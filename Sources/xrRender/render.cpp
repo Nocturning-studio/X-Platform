@@ -641,6 +641,9 @@ void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::
 {
 	OPTICK_EVENT("CRender::add_StaticWallmark");
 
+	if (g_dedicated_server)
+		return;
+
 	if (T->suppress_wm)
 		return;
 	VERIFY2(_valid(P) && _valid(s) && T && verts && (s > EPS_L), "Invalid static wallmark params");
