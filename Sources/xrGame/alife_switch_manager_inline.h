@@ -22,7 +22,7 @@ IC CALifeSwitchManager::CALifeSwitchManager(xrServer* server, LPCSTR section) : 
 	if (pSettings->line_exist(section, "switch_online_limit"))
 		m_online_limit_per_update = pSettings->r_u32(section, "switch_online_limit");
 	else
-		m_online_limit_per_update = 15;
+		m_online_limit_per_update = 10000;
 }
 
 IC float CALifeSwitchManager::online_distance() const
