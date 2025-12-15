@@ -214,34 +214,71 @@ void CHW::CreateDevice(HWND m_hWnd)
 #endif
 
 	P.BackBufferFormat = fTarget;
-	P.BackBufferCount = 1; // Минимум буферов для сервера
+
+	// FIX 1: Увеличиваем буфер для надежности (было 1)
+	P.BackBufferCount = 2;
 
 	P.MultiSampleType = D3DMULTISAMPLE_NONE;
 	P.MultiSampleQuality = 0;
-
-	// D3DSWAPEFFECT_DISCARD быстрее всего, и серверу всё равно, что там в буфере
 	P.SwapEffect = D3DSWAPEFFECT_DISCARD;
-
 	P.hDeviceWindow = m_hWnd;
 	P.Windowed = bWindowed;
 	P.EnableAutoDepthStencil = TRUE;
 	P.AutoDepthStencilFormat = fDepth;
-	P.Flags = 0;
+	P.Flags = 0; // Можно добавить D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL для оптимизации
 
-	// На сервере всегда выключаем VSync (IMMEDIATE)
 	P.PresentationInterval = selectPresentInterval();
 
-	P.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+	// FIX 2: Подготовка структуры DisplayModeEx для CreateDeviceEx
+	D3DDISPLAYMODEEX ModeEx;
+	ZeroMemory(&ModeEx, sizeof(D3DDISPLAYMODEEX));
+	ModeEx.Size = sizeof(D3DDISPLAYMODEEX);
+
+	D3DDISPLAYMODEEX* pModeEx = NULL;
+
+	if (!bWindowed)
+	{
+		// FIX 3: Не используем 0 (DEFAULT), берем частоту десктопа
+		u32 refreshRate = mWindowed.RefreshRate;
+		if (refreshRate == 0)
+			refreshRate = 60;
+
+		P.FullScreen_RefreshRateInHz = refreshRate;
+
+		ModeEx.Width = P.BackBufferWidth;
+		ModeEx.Height = P.BackBufferHeight;
+		ModeEx.Format = P.BackBufferFormat;
+		ModeEx.RefreshRate = P.FullScreen_RefreshRateInHz;
+		ModeEx.ScanLineOrdering = D3DSCANLINEORDERING_PROGRESSIVE;
+
+		// Указатель на структуру для передачи в функцию
+		pModeEx = &ModeEx;
+	}
+	else
+	{
+		P.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+		pModeEx = NULL;
+	}
 
 	u32 GPU = selectGPU();
 
 	// Create Device
-	HRESULT R = pD3D->CreateDeviceEx(DevAdapter, DevT, m_hWnd, GPU | D3DCREATE_MULTITHREADED, &P, NULL, &pDevice);
+	// FIX 4: Передаем pModeEx вместо NULL
+	HRESULT R = pD3D->CreateDeviceEx(DevAdapter, DevT, m_hWnd, GPU | D3DCREATE_MULTITHREADED, &P, pModeEx, &pDevice);
 
 	if (FAILED(R))
 	{
+		// Попытка без FPU preserve
 		R = pD3D->CreateDeviceEx(DevAdapter, DevT, m_hWnd, GPU | D3DCREATE_MULTITHREADED | D3DCREATE_FPU_PRESERVE, &P,
-								 NULL, &pDevice);
+								 pModeEx, &pDevice);
+	}
+
+	// FIX 5: Последний шанс - если не вышло с конкретным режимом, пробуем NULL (как было раньше), но с четкой частотой
+	if (FAILED(R) && !bWindowed)
+	{
+		Msg("! Failed to create device with explicit ModeEx, trying fallback...");
+		P.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+		R = pD3D->CreateDeviceEx(DevAdapter, DevT, m_hWnd, GPU | D3DCREATE_MULTITHREADED, &P, NULL, &pDevice);
 	}
 
 	if (FAILED(R))
