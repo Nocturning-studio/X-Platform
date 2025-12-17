@@ -260,6 +260,68 @@ class adopt_compiler
 		return *this;
 	}
 
+	// Обертка для дефайна без значения (например, #define USE_WATER)
+	adopt_compiler& _define(LPCSTR name)
+	{
+		if (C)
+		{
+			string32 n;
+			strcpy_s(n, name);
+			C->set_Define(n, CBlender_Compile::ShaderScope::Both);
+		}
+		return *this;
+	}
+
+	// Обертка для int
+	adopt_compiler& _define_int(LPCSTR name, int v)
+	{
+		if (C)
+		{
+			string32 n;
+			strcpy_s(n, name);
+			C->set_Define(n, v, CBlender_Compile::ShaderScope::Both);
+		}
+		return *this;
+	}
+
+	// Обертка для float
+	adopt_compiler& _define_float(LPCSTR name, float v)
+	{
+		if (C)
+		{
+			string32 n;
+			strcpy_s(n, name);
+			C->set_Define(n, v, CBlender_Compile::ShaderScope::Both);
+		}
+		return *this;
+	}
+
+	// Обертка для bool
+	adopt_compiler& _define_bool(LPCSTR name, bool v)
+	{
+		if (C)
+		{
+			string32 n;
+			strcpy_s(n, name);
+			C->set_Define(n, v, CBlender_Compile::ShaderScope::Both);
+		}
+		return *this;
+	}
+
+	// Обертка для строки (#define MACRO "VALUE")
+	adopt_compiler& _define_string(LPCSTR name, LPCSTR v)
+	{
+		if (C)
+		{
+			string32 n;
+			strcpy_s(n, name);
+			string32 val;
+			strcpy_s(val, v);
+			C->set_Define(n, val, CBlender_Compile::ShaderScope::Both);
+		}
+		return *this;
+	}
+
 	adopt_compiler& _fog(bool _fog)
 	{
 		C->PassSET_LightFog(FALSE, _fog);
@@ -415,6 +477,11 @@ void CResourceManager::LS_Load()
 					 .def("pixel_shader", &adopt_compiler::_pixel_shader, return_reference_to(_1))
 					 .def("vertex_shader_entry", &adopt_compiler::_vertex_shader_entry, return_reference_to(_1))
 					 .def("pixel_shader_entry", &adopt_compiler::_pixel_shader_entry, return_reference_to(_1))
+					 .def("define", &adopt_compiler::_define, return_reference_to(_1))
+					 .def("define_int", &adopt_compiler::_define_int, return_reference_to(_1))
+					 .def("define_float", &adopt_compiler::_define_float, return_reference_to(_1))
+					 .def("define_bool", &adopt_compiler::_define_bool, return_reference_to(_1))
+					 .def("define_string", &adopt_compiler::_define_string, return_reference_to(_1))
 					 .def("sorting", &adopt_compiler::_options, return_reference_to(_1))
 					 .def("emissive", &adopt_compiler::_o_emissive, return_reference_to(_1))
 					 .def("distort", &adopt_compiler::_o_distort, return_reference_to(_1))
