@@ -52,17 +52,36 @@ class CGlow : public IRender_Glow
 
 float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq)
 {
-	OPTICK_EVENT("CRender::rimp_select_sh_dynamic");
+	OPTICK_EVENT("CRender::rimp_select_sh_static");
 
-	int id = 0;
+	if (!pVisual)
+	{
+		return 0;
+	}
+
+	if (!pVisual->shader._get())
+	{
+		return 0;
+	}
+
+	int id = SE_R1_NORMAL_HQ;
 
 	switch (active_phase())
 	{
-	case CRender::PHASE_HUD:
-	case CRender::PHASE_NORMAL:
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_NORMAL_HQ : SE_NORMAL_LQ;
+	case CRender::PHASE_HUD:	// HUD Forward Base Pass
+	case CRender::PHASE_NORMAL: // Forward Base Pass
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
+		break;
+	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
+		id = SE_R1_LPOINT;
+		break;
+	case CRender::PHASE_SPOT_LIGHTING: // Additive Spot Light Pass
+		id = SE_R1_LSPOT;
+		break;
+	case CRender::PHASE_SUN_LIGHTING: // Additive Sun Light Pass
+		id = SE_R1_LSUN;
 		break;
 	case CRender::PHASE_SHADOW_DEPTH:
 		id = SE_SHADOW_DEPTH;
@@ -74,18 +93,37 @@ ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cd
 
 	return pVisual->shader->E[id]._get();
 }
-//////////////////////////////////////////////////////////////////////////
-ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq)
-{
-	OPTICK_EVENT("CRender::rimp_select_sh_static");
 
-	int id = 0;
+ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq)
+{
+	OPTICK_EVENT("CRender::rimp_select_sh_dynamic");
+
+	if (!pVisual)
+	{
+		return 0;
+	}
+
+	if (!pVisual->shader._get())
+	{
+		return 0;
+	}
+
+	int id = SE_R1_NORMAL_HQ;
 
 	switch (active_phase())
 	{
-	case CRender::PHASE_HUD:
-	case CRender::PHASE_NORMAL:
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_NORMAL_HQ : SE_NORMAL_LQ;
+	case CRender::PHASE_HUD:	// HUD Forward Base Pass
+	case CRender::PHASE_NORMAL: // Forward Base Pass
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
+		break;
+	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
+		id = SE_R1_LPOINT;
+		break;
+	case CRender::PHASE_SPOT_LIGHTING: // Additive Spot Light Pass
+		id = SE_R1_LSPOT;
+		break;
+	case CRender::PHASE_SUN_LIGHTING: // Additive Sun Light Pass
+		id = SE_R1_LSUN;
 		break;
 	case CRender::PHASE_SHADOW_DEPTH:
 		id = SE_SHADOW_DEPTH;

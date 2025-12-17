@@ -6,8 +6,6 @@
 
 #pragma warning(disable: 4456)
 
-#ifndef __BORLANDC__
-
 #ifndef DEBUG_MEMORY_MANAGER
 #define debug_mode 0
 #endif // DEBUG_MEMORY_MANAGER
@@ -45,11 +43,7 @@ ICF u32 get_pool(size_t size)
 bool g_use_pure_alloc = false;
 #endif // PURE_ALLOC
 
-void* xrMemory::mem_alloc(size_t size
-#ifdef DEBUG_MEMORY_NAME
-						  ,
-						  const char* _name
-#endif // DEBUG_MEMORY_NAME
+void* xrMemory::mem_alloc(size_t size, const char* _name
 )
 {
 	stat_calls++;
@@ -318,5 +312,3 @@ void* xrMemory::mem_realloc(void* P, size_t size
 
 	return _ptr;
 }
-
-#endif // __BORLANDC__

@@ -224,9 +224,39 @@ class adopt_compiler
 		return *this;
 	}
 
-	adopt_compiler& _pass(LPCSTR vs, LPCSTR ps)
+	adopt_compiler& _pass(LPCSTR vs = "null", LPCSTR ps = "null")
 	{
 		C->begin_Pass(vs, ps, "main", "main", true, true);
+		return *this;
+	}
+
+	adopt_compiler& _commit_pass()
+	{
+		C->commit_Pass();
+		return *this;
+	}
+
+	adopt_compiler& _vertex_shader(LPCSTR name)
+	{
+		C->SetVertexShader(name);
+		return *this;
+	}
+
+	adopt_compiler& _pixel_shader(LPCSTR name)
+	{
+		C->SetPixelShader(name);
+		return *this;
+	}
+
+	adopt_compiler& _vertex_shader_entry(LPCSTR entry)
+	{
+		C->SetVertexShaderEntry(entry);
+		return *this;
+	}
+
+	adopt_compiler& _pixel_shader_entry(LPCSTR entry)
+	{
+		C->SetPixelShaderEntry(entry);
 		return *this;
 	}
 
@@ -381,6 +411,10 @@ void CResourceManager::LS_Load()
 				 class_<adopt_compiler>("_compiler")
 					 .def(constructor<const adopt_compiler&>())
 					 .def("begin", &adopt_compiler::_pass, return_reference_to(_1))
+					 .def("vertex_shader", &adopt_compiler::_vertex_shader, return_reference_to(_1))
+					 .def("pixel_shader", &adopt_compiler::_pixel_shader, return_reference_to(_1))
+					 .def("vertex_shader_entry", &adopt_compiler::_vertex_shader_entry, return_reference_to(_1))
+					 .def("pixel_shader_entry", &adopt_compiler::_pixel_shader_entry, return_reference_to(_1))
 					 .def("sorting", &adopt_compiler::_options, return_reference_to(_1))
 					 .def("emissive", &adopt_compiler::_o_emissive, return_reference_to(_1))
 					 .def("distort", &adopt_compiler::_o_distort, return_reference_to(_1))
@@ -389,7 +423,8 @@ void CResourceManager::LS_Load()
 					 .def("zb", &adopt_compiler::_ZB, return_reference_to(_1))
 					 .def("blend", &adopt_compiler::_blend, return_reference_to(_1))
 					 .def("aref", &adopt_compiler::_aref, return_reference_to(_1))
-					 .def("sampler", &adopt_compiler::_sampler), // returns sampler-object
+					 .def("sampler", &adopt_compiler::_sampler)
+					 .def("commit", &adopt_compiler::_commit_pass),
 
 				 class_<adopt_blend>("blend").enum_("blend")
 					 [value("zero", int(D3DBLEND_ZERO)), value("one", int(D3DBLEND_ONE)),
@@ -478,6 +513,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	C.detail_texture = NULL;
 	C.detail_scaler = NULL;
 
+	Msg("Debug Shader Compile: %s", s_shader);
+
 	// Compile element	(LOD0 - HQ)
 	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_hq", LUA_TFUNCTION))
 	{
@@ -511,6 +548,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	// Compile element
 	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_point", LUA_TFUNCTION))
 	{
+		Msg("- Found l_point!");
+
 		C.iElement = 2;
 		C.bDetail = FALSE;
 		S.E[2] = C._lua_Compile(s_shader, "l_point");
@@ -519,6 +558,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	// Compile element
 	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_spot", LUA_TFUNCTION))
 	{
+			Msg("- Found l_spot!");
+
 		C.iElement = 3;
 		C.bDetail = FALSE;
 		S.E[3] = C._lua_Compile(s_shader, "l_spot");
@@ -530,6 +571,13 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 		C.iElement = 4;
 		C.bDetail = FALSE;
 		S.E[4] = C._lua_Compile(s_shader, "l_special");
+	}
+
+	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_sun", LUA_TFUNCTION))
+	{
+		C.iElement = 5;
+		C.bDetail = FALSE;
+		S.E[5] = C._lua_Compile(s_shader, "l_sun");
 	}
 
 	// Search equal in shaders array

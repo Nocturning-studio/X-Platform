@@ -345,22 +345,38 @@ void CBlender_Compile::Stage_Constant(LPCSTR name)
 }
 
 void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCSTR _ps_entry, bool bFog, BOOL bZtest,
-								  BOOL bZwrite, BOOL bABlend,
-								  D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
+								  BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
 {
-	RS.Invalidate();
-	ctable.clear();
-	passTextures.clear();
-	passMatrices.clear();
-	passConstants.clear();
-	dwStage = 0;
+	// 1. Сначала копируем имена. Если пришли NULL - ставим "null".
+	strcpy_s(pass_vs, _vs ? _vs : "null");
+	strcpy_s(pass_ps, _ps ? _ps : "null");
+	strcpy_s(pass_vs_entry, _vs_entry ? _vs_entry : "main");
+	strcpy_s(pass_ps_entry, _ps_entry ? _ps_entry : "main");
 
-	// Setup FF-units (Z-buffer, blender)
+	// 2. ОБЯЗАТЕЛЬНО коммитим СРАЗУ.
+	// Это подготовит базовый проход и ctable для сэмплеров.
+	// При этом внутри вызовется RS.Invalidate(), что нормально, т.к. мы еще не настроили стейты.
+	commit_Pass();
+
+	// 3. ПРИМЕНЯЕМ НАСТРОЙКИ СТЕЙТОВ ПОСЛЕ КОММИТА
+	// Теперь они лягут в чистый RS и не сотрутся.
 	PassSET_ZB(bZtest, bZwrite);
 	PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
 	PassSET_LightFog(FALSE, bFog);
+}
 
-	// [НОВАЯ ЛОГИКА] Объединяем макросы
+void CBlender_Compile::commit_Pass()
+{
+	// Сброс эмулятора
+	//RS.Invalidate();
+
+	//ctable.clear();
+	//passTextures.clear();
+	//passMatrices.clear();
+	//passConstants.clear();
+	dwStage = 0;
+
+	// Макросы
 	CShaderMacros final_macros_ps;
 	final_macros_ps.add(macros_common);
 	final_macros_ps.add(macros_ps);
@@ -369,23 +385,32 @@ void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCS
 	final_macros_vs.add(macros_common);
 	final_macros_vs.add(macros_vs);
 
-	// Create shaders
-	SPS* ps = Device.Resources->CreateShader<SPS>(_ps, _ps_entry, final_macros_ps);
-	SVS* vs = Device.Resources->CreateShader<SVS>(_vs, _vs_entry, final_macros_vs);
+	// Создание шейдеров
+	ref_ps ps = Device.Resources->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
+	ref_vs vs = Device.Resources->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
 
-	// Очищаем после использования
+	// Очистка
 	macros_common.clear();
 	macros_vs.clear();
 	macros_ps.clear();
 
+	// Сохранение в дест
 	dest.ps = ps;
 	dest.vs = vs;
-	ctable.merge(&ps->constants);
-	ctable.merge(&vs->constants);
+
+	// Проверяем, создались ли шейдеры, прежде чем лезть в их константы.
+	// Если шейдер "null", реф-каунтер (p_) будет равен nullptr.
+	if (ps)
+		ctable.merge(&ps->constants);
+	if (vs)
+		ctable.merge(&vs->constants);
+
+	// SetMapping привязывает сэмплеры к симулятору.
+	// Важно: он использует dest.ps, который теперь безопасно обновлен (даже если он пуст).
 	SetMapping();
 
-	// Last Stage - disable
-	if (0 == xr_stricmp(_ps, "null"))
+	// Отключение последнего стейджа
+	if (0 == xr_stricmp(pass_ps, "null"))
 	{
 		RS.SetTSS(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		RS.SetTSS(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
@@ -538,4 +563,9 @@ void CBlender_Compile::end_Pass()
 	ref_matrix_list temp(0);
 	SH->passes.push_back(
 		Device.Resources->_CreatePass(dest.state, dest.ps, dest.vs, dest.constants, dest.T, temp, dest.C));
+
+	ctable.clear();
+	passTextures.clear();
+	passMatrices.clear();
+	passConstants.clear();
 }

@@ -13,20 +13,10 @@
 
 extern bool shared_str_initialized;
 
-#ifdef __BORLANDC__
-#include "d3d9.h"
-#include "d3dx9.h"
-#include "D3DX_Wrapper.h"
-#pragma comment(lib, "EToolsB.lib")
-#define DEBUG_INVOKE DebugBreak()
-static BOOL bException = TRUE;
-#define USE_BUG_TRAP
-#else
 #define USE_OWN_ERROR_MESSAGE_WINDOW
-#define USE_BUG_TRAP
+//#define USE_BUG_TRAP
 #define DEBUG_INVOKE __asm int 3
 static BOOL bException = FALSE;
-#endif
 
 #include <dbghelp.h> // MiniDump flags
 
@@ -41,10 +31,12 @@ static BOOL bException = FALSE;
 #include <signal.h> // for signals
 
 #if 0 // def DEBUG
-#define USE_OWN_ERROR_MESSAGE_WINDOW
+
 #else // DEBUG
-#define USE_OWN_MINI_DUMP
+//#define USE_OWN_MINI_DUMP
 #endif // DEBUG
+
+#define USE_OWN_ERROR_MESSAGE_WINDOW
 
 XRCORE_API xrDebug Debug;
 

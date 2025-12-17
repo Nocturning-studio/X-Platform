@@ -467,11 +467,11 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 				animation().play_fx(power_factor, fx_index);
 #ifdef DEBUG
-				else
-				{
-					Msg("! WARNING: Invalid fx_index %d (max: %d) for bone %d, body_state %d", fx_index, max_fx_index,
-						pHDS->bone(), body_state);
-				}
+				//else
+				//{
+				//	Msg("! WARNING: Invalid fx_index %d (max: %d) for bone %d, body_state %d", fx_index, max_fx_index,
+				//		pHDS->bone(), body_state);
+				//}
 #endif
 			}
 			else

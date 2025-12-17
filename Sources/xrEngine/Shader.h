@@ -131,8 +131,7 @@ typedef resptr_core<ShaderElement, resptr_base<ShaderElement>> ref_selement;
 struct ENGINE_API Shader : public xr_resource_flagged
 {
   public:
-	ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
-					   // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+	ref_selement E[6]; // 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models, 5=L_sun
 	~Shader();
 	BOOL equal(Shader& S);
 	BOOL equal(Shader* S);
@@ -155,6 +154,7 @@ enum SE_R1
 	SE_R1_LPOINT = 2,	 // add: point light
 	SE_R1_LSPOT = 3,	 // add:	spot light
 	SE_R1_LMODELS = 4,	 // lighting info for models or shadowing from models
+	SE_R1_LSUN = 5
 };
 
 #pragma pack(pop)

@@ -69,3 +69,5 @@ changelog.txt
 
 # CLion cache
 cmake-build*/
+*.pdb
+*.exp

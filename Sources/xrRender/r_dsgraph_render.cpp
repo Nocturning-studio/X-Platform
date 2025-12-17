@@ -614,3 +614,26 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 	View = 0;
 }
 
+void CRender::r_dsgraph_render_reuse()
+{
+	// Статика
+	for (IRender_Visual* V : m_visuals_static_visible)
+	{
+		// Вызываем добавление ЛИСТА.
+		// Важно: мы не вызываем полную рекурсию add_Static, а сразу идем к листовой логике.
+		// Но нам нужно, чтобы switch внутри add_leafs_Static отработал,
+		// чтобы корректно раскидать LOD-ы, если они попали в список.
+
+		// Оптимальный вариант - вызвать switch обработки типа из add_leafs_Static
+		// Но чтобы не дублировать код, можно просто вызвать add_leafs_Static.
+		// Да, там есть проверка HOM.visible, но она очень быстрая (это просто флаг после render_main).
+		add_leafs_Static(V);
+	}
+
+	// Динамика
+	for (auto& it : m_visuals_dynamic_visible)
+	{
+		RenderImplementation.set_Transform(&it.matrix); // Восстанавливаем матрицу
+		add_leafs_Dynamic(it.visual);
+	}
+}

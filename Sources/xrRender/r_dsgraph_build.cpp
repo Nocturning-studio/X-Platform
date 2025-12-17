@@ -909,8 +909,18 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 		// Calculate distance to it's center
 		Fvector Tpos;
 		val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+
+		if (active_phase() == PHASE_NORMAL)
+		{
+			DReuseItem item;
+			item.visual = pVisual;
+			item.matrix = *val_pTransform; // Копируем текущую матрицу
+			m_visuals_dynamic_visible.push_back(item);
+		}
+
 		r_dsgraph_insert_dynamic(pVisual, Tpos);
 	}
+
 		return;
 	}
 }
@@ -924,6 +934,11 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 
 	if (!IsValuableToRender(pVisual, true, RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH, *val_pTransform, false))
 		return;
+
+	if (active_phase() == PHASE_NORMAL)
+	{
+		m_visuals_static_visible.push_back(pVisual);
+	}
 
 	// Visual is 100% visible - simply add it
 	xr_vector<IRender_Visual*>::iterator I, E; // it may be usefull for 'hierrarhy' visuals

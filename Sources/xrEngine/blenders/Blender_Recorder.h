@@ -141,6 +141,7 @@ class ENGINE_API CBlender_Compile
 	void Stage_Texture(LPCSTR name, u32 address = D3DTADDRESS_WRAP, u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR);
 	void Stage_Matrix(LPCSTR name, int UVW_channel);
 	void Stage_Constant(LPCSTR name);
+	void UpdateShaderAndConstants();
 	void StageEnd();
 
 	// R1/R2-compiler	[programmable]
@@ -225,7 +226,9 @@ private:
 					D3DBLEND abSRC = D3DBLEND_ONE, 
 					D3DBLEND abDST = D3DBLEND_ZERO, 
 					BOOL aTest = FALSE, 
-					u32 aRef = 0);	
+					u32 aRef = 0);
+	void commit_Pass();
+	
 
 	void begin_Pass(PassDesc PassDescription)
 	{
@@ -242,6 +245,26 @@ private:
 					PassDescription.EnableAlphaTest, 
 					PassDescription.AlphaRef );
 	};
+
+	void SetVertexShader(LPCSTR name)
+	{
+		strcpy_s(pass_vs, name);
+	}
+
+	void SetPixelShader(LPCSTR name)
+	{
+		strcpy_s(pass_ps, name);
+	}
+
+	void SetVertexShaderEntry(LPCSTR entry)
+	{
+		strcpy_s(pass_vs_entry, entry);
+	}
+
+	void SetPixelShaderEntry(LPCSTR entry)
+	{
+		strcpy_s(pass_ps_entry, entry);
+	}
 
 	void set_Constant(LPCSTR name, R_constant_setup* s);
 	u32 set_Sampler(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false, u32 address = D3DTADDRESS_WRAP,

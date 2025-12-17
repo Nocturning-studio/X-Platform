@@ -71,6 +71,16 @@ class R_dsgraph_structure : public IRender_interface, public pureFrame
 	u32 counter_D;
 	BOOL b_loaded;
 
+	// Списки видимых объектов за текущий кадр
+	xr_vector<IRender_Visual*> m_visuals_static_visible;
+
+	struct DReuseItem
+	{
+		IRender_Visual* visual;
+		Fmatrix matrix;
+	};
+	xr_vector<DReuseItem> m_visuals_dynamic_visible;
+
   public:
 	virtual void set_Transform(Fmatrix* M)
 	{

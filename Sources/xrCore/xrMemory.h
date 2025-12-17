@@ -82,13 +82,16 @@ class XRCORE_API xrMemory
 
 #ifdef DEBUG_MEMORY_NAME
 	void mem_statistic(LPCSTR fn);
-	void* mem_alloc(size_t size, const char* _name);
 	void* mem_realloc(void* p, size_t size, const char* _name);
 #else  // DEBUG_MEMORY_NAME
-	void* mem_alloc(size_t size);
 	void* mem_realloc(void* p, size_t size);
 #endif // DEBUG_MEMORY_NAME
 	void mem_free(void* p);
+	void* mem_alloc(size_t size, const char* _name);
+	void* mem_alloc(size_t size)
+	{
+		return mem_alloc(size, "");
+	}
 
 	pso_MemCopy* mem_copy;
 	pso_MemFill* mem_fill;
@@ -105,11 +108,7 @@ extern XRCORE_API xrMemory Memory;
 #define FillMemory(a, b, c) Memory.mem_fill(a, c, b)
 
 // delete
-#ifdef __BORLANDC__
-#include "xrMemory_subst_borland.h"
-#else
-#include "xrMemory_subst_msvc.h"
-#endif
+#include "xrMemory_subst.h"
 
 // generic "C"-like allocations/deallocations
 #ifdef DEBUG_MEMORY_NAME

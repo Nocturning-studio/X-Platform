@@ -1586,8 +1586,7 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
-    <ClCompile Include="xrMemory_subst_borland.cpp" />
-    <ClCompile Include="xrMemory_subst_msvc.cpp" />
+    <ClCompile Include="xrMemory_subst.cpp" />
     <ClCompile Include="xrsharedmem.cpp" />
     <ClCompile Include="xrstring.cpp" />
     <ClCompile Include="xrSyncronize.cpp" />
@@ -1691,8 +1690,7 @@
     <ClInclude Include="xrMEMORY_POOL.h" />
     <ClInclude Include="xrMemory_pso.h" />
     <ClInclude Include="xrMemory_pure.h" />
-    <ClInclude Include="xrMemory_subst_borland.h" />
-    <ClInclude Include="xrMemory_subst_msvc.h" />
+    <ClInclude Include="xrMemory_subst.h" />
     <ClInclude Include="xrPool.h" />
     <ClInclude Include="xrsharedmem.h" />
     <ClInclude Include="xrstring.h" />

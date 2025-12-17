@@ -37,7 +37,10 @@ class CRender : public R_dsgraph_structure
 		PHASE_NORMAL = 0,		// E[0]
 		PHASE_SHADOW_DEPTH = 1, // E[1]
 		PHASE_DEPTH_PREPASS = 2,
-		PHASE_HUD = 3
+		PHASE_HUD = 3,
+		PHASE_SUN_LIGHTING = 4,
+		PHASE_SPOT_LIGHTING = 5,
+		PHASE_POINT_LIGHTING = 6
 	};
 
 	enum
@@ -129,6 +132,8 @@ class CRender : public R_dsgraph_structure
 	u32 q_sync_count;
 
 	bool m_bFirstFrameAfterReset; // Determines weather the frame is the first after resetting device.
+
+	bool m_b_collect_visuals;
 
 	bool m_need_render_sun;
 	xr_vector<sun::cascade> m_sun_cascades;
@@ -361,6 +366,7 @@ class CRender : public R_dsgraph_structure
 	void render_depth_prepass();
 	void render_gbuffer_primary();
 	void render_gbuffer_secondary();
+	void render_forward_lights(xr_vector<light*>& lights, int phase);
 	void render_stage_occlusion_culling();
 	void render_stage_forward();
 	void update_shadow_map_visibility();
@@ -403,6 +409,7 @@ class CRender : public R_dsgraph_structure
 	HMODULE hCompiler;
   private:
 	FS_FileSet m_file_set;
+	void r_dsgraph_render_reuse();
 };
 
 extern CRender RenderImplementation;

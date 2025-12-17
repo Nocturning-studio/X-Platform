@@ -259,14 +259,14 @@ void CRender::render_depth_prepass()
 
 	RenderBackend.enable_anisotropy_filtering();
 
-	//if (Details)
-	//	Details->Render();
+	if (Details)
+		Details->Render();
 
 	r_dsgraph_render_hud();
 
 	r_dsgraph_render_graph(0);
 
-	//r_dsgraph_render_lods(true, true);
+	r_dsgraph_render_lods(true, true);
 
 	RenderBackend.disable_anisotropy_filtering();
 
@@ -343,48 +343,271 @@ void CRender::render_gbuffer_secondary()
 	RenderBackend.disable_anisotropy_filtering();
 }
 
+void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
+{
+	if (lights.empty())
+		return;
+
+	dwLightMarkerID = 5; 
+
+	std::sort(lights.begin(), lights.end(), [](light* a, light* b) {
+		return Device.vCameraPosition.distance_to_sqr(a->get_position()) <
+			   Device.vCameraPosition.distance_to_sqr(b->get_position());
+	});
+
+	const size_t max_forward_lights = 100;
+	size_t count = std::min(lights.size(), max_forward_lights);
+	float smapsize = float(RenderImplementation.o.smapsize);
+
+	for (size_t i = 0; i < count; ++i)
+	{
+		light* L = lights[i];
+
+		if (!L->vis.visible || !L->flags.bActive)
+			continue;
+
+		L->xform_calc();
+		Fvector L_pos = L->get_position();
+		float L_range = L->get_range();
+		float distSqToCam = Device.vCameraPosition.distance_to_sqr(L_pos);
+		if (distSqToCam > (L_range * L_range + 400.0f))
+			continue;
+
+		// =========================================================================
+		// 1. ОТРИСОВКА МАСКИ СВЕТА
+		// =========================================================================
+		RenderBackend.set_xform_world(L->get_xform());
+		RenderBackend.set_xform_view(Device.mView);
+		RenderBackend.set_xform_project(Device.mProject);
+		enable_scissor(L);
+
+		u32 mask_id = (L->flags.type == IRender_Light::OMNIPART) ? SE_MASK_POINT : SE_MASK_SPOT;
+		RenderBackend.set_Element(RenderTarget->s_accum_mask->E[mask_id]);
+
+		// принудительное отключение цвета
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0));
+		RenderBackend.set_ZWriteEnable(FALSE);
+
+		// Мы хотим ГАРАНТИРОВАННО пометить пиксели стенсилом, не завися от того,
+		// что там нарисовало (или не нарисовало) Солнце.
+		// Cull CW: Увеличиваем ref для пикселей ЗА объемом света
+		RenderBackend.set_CullMode(CULL_CW);
+		RenderBackend.set_Stencil(TRUE, D3DCMP_ALWAYS, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP,
+								  D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+		draw_volume(L);
+
+		// Cull CCW: Та же логика для передних граней
+		RenderBackend.set_CullMode(CULL_CCW);
+		RenderBackend.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP,
+								  D3DSTENCILOP_REPLACE);
+		draw_volume(L);
+
+		// =========================================================================
+		// 2. ОТРИСОВКА ГЕОМЕТРИИ (СВЕТ НА ВОДЕ)
+		// =========================================================================
+		RenderImplementation.apply_lmaterial();
+
+		Fvector L_pos_view;
+		Device.mView.transform_tiny(L_pos_view, L_pos);
+		Fvector L_dir, L_dir_view;
+		L_dir = L->get_direction();
+		Device.mView.transform_dir(L_dir_view, L_dir);
+		L_dir_view.normalize();
+		Fvector L_clr = {L->get_color().r, L->get_color().g, L->get_color().b};
+		L_clr.mul(L->get_LOD());
+
+		Fmatrix m_Shadow = Fidentity;
+		Fmatrix m_Lmap = Fidentity;
+		if (phase == PHASE_SPOT_LIGHTING || L->flags.type != IRender_Light::OMNIPART)
+		{
+			float fTexelOffs = (.5f / smapsize);
+			float view_dim = float(L->X.S.size - 2) / smapsize;
+			float view_sx = float(L->X.S.posX + 1) / smapsize;
+			float view_sy = float(L->X.S.posY + 1) / smapsize;
+			float fRange = float(1.f) * ps_r_ls_depth_scale;
+			float fBias = ps_r_ls_depth_bias;
+
+			Fmatrix m_TexelAdjust = {view_dim / 2.f,
+									 0.0f,
+									 0.0f,
+									 0.0f,
+									 0.0f,
+									 -view_dim / 2.f,
+									 0.0f,
+									 0.0f,
+									 0.0f,
+									 0.0f,
+									 fRange,
+									 0.0f,
+									 view_dim / 2.f + view_sx + fTexelOffs,
+									 view_dim / 2.f + view_sy + fTexelOffs,
+									 fBias,
+									 1.0f};
+			Fmatrix xf_inv_view;
+			xf_inv_view.invert(Device.mView);
+			Fmatrix xf_project;
+			xf_project.mul(m_TexelAdjust, L->X.S.project);
+			m_Shadow.mul(L->X.S.view, xf_inv_view);
+			m_Shadow.mulA_44(xf_project);
+
+			float l_dim = 1.f;
+			Fmatrix m_TexelAdjust2 = {l_dim / 2.f, 0.0f, 0.0f,	 0.0f, 0.0f,		-l_dim / 2.f, 0.0f,	 0.0f,
+									  0.0f,		   0.0f, fRange, 0.0f, l_dim / 2.f, l_dim / 2.f,  fBias, 1.0f};
+			xf_project.mul(m_TexelAdjust2, L->X.S.project);
+			m_Lmap.mul(L->X.S.view, xf_inv_view);
+			m_Lmap.mulA_44(xf_project);
+			if (!L->flags.bShadow)
+				m_Shadow = m_Lmap;
+		}
+
+		float att_R = L_range * .95f;
+		float att_factor = 1.f / (att_R * att_R);
+		RenderBackend.set_Constant("L_dynamic_pos", L_pos_view.x, L_pos_view.y, L_pos_view.z, att_factor);
+		RenderBackend.set_Constant("L_dynamic_color", L_clr.x, L_clr.y, L_clr.z, 0.f);
+		RenderBackend.set_Constant("L_dynamic_dir", L_dir_view.x, L_dir_view.y, L_dir_view.z, 0.f);
+		if (phase == PHASE_SPOT_LIGHTING || L->flags.type != IRender_Light::OMNIPART)
+		{
+			float spot_cutoff = L->get_cone();
+			float spot_inner = spot_cutoff * 0.8f;
+			RenderBackend.set_Constant("Ldynamic_spot_att", cosf(spot_inner), cosf(spot_cutoff), L_range * L_range,
+									   0.f);
+		}
+		else
+		{
+			RenderBackend.set_Constant("Ldynamic_spot_att", 0.f, 0.f, L_range * L_range, 0.f);
+		}
+
+		RenderBackend.set_Constant("m_shadow", m_Shadow);
+		RenderBackend.set_Array_Constant("m_lmap", 0, m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
+		RenderBackend.set_Array_Constant("m_lmap", 1, m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
+
+		// --- RENDER GEOMETRY ---
+		set_active_phase(phase);
+		RenderImplementation.set_Transform(0);
+		marker++;
+
+		for (IRender_Visual* V : m_visuals_static_visible)
+		{
+			ShaderElement* E = rimp_select_sh_static(V, 0.0f);
+			if (!E || E->passes.empty())
+				continue;
+
+			float R_sum = V->vis.sphere.R + L_range;
+			if (V->vis.sphere.P.distance_to_sqr(L_pos) < (R_sum * R_sum))
+				add_leafs_Static(V);
+		}
+
+		for (auto& item : m_visuals_dynamic_visible)
+		{
+			ShaderElement* E = rimp_select_sh_dynamic(item.visual, 0.0f);
+			if (!E || E->passes.empty())
+				continue;
+
+			Fvector sphere_center_world;
+			item.matrix.transform_tiny(sphere_center_world, item.visual->vis.sphere.P);
+			float R_sum = item.visual->vis.sphere.R + L_range;
+			if (sphere_center_world.distance_to_sqr(L_pos) < (R_sum * R_sum))
+			{
+				RenderImplementation.set_Transform(&item.matrix);
+				add_leafs_Dynamic(item.visual);
+			}
+		}
+
+		// Включаем обратно цвет
+		RenderBackend.set_ColorWriteEnable(TRUE);
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0xF));
+		RenderBackend.set_ZWriteEnable(FALSE);
+
+		// СТЕНСИЛ ТЕСТ для воды: рисуем только если маска == dwLightMarkerID
+		RenderBackend.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
+
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
+		RenderBackend.set_CullMode(CULL_CCW);
+
+		r_dsgraph_render_graph(1);
+		r_dsgraph_render_sorted();
+
+		// CLEANUP
+		dwLightMarkerID += 2;
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
+		RenderBackend.set_Stencil(FALSE);
+	}
+}
+
 void CRender::render_stage_forward()
 {
 	OPTICK_EVENT("CRender::render_stage_forward()");
 
 	VERIFY(0 == mapDistort.size());
 
-	//******* Main render - second order geometry (the one, that doesn't support deffering)
+	// Очищаем списки с прошлого кадра
+	m_visuals_static_visible.clear();
+	m_visuals_dynamic_visible.clear();
+
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
+	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
+	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_Stencil(FALSE);
+
+	// ============================================
+	// PASS 1: Base Pass (Ambient + Texture + Hemi)
+	// ============================================
 	{
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
-		RenderBackend.set_Depth_Buffer(HW.pBaseZB);
-
-		RenderBackend.set_CullMode(CULL_CCW);
-		RenderBackend.set_Stencil(FALSE);
+		// Настраиваем состояния: Базовый проход ПИШЕТ цвет и Z
 		RenderBackend.set_ColorWriteEnable();
+		RenderBackend.set_ZWriteEnable(TRUE);
 
-		// if (g_pGamePersistent)
-		//	g_pGamePersistent->Environment().RenderClouds();
+		r_pmask(false, true);
 
-		// level
-		r_pmask(false, true); // enable priority "1"
+		// !!! ИСПРАВЛЕНИЕ: Базовая фаза должна быть NORMAL, чтобы заполнился кэш !!!
 		set_active_phase(PHASE_NORMAL);
-		render_main(Device.mFullTransform, false); //
 
-		RenderBackend.enable_anisotropy_filtering();
+		// Этот вызов заполнит граф геометрией с шейдерами normal_hq/lq
+		// И ЗАПОЛНИТ наши списки m_visuals_... благодаря правкам в add_leafs
+		render_main(Device.mFullTransform, false);
 
-		if (psDeviceFlags.test(rsWireframe))
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
-
-		r_dsgraph_render_graph(1); // normal level, secondary priority
-		r_dsgraph_render_sorted(); // strict-sorted geoms
-
-		if (psDeviceFlags.test(rsWireframe))
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID));
-
-		RenderBackend.disable_anisotropy_filtering();
+		r_dsgraph_render_graph(1);
+		r_dsgraph_render_sorted();
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
-
-		if (m_SunOccluder && ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
-			m_SunOccluder->Render();
 	}
+
+	// ============================================
+	// PASS 2: Dynamic Lighting Passes (Lights)
+	// ============================================
+
+	//render_forward_lights(Lights.package.v_point, PHASE_POINT_LIGHTING);
+	//render_forward_lights(Lights.package.v_shadowed, PHASE_POINT_LIGHTING);
+	//render_forward_lights(Lights.package.v_spot, PHASE_SPOT_LIGHTING);
+
+	// ============================================
+	// PASS 3: Sun Light
+	// ============================================
+	// Смена фазы
+	set_active_phase(PHASE_SUN_LIGHTING);
+
+	RenderBackend.set_ColorWriteEnable();
+
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
+
+	// Z-Write должен быть FALSE для аддитивного солнца
+	// Иначе оно будет перезаписывать глубину и "бороться" с базовой геометрией.
+	// Шейдеры l_sun обычно используют blend one/one или dest_color/src_color
+	RenderBackend.set_ZWriteEnable(FALSE);
+
+	// Заново наполняем граф из кэша.
+	render_main(Device.mFullTransform, false);
+	r_dsgraph_render_reuse();
+	r_dsgraph_render_graph(1);
+	r_dsgraph_render_sorted();
+
+	// ============================================
+	// PASS 4: Debug
+	// ============================================
+
+	if (m_SunOccluder && ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
+		m_SunOccluder->Render();
 }
 
 void CRender::render_hom()
