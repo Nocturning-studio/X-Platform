@@ -41,7 +41,7 @@ void CRender::render_depth_of_field()
 	float SensorHeight = 24.0f;
 	float PPM = (float(Device.dwHeight) / SensorHeight);
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	// PHASE 1: Calc CoC

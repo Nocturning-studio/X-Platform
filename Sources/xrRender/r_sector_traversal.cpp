@@ -143,9 +143,9 @@ void CPortalTraverser::fade_render()
 	RenderBackend.set_xform_world(Fidentity);
 	RenderBackend.set_Shader(f_shader);
 	RenderBackend.set_Geometry(f_geom);
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, _offset, _pcount);
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 
 	// cleanup
 	f_portals.clear();

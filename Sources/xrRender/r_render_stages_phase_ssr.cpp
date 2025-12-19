@@ -17,7 +17,7 @@ void CRender::clear_reflections()
 void CRender::create_backbuffer_mip_chain()
 {
 	OPTICK_EVENT("CRender::downsample_scene_luminance");
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	ref_rt MipChain = RenderTarget->rt_BackbufferMip;
@@ -42,7 +42,7 @@ void CRender::create_backbuffer_mip_chain()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_reflections()
 {
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_reflections->E[SE_SSR_RENDER_PASS]);

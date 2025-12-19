@@ -409,10 +409,10 @@ void CParticleEffect::Render(float)
 
 				//              u32 cm					= RenderBackend.get_CullMode();
 				RenderBackend.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling)
-										? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_CCW : CULL_CW)
-										: CULL_NONE);
+										? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_BACKFACE : CULL_FRONTFACE)
+										: CULL_DISABLE);
 				RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-				RenderBackend.set_CullMode(CULL_CCW);
+				RenderBackend.set_CullMode(CULL_BACKFACE);
 			}
 		}
 	}

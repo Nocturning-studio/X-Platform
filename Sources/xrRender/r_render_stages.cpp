@@ -391,13 +391,13 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		// Мы хотим ГАРАНТИРОВАННО пометить пиксели стенсилом, не завися от того,
 		// что там нарисовало (или не нарисовало) Солнце.
 		// Cull CW: Увеличиваем ref для пикселей ЗА объемом света
-		RenderBackend.set_CullMode(CULL_CW);
+		RenderBackend.set_CullMode(CULL_FRONTFACE);
 		RenderBackend.set_Stencil(TRUE, D3DCMP_ALWAYS, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP,
 								  D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 
 		// Cull CCW: Та же логика для передних граней
-		RenderBackend.set_CullMode(CULL_CCW);
+		RenderBackend.set_CullMode(CULL_BACKFACE);
 		RenderBackend.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP,
 								  D3DSTENCILOP_REPLACE);
 		draw_volume(L);
@@ -522,7 +522,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderBackend.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
 
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
-		RenderBackend.set_CullMode(CULL_CCW);
+		RenderBackend.set_CullMode(CULL_BACKFACE);
 
 		r_dsgraph_render_graph(1);
 		r_dsgraph_render_sorted();
@@ -546,7 +546,7 @@ void CRender::render_stage_forward()
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 
 	// ============================================
@@ -725,8 +725,13 @@ void CRender::render_lights()
 
 void CRender::combine_scene()
 {
+	if (ps_r_shading_mode == 1)
+		render_bent_normals();
+
 	if ((ps_r_shading_mode == 1) && ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
 	{
+		create_hi_z_mip_chain();
+
 		precombine_scene();
 
 		render_screen_space_reflections();

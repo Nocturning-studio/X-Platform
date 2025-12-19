@@ -61,8 +61,8 @@ BOOL CRenderDevice::Begin()
 	CHK_DX(HW.pDevice->BeginScene());
 
 	RenderBackend.OnFrameBegin();
-	RenderBackend.set_CullMode(CULL_CW);
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_FRONTFACE);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	if (HW.Caps.SceneMode)
 		overdrawBegin();
 	FPU::m24r();

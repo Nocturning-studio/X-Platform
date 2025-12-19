@@ -11,7 +11,7 @@ void CRender::render_antialiasing()
 {
 	OPTICK_EVENT("CRender::render_antialiasing");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_antialiasing->E[SE_PASS_FXAA], 0);

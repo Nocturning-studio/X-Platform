@@ -379,7 +379,7 @@ void CEffect_Rain::Render()
 	// Render if needed
 	if (vCount)
 	{
-		RenderBackend.set_CullMode(CULL_NONE);
+		RenderBackend.set_CullMode(CULL_DISABLE);
 		RenderBackend.set_xform_world(Fidentity);
 		RenderBackend.set_Shader(SH_Rain);
 		RenderBackend.set_Geometry(hGeom_Rain);

@@ -51,7 +51,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 	if (SE_SUN_NEAR == sub_phase)
 	{
 		set_light_accumulator();
-		RenderBackend.set_CullMode(CULL_NONE);
+		RenderBackend.set_CullMode(CULL_DISABLE);
 
 		// Use backend's viewport geometry setup
 		u32 Offset = 0;
@@ -69,7 +69,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 
 	// Setup lighting pass
 	set_light_accumulator();
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_ColorWriteEnable();
 
 	// Texture adjustment matrix
@@ -235,7 +235,7 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, Fmatrix m_shadow, Fvector
 
 	// Убираем ВСЕ ограничения для объемного света
 	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Depth_Buffer(NULL);
 	RenderBackend.set_ColorWriteEnable();
 

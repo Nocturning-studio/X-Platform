@@ -12,7 +12,7 @@ void CRender::create_distortion_mask()
 	RenderBackend.ClearTexture(RenderTarget->rt_Distortion_Mask, color_rgba(127, 127, 0, 127));
 	RenderBackend.setDepthBuffer(HW.pBaseZB);
 
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
 
@@ -23,7 +23,7 @@ void CRender::render_distortion()
 {
 	OPTICK_EVENT("CRender::render_distortion");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_distortion->E[0]);

@@ -37,7 +37,7 @@ void CRenderDevice::overdrawEnd()
 	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILMASK, 0xff));
 
 	// Set the background to black
-	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(255, 0, 0), 0, 0));
+	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_XRGB(255, 0, 0), 0, 0);
 
 	// Draw a rectangle wherever the count equal I
 	RenderBackend.OnFrameEnd();

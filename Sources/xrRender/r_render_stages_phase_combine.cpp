@@ -8,7 +8,7 @@ void CRender::combine_additional_postprocess()
 {
 	OPTICK_EVENT("CRender::combine_additional_postprocess");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
@@ -24,7 +24,7 @@ void CRender::combine_sun_shafts()
 {
 	OPTICK_EVENT("CRender::combine_sun_shafts");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
@@ -39,7 +39,7 @@ void CRender::render_skybox()
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
 	RenderBackend.set_Depth_Buffer(NULL);
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
 
@@ -53,7 +53,7 @@ void CRender::precombine_scene()
 {
 	OPTICK_EVENT("CRender::combine_additional_postprocess");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
 
@@ -99,13 +99,13 @@ void CRender::combine_scene_lighting()
 	RenderBackend.set_Constant("debug_mode", ps_r_debug_render);
 	RenderBackend.set_Constant("ambient_color", ambclr);
 	RenderBackend.set_Constant("env_color", envclr);
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	// stencil should be >= 1, we don't touch sky pixels
 	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1, HW.pBaseZB);
 //
 //#ifdef DEBUG
-//	RenderBackend.set_CullMode(CULL_CCW);
+//	RenderBackend.set_CullMode(CULL_BACKFACE);
 //	static xr_vector<Fplane> saved_dbg_planes;
 //	if (bDebug)
 //		saved_dbg_planes = dbg_planes;

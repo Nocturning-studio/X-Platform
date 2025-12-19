@@ -15,7 +15,7 @@ void CRender::motion_blur_pass_prepare_dilation_map()
 	m_previous.mul(RenderImplementation.m_saved_viewproj, m_invview);
 	m_current.set(Device.mProject);
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	float w = float(Device.dwWidth * 0.5f);
@@ -44,7 +44,7 @@ void CRender::motion_blur_pass_blur()
 {
 	OPTICK_EVENT("CRenderTarget::motion_blur_pass_blur");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic_1, RenderTarget->rt_Generic_0);
@@ -56,7 +56,7 @@ void CRender::motion_blur_pass_save_depth()
 {
 	OPTICK_EVENT("CRenderTarget::motion_blur_pass_save_depth");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_motion_blur->E[SE_PASS_SAVE_DEPTH_BUFFER]);

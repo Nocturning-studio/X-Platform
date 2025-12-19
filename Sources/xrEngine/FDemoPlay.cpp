@@ -6,7 +6,6 @@
 #include "motion.h"
 #include "Render.h"
 #include "CameraManager.h"
-#include "Benchmark.h"
 #include "demo_common.h"
 #include "gamefont.h"
 #include "x_ray.h"

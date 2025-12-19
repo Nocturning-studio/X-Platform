@@ -15,7 +15,7 @@ void CRender::render_wallmarks()
 
 	// Stencil	- draw only where stencil >= 0x1
 	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }
 ///////////////////////////////////////////////////////////////////////////////////

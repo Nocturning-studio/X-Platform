@@ -17,7 +17,7 @@ void CRender::clear_bloom()
 
 void CRender::calculate_bloom()
 {
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	float BloomResolutionMultiplier = 0.5f;

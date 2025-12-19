@@ -16,11 +16,14 @@
 #include "r_backend_tree.h"
 #include "fvf.h"
 
-const u32 CULL_CCW = D3DCULL_CCW;
-const u32 CULL_CW = D3DCULL_CW;
-const u32 CULL_NONE = D3DCULL_NONE;
+const u32 CULL_BACKFACE = D3DCULL_CCW;
+const u32 CULL_FRONTFACE = D3DCULL_CW;
+const u32 CULL_DISABLE = D3DCULL_NONE;
 
-///		detailed statistic
+const u32 CLEAR_RENDERTARGET = D3DCLEAR_TARGET;
+const u32 CLEAR_ZBUFFER = D3DCLEAR_ZBUFFER;
+const u32 CLEAR_STENCIL = D3DCLEAR_STENCIL;
+
 struct R_statistics_element
 {
 	u32 verts, dips;
@@ -30,6 +33,7 @@ struct R_statistics_element
 		dips++;
 	}
 };
+
 struct R_statistics
 {
 	R_statistics_element s_static;
@@ -301,6 +305,37 @@ class ENGINE_API CBackend
 			constants.seta(Const, e, x, y, z, w);
 	}
 
+	void set_Array_Constant(LPCSTR n, u32 count, const Fvector* data)
+	{
+		if (ctable)
+		{
+			ref_constant C = ctable->get(n);
+			if (C)
+			{
+				for (u32 i = 0; i < count; ++i)
+				{
+					constants.seta(&*C, i, data[i].x, data[i].y, data[i].z, 0.0f);
+				}
+			}
+		}
+	}
+
+	// Передача массива Fvector4 (float4)
+	void set_Array_Constant(LPCSTR n, u32 count, const Fvector4* data)
+	{
+		if (ctable)
+		{
+			ref_constant C = ctable->get(n);
+			if (C)
+			{
+				for (u32 i = 0; i < count; ++i)
+				{
+					constants.seta(&*C, i, data[i]);
+				}
+			}
+		}
+	}
+
 	// constants - LPCSTR (slow)
 	ICF void set_Constant(LPCSTR n, const Fmatrix& A)
 	{
@@ -492,7 +527,10 @@ class ENGINE_API CBackend
 
 	void CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination);
 	void CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter);
-	void CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter);
+	void CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect,
+					 D3DTEXTUREFILTERTYPE filter);
+
+	void Clear(DWORD Count, const D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
 
 	void ClearTexture(const ref_rt& _1, u32 color = color_rgba(0, 0, 0, 0));
 	void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, u32 color = color_rgba(0, 0, 0, 0));

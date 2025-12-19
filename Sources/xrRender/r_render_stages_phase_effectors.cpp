@@ -51,7 +51,7 @@ void CRender::render_effectors_pass_generate_radiation_noise()
 {
 	OPTICK_EVENT("CRenderTarget::render_effectors_pass_generate_radiation_noise");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	float w = float(Device.dwWidth);
@@ -74,7 +74,7 @@ void CRender::render_effectors_pass_color_blind_filter()
 {
 	OPTICK_EVENT("CRenderTarget::render_effectors_pass_color_blind_filter");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	Fvector3 RedMatrix;
@@ -208,7 +208,7 @@ void CRender::render_effectors_pass_resolve_gamma()
 {
 	OPTICK_EVENT("CRenderTarget::render_effectors_pass_resolve_gamma");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RESOLVE_GAMMA]);
@@ -219,7 +219,7 @@ void CRender::render_effectors_pass_lut()
 {
 	OPTICK_EVENT("CRenderTarget::render_effectors_pass_lut");
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;

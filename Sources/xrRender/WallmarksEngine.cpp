@@ -391,10 +391,10 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 		RenderBackend.set_Shader(shader);
 		RenderBackend.set_Geometry(hGeom);
 		if (bSuppressCull)
-			RenderBackend.set_CullMode(CULL_NONE);
+			RenderBackend.set_CullMode(CULL_DISABLE);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, w_offset, w_count / 3);
 		if (bSuppressCull)
-			RenderBackend.set_CullMode(CULL_CCW);
+			RenderBackend.set_CullMode(CULL_BACKFACE);
 		Device.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
 }

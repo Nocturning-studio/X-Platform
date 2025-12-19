@@ -3,9 +3,6 @@
 // Author: NSDeathman
 // Refactored code: Windows application entry point
 ////////////////////////////////////////////////////////////////////////////////
-#pragma todo(NSDeathman to NSDeathman : Реализовать бенчмарк)
-#pragma todo(NSDeathman to NSDeathman : Реализовать лаунчер)
-////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "build_identificator.h"
 #include "resource.h"

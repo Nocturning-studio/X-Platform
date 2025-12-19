@@ -422,12 +422,12 @@ void CBulletManager::Render()
 
 	if (vCount)
 	{
-		RenderBackend.set_CullMode(CULL_NONE);
+		RenderBackend.set_CullMode(CULL_DISABLE);
 		RenderBackend.set_xform_world(Fidentity);
 		RenderBackend.set_Shader(tracers.sh_Tracer);
 		RenderBackend.set_Geometry(tracers.sh_Geom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
-		RenderBackend.set_CullMode(CULL_CCW);
+		RenderBackend.set_CullMode(CULL_BACKFACE);
 	}
 }
 

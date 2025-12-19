@@ -40,12 +40,12 @@ void CRender::accumulate_spot_lights(light* L)
 		RenderBackend.set_Element(RenderTarget->s_accum_mask->E[SE_MASK_SPOT]); // masker
 
 		// backfaces: if (stencil>=1 && zfail)			stencil = light_id
-		RenderBackend.set_CullMode(CULL_CW);
+		RenderBackend.set_CullMode(CULL_FRONTFACE);
 		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 
 		// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
-		RenderBackend.set_CullMode(CULL_CCW);
+		RenderBackend.set_CullMode(CULL_BACKFACE);
 		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 	}
@@ -53,7 +53,7 @@ void CRender::accumulate_spot_lights(light* L)
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RenderBackend.set_ColorWriteEnable();
-	RenderBackend.set_CullMode(CULL_CW); // back
+	RenderBackend.set_CullMode(CULL_FRONTFACE); // back
 
 	// 2D texgens
 	Fmatrix m_Texgen;

@@ -727,26 +727,31 @@ void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSu
 	HW.pDevice->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
+void CBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
+{
+	CHK_DX(HW.pDevice->Clear(Count, pRects, Flags, Color, Z, Stencil));
+}
+
 void CBackend::ClearTexture(const ref_rt& _1, u32 color)
 {
 	set_Render_Target_Surface(_1, NULL, NULL, NULL);
-	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L));
+	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
 void CBackend::ClearTexture(const ref_rt& _1, const ref_rt& _2, u32 color)
 {
 	set_Render_Target_Surface(_1, _2, NULL, NULL);
-	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L));
+	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
 void CBackend::ClearTexture(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, u32 color)
 {
 	set_Render_Target_Surface(_1, _2, _3, NULL);
-	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L));
+	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
 void CBackend::ClearTexture(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, u32 color)
 {
 	set_Render_Target_Surface(_1, _2, _3, _4);
-	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L));
+	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }

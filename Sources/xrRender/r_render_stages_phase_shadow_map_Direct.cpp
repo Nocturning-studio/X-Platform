@@ -19,9 +19,9 @@ void CRender::render_shadow_map_sun(light* L, u32 sub_phase)
 
 	// Misc	- draw only front/back-faces
 	//if (SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase)
-		RenderBackend.set_CullMode(CULL_CCW);
+		RenderBackend.set_CullMode(CULL_BACKFACE);
 	//else
-	//	RenderBackend.set_CullMode(CULL_CW);
+	//	RenderBackend.set_CullMode(CULL_FRONTFACE);
 
 	RenderBackend.set_ColorWriteEnable(FALSE);
 }

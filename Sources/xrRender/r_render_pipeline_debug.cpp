@@ -36,7 +36,7 @@ void CRender::render_stage_main_geometry()
 	CHK_DX(HW.pDevice->SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE));
 
 	// Set backface culling
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 
 	RenderBackend.set_ColorWriteEnable();
 	//RenderTarget->set_gbuffer();

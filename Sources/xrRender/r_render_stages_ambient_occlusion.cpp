@@ -12,7 +12,7 @@ void CRender::render_ambient_occlusion()
 	Device.Statistic->RenderCALC_AO.Begin();
 
 	RenderBackend.set_ColorWriteEnable();
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	float w = float(RenderTarget->rt_ao->dwWidth);

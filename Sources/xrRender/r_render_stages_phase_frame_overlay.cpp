@@ -19,7 +19,7 @@ void CRender::render_screen_overlays()
 	if (ps_r_overlay_flags.test(RFLAG_CINEMA_BORDERS))
 		CinemaBordersEnabled = 1;
 
-	RenderBackend.set_CullMode(CULL_NONE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_frame_overlay->E[SE_OVERLAYS_MAIN]);

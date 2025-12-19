@@ -10,10 +10,10 @@ void CRender::RenderMenu()
 {
 	OPTICK_EVENT("CRender::RenderMenu");
 
-	//u32 FrameStartTime = Device.TimerGlobal.GetElapsed_ms();
+	u32 FrameStartTime = Device.TimerGlobal.GetElapsed_ms();
 
 	// Globals
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
 
@@ -23,7 +23,7 @@ void CRender::RenderMenu()
 
 	// Prepare distortion mask
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Distortion_Mask, HW.pBaseZB);
-	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, color_rgba(127, 127, 0, 127), 1.0f, 0L));
+	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, color_rgba(127, 127, 0, 127), 1.0f, 0);
 	g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
 
 	// Apply distortion
@@ -35,10 +35,10 @@ void CRender::RenderMenu()
 	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, HW.pBaseRT, HW.pBaseZB);
 
 	// Fucking frame limiter
-	//u32 FrameEndTime = Device.TimerGlobal.GetElapsed_ms();
-	//u32 FrameTime = (FrameEndTime - FrameStartTime);
-	//u32 UpdateDelta = 13.0f;
-	//if (FrameTime < UpdateDelta)
-	//	Sleep(UpdateDelta - FrameTime);
+	u32 FrameEndTime = Device.TimerGlobal.GetElapsed_ms();
+	u32 FrameTime = (FrameEndTime - FrameStartTime);
+	u32 UpdateDelta = 13.0f;
+	if (FrameTime < UpdateDelta)
+		Sleep(UpdateDelta - FrameTime);
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,9 +7,6 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{5eedd12d-df79-4474-bd26-420643f25696}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Sound">
-      <UniqueIdentifier>{7cafd3e6-ea20-4d39-9da3-9b290edb4837}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Input">
       <UniqueIdentifier>{936ea3c7-9e7b-46ff-b726-eec517683b35}</UniqueIdentifier>
     </Filter>
@@ -175,9 +172,6 @@
     <Filter Include="General\Application">
       <UniqueIdentifier>{da16bb34-ac2e-4739-84c6-4ddcbaa016a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="General\Additional">
-      <UniqueIdentifier>{cafdd3d6-74f2-41c8-852b-37627efb72c6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\UI">
       <UniqueIdentifier>{83fb0322-54fe-475c-b767-42e276abd678}</UniqueIdentifier>
     </Filter>
@@ -192,9 +186,6 @@
     </Filter>
     <Filter Include="CPU Pipe\Kernel">
       <UniqueIdentifier>{e9c49a80-d1d7-4fe9-89e4-6adde51291e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CPU Pipe\SSE">
-      <UniqueIdentifier>{0ca130e5-468e-4c97-8940-43dac64dbd50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -582,20 +573,11 @@
     <ClInclude Include="_d3d_extensions.h">
       <Filter>General\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="CopyProtection.h">
-      <Filter>General\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="trivial_encryptor.h">
       <Filter>General\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="build_identificator.h">
       <Filter>General\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Launcher.h">
-      <Filter>General\Additional</Filter>
-    </ClInclude>
-    <ClInclude Include="Benchmark.h">
-      <Filter>General\Additional</Filter>
     </ClInclude>
     <ClInclude Include="ImGui_API.h">
       <Filter>Interfaces\UI</Filter>
@@ -1040,9 +1022,6 @@
     <ClCompile Include="xrCPU_Pipe\3DNow!Lib.cpp">
       <Filter>CPU Pipe\3DNow!</Filter>
     </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrBoneLerp_3DNow!.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
     <ClCompile Include="xrCPU_Pipe\xrM44mul_3DNow!.cpp">
       <Filter>CPU Pipe\3DNow!</Filter>
     </ClCompile>
@@ -1051,15 +1030,6 @@
     </ClCompile>
     <ClCompile Include="xrCPU_Pipe\xrMemFill32_3DNow!.cpp">
       <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrSkin1W_3DNow!.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrSkin2W_3DNow!.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrBoneLerp.cpp">
-      <Filter>CPU Pipe\Generic x86</Filter>
     </ClCompile>
     <ClCompile Include="xrCPU_Pipe\xrM44mul.cpp">
       <Filter>CPU Pipe\Generic x86</Filter>
@@ -1078,12 +1048,6 @@
     </ClCompile>
     <ClCompile Include="xrCPU_Pipe\xrCPU_Pipe.cpp">
       <Filter>CPU Pipe\Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrSkin1W_SSE.cpp">
-      <Filter>CPU Pipe\SSE</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrSkin2W_SSE.cpp">
-      <Filter>CPU Pipe\SSE</Filter>
     </ClCompile>
     <ClCompile Include="demo_common.cpp">
       <Filter>Game API\Demo</Filter>
@@ -1127,14 +1091,5 @@
     <Image Include="ui_splash3.bmp">
       <Filter>General\Kernel\Resources</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ClientServer.txt" />
-    <Text Include="Effects description.txt" />
-    <Text Include="features.txt" />
-    <Text Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ void CRender::render_shadow_map_spot(light* L)
 	CHK_DX(HW.pDevice->SetViewport(&VP));
 
 	// Misc	- draw only front-faces
-	RenderBackend.set_CullMode(CULL_CCW);
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 	// no transparency
 #pragma todo("can optimize for multi-lights covering more than say 50%...")

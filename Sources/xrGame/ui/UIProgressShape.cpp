@@ -152,10 +152,10 @@ void CUIProgressShape::Draw()
 	RenderBackend.set_Geometry(gm);
 
 	//	if(!m_bClockwise)
-	//		RenderBackend.set_CullMode			(CULL_NONE);
+	//		RenderBackend.set_CullMode			(CULL_DISABLE);
 
 	RenderBackend.Render(D3DPT_TRIANGLELIST, offset, m_sectorCount);
 
 	//	if(!m_bClockwise)
-	//		RenderBackend.set_CullMode			(CULL_CCW);
+	//		RenderBackend.set_CullMode			(CULL_BACKFACE);
 }
