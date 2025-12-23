@@ -95,6 +95,8 @@ class CSoundEnvironment : public Presence::ISoundOcclusionCalculator
 	// Флаг состояния: true если сама библиотека включена (для проверки выключили ли эффект чтобы очистить данные для EAX)
 	bool m_bEnabled;
 
+	bool m_bPaused;
+
   public:
 	// =============================================================================================
 	// Initialization / Destruction
@@ -157,4 +159,14 @@ class CSoundEnvironment : public Presence::ISoundOcclusionCalculator
 	 * @return Коэффициент громкости [0.0..1.0].
 	 */
 	virtual float CalculateOcclusion(const Presence::float3& listenerPos, const Presence::float3& sourcePos) override;
+
+	void Pause()
+	{
+		m_bPaused = true;
+	}
+
+	void Play()
+	{
+		m_bPaused = false;
+	}
 };

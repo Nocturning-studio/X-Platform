@@ -60,9 +60,11 @@
 // =================================================================================================
 
 CSoundEnvironment::CSoundEnvironment()
-	: m_pAudioSystem(nullptr), m_pGeometryAdapter(nullptr), m_bLoaded(false), m_bEnabled(false)
+	: m_pAudioSystem(nullptr), m_pGeometryAdapter(nullptr), m_bLoaded(false), m_bEnabled(false), m_bPaused(false)
 {
 	Msg("Initializing Presence audio SDK...");
+
+	Msg("Presence audio SDK version: %s", PRESENCE_VERSION_TEXT);
 
 	// ---------------------------------------------------------------------------------------------
 	// Динамическая загрузка DLL (Dynamic Loading)
@@ -119,34 +121,22 @@ CSoundEnvironment::~CSoundEnvironment()
 
 void CSoundEnvironment::OnLevelLoad()
 {
-	if (!m_pAudioSystem)
+	if (!m_pAudioSystem || !m_pGeometryAdapter)
 		return;
 
 	Msg("[Presence EAX] Loading Level...");
 
 	// Настройка параметров симуляции
 	Presence::Settings s;
-	s.maxBounces = 5; // Глубина рекурсии (5 отскока достаточно для качественного эха)
-	s.maxRayDistance = 200.0f; // Дистанция трассировки (дальше 200м звук не анализируем)
-	s.useMultithreading = true; // Включаем асинхронные вычисления в отдельном потоке
+	s.maxBounces = 5;
+	s.maxRayDistance = 150.0f;
+	s.useMultithreading = true;
+	s.updateInterval = 0.033f; // Можно задать, если нужно
 
-	if (m_pGeometryAdapter)
-	{
-		m_pGeometryAdapter->BuildMaterialCache();
-	}
-
-	// Инициализация системы и передача адаптера геометрии
-	// В этот момент внутри адаптера будет построен кэш материалов.
+	m_pGeometryAdapter->BuildMaterialCache(m_pAudioSystem);
 	m_pAudioSystem->Initialize(m_pGeometryAdapter, s);
 	m_bLoaded = true;
 
-	// ---------------------------------------------------------------------------------------------
-	// Внедрение зависимости (Dependency Injection) в xrSound
-	// ---------------------------------------------------------------------------------------------
-	// Мы сообщаем низкоуровневому звуковому движку (xrSound), что теперь МЫ отвечаем за расчет
-	// громкости звуков (Occlusion). Мы передаем указатель 'this', так как CSoundEnvironment
-	// наследует интерфейс ISoundOcclusionCalculator.
-	// ---------------------------------------------------------------------------------------------
 	if (::Sound)
 	{
 		CSoundRender_Core* pCore = (CSoundRender_Core*)::Sound;
@@ -203,7 +193,7 @@ float CSoundEnvironment::CalculateOcclusion(const Presence::float3& listenerPos,
 void CSoundEnvironment::Update()
 {
 	// Проверка флага консоли (ss_EAX) — позволяет отключить систему на лету
-	if (!psSoundFlags.test(ss_EAX) || !m_bLoaded || !m_pAudioSystem)
+	if (!psSoundFlags.test(ss_EAX) || !m_bLoaded || !m_pAudioSystem || m_bPaused)
 	{
 		if (m_bEnabled)
 		{
@@ -214,33 +204,29 @@ void CSoundEnvironment::Update()
 		return;
 	}
 
-	if (!g_pGameLevel)
+	if (!g_pGameLevel || !g_pGamePersistent)
 		return;
 
 	if (!m_bEnabled)
 		m_bEnabled = true;
 
-	// 1. Сбор данных о состоянии мира (World State Gathering)
-	// Преобразуем координаты камеры из X-Ray (Fvector) в формат SDK (float3)
+	// Сбор данных
 	Fvector pos = Device.vCameraPosition;
-	Presence::float3 camPos(pos.x, pos.y, pos.z);
+	Presence::float3 camPos(pos.x, pos.y, pos.z); // Использует новый конструктор float3
 
 	float dt = Device.fTimeDelta;
 
-	// Получаем плотность тумана/дождя.
-	// Высокая влажность увеличивает поглощение высоких частот в воздухе.
 	float fog_density = 0.0f;
-	if (g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv)
+	if (g_pGamePersistent->Environment().CurrentEnv)
 		fog_density = g_pGamePersistent->Environment().CurrentEnv->fog_density;
 
-	// 2. Обновление SDK (Async processing trigger)
-	// Отправляем данные в рабочий поток. SDK сам интерполирует значения для плавности.
+	// Обновление SDK
+	// SDK v0.2 ожидает dt и envFogDensity
 	m_pAudioSystem->Update(camPos, dt, fog_density);
 
-	// 3. Получение результата (Thread-safe getter)
+	// Получение результата
 	Presence::EAXResult res = m_pAudioSystem->GetEAXResult();
 
-	// 4. Применение параметров к драйверу OpenAL
 	if (res.isValid)
 	{
 		ApplyToSoundDriver(res);

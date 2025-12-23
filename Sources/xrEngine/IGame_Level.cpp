@@ -134,22 +134,13 @@ BOOL IGame_Level::Load(u32 dwNum)
 	return TRUE;
 }
 
-int psNET_DedicatedSleep = 5;
 void IGame_Level::OnRender()
 {
 	OPTICK_EVENT("IGame_Level::OnRender");
 
 #ifndef DEDICATED_SERVER
-	// Level render, only when no client output required
-	if (!g_dedicated_server)
-	{
 		Render->Calculate();
 		Render->Render();
-	}
-	else
-	{
-		Sleep(psNET_DedicatedSleep);
-	}
 #endif
 }
 

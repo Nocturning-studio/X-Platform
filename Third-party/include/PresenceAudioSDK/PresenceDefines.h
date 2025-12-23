@@ -4,7 +4,7 @@
   High-Performance Real-time Audio Path Tracing & EAX Simulation Library
 ====================================================================================================
 
-  Copyright (c) 2025 Nocturning Studio, NSDeathman & Gemini 3
+  Copyright (c) 2025 Presence Collaboratory, NSDeathman & Gemini 3
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -17,7 +17,7 @@
      copies or substantial portions of the Software.
 
   2. Any project (commercial, free, open-source, or closed-source) using this Software
-     must include attribution to "Presence Audio SDK by Nocturning Studio" in its
+     must include attribution to "Presence Audio SDK by Presence Collaboratory" in its
      documentation, credits, or about screen.
 
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -30,12 +30,15 @@
 
 ====================================================================================================
   Developed by: NSDeathman (Architecture & Core), Gemini 3 (Optimization & Math)
-  Organization: Nocturning Studio
+  Organization: Presence Collaboratory
 ====================================================================================================
 */
 #pragma once
 #include "PresenceMath.h"
 #include <cstdint>
+
+#define PRESENCE_VERSION 0.2f
+#define PRESENCE_VERSION_TEXT "Presence Audio ver. 0.2 InDev"
 
 // =================================================================================================
 // DLL EXPORT / IMPORT MACROS
@@ -61,16 +64,24 @@ namespace Presence
     enum class MaterialType : int
     {
         Air = 0,    // Воздух / Отсутствие препятствия (полная проницаемость).
-        Stone,      // Бетон, кирпич, камень, асфальт (сильное эхо, низкая проницаемость).
-        Metal,      // Металл (звенящее эхо, полная блокировка звука).
-        Wood,       // Дерево, паркет, фанера (теплый тон, среднее поглощение).
-        Soft,       // Ткань, ковры, трава, земля, листва (сильное поглощение ВЧ).
-        Glass,      // Стекло, лед (пропускает звук, но сильно отражает высокие частоты).
-        Absorber,   // Акустический поролон, студийная изоляция (полное поглощение, нет эха).
+        Stone = 1,      // Бетон, кирпич, камень, асфальт (сильное эхо, низкая проницаемость).
+        Metal = 2,      // Металл (звенящее эхо, полная блокировка звука).
+        Wood = 3,       // Дерево, паркет, фанера (теплый тон, среднее поглощение).
+        Soft = 4,       // Ткань, ковры, трава, земля, листва (сильное поглощение ВЧ).
+        Glass = 5,      // Стекло, лед (пропускает звук, но сильно отражает высокие частоты).
+        Absorber = 6,   // Акустический поролон, студийная изоляция (полное поглощение, нет эха).
 
         // Служебное значение для автоматического подсчета количества материалов.
         // Должно всегда быть последним!
-        Count
+        Count = 7
+    };
+
+    struct MaterialParams
+    {
+        float transmission;  // [0.0-1.0] Проницаемость
+        float reflectivity;  // [0.0-1.0] Отражение
+        float absorption;    // [0.0-1.0] Поглощение
+        float rt60_weight;   // [0.0-1.0] Вес в RT60
     };
 
     // =================================================================================================
@@ -84,9 +95,9 @@ namespace Presence
         bool isHit;             // true, если луч пересек препятствие.
         float distance;         // Расстояние от начала луча до точки удара (в метрах).
         float3 normal;          // Нормаль поверхности в точке удара (для расчета отражений).
-        MaterialType material;  // Тип материала поверхности (определяется движком игры).
+        int materialID;
 
-        RayHit() : isHit(false), distance(0), material(MaterialType::Air) {}
+        RayHit() : isHit(false), distance(0), materialID(0) {}
     };
 
     // =================================================================================================
@@ -114,7 +125,7 @@ namespace Presence
     // Интерфейс для интеграции в звуковую подсистему (например, в CSoundRender_Core).
     // Позволяет запрашивать громкость звука с учетом препятствий.
     // =================================================================================================
-    class ISoundOcclusionCalculator
+    class PRESENCE_API ISoundOcclusionCalculator
     {
     public:
         virtual ~ISoundOcclusionCalculator() = default;
@@ -166,18 +177,18 @@ namespace Presence
 
         // Сброс в "нейтральное" состояние (звук как в вакууме/тихой комнате)
         void Reset() {
-			lRoom = -1000;
-			lRoomHF = -100;
-			flRoomRolloffFactor = 0.0f;
-			flDecayTime = 1.49f;
-			flDecayHFRatio = 0.83f;
-			lReflections = -2602;
-			flReflectionsDelay = 0.007f;
-			lReverb = 200;
-			flReverbDelay = 0.011f;
-			flEnvironmentSize = 7.5f;
-			flEnvironmentDiffusion = 1.0f;
-			flAirAbsorptionHF = -5.0f;
+            lRoom = -1000;
+            lRoomHF = -100;
+            flRoomRolloffFactor = 0.0f;
+            flDecayTime = 1.49f;
+            flDecayHFRatio = 0.83f;
+            lReflections = -2602;
+            flReflectionsDelay = 0.007f;
+            lReverb = 200;
+            flReverbDelay = 0.011f;
+            flEnvironmentSize = 7.5f;
+            flEnvironmentDiffusion = 1.0f;
+            flAirAbsorptionHF = -5.0f;
             isValid = false;
             flRoomRolloffFactor = 0.0f;
             debugEnclosedness = 0.0f;

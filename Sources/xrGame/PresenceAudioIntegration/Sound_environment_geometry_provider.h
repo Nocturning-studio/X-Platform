@@ -43,27 +43,16 @@
 // Подключение API библиотеки звука
 #include <PresenceAudioSDK/PresenceAudioAPI.h>
 
-// Подключение заголовков движка X-Ray для доступа к геометрии и материалам
+// Подключение заголовков движка X-Ray
 #include "../xrEngine/igame_level.h"
 #include "../xrEngine/xr_area.h"
 #include "..\xrGame\GameMtlLib.h"
 
-// =================================================================================================
-// ADAPTER CLASS (X-Ray -> Presence)
-// =================================================================================================
 class XRayGeometryAdapter : public Presence::IGeometryProvider
 {
   public:
-	// ---------------------------------------------------------------------------------------------
-	// Кэш материалов (Material Cache)
-	// ---------------------------------------------------------------------------------------------
-	// В движке X-Ray материалы хранятся как строки (LPCSTR).
-	// Сравнивать строки (strstr) при каждом трассировке луча — экстремально медленно.
-	// Поэтому мы создаем массив (Lookup Table), где индекс соответствует ID материала (u16),
-	// а значение — это наш enum Presence::MaterialType.
-	// Это превращает поиск материала из O(N) в O(1).
-	// ---------------------------------------------------------------------------------------------
-	xr_vector<Presence::MaterialType> m_MaterialCache;
+	// Кэш теперь хранит int ID, так как библиотека перешла на int идентификаторы
+	xr_vector<int> m_MaterialCache;
 	bool m_bCacheBuilt;
 
 	XRayGeometryAdapter() : m_bCacheBuilt(false)
@@ -71,52 +60,113 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	}
 
 	// ---------------------------------------------------------------------------------------------
-	// Построение кэша (Build Cache)
+	// Настройка параметров материала
 	// ---------------------------------------------------------------------------------------------
-	// Анализирует все материалы, загруженные в GMLib, и сопоставляет их с типами Presence.
-	// Вызывается один раз при первом обращении (Lazy Initialization).
-	// ---------------------------------------------------------------------------------------------
-	void BuildMaterialCache()
+	// Вспомогательная функция для заполнения структуры параметров
+	Presence::MaterialParams GetDefaultParamsForType(Presence::MaterialType type)
 	{
-		if (m_bCacheBuilt)
+		Presence::MaterialParams p;
+		// Дефолтные значения (можно тюнить под свой вкус)
+		switch (type)
+		{
+		case Presence::MaterialType::Stone:
+			p.transmission = 0.02f;
+			p.reflectivity = 0.60f;
+			p.absorption = 0.10f;
+			p.rt60_weight = 0.8f;
+			break;
+		case Presence::MaterialType::Metal:
+			p.transmission = 0.00f;
+			p.reflectivity = 0.85f;
+			p.absorption = 0.05f;
+			p.rt60_weight = 0.9f;
+			break;
+		case Presence::MaterialType::Wood:
+			p.transmission = 0.08f;
+			p.reflectivity = 0.25f;
+			p.absorption = 0.30f;
+			p.rt60_weight = 0.5f;
+			break;
+		case Presence::MaterialType::Soft: // Трава, земля, ковры
+			p.transmission = 0.40f;
+			p.reflectivity = 0.05f;
+			p.absorption = 0.90f;
+			p.rt60_weight = 0.1f;
+			break;
+		case Presence::MaterialType::Glass:
+			p.transmission = 0.60f;
+			p.reflectivity = 0.40f;
+			p.absorption = 0.05f;
+			p.rt60_weight = 0.2f;
+			break;
+		case Presence::MaterialType::Absorber:
+			p.transmission = 0.01f;
+			p.reflectivity = 0.00f;
+			p.absorption = 1.00f;
+			p.rt60_weight = 0.0f;
+			break;
+		default: // Air / Default
+			p.transmission = 0.99f;
+			p.reflectivity = 0.00f;
+			p.absorption = 0.00f;
+			p.rt60_weight = 0.0f;
+			break;
+		}
+		return p;
+	}
+
+	// ---------------------------------------------------------------------------------------------
+	// Построение кэша
+	// ---------------------------------------------------------------------------------------------
+	// Теперь принимаем указатель на систему, чтобы зарегистрировать свойства материалов!
+	void BuildMaterialCache(Presence::AudioSystem* pSystem)
+	{
+		if (m_bCacheBuilt || !pSystem)
 			return;
 
-		Msg("[Presence EAX] Building material cache...");
+		Msg("[Presence EAX] Building material cache and registering physics...");
 
-		// Получаем общее количество материалов в игре
+		// 1. Сначала настроим базовые пресеты в самой библиотеке
+		// Мы мапим enum class на int ID
+		for (int i = 0; i < (int)Presence::MaterialType::Count; i++)
+		{
+			Presence::MaterialType type = (Presence::MaterialType)i;
+			pSystem->SetMaterialProperties(i, GetDefaultParamsForType(type));
+		}
+
+		// 2. Теперь проходимся по материалам X-Ray и линкуем их к ID библиотеки
 		u32 mtlCount = GMLib.CountMaterial();
 		m_MaterialCache.reserve(mtlCount);
 
 		for (u32 i = 0; i < mtlCount; i++)
 		{
 			SGameMtl* mtl = GMLib.GetMaterialByIdx(i);
-			Presence::MaterialType type = Presence::MaterialType::Stone; // Дефолтный материал (Бетон)
+			Presence::MaterialType mappedType = Presence::MaterialType::Stone;
 
 			if (mtl)
 			{
-				// Эвристический анализ имени материала.
-				// Имена в X-Ray обычно имеют формат "materials\wood_plank", "materials\concrete_wall" и т.д.
 				LPCSTR name = mtl->m_Name.c_str();
 
-				if (strstr(name, "wood") || strstr(name, "trees") || strstr(name, "plank"))
-					type = Presence::MaterialType::Wood;
-				else if (strstr(name, "metal") || strstr(name, "grate") || strstr(name, "tin") || strstr(name, "pipe"))
-					type = Presence::MaterialType::Metal;
+				if (strstr(name, "fake") || strstr(name, "setka_rabica"))
+					mappedType = Presence::MaterialType::Air;
+				else if (strstr(name, "wood") || strstr(name, "trees") || strstr(name, "plank"))
+					mappedType = Presence::MaterialType::Wood;
+				else if (strstr(name, "metal") || strstr(name, "grate") || strstr(name, "tin") ||
+						 strstr(name, "pipe") || strstr(name, "door"))
+					mappedType = Presence::MaterialType::Metal;
 				else if (strstr(name, "glass") || strstr(name, "ice") || strstr(name, "window"))
-					type = Presence::MaterialType::Glass;
+					mappedType = Presence::MaterialType::Glass;
 				else if (strstr(name, "earth") || strstr(name, "grass") || strstr(name, "bush") ||
 						 strstr(name, "water") || strstr(name, "cloth") || strstr(name, "fabric"))
-					type = Presence::MaterialType::Soft;
-				// Проверка на специальный материал "Абсорбер" (Студийная звукоизоляция)
+					mappedType = Presence::MaterialType::Soft;
 				else if (strstr(name, "absorber") || strstr(name, "foam") || strstr(name, "padding"))
-					type = Presence::MaterialType::Absorber;
-				else if (strstr(name, "stone") || strstr(name, "brick") || strstr(name, "concrete") ||
-						 strstr(name, "asphalt"))
-					type = Presence::MaterialType::Stone;
+					mappedType = Presence::MaterialType::Absorber;
+				else
+					mappedType = Presence::MaterialType::Stone; // Бетон/Кирпич по умолчанию
 			}
 
-			// Индекс в векторе соответствует ID материала
-			m_MaterialCache.push_back(type);
+			// Сохраняем ID (cast enum to int)
+			m_MaterialCache.push_back((int)mappedType);
 		}
 
 		m_bCacheBuilt = true;
@@ -124,21 +174,17 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	}
 
 	// ---------------------------------------------------------------------------------------------
-	// Трассировка луча (Ray Casting Implementation)
-	// ---------------------------------------------------------------------------------------------
-	// Главный метод, вызываемый библиотекой PresenceAudioSDK.
-	// Переводит запрос из формата SDK в формат X-Ray и возвращает физические данные.
+	// Ray Casting
 	// ---------------------------------------------------------------------------------------------
 	virtual Presence::RayHit CastRay(const Presence::float3& start, const Presence::float3& dir, float maxDist) override
 	{
-		if (!m_bCacheBuilt)
-			BuildMaterialCache();
+		// Примечание: BuildMaterialCache должен быть вызван ДО первого CastRay из CSoundEnvironment
 
 		Presence::RayHit result;
 		result.isHit = false;
 		result.distance = maxDist;
+		result.materialID = 0; // 0 = Air по умолчанию
 
-		// Защита от вызова до загрузки уровня
 		if (!g_pGameLevel)
 			return result;
 
@@ -146,47 +192,44 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		xStart.set(start.x, start.y, start.z);
 		xDir.set(dir.x, dir.y, dir.z);
 
-		// Если длина вектора не равна 1, дистанция будет рассчитана неверно.
-		xDir.normalize();
+		// Нормализация обязательна для движка X-Ray
+		float dirLen = xDir.magnitude();
+		if (dirLen > 0.0001f)
+			xDir.div(dirLen);
+		else
+			return result;
 
-		// Сдвигаем точку начала луча на 5 см вперед по направлению луча.
-		// Это предотвращает:
-		// 1. Попадание в геометрию "за спиной" или в самого себя (если камера внутри коллизии).
-		// 2. Ошибки точности, когда луч начинается прямо на поверхности треугольника.
 		const float K_BIAS = 0.05f;
 		xStart.mad(xDir, K_BIAS);
 
-		// Уменьшаем дистанцию трассировки на величину смещения, чтобы не стрелять сквозь стены на пределе дистанции
 		float traceDist = maxDist - K_BIAS;
 		if (traceDist <= 0.001f)
 			return result;
 
 		collide::rq_result rq;
 
-		// Выполняем трассировку по СТАТИКЕ
+		// RayPick по статике
 		BOOL hit = g_pGameLevel->ObjectSpace.RayPick(xStart, xDir, traceDist, collide::rqtStatic, rq, NULL);
 
 		if (hit)
 		{
 			result.isHit = true;
-			// Возвращаем реальную дистанцию (результат RayPick + наше смещение)
 			result.distance = rq.range + K_BIAS;
 
-			// Обработка треугольника
 			CDB::TRI* tri = g_pGameLevel->ObjectSpace.GetStaticTris() + rq.element;
 			Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 
-			// Расчет нормали
 			Fvector xNorm;
 			xNorm.mknormal(verts[tri->verts[0]], verts[tri->verts[1]], verts[tri->verts[2]]);
+
+			// ВАЖНО: Присваиваем нормаль и ID материала
 			result.normal = Presence::float3(xNorm.x, xNorm.y, xNorm.z);
 
-			// Определение материала
 			u16 mtl_idx = (u16)tri->material;
 			if (mtl_idx < m_MaterialCache.size())
-				result.material = m_MaterialCache[mtl_idx];
+				result.materialID = m_MaterialCache[mtl_idx];
 			else
-				result.material = Presence::MaterialType::Stone;
+				result.materialID = (int)Presence::MaterialType::Stone;
 		}
 
 		return result;
