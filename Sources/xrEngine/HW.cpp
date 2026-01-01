@@ -375,7 +375,6 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	return;
 #endif
 
-	// ... (стандартный код для клиента остается ниже)
 	BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
 
 	u32 dwWindowStyle = 0;

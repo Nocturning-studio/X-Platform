@@ -1036,15 +1036,17 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 
 		Log(warning.c_str());
 		FlushLog();
-
-		// ѕоказываем диалог с предупреждением
-		std::string dialogTitle = make_string("Shader Warning - %s.%s", name, ext);
-		ShowShaderErrorDialog(dialogTitle.c_str(), warning, true);
-
+		
 		// ¬место CHECK_OR_EXIT просто логируем предупреждение
-		if (bWarningsAsErrors)
+		if (!bWarningsAsErrors)
 		{
 			Msg("! [COMPILE] Warnings treated as errors for shader: %s.%s", name, ext);
+		}
+		else
+		{
+			// ѕоказываем диалог с предупреждением
+			std::string dialogTitle = make_string("Shader Warning - %s.%s", name, ext);
+			ShowShaderErrorDialog(dialogTitle.c_str(), warning, true);
 		}
 	}
 

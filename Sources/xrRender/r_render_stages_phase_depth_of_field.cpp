@@ -23,7 +23,7 @@ void CRender::render_depth_of_field()
 {
 	OPTICK_EVENT("CRender::render_depth_of_field");
 
-	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic_1, RenderTarget->rt_Generic_0);
+	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
 
 	// Params
 	Fvector3 DofParams;
@@ -64,15 +64,15 @@ void CRender::render_depth_of_field()
 
 	// PHASE 4: Blur Far
 	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_FAR]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
-	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic_1, RenderTarget->rt_dof_far);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_far);
 
 	// PHASE 5: Blur Near (ñ Dilation map)
 	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_NEAR]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
-	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic_1, RenderTarget->rt_dof_near);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_near);
 
 	// PHASE 6: Composite
 	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_COMPOSITE]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }

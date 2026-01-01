@@ -26,7 +26,7 @@ void CRender::render_stage_main_geometry()
 
 	RenderBackend.enable_anisotropy_filtering();
 
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_0);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[0]);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
 
 	// Stencil - write 0x1 at pixel pos

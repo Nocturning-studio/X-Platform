@@ -36,15 +36,15 @@ void CRenderTarget::create_textures()
 	// G-Buffer
 	if (ps_r_shading_mode == 0)
 	{
-		rt_GBuffer_1.create(r_RT_GBuffer_1, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
-		rt_GBuffer_2.create(r_RT_GBuffer_2, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
+		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
 	}
 	else
 	{
-		rt_GBuffer_1.create(r_RT_GBuffer_1, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
-		rt_GBuffer_2.create(r_RT_GBuffer_2, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
-		rt_GBuffer_3.create(r_RT_GBuffer_3, dwWidth, dwHeight, D3DFMT_R16F);
-		rt_GBuffer_4.create(r_RT_GBuffer_4, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
+		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
+		rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, D3DFMT_R16F);
+		rt_GBuffer[3].create(r_RT_GBuffer_4, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
 	}
 
 	rt_Hi_z.create(r_RT_Hi_z, dwWidth, dwHeight, D3DFMT_R16F, 9);
@@ -69,19 +69,19 @@ void CRenderTarget::create_textures()
 
 	rt_Distortion_Mask.create(r_RT_distortion_mask, dwWidth, dwHeight, D3DFMT_G16R16F);
 
-	rt_Generic_0.create(r_RT_generic0, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
-	rt_Generic_1.create(r_RT_generic1, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_Generic[0].create(r_RT_generic0, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_Generic[1].create(r_RT_generic1, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
 
 	rt_Motion_Blur_Previous_Frame_Depth.create(r_RT_mblur_previous_frame_depth, dwWidth, dwHeight, D3DFMT_R16F);
 	rt_Motion_Blur_Dilation_Map_0.create(r_RT_mblur_dilation_map_0, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_G16R16F);
 	rt_Motion_Blur_Dilation_Map_1.create(r_RT_mblur_dilation_map_1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_G16R16F);
 
-	rt_BackbufferMip.create(r_RT_backbuffer_mip, u32(dwWidth), u32(dwHeight), D3DFMT_A16B16G16R16F, 3);
-	rt_Reflections.create(r_RT_reflections, u32(dwWidth), u32(dwHeight), D3DFMT_A16B16G16R16F);
+	rt_BackbufferMip.create(r_RT_backbuffer_mip, dwWidth, dwHeight, D3DFMT_A16B16G16R16F, 3);
+	rt_Reflections.create(r_RT_reflections, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
 
-	rt_Radiation_Noise0.create(r_RT_radiation_noise0, dwWidth, dwHeight, D3DFMT_L8);
-	rt_Radiation_Noise1.create(r_RT_radiation_noise1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_L8);
-	rt_Radiation_Noise2.create(r_RT_radiation_noise2, u32(dwWidth * 0.25f), u32(dwHeight * 0.25f), D3DFMT_L8);
+	rt_Radiation_Noise[0].create(r_RT_radiation_noise0, dwWidth, dwHeight, D3DFMT_L8);
+	rt_Radiation_Noise[1].create(r_RT_radiation_noise1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_L8);
+	rt_Radiation_Noise[2].create(r_RT_radiation_noise2, u32(dwWidth * 0.25f), u32(dwHeight * 0.25f), D3DFMT_L8);
 
 	rt_ao.create(r_RT_ao, dwWidth, dwHeight, D3DFMT_L8);
 
@@ -94,10 +94,10 @@ void CRenderTarget::create_textures()
 	// BLOOM
 	float BloomResolutionMultiplier = 0.5f;
 	u32 w = u32(dwWidth * BloomResolutionMultiplier), h = u32(dwHeight * BloomResolutionMultiplier);
-	rt_Bloom_1.create(r_RT_bloom1, w, h, D3DFMT_A16B16G16R16F);
-	rt_Bloom_2.create(r_RT_bloom2, w, h, D3DFMT_A16B16G16R16F);
-	rt_Bloom_Blades_1.create(r_RT_bloom_blades1, w, h, D3DFMT_A16B16G16R16F);
-	rt_Bloom_Blades_2.create(r_RT_bloom_blades2, w, h, D3DFMT_A16B16G16R16F);
+	rt_Bloom[0].create(r_RT_bloom1, w, h, D3DFMT_A16B16G16R16F);
+	rt_Bloom[1].create(r_RT_bloom2, w, h, D3DFMT_A16B16G16R16F);
+	rt_Bloom_Blades[0].create(r_RT_bloom_blades1, w, h, D3DFMT_A16B16G16R16F);
+	rt_Bloom_Blades[1].create(r_RT_bloom_blades2, w, h, D3DFMT_A16B16G16R16F);
 
 	// autoexposure
 	rt_LUM_Mip_Chain.create(r_RT_autoexposure_mip_chain, dwWidth, dwWidth, D3DFMT_R16F, 9);

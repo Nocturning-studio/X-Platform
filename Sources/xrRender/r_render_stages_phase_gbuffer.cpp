@@ -10,13 +10,13 @@ void CRender::clear_gbuffer()
 	OPTICK_EVENT("CRenderTarget::clear_gbuffer");
 
 	if (ps_r_shading_mode == 0)
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer_1, 
-												RenderTarget->rt_GBuffer_2);
+		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
+												RenderTarget->rt_GBuffer[1]);
 	else
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer_1, 
-												RenderTarget->rt_GBuffer_2, 
-												RenderTarget->rt_GBuffer_3, 
-												RenderTarget->rt_GBuffer_4);
+		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
+												RenderTarget->rt_GBuffer[1], 
+												RenderTarget->rt_GBuffer[2], 
+												RenderTarget->rt_GBuffer[3]);
 
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
 
@@ -28,13 +28,13 @@ void CRender::set_gbuffer()
 	OPTICK_EVENT("CRenderTarget::set_gbuffer");
 
 	if (ps_r_shading_mode == 0)
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer_1, 
-												RenderTarget->rt_GBuffer_2);
+		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
+												RenderTarget->rt_GBuffer[1]);
 	else
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer_1, 
-												RenderTarget->rt_GBuffer_2, 
-												RenderTarget->rt_GBuffer_3, 
-												RenderTarget->rt_GBuffer_4);
+		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
+												RenderTarget->rt_GBuffer[1], 
+												RenderTarget->rt_GBuffer[2], 
+												RenderTarget->rt_GBuffer[3]);
 
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
 

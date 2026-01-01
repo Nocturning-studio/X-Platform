@@ -18,7 +18,7 @@ void CRender::RenderMenu()
 	RenderBackend.set_ColorWriteEnable();
 
 	// Main Render
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_0, HW.pBaseZB);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0], HW.pBaseZB);
 	g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
 
 	// Prepare distortion mask
@@ -28,7 +28,7 @@ void CRender::RenderMenu()
 
 	// Apply distortion
 	RenderBackend.set_Shader(RenderTarget->s_menu_distortion);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1, HW.pBaseZB);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], HW.pBaseZB);
 
 	// Resolve gamma and actual display
 	RenderBackend.set_Shader(RenderTarget->s_menu_gamma);

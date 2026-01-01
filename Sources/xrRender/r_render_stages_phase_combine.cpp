@@ -17,7 +17,7 @@ void CRender::combine_additional_postprocess()
 												ps_r_bloom_brightness, 
 												ps_r_bloom_blades_threshold, 
 												ps_r_bloom_blades_brightness);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_0);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_sun_shafts()
@@ -30,14 +30,14 @@ void CRender::combine_sun_shafts()
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
 	float sun_shafts_intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity;
 	RenderBackend.set_Constant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_skybox()
 {
 	OPTICK_EVENT("CRender::render_skybox");
 
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(NULL);
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -64,7 +64,7 @@ void CRender::precombine_scene()
 
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
 	RenderBackend.set_Constant("additional_ambient", additional_ambient);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_0);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_scene_lighting()
@@ -102,7 +102,7 @@ void CRender::combine_scene_lighting()
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	// stencil should be >= 1, we don't touch sky pixels
 	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1, HW.pBaseZB);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], HW.pBaseZB);
 //
 //#ifdef DEBUG
 //	RenderBackend.set_CullMode(CULL_BACKFACE);

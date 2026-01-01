@@ -38,15 +38,15 @@
 // =================================================================================================
 // SIMD / SSE INTRINSICS
 // =================================================================================================
-// Подключаем заголовки для векторных инструкций процессора.
-// SSE (Streaming SIMD Extensions) позволяет выполнять математические операции
-// над 4-мя числами float одновременно за один такт процессора.
+// Include headers for vector processor instructions.
+// SSE (Streaming SIMD Extensions) allows performing mathematical operations
+// on 4 float numbers simultaneously in a single CPU cycle.
 // =================================================================================================
-#include <xmmintrin.h> // SSE  (Базовые операции: add, sub, mul, div)
-#include <pmmintrin.h> // SSE3 (Горизонтальное сложение: hadd)
+#include <xmmintrin.h> // SSE  (Basic operations: add, sub, mul, div)
+#include <pmmintrin.h> // SSE3 (Horizontal addition: hadd)
 #include <smmintrin.h> // SSE4.1 (Dot product: dp)
 
-// Подавление предупреждений X-Ray Engine о deprecated функциях (sin, cos, sqrt)
+// Suppress X-Ray Engine warnings about deprecated functions (sin, cos, sqrt)
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <cmath>
@@ -60,8 +60,8 @@
 // =================================================================================================
 // MEMORY ALIGNMENT MACRO
 // =================================================================================================
-// Для эффективной работы SSE данные должны быть выровнены по границе 16 байт.
-// Если адрес памяти не кратен 16, инструкция _mm_load_ps вызовет краш (Access Violation).
+// For efficient SSE operation, data must be aligned to 16-byte boundary.
+// If memory address is not multiple of 16, _mm_load_ps will cause crash (Access Violation).
 // =================================================================================================
 #if defined(_MSC_VER)
 #define PRESENCE_ALIGN(x) __declspec(align(x))
@@ -71,72 +71,73 @@
 
 namespace Presence
 {
-    // Небольшая константа для сравнений с плавающей точкой (Epsilon)
+    // Small constant for floating point comparisons (Epsilon)
     static constexpr float EPSILON = 1e-5f;
 
     /**
      * @brief 3-dimensional vector class with SSE optimization.
      *
-     * Представляет собой 3D вектор (x, y, z), оптимизированный для высокопроизводительных вычислений.
-     * Использует 128-битный регистр XMM для хранения данных, что позволяет выполнять
-     * арифметические операции (сложение, умножение) в 4 раза быстрее, чем стандартный FPU код.
+     * Represents a 3D vector (x, y, z), optimized for high-performance calculations.
+     * Uses 128-bit XMM register for data storage, allowing arithmetic operations
+     * (addition, multiplication) to execute 4 times faster than standard FPU code.
      *
-     * @note Размер структуры: 16 байт (x, y, z, w). Поле w используется для выравнивания (Padding).
+     * @note Structure size: 16 bytes (x, y, z, w). Field w is used for alignment (Padding).
      */
     PRESENCE_ALIGN(16) struct float3
     {
     public:
         // ========================================================================
-        // Данные (Data Union)
-        // Union позволяет обращаться к памяти двояко:
-        // 1. Как к отдельным компонентам {x, y, z} для удобства программиста.
-        // 2. Как к вектору __m128 для инструкций процессора.
+        // Data Union
+        // ========================================================================
+        // Union allows dual memory access:
+        // 1. As individual components {x, y, z} for programmer convenience
+        // 2. As __m128 vector for processor instructions
         // ========================================================================
         union {
             struct {
                 float x;
                 float y;
                 float z;
-                float _w; // Padding (не используется, но нужен для alignment 16 байт)
+                float _w; // Padding (unused, but needed for 16-byte alignment)
             };
-            __m128 simd_; // SSE регистр, содержащий {x, y, z, w}
+            __m128 simd_; // SSE register containing {x, y, z, w}
         };
 
         // ========================================================================
-        // Конструкторы (Constructors)
+        // Constructors
         // ========================================================================
 
-        /** @brief Конструктор по умолчанию. Инициализирует нулями. */
+        /** @brief Default constructor. Initializes to zero. */
         inline float3() noexcept : simd_(_mm_setzero_ps()) {}
 
-        /** @brief Конструктор из скаляра. Все компоненты равны s. */
+        /** @brief Constructor from scalar. All components equal s. */
         inline explicit float3(float s) noexcept : simd_(_mm_set1_ps(s)) {}
 
         /**
-         * @brief Основной конструктор.
-         * @note В SSE данные загружаются в обратном порядке (Little Endian), поэтому _mm_set_ps(w, z, y, x).
+         * @brief Main constructor.
+         * @note In SSE, data is loaded in reverse order (Little Endian), hence _mm_set_ps(w, z, y, x).
          */
         inline float3(float _x, float _y, float _z) noexcept
             : simd_(_mm_set_ps(0.0f, _z, _y, _x)) {}
 
-        /** @brief Конструктор напрямую из SSE регистра (для внутренних операций). */
+        /** @brief Constructor directly from SSE register (for internal operations). */
         inline explicit float3(__m128 s) noexcept : simd_(s) {}
 
         // ========================================================================
-        // Унарные операторы (Unary Operators)
+        // Unary Operators
         // ========================================================================
 
         /**
-         * @brief Унарный минус (Инверсия вектора).
-         * @return Вектор (-x, -y, -z).
-         * @note Реализовано как вычитание из нуля: 0.0f - v. Это быстрее умножения на -1.
+         * @brief Unary minus (Vector inversion).
+         * @return Vector (-x, -y, -z).
+         * @note Implemented as subtraction from zero: 0.0f - v. Faster than multiplication by -1.
          */
         inline float3 operator-() const noexcept {
             return float3(_mm_sub_ps(_mm_setzero_ps(), simd_));
         }
 
         // ========================================================================
-        // Операторы доступа и присваивания (Access & Assignment)
+        // Access & Assignment Operators
         // ========================================================================
 
         inline float3& operator=(const float3& rhs) noexcept {
@@ -144,14 +145,14 @@ namespace Presence
             return *this;
         }
 
-        // Доступ по индексу (0=x, 1=y, 2=z). Небезопасно (нет проверки границ), но быстро.
+        // Array access (0=x, 1=y, 2=z). Unsafe (no bounds checking), but fast.
         inline float& operator[](int index) noexcept { return (&x)[index]; }
         inline const float& operator[](int index) const noexcept { return (&x)[index]; }
 
         // ========================================================================
-        // Арифметика (SSE Optimized Arithmetic)
-        // Все операции выполняются параллельно для 4 компонентов за 1 такт.
+        // SSE Optimized Arithmetic
         // ========================================================================
+        // All operations are performed in parallel for 4 components in 1 CPU cycle.
 
         inline float3 operator+(const float3& v) const noexcept {
             return float3(_mm_add_ps(simd_, v.simd_));
@@ -161,27 +162,27 @@ namespace Presence
             return float3(_mm_sub_ps(simd_, v.simd_));
         }
 
-        // Покомпонентное умножение (x*x, y*y, z*z)
+        // Component-wise multiplication (x*x, y*y, z*z)
         inline float3 operator*(const float3& v) const noexcept {
             return float3(_mm_mul_ps(simd_, v.simd_));
         }
 
-        // Покомпонентное деление
+        // Component-wise division
         inline float3 operator/(const float3& v) const noexcept {
             return float3(_mm_div_ps(simd_, v.simd_));
         }
 
-        // Умножение на скаляр
+        // Scalar multiplication
         inline float3 operator*(float s) const noexcept {
             return float3(_mm_mul_ps(simd_, _mm_set1_ps(s)));
         }
 
-        // Деление на скаляр (умножение на обратное число 1/s, так быстрее)
+        // Scalar division (multiply by reciprocal 1/s, faster)
         inline float3 operator/(float s) const noexcept {
             return float3(_mm_mul_ps(simd_, _mm_set1_ps(1.0f / s)));
         }
 
-        // Операторы с присваиванием (+=, -=, *=)
+        // Compound assignment operators (+=, -=, *=)
         inline float3& operator+=(const float3& v) noexcept {
             simd_ = _mm_add_ps(simd_, v.simd_);
             return *this;
@@ -198,29 +199,29 @@ namespace Presence
         }
 
         // ========================================================================
-        // Векторная математика (Vector Math)
+        // Vector Mathematics
         // ========================================================================
 
         /**
-         * @brief Скалярное произведение (Dot Product).
+         * @brief Dot Product (Scalar product).
          * @return x*v.x + y*v.y + z*v.z
-         * @note Использует горизонтальное сложение для свертки результата.
+         * @note Uses horizontal addition for result folding.
          */
         inline float dot(const float3& v) const noexcept {
             __m128 mul = _mm_mul_ps(simd_, v.simd_);
-            // Горизонтальное сложение: (x+y, z+w, x+y, z+w)
+            // Horizontal addition: (x+y, z+w, x+y, z+w)
             __m128 shuf = _mm_movehdup_ps(mul);
             __m128 sums = _mm_add_ps(mul, shuf);
-            // Финальное сложение: (x+y) + (z+w)
+            // Final addition: (x+y) + (z+w)
             shuf = _mm_movehl_ps(shuf, sums);
             sums = _mm_add_ss(sums, shuf);
             return _mm_cvtss_f32(sums);
         }
 
         /**
-         * @brief Векторное произведение (Cross Product).
-         * @return Вектор, перпендикулярный обоим исходным векторам.
-         * @note Реализовано через shuffles (перестановку байт), без переходов в скалярный режим.
+         * @brief Cross Product (Vector product).
+         * @return Vector perpendicular to both input vectors.
+         * @note Implemented using shuffles (byte permutation), without switching to scalar mode.
          */
         inline float3 cross(const float3& v) const noexcept {
             // Formula: (y1*z2 - z1*y2, z1*x2 - x1*z2, x1*y2 - y1*x2)
@@ -241,23 +242,23 @@ namespace Presence
             return float3(_mm_sub_ps(mul1, mul2));
         }
 
-        /** @brief Длина вектора (Magnitude). */
+        /** @brief Vector magnitude (Length). */
         inline float magnitude() const noexcept {
             return std::sqrt(dot(*this));
         }
 
-        /** @brief Квадрат длины (Squared Magnitude). Быстрее, так как нет sqrt. */
+        /** @brief Squared magnitude (Length squared). Faster as no sqrt required. */
         inline float length_sq() const noexcept {
             return dot(*this);
         }
 
         /**
-         * @brief Нормализация вектора (приведение к длине 1.0).
-         * @return Единичный вектор того же направления.
+         * @brief Vector normalization (scale to unit length).
+         * @return Unit vector with same direction.
          */
         inline float3 normalize() const noexcept {
-            // Используем SSE4.1 Dot Product, если доступен (быстрее), иначе ручной dot()
-            // Маска 0x7F означает: умножить x,y,z (первые 3 бита 7) и записать результат во все 4 флоата (F)
+            // Use SSE4.1 Dot Product if available (faster), otherwise manual dot()
+            // Mask 0x7F means: multiply x,y,z (first 3 bits 7) and write result to all 4 floats (F)
             __m128 dp = _mm_dp_ps(simd_, simd_, 0x7F);
 
             float len = std::sqrt(_mm_cvtss_f32(dp));
@@ -265,18 +266,18 @@ namespace Presence
             if (len > 1e-6f) {
                 return *this / len;
             }
-            return float3(); // Возвращаем (0,0,0) при делении на ноль
+            return float3(); // Return (0,0,0) on division by zero
         }
 
-        /** @brief Расстояние до другой точки. */
+        /** @brief Distance to another point. */
         inline float distance_to(const float3& v) const noexcept {
             return (*this - v).magnitude();
         }
 
         /**
-         * @brief Multiply-Add (MAD).
-         * @details Выполняет операцию: this += v * s.
-         * Эффективно используется в трассировке лучей для шага вперед: pos += dir * distance.
+         * @brief Multiply-Add (MAD) operation.
+         * @details Performs: this += v * s.
+         * Efficiently used in ray tracing for forward step: pos += dir * distance.
          */
         inline void mad(const float3& v, float s) noexcept {
             __m128 s_vec = _mm_set1_ps(s);
@@ -285,20 +286,20 @@ namespace Presence
         }
 
         /**
-         * @brief Отражение вектора от нормали.
-         * @param i Вектор падения (Incident).
-         * @param n Нормаль поверхности (Normal).
-         * @return Отраженный вектор: i - 2 * dot(i, n) * n.
+         * @brief Vector reflection from surface normal.
+         * @param i Incident vector.
+         * @param n Surface normal.
+         * @return Reflected vector: i - 2 * dot(i, n) * n.
          */
         static float3 reflect(const float3& i, const float3& n) {
             return i - n * (2.0f * i.dot(n));
         }
 
         // ========================================================================
-        // Утилиты / Отладка
+        // Utilities / Debugging
         // ========================================================================
 
-        /** @brief Строковое представление вектора "(x, y, z)" для логов. */
+        /** @brief String representation "(x, y, z)" for logging. */
         std::string to_string() const {
             char buffer[64];
             snprintf(buffer, sizeof(buffer), "(%.3f, %.3f, %.3f)", x, y, z);
@@ -307,10 +308,10 @@ namespace Presence
     };
 
     // =================================================================================================
-    // ГЛОБАЛЬНЫЕ ОПЕРАТОРЫ
+    // GLOBAL OPERATORS
     // =================================================================================================
 
-    /** @brief Позволяет писать "float * vector" (коммутативность умножения). */
+    /** @brief Allows writing "float * vector" (multiplication commutativity). */
     inline float3 operator*(float s, const float3& v) noexcept {
         return v * s;
     }

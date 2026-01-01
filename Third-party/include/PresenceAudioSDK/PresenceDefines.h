@@ -37,15 +37,12 @@
 #include "PresenceMath.h"
 #include <cstdint>
 
-#define PRESENCE_VERSION 0.2f
-#define PRESENCE_VERSION_TEXT "Presence Audio ver. 0.2 InDev"
-
 // =================================================================================================
 // DLL EXPORT / IMPORT MACROS
 // =================================================================================================
-// Стандартный блок для управления видимостью символов в Windows DLL.
-// При сборке самой библиотеки (PRESENCE_BUILD_DLL) символы экспортируются.
-// При подключении к игровому движку - импортируются.
+// Standard Windows DLL visibility control macros.
+// When building the library (PRESENCE_BUILD_DLL), symbols are exported.
+// When linking from game engine - symbols are imported.
 // =================================================================================================
 #ifdef PRESENCE_BUILD_DLL
 #define PRESENCE_API __declspec(dllexport)
@@ -56,127 +53,149 @@
 namespace Presence
 {
     // =================================================================================================
-    // ТИПЫ МАТЕРИАЛОВ (MATERIAL TYPES)
+    // MATERIAL TYPES
     // =================================================================================================
-    // Акустические свойства поверхностей. Влияют на поглощение звука (absorption),
-    // отражающую способность (reflectivity) и проницаемость (transmission).
+    // Acoustic properties of surfaces. Affect sound absorption,
+    // reflectivity, and transmission.
     // =================================================================================================
     enum class MaterialType : int
     {
-        Air = 0,    // Воздух / Отсутствие препятствия (полная проницаемость).
-        Stone = 1,      // Бетон, кирпич, камень, асфальт (сильное эхо, низкая проницаемость).
-        Metal = 2,      // Металл (звенящее эхо, полная блокировка звука).
-        Wood = 3,       // Дерево, паркет, фанера (теплый тон, среднее поглощение).
-        Soft = 4,       // Ткань, ковры, трава, земля, листва (сильное поглощение ВЧ).
-        Glass = 5,      // Стекло, лед (пропускает звук, но сильно отражает высокие частоты).
-        Absorber = 6,   // Акустический поролон, студийная изоляция (полное поглощение, нет эха).
+        Air = 0,      // Air / No obstacle (full transmission).
+        Stone = 1,    // Concrete, brick, stone, asphalt (strong echo, low transmission).
+        Metal = 2,    // Metal (ringing echo, complete sound blocking).
+        Wood = 3,     // Wood, parquet, plywood (warm tone, medium absorption).
+        Soft = 4,     // Fabric, carpets, grass, soil, foliage (strong HF absorption).
+        Glass = 5,    // Glass, ice (transmits sound but strongly reflects high frequencies).
+        Absorber = 6, // Acoustic foam, studio isolation (complete absorption, no echo).
 
-        // Служебное значение для автоматического подсчета количества материалов.
-        // Должно всегда быть последним!
+        // Sentinel value for automatic material count calculation.
+        // Must always be last!
         Count = 7
     };
 
+    // =================================================================================================
+    // MATERIAL PARAMETERS STRUCTURE
+    // =================================================================================================
+    // Defines acoustic properties of a material.
+    // All values range from 0.0 to 1.0.
+    // =================================================================================================
     struct MaterialParams
     {
-        float transmission;  // [0.0-1.0] Проницаемость
-        float reflectivity;  // [0.0-1.0] Отражение
-        float absorption;    // [0.0-1.0] Поглощение
-        float rt60_weight;   // [0.0-1.0] Вес в RT60
+        float transmission;  // [0.0-1.0] Sound transmission through material
+        float reflectivity;  // [0.0-1.0] Sound reflection coefficient
+        float absorption;    // [0.0-1.0] Sound absorption coefficient
+        float rt60_weight;   // [0.0-1.0] Weight in RT60 calculation
+
+        MaterialParams() : transmission(0.0f), reflectivity(0.0f),
+            absorption(0.0f), rt60_weight(0.0f) {}
+
+        MaterialParams(float t, float r, float a, float w) :
+            transmission(t), reflectivity(r), absorption(a), rt60_weight(w) {}
     };
 
     // =================================================================================================
-    // РЕЗУЛЬТАТ ТРАССИРОВКИ (RAYCAST HIT)
+    // RAYCAST HIT RESULT
     // =================================================================================================
-    // Структура, возвращаемая игровым движком при запросе CastRay.
-    // Содержит физические данные о точке столкновения звукового луча с геометрией.
+    // Structure returned by game engine's CastRay implementation.
+    // Contains physical data about sound ray collision with geometry.
     // =================================================================================================
     struct RayHit
     {
-        bool isHit;             // true, если луч пересек препятствие.
-        float distance;         // Расстояние от начала луча до точки удара (в метрах).
-        float3 normal;          // Нормаль поверхности в точке удара (для расчета отражений).
-        int materialID;
+        bool isHit;           // true if ray intersected an obstacle
+        float distance;       // Distance from ray origin to hit point (in meters)
+        float3 normal;        // Surface normal at hit point (for reflection calculations)
+        int materialID;       // Material identifier at hit point
 
-        RayHit() : isHit(false), distance(0), materialID(0) {}
+        RayHit() : isHit(false), distance(0.0f), materialID(0) {}
+
+        RayHit(bool hit, float dist, const float3& norm, int matID) :
+            isHit(hit), distance(dist), normal(norm), materialID(matID) {}
     };
 
     // =================================================================================================
-    // ИНТЕРФЕЙС ПРОВАЙДЕРА ГЕОМЕТРИИ (GEOMETRY PROVIDER INTERFACE)
+    // GEOMETRY PROVIDER INTERFACE
     // =================================================================================================
-    // Абстрактный слой между Presence SDK и физическим движком игры (X-Ray, PhysX, etc).
-    // Пользователь библиотеки обязан реализовать этот класс.
+    // Abstract layer between Presence SDK and game's physics engine (X-Ray, PhysX, etc.).
+    // Library user must implement this interface.
     // =================================================================================================
     class IGeometryProvider
     {
     public:
         virtual ~IGeometryProvider() = default;
 
-        // Выполняет трассировку луча в игровом мире.
-        // @param start: Начальная точка луча (обычно позиция камеры или источника).
-        // @param dir: Нормализованный вектор направления.
-        // @param maxDist: Максимальная дистанция проверки.
-        // @return RayHit с информацией о ближайшем препятствии.
+        /**
+         * @brief Performs ray tracing in game world
+         * @param start Ray origin point (usually camera or source position)
+         * @param dir Normalized direction vector
+         * @param maxDist Maximum ray distance to check
+         * @return RayHit with information about nearest obstacle
+         */
         virtual RayHit CastRay(const float3& start, const float3& dir, float maxDist) = 0;
     };
 
     // =================================================================================================
-    // ИНТЕРФЕЙС РАСЧЕТА ОККЛЮЗИИ (OCCLUSION CALCULATOR INTERFACE)
+    // OCCLUSION CALCULATOR INTERFACE
     // =================================================================================================
-    // Интерфейс для интеграции в звуковую подсистему (например, в CSoundRender_Core).
-    // Позволяет запрашивать громкость звука с учетом препятствий.
+    // Interface for integration into sound subsystem (e.g., CSoundRender_Core).
+    // Allows querying sound volume considering obstacles.
     // =================================================================================================
     class PRESENCE_API ISoundOcclusionCalculator
     {
     public:
         virtual ~ISoundOcclusionCalculator() = default;
 
-        // Рассчитывает коэффициент слышимости источника звука.
-        // @param start: Позиция слушателя (Listener).
-        // @param end: Позиция источника звука (Source).
-        // @return float [0.0 ... 1.0], где 0.0 - полная тишина, 1.0 - прямая видимость.
-        virtual float CalculateOcclusion(const float3& start, const float3& end) = 0;
+        /**
+         * @brief Calculates sound source audibility coefficient
+         * @param listenerPos Listener position
+         * @param sourcePos Sound source position
+         * @return float [0.0 ... 1.0] where 0.0 = complete silence, 1.0 = direct line of sight
+         */
+        virtual float CalculateOcclusion(const float3& listenerPos, const float3& sourcePos) = 0;
     };
 
     // =================================================================================================
-    // ПАРАМЕТРЫ РЕВЕРБЕРАЦИИ (EAX / OPENAL ENVIRONMENT)
+    // REVERBERATION PARAMETERS (EAX / OPENAL ENVIRONMENT)
     // =================================================================================================
-    // Итоговая структура с акустическими параметрами, рассчитанными системой.
-    // Полностью совместима со стандартами EAX 2.0 / EAX 5.0 / OpenAL EF X.
-    // Значения громкости указаны в Millibels (mB): 0 mB = макс. громкость, -10000 mB = тишина.
+    // Final structure with acoustic parameters calculated by the system.
+    // Fully compatible with EAX 2.0 / EAX 5.0 / OpenAL EF X standards.
+    // Volume values are in Millibels (mB): 0 mB = maximum volume, -10000 mB = silence.
     // =================================================================================================
     struct EAXResult
     {
-        // --- Основные параметры (Room & Decay) ---
-        int32_t lRoom;               // [-10000 ... 0] Общая громкость реверберации (Master Volume).
-        int32_t lRoomHF;             // [-10000 ... 0] Затухание высоких частот (Tone). Чем меньше, тем глуше звук.
-        float   flRoomRolloffFactor; // [0.0 ... 10.0] Коэффициент затухания эффекта с расстоянием.
-        float   flDecayTime;         // [0.1 ... 20.0] Время затухания (RT60) в секундах. "Хвост" эха.
-        float   flDecayHFRatio;      // [0.1 ... 2.0] Отношение времени затухания ВЧ к НЧ. < 1.0 = ВЧ гаснут быстрее.
+        // --- Core parameters (Room & Decay) ---
+        int32_t lRoom;               // [-10000 ... 0] Overall reverb volume (Master Volume)
+        int32_t lRoomHF;             // [-10000 ... 0] High frequency attenuation (Tone)
+        float   flRoomRolloffFactor; // [0.0 ... 10.0] Distance-based effect rolloff factor
+        float   flDecayTime;         // [0.1 ... 20.0] Reverberation decay time (RT60) in seconds
+        float   flDecayHFRatio;      // [0.1 ... 2.0] HF to LF decay time ratio
 
-        // --- Ранние отражения (Early Reflections) ---
-        int32_t lReflections;        // [-10000 ... 1000] Громкость первых отражений от стен.
-        float   flReflectionsDelay;  // [0.0 ... 0.3] Задержка первых отражений (сек). Зависит от размера комнаты.
+        // --- Early reflections ---
+        int32_t lReflections;        // [-10000 ... 1000] First reflection volume
+        float   flReflectionsDelay;  // [0.0 ... 0.3] First reflection delay in seconds
 
-        // --- Поздняя реверберация (Late Reverb) ---
-        int32_t lReverb;             // [-10000 ... 2000] Громкость "хвоста" реверберации.
-        float   flReverbDelay;       // [0.0 ... 0.1] Задержка начала хвоста относительно ранних отражений.
+        // --- Late reverb ---
+        int32_t lReverb;             // [-10000 ... 2000] Late reverb tail volume
+        float   flReverbDelay;       // [0.0 ... 0.1] Late reverb delay relative to early reflections
 
-        // --- Параметры среды (Environment) ---
-        float   flEnvironmentSize;      // [1.0 ... 100.0] Условный размер помещения в метрах (для масштабирования).
-        float   flEnvironmentDiffusion; // [0.0 ... 1.0] Плотность эха. 1.0 = густое, 0.0 = зернистое (как в трубе).
-        float   flAirAbsorptionHF;      // [-100 ... 0] Поглощение звука воздухом (зависит от тумана/влажности).
+        // --- Environment properties ---
+        float   flEnvironmentSize;      // [1.0 ... 100.0] Perceived room size in meters
+        float   flEnvironmentDiffusion; // [0.0 ... 1.0] Echo density (1.0 = dense, 0.0 = grainy)
+        float   flAirAbsorptionHF;      // [-100 ... 0] Air absorption (affected by fog/humidity)
 
-        // --- Служебные поля ---
-        bool    isValid;                // Флаг готовности данных (false, если расчет еще не завершен).
+        // --- Internal flags ---
+        bool    isValid;                // Data readiness flag (false if calculation not complete)
 
-        // --- Debug Info (для отладки в консоли) ---
-        float   debugEnclosedness;      // [0.0 ... 1.0] 1.0 = полностью закрытое помещение.
-        float   debugOpenness;          // [0.0 ... 1.0] 1.0 = открытое поле.
+        // --- Debug information (for console output) ---
+        float   debugEnclosedness;      // [0.0 ... 1.0] 1.0 = fully enclosed space
+        float   debugOpenness;          // [0.0 ... 1.0] 1.0 = open field
 
         EAXResult() { Reset(); }
 
-        // Сброс в "нейтральное" состояние (звук как в вакууме/тихой комнате)
-        void Reset() {
+        /**
+         * @brief Resets to neutral state (sound as in vacuum/quiet room)
+         */
+        void Reset()
+        {
             lRoom = -1000;
             lRoomHF = -100;
             flRoomRolloffFactor = 0.0f;
@@ -190,20 +209,25 @@ namespace Presence
             flEnvironmentDiffusion = 1.0f;
             flAirAbsorptionHF = -5.0f;
             isValid = false;
-            flRoomRolloffFactor = 0.0f;
             debugEnclosedness = 0.0f;
             debugOpenness = 1.0f;
         }
     };
 
     // =================================================================================================
-    // НАСТРОЙКИ СИСТЕМЫ (SYSTEM SETTINGS)
+    // SYSTEM SETTINGS STRUCTURE
     // =================================================================================================
     struct Settings
     {
-        bool useMultithreading = true;  // Использовать фоновый поток для расчетов (рекомендуется true).
-        float maxRayDistance = 200.0f;  // Максимальная длина луча в метрах (Culling distance).
-        int maxBounces = 3;             // Глубина рекурсии (кол-во отскоков звука). Оптимально 2-3.
-        float updateInterval = 0.033f;  // Интервал обновления физики в секундах (~30 FPS).
+        bool useMultithreading = true;  // Use background thread for calculations (recommended true)
+        float maxRayDistance = 200.0f;  // Maximum ray length in meters (Culling distance)
+        int maxBounces = 3;             // Recursion depth (number of sound bounces). Optimal 2-3.
+        float updateInterval = 0.033f;  // Physics update interval in seconds (~30 FPS)
+
+        Settings() = default;
+
+        Settings(bool multithread, float maxDist, int bounces, float interval) :
+            useMultithreading(multithread), maxRayDistance(maxDist),
+            maxBounces(bounces), updateInterval(interval) {}
     };
 }

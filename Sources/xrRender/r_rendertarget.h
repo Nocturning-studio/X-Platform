@@ -45,10 +45,7 @@ class CRenderTarget : public IRender_Target
 	ref_rt rt_ZB;
 
 	// Geometry Buffer
-	ref_rt rt_GBuffer_1;
-	ref_rt rt_GBuffer_2;
-	ref_rt rt_GBuffer_3;
-	ref_rt rt_GBuffer_4;
+	ref_rt rt_GBuffer[4];
 
 	ref_rt rt_Hi_z;
 
@@ -63,15 +60,12 @@ class CRenderTarget : public IRender_Target
 	// Accumulation Buffer
 	ref_rt rt_Light_Accumulator;
 
-	ref_rt rt_Generic_0;
-	ref_rt rt_Generic_1;
+	ref_rt rt_Generic[2];
 
 	ref_rt rt_Distortion_Mask;
 
-	ref_rt rt_Bloom_1; // 32bit, dim/4	(r,g,b,?)
-	ref_rt rt_Bloom_2; // 32bit, dim/4	(r,g,b,?)
-	ref_rt rt_Bloom_Blades_1;
-	ref_rt rt_Bloom_Blades_2;
+	ref_rt rt_Bloom[2];
+	ref_rt rt_Bloom_Blades[2];
 	ref_rt rt_LUM_Mip_Chain;
 	ref_rt rt_SceneLuminance;
 	ref_rt rt_SceneLuminancePrevious;
@@ -79,9 +73,7 @@ class CRenderTarget : public IRender_Target
 	ref_rt rt_BackbufferMip;
 	ref_rt rt_Reflections;
 
-	ref_rt rt_Radiation_Noise0;
-	ref_rt rt_Radiation_Noise1;
-	ref_rt rt_Radiation_Noise2;
+	ref_rt rt_Radiation_Noise[3];
 
 	ref_rt rt_Generic_Prev;
 

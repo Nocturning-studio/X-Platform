@@ -66,7 +66,7 @@ void CRender::apply_exposure()
 	// Применяем экспозицию
 	RenderBackend.set_Element(RenderTarget->s_autoexposure->E[SE_PASS_AUTOEXPOSURE_APPLY_EXPOSURE]);
 	RenderBackend.set_Constant("autoexposure_params", _result.x, _result.z);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_autoexposure()

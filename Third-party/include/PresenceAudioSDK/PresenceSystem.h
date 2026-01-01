@@ -1,6 +1,6 @@
 /*
 ====================================================================================================
-  Presence Audio SDK
+  Presence Audio SDK - Main System Interface
   High-Performance Real-time Audio Path Tracing & EAX Simulation Library
 ====================================================================================================
 
@@ -34,6 +34,7 @@
 ====================================================================================================
 */
 #pragma once
+
 #include "PresenceDefines.h"
 #include <memory>
 
@@ -42,93 +43,161 @@ namespace Presence
     // =================================================================================================
     // MAIN AUDIO SIMULATION SYSTEM
     // =================================================================================================
-    // Главный класс библиотеки. Управляет:
-    // 1. Асинхронной трассировкой лучей (Path Tracing) в отдельном потоке.
-    // 2. Расчетом параметров реверберации (EAX) на основе геометрии помещения.
-    // 3. Расчетом окклюзии (слышимости) источников звука.
+    // Primary library class. Manages:
+    // 1. Asynchronous ray tracing (Path Tracing) in separate thread
+    // 2. Reverberation parameter calculation (EAX) based on room geometry
+    // 3. Sound source occlusion (audibility) calculation
     // 
-    // Реализован с использованием идиомы PIMPL (Pointer to Implementation), чтобы скрыть
-    // зависимости (std::thread, internal structs) от пользователя библиотеки.
+    // Implemented using PIMPL idiom (Pointer to Implementation) to hide
+    // dependencies (std::thread, internal structs) from library users.
+    // Using raw pointer for Impl to avoid DLL export issues with std::shared_ptr
     // =================================================================================================
     class PRESENCE_API AudioSystem : public ISoundOcclusionCalculator
     {
     public:
         // =============================================================================================
-        // Конструкторы и Деструкторы
-        // =============================================================================================
-
-        /** @brief Создает экземпляр системы, но не запускает потоки. Требует вызова Initialize(). */
-        AudioSystem();
-
-        /** @brief Автоматически вызывает Shutdown() при уничтожении объекта. */
-        ~AudioSystem();
-
-        // =============================================================================================
-        // Управление Жизненным Циклом (Lifecycle Management)
+        // VERSION INFORMATION METHODS
         // =============================================================================================
 
         /**
-         * @brief Инициализация системы и запуск рабочих потоков.
-         * @param provider Указатель на адаптер геометрии (реализованный в движке игры).
-         *                 Система использует его для вызова CastRay. Не должен быть null.
-         * @param settings Настройки симуляции (кол-во отскоков, дистанция, многопоточность).
+         * @brief Returns library version number
+         * @return Version as float (e.g., 0.2 for version 0.2)
+         */
+        static float GetVersion();
+
+        /**
+         * @brief Returns full version string
+         * @return Complete version information in text format
+         */
+        static const char* GetVersionString();
+
+        // =============================================================================================
+        // Constructors and Destructors
+        // =============================================================================================
+
+        /**
+         * @brief Creates system instance but doesn't start threads. Requires Initialize() call.
+         */
+        AudioSystem();
+
+        /**
+         * @brief Automatically calls Shutdown() on object destruction
+         */
+        ~AudioSystem();
+
+        /**
+         * @brief Move constructor for efficient resource transfer
+         */
+        AudioSystem(AudioSystem&& other) noexcept;
+
+        /**
+         * @brief Move assignment operator
+         */
+        AudioSystem& operator=(AudioSystem&& other) noexcept;
+
+        // =============================================================================================
+        // Lifecycle Management
+        // =============================================================================================
+
+        /**
+         * @brief Initialize system and start worker threads
+         * @param provider Pointer to geometry adapter (implemented in game engine)
+         *                 System uses it to call CastRay. Must not be null
+         * @param settings Simulation settings (number of bounces, distance, multithreading)
+         * @throws std::invalid_argument if provider is null
          */
         void Initialize(IGeometryProvider* provider, const Settings& settings = Settings());
 
         /**
-         * @brief Остановка вычислений и освобождение ресурсов.
-         * @details Корректно завершает рабочий поток. Рекомендуется вызывать при выгрузке уровня.
+         * @brief Stop calculations and free resources
+         * @details Properly terminates worker thread. Recommended to call when unloading level
          */
         void Shutdown();
 
         // =============================================================================================
-        // Обновление симуляции (Simulation Update)
+        // Simulation Update
         // =============================================================================================
 
         /**
-         * @brief Основной метод обновления. Должен вызываться каждый кадр (в OnFrame).
-         *
-         * @details Метод отправляет новую позицию слушателя в рабочий поток.
-         * Сами расчеты трассировки происходят асинхронно, не блокируя игровой цикл.
-         * Результаты (EAX) интерполируются (сглаживаются) относительно времени кадра dt.
-         *
-         * @param position Текущая позиция слушателя (Камеры или Актера).
-         * @param dt Дельта времени (время, прошедшее с предыдущего кадра) в секундах.
-         * @param envFogDensity Плотность тумана/дождя [0.0 - 1.0]. Влияет на поглощение высоких частот (Air Absorption).
+         * @brief Main update method. Should be called each frame (in OnFrame)
+         * @details Method sends new listener position to worker thread.
+         * Tracing calculations occur asynchronously, not blocking game loop.
+         * Results (EAX) are interpolated (smoothed) relative to frame time dt.
+         * @param position Current listener position (Camera or Actor)
+         * @param dt Delta time (time elapsed since previous frame) in seconds
+         * @param envFogDensity Fog/rain density [0.0 - 1.0]. Affects high frequency absorption
          */
         void Update(const float3& position, float dt, float envFogDensity = 0.0f);
 
         // =============================================================================================
-        // Получение результатов (Data Access)
+        // Data Access
         // =============================================================================================
 
         /**
-         * @brief Возвращает текущие рассчитанные параметры реверберации.
-         * @return Структура EAXResult, готовая к отправке в OpenAL/DirectSound.
-         * @note Данные в структуре уже сглажены (интерполированы) для предотвращения резких скачков звука.
+         * @brief Returns current calculated reverberation parameters
+         * @return EAXResult structure ready for sending to OpenAL/DirectSound
+         * @note Data in structure is already smoothed (interpolated) to prevent sharp sound jumps
          */
         EAXResult GetEAXResult() const;
 
         /**
-         * @brief Реализация интерфейса ISoundOcclusionCalculator.
-         *
-         * Рассчитывает коэффициент громкости для конкретного источника звука.
-         * Учитывает препятствия (Transmission) и огибание звука (Diffraction/Reflection).
-         *
-         * @param listenerPos Позиция слушателя.
-         * @param sourcePos Позиция источника звука.
-         * @return Коэффициент громкости [0.0 - тишина, 1.0 - полная громкость].
-         * @note Этот метод может вызываться синхронно из звукового потока движка.
+         * @brief Implementation of ISoundOcclusionCalculator interface
+         * @details Calculates volume coefficient for specific sound source.
+         * Considers obstacles (Transmission) and sound bending (Diffraction/Reflection)
+         * @param listenerPos Listener position
+         * @param sourcePos Sound source position
+         * @return Volume coefficient [0.0 - silence, 1.0 - full volume]
+         * @note This method can be called synchronously from engine's sound thread
          */
         virtual float CalculateOcclusion(const float3& listenerPos, const float3& sourcePos) override;
 
-        void SetMaterialProperties(int materialID, const MaterialParams& params);
+        // =============================================================================================
+        // Material Management
+        // =============================================================================================
 
+        /**
+         * @brief Set properties for existing material
+         * @param materialID Material identifier (0 = Air, 1 = Stone, etc., or custom ID)
+         * @param params New acoustic parameters
+         * @return true if material exists and parameters were set
+         */
+        bool SetMaterialProperties(int materialID, const MaterialParams& params);
+
+        /**
+         * @brief Create new custom material with specified properties
+         * @param params Acoustic parameters for new material
+         * @return New material ID (positive integer) or -1 on failure
+         */
         int CreateCustomMaterial(const MaterialParams& params);
 
+        // =============================================================================================
+        // System Status
+        // =============================================================================================
+
+        /**
+         * @brief Check if system is initialized and ready
+         * @return true if system is operational
+         */
+        bool IsInitialized() const;
+
+        /**
+         * @brief Get current system settings
+         * @return Current settings structure
+         */
+        Settings GetCurrentSettings() const;
+
     private:
-        // Скрытая реализация (PIMPL)
+        // =============================================================================================
+        // PIMPL Implementation
+        // =============================================================================================
+        // Forward declaration of implementation class
         class Impl;
+
+        // Raw pointer to implementation to avoid DLL export issues with smart pointers
         Impl* m_Impl;
+
+        // Disable copy semantics
+        AudioSystem(const AudioSystem&) = delete;
+        AudioSystem& operator=(const AudioSystem&) = delete;
     };
 }

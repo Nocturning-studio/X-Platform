@@ -28,5 +28,5 @@ void CRender::render_distortion()
 
 	RenderBackend.set_Element(RenderTarget->s_distortion->E[0]);
 
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }

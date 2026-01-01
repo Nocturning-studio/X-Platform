@@ -59,15 +59,15 @@ void CRender::render_effectors_pass_generate_radiation_noise()
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
 	RenderBackend.set_Constant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 1);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Radiation_Noise0);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Radiation_Noise[0]);
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
 	RenderBackend.set_Constant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 0.66f);
-	RenderBackend.RenderViewportSurface(w * 0.5f, h * 0.5f, RenderTarget->rt_Radiation_Noise1);
+	RenderBackend.RenderViewportSurface(w * 0.5f, h * 0.5f, RenderTarget->rt_Radiation_Noise[1]);
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
 	RenderBackend.set_Constant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 0.33f);
-	RenderBackend.RenderViewportSurface(w * 0.25f, h * 0.25f, RenderTarget->rt_Radiation_Noise2);
+	RenderBackend.RenderViewportSurface(w * 0.25f, h * 0.25f, RenderTarget->rt_Radiation_Noise[2]);
 }
 
 void CRender::render_effectors_pass_color_blind_filter()
@@ -136,10 +136,10 @@ void CRender::render_effectors_pass_color_blind_filter()
 	RenderBackend.set_Constant("green_matrix", GreenMatrix.x, GreenMatrix.y, GreenMatrix.z);
 	RenderBackend.set_Constant("blue_matrix", BlueMatrix.x, BlueMatrix.y, BlueMatrix.z);
 
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_0);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_COLOR_BLIND_FILTER], 1);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 
 void CRender::render_effectors_pass_combine()
@@ -147,7 +147,7 @@ void CRender::render_effectors_pass_combine()
 	OPTICK_EVENT("CRenderTarget::render_effectors_pass_combine");
 
 	// combination/postprocess
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(NULL);
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_COMBINE]);
@@ -212,7 +212,7 @@ void CRender::render_effectors_pass_resolve_gamma()
 	RenderBackend.set_Stencil(FALSE);
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RESOLVE_GAMMA]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_0);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 
 void CRender::render_effectors_pass_lut()
@@ -233,6 +233,6 @@ void CRender::render_effectors_pass_lut()
 
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_LUT], 0);
 	RenderBackend.set_Constant("c_lut_params", envdesc->weight, 0, 0, 0);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic_1);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////

@@ -544,7 +544,7 @@ void CRender::render_stage_forward()
 	m_visuals_static_visible.clear();
 	m_visuals_dynamic_visible.clear();
 
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic_1);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
