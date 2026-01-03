@@ -95,7 +95,7 @@ xr_token geometry_quality_mode_token[] =
 	{0, 0}
 };
 
-Flags32 ps_r_ls_flags = {RFLAG_Z_PREPASS};
+Flags32 ps_r_ls_flags = {0};
 
 /*-------------------------------------------------------------------------------*/
 // R2a/R2/R2.5 specific tokens
@@ -309,7 +309,7 @@ float ps_cas_sharpening = 0.1f;
 // R2-specific flags
 Flags32 ps_r_lighting_flags = {RFLAG_SUN | RFLAG_EXP_DONT_TEST_UNSHADOWED};
 
-Flags32 ps_r_postprocess_flags = {RFLAG_DOF | RFLAG_MBLUR};
+Flags32 ps_r_postprocess_flags = {RFLAG_DOF | RFLAG_MBLUR | RFLAG_AUTOEXPOSURE};
 
 Flags32 ps_r_shading_flags = {0};
 
