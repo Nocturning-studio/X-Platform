@@ -46,7 +46,7 @@ void CRender::level_Load(IReader* fs)
 		});
 	};
 
-	pApp->LoadBegin();
+	Engine.LoadingScreen.Show();
 	Device.Resources->DeferredLoad(TRUE);
 
 	// 1. RAM BUFFERING
@@ -123,7 +123,7 @@ void CRender::level_Load(IReader* fs)
 		LoadSWIs(geom);
 		FS.r_close(geom);
 
-		pApp->LoadDraw();
+		Engine.LoadingScreen.ForceRender();
 
 		g_pGamePersistent->LoadTitle("st_loading_fast_geometry");
 
@@ -168,7 +168,7 @@ void CRender::level_Load(IReader* fs)
 	// === ACTIVE WAIT ===
 	while (active_tasks > 0)
 	{
-		pApp->LoadDraw();
+		Engine.LoadingScreen.ForceRender();
 		Sleep(1);
 	}
 	tg_visuals.wait();
@@ -180,7 +180,7 @@ void CRender::level_Load(IReader* fs)
 		LoadSectors(&local_fs_sectors);
 	}
 
-	pApp->LoadDraw();
+	Engine.LoadingScreen.ForceRender();
 
 	// --- ќѕ“»ћ»«ј÷»я: Ћампы на сервере часто не нужны, если AI не зав€зан на уровень освещенности движком рендера ---
 	g_pGamePersistent->LoadTitle("st_loading_lights");
@@ -195,7 +195,7 @@ void CRender::level_Load(IReader* fs)
 
 	xr_free(level_data_ptr);
 
-	pApp->LoadEnd();
+	Engine.LoadingScreen.Hide();
 
 	lstLODs.clear();
 	lstLODgroups.clear();
@@ -212,9 +212,6 @@ void CRender::level_Unload()
 		return;
 	if (!b_loaded)
 		return;
-
-	// Begin
-	//	pApp->LoadBegin();
 
 	u32 I;
 
@@ -291,8 +288,6 @@ void CRender::level_Unload()
 	g_pGamePersistent->LoadTitle("st_unloading_shaders");
 	Shaders.clear_and_free();
 
-	// End
-	//	pApp->LoadEnd();
 	b_loaded = FALSE;
 }
 

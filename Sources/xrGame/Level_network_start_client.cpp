@@ -19,7 +19,7 @@ BOOL CLevel::net_Start_client(LPCSTR options)
 #include "string_table.h"
 bool CLevel::net_start_client1()
 {
-	pApp->LoadBegin();
+	Engine.LoadingScreen.Show();
 	// name_of_server
 	string64 name_of_server = "";
 	//	strcpy						(name_of_server,*m_caClientOptions);
@@ -64,17 +64,17 @@ bool CLevel::net_start_client3()
 			level_name = ai().get_alife() ? *name() : net_SessionName();
 
 		// Determine internal level-ID
-		int level_id = pApp->Level_ID(level_name);
+		int level_id = Engine.LevelManager.GetLevelID(level_name);
 		if (level_id < 0)
 		{
 			Disconnect();
-			pApp->LoadEnd();
+			Engine.LoadingScreen.Hide();
 			connected_to_server = FALSE;
 			m_name = level_name;
 			m_connect_server_err = xrServer::ErrNoLevel;
 			return false;
 		}
-		pApp->Level_Set(level_id);
+		Engine.LevelManager.SetLevel(level_id);
 		m_name = level_name;
 		// Load level
 		R_ASSERT2(Load(level_id), "Loading failed.");
@@ -125,23 +125,6 @@ bool CLevel::net_start_client4()
 				Server->Update();
 			Sleep(5);
 		}
-		/*
-				if(psNET_direct_connect)
-				{
-					ClientReceive();
-					if(Server)
-							Server->Update()	;
-					Sleep(5);
-				}else
-
-					while(!game_configured)
-					{
-						ClientReceive();
-						if(Server)
-							Server->Update()	;
-						Sleep(5);
-					}
-		*/
 	}
 	return true;
 }
@@ -180,6 +163,6 @@ bool CLevel::net_start_client6()
 		net_start_result_total = FALSE;
 	}
 
-	pApp->LoadEnd();
+	Engine.LoadingScreen.Hide();
 	return true;
 }

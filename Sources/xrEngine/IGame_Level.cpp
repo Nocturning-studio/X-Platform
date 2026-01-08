@@ -71,7 +71,7 @@ extern CStatTimer tscreate;
 BOOL IGame_Level::Load(u32 dwNum)
 {
 	// Initialize level data
-	pApp->Level_Set(dwNum);
+	Engine.LevelManager.SetLevel(dwNum);
 	string_path temp;
 	if (!FS.exist(temp, "$level$", "level.ltx"))
 		Debug.fatal(DEBUG_INFO, "Can't find level configuration file '%s'.", temp);
@@ -90,7 +90,6 @@ BOOL IGame_Level::Load(u32 dwNum)
 	// CForms
 	g_pGamePersistent->LoadTitle("st_loading_cform");
 	ObjectSpace.Load();
-	pApp->LoadSwitch();
 
 	// HUD + Environment
 	if (g_hud)

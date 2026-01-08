@@ -15,7 +15,7 @@
 
 CUILines::CUILines()
 {
-	m_pFont = NULL;
+	m_pFont = UI()->Font()->pFontLetterica16Russian;
 	m_interval = 0.0f;
 	m_eTextAlign = CGameFont::alLeft;
 	m_eVTextAlign = valTop;
@@ -30,7 +30,6 @@ CUILines::CUILines()
 	uFlags.set(flColoringMode, TRUE);
 	uFlags.set(flCutWordsMode, FALSE);
 	uFlags.set(flRecognizeNewLine, TRUE);
-	m_pFont = UI()->Font()->pFontLetterica16Russian;
 	m_cursor_pos.set(0, 0);
 	m_iCursorPos = 0;
 }

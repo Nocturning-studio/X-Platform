@@ -294,65 +294,65 @@ void CDemoRecord::SwitchShowInputInfo()
 
 void CDemoRecord::ShowInfo()
 {
-	pApp->pFontSystem->SetColor(color_rgba(215, 195, 170, 255));
-	pApp->pFontSystem->SetAligment(CGameFont::alLeft);
-	pApp->pFontSystem->OutSetI(-1.0, -1.0f);
+	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(215, 195, 170, 255));
+	Engine.FontManager.GetSystemFont()->SetAligment(CGameFont::alLeft);
+	Engine.FontManager.GetSystemFont()->OutSetI(-1.0, -1.0f);
 
-	pApp->pFontSystem->OutNext("Key frames count: %d", iCount);
-	pApp->pFontSystem->OutNext("DOF fStop: %f", g_fDOF.z);
-	pApp->pFontSystem->OutNext("DOF Focal depth: %f", g_fDOF.x);
-	pApp->pFontSystem->OutNext("DOF Focal length: %f", g_fDOF.y);
-	pApp->pFontSystem->OutNext("FOV: %f", g_fFov);
+	Engine.FontManager.GetSystemFont()->OutNext("Key frames count: %d", iCount);
+	Engine.FontManager.GetSystemFont()->OutNext("DOF fStop: %f", g_fDOF.z);
+	Engine.FontManager.GetSystemFont()->OutNext("DOF Focal depth: %f", g_fDOF.x);
+	Engine.FontManager.GetSystemFont()->OutNext("DOF Focal length: %f", g_fDOF.y);
+	Engine.FontManager.GetSystemFont()->OutNext("FOV: %f", g_fFov);
 }
 
 void CDemoRecord::ShowInputInfo()
 {
-	pApp->pFontSystem->SetColor(color_rgba(215, 195, 170, 255));
+	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(215, 195, 170, 255));
 
-	pApp->pFontSystem->SetAligment(CGameFont::alLeft);
-	pApp->pFontSystem->OutSetI(-0.2f, -.25f);
-	pApp->pFontSystem->OutNext("TAB");
-	pApp->pFontSystem->OutNext("SPACE");
-	pApp->pFontSystem->OutNext("LEFT ALT");
-	pApp->pFontSystem->OutNext("BACKSPACE");
-	pApp->pFontSystem->OutNext("NUMPAD MINUS");
-	pApp->pFontSystem->OutNext("ESC");
-	pApp->pFontSystem->OutNext("F11");
-	pApp->pFontSystem->OutNext("F12");
-	pApp->pFontSystem->OutNext("G + Mouse Wheel");
-	pApp->pFontSystem->OutNext("T + Mouse Wheel");
-	pApp->pFontSystem->OutNext("R + Mouse Wheel");
-	pApp->pFontSystem->OutNext("F + Mouse Wheel");
-	pApp->pFontSystem->OutNext("H");
-	pApp->pFontSystem->OutNext("V");
-	pApp->pFontSystem->OutNext("B");
+	Engine.FontManager.GetSystemFont()->SetAligment(CGameFont::alLeft);
+	Engine.FontManager.GetSystemFont()->OutSetI(-0.2f, -.25f);
+	Engine.FontManager.GetSystemFont()->OutNext("TAB");
+	Engine.FontManager.GetSystemFont()->OutNext("SPACE");
+	Engine.FontManager.GetSystemFont()->OutNext("LEFT ALT");
+	Engine.FontManager.GetSystemFont()->OutNext("BACKSPACE");
+	Engine.FontManager.GetSystemFont()->OutNext("NUMPAD MINUS");
+	Engine.FontManager.GetSystemFont()->OutNext("ESC");
+	Engine.FontManager.GetSystemFont()->OutNext("F11");
+	Engine.FontManager.GetSystemFont()->OutNext("F12");
+	Engine.FontManager.GetSystemFont()->OutNext("G + Mouse Wheel");
+	Engine.FontManager.GetSystemFont()->OutNext("T + Mouse Wheel");
+	Engine.FontManager.GetSystemFont()->OutNext("R + Mouse Wheel");
+	Engine.FontManager.GetSystemFont()->OutNext("F + Mouse Wheel");
+	Engine.FontManager.GetSystemFont()->OutNext("H");
+	Engine.FontManager.GetSystemFont()->OutNext("V");
+	Engine.FontManager.GetSystemFont()->OutNext("B");
 
 #ifndef MASTER_GOLD
-	pApp->pFontSystem->OutNext("1, 2, ..., 0");
-	pApp->pFontSystem->OutNext("ENTER");
+	Engine.FontManager.GetSystemFont()->OutNext("1, 2, ..., 0");
+	Engine.FontManager.GetSystemFont()->OutNext("ENTER");
 #endif
 
-	pApp->pFontSystem->SetAligment(CGameFont::alLeft);
-	pApp->pFontSystem->OutSetI(0, -.25f);
-	pApp->pFontSystem->OutNext("= Draw this help");
-	pApp->pFontSystem->OutNext("= Append Key With Interpolation");
-	pApp->pFontSystem->OutNext("= Append Key Without Interpolation");
-	pApp->pFontSystem->OutNext("= Delete key");
-	pApp->pFontSystem->OutNext("= Cube Map");
-	pApp->pFontSystem->OutNext("= Quit");
-	pApp->pFontSystem->OutNext("= Level Map ScreenShot");
-	pApp->pFontSystem->OutNext("= ScreenShot");
-	pApp->pFontSystem->OutNext("= Depth of field Focal length");
-	pApp->pFontSystem->OutNext("= Depth of field Focal depth");
-	pApp->pFontSystem->OutNext("= Depth of field FStop");
-	pApp->pFontSystem->OutNext("= Field of view");
-	pApp->pFontSystem->OutNext("= Autofocus");
-	pApp->pFontSystem->OutNext("= Grid");
-	pApp->pFontSystem->OutNext("= Cinema borders");
+	Engine.FontManager.GetSystemFont()->SetAligment(CGameFont::alLeft);
+	Engine.FontManager.GetSystemFont()->OutSetI(0, -.25f);
+	Engine.FontManager.GetSystemFont()->OutNext("= Draw this help");
+	Engine.FontManager.GetSystemFont()->OutNext("= Append Key With Interpolation");
+	Engine.FontManager.GetSystemFont()->OutNext("= Append Key Without Interpolation");
+	Engine.FontManager.GetSystemFont()->OutNext("= Delete key");
+	Engine.FontManager.GetSystemFont()->OutNext("= Cube Map");
+	Engine.FontManager.GetSystemFont()->OutNext("= Quit");
+	Engine.FontManager.GetSystemFont()->OutNext("= Level Map ScreenShot");
+	Engine.FontManager.GetSystemFont()->OutNext("= ScreenShot");
+	Engine.FontManager.GetSystemFont()->OutNext("= Depth of field Focal length");
+	Engine.FontManager.GetSystemFont()->OutNext("= Depth of field Focal depth");
+	Engine.FontManager.GetSystemFont()->OutNext("= Depth of field FStop");
+	Engine.FontManager.GetSystemFont()->OutNext("= Field of view");
+	Engine.FontManager.GetSystemFont()->OutNext("= Autofocus");
+	Engine.FontManager.GetSystemFont()->OutNext("= Grid");
+	Engine.FontManager.GetSystemFont()->OutNext("= Cinema borders");
 
 #ifndef MASTER_GOLD
-	pApp->pFontSystem->OutNext("= Render debugging");
-	pApp->pFontSystem->OutNext("= Actor teleportation");
+	Engine.FontManager.GetSystemFont()->OutNext("= Render debugging");
+	Engine.FontManager.GetSystemFont()->OutNext("= Actor teleportation");
 #endif
 }
 

@@ -15,7 +15,7 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 {
 	net_start_result_total = TRUE;
 
-	pApp->LoadBegin();
+	Engine.LoadingScreen.Show();
 
 	// make Client Name if options doesn't have it
 	LPCSTR NameStart = strstr(op_client, "/name=");
@@ -123,16 +123,16 @@ bool CLevel::net_start1()
 
 			m_name = l_name;
 
-			int id = pApp->Level_ID(l_name);
+			int id = Engine.LevelManager.GetLevelID(l_name);
 
 			if (id < 0)
 			{
-				pApp->LoadEnd();
+				Engine.LoadingScreen.Hide();
 				Log("Can't find level: ", l_name);
 				net_start_result_total = FALSE;
 				return true;
 			}
-			pApp->Level_Set(id);
+			Engine.LevelManager.SetLevel(id);
 		}
 	}
 	return true;
@@ -278,7 +278,7 @@ bool CLevel::net_start6()
 	BulletManager().Clear();
 	BulletManager().Load();
 
-	pApp->LoadEnd();
+	Engine.LoadingScreen.Hide();
 
 	if (net_start_result_total)
 	{

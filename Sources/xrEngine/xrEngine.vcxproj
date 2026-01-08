@@ -1742,6 +1742,7 @@
     <ClInclude Include="Feel_Vision.h" />
     <ClInclude Include="FHierrarhyVisual.h" />
     <ClInclude Include="Fmesh.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FVF.h" />
     <ClInclude Include="GameFont.h" />
@@ -1757,6 +1758,8 @@
     <ClInclude Include="IRenderDetailModel.h" />
     <ClInclude Include="ISheduled.h" />
     <ClInclude Include="ISpatial.h" />
+    <ClInclude Include="LevelLoadingScreen.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="LightAnimLibrary.h" />
     <ClInclude Include="line_editor.h" />
     <ClInclude Include="line_edit_control.h" />
@@ -1966,6 +1969,7 @@
     <ClCompile Include="Feel_Vision.cpp" />
     <ClCompile Include="FHierrarhyVisual.cpp" />
     <ClCompile Include="fmesh.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="Frustum.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
@@ -2000,6 +2004,8 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="ISpatial_verify.cpp" />
+    <ClCompile Include="LevelLoadingScreen.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
     <ClCompile Include="line_editor.cpp" />
     <ClCompile Include="line_edit_control.cpp" />

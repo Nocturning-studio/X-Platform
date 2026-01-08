@@ -157,61 +157,8 @@ void CXRay::UnloadLibraries()
 	XRC.r_clear_compact();
 }
 
-bool CXRay::Initialize()
+void HandleComandLine()
 {
-	auto Logo = xr_make_unique<LogoWindow>();
-	Logo->Show();
-
-#ifndef DEDICATED_SERVER
-	Debug._initialize(false);
-#else  // DEDICATED_SERVER
-	Debug._initialize(true);
-	g_dedicated_server = true;
-#endif // DEDICATED_SERVER
-
-	DecodeResources();
-
-	LPCSTR fsgame_ltx_name = "-fsltx ";
-	string_path fsgame = "";
-	if (strstr(GetCommandLine(), fsgame_ltx_name))
-	{
-		int sz = xr_strlen(fsgame_ltx_name);
-		sscanf(strstr(GetCommandLine(), fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
-	}
-
-	Core._initialize("X-Ray Engine", "xray_engine", NULL, TRUE, fsgame[0] ? fsgame : NULL);
-
-	ComputeBuildIdentificator();
-	PrintBuildIdentificator();
-
-	FPU::m24r();
-
-	InitSettings();
-
-	Msg("Initializing Engine...");
-
-	// Bind PSGP
-	xrBind_PSGP(&PSGP, true);
-
-	// Other stuff
-	Msg("Initializing Engine Sheduler...");
-	Sheduler.Initialize();
-
-#ifdef DEBUG
-	msCreate("game");
-#endif
-
-	Device.Initialize();
-
-	InitInput();
-
-	InitConsole();
-
-	LoadLibraries();
-
-	execUserScript();
-	InitSound();
-
 	// ...command line for auto start
 	{
 		LPCSTR pStartup = strstr(Core.Params, "-start ");
@@ -235,20 +182,69 @@ bool CXRay::Initialize()
 #ifdef BENCHMARK_BUILD
 	R_ASSERT2(strstr(Core.Params, "-demo_play "), "For benchmark build demo file required");
 #endif
+}
 
-	Logo->Hide();
+bool CXRay::Initialize()
+{
+	auto Logo = xr_make_unique<LogoWindow>();
+	Logo->Show();
 
-	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+#ifndef DEDICATED_SERVER
+	Debug._initialize(false);
+#else  // DEDICATED_SERVER
+	Debug._initialize(true);
+	g_dedicated_server = true;
+#endif // DEDICATED_SERVER
+
+	DecodeResources();
+
+	ComputeBuildIdentificator();
+	PrintBuildIdentificator();
+
+	Core.Initialize("X-Ray Engine", "xray_engine");
+
+	FPU::m24r();
+
+	InitSettings();
+
+	Msg("Initializing Engine...");
+
+	xrBind_PSGP(&PSGP, true);
+
+	Msg("Initializing Engine Sheduler...");
+	Sheduler.Initialize();
+
+#ifdef DEBUG
+	msCreate("game");
+#endif
+
+	Device.Initialize();
+
+	InitInput();
+
+	InitConsole();
+
+	LoadLibraries();
+
+	execUserScript();
+	InitSound();
 
 	DebugUI = new CDebugUI();
+	DebugUI->Initialize();
+
+	HandleComandLine();
 
 	Device.Create();
-
-	DebugUI->Initialize();
 
 	LALib.OnCreate();
 
 	pApp = xr_new<CApplication>();
+
+	Msg("Initializing Font Manager...");
+	FontManager.Initialize();
+
+	Msg("Scanning levels...");
+	LevelManager.Scan();
 
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 
@@ -256,6 +252,10 @@ bool CXRay::Initialize()
 	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
 
 	Memory.mem_usage();
+
+	Logo->Hide();
+
+	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
 
 	return true;
 }
@@ -267,8 +267,6 @@ void CXRay::Run()
 	ProcessEventLoop();
 
 	Destroy();
-
-	Core._destroy();
 }
 
 void CXRay::InitSettings()
@@ -391,6 +389,10 @@ void CXRay::Destroy()
 
 	DebugUI->Destroy();
 	delete DebugUI;
+
+	FontManager.Destroy();
+
+	Core.Destroy();
 }
 
 typedef void DUMMY_STUFF(const void*, const u32&, void*);

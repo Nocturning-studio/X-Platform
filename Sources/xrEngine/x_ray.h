@@ -13,6 +13,9 @@ struct xrDispatchTable;
 #include "EventAPI.h"
 #include "xrSheduler.h"
 #include "xrCPU_Pipe.h"
+#include "LevelManager.h"
+#include "LevelLoadingScreen.h"
+#include "FontManager.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure
@@ -59,13 +62,18 @@ private:
 	HMODULE hOptick;
 
 public:
-	CEventAPI Event;
-	CSheduler Sheduler;
 	Factory_Create* pCreate;
 	Factory_Destroy* pDestroy;
+
 	BOOL tune_enabled;
 	VTPause* tune_pause;
 	VTResume* tune_resume;
+
+	CEventAPI Event;
+	CSheduler Sheduler;
+	CLevelManager LevelManager;
+	CLevelLoadingScreen LoadingScreen;
+	CFontManager FontManager;
 
 public:
 	void InitSettings();

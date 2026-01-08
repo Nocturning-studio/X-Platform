@@ -92,7 +92,7 @@ void CRenderDevice::End(void)
 	{
 		::Sound->set_master_volume(psSoundVFactor);
 		dwPrecacheFrame--;
-		pApp->load_draw_internal();
+		Engine.LoadingScreen.ForceRender();
 		if (0 == dwPrecacheFrame)
 		{
 			Gamma.Update();
@@ -102,7 +102,6 @@ void CRenderDevice::End(void)
 			if (precache_light)
 				precache_light.destroy();
 			::Sound->set_master_volume(psSoundVFactor);
-			pApp->destroy_loading_shaders();
 			Resources->DestroyNecessaryTextures();
 			Memory.mem_compact();
 			Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
@@ -278,7 +277,7 @@ void CRenderDevice::StartEventLoop()
 					if (g_loading_events.front()())
 						g_loading_events.pop_front();
 
-					pApp->LoadDraw();
+					Engine.LoadingScreen.ForceRender();
 					continue;
 				}
 				else

@@ -722,7 +722,7 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512 buff;
 	sprintf_s(buff, "%s", CStringTable().translate(str).c_str());
-	pApp->LoadTitleInt(buff);
+	Engine.LoadingScreen.SetTitle(buff);
 }
 
 bool CGamePersistent::CanBePaused()

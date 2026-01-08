@@ -24,7 +24,7 @@ static u32 init_counter = 0;
 
 extern char g_application_path[256];
 
-void xrCore::_initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
+void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
 	strcpy_s(ApplicationName, _ApplicationName);
 	strcpy_s(ApplicationNameLog, _ApplicationNameLog);
@@ -131,7 +131,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Lo
 #include "compression_ppmd_stream.h"
 extern compression::ppmd::stream* trained_model;
 #endif
-void xrCore::_destroy()
+void xrCore::Destroy()
 {
 	--init_counter;
 	if (0 == init_counter)

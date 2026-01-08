@@ -523,25 +523,25 @@ void CDemoPlay::IR_OnKeyboardPress(int dik)
 void CDemoPlay::PrintSummaryBenchmarkStatistic()
 {
 	// Выравниваем надпись по центру
-	pApp->pFontSystem->SetAligment(CGameFont::alCenter);
-	pApp->pFontSystem->OutSetI(0.0, -0.2f);
+	Engine.FontManager.GetSystemFont()->SetAligment(CGameFont::alCenter);
+	Engine.FontManager.GetSystemFont()->OutSetI(0.0, -0.2f);
 
-	pApp->pFontSystem->OutNext("Benchmark results");
+	Engine.FontManager.GetSystemFont()->OutNext("Benchmark results");
 
 	ChooseTextColor(fFPS_max);
-	pApp->pFontSystem->OutNext("FPS Maximal: %f", fFPS_max);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS Maximal: %f", fFPS_max);
 
 	ChooseTextColor(fFPS_avg);
-	pApp->pFontSystem->OutNext("FPS Average: %f", fFPS_avg);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS Average: %f", fFPS_avg);
 
 	ChooseTextColor(fFPS_min);
-	pApp->pFontSystem->OutNext("FPS Minimal: %f", fFPS_min);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS Minimal: %f", fFPS_min);
 
-	pApp->pFontSystem->SetColor(color_rgba(255, 255, 255, 255));
-	pApp->pFontSystem->OutNext("GPU: %s", HW.Caps.id_description);
+	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 255, 255, 255));
+	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.Caps.id_description);
 
 	if (Device.dwTimeGlobal > uTimeToScreenShot)
-		pApp->pFontSystem->OutNext("Results saved to screenshots and log folder");
+		Engine.FontManager.GetSystemFont()->OutNext("Results saved to screenshots and log folder");
 }
 
 void CDemoPlay::ResetPerFrameStatistic()
@@ -560,11 +560,11 @@ void CDemoPlay::ResetPerFrameStatistic()
 void CDemoPlay::ChooseTextColor(float FPSValue)
 {
 	if (FPSValue > 50.0f)
-		pApp->pFontSystem->SetColor(color_rgba(101, 255, 0, 200));
+		Engine.FontManager.GetSystemFont()->SetColor(color_rgba(101, 255, 0, 200));
 	else if (FPSValue < 50.0f && FPSValue > 24.0f)
-		pApp->pFontSystem->SetColor(color_rgba(230, 255, 130, 200));
+		Engine.FontManager.GetSystemFont()->SetColor(color_rgba(230, 255, 130, 200));
 	else
-		pApp->pFontSystem->SetColor(color_rgba(255, 59, 0, 200));
+		Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 59, 0, 200));
 }
 
 // Статистика в левом верхнем углу экрана
@@ -610,26 +610,26 @@ void CDemoPlay::ShowPerFrameStatistic()
 	}
 
 	// Выравниваем надпись по левому краю строки
-	pApp->pFontSystem->SetAligment(CGameFont::alLeft);
+	Engine.FontManager.GetSystemFont()->SetAligment(CGameFont::alLeft);
 
 	if (g_bBordersEnabled)
-		pApp->pFontSystem->OutSetI(-1.0, -0.8f);
+		Engine.FontManager.GetSystemFont()->OutSetI(-1.0, -0.8f);
 	else
-		pApp->pFontSystem->OutSetI(-1.0, -1.0f);
+		Engine.FontManager.GetSystemFont()->OutSetI(-1.0, -1.0f);
 
 	ChooseTextColor(fFPS);
-	pApp->pFontSystem->OutNext("FPS: %.2f", fFPS);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS: %.2f", fFPS);
 
 	ChooseTextColor(fFPS_max);
-	pApp->pFontSystem->OutNext("FPS Maximal: %.2f", fFPS_max);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS Maximal: %.2f", fFPS_max);
 
 	ChooseTextColor(fFPS_avg);
-	pApp->pFontSystem->OutNext("FPS Average: %.2f", fFPS_avg);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS Average: %.2f", fFPS_avg);
 
 	ChooseTextColor(fFPS_min);
-	pApp->pFontSystem->OutNext("FPS Minimal: %.2f", fFPS_min);
+	Engine.FontManager.GetSystemFont()->OutNext("FPS Minimal: %.2f", fFPS_min);
 
-	pApp->pFontSystem->SetColor(color_rgba(200, 200, 200, 255));
-	pApp->pFontSystem->OutNext("GPU: %s", HW.Caps.id_description);
+	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(200, 200, 200, 255));
+	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.Caps.id_description);
 }
 //////////////////////////////////////////////////////////////////////

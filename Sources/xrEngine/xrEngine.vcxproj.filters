@@ -49,9 +49,6 @@
     <Filter Include="Game API\Feelers">
       <UniqueIdentifier>{ce753112-d3ff-4f61-a81b-c7ce8082f265}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game API\Demo">
-      <UniqueIdentifier>{60034e8b-b523-4455-9796-c5ce14356810}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render">
       <UniqueIdentifier>{bd90e4e4-3163-4f14-8ba3-ca5d03dba70f}</UniqueIdentifier>
     </Filter>
@@ -151,9 +148,6 @@
     <Filter Include="Engine\Profiling">
       <UniqueIdentifier>{8dc6eb7a-079c-47df-bbfa-b9bf38756dc6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game API\Photo mode">
-      <UniqueIdentifier>{227abcdc-449a-4663-a476-96aca17ddd7d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="General\Kernel">
       <UniqueIdentifier>{109dc807-b1be-46d5-b006-c2b448dd9175}</UniqueIdentifier>
     </Filter>
@@ -183,6 +177,27 @@
     </Filter>
     <Filter Include="Engine\LogoWindow">
       <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Game Level %28Maps/Scenes%29">
+      <UniqueIdentifier>{9698ab8f-4772-4318-9d5f-e35b907be079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Game persistance">
+      <UniqueIdentifier>{3ec0edfc-9114-46c1-978b-8979cfef639e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Demo tools %28Demo/Photo modes%29">
+      <UniqueIdentifier>{8fb90e1d-39ce-40a0-abd4-25572962a6be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Demo tools %28Demo/Photo modes%29\Photo mode">
+      <UniqueIdentifier>{227abcdc-449a-4663-a476-96aca17ddd7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Demo tools %28Demo/Photo modes%29\Demo">
+      <UniqueIdentifier>{60034e8b-b523-4455-9796-c5ce14356810}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Level loading screen %28Need be refactored%29">
+      <UniqueIdentifier>{0b973863-6ec7-42ac-a3b0-8551b2498ada}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Font manager">
+      <UniqueIdentifier>{a89d42b6-914f-4801-b7a5-0c5e5649e654}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -218,15 +233,6 @@
     </ClInclude>
     <ClInclude Include="ICollidable.h">
       <Filter>Interfaces\Collidable</Filter>
-    </ClInclude>
-    <ClInclude Include="IGame_Level.h">
-      <Filter>Game API</Filter>
-    </ClInclude>
-    <ClInclude Include="IGame_Persistent.h">
-      <Filter>Game API</Filter>
-    </ClInclude>
-    <ClInclude Include="xrLevel.h">
-      <Filter>Game API</Filter>
     </ClInclude>
     <ClInclude Include="IGame_ObjectPool.h">
       <Filter>Game API\Objects</Filter>
@@ -304,10 +310,10 @@
       <Filter>Game API\Feelers</Filter>
     </ClInclude>
     <ClInclude Include="FDemoPlay.h">
-      <Filter>Game API\Demo</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FDemoRecord.h">
-      <Filter>Game API\Demo</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FBasicVisual.h">
       <Filter>Render\Visuals</Filter>
@@ -544,7 +550,7 @@
       <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
     <ClInclude Include="CPhotoMode.h">
-      <Filter>Game API\Photo mode</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
     </ClInclude>
     <ClInclude Include="Optick_Capture.h">
       <Filter>Engine\Profiling</Filter>
@@ -571,7 +577,7 @@
       <Filter>Engine\Profiling</Filter>
     </ClInclude>
     <ClInclude Include="demo_common.h">
-      <Filter>Game API\Demo</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FVF.h">
       <Filter>Render\Backend</Filter>
@@ -599,6 +605,24 @@
     </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>General\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IGame_Level.h">
+      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+    </ClInclude>
+    <ClInclude Include="xrLevel.h">
+      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.h">
+      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+    </ClInclude>
+    <ClInclude Include="IGame_Persistent.h">
+      <Filter>Game API\Game persistance</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoadingScreen.h">
+      <Filter>Engine\Level loading screen %28Need be refactored%29</Filter>
+    </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Engine\Font manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -637,15 +661,6 @@
     </ClCompile>
     <ClCompile Include="ICollidable.cpp">
       <Filter>Interfaces\Collidable</Filter>
-    </ClCompile>
-    <ClCompile Include="IGame_Level.cpp">
-      <Filter>Game API</Filter>
-    </ClCompile>
-    <ClCompile Include="IGame_Level_check_textures.cpp">
-      <Filter>Game API</Filter>
-    </ClCompile>
-    <ClCompile Include="IGame_Persistent.cpp">
-      <Filter>Game API</Filter>
     </ClCompile>
     <ClCompile Include="IGame_ObjectPool.cpp">
       <Filter>Game API\Objects</Filter>
@@ -720,10 +735,10 @@
       <Filter>Game API\Feelers</Filter>
     </ClCompile>
     <ClCompile Include="FDemoPlay.cpp">
-      <Filter>Game API\Demo</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="FDemoRecord.cpp">
-      <Filter>Game API\Demo</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="FBasicVisual.cpp">
       <Filter>Render\Visuals</Filter>
@@ -972,7 +987,7 @@
       <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="CPhotoMode.cpp">
-      <Filter>Game API\Photo mode</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
     </ClCompile>
     <ClCompile Include="Optick_Capture.cpp">
       <Filter>Engine\Profiling</Filter>
@@ -1026,7 +1041,7 @@
       <Filter>CPU Pipe\Kernel</Filter>
     </ClCompile>
     <ClCompile Include="demo_common.cpp">
-      <Filter>Game API\Demo</Filter>
+      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend.cpp">
       <Filter>Render\Backend</Filter>
@@ -1054,6 +1069,24 @@
     </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>General\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="IGame_Level.cpp">
+      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+    </ClCompile>
+    <ClCompile Include="IGame_Level_check_textures.cpp">
+      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
+      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+    </ClCompile>
+    <ClCompile Include="IGame_Persistent.cpp">
+      <Filter>Game API\Game persistance</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelLoadingScreen.cpp">
+      <Filter>Engine\Level loading screen %28Need be refactored%29</Filter>
+    </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Engine\Font manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
