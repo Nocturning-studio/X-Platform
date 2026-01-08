@@ -9,13 +9,13 @@ class ENGINE_API CGameFont;
 struct xrDispatchTable;
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "Application.h"
 #include "EventAPI.h"
 #include "xrSheduler.h"
 #include "xrCPU_Pipe.h"
 #include "LevelManager.h"
 #include "LevelLoadingScreen.h"
 #include "FontManager.h"
+#include "GameStateManager.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure
@@ -74,6 +74,7 @@ public:
 	CLevelManager LevelManager;
 	CLevelLoadingScreen LoadingScreen;
 	CFontManager FontManager;
+	CGameStateManager GameStateManager;
 
 public:
 	void InitSettings();

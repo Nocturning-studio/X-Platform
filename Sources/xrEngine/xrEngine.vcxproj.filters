@@ -199,6 +199,9 @@
     <Filter Include="Engine\Font manager">
       <UniqueIdentifier>{a89d42b6-914f-4801-b7a5-0c5e5649e654}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game API\Game state manager">
+      <UniqueIdentifier>{032921f8-97cd-4088-b823-1238a5ff6214}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -603,9 +606,6 @@
     <ClInclude Include="LogoWindow.h">
       <Filter>Engine\LogoWindow</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>General\Core</Filter>
-    </ClInclude>
     <ClInclude Include="IGame_Level.h">
       <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
@@ -623,6 +623,9 @@
     </ClInclude>
     <ClInclude Include="FontManager.h">
       <Filter>Engine\Font manager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h">
+      <Filter>Game API\Game state manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1067,9 +1070,6 @@
     <ClCompile Include="LogoWindow.cpp">
       <Filter>Engine\LogoWindow</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>General\Core</Filter>
-    </ClCompile>
     <ClCompile Include="IGame_Level.cpp">
       <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
@@ -1087,6 +1087,9 @@
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>Engine\Font manager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp">
+      <Filter>Game API\Game state manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

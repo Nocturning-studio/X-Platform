@@ -43,17 +43,6 @@ CLevelLoadingScreen::CLevelLoadingScreen()
 	app_title[0] = 0;
 }
 
-CLevelLoadingScreen::~CLevelLoadingScreen()
-{
-	if (pFontSystem)
-	{
-		Device.seqRender.Remove(pFontSystem);
-		xr_delete(pFontSystem);
-	}
-	hLevelLogo.destroy();
-	sh_progress.destroy();
-}
-
 void CLevelLoadingScreen::InitializeFont()
 {
 	LPCSTR section = "ui_font_graffiti19_russian";
@@ -327,4 +316,26 @@ void CLevelLoadingScreen::DrawInternal()
 		RenderBackend.set_Geometry(ll_hGeom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
+}
+
+void CLevelLoadingScreen::Destroy()
+{
+	// Удаляем фонт пока Device еще жив
+	if (pFontSystem)
+	{
+		Device.seqRender.Remove(pFontSystem);
+		xr_delete(pFontSystem);
+	}
+
+	// Удаляем шейдеры
+	hLevelLogo.destroy();
+	sh_progress.destroy();
+	ll_hGeom.destroy();
+	ll_hGeom2.destroy();
+}
+
+// В деструкторе проверяем, если еще не удалили (на всякий случай)
+CLevelLoadingScreen::~CLevelLoadingScreen()
+{
+	Destroy();
 }

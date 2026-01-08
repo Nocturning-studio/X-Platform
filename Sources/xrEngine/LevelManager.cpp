@@ -1,5 +1,10 @@
 #include "stdafx.h"
 #include "LevelManager.h"
+#include "x_ray.h"
+#include "igame_level.h"
+#include "igame_persistent.h"
+#include "xr_ioconsole.h"
+#include "std_classes.h"
 
 CLevelManager::CLevelManager()
 {
@@ -66,6 +71,57 @@ void CLevelManager::Scan()
 	}
 #endif
 }
+
+void CLevelManager::StartGame(LPCSTR op_server, LPCSTR op_client)
+{
+	// 0. Валидация
+	R_ASSERT(g_pGamePersistent);
+	// Нельзя стартовать, если уровень уже есть (нужно сначала стопнуть)
+	R_ASSERT2(0 == g_pGameLevel, "Level already exists! Call StopGame() first.");
+
+	// 1. Подготовка UI
+	Console->Execute("main_menu off");
+	Console->Hide();
+
+	// 2. PreStart (подготовка персистента)
+	g_pGamePersistent->PreStart(op_server);
+
+	// 3. Физическое создание класса уровня (из xrGame.dll)
+	g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
+
+	// 4. Показываем загрузочный экран
+	// Теперь мы сами управляем этим процессом, а не дергаем pApp
+	Engine.LoadingScreen.Show();
+
+	Msg("\n[CLevelManager]: Start level loading...");
+
+	// 5. Запуск логики
+	g_pGamePersistent->Start(op_server);		   // Старт сервера (или сингла)
+	g_pGameLevel->net_Start(op_server, op_client); // Старт сетевой части и загрузка геометрии
+
+	// 6. Скрываем загрузочный экран
+	Engine.LoadingScreen.Hide();
+}
+
+void CLevelManager::StopGame()
+{
+	// Если уровня нет, то и останавливать нечего (кроме дисконнекта персистента)
+	if (g_pGameLevel)
+	{
+		Msg("[CLevelManager]: Stopping level...");
+
+		// Останавливаем сеть и логику уровня
+		g_pGameLevel->net_Stop();
+
+		// Уничтожаем объект уровня
+		DEL_INSTANCE(g_pGameLevel);
+	}
+
+	// Отключаем персистент (сброс соединения)
+	if (g_pGamePersistent)
+		g_pGamePersistent->Disconnect();
+}
+
 
 int CLevelManager::GetLevelID(LPCSTR name)
 {

@@ -32,4 +32,10 @@ class ENGINE_API CLevelManager
 	// ќсновна€ логика
 	int GetLevelID(LPCSTR name);
 	void SetLevel(u32 ID); // “ут будет только установка FS путей
+
+	// «апускает игровую сессию (создает уровень, запускает сервер/клиент)
+	void StartGame(LPCSTR server_options, LPCSTR client_options);
+
+	// ќстанавливает сессию и уничтожает уровень
+	void StopGame();
 };
