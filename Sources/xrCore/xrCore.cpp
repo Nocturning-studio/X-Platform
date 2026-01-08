@@ -24,8 +24,6 @@ static u32 init_counter = 0;
 
 extern char g_application_path[256];
 
-//. extern xr_vector<shared_str>*	LogFile;
-
 void xrCore::_initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
 	strcpy_s(ApplicationName, _ApplicationName);

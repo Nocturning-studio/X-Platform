@@ -268,9 +268,115 @@ void CXRay::Destroy()
 	delete DebugUI;
 }
 
+// -------------------------------------------------------------------------------------------------
+// Universal Encryption Auto-Detection
+// -------------------------------------------------------------------------------------------------
+
+// State cache: -1 = unknown, 0 = WW, 1 = RU
+static int g_last_successful_profile = -1;
+
+// Wrapper function to determine valid keys for FS archives
+static void UniversalDecodingWrapper(const void* source, const u32& size, void* destination)
+{
+	// 1. Short path: Block too small for analysis or impact.
+	if (size < 4)
+	{
+		if (g_last_successful_profile == trivial_encryptor::PROFILE_RU)
+			trivial_encryptor::decode_rus(source, size, destination);
+		else
+			trivial_encryptor::decode_ww(source, size, destination);
+		return;
+	}
+
+	u8 probe_buffer[16];
+	size_t probe_len = (size < 16) ? size : 16;
+
+	// Heuristic validator: Header usually contains file count/uncompressed size.
+	// Limits raised to ~128MB to support large mod archives while filtering garbage (>3GB).
+	auto is_valid_header = [](u32 value) -> bool { return (value > 0) && (value < 128000000); };
+
+	// 2. Sticky Logic: Try previously successful profile first to avoid fluctuation on large blocks
+	if (g_last_successful_profile != -1)
+	{
+		std::memcpy(probe_buffer, source, probe_len);
+		if (g_last_successful_profile == trivial_encryptor::PROFILE_RU)
+			trivial_encryptor::decode_rus(probe_buffer, u32(probe_len), probe_buffer);
+		else
+			trivial_encryptor::decode_ww(probe_buffer, u32(probe_len), probe_buffer);
+
+		u32 check_val = *((u32*)probe_buffer);
+
+		if (is_valid_header(check_val))
+		{
+			// Confirmed valid again - proceed
+			if (g_last_successful_profile == trivial_encryptor::PROFILE_RU)
+				trivial_encryptor::decode_rus(source, size, destination);
+			else
+				trivial_encryptor::decode_ww(source, size, destination);
+			return;
+		}
+
+		// Validation failed, reset cache
+		Msg("![AutoDecoder]: Cached profile failed (Val: %u). Resetting detection.", check_val);
+		g_last_successful_profile = -1;
+	}
+
+	// 3. Full Auto-Detection
+	Msg("[AutoDecoder]: Detecting profile for block size %u...", size);
+
+	// Test Worldwide
+	std::memcpy(probe_buffer, source, probe_len);
+	trivial_encryptor::decode_ww(probe_buffer, u32(probe_len), probe_buffer);
+	u32 val_ww = *((u32*)probe_buffer);
+	bool ww_ok = is_valid_header(val_ww);
+
+	// Test Russian
+	std::memcpy(probe_buffer, source, probe_len);
+	trivial_encryptor::decode_rus(probe_buffer, u32(probe_len), probe_buffer);
+	u32 val_ru = *((u32*)probe_buffer);
+	bool ru_ok = is_valid_header(val_ru);
+
+	// Decision Matrix
+	if (ww_ok && !ru_ok)
+	{
+		Msg("[AutoDecoder]: Detected WORLDWIDE (Val: %u).", val_ww);
+		g_last_successful_profile = trivial_encryptor::PROFILE_WW;
+		trivial_encryptor::decode_ww(source, size, destination);
+	}
+	else if (!ww_ok && ru_ok)
+	{
+		Msg("[AutoDecoder]: Detected RUSSIAN (Val: %u).", val_ru);
+		g_last_successful_profile = trivial_encryptor::PROFILE_RU;
+		trivial_encryptor::decode_rus(source, size, destination);
+	}
+	else if (ww_ok && ru_ok)
+	{
+		// Ambiguous: pick smallest reasonable number
+		if (val_ww < val_ru)
+		{
+			Msg("[AutoDecoder]: Ambiguous. Guessing WW (%u vs %u)", val_ww, val_ru);
+			g_last_successful_profile = trivial_encryptor::PROFILE_WW;
+			trivial_encryptor::decode_ww(source, size, destination);
+		}
+		else
+		{
+			Msg("[AutoDecoder]: Ambiguous. Guessing RU (%u vs %u)", val_ru, val_ww);
+			g_last_successful_profile = trivial_encryptor::PROFILE_RU;
+			trivial_encryptor::decode_rus(source, size, destination);
+		}
+	}
+	else
+	{
+		// Critical failure. Fallback to WW default.
+		Msg("![AutoDecoder]: CRITICAL WARNING! Unknown format (WW: %u, RU: %u).", val_ww, val_ru);
+		trivial_encryptor::decode_ww(source, size, destination);
+	}
+}
+
 void CXRay::DecodeResources()
 {
-	g_temporary_stuff = &trivial_encryptor::decode;
+	Msg("[CXRay]: Initializing Universal Resource Auto-Decoder...");
+	g_temporary_stuff = &UniversalDecodingWrapper;
 }
 
 //////////////////////////////////////////////////////////////////////////
