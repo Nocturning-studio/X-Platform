@@ -36,7 +36,7 @@ class optimizer
 	{
 		if (!enabled_)
 		{
-			Engine.External.tune_resume();
+			Engine.tune_resume();
 			enabled_ = TRUE;
 		}
 	}
@@ -44,7 +44,7 @@ class optimizer
 	{
 		if (enabled_)
 		{
-			Engine.External.tune_pause();
+			Engine.tune_pause();
 			enabled_ = FALSE;
 		}
 	}
@@ -164,7 +164,7 @@ void CStats::Show()
 	if (Device.fTimeDelta > EPS_S)
 	{
 		float fps = 1.f / Device.fTimeDelta;
-		// if (Engine.External.tune_enabled)	vtune.update	(fps);
+		// if (Engine.tune_enabled)	vtune.update	(fps);
 		float fOne = 0.3f;
 		float fInv = 1.f - fOne;
 		fFPS = fInv * fFPS + fOne * fps;

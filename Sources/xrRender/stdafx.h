@@ -17,7 +17,6 @@
 #include "..\xrEngine\resourcemanager.h"
 #include "..\xrEngine\vis_common.h"
 #include "..\xrEngine\render.h"
-#include "..\xrEngine\_d3d_extensions.h"
 #include "..\xrEngine\igame_level.h"
 #include "..\xrEngine\blenders\blender.h"
 #include "..\xrEngine\blenders\blender_clsid.h"

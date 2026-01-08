@@ -114,7 +114,7 @@ class vtune_
 	{
 		if (!enabled_)
 		{
-			Engine.External.tune_resume();
+			Engine.tune_resume();
 			enabled_ = TRUE;
 			Msg("vtune : enabled");
 		}
@@ -123,7 +123,7 @@ class vtune_
 	{
 		if (enabled_)
 		{
-			Engine.External.tune_pause();
+			Engine.tune_pause();
 			enabled_ = FALSE;
 			Msg("vtune : disabled");
 		}

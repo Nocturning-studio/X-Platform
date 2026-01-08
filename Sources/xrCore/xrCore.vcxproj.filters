@@ -94,6 +94,9 @@
     <Filter Include="Critical section">
       <UniqueIdentifier>{87cb3ad6-e742-46af-a03c-4344b964cb2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Build identification">
+      <UniqueIdentifier>{421f90c7-42c7-4c99-ae6d-5fe8528a3b88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -637,6 +640,12 @@
     </ClInclude>
     <ClInclude Include="xrSyncronize.h">
       <Filter>Critical section</Filter>
+    </ClInclude>
+    <ClInclude Include="trivial_encryptor.h">
+      <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="build_identificator.h">
+      <Filter>Build identification</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

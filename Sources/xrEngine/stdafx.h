@@ -38,7 +38,7 @@
 #define ECORE_API
 
 // Our headers
-#include "engine.h"
+#include "x_ray.h"
 #include "defines.h"
 #ifndef NO_XRLOG
 #include "log.h"

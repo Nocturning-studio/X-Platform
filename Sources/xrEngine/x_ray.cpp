@@ -20,41 +20,255 @@
 #include <process.h>
 #include "../xrDiscordAPI/DiscordAPI.h"
 #include "Application.h"
+#include "build_identificator.h"
 #include "debug_ui.h"
+#include "LogoWindow.h"
 //////////////////////////////////////////////////////////////////////////
 ENGINE_API CDebugUI* DebugUI = nullptr;
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
-
-typedef void DUMMY_STUFF(const void*, const u32&, void*);
-XRCORE_API DUMMY_STUFF* g_temporary_stuff;
+#include <xrCPU_Pipe.h>
 //////////////////////////////////////////////////////////////////////////
 extern CRenderDevice Device;
 //////////////////////////////////////////////////////////////////////////
+xrDispatchTable PSGP;
+//////////////////////////////////////////////////////////////////////////
 ENGINE_API CApplication* pApp = NULL;
 ENGINE_API CInifile* pGameIni = NULL;
-ENGINE_API bool g_bBenchmark = false;
+//////////////////////////////////////////////////////////////////////////
+ENGINE_API bool g_dedicated_server = false;
+//////////////////////////////////////////////////////////////////////////
+void __cdecl dummy(void){};
+//////////////////////////////////////////////////////////////////////////
+extern void msCreate(LPCSTR name);
+extern void __cdecl xrBind_PSGP(xrDispatchTable* T, DWORD dwFeatures);
 //////////////////////////////////////////////////////////////////////////
 CXRay::CXRay()
 {
-	m_bIntroState = TRUE;
+	hGame = 0;
+	hRender = 0;
+	hTuner = 0;
+	hOptick = 0;
+	pCreate = 0;
+	pDestroy = 0;
+	tune_pause = dummy;
+	tune_resume = dummy;
 }
 
-void CXRay::InitEngine()
+CXRay::~CXRay()
 {
+}
+
+void CXRay::LoadLibraries()
+{
+	Msg("Initializing Engine API...");
+
+	// render
+	Msg("Initializing Renderer...");
+	LPCSTR render_name = "xrRender.dll";
+	Log("Loading DLL:", render_name);
+	hRender = LoadLibrary(render_name);
+	R_ASSERT2(hRender, "! Can't load renderer");
+
+	// game
+	{
+		Msg("Initializing Game API...");
+
+		LPCSTR g_name = "xrGame.dll";
+		Msg("Loading DLL: %s", g_name);
+		hGame = LoadLibrary(g_name);
+
+		if (0 == hGame)
+			R_CHK(GetLastError());
+
+		R_ASSERT2(hGame, "Game DLL raised exception during loading or there is no game DLL at all");
+
+		Msg("Initializing xrFactory...");
+		pCreate = (Factory_Create*)GetProcAddress(hGame, "xrFactory_Create");
+		R_ASSERT2(pCreate, "Error in xrFactory_Create");
+
+		pDestroy = (Factory_Destroy*)GetProcAddress(hGame, "xrFactory_Destroy");
+		R_ASSERT2(pDestroy, "Error in xrFactory_Destroy");
+	}
+
+	// vTune
+	tune_enabled = FALSE;
+	if (strstr(Core.Params, "-tune"))
+	{
+		LPCSTR g_name = "vTuneAPI.dll";
+		Log("Loading DLL:", g_name);
+		hTuner = LoadLibrary(g_name);
+		if (0 == hTuner)
+		{
+			R_CHK(GetLastError());
+			Msg("Intel vTune is not installed");
+		}
+		else
+		{
+			tune_enabled = TRUE;
+			tune_pause = (VTPause*)GetProcAddress(hTuner, "VTPause");
+			tune_resume = (VTResume*)GetProcAddress(hTuner, "VTResume");
+		}
+	}
+
+#ifdef ENABLE_PROFILING
+	LPCSTR g_name = "OptickCore.dll";
+	Log("Loading DLL:", g_name);
+	hOptick = LoadLibrary(g_name);
+	if (0 == hOptick)
+	{
+		R_CHK(GetLastError());
+		Msg("Optick is not installed");
+	}
+#endif
+
+	LPCSTR DiscordAPI_name = "xrDiscordAPI.dll";
+	Log("Loading DLL:", DiscordAPI_name);
+	hDiscordAPI = LoadLibrary(DiscordAPI_name);
+	R_ASSERT2(DiscordAPI_name, "! Can't load discord api");
+}
+
+void CXRay::UnloadLibraries()
+{
+	if (hGame)
+	{
+		FreeLibrary(hGame);
+		hGame = 0;
+	}
+	if (hRender)
+	{
+		FreeLibrary(hRender);
+		hRender = 0;
+	}
+	if (hOptick)
+	{
+		FreeLibrary(hOptick);
+		hOptick = 0;
+	}
+	if (hDiscordAPI)
+	{
+		FreeLibrary(hDiscordAPI);
+		hDiscordAPI = 0;
+	}
+	pCreate = 0;
+	pDestroy = 0;
+	Event._destroy();
+	XRC.r_clear_compact();
+}
+
+bool CXRay::Initialize()
+{
+	auto Logo = xr_make_unique<LogoWindow>();
+	Logo->Show();
+
+#ifndef DEDICATED_SERVER
+	Debug._initialize(false);
+#else  // DEDICATED_SERVER
+	Debug._initialize(true);
+	g_dedicated_server = true;
+#endif // DEDICATED_SERVER
+
+	DecodeResources();
+
+	LPCSTR fsgame_ltx_name = "-fsltx ";
+	string_path fsgame = "";
+	if (strstr(GetCommandLine(), fsgame_ltx_name))
+	{
+		int sz = xr_strlen(fsgame_ltx_name);
+		sscanf(strstr(GetCommandLine(), fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+	}
+
+	Core._initialize("X-Ray Engine", "xray_engine", NULL, TRUE, fsgame[0] ? fsgame : NULL);
+
+	ComputeBuildIdentificator();
+	PrintBuildIdentificator();
+
+	FPU::m24r();
+
 	InitSettings();
 
-	Engine.Initialize();
+	Msg("Initializing Engine...");
 
-	while (GetIntroState())
-		Sleep(100);
+	// Bind PSGP
+	xrBind_PSGP(&PSGP, true);
+
+	// Other stuff
+	Msg("Initializing Engine Sheduler...");
+	Sheduler.Initialize();
+
+#ifdef DEBUG
+	msCreate("game");
+#endif
 
 	Device.Initialize();
 
 	InitInput();
 
 	InitConsole();
+
+	LoadLibraries();
+
+	execUserScript();
+	InitSound();
+
+	// ...command line for auto start
+	{
+		LPCSTR pStartup = strstr(Core.Params, "-start ");
+		if (pStartup)
+			Console->Execute(pStartup + 1);
+	}
+	{
+		LPCSTR pStartup = strstr(Core.Params, "-load ");
+		if (pStartup)
+			Console->Execute(pStartup + 1);
+	}
+	if (strstr(Core.Params, "-load_last_save"))
+	{
+		Console->Execute("load_last_save");
+	}
+	if (strstr(Core.Params, "-load_last_quick_save"))
+	{
+		Console->Execute("load_last_quick_save");
+	}
+
+#ifdef BENCHMARK_BUILD
+	R_ASSERT2(strstr(Core.Params, "-demo_play "), "For benchmark build demo file required");
+#endif
+
+	Logo->Hide();
+
+	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+
+	DebugUI = new CDebugUI();
+
+	Device.Create();
+
+	DebugUI->Initialize();
+
+	LALib.OnCreate();
+
+	pApp = xr_new<CApplication>();
+
+	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+
+	g_SpatialSpace = xr_new<ISpatial_DB>();
+	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+
+	Memory.mem_usage();
+
+	return true;
+}
+
+void CXRay::Run()
+{
+	Initialize();
+
+	ProcessEventLoop();
+
+	Destroy();
+
+	Core._destroy();
 }
 
 void CXRay::InitSettings()
@@ -136,101 +350,10 @@ void CXRay::destroyConsole()
 	xr_delete(Console);
 }
 
-void CXRay::destroyEngine()
-{
-	Device.Destroy();
-	Engine.Destroy();
-}
-
 void CXRay::execUserScript()
 {
 	Console->Execute("unbindall");
 	Console->ExecuteScript(Console->ConfigFile);
-}
-
-void slowdownthread(void*)
-{
-	OPTICK_EVENT("X-Ray Slowdown thread");
-	OPTICK_FRAME("X-Ray Slowdown thread");
-	for (;;)
-	{
-		if (Device.Statistic->fFPS < 30)
-			Sleep(1);
-		if (Device.mt_bMustExit)
-			return;
-		if (0 == pSettings)
-			return;
-		if (0 == Console)
-			return;
-		if (0 == pInput)
-			return;
-		if (0 == pApp)
-			return;
-	}
-}
-
-void CheckPrivilegySlowdown()
-{
-#ifdef DEBUG
-	if (strstr(Core.Params, "-slowdown"))
-	{
-		//Threading::SpawnThreadthread_spawn(slowdownthread, "Debug Slowdown thread", 0, 0);
-	}
-	if (strstr(Core.Params, "-slowdown2x"))
-	{
-		//Threading::SpawnThreadthread_spawn(slowdownthread, "Debug Slowdown thread 0", 0, 0);
-		//Threading::SpawnThreadthread_spawn(slowdownthread, "Debug Slowdown thread 1", 0, 0);
-	}
-#endif // DEBUG
-}
-
-void CXRay::Startup()
-{
-	execUserScript();
-	InitSound();
-
-	// ...command line for auto start
-	{
-		LPCSTR pStartup = strstr(Core.Params, "-start ");
-		if (pStartup)
-			Console->Execute(pStartup + 1);
-	}
-	{
-		LPCSTR pStartup = strstr(Core.Params, "-load ");
-		if (pStartup)
-			Console->Execute(pStartup + 1);
-	}
-	if (strstr(Core.Params, "-load_last_save"))
-	{
-		Console->Execute("load_last_save");
-	}
-	if (strstr(Core.Params, "-load_last_quick_save"))
-	{
-		Console->Execute("load_last_quick_save");
-	}
-
-#ifdef BENCHMARK_BUILD
-	R_ASSERT2(strstr(Core.Params, "-demo_play "), "For benchmark build demo file required");
-#endif
-
-	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
-
-	DebugUI = new CDebugUI();
-
-	Device.Create();
-
-	DebugUI->Initialize();
-
-	LALib.OnCreate();
-
-	pApp = xr_new<CApplication>();
-
-	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-
-	g_SpatialSpace = xr_new<ISpatial_DB>();
-	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
-
-	Memory.mem_usage();
 }
 
 void CXRay::ProcessEventLoop()
@@ -246,137 +369,35 @@ void CXRay::Destroy()
 	xr_delete(g_SpatialSpace);
 	DEL_INSTANCE(g_pGamePersistent);
 	xr_delete(pApp);
-	Engine.Event.Dump();
+	Event.Dump();
 
-	// Destroying
 	destroySound();
 	destroyInput();
 
-	if (!g_bBenchmark)
-		destroySettings();
+	destroySettings();
 
 	LALib.OnDestroy();
 
-	if (!g_bBenchmark)
-		destroyConsole();
-	else
-		Console->Destroy();
+	destroyConsole();
 
-	destroyEngine();
+	Device.Destroy();
+	Sheduler.Destroy();
+#ifdef DEBUG_MEMORY_MANAGER
+	extern void dbg_dump_leaks_prepare();
+	if (Memory.debug_mode)
+		dbg_dump_leaks_prepare();
+#endif // DEBUG_MEMORY_MANAGER
+	UnloadLibraries();
 
 	DebugUI->Destroy();
 	delete DebugUI;
 }
 
-// -------------------------------------------------------------------------------------------------
-// Universal Encryption Auto-Detection
-// -------------------------------------------------------------------------------------------------
-
-// State cache: -1 = unknown, 0 = WW, 1 = RU
-static int g_last_successful_profile = -1;
-
-// Wrapper function to determine valid keys for FS archives
-static void UniversalDecodingWrapper(const void* source, const u32& size, void* destination)
-{
-	// 1. Short path: Block too small for analysis or impact.
-	if (size < 4)
-	{
-		if (g_last_successful_profile == trivial_encryptor::PROFILE_RU)
-			trivial_encryptor::decode_rus(source, size, destination);
-		else
-			trivial_encryptor::decode_ww(source, size, destination);
-		return;
-	}
-
-	u8 probe_buffer[16];
-	size_t probe_len = (size < 16) ? size : 16;
-
-	// Heuristic validator: Header usually contains file count/uncompressed size.
-	// Limits raised to ~128MB to support large mod archives while filtering garbage (>3GB).
-	auto is_valid_header = [](u32 value) -> bool { return (value > 0) && (value < 128000000); };
-
-	// 2. Sticky Logic: Try previously successful profile first to avoid fluctuation on large blocks
-	if (g_last_successful_profile != -1)
-	{
-		std::memcpy(probe_buffer, source, probe_len);
-		if (g_last_successful_profile == trivial_encryptor::PROFILE_RU)
-			trivial_encryptor::decode_rus(probe_buffer, u32(probe_len), probe_buffer);
-		else
-			trivial_encryptor::decode_ww(probe_buffer, u32(probe_len), probe_buffer);
-
-		u32 check_val = *((u32*)probe_buffer);
-
-		if (is_valid_header(check_val))
-		{
-			// Confirmed valid again - proceed
-			if (g_last_successful_profile == trivial_encryptor::PROFILE_RU)
-				trivial_encryptor::decode_rus(source, size, destination);
-			else
-				trivial_encryptor::decode_ww(source, size, destination);
-			return;
-		}
-
-		// Validation failed, reset cache
-		Msg("![AutoDecoder]: Cached profile failed (Val: %u). Resetting detection.", check_val);
-		g_last_successful_profile = -1;
-	}
-
-	// 3. Full Auto-Detection
-	Msg("[AutoDecoder]: Detecting profile for block size %u...", size);
-
-	// Test Worldwide
-	std::memcpy(probe_buffer, source, probe_len);
-	trivial_encryptor::decode_ww(probe_buffer, u32(probe_len), probe_buffer);
-	u32 val_ww = *((u32*)probe_buffer);
-	bool ww_ok = is_valid_header(val_ww);
-
-	// Test Russian
-	std::memcpy(probe_buffer, source, probe_len);
-	trivial_encryptor::decode_rus(probe_buffer, u32(probe_len), probe_buffer);
-	u32 val_ru = *((u32*)probe_buffer);
-	bool ru_ok = is_valid_header(val_ru);
-
-	// Decision Matrix
-	if (ww_ok && !ru_ok)
-	{
-		Msg("[AutoDecoder]: Detected WORLDWIDE (Val: %u).", val_ww);
-		g_last_successful_profile = trivial_encryptor::PROFILE_WW;
-		trivial_encryptor::decode_ww(source, size, destination);
-	}
-	else if (!ww_ok && ru_ok)
-	{
-		Msg("[AutoDecoder]: Detected RUSSIAN (Val: %u).", val_ru);
-		g_last_successful_profile = trivial_encryptor::PROFILE_RU;
-		trivial_encryptor::decode_rus(source, size, destination);
-	}
-	else if (ww_ok && ru_ok)
-	{
-		// Ambiguous: pick smallest reasonable number
-		if (val_ww < val_ru)
-		{
-			Msg("[AutoDecoder]: Ambiguous. Guessing WW (%u vs %u)", val_ww, val_ru);
-			g_last_successful_profile = trivial_encryptor::PROFILE_WW;
-			trivial_encryptor::decode_ww(source, size, destination);
-		}
-		else
-		{
-			Msg("[AutoDecoder]: Ambiguous. Guessing RU (%u vs %u)", val_ru, val_ww);
-			g_last_successful_profile = trivial_encryptor::PROFILE_RU;
-			trivial_encryptor::decode_rus(source, size, destination);
-		}
-	}
-	else
-	{
-		// Critical failure. Fallback to WW default.
-		Msg("![AutoDecoder]: CRITICAL WARNING! Unknown format (WW: %u, RU: %u).", val_ww, val_ru);
-		trivial_encryptor::decode_ww(source, size, destination);
-	}
-}
-
+typedef void DUMMY_STUFF(const void*, const u32&, void*);
+XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 void CXRay::DecodeResources()
 {
 	Msg("[CXRay]: Initializing Universal Resource Auto-Decoder...");
-	g_temporary_stuff = &UniversalDecodingWrapper;
+	g_temporary_stuff = &DecodeGameResources;
 }
-
 //////////////////////////////////////////////////////////////////////////

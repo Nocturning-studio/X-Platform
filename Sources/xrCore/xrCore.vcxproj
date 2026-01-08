@@ -1610,6 +1610,7 @@
     <ClInclude Include="blackbox\WarningsOn.h" />
     <ClInclude Include="buffer_vector.h" />
     <ClInclude Include="buffer_vector_inline.h" />
+    <ClInclude Include="build_identificator.h" />
     <ClInclude Include="clsid.h" />
     <ClInclude Include="Coder.hpp" />
     <ClInclude Include="compression_ppmd_stream.h" />
@@ -1680,6 +1681,7 @@
     <ClInclude Include="ThreadUtil.h" />
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />
+    <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />

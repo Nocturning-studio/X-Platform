@@ -453,6 +453,8 @@ ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
 
+ENGINE_API extern int psAnisotropic;
+
 ICF void CBackend::enable_anisotropy_filtering()
 {
 	OPTICK_EVENT("CBackend::enable_anisotropy_filtering");

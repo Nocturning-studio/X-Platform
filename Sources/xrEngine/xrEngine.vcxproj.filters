@@ -166,12 +166,6 @@
     <Filter Include="General\Core">
       <UniqueIdentifier>{3d1057e9-5839-455b-bdbe-453c68af805c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="General\Helpers">
-      <UniqueIdentifier>{219f6925-2cde-4ef3-a739-235121f5a5c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="General\Application">
-      <UniqueIdentifier>{da16bb34-ac2e-4739-84c6-4ddcbaa016a6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\UI">
       <UniqueIdentifier>{83fb0322-54fe-475c-b767-42e276abd678}</UniqueIdentifier>
     </Filter>
@@ -186,6 +180,9 @@
     </Filter>
     <Filter Include="CPU Pipe\Kernel">
       <UniqueIdentifier>{e9c49a80-d1d7-4fe9-89e4-6adde51291e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\LogoWindow">
+      <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -492,12 +489,6 @@
     <ClInclude Include="XR_IOConsole.h">
       <Filter>Engine\Console</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineAPI.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="EventAPI.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
@@ -564,20 +555,8 @@
     <ClInclude Include="defines.h">
       <Filter>General\Defines</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>General\Application</Filter>
-    </ClInclude>
     <ClInclude Include="x_ray.h">
       <Filter>General\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="_d3d_extensions.h">
-      <Filter>General\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="trivial_encryptor.h">
-      <Filter>General\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="build_identificator.h">
-      <Filter>General\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="ImGui_API.h">
       <Filter>Interfaces\UI</Filter>
@@ -614,6 +593,12 @@
     </ClInclude>
     <ClInclude Include="Environment_wind.h">
       <Filter>Game API\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="LogoWindow.h">
+      <Filter>Engine\LogoWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>General\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -932,12 +917,6 @@
     <ClCompile Include="XR_IOConsole.cpp">
       <Filter>Engine\Console</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineAPI.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
     <ClCompile Include="EventAPI.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
@@ -1004,9 +983,6 @@
     <ClCompile Include="defines.cpp">
       <Filter>General\Defines</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>General\Application</Filter>
-    </ClCompile>
     <ClCompile Include="win_entry_point.cpp">
       <Filter>General\Core</Filter>
     </ClCompile>
@@ -1072,6 +1048,12 @@
     </ClCompile>
     <ClCompile Include="Environment_wind.cpp">
       <Filter>Game API\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="LogoWindow.cpp">
+      <Filter>Engine\LogoWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>General\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

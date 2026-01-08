@@ -6,23 +6,73 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API CGameFont;
+struct xrDispatchTable;
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "Application.h"
+#include "EventAPI.h"
+#include "xrSheduler.h"
+#include "xrCPU_Pipe.h"
 ////////////////////////////////////////////////////////////////////////////////
+// Abstract 'Pure' class for DLL interface
+class ENGINE_API DLL_Pure
+{
+  public:
+	CLASS_ID CLS_ID;
+
+	DLL_Pure(void* params)
+	{
+		CLS_ID = 0;
+	};
+	DLL_Pure()
+	{
+		CLS_ID = 0;
+	};
+	virtual DLL_Pure* _construct()
+	{
+		return this;
+	}
+	virtual ~DLL_Pure(){};
+};
+
+// Class creation/destroying interface
+extern "C"
+{
+	typedef DLL_API DLL_Pure* __cdecl Factory_Create(CLASS_ID CLS_ID);
+	typedef DLL_API void __cdecl Factory_Destroy(DLL_Pure* O);
+};
+
+// Tuning interface
+extern "C"
+{
+	typedef void __cdecl VTPause(void);
+	typedef void __cdecl VTResume(void);
+};
+
 class ENGINE_API CXRay
 {
 private:
-	BOOL m_bIntroState;
+	HMODULE hGame;
+	HMODULE hRender;
+	HMODULE hTuner;
+	HMODULE hDiscordAPI;
+	HMODULE hOptick;
 
 public:
-	void InitEngine();
+	CEventAPI Event;
+	CSheduler Sheduler;
+	Factory_Create* pCreate;
+	Factory_Destroy* pDestroy;
+	BOOL tune_enabled;
+	VTPause* tune_pause;
+	VTResume* tune_resume;
+
+public:
 	void InitSettings();
 	void InitConsole();
 	void InitInput();
 	void InitSound();
 	
-	void destroyEngine();
 	void destroySettings();
 	void destroyConsole();
 	void destroyInput();
@@ -30,25 +80,34 @@ public:
 
 	void execUserScript();
 
-	void Startup();
 	void ProcessEventLoop();
 	void Destroy();
 
 	void DecodeResources();
 
+	void LoadLibraries();
+	void UnloadLibraries();
+
 	CXRay();
-	~CXRay() = default;
+	~CXRay();
 
-	void SetIntroState(bool state)
-	{
-		m_bIntroState = state;
-	};
-
-	BOOL GetIntroState()
-	{
-		return m_bIntroState;
-	};
+	void Run();
+	bool Initialize();
 };
 ////////////////////////////////////////////////////////////////////////////////
-extern ENGINE_API CXRay* pXRay;
+extern xrDispatchTable PSGP;
+////////////////////////////////////////////////////////////////////////////////
+// Объявляем глобальный указатель, чтобы его видели другие .cpp файлы
+extern ENGINE_API CXRay* g_XRay;
+
+// "Обманываем" старый код, который пишет Engine.Event...
+// Теперь Engine разыменовывается в наш глобальный объект
+#define Engine (*g_XRay)
+
+#define NEW_INSTANCE(a) Engine.pCreate(a)
+#define DEL_INSTANCE(a)                                                                                                \
+	{                                                                                                                  \
+		Engine.pDestroy(a);                                                                                   \
+		a = NULL;                                                                                                      \
+	}
 ////////////////////////////////////////////////////////////////////////////////

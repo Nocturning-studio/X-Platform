@@ -30,9 +30,6 @@ ENGINE_API BOOL g_bRendering = FALSE;
 BOOL g_bLoaded = FALSE;
 ref_light precache_light = 0;
 /////////////////////////////////////
-DWORD gMainThreadId = 0xFFFFFFFF;
-DWORD gSecondaryThreadId = std::thread::hardware_concurrency(); // 0xFFFFFFFF;
-/////////////////////////////////////
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
@@ -42,13 +39,6 @@ BOOL CRenderDevice::Begin()
 	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
 	if (FAILED(_hr))
 	{
-		// If the device was lost, do not render until we get it back
-		if (D3DERR_DEVICELOST == _hr)
-		{
-			Sleep(33);
-			return FALSE;
-		}
-
 		// Check if the device is ready to be reset
 		if (D3DERR_DEVICENOTRESET == _hr)
 		{
@@ -61,7 +51,6 @@ BOOL CRenderDevice::Begin()
 	CHK_DX(HW.pDevice->BeginScene());
 
 	RenderBackend.OnFrameBegin();
-	RenderBackend.set_CullMode(CULL_FRONTFACE);
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	if (HW.Caps.SceneMode)
 		overdrawBegin();
@@ -78,8 +67,6 @@ void CRenderDevice::Clear()
 							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
-extern void CheckPrivilegySlowdown();
-
 void Present()
 {
 	OPTICK_EVENT("PRESENT");
@@ -87,8 +74,6 @@ void Present()
 	Device.Statistic->RenderPresentation.Begin();
 
 	HRESULT _hr = HW.pDevice->PresentEx(NULL, NULL, NULL, NULL, NULL);
-	//if (D3DERR_DEVICELOST == _hr)
-	//	return; // we will handle this later
 
 	Device.Statistic->RenderPresentation.End();
 }
@@ -121,7 +106,6 @@ void CRenderDevice::End(void)
 			Resources->DestroyNecessaryTextures();
 			Memory.mem_compact();
 			Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
-			CheckPrivilegySlowdown();
 		}
 	}
 
@@ -329,9 +313,6 @@ void CRenderDevice::StartEventLoop()
 					if (Begin())
 					{
 						DebugUI->DrawUI();
-
-						//renderProcessFrame.Set(); // allow render thread to do its job
-						//renderFrameDone.Wait();	  // wait until render thread finish its job
 						seqRender.Process(rp_Render);
 
 						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) ||
@@ -380,8 +361,6 @@ void CRenderDevice::EndEventLoop()
 
 	// Stop Balance-Thread
 	mt_bMustExit = TRUE;
-	// renderProcessFrame.Set();
-	// renderThreadExit.Wait();
 	syncProcessFrame.Set();
 	syncThreadExit.Wait();
 	while (mt_bMustExit)
@@ -416,10 +395,9 @@ void CRenderDevice::FrameMove()
 		if (Paused())
 			fTimeDelta = 0.0f;
 
-		//		u64	qTime		= TimerGlobal.GetElapsed_clk();
-		fTimeGlobal = TimerGlobal.GetElapsed_sec(); // float(qTime)*CPU::cycles2seconds;
+		fTimeGlobal = TimerGlobal.GetElapsed_sec();
 		u32 _old_global = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms(); // u32((qTime*u64(1000))/CPU::cycles_per_second);
+		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
 		dwTimeDelta = dwTimeGlobal - _old_global;
 	}
 
@@ -445,9 +423,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 	OPTICK_EVENT("CRenderDevice::Pause");
 
 	static int snd_emitters_ = -1;
-
-	if (g_bBenchmark)
-		return;
 
 #ifdef DEBUG
 	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s", bOn ? "ON" : "OFF", bTimer ? "ON" : "OFF", bSound ? "ON" : "OFF",
