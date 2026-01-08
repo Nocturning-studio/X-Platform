@@ -13,6 +13,7 @@
 #include <codecvt>
 #include <commctrl.h>
 #include <windowsx.h>
+#include <sstream>
 #include "TinyXML\tinyxml2.h"
 
 using namespace tinyxml2;
@@ -151,7 +152,7 @@ void SendLogFile();
 void OpenFeedbackWarning(HWND hParent);
 void OpenFeedbackForm(HWND hParent);
 void OpenLogWarningWindow(HWND hParent);
-void CheckForUpdates(HWND hWnd);
+void CheckForUpdates(HWND hWnd, bool silent = false);
 bool CheckUpdateDependencies();
 
 // Функции работы с файлами и процессами
@@ -1100,6 +1101,14 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		}
 
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(hFont));
+
+		std::thread([hWnd]() {
+			// Ждем 1 секунду, чтобы лаунчер успел появиться и прогрузиться
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			// Запускаем проверку в тихом режиме
+			CheckForUpdates(hWnd, true);
+		}).detach();
+
 		break;
 	}
 
@@ -1569,26 +1578,35 @@ bool CheckUpdateDependencies()
 	return true;
 }
 
-void CheckForUpdates(HWND hWnd)
+void CheckForUpdates(HWND hWnd, bool silent)
 {
-	LogMessage(L"Проверка обновлений");
+	LogMessage(L"Проверка обновлений" + std::wstring(silent ? L" (тихий режим)" : L""));
 
+	// В тихом режиме мы не спамим ошибками зависимостей, просто пишем в лог
 	if (!CheckUpdateDependencies())
 	{
-		MessageBoxW(hWnd, L"Система обновлений не настроена правильно.", L"Ошибка", MB_OK | MB_ICONERROR);
+		if (!silent)
+		{
+			MessageBoxW(hWnd, L"Система обновлений не настроена правильно.", L"Ошибка", MB_OK | MB_ICONERROR);
+		}
+		else
+		{
+			LogMessage(L"Ошибка: зависимости обновлений не найдены при автопроверке.");
+		}
 		return;
 	}
 
 	std::wstring updateDir = g_UpdateServicePath.substr(0, g_UpdateServicePath.find_last_of(L"\\/"));
-
 	std::wstring checkCommand = L"\"" + g_UpdateServicePath + L"\" --check --work-dir \"" + g_LauncherDir + L"\"";
 
+	// Выполняем проверку
 	int result = ExecuteProcess(checkCommand, updateDir, false);
 
 	switch (result)
 	{
 	case 1: // Обновление доступно
 	{
+		// Показываем сообщение даже в тихом режиме, так как это важно
 		int choice = MessageBoxW(hWnd,
 								 L"Доступно обновление!\n"
 								 L"Установить сейчас?",
@@ -1596,27 +1614,55 @@ void CheckForUpdates(HWND hWnd)
 
 		if (choice == IDYES)
 		{
-			MessageBoxW(hWnd, L"Лаунчер закроется для установки обновлений.", L"Обновление",
-						MB_OK | MB_ICONINFORMATION);
+			// Если пользователь согласился, можно вывести предупреждение, если нужно
+			if (!silent)
+			{
+				MessageBoxW(hWnd, L"Лаунчер закроется для установки обновлений.", L"Обновление",
+							MB_OK | MB_ICONINFORMATION);
+			}
 
 			std::wstring updateCommand =
 				L"\"" + g_UpdateServicePath + L"\" --update --work-dir \"" + g_LauncherDir + L"\"";
 
-			ExecuteProcess(updateCommand, updateDir, false);
+			// Запускаем процесс обновления. Важно: здесь мы не ждем завершения (ExecuteProcess может блокировать),
+			// но так как мы скоро выходим, лучше использовать ShellExecute или CreateProcess без ожидания,
+			// но твой текущий ExecuteProcess подойдет, если апдейтер сам быстро отпускает процесс.
+			// Однако правильнее запустить апдейтер и закрыть лаунчер.
+
+			// Запускаем апдейтер так, чтобы он работал после закрытия лаунчера
+			ShellExecuteW(NULL, L"open", g_UpdateServicePath.c_str(),
+						  (L"--update --work-dir \"" + g_LauncherDir + L"\"").c_str(), updateDir.c_str(), SW_SHOW);
+
+			// Закрываем лаунчер
 			PostMessage(hWnd, WM_CLOSE, 0, 0);
 		}
 		break;
 	}
 
-	case 0: // Обновлений нет
-		MessageBoxW(hWnd, L"Установлена последняя версия.", L"Обновлений нет", MB_OK | MB_ICONINFORMATION);
+	case 0:			 // Обновлений нет
+		if (!silent) // Показываем только если нажали кнопку
+		{
+			MessageBoxW(hWnd, L"Установлена последняя версия.", L"Обновлений нет", MB_OK | MB_ICONINFORMATION);
+		}
+		else
+		{
+			LogMessage(L"Автопроверка: обновлений не найдено.");
+		}
 		break;
 
 	case -1: // Ошибка
-		MessageBoxW(hWnd,
-					L"Не удалось проверить обновления.\n"
-					L"Проверьте подключение к интернету.",
-					L"Ошибка", MB_OK | MB_ICONWARNING);
+	default:
+		if (!silent) // Показываем ошибку только при ручном нажатии
+		{
+			MessageBoxW(hWnd,
+						L"Не удалось проверить обновления.\n"
+						L"Проверьте подключение к интернету.",
+						L"Ошибка", MB_OK | MB_ICONWARNING);
+		}
+		else
+		{
+			LogMessage(L"Автопроверка: ошибка соединения или проверки.");
+		}
 		break;
 	}
 }
