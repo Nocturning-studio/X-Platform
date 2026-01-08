@@ -44,6 +44,16 @@ void __cdecl dummy(void){};
 extern void msCreate(LPCSTR name);
 extern void __cdecl xrBind_PSGP(xrDispatchTable* T, DWORD dwFeatures);
 //////////////////////////////////////////////////////////////////////////
+struct _SoundProcessor : public pureFrame
+{
+	virtual void OnFrame()
+	{
+		Device.Statistic->Sound.Begin();
+		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+		Device.Statistic->Sound.End();
+	}
+} SoundProcessor;
+//////////////////////////////////////////////////////////////////////////
 CXRay::CXRay()
 {
 	hGame = 0;
@@ -246,6 +256,8 @@ bool CXRay::Initialize()
 	Msg("Scanning levels...");
 	LevelManager.Scan();
 
+	Device.seqFrameMT.Add(&SoundProcessor);
+
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 
 	g_SpatialSpace = xr_new<ISpatial_DB>();
@@ -378,6 +390,10 @@ void CXRay::Destroy()
 
 	destroyConsole();
 
+	FontManager.Destroy();
+
+	Device.seqFrameMT.Remove(&SoundProcessor);
+
 	Device.Destroy();
 	Sheduler.Destroy();
 #ifdef DEBUG_MEMORY_MANAGER
@@ -389,8 +405,6 @@ void CXRay::Destroy()
 
 	DebugUI->Destroy();
 	delete DebugUI;
-
-	FontManager.Destroy();
 
 	Core.Destroy();
 }

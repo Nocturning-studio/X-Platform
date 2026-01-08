@@ -21,16 +21,6 @@
 #include "xr_ioconsole.h"
 #include "../xrDiscordAPI/DiscordAPI.h"
 
-struct _SoundProcessor : public pureFrame
-{
-	virtual void OnFrame()
-	{
-		Device.Statistic->Sound.Begin();
-		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
-		Device.Statistic->Sound.End();
-	}
-} SoundProcessor;
-
 CApplication::CApplication()
 {
 	OPTICK_EVENT("CApplication::CApplication");
@@ -41,11 +31,6 @@ CApplication::CApplication()
 	eDisconnect = Engine.Event.Handler_Attach("KERNEL:disconnect", this);
 
 	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
-
-	if (psDeviceFlags.test(mtSound))
-		Device.seqFrameMT.Add(&SoundProcessor);
-	else
-		Device.seqFrame.Add(&SoundProcessor);
 
 	DiscordAPI.Init();
 
@@ -62,8 +47,6 @@ CApplication::~CApplication()
 	OptickCapture.Destroy();
 #endif
 
-	Device.seqFrameMT.Remove(&SoundProcessor);
-	Device.seqFrame.Remove(&SoundProcessor);
 	Device.seqFrame.Remove(this);
 
 	Engine.Event.Handler_Detach(eDisconnect, this);
