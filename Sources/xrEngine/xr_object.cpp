@@ -7,7 +7,7 @@
 #include "xrLevel.h"
 #include "fbasicvisual.h"
 
-#include "Engine.h"
+#include "x_ray.h"
 #include "GameFont.h"
 
 void CObject::MakeMeCrow_internal()

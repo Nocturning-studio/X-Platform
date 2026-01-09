@@ -121,6 +121,12 @@
     <Filter Include="Engine\Console">
       <UniqueIdentifier>{f6926292-2e77-49ec-aa6a-934a8cc2f7fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Core">
+      <UniqueIdentifier>{81e08626-aa48-49c7-a5c3-0d7a6144e1bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\Scripting">
+      <UniqueIdentifier>{945960da-72ca-46e6-a565-0c18dbf5c380}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{557b67e4-0fc1-40cb-96e0-60ce0db42af4}</UniqueIdentifier>
     </Filter>
@@ -150,6 +156,9 @@
     </Filter>
     <Filter Include="General\Defines">
       <UniqueIdentifier>{7c9382ce-d352-456c-9a03-11f55a545226}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General\Core">
+      <UniqueIdentifier>{3d1057e9-5839-455b-bdbe-453c68af805c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\UI">
       <UniqueIdentifier>{83fb0322-54fe-475c-b767-42e276abd678}</UniqueIdentifier>
@@ -192,21 +201,6 @@
     </Filter>
     <Filter Include="Game API\Game state manager">
       <UniqueIdentifier>{032921f8-97cd-4088-b823-1238a5ff6214}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Engine">
-      <UniqueIdentifier>{87ad51f7-a325-4f54-8cc3-86be4b87a711}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Scripting">
-      <UniqueIdentifier>{945960da-72ca-46e6-a565-0c18dbf5c380}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\MailSlot">
-      <UniqueIdentifier>{50263bdf-b916-46e9-af7f-f17829af1219}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Event API">
-      <UniqueIdentifier>{81e08626-aa48-49c7-a5c3-0d7a6144e1bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="General\Entry point">
-      <UniqueIdentifier>{3d1057e9-5839-455b-bdbe-453c68af805c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -505,16 +499,19 @@
       <Filter>Engine\Console</Filter>
     </ClInclude>
     <ClInclude Include="EventAPI.h">
-      <Filter>Engine\Event API</Filter>
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrCPU_Pipe.h">
+      <Filter>Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_lua_extension.h">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Core\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_lua_space.h">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Core\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_space.h">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Core\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="perlin.h">
       <Filter>Engine\Noise</Filter>
@@ -566,6 +563,9 @@
     </ClInclude>
     <ClInclude Include="defines.h">
       <Filter>General\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="x_ray.h">
+      <Filter>General\Core</Filter>
     </ClInclude>
     <ClInclude Include="ImGui_API.h">
       <Filter>Interfaces\UI</Filter>
@@ -626,12 +626,6 @@
     </ClInclude>
     <ClInclude Include="GameStateManager.h">
       <Filter>Game API\Game state manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Engine\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="xrCPU_Pipe.h">
-      <Filter>CPU Pipe</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -942,16 +936,19 @@
       <Filter>Engine\Console</Filter>
     </ClCompile>
     <ClCompile Include="EventAPI.cpp">
-      <Filter>Engine\Event API</Filter>
+      <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="mailSlot.cpp">
+      <Filter>Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="_scripting.cpp">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Core\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_debug.cpp">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Core\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_extension.cpp">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Core\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
@@ -1005,7 +1002,10 @@
       <Filter>General\Defines</Filter>
     </ClCompile>
     <ClCompile Include="win_entry_point.cpp">
-      <Filter>General\Entry point</Filter>
+      <Filter>General\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="x_ray.cpp">
+      <Filter>General\Core</Filter>
     </ClCompile>
     <ClCompile Include="ImGui_API.cpp">
       <Filter>Interfaces\UI</Filter>
@@ -1090,12 +1090,6 @@
     </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
       <Filter>Game API\Game state manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Engine\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="mailSlot.cpp">
-      <Filter>Engine\MailSlot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

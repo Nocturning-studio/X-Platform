@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LevelLoadingScreen.h"
-#include "Engine.h"			  // Для доступа к Engine.LevelManager
+#include "x_ray.h"			  // Для доступа к Engine.LevelManager
 #include "igame_persistent.h" // Для g_pGamePersistent
 #include "xr_ioconsole.h"
 

@@ -1833,7 +1833,7 @@
     <ClInclude Include="xr_ioc_cmd.h" />
     <ClInclude Include="xr_object.h" />
     <ClInclude Include="xr_object_list.h" />
-    <ClInclude Include="Engine.h" />
+    <ClInclude Include="x_ray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ai_script_lua_debug.cpp" />
@@ -2181,7 +2181,7 @@
     <ClCompile Include="xr_ioc_cmd.cpp" />
     <ClCompile Include="xr_object.cpp" />
     <ClCompile Include="xr_object_list.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="x_ray.cpp" />
     <ClCompile Include="_scripting.cpp" />
   </ItemGroup>
   <ItemGroup>

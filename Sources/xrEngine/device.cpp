@@ -12,7 +12,7 @@
 #include <d3dx9.h>
 #pragma warning(default : 4995)
 
-#include "Engine.h"
+#include "x_ray.h"
 #include "render.h"
 #pragma warning(push)
 #pragma warning(disable : 4995)
@@ -30,12 +30,6 @@ ENGINE_API BOOL g_bRendering = FALSE;
 BOOL g_bLoaded = FALSE;
 ref_light precache_light = 0;
 /////////////////////////////////////
-void ProcessLoading(RP_FUNC* f)
-{
-	Device.seqFrame.Process(f);
-	g_bLoaded = TRUE;
-}
-
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
@@ -241,124 +235,119 @@ void CRenderDevice::PrepareEventLoop()
 	}
 
 	mt_bMustExit = FALSE;
+}
+
+void CRenderDevice::StartEventLoop()
+{
+	OPTICK_EVENT("CRenderDevice::StartEventLoop");
+
+	Log("\nStarting event loop...");
+
+	MSG msg;
+	BOOL bGotMsg;
+
+	// Message cycle
+	PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
 
 	seqAppStart.Process(rp_AppStart);
-}
 
-void CRenderDevice::Update()
-{
-	OPTICK_EVENT("CRenderDevice::Update");
-
-	// 1. Считаем кадры
-	dwFrame++;
-
-	// 2. Считаем Дельту Времени (Time Delta)
-	dwTimeContinual = TimerMM.GetElapsed_ms();
-
-	if (psDeviceFlags.test(rsConstantFPS))
-	{
-		// Фиксированный шаг (для отладки)
-		fTimeDelta = 0.020f;
-		fTimeGlobal += 0.020f;
-		dwTimeDelta = 20;
-		dwTimeGlobal += 20;
-	}
-	else
-	{
-		// Реальный таймер
-		float fPreviousFrameTime = Timer.GetElapsed_sec();
-		Timer.Start();
-
-		// Сглаживание дельты (чтобы физику не трясло)
-		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime;
-
-		if (fTimeDelta > .1f)
-			fTimeDelta = .1f; // Ограничение мин. FPS (чтобы не проваливаться сквозь пол)
-		if (Paused())
-			fTimeDelta = 0.0f;
-
-		// Глобальное время
-		fTimeGlobal = TimerGlobal.GetElapsed_sec();
-		u32 _old_global = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
-		dwTimeDelta = dwTimeGlobal - _old_global;
-	}
-
-	// 3. Выполняем игровую логику (seqFrame)
-	Statistic->EngineTOTAL.Begin();
-
-	if (!g_bLoaded)
-		ProcessLoading(rp_Frame);
-	else
-		seqFrame.Process(rp_Frame); // <-- Тут обновляются Акторы, Физика, Скрипты
-
-	Statistic->EngineTOTAL.End();
-}
-
-void CRenderDevice::Render()
-{
-	OPTICK_EVENT("CRenderDevice::Render");
-
-	// Проверка готовности должна быть снаружи или тут (safety check)
-	if (!b_is_Ready)
-		return;
-
-	// 1. Очистка экрана
 	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 
-	// 2. Сбор статистики
-	g_bEnableStatGather = psDeviceFlags.test(rsStatistic) ? TRUE : FALSE;
-
-	// 3. Логика камеры (Precache)
-	// (Она тут, потому что влияет на View Matrix перед рендером)
-	if (dwPrecacheFrame)
+	while (WM_QUIT != msg.message)
 	{
-		float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
-		float angle = PI_MUL_2 * factor;
-		vCameraDirection.set(_sin(angle), 0, _cos(angle));
-		vCameraDirection.normalize();
-		vCameraTop.set(0, 1, 0);
-		vCameraRight.crossproduct(vCameraTop, vCameraDirection);
-		mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
-	}
+		bGotMsg = PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE);
+		if (bGotMsg)
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			if (b_is_Ready)
+			{
+#ifdef DEDICATED_SERVER
+				u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
+#endif
+				if (psDeviceFlags.test(rsStatistic))
+					g_bEnableStatGather = TRUE;
+				else
+					g_bEnableStatGather = FALSE;
+				if (g_loading_events.size())
+				{
+					if (g_loading_events.front()())
+						g_loading_events.pop_front();
 
-	// 4. Расчет Матриц
-	mFullTransform.mul(mProject, mView);
-	RenderBackend.set_xform_view(mView);
-	RenderBackend.set_xform_project(mProject);
-	D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+					Engine.LoadingScreen.ForceRender();
+					continue;
+				}
+				else
+					FrameMove();
 
-	// 5. Синхронизация потоков (разрешаем вторичному потоку работать)
-	syncProcessFrame.Set();
+				// Precache
+				if (dwPrecacheFrame)
+				{
+					float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+					float angle = PI_MUL_2 * factor;
+					vCameraDirection.set(_sin(angle), 0, _cos(angle));
+					vCameraDirection.normalize();
+					vCameraTop.set(0, 1, 0);
+					vCameraRight.crossproduct(vCameraTop, vCameraDirection);
+
+					mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
+				}
+
+				// Matrices
+				mFullTransform.mul(mProject, mView);
+				RenderBackend.set_xform_view(mView);
+				RenderBackend.set_xform_project(mProject);
+				D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+
+				syncProcessFrame.Set(); // allow secondary thread to do its job
 
 #ifndef DEDICATED_SERVER
-	Statistic->RenderTOTAL_Real.FrameStart();
-	Statistic->RenderTOTAL_Real.Begin();
+				Statistic->RenderTOTAL_Real.FrameStart();
+				Statistic->RenderTOTAL_Real.Begin();
+				if (b_is_Active)
+				{
+					if (Begin())
+					{
+						DebugUI->DrawUI();
+						seqRender.Process(rp_Render);
 
-	// 6. Собственно Отрисовка
-	if (b_is_Active && Begin()) // BeginScene
-	{
-		DebugUI->DrawUI(); // ImGui / Debug UI
+						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) ||
+							Statistic->errors.size())
+							Statistic->Show();
 
-		seqRender.Process(rp_Render); // <-- Главный рендер игры (Уровни, HUD)
-
-		if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-			Statistic->Show();
-
-		End(); // EndScene + Present (если нужно)
-	}
-
-	Statistic->RenderTOTAL_Real.End();
-	Statistic->RenderTOTAL_Real.FrameEnd();
-	Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+						End();
+					}
+				}
+				Statistic->RenderTOTAL_Real.End();
+				Statistic->RenderTOTAL_Real.FrameEnd();
+				Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 #endif
 
-	// 7. Сохранение позиции камеры для следующего кадра
-	vCameraPosition_saved = vCameraPosition;
-	mFullTransform_saved = mFullTransform;
+				vCameraPosition_saved = vCameraPosition;
+				mFullTransform_saved = mFullTransform;
 
-	// 8. Ждем завершения вторичного потока перед следующим кадром
-	syncFrameDone.Wait();
+				syncFrameDone.Wait();
+#ifdef DEDICATED_SERVER
+				u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
+				u32 FrameTime = (FrameEndTime - FrameStartTime);
+				u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
+				if (FrameTime < DSUpdateDelta)
+				{
+					Sleep(DSUpdateDelta - FrameTime);
+				}
+#endif
+			}
+			else
+			{
+				Sleep(100);
+			}
+			if (!b_is_Active)
+				Sleep(1);
+		}
+	}
 }
 
 void CRenderDevice::EndEventLoop()
@@ -375,6 +364,55 @@ void CRenderDevice::EndEventLoop()
 	syncThreadExit.Wait();
 	while (mt_bMustExit)
 		Sleep(0);
+}
+
+void ProcessLoading(RP_FUNC* f);
+void CRenderDevice::FrameMove()
+{
+	OPTICK_EVENT("CRenderDevice::FrameMove");
+
+	dwFrame++;
+
+	dwTimeContinual = TimerMM.GetElapsed_ms();
+	if (psDeviceFlags.test(rsConstantFPS))
+	{
+		// 20ms = 50fps
+		fTimeDelta = 0.020f;
+		fTimeGlobal += 0.020f;
+		dwTimeDelta = 20;
+		dwTimeGlobal += 20;
+	}
+	else
+	{
+		// Timer
+		float fPreviousFrameTime = Timer.GetElapsed_sec();
+		Timer.Start(); // previous frame
+		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
+		if (fTimeDelta > .1f)
+			fTimeDelta = .1f; // limit to 15fps minimum
+
+		if (Paused())
+			fTimeDelta = 0.0f;
+
+		fTimeGlobal = TimerGlobal.GetElapsed_sec();
+		u32 _old_global = dwTimeGlobal;
+		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
+		dwTimeDelta = dwTimeGlobal - _old_global;
+	}
+
+	// Frame move
+	Statistic->EngineTOTAL.Begin();
+	if (!g_bLoaded)
+		ProcessLoading(rp_Frame);
+	else
+		seqFrame.Process(rp_Frame);
+	Statistic->EngineTOTAL.End();
+}
+
+void ProcessLoading(RP_FUNC* f)
+{
+	Device.seqFrame.Process(rp_Frame);
+	g_bLoaded = TRUE;
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;

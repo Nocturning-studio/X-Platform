@@ -170,7 +170,7 @@ public:
 	BOOL Begin();
 	void Clear();
 	void End();
-	void Update();
+	void FrameMove();
 
 	void overdrawBegin();
 	void overdrawEnd();
@@ -193,7 +193,7 @@ public:
 	// Creation & Destroying
 	void Create(void);
 	void PrepareEventLoop();
-	void Render();
+	void StartEventLoop(void);
 	void EndEventLoop();
 	void Destroy(void);
 	void Reset(bool precache = true);

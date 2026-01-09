@@ -12,7 +12,7 @@
 #include "Effector.h"
 #include "EffectorPP.h"
 
-#include "Engine.h"
+#include "x_ray.h"
 #include "gamefont.h"
 #include "render.h"
 

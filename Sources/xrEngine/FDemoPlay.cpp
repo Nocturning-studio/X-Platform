@@ -8,7 +8,7 @@
 #include "CameraManager.h"
 #include "demo_common.h"
 #include "gamefont.h"
-#include "Engine.h"
+#include "x_ray.h"
 #include "xr_input.h"
 #include "igame_level.h"
 #include "iinputreceiver.h"

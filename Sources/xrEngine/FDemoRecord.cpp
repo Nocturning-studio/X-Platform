@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "igame_level.h"
-#include "Engine.h"
+#include "x_ray.h"
 
 #include "gamefont.h"
 #include "fDemoRecord.h"

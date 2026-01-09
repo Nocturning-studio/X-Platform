@@ -717,7 +717,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 	MainMenu()->OnRenderPPUI_PP();
 }
 #include "string_table.h"
-#include "../xrEngine/Engine.h"
+#include "../xrEngine/x_ray.h"
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512 buff;

@@ -10,7 +10,7 @@
 #include "igame_persistent.h"
 #include "xr_input.h"
 #include "xr_ioconsole.h"
-#include "Engine.h"
+#include "x_ray.h"
 #include "std_classes.h"
 #include "GameFont.h"
 #include "resource.h"
@@ -22,7 +22,6 @@
 #include "build_identificator.h"
 #include "debug_ui.h"
 #include "LogoWindow.h"
-#include "device.h"
 //////////////////////////////////////////////////////////////////////////
 ENGINE_API CDebugUI* DebugUI = nullptr;
 //////////////////////////////////////////////////////////////////////////
@@ -30,7 +29,7 @@ ENGINE_API CDebugUI* DebugUI = nullptr;
 #include "trivial_encryptor.h"
 #include <xrCPU_Pipe.h>
 //////////////////////////////////////////////////////////////////////////
-ENGINE_API CEngine* g_Engine;
+extern CRenderDevice Device;
 //////////////////////////////////////////////////////////////////////////
 xrDispatchTable PSGP;
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +52,7 @@ struct _SoundProcessor : public pureFrame
 	}
 } SoundProcessor;
 //////////////////////////////////////////////////////////////////////////
-CEngine::CEngine()
+CXRay::CXRay()
 {
 	hGame = 0;
 	hRender = 0;
@@ -65,11 +64,11 @@ CEngine::CEngine()
 	tune_resume = dummy;
 }
 
-CEngine::~CEngine()
+CXRay::~CXRay()
 {
 }
 
-void CEngine::LoadLibraries()
+void CXRay::LoadLibraries()
 {
 	Msg("Initializing Engine API...");
 
@@ -138,7 +137,7 @@ void CEngine::LoadLibraries()
 	R_ASSERT2(DiscordAPI_name, "! Can't load discord api");
 }
 
-void CEngine::UnloadLibraries()
+void CXRay::UnloadLibraries()
 {
 	if (hGame)
 	{
@@ -193,7 +192,7 @@ void HandleComandLine()
 #endif
 }
 
-bool CEngine::Initialize()
+bool CXRay::Initialize()
 {
 	auto Logo = xr_make_unique<LogoWindow>();
 	Logo->Show();
@@ -271,7 +270,7 @@ bool CEngine::Initialize()
 	return true;
 }
 
-void CEngine::Run()
+void CXRay::Run()
 {
 	Initialize();
 
@@ -280,7 +279,7 @@ void CEngine::Run()
 	Destroy();
 }
 
-void CEngine::InitSettings()
+void CXRay::InitSettings()
 {
 	Msg("Initializing Settings...");
 
@@ -296,7 +295,7 @@ void CEngine::InitSettings()
 				  make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 }
 
-void CEngine::InitConsole()
+void CXRay::InitConsole()
 {
 	Msg("Initializing Console...");
 
@@ -322,7 +321,7 @@ void CEngine::InitConsole()
 	}
 }
 
-void CEngine::InitInput()
+void CXRay::InitInput()
 {
 	BOOL bCaptureInput = !strstr(Core.Params, "-i");
 	if (g_dedicated_server)
@@ -331,72 +330,48 @@ void CEngine::InitInput()
 	pInput = xr_new<CInput>(bCaptureInput);
 }
 
-void CEngine::destroyInput()
+void CXRay::destroyInput()
 {
 	xr_delete(pInput);
 }
 
-void CEngine::InitSound()
+void CXRay::InitSound()
 {
 	Msg("Initializing Sound...");
 	CSound_manager_interface::_create(u64(Device.m_hWnd));
 }
 
-void CEngine::destroySound()
+void CXRay::destroySound()
 {
 	CSound_manager_interface::_destroy();
 }
 
-void CEngine::destroySettings()
+void CXRay::destroySettings()
 {
 	xr_delete(pSettings);
 	xr_delete(pGameIni);
 }
 
-void CEngine::destroyConsole()
+void CXRay::destroyConsole()
 {
 	Console->Destroy();
 	xr_delete(Console);
 }
 
-void CEngine::execUserScript()
+void CXRay::execUserScript()
 {
 	Console->Execute("unbindall");
 	Console->ExecuteScript(Console->ConfigFile);
 }
 
-void CEngine::ProcessEventLoop()
+void CXRay::ProcessEventLoop()
 {
-	OPTICK_EVENT("CEngine::ProcessEventLoop");
-	Log("\nStarting event loop...");
-
 	Device.PrepareEventLoop();
-
-	MSG msg;
-	BOOL bGotMsg;
-
-	// Message cycle
-	PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
-
-	while (WM_QUIT != msg.message)
-	{
-		bGotMsg = PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE);
-		if (bGotMsg)
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else
-		{
-			Device.Update();
-			Device.Render();
-		}
-	}
-
+	Device.StartEventLoop();
 	Device.EndEventLoop();
 }
 
-void CEngine::Destroy()
+void CXRay::Destroy()
 {
 	xr_delete(g_SpatialSpacePhysic);
 	xr_delete(g_SpatialSpace);
@@ -437,9 +412,9 @@ void CEngine::Destroy()
 
 typedef void DUMMY_STUFF(const void*, const u32&, void*);
 XRCORE_API DUMMY_STUFF* g_temporary_stuff;
-void CEngine::DecodeResources()
+void CXRay::DecodeResources()
 {
-	Msg("[CEngine]: Initializing Universal Resource Auto-Decoder...");
+	Msg("[CXRay]: Initializing Universal Resource Auto-Decoder...");
 	g_temporary_stuff = &DecodeGameResources;
 }
 //////////////////////////////////////////////////////////////////////////
