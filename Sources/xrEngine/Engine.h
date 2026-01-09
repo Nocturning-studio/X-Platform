@@ -65,8 +65,10 @@ class ENGINE_API CEngine
 
 	// Основные жизненные циклы (Методы, которые остались)
 	bool Initialize(); // Вся инициализация (Console, Sound, Device, Input, DLLs) теперь здесь
-	void Run();		   // Запуск Loop (Init -> Loop -> Destroy)
+	void ProcessEventLoop();
 	void Destroy();	   // Очистка ресурсов
+
+	void Run(); // Запуск Loop (Init -> Loop -> Destroy)
 };
 ////////////////////////////////////////////////////////////////////////////////
 extern xrDispatchTable PSGP;

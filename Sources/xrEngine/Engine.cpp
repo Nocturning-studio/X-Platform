@@ -298,6 +298,29 @@ bool CEngine::Initialize()
 	return true;
 }
 
+void CEngine::ProcessEventLoop()
+{
+	Device.PrepareEventLoop();
+
+	MSG msg;
+	ZeroMemory(&msg, sizeof(msg));
+
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			Device.DoFrame();
+		}
+	}
+
+	Device.EndEventLoop();
+}
+
 void CEngine::Destroy()
 {
 	// 1. Очистка игровых сущностей и пространств
@@ -375,11 +398,6 @@ void CEngine::Destroy()
 void CEngine::Run()
 {
 	Initialize();
-
-	// ProcessEventLoop (встроен сюда для упрощения)
-	Device.PrepareEventLoop();
-	Device.StartEventLoop();
-	Device.EndEventLoop();
-
+	ProcessEventLoop();
 	Destroy();
 }

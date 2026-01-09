@@ -193,7 +193,7 @@ public:
 	// Creation & Destroying
 	void Create(void);
 	void PrepareEventLoop();
-	void StartEventLoop(void);
+	void DoFrame();
 	void EndEventLoop();
 	void Destroy(void);
 	void Reset(bool precache = true);

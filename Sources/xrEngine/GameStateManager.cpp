@@ -33,8 +33,6 @@ void CGameStateManager::Initialize()
 
 void CGameStateManager::Destroy()
 {
-	Console->Hide();
-
 #ifdef ENABLE_PROFILING
 	OptickCapture.Destroy();
 #endif
