@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "GameFont.h"
-#include "device.h"
 
 class ENGINE_API CLevelLoadingScreen
 {
@@ -48,8 +47,6 @@ class ENGINE_API CLevelLoadingScreen
 	{
 		return bIsActive;
 	}
-
-	void Destroy();
 };
 
 extern ENGINE_API BOOL g_appLoaded;

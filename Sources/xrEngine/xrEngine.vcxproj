@@ -1696,6 +1696,7 @@
     <ClInclude Include="ai_script_lua_extension.h" />
     <ClInclude Include="ai_script_lua_space.h" />
     <ClInclude Include="ai_script_space.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="Blenders\Blender.h" />
     <ClInclude Include="Blenders\Blender_CLSID.h" />
     <ClInclude Include="Blenders\Blender_Recorder.h" />
@@ -1745,7 +1746,6 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FVF.h" />
     <ClInclude Include="GameFont.h" />
-    <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="HW.h" />
     <ClInclude Include="HWCaps.h" />
     <ClInclude Include="ICollidable.h" />
@@ -1838,6 +1838,7 @@
   <ItemGroup>
     <ClCompile Include="ai_script_lua_debug.cpp" />
     <ClCompile Include="ai_script_lua_extension.cpp" />
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Blenders\Blender.cpp" />
     <ClCompile Include="Blenders\Blender_Palette.cpp" />
     <ClCompile Include="Blenders\Blender_Recorder.cpp" />
@@ -1976,7 +1977,6 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="GameFont.cpp" />
-    <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="HW.cpp" />
     <ClCompile Include="HWCaps.cpp" />
     <ClCompile Include="ICollidable.cpp" />

@@ -19,6 +19,7 @@
 #include "Text_Console.h"
 #include <process.h>
 #include "../xrDiscordAPI/DiscordAPI.h"
+#include "Application.h"
 #include "build_identificator.h"
 #include "debug_ui.h"
 #include "LogoWindow.h"
@@ -33,6 +34,7 @@ extern CRenderDevice Device;
 //////////////////////////////////////////////////////////////////////////
 xrDispatchTable PSGP;
 //////////////////////////////////////////////////////////////////////////
+ENGINE_API CApplication* pApp = NULL;
 ENGINE_API CInifile* pGameIni = NULL;
 //////////////////////////////////////////////////////////////////////////
 ENGINE_API bool g_dedicated_server = false;
@@ -246,7 +248,7 @@ bool CXRay::Initialize()
 
 	LALib.OnCreate();
 
-	GameStateManager.Initialize();
+	pApp = xr_new<CApplication>();
 
 	Msg("Initializing Font Manager...");
 	FontManager.Initialize();
@@ -376,6 +378,7 @@ void CXRay::Destroy()
 	xr_delete(g_SpatialSpacePhysic);
 	xr_delete(g_SpatialSpace);
 	DEL_INSTANCE(g_pGamePersistent);
+	xr_delete(pApp);
 	Event.Dump();
 
 	destroySound();
@@ -386,10 +389,6 @@ void CXRay::Destroy()
 	LALib.OnDestroy();
 
 	destroyConsole();
-
-	GameStateManager.Destroy();
-
-	LoadingScreen.Destroy();
 
 	FontManager.Destroy();
 

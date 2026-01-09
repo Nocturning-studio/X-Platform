@@ -191,7 +191,9 @@ void CActor::HitSector(CObject* who, CObject* weapon)
 
 void CActor::on_weapon_shot_start(CWeapon* weapon)
 {
+#pragma todo("NSDeathman to all: Замените пожалуйста мой дебилизм на нормальную реализацию из зова Припяти")
 	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(weapon);
+	//*
 	CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
 	if (!effector)
 	{
