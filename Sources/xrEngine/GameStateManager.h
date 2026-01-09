@@ -4,7 +4,7 @@
 #include "pure.h"
 #include "device.h"
 
-class ENGINE_API CApplication : public pureFrame, public IEventReceiver
+class ENGINE_API CGameStateManager : public pureFrame, public IEventReceiver
 {
   private:
 	// События
@@ -14,13 +14,12 @@ class ENGINE_API CApplication : public pureFrame, public IEventReceiver
 	EVENT eDisconnect;
 
   public:
+	CGameStateManager() = default;
+	~CGameStateManager() = default;
+
+	void Initialize();
+	void Destroy();
 
 	virtual void OnEvent(EVENT E, u64 P1, u64 P2);
-
-	CApplication();
-	~CApplication();
-
 	virtual void OnFrame();
 };
-
-extern ENGINE_API CApplication* pApp;

@@ -121,12 +121,6 @@
     <Filter Include="Engine\Console">
       <UniqueIdentifier>{f6926292-2e77-49ec-aa6a-934a8cc2f7fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Core">
-      <UniqueIdentifier>{81e08626-aa48-49c7-a5c3-0d7a6144e1bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core\Scripting">
-      <UniqueIdentifier>{945960da-72ca-46e6-a565-0c18dbf5c380}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{557b67e4-0fc1-40cb-96e0-60ce0db42af4}</UniqueIdentifier>
     </Filter>
@@ -198,6 +192,21 @@
     </Filter>
     <Filter Include="Engine\Font manager">
       <UniqueIdentifier>{a89d42b6-914f-4801-b7a5-0c5e5649e654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Scripting">
+      <UniqueIdentifier>{945960da-72ca-46e6-a565-0c18dbf5c380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\EventAPI">
+      <UniqueIdentifier>{81e08626-aa48-49c7-a5c3-0d7a6144e1bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Mail Slot">
+      <UniqueIdentifier>{e783879f-b2b9-4503-9df3-29fdd4df5c7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pure">
+      <UniqueIdentifier>{55f33a01-7fa0-4c86-affd-d394c030b61b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Game state manager">
+      <UniqueIdentifier>{f7a65081-dab7-436e-9519-2bb4fb62d2cb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -477,9 +486,6 @@
     <ClInclude Include="Properties.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="pure.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="std_classes.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -496,19 +502,16 @@
       <Filter>Engine\Console</Filter>
     </ClInclude>
     <ClInclude Include="EventAPI.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="xrCPU_Pipe.h">
-      <Filter>Engine\Core</Filter>
+      <Filter>Engine\EventAPI</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_lua_extension.h">
-      <Filter>Engine\Core\Scripting</Filter>
+      <Filter>Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_lua_space.h">
-      <Filter>Engine\Core\Scripting</Filter>
+      <Filter>Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_space.h">
-      <Filter>Engine\Core\Scripting</Filter>
+      <Filter>Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="perlin.h">
       <Filter>Engine\Noise</Filter>
@@ -603,9 +606,6 @@
     <ClInclude Include="LogoWindow.h">
       <Filter>Engine\LogoWindow</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>General\Core</Filter>
-    </ClInclude>
     <ClInclude Include="IGame_Level.h">
       <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
@@ -623,6 +623,15 @@
     </ClInclude>
     <ClInclude Include="FontManager.h">
       <Filter>Engine\Font manager</Filter>
+    </ClInclude>
+    <ClInclude Include="xrCPU_Pipe.h">
+      <Filter>CPU Pipe</Filter>
+    </ClInclude>
+    <ClInclude Include="pure.h">
+      <Filter>Engine\Pure</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h">
+      <Filter>Game API\Game state manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -920,9 +929,6 @@
     <ClCompile Include="du_sphere_part.cpp">
       <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
-    <ClCompile Include="pure.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="xrXRC.cpp">
       <Filter>Engine\Collision Core</Filter>
     </ClCompile>
@@ -933,19 +939,16 @@
       <Filter>Engine\Console</Filter>
     </ClCompile>
     <ClCompile Include="EventAPI.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="mailSlot.cpp">
-      <Filter>Engine\Core</Filter>
+      <Filter>Engine\EventAPI</Filter>
     </ClCompile>
     <ClCompile Include="_scripting.cpp">
-      <Filter>Engine\Core\Scripting</Filter>
+      <Filter>Engine\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_debug.cpp">
-      <Filter>Engine\Core\Scripting</Filter>
+      <Filter>Engine\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_extension.cpp">
-      <Filter>Engine\Core\Scripting</Filter>
+      <Filter>Engine\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
@@ -1067,9 +1070,6 @@
     <ClCompile Include="LogoWindow.cpp">
       <Filter>Engine\LogoWindow</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>General\Core</Filter>
-    </ClCompile>
     <ClCompile Include="IGame_Level.cpp">
       <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
@@ -1087,6 +1087,15 @@
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>Engine\Font manager</Filter>
+    </ClCompile>
+    <ClCompile Include="mailSlot.cpp">
+      <Filter>Engine\Mail Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="pure.cpp">
+      <Filter>Engine\Pure</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp">
+      <Filter>Game API\Game state manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

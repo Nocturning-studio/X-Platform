@@ -1,10 +1,5 @@
-////////////////////////////////////////////////////////////////////////////////
-// Created: 14.01.2025
-// Author: NSDeathman
-// Refactored code: Application class realization
-////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "Application.h"
+#include "GameStateManager.h"
 #include "Optick_Capture.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
@@ -18,13 +13,10 @@
 #include "ispatial.h"
 #include "Text_Console.h"
 #include <process.h>
-#include "xr_ioconsole.h"
 #include "../xrDiscordAPI/DiscordAPI.h"
 
-CApplication::CApplication()
+void CGameStateManager::Initialize()
 {
-	OPTICK_EVENT("CApplication::CApplication");
-
 	eQuit = Engine.Event.Handler_Attach("KERNEL:quit", this);
 	eStart = Engine.Event.Handler_Attach("KERNEL:start", this);
 	eStartLoad = Engine.Event.Handler_Attach("KERNEL:load", this);
@@ -39,7 +31,7 @@ CApplication::CApplication()
 #endif
 }
 
-CApplication::~CApplication()
+void CGameStateManager::Destroy()
 {
 	Console->Hide();
 
@@ -55,9 +47,9 @@ CApplication::~CApplication()
 	Engine.Event.Handler_Detach(eQuit, this);
 }
 
-void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
+void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 {
-	OPTICK_EVENT("CApplication::OnEvent");
+	OPTICK_EVENT("CGameStateManager::OnEvent");
 
 	if (E == eQuit)
 	{
@@ -93,7 +85,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if (E == eDisconnect)
 	{
-		// ... (код дисконнекта без изменений) ...
 		if (g_pGameLevel)
 		{
 			g_pGameLevel->net_Stop();
@@ -108,18 +99,29 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 }
 
-void CApplication::OnFrame()
+void CGameStateManager::OnFrame()
 {
-	OPTICK_EVENT("CApplication::OnFrame");
+	OPTICK_EVENT("CGameStateManager::OnFrame");
+
+	// Обработка событий
 	Engine.Event.OnFrame();
+
+	// Обновление пространственных баз
 	g_SpatialSpace->update();
 	g_SpatialSpacePhysic->update();
+
+	// Звуковые события уровня
 	if (g_pGameLevel)
 		g_pGameLevel->SoundEvent_Dispatch();
+
+	// Discord API update
 	if (!g_dedicated_server)
 		DiscordAPI.Update();
+
+	// Для выделенного сервера обновление консоли здесь
 	if (g_dedicated_server)
 		Console->OnFrame();
+
 #ifdef ENABLE_PROFILING
 	OptickCapture.OnFrame();
 #endif

@@ -149,22 +149,5 @@ IC void xrPREAD_MARKER(IReader& fs)
 			break;                                                                                                     \
 		};                                                                                                             \
 	}
-
-// template <class T>
-// IC void		xrPWRITE_PROP	(IWriter& FS, LPCSTR name, u32 ID, T& data)
-//{
-//	xrPWRITE	(FS,ID,name,&data,sizeof(data));
-// }
-
-// template <class T>
-// IC void		xrPREAD_PROP	(IReader& FS, u32 ID, T& data)
-//{
-//	R_ASSERT(ID==xrPREAD(FS)); FS.Read(&data,sizeof(data));
-//	switch (ID)
-//	{
-//	case xrPID_TOKEN:	FS.Advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item));	break;
-//	case xrPID_CLSID:	FS.Advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID));			break;
-//	};
-// }
 #pragma pack(pop)
 #endif // xrPROPERTIES_H

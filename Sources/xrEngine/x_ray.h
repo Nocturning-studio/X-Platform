@@ -9,7 +9,7 @@ class ENGINE_API CGameFont;
 struct xrDispatchTable;
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "Application.h"
+#include "GameStateManager.h"
 #include "EventAPI.h"
 #include "xrSheduler.h"
 #include "xrCPU_Pipe.h"
@@ -74,6 +74,7 @@ public:
 	CLevelManager LevelManager;
 	CLevelLoadingScreen LoadingScreen;
 	CFontManager FontManager;
+	CGameStateManager GameStateManager;
 
 public:
 	void InitSettings();
