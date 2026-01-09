@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LevelManager.h"
-#include "x_ray.h"
+#include "Engine.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
 #include "xr_ioconsole.h"

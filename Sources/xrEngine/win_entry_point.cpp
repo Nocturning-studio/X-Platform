@@ -5,11 +5,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "resource.h"
-#include "x_ray.h"
+#include "Engine.h"
 ////////////////////////////////////////////////////////////////////////////////
 ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
-ENGINE_API CXRay* g_XRay;
 ////////////////////////////////////////////////////////////////////////////////
 int stack_overflow_exception_filter(int exception_code)
 {
@@ -19,19 +18,8 @@ int stack_overflow_exception_filter(int exception_code)
 		return EXCEPTION_CONTINUE_SEARCH;
 }
 
-int APIENTRY WinMain_implementation(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
+void OnApplicationExit()
 {
-	g_sLaunchOnExit_app[0] = NULL;
-	g_sLaunchOnExit_params[0] = NULL;
-
-	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
-
-	g_XRay = xr_new<CXRay>();
-
-	g_XRay->Run();
-
-	xr_delete(g_XRay);
-
 	// check for need to execute something external
 	if (xr_strlen(g_sLaunchOnExit_app))
 	{
@@ -50,15 +38,20 @@ int APIENTRY WinMain_implementation(HINSTANCE hInstance, HINSTANCE hPrevInstance
 
 		_spawnv(_P_NOWAIT, _args[0], _args);
 	}
-
-	return 0;
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
 	__try
 	{
-		WinMain_implementation(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+		g_sLaunchOnExit_app[0] = NULL;
+		g_sLaunchOnExit_params[0] = NULL;
+
+		g_Engine = xr_new<CEngine>();
+		g_Engine->Run();
+		xr_delete(g_Engine);
+
+		OnApplicationExit();
 	}
 	__except (stack_overflow_exception_filter(GetExceptionCode()))
 	{

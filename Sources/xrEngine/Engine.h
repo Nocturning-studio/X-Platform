@@ -52,7 +52,7 @@ extern "C"
 	typedef void __cdecl VTResume(void);
 };
 
-class ENGINE_API CXRay
+class ENGINE_API CEngine
 {
 private:
 	HMODULE hGame;
@@ -97,8 +97,8 @@ public:
 	void LoadLibraries();
 	void UnloadLibraries();
 
-	CXRay();
-	~CXRay();
+	CEngine();
+	~CEngine();
 
 	void Run();
 	bool Initialize();
@@ -107,11 +107,11 @@ public:
 extern xrDispatchTable PSGP;
 ////////////////////////////////////////////////////////////////////////////////
 // Объявляем глобальный указатель, чтобы его видели другие .cpp файлы
-extern ENGINE_API CXRay* g_XRay;
+extern ENGINE_API CEngine* g_Engine;
 
 // "Обманываем" старый код, который пишет Engine.Event...
 // Теперь Engine разыменовывается в наш глобальный объект
-#define Engine (*g_XRay)
+#define Engine (*g_Engine)
 
 #define NEW_INSTANCE(a) Engine.pCreate(a)
 #define DEL_INSTANCE(a)                                                                                                \
