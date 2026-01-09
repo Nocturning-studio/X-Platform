@@ -733,8 +733,6 @@ void CConsole::Hide()
 	{
 		return;
 	}
-	//	if  ( g_pGameLevel ||
-	//		( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ))
 
 	if (pInput->get_exclusive_mode())
 	{

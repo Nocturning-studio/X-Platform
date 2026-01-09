@@ -258,7 +258,7 @@ bool CMainMenu::IsActive()
 static int mm_mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
 void CMainMenu::IR_OnMousePress(int btn)
 {
-	DebugUI->IR_OnMousePress(mm_mouse_button_2_key[btn]);
+	Engine.DebugUI.IR_OnMousePress(mm_mouse_button_2_key[btn]);
 
 	if (!IsActive())
 		return;
@@ -295,7 +295,7 @@ void CMainMenu::IR_OnMouseStop(int x, int y){};
 
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {
-	DebugUI->IR_OnKeyboardPress(dik);
+	Engine.DebugUI.IR_OnKeyboardPress(dik);
 
 	if (!IsActive())
 		return;
@@ -326,7 +326,7 @@ void CMainMenu::IR_OnKeyboardRelease(int dik)
 
 void CMainMenu::IR_OnKeyboardHold(int dik)
 {
-	DebugUI->IR_OnKeyboardHold(dik);
+	Engine.DebugUI.IR_OnKeyboardHold(dik);
 
 	if (!IsActive())
 		return;

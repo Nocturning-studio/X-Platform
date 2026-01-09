@@ -46,7 +46,7 @@ BOOL CRenderDevice::Begin()
 		}
 	}
 
-	DebugUI->OnFrameBegin();
+	Engine.DebugUI.OnFrameBegin();
 
 	CHK_DX(HW.pDevice->BeginScene());
 
@@ -114,7 +114,7 @@ void CRenderDevice::End(void)
 	Memory.dbg_check();
 	CHK_DX(HW.pDevice->EndScene());
 
-	DebugUI->OnFrameEnd();
+	Engine.DebugUI.OnFrameEnd();
 
 	BOOL needsPresent = TRUE;
 
@@ -311,7 +311,7 @@ void CRenderDevice::StartEventLoop()
 				{
 					if (Begin())
 					{
-						DebugUI->DrawUI();
+						Engine.DebugUI.DrawUI();
 						seqRender.Process(rp_Render);
 
 						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) ||

@@ -66,21 +66,21 @@ static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
 
 void CLevel::IR_OnMousePress(int btn)
 {
-	DebugUI->IR_OnMousePress(mouse_button_2_key[btn]);
+	Engine.DebugUI.IR_OnMousePress(mouse_button_2_key[btn]);
 
 	IR_OnKeyboardPress(mouse_button_2_key[btn]);
 }
 
 void CLevel::IR_OnMouseRelease(int btn)
 {
-	DebugUI->IR_OnMouseRelease(mouse_button_2_key[btn]);
+	Engine.DebugUI.IR_OnMouseRelease(mouse_button_2_key[btn]);
 
 	IR_OnKeyboardRelease(mouse_button_2_key[btn]);
 }
 
 void CLevel::IR_OnMouseHold(int btn)
 {
-	DebugUI->IR_OnMouseHold(mouse_button_2_key[btn]);
+	Engine.DebugUI.IR_OnMouseHold(mouse_button_2_key[btn]);
 
 	IR_OnKeyboardHold(mouse_button_2_key[btn]);
 }
@@ -143,7 +143,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 	EGameActions _curr = get_binded_action(key);
 
 	//Msg("Keyboard pressed");
-	DebugUI->IR_OnKeyboardPress(key);
+	Engine.DebugUI.IR_OnKeyboardPress(key);
 
 	switch (_curr)
 	{
@@ -419,7 +419,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 {
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 
-	DebugUI->IR_OnKeyboardRelease(key);
+	Engine.DebugUI.IR_OnKeyboardRelease(key);
 
 	if (g_bDisableAllInput)
 		return;
@@ -442,7 +442,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
-	DebugUI->IR_OnKeyboardHold(key);
+	Engine.DebugUI.IR_OnKeyboardHold(key);
 
 	if (g_bDisableAllInput)
 		return;

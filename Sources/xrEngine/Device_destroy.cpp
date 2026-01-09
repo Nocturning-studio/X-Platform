@@ -62,7 +62,7 @@ void CRenderDevice::Reset(bool precache)
 {
 	OPTICK_EVENT("CRenderDevice::Reset");
 
-	DebugUI->OnResetBegin();
+	Engine.DebugUI.OnResetBegin();
 
 #ifdef DEBUG
 	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
@@ -109,7 +109,7 @@ void CRenderDevice::Reset(bool precache)
 	if (b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
 		g_pGameLevel->pHUD->OnScreenRatioChanged();
 
-	DebugUI->OnResetEnd();
+	Engine.DebugUI.OnResetEnd();
 
 #ifdef DEBUG
 	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);

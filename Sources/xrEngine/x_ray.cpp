@@ -20,10 +20,7 @@
 #include <process.h>
 #include "../xrDiscordAPI/DiscordAPI.h"
 #include "build_identificator.h"
-#include "debug_ui.h"
 #include "LogoWindow.h"
-//////////////////////////////////////////////////////////////////////////
-ENGINE_API CDebugUI* DebugUI = nullptr;
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
@@ -237,8 +234,7 @@ bool CXRay::Initialize()
 	execUserScript();
 	InitSound();
 
-	DebugUI = new CDebugUI();
-	DebugUI->Initialize();
+	DebugUI.Initialize();
 
 	HandleComandLine();
 
@@ -394,8 +390,7 @@ void CXRay::Destroy()
 	
 	GameStateManager.Destroy();
 
-	DebugUI->Destroy();
-	delete DebugUI;
+	DebugUI.Destroy();
 
 	Device.Destroy();
 	Sheduler.Destroy();

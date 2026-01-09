@@ -16,6 +16,7 @@ struct xrDispatchTable;
 #include "LevelManager.h"
 #include "LevelLoadingScreen.h"
 #include "FontManager.h"
+#include "debug_ui.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure
@@ -75,6 +76,7 @@ public:
 	CLevelLoadingScreen LoadingScreen;
 	CFontManager FontManager;
 	CGameStateManager GameStateManager;
+	CDebugUI DebugUI;
 
 public:
 	void InitSettings();
