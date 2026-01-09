@@ -89,7 +89,7 @@ void CUICursor::UpdateCursorPosition()
 	p.y = NULL;
 
 	R_ASSERT(GetCursorPos(&p));
-	R_ASSERT(ScreenToClient(Device.m_hWnd, &p));
+	R_ASSERT(ScreenToClient(Engine.WindowManager.GetHandle(), &p));
 
 	vPrevPos = vPos;
 
@@ -105,7 +105,7 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 	clamp(pos.x, 0.f, UI_BASE_WIDTH);
 	clamp(pos.y, 0.f, UI_BASE_HEIGHT);
 
-	HWND hWnd = Device.m_hWnd;
+	HWND hWnd = Engine.WindowManager.GetHandle();
 
 	// 1) Текущая клиентка
 	RECT rc{};

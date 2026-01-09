@@ -34,34 +34,6 @@ ENGINE_API BOOL g_bRendering = FALSE;
 BOOL g_bLoaded = FALSE;
 ref_light precache_light = 0;
 /////////////////////////////////////
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch (uMsg)
-	{
-	case WM_ACTIVATE:
-		Device.OnWM_Activate(wParam, lParam);
-		break;
-	case WM_SETCURSOR:
-		return 1;
-	case WM_SYSCOMMAND:
-		switch (wParam)
-		{
-		case SC_MOVE:
-		case SC_SIZE:
-		case SC_MAXIMIZE:
-		case SC_MONITORPOWER:
-			return 1;
-		}
-		break;
-	case WM_CLOSE:
-		Console->Execute("quit");
-		return 0;
-	case WM_KEYDOWN:
-		break;
-	}
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
@@ -154,7 +126,7 @@ void CRenderDevice::End(void)
 	// 1. Мы в режиме precache
 	// 2. Нет активных изменений
 	// 3. Окно минимизировано
-	if (dwPrecacheFrame || !b_is_Active || IsIconic(m_hWnd))
+	if (dwPrecacheFrame || !b_is_Active || IsIconic(Engine.WindowManager.GetHandle()))
 	{
 		needsPresent = FALSE;
 	}
@@ -638,9 +610,10 @@ void CRenderDevice::Create()
 	psCurrentVidMode[1] = dwHeight;
 #endif
 
-	HW.CreateDevice(m_hWnd);
+	HW.CreateDevice(Engine.WindowManager.GetHandle());
 	dwWidth = HW.DevPP.BackBufferWidth;
 	dwHeight = HW.DevPP.BackBufferHeight;
+	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
 	fFOV = 90.f;
@@ -731,9 +704,10 @@ void CRenderDevice::Reset(bool precache)
 
 	Resources->reset_begin();
 	Memory.mem_compact();
-	HW.Reset(m_hWnd);
+	HW.Reset(Engine.WindowManager.GetHandle());
 	dwWidth = HW.DevPP.BackBufferWidth;
 	dwHeight = HW.DevPP.BackBufferHeight;
+	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
 	Resources->reset_end();
@@ -775,43 +749,10 @@ void CRenderDevice::Initialize()
 	TimerGlobal.Start();
 	TimerMM.Start();
 
-	// Unless a substitute hWnd has been specified, create a window to render into
-	if (m_hWnd == NULL)
-	{
-		const char* wndclass = "_XRAY_";
-
-		// Register the windows class
-		HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
-		WNDCLASS wndClass = {0,
-							 WndProc,
-							 0,
-							 0,
-							 hInstance,
-							 LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)),
-							 LoadCursor(NULL, IDC_ARROW),
-							 (HBRUSH)GetStockObject(BLACK_BRUSH),
-							 NULL,
-							 wndclass};
-		RegisterClass(&wndClass);
-
-		// Set the window's initial style
-		m_dwWindowStyle = WS_BORDER | WS_DLGFRAME;
-
-		// Set the window's initial width
-		RECT rc;
-		SetRect(&rc, 0, 0, 640, 480);
-		AdjustWindowRect(&rc, m_dwWindowStyle, FALSE);
-
-		// Create the render window
-		m_hWnd = CreateWindow(wndclass, "S.T.A.L.K.E.R.: Shadow Of Chernobyl", m_dwWindowStyle,
-							  /*rc.left, rc.top, */ CW_USEDEFAULT, CW_USEDEFAULT, (rc.right - rc.left),
-							  (rc.bottom - rc.top), 0L, 0, hInstance, 0L);
-	}
-
 	// Save window properties
-	m_dwWindowStyle = GetWindowLong(m_hWnd, GWL_STYLE);
-	GetWindowRect(m_hWnd, &m_rcWindowBounds);
-	GetClientRect(m_hWnd, &m_rcWindowClient);
+	m_dwWindowStyle = GetWindowLong(Engine.WindowManager.GetHandle(), GWL_STYLE);
+	GetWindowRect(Engine.WindowManager.GetHandle(), &m_rcWindowBounds);
+	GetClientRect(Engine.WindowManager.GetHandle(), &m_rcWindowClient);
 
 	// Command line
 	char* lpCmdLine = Core.Params;

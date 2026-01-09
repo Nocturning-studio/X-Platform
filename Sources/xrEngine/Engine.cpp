@@ -126,6 +126,8 @@ bool CEngine::Initialize()
 	msCreate("game");
 #endif
 
+	WindowManager.Initialize();
+
 	// 8. Device Base Init (без создания окна/контекста, только структуры)
 	Device.Initialize();
 
@@ -236,7 +238,7 @@ bool CEngine::Initialize()
 		Console->ExecuteScript(Console->ConfigFile);
 
 		Msg("Initializing Sound...");
-		CSound_manager_interface::_create(u64(Device.m_hWnd));
+		CSound_manager_interface::_create(u64(WindowManager.GetHandle()));
 	}
 
 	DebugUI.Initialize();
@@ -269,6 +271,7 @@ bool CEngine::Initialize()
 	}
 
 	// 14. Final Systems Create
+
 	Device.Create();
 
 	LALib.OnCreate();
@@ -293,29 +296,25 @@ bool CEngine::Initialize()
 
 	Logo->Hide();
 
-	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+	//ShowWindow(Engine.WindowManager.GetHandle(), SW_SHOWNORMAL);
 
 	return true;
 }
 
 void CEngine::ProcessEventLoop()
 {
+	// Подготовка потоков (из предыдущего шага)
 	Device.PrepareEventLoop();
 
-	MSG msg;
-	ZeroMemory(&msg, sizeof(msg));
-
-	while (msg.message != WM_QUIT)
+	// Основной цикл теперь выглядит так:
+	while (true)
 	{
-		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else
-		{
-			Device.DoFrame();
-		}
+		// 1. Обработка сообщений ОС (Window Manager)
+		if (!WindowManager.ProcessMessages())
+			break; // Если вернул false -> WM_QUIT -> выходим
+
+		// 2. Игровой кадр (Render Device)
+		Device.DoFrame();
 	}
 
 	Device.EndEventLoop();
@@ -352,6 +351,8 @@ void CEngine::Destroy()
 	GameStateManager.Destroy();
 
 	DebugUI.Destroy();
+
+	WindowManager.Destroy();
 
 	// 6. Device & Scheduler
 	Device.Destroy();

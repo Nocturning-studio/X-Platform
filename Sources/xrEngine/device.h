@@ -49,7 +49,6 @@ class ENGINE_API CRenderDevice
 	void _SetupStates();
 
   public:
-	HWND m_hWnd;
 	LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
 
 	u32 dwFrame;
@@ -149,7 +148,6 @@ class ENGINE_API CRenderDevice
 		  mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
 #endif // PROFILE_CRITICAL_SECTIONS
 	{
-		m_hWnd = NULL;
 		b_is_Active = FALSE;
 		b_is_Ready = FALSE;
 		Timer.Start();

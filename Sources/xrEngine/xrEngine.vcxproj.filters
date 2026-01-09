@@ -166,9 +166,6 @@
     <Filter Include="CPU Pipe\Kernel">
       <UniqueIdentifier>{e9c49a80-d1d7-4fe9-89e4-6adde51291e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\LogoWindow">
-      <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game API\Game Level %28Maps/Scenes%29">
       <UniqueIdentifier>{9698ab8f-4772-4318-9d5f-e35b907be079}</UniqueIdentifier>
     </Filter>
@@ -210,6 +207,15 @@
     </Filter>
     <Filter Include="General\Entry point">
       <UniqueIdentifier>{3d1057e9-5839-455b-bdbe-453c68af805c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Windows %28Splash/Main window%29">
+      <UniqueIdentifier>{ae13243b-4395-4700-aab9-79025012a2af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Windows %28Splash/Main window%29\Window manager">
+      <UniqueIdentifier>{7235f8b4-1e1c-47e8-bda0-90e0dba689ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Windows %28Splash/Main window%29\Logo window">
+      <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -604,7 +610,7 @@
       <Filter>Game API\Environment</Filter>
     </ClInclude>
     <ClInclude Include="LogoWindow.h">
-      <Filter>Engine\LogoWindow</Filter>
+      <Filter>Engine\Windows %28Splash/Main window%29\Logo window</Filter>
     </ClInclude>
     <ClInclude Include="IGame_Level.h">
       <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
@@ -635,6 +641,9 @@
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Engine\Windows %28Splash/Main window%29\Window manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1050,7 +1059,7 @@
       <Filter>Game API\Environment</Filter>
     </ClCompile>
     <ClCompile Include="LogoWindow.cpp">
-      <Filter>Engine\LogoWindow</Filter>
+      <Filter>Engine\Windows %28Splash/Main window%29\Logo window</Filter>
     </ClCompile>
     <ClCompile Include="IGame_Level.cpp">
       <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
@@ -1081,6 +1090,9 @@
     </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowManager.cpp">
+      <Filter>Engine\Windows %28Splash/Main window%29\Window manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

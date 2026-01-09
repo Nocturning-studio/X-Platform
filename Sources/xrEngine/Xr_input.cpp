@@ -115,7 +115,7 @@ HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
 
 	// Set the cooperativity level to let DirectInput know how this device
 	// should interact with the system and with other DirectInput applications.
-	HRESULT _hr = (*device)->SetCooperativeLevel(Device.m_hWnd, dwFlags);
+	HRESULT _hr = (*device)->SetCooperativeLevel(Engine.WindowManager.GetHandle(), dwFlags);
 	if (FAILED(_hr) && (_hr == E_NOTIMPL))
 		Msg("! INPUT: Can't set coop level. Emulation???");
 	else
@@ -512,10 +512,10 @@ IInputReceiver* CInput::CurrentIR()
 void CInput::exclusive_mode(const bool& exclusive)
 {
 	g_exclusive = exclusive;
-	pKeyboard->SetCooperativeLevel(Device.m_hWnd,
+	pKeyboard->SetCooperativeLevel(Engine.WindowManager.GetHandle(),
 								   (exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
 
-	pMouse->SetCooperativeLevel(Device.m_hWnd,
+	pMouse->SetCooperativeLevel(Engine.WindowManager.GetHandle(),
 								(exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY);
 }
 

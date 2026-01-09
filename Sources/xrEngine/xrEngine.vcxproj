@@ -1813,6 +1813,7 @@
     <ClInclude Include="tss_def.h" />
     <ClInclude Include="vis_common.h" />
     <ClInclude Include="WaveForm.h" />
+    <ClInclude Include="WindowManager.h" />
     <ClInclude Include="xrCPU_Pipe.h" />
     <ClInclude Include="xrCPU_Pipe\xrCPU_Pipe.h" />
     <ClInclude Include="xrHemisphere.h" />
@@ -2122,6 +2123,7 @@
     <ClCompile Include="thunderbolt.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="tss_def.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="win_entry_point.cpp" />
     <ClCompile Include="xrCPU_Pipe\3DNow!Lib.cpp" />
     <ClCompile Include="xrCPU_Pipe\xrCPU_Pipe.cpp" />

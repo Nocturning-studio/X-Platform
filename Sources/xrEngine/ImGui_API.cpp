@@ -23,7 +23,7 @@ void CImguiAPI::Initialize()
 	// ImGui::StyleColorsLight();
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplWin32_Init(Device.m_hWnd);
+	ImGui_ImplWin32_Init(Engine.WindowManager.GetHandle());
 	ImGui_ImplDX9_Init(HW.pDevice);
 
 	// Load Fonts
