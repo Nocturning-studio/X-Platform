@@ -17,28 +17,8 @@ struct xrDispatchTable;
 #include "LevelLoadingScreen.h"
 #include "FontManager.h"
 #include "debug_ui.h"
+#include "pure.h"
 ////////////////////////////////////////////////////////////////////////////////
-// Abstract 'Pure' class for DLL interface
-class ENGINE_API DLL_Pure
-{
-  public:
-	CLASS_ID CLS_ID;
-
-	DLL_Pure(void* params)
-	{
-		CLS_ID = 0;
-	};
-	DLL_Pure()
-	{
-		CLS_ID = 0;
-	};
-	virtual DLL_Pure* _construct()
-	{
-		return this;
-	}
-	virtual ~DLL_Pure(){};
-};
-
 // Class creation/destroying interface
 extern "C"
 {
@@ -53,16 +33,16 @@ extern "C"
 	typedef void __cdecl VTResume(void);
 };
 
-class ENGINE_API CXRay
+class ENGINE_API CEngine
 {
-private:
+  private:
 	HMODULE hGame;
 	HMODULE hRender;
 	HMODULE hTuner;
 	HMODULE hDiscordAPI;
 	HMODULE hOptick;
 
-public:
+  public:
 	Factory_Create* pCreate;
 	Factory_Destroy* pDestroy;
 
@@ -78,47 +58,29 @@ public:
 	CGameStateManager GameStateManager;
 	CDebugUI DebugUI;
 
-public:
-	void InitSettings();
-	void InitConsole();
-	void InitInput();
-	void InitSound();
-	
-	void destroySettings();
-	void destroyConsole();
-	void destroyInput();
-	void destroySound();
+  public:
+	// Конструктор/Деструктор
+	CEngine();
+	~CEngine();
 
-	void execUserScript();
-
-	void ProcessEventLoop();
-	void Destroy();
-
-	void DecodeResources();
-
-	void LoadLibraries();
-	void UnloadLibraries();
-
-	CXRay();
-	~CXRay();
-
-	void Run();
-	bool Initialize();
+	// Основные жизненные циклы (Методы, которые остались)
+	bool Initialize(); // Вся инициализация (Console, Sound, Device, Input, DLLs) теперь здесь
+	void Run();		   // Запуск Loop (Init -> Loop -> Destroy)
+	void Destroy();	   // Очистка ресурсов
 };
 ////////////////////////////////////////////////////////////////////////////////
 extern xrDispatchTable PSGP;
 ////////////////////////////////////////////////////////////////////////////////
 // Объявляем глобальный указатель, чтобы его видели другие .cpp файлы
-extern ENGINE_API CXRay* g_XRay;
+extern ENGINE_API CEngine* g_Engine;
 
 // "Обманываем" старый код, который пишет Engine.Event...
-// Теперь Engine разыменовывается в наш глобальный объект
-#define Engine (*g_XRay)
+#define Engine (*g_Engine)
 
 #define NEW_INSTANCE(a) Engine.pCreate(a)
 #define DEL_INSTANCE(a)                                                                                                \
 	{                                                                                                                  \
-		Engine.pDestroy(a);                                                                                   \
+		Engine.pDestroy(a);                                                                                            \
 		a = NULL;                                                                                                      \
 	}
 ////////////////////////////////////////////////////////////////////////////////

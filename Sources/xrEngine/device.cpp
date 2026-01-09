@@ -12,7 +12,7 @@
 #include <d3dx9.h>
 #pragma warning(default : 4995)
 
-#include "x_ray.h"
+#include "Engine.h"
 #include "render.h"
 #pragma warning(push)
 #pragma warning(disable : 4995)
@@ -24,12 +24,44 @@
 
 #include "debug_ui.h"
 
+#include "xr_ioc_cmd.h"
+
+#include "resource.h"
+
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;
 
 BOOL g_bLoaded = FALSE;
 ref_light precache_light = 0;
 /////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_ACTIVATE:
+		Device.OnWM_Activate(wParam, lParam);
+		break;
+	case WM_SETCURSOR:
+		return 1;
+	case WM_SYSCOMMAND:
+		switch (wParam)
+		{
+		case SC_MOVE:
+		case SC_SIZE:
+		case SC_MAXIMIZE:
+		case SC_MONITORPOWER:
+			return 1;
+		}
+		break;
+	case WM_CLOSE:
+		Console->Execute("quit");
+		return 0;
+	case WM_KEYDOWN:
+		break;
+	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
@@ -523,4 +555,377 @@ void CRenderDevice::stop_time()
 	Timer.time_factor(0.0001f);
 	TimerGlobal.time_factor(0.0001f);
 	psTimeFactor = 0.0001f;
+}
+
+void CRenderDevice::_SetupStates()
+{
+	OPTICK_EVENT("CRenderDevice::_SetupStates");
+
+	// General Render States
+	mView.identity();
+	mProject.identity();
+	mFullTransform.identity();
+	vCameraPosition.set(0, 0, 0);
+	vCameraDirection.set(0, 0, 1);
+	vCameraTop.set(0, 1, 0);
+	vCameraRight.set(1, 0, 0);
+
+	HW.Caps.Update();
+	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+	{
+		float fBias = -.5f;
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 4));
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&fBias))));
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
+	}
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_DITHERENABLE, TRUE));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORVERTEX, TRUE));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, TRUE));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_LOCALVIEWER, TRUE));
+
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, D3DMCS_COLOR1));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE));
+
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID));
+
+	// ******************** Fog parameters
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGCOLOR, 0));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_RANGEFOGENABLE, FALSE));
+	if (HW.Caps.bTableFog)
+	{
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_EXP2));
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE));
+	}
+	else
+	{
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_NONE));
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_EXP2));
+	}
+}
+
+void CRenderDevice::_Create(LPCSTR shName)
+{
+	OPTICK_EVENT("CRenderDevice::_Create");
+
+	Memory.mem_compact();
+
+	// after creation
+	b_is_Ready = TRUE;
+	_SetupStates();
+
+	// Signal everyone - device created
+	RenderBackend.OnDeviceCreate();
+	Gamma.Update();
+	Resources->OnDeviceCreate(shName);
+	::Render->create();
+	Statistic->OnDeviceCreate();
+
+#ifndef DEDICATED_SERVER
+	m_WireShader.create("hud\\crosshair");
+	m_SelectionShader.create("hud\\crosshair");
+
+	DU.OnDeviceCreate();
+#endif
+
+	dwFrame = 0;
+}
+
+void CRenderDevice::Create()
+{
+	OPTICK_EVENT("CRenderDevice::Create");
+
+	if (b_is_Ready)
+		return; // prevent double call
+	Statistic = xr_new<CStats>();
+	Log("\nStarting RENDER device...");
+
+#ifdef _EDITOR
+	psCurrentVidMode[0] = dwWidth;
+	psCurrentVidMode[1] = dwHeight;
+#endif
+
+	HW.CreateDevice(m_hWnd);
+	dwWidth = HW.DevPP.BackBufferWidth;
+	dwHeight = HW.DevPP.BackBufferHeight;
+	fWidth_2 = float(dwWidth / 2);
+	fHeight_2 = float(dwHeight / 2);
+	fFOV = 90.f;
+	fASPECT = 1.f;
+
+	string_path fname;
+	FS.update_path(fname, "$game_data$", "shaders.xr");
+
+	//////////////////////////////////////////////////////////////////////////
+	Resources = xr_new<CResourceManager>();
+	_Create(fname);
+
+	PreCache(0);
+}
+
+void CRenderDevice::_Destroy(BOOL bKeepTextures)
+{
+	OPTICK_EVENT("CRenderDevice::_Destroy");
+
+	DU.OnDeviceDestroy();
+	m_WireShader.destroy();
+	m_SelectionShader.destroy();
+
+	// before destroy
+	b_is_Ready = FALSE;
+	Statistic->OnDeviceDestroy();
+	::Render->destroy();
+	RenderBackend.DeleteResources();
+	Resources->OnDeviceDestroy(bKeepTextures);
+	RenderBackend.OnDeviceDestroy();
+
+	Memory.mem_compact();
+}
+
+void CRenderDevice::Destroy(void)
+{
+	OPTICK_EVENT("CRenderDevice::Destroy");
+
+	if (!b_is_Ready)
+		return;
+
+	Log("\nDestroying Direct3D...");
+
+	ShowCursor(TRUE);
+	HW.Validate();
+
+	_Destroy(FALSE);
+
+	xr_delete(Resources);
+
+	// real destroy
+	HW.DestroyDevice();
+
+	seqRender.R.clear();
+	seqAppActivate.R.clear();
+	seqAppDeactivate.R.clear();
+	seqAppStart.R.clear();
+	seqAppEnd.R.clear();
+	seqFrame.R.clear();
+	seqFrameMT.R.clear();
+	seqDeviceReset.R.clear();
+	seqParallel.clear();
+
+	xr_delete(Statistic);
+}
+
+#include "IGame_Level.h"
+#include "CustomHUD.h"
+void CRenderDevice::Reset(bool precache)
+{
+	OPTICK_EVENT("CRenderDevice::Reset");
+
+	Engine.DebugUI.OnResetBegin();
+
+#ifdef DEBUG
+	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
+#endif // DEBUG
+	bool b_16_before = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
+
+	ShowCursor(TRUE);
+	u32 tm_start = TimerAsync();
+	// if (g_pGamePersistent)
+	//{
+	//.		g_pGamePersistent->Environment().OnDeviceDestroy();
+	//}
+
+	RenderBackend.reset_begin();
+
+	Resources->reset_begin();
+	Memory.mem_compact();
+	HW.Reset(m_hWnd);
+	dwWidth = HW.DevPP.BackBufferWidth;
+	dwHeight = HW.DevPP.BackBufferHeight;
+	fWidth_2 = float(dwWidth / 2);
+	fHeight_2 = float(dwHeight / 2);
+	Resources->reset_end();
+
+	if (g_pGamePersistent)
+	{
+		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
+	}
+	_SetupStates();
+	// if (precache)
+	//	PreCache(20);
+	u32 tm_end = TimerAsync();
+	Msg("*** RESET [%d ms]", tm_end - tm_start);
+
+#ifndef DEDICATED_SERVER
+	ShowCursor(FALSE);
+#endif
+
+	seqDeviceReset.Process(rp_DeviceReset);
+
+	RenderBackend.reset_end();
+
+	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
+	if (b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
+		g_pGameLevel->pHUD->OnScreenRatioChanged();
+
+	Engine.DebugUI.OnResetEnd();
+
+#ifdef DEBUG
+	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
+#endif // DEBUG
+}
+
+void CRenderDevice::Initialize()
+{
+	OPTICK_EVENT("CRenderDevice::Initialize");
+
+	Msg("Initializing Render Device...");
+	TimerGlobal.Start();
+	TimerMM.Start();
+
+	// Unless a substitute hWnd has been specified, create a window to render into
+	if (m_hWnd == NULL)
+	{
+		const char* wndclass = "_XRAY_";
+
+		// Register the windows class
+		HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
+		WNDCLASS wndClass = {0,
+							 WndProc,
+							 0,
+							 0,
+							 hInstance,
+							 LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)),
+							 LoadCursor(NULL, IDC_ARROW),
+							 (HBRUSH)GetStockObject(BLACK_BRUSH),
+							 NULL,
+							 wndclass};
+		RegisterClass(&wndClass);
+
+		// Set the window's initial style
+		m_dwWindowStyle = WS_BORDER | WS_DLGFRAME;
+
+		// Set the window's initial width
+		RECT rc;
+		SetRect(&rc, 0, 0, 640, 480);
+		AdjustWindowRect(&rc, m_dwWindowStyle, FALSE);
+
+		// Create the render window
+		m_hWnd = CreateWindow(wndclass, "S.T.A.L.K.E.R.: Shadow Of Chernobyl", m_dwWindowStyle,
+							  /*rc.left, rc.top, */ CW_USEDEFAULT, CW_USEDEFAULT, (rc.right - rc.left),
+							  (rc.bottom - rc.top), 0L, 0, hInstance, 0L);
+	}
+
+	// Save window properties
+	m_dwWindowStyle = GetWindowLong(m_hWnd, GWL_STYLE);
+	GetWindowRect(m_hWnd, &m_rcWindowBounds);
+	GetClientRect(m_hWnd, &m_rcWindowClient);
+
+	// Command line
+	char* lpCmdLine = Core.Params;
+	if (strstr(lpCmdLine, "-gpu_sw") != NULL)
+		HW.Caps.bForceGPU_SW = TRUE;
+	else
+		HW.Caps.bForceGPU_SW = FALSE;
+	if (strstr(lpCmdLine, "-gpu_nopure") != NULL)
+		HW.Caps.bForceGPU_NonPure = TRUE;
+	else
+		HW.Caps.bForceGPU_NonPure = FALSE;
+	if (strstr(lpCmdLine, "-gpu_ref") != NULL)
+		HW.Caps.bForceGPU_REF = TRUE;
+	else
+		HW.Caps.bForceGPU_REF = FALSE;
+}
+
+// *****************************************************************************************
+// Error handling
+
+//----------------------------- FLAGS
+static struct _DF
+{
+	char* name;
+	u32 mask;
+} DF[] = {{"rsFullscreen", rsFullscreen},
+		  {"rsClearBB", rsClearBB},
+		  {"rsVSync", rsVSync},
+		  {"rsWireframe", rsWireframe},
+		  {NULL, 0}};
+
+void CRenderDevice::DumpFlags()
+{
+	Log("- Dumping device flags");
+	_DF* p = DF;
+	while (p->name)
+	{
+		Msg("* %20s %s", p->name, psDeviceFlags.test(p->mask) ? "on" : "off");
+		p++;
+	}
+}
+
+void CRenderDevice::overdrawBegin()
+{
+	OPTICK_EVENT("CRenderDevice::overdrawBegin");
+
+	// Turn stenciling
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILREF, 0));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILMASK, 0x00000000));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff));
+
+	// Increment the stencil buffer for each pixel drawn
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT));
+
+	if (1 == HW.Caps.SceneMode)
+	{
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP));
+	} // Overdraw
+	else
+	{
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT));
+	} // ZB access
+}
+
+void CRenderDevice::overdrawEnd()
+{
+	OPTICK_EVENT("CRenderDevice::overdrawEnd");
+
+	// Set up the stencil states
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL));
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILMASK, 0xff));
+
+	// Set the background to black
+	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_XRGB(255, 0, 0), 0, 0);
+
+	// Draw a rectangle wherever the count equal I
+	RenderBackend.OnFrameEnd();
+	CHK_DX(HW.pDevice->SetFVF(FVF::F_TL));
+
+	// Render gradients
+	for (int I = 0; I < 12; I++)
+	{
+		u32 _c = I * 256 / 13;
+		u32 c = D3DCOLOR_XRGB(_c, _c, _c);
+
+		FVF::TL pv[4];
+		pv[0].set(float(0), float(dwHeight), c, 0, 0);
+		pv[1].set(float(0), float(0), c, 0, 0);
+		pv[2].set(float(dwWidth), float(dwHeight), c, 0, 0);
+		pv[3].set(float(dwWidth), float(0), c, 0, 0);
+
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILREF, I));
+		CHK_DX(HW.pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
+	}
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE));
 }

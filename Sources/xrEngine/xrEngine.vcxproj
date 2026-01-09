@@ -1833,7 +1833,7 @@
     <ClInclude Include="xr_ioc_cmd.h" />
     <ClInclude Include="xr_object.h" />
     <ClInclude Include="xr_object_list.h" />
-    <ClInclude Include="x_ray.h" />
+    <ClInclude Include="Engine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ai_script_lua_debug.cpp" />
@@ -1851,12 +1851,6 @@
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="demo_common.cpp" />
     <ClCompile Include="device.cpp" />
-    <ClCompile Include="Device_create.cpp" />
-    <ClCompile Include="Device_destroy.cpp" />
-    <ClCompile Include="Device_Initialize.cpp" />
-    <ClCompile Include="Device_Misc.cpp" />
-    <ClCompile Include="Device_overdraw.cpp" />
-    <ClCompile Include="Device_wndproc.cpp" />
     <ClCompile Include="doug_lea_memory_allocator.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">
       </PrecompiledHeader>
@@ -2181,7 +2175,7 @@
     <ClCompile Include="xr_ioc_cmd.cpp" />
     <ClCompile Include="xr_object.cpp" />
     <ClCompile Include="xr_object_list.cpp" />
-    <ClCompile Include="x_ray.cpp" />
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="_scripting.cpp" />
   </ItemGroup>
   <ItemGroup>

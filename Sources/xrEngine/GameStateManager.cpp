@@ -5,7 +5,7 @@
 #include "igame_persistent.h"
 #include "xr_input.h"
 #include "xr_ioconsole.h"
-#include "x_ray.h"
+#include "Engine.h"
 #include "std_classes.h"
 #include "GameFont.h"
 #include "resource.h"

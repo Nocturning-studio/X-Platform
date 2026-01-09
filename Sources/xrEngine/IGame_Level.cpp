@@ -2,7 +2,7 @@
 #include "igame_level.h"
 #include "igame_persistent.h"
 
-#include "x_ray.h"
+#include "Engine.h"
 #include "std_classes.h"
 #include "customHUD.h"
 #include "render.h"

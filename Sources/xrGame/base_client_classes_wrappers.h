@@ -10,7 +10,7 @@
 
 #include "script_export_space.h"
 #include "base_client_classes.h"
-#include "../xrEngine/x_ray.h"
+#include "../xrEngine/Engine.h"
 #include "../xrEngine/ispatial.h"
 #include "../xrEngine/isheduled.h"
 #include "../xrEngine/irenderable.h"

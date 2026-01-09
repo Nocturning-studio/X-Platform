@@ -151,9 +151,6 @@
     <Filter Include="General\Defines">
       <UniqueIdentifier>{7c9382ce-d352-456c-9a03-11f55a545226}</UniqueIdentifier>
     </Filter>
-    <Filter Include="General\Core">
-      <UniqueIdentifier>{3d1057e9-5839-455b-bdbe-453c68af805c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\UI">
       <UniqueIdentifier>{83fb0322-54fe-475c-b767-42e276abd678}</UniqueIdentifier>
     </Filter>
@@ -207,6 +204,12 @@
     </Filter>
     <Filter Include="Game API\Game state manager">
       <UniqueIdentifier>{f7a65081-dab7-436e-9519-2bb4fb62d2cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core">
+      <UniqueIdentifier>{2014cfbf-992d-4909-95a5-9c43100d9451}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General\Entry point">
+      <UniqueIdentifier>{3d1057e9-5839-455b-bdbe-453c68af805c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -564,9 +567,6 @@
     <ClInclude Include="defines.h">
       <Filter>General\Defines</Filter>
     </ClInclude>
-    <ClInclude Include="x_ray.h">
-      <Filter>General\Core</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui_API.h">
       <Filter>Interfaces\UI</Filter>
     </ClInclude>
@@ -632,6 +632,9 @@
     </ClInclude>
     <ClInclude Include="GameStateManager.h">
       <Filter>Game API\Game state manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -792,24 +795,6 @@
       <Filter>Render\Font output</Filter>
     </ClCompile>
     <ClCompile Include="device.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_create.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_destroy.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_Initialize.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_Misc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_overdraw.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_wndproc.cpp">
       <Filter>Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="StatGraph.cpp">
@@ -1002,10 +987,7 @@
       <Filter>General\Defines</Filter>
     </ClCompile>
     <ClCompile Include="win_entry_point.cpp">
-      <Filter>General\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="x_ray.cpp">
-      <Filter>General\Core</Filter>
+      <Filter>General\Entry point</Filter>
     </ClCompile>
     <ClCompile Include="ImGui_API.cpp">
       <Filter>Interfaces\UI</Filter>
@@ -1096,6 +1078,9 @@
     </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
       <Filter>Game API\Game state manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@
 #include "cl_intersect.h"
 
 #include "igame_level.h"
-#include "x_ray.h"
+#include "Engine.h"
 #include "GameFont.h"
 
 using namespace collide;
