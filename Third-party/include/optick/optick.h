@@ -1022,3 +1022,9 @@ struct OptickApp
 #define OPTICK_SAVE_CAPTURE(...)
 #define OPTICK_APP(NAME)
 #endif
+
+#define PROFILE_FUNCTION() OPTICK_EVENT(__FUNCTION__)
+
+// Альтернативный вариант (если вдруг захочется больше деталей, включая аргументы)
+// Передает "void ClassName::MethodName(int arg)"
+#define PROFILE_FUNCTION_FULL() OPTICK_EVENT(__FUNCSIG__)

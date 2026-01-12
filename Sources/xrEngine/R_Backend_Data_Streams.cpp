@@ -36,10 +36,7 @@ void VertexStream::Destroy()
 
 void* VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
 {
-	OPTICK_EVENT("VertexStream::Lock");
-
 #ifdef DEBUG
-	OPTICK_EVENT("PGO:VB_LOCK:%d", vl_Count);
 	VERIFY(0 == dbg_lock);
 	dbg_lock++;
 #endif
@@ -78,10 +75,7 @@ void* VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
 
 void VertexStream::Unlock(u32 Count, u32 Stride)
 {
-	OPTICK_EVENT("VertexStream::Unlock");
-
 #ifdef DEBUG
-	OPTICK_EVENT("PGO:VB_UNLOCK:%d");
 	VERIFY(1 == dbg_lock);
 	dbg_lock--;
 #endif
@@ -132,8 +126,6 @@ void IndexStream::Destroy()
 
 u16* IndexStream::Lock(u32 Count, u32& vOffset)
 {
-	OPTICK_EVENT("IndexStream::Lock");
-
 	vOffset = 0;
 	BYTE* pLockedData = 0;
 
@@ -160,8 +152,6 @@ u16* IndexStream::Lock(u32 Count, u32& vOffset)
 
 void IndexStream::Unlock(u32 RealCount)
 {
-	OPTICK_EVENT("IndexStream::Unlock");
-
 	mPosition += RealCount;
 	VERIFY(pIB);
 	pIB->Unlock();

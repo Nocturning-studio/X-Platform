@@ -5,8 +5,6 @@
 
 void R_xforms::set_W(const Fmatrix& m)
 {
-	OPTICK_EVENT("R_xforms::set_W");
-
 	m_w.set(m);
 	m_wv.mul_43(m_v, m_w);
 	m_wvp.mul(m_p, m_wv);
@@ -23,8 +21,6 @@ void R_xforms::set_W(const Fmatrix& m)
 }
 void R_xforms::set_V(const Fmatrix& m)
 {
-	OPTICK_EVENT("R_xforms::set_V");
-
 	m_v.set(m);
 	m_wv.mul_43(m_v, m_w);
 	m_vp.mul(m_p, m_v);
@@ -41,8 +37,6 @@ void R_xforms::set_V(const Fmatrix& m)
 }
 void R_xforms::set_P(const Fmatrix& m)
 {
-	OPTICK_EVENT("R_xforms::set_P");
-
 	m_p.set(m);
 	m_vp.mul(m_p, m_v);
 	m_wvp.mul(m_p, m_wv);
@@ -58,8 +52,6 @@ void R_xforms::set_P(const Fmatrix& m)
 
 void R_xforms::apply_invw()
 {
-	OPTICK_EVENT("R_xforms::apply_invw");
-
 	VERIFY(c_invw);
 
 	if (!m_bInvWValid)
@@ -73,8 +65,6 @@ void R_xforms::apply_invw()
 
 void R_xforms::unmap()
 {
-	OPTICK_EVENT("R_xforms::unmap");
-
 	c_w = NULL;
 	c_v = NULL;
 	c_p = NULL;
@@ -84,8 +74,6 @@ void R_xforms::unmap()
 }
 R_xforms::R_xforms()
 {
-	OPTICK_EVENT("R_xforms::R_xforms");
-
 	unmap();
 	m_w.identity();
 	m_invw.identity();

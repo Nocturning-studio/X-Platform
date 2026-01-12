@@ -10,102 +10,72 @@
 
 IC void R_xforms::set_c_w(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_w");
-
 	c_w = C;
 	RenderBackend.set_Constant(C, m_w);
 };
 IC void R_xforms::set_c_invw(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_invw");
-
 	c_invw = C;
 	apply_invw();
 };
 IC void R_xforms::set_c_v(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_v");
-
 	c_v = C;
 	RenderBackend.set_Constant(C, m_v);
 };
 IC void R_xforms::set_c_p(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_p");
-
 	c_p = C;
 	RenderBackend.set_Constant(C, m_p);
 };
 IC void R_xforms::set_c_wv(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_wv");
-
 	c_wv = C;
 	RenderBackend.set_Constant(C, m_wv);
 };
 IC void R_xforms::set_c_vp(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_vp");
-
 	c_vp = C;
 	RenderBackend.set_Constant(C, m_vp);
 };
 IC void R_xforms::set_c_wvp(R_constant* C)
 {
-	OPTICK_EVENT("R_xforms::set_c_wvp");
-
 	c_wvp = C;
 	RenderBackend.set_Constant(C, m_wvp);
 };
 
 IC void CBackend::set_xform(u32 ID, const Fmatrix& Matrix)
 {
-	OPTICK_EVENT("CBackend::set_xform");
-
 	stat.xforms++;
 	CHK_DX(HW.pDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID, (D3DMATRIX*)&Matrix));
 }
 IC void CBackend::set_xform_world(const Fmatrix& Matrix)
 {
-	OPTICK_EVENT("CBackend::set_xform_world");
-
 	xforms.set_W(Matrix);
 }
 IC void CBackend::set_xform_view(const Fmatrix& Matrix)
 {
-	OPTICK_EVENT("CBackend::set_xform_view");
-
 	xforms.set_V(Matrix);
 }
 IC void CBackend::set_xform_project(const Fmatrix& Matrix)
 {
-	OPTICK_EVENT("CBackend::set_xform_project");
-
 	xforms.set_P(Matrix);
 }
 IC const Fmatrix& CBackend::get_xform_world()
 {
-	OPTICK_EVENT("CBackend::get_xform_world");
-
 	return xforms.get_W();
 }
 IC const Fmatrix& CBackend::get_xform_view()
 {
-	OPTICK_EVENT("CBackend::get_xform_view");
-
 	return xforms.get_V();
 }
 IC const Fmatrix& CBackend::get_xform_project()
 {
-	OPTICK_EVENT("CBackend::get_xform_project");
-
 	return xforms.get_P();
 }
 
 IC void CBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
 {		
-	OPTICK_EVENT("CBackend:setRT");
-
 	if (RT != pRT[ID])
 	{
 		stat.target_rt++;
@@ -116,8 +86,6 @@ IC void CBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
 
 IC void CBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 {
-	OPTICK_EVENT("CBackend:setZB");
-
 	if (ZB != pZB)
 	{
 		stat.target_zb++;
@@ -128,8 +96,6 @@ IC void CBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 
 ICF void CBackend::set_States(IDirect3DStateBlock9* _state)
 {
-	OPTICK_EVENT("CBackend:set_States");
-
 	if (state != _state)
 	{
 #ifdef DEBUG
@@ -166,8 +132,6 @@ IC void CBackend::set_Matrices(SMatrixList* _M)
 
 IC void CBackend::set_Constants(R_constant_table* ConstTable)
 {
-	OPTICK_EVENT("CBackend::set_Constants");
-
 	// caching
 	if (ctable == ConstTable)
 		return;
@@ -191,8 +155,6 @@ IC void CBackend::set_Constants(R_constant_table* ConstTable)
 
 IC void CBackend::set_Element(ShaderElement* S, u32 pass)
 {
-	OPTICK_EVENT("CBackend::set_Element");
-
 	SPass& P = *(S->passes[pass]);
 	set_States(P.state);
 	set_Pixel_Shader(P.ps);
@@ -206,8 +168,6 @@ IC void CBackend::set_Element(ShaderElement* S, u32 pass)
 
 ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 {
-	OPTICK_EVENT("CBackend::set_Format");
-
 	if (decl != _decl)
 	{
 #ifdef DEBUG
@@ -220,14 +180,8 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 
 ICF void CBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
 {
-	OPTICK_EVENT("CBackend::set_Pixel_Shader");
-
 	if (ps != _ps)
 	{
-		//shared_str str;
-		//str.sprintf("CBackend::set_Pixel_Shader: %s", _n);
-		//OPTICK_EVENT_DYNAMIC(str.c_str());
-
 		stat.ps++;
 		ps = _ps;
 		CHK_DX(HW.pDevice->SetPixelShader(ps));
@@ -239,14 +193,8 @@ ICF void CBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
 
 ICF void CBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n)
 {
-	OPTICK_EVENT("CBackend::set_Vertex_Shader");
-
 	if (vs != _vs)
 	{
-		//shared_str str;
-		//str.sprintf("CBackend::set_Vertex_Shader: %s", _n);
-		//OPTICK_EVENT_DYNAMIC(str.c_str());
-
 		stat.vs++;
 		vs = _vs;
 		CHK_DX(HW.pDevice->SetVertexShader(vs));
@@ -258,13 +206,8 @@ ICF void CBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n)
 
 ICF void CBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride)
 {
-	OPTICK_EVENT("CBackend::set_Vertices");
-
 	if ((vb != _vb) || (vb_stride != _vb_stride))
 	{
-		//LPSTR event_name;
-		//sprintf(event_name, "CBackend::set_Vertices:%x,%d", _vb, _vb_stride);
-		//OPTICK_EVENT(event_name);
 #ifdef DEBUG
 		stat.vb++;
 #endif
@@ -276,14 +219,8 @@ ICF void CBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride)
 
 ICF void CBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
 {
-	OPTICK_EVENT("CBackend::set_Indices");
-
 	if (ib != _ib)
 	{
-		//LPSTR event_name;
-		//sprintf(event_name, "CBackend::set_Indices:%x", _ib);
-		//OPTICK_EVENT(event_name);
-
 #ifdef DEBUG
 		stat.ib++;
 #endif
@@ -304,43 +241,27 @@ ICF void CBackend::Apply(u32 countV, u32 PC)
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	OPTICK_EVENT("CBackend::Render");
-
 	Apply(countV, PC);
 
 	CHK_DX(HW.pDevice->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
-
-	//LPSTR event_name;
-	//sprintf(event_name, "CBackend::Render:%dv/%df", countV, PC);
-	//OPTICK_EVENT(event_name);
 }
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
 {
-	OPTICK_EVENT("CBackend::Render");
-
 	stat.calls++;
 	stat.verts += 3 * PC;
 	stat.polys += PC;
 	constants.flush();
 	CHK_DX(HW.pDevice->DrawPrimitive(PrimitiveType, startV, PC));
-
-	//LPSTR event_name;
-	//sprintf(event_name, "CBackend::Render:%dv/%df", 3 * PC, PC);
-	//OPTICK_EVENT(event_name);
 }
 
 ICF void CBackend::set_Shader(Shader* S, u32 pass)
 {
-	OPTICK_EVENT("CBackend::set_Shader");
-
 	set_Element(S->E[0], pass);
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
 {
-	OPTICK_EVENT("CBackend::set_Geometry");
-
 	set_Format(_geom->dcl._get()->dcl);
 	set_Vertices(_geom->vb, _geom->vb_stride);
 	set_Indices(_geom->ib);
@@ -348,8 +269,6 @@ IC void CBackend::set_Geometry(SGeometry* _geom)
 
 IC void CBackend::set_Scissor(Irect* R)
 {
-	OPTICK_EVENT("CBackend::set_Scissor");
-
 	if (R)
 	{
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE));
@@ -365,8 +284,6 @@ IC void CBackend::set_Scissor(Irect* R)
 IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass,
 							  u32 _zfail)
 {
-	OPTICK_EVENT("CBackend::set_Stencil");
-
 	// Simple filter
 	if (stencil_enable != _enable)
 	{
@@ -413,8 +330,6 @@ IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _
 }
 IC void CBackend::set_ColorWriteEnable(u32 _mask)
 {
-	OPTICK_EVENT("CBackend::set_ColorWriteEnable");
-
 	if (colorwrite_mask != _mask)
 	{
 		colorwrite_mask = _mask;
@@ -426,8 +341,6 @@ IC void CBackend::set_ColorWriteEnable(u32 _mask)
 }
 IC void CBackend::set_ZWriteEnable(bool write_state)
 {
-	OPTICK_EVENT("CBackend::set_ZWriteEnable");
-
 	if (zwrite != write_state)
 	{
 		zwrite = write_state;
@@ -436,8 +349,6 @@ IC void CBackend::set_ZWriteEnable(bool write_state)
 }
 ICF void CBackend::set_CullMode(u32 _mode)
 {
-	OPTICK_EVENT("CBackend::set_CullMode");
-
 	if (cull_mode != _mode)
 	{
 		cull_mode = _mode;
@@ -447,8 +358,6 @@ ICF void CBackend::set_CullMode(u32 _mode)
 
 ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
 {
-	OPTICK_EVENT("CBackend::set_anisotropy_filtering");
-
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
@@ -457,16 +366,12 @@ ENGINE_API extern int psAnisotropic;
 
 ICF void CBackend::enable_anisotropy_filtering()
 {
-	OPTICK_EVENT("CBackend::enable_anisotropy_filtering");
-
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
 ICF void CBackend::disable_anisotropy_filtering()
 {
-	OPTICK_EVENT("CBackend::disable_anisotropy_filtering");
-
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }

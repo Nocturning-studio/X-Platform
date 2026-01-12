@@ -105,8 +105,6 @@ void CBackend::RestoreRenderState()
 
 void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
 {
-	OPTICK_EVENT("CBackend::set_ClipPlanes");
-
 	if (0 == HW.Caps.geometry.dwClipPlanes)
 		return;
 	if (!_enable)
@@ -140,8 +138,6 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 #ifndef DEDICATED_SREVER
 void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */)
 {
-	OPTICK_EVENT("CBackend::set_ClipPlanes");
-
 	if (0 == HW.Caps.geometry.dwClipPlanes)
 		return;
 	if (!_enable)
@@ -157,8 +153,6 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask
 
 void CBackend::set_Textures(STextureList* _T)
 {
-	OPTICK_EVENT("CBackend::set_Textures");
-
 	if (T == _T)
 		return;
 	T = _T;
@@ -296,8 +290,6 @@ void CBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
 
 void CBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 {
-	OPTICK_EVENT("CBackend::set_Blend");
-
 	// Check if state actually changed to avoid redundant API calls
 	if (bBlend != enable || srcBlend != src || dstBlend != dest)
 	{
@@ -362,8 +354,6 @@ void CBackend::set_Blend_ColorAdd()
 
 void CBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
 {
-	OPTICK_EVENT("CBackend::set_BlendEx");
-
 	if (bBlend != enable || srcBlend != src || dstBlend != dest)
 	{
 		bBlend = enable;
@@ -399,8 +389,6 @@ void CBackend::u_compute_texgen_screen(Fmatrix& m_Texgen)
 
 void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
 {
-	OPTICK_EVENT("CRenderTarget::set_viewport_geometry")
-
 	// Constants
 	u32 C = color_rgba(0, 0, 0, 255);
 
@@ -507,8 +495,6 @@ void CBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& _1, const ref_r
 
 void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 {
-	 OPTICK_EVENT("CBackend::RenderToMipLevel");
-
 	 if (!target || !target->valid())
 	 {
 		 Msg("!CBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName, mip_level);
@@ -539,8 +525,6 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 
 void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass)
 {
-	OPTICK_EVENT("CBackend::RenderToMipLevel");
-
 	if (!target || !target->valid())
 		return;
 
@@ -569,8 +553,6 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* sha
 // Генерация mip-цепочки
 void CBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
 {
-	OPTICK_EVENT("CBackend::GenerateMipChain");
-
 	if (!source || !mip_chain || !source->valid() || !mip_chain->valid())
 		return;
 
@@ -596,8 +578,6 @@ void CBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* 
 // Копирование содержимого из одного ref_rt в другой
 void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 {
-	OPTICK_EVENT("CBackend::CopyViewportSurface");
-
 	if (!source || !destination || !source->valid() || !destination->valid())
 	{
 		Msg("! ERROR: CopyViewportSurface - invalid source or destination");
@@ -630,8 +610,6 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 // Версия с указанием фильтра
 void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
 {
-	OPTICK_EVENT("CBackend::CopyViewportSurface");
-
 	if (!source || !destination || !source->valid() || !destination->valid())
 		return;
 
@@ -650,8 +628,6 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTURE
 // Версия с указанием конкретных областей
 void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter = D3DTEXF_LINEAR)
 {
-	OPTICK_EVENT("CBackend::CopyViewportSurface");
-
 	if (!source || !destination || !source->valid() || !destination->valid())
 		return;
 
@@ -666,8 +642,6 @@ void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destinat
 
 void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
 {
-	OPTICK_EVENT("CBackend::CopySurface");
-
 	if (!source || !destination)
 	{
 		Msg("! ERROR: CopySurface - invalid source or destination surface");
@@ -701,8 +675,6 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 // Версия с фильтром
 void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
 {
-	OPTICK_EVENT("CBackend::CopySurface");
-
 	if (!source || !destination)
 		return;
 
@@ -719,8 +691,6 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 // Версия с указанием областей
 void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter = D3DTEXF_NONE)
 {
-	OPTICK_EVENT("CBackend::CopySurface");
-
 	if (!source || !destination)
 		return;
 
