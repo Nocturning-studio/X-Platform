@@ -32,11 +32,11 @@ void CStateMonsterEatingAbstract::execute()
 	object->set_state_sound(MonsterSound::eMonsterSoundEat);
 
 	// סתוסעü קאסעü
-	if (time_last_eat + u32(1000 / object->db().m_fEatFreq) < Device.dwTimeGlobal)
+	if (time_last_eat + u32(1000 / object->db().m_fEatFreq) < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		object->ChangeSatiety(object->db().m_fEatSlice);
 		corpse->m_fFood -= object->db().m_fEatSliceWeight;
-		time_last_eat = Device.dwTimeGlobal;
+		time_last_eat = Engine.TimeManager.GetGlobalTimeMs();
 	}
 }
 

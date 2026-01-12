@@ -156,7 +156,7 @@ void CStalkerActionDangerUnknownSearch::execute()
 	{
 		object().agent_manager().location().add(
 			xr_new<CDangerCoverLocation>(object().agent_manager().member().member(&object()).cover(),
-										 Device.dwTimeGlobal, DANGER_INTERVAL, DANGER_DISTANCE));
+										 Engine.TimeManager.GetGlobalTimeMs(), DANGER_INTERVAL, DANGER_DISTANCE));
 		return;
 	}
 

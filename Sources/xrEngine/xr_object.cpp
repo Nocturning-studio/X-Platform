@@ -232,7 +232,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
 		// Empty
 		bUpdate = TRUE;
 		PositionStack.push_back(SavedPosition());
-		PositionStack.back().dwTime = Device.dwTimeGlobal;
+		PositionStack.back().dwTime = Engine.TimeManager.GetGlobalTimeMs();
 		PositionStack.back().vPosition = Position();
 	}
 	else
@@ -240,7 +240,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
 		if (PositionStack.back().vPosition.similar(Position(), eps_P))
 		{
 			// Just update time
-			PositionStack.back().dwTime = Device.dwTimeGlobal;
+			PositionStack.back().dwTime = Engine.TimeManager.GetGlobalTimeMs();
 		}
 		else
 		{
@@ -256,7 +256,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
 				PositionStack[1] = PositionStack[2];
 				PositionStack[2] = PositionStack[3];
 			}
-			PositionStack.back().dwTime = Device.dwTimeGlobal;
+			PositionStack.back().dwTime = Engine.TimeManager.GetGlobalTimeMs();
 			PositionStack.back().vPosition = Position();
 		}
 	}
@@ -292,9 +292,9 @@ void CObject::UpdateCL()
 #ifdef DEBUG
 	VERIFY2(_valid(renderable.xform), *cName());
 
-	if (Device.dwFrame == dbg_update_cl)
+	if (Engine.TimeManager.GetFrameCount() == dbg_update_cl)
 		Debug.fatal(DEBUG_INFO, "'UpdateCL' called twice per frame for %s", *cName());
-	dbg_update_cl = Device.dwFrame;
+	dbg_update_cl = Engine.TimeManager.GetFrameCount();
 
 	if (Parent && spatial.node_ptr)
 		Debug.fatal(DEBUG_INFO, "Object %s has parent but is still registered inside spatial DB", *cName());
@@ -432,7 +432,7 @@ void CObject::setDestroy(BOOL _destroy)
 	{
 		g_pGameLevel->Objects.register_object_to_destroy(this);
 #ifdef DEBUG
-		Msg("cl setDestroy [%d][%d]", ID(), Device.dwFrame);
+		Msg("cl setDestroy [%d][%d]", ID(), Engine.TimeManager.GetFrameCount());
 #endif
 	}
 	else

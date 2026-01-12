@@ -262,9 +262,9 @@ void CSightManager::Exec_Look(float dt)
 		head_speed = current_action().head_speed();
 
 #ifdef SIGHT_DEBUG
-	Msg("%6d BEFORE BODY [%f] -> [%f]", Device.dwTimeGlobal, object().movement().m_body.current.yaw,
+	Msg("%6d BEFORE BODY [%f] -> [%f]", Engine.TimeManager.GetGlobalTimeMs(), object().movement().m_body.current.yaw,
 		object().movement().m_body.target.yaw);
-	Msg("%6d BEFORE HEAD [%f] -> [%f]", Device.dwTimeGlobal, object().movement().m_head.current.yaw,
+	Msg("%6d BEFORE HEAD [%f] -> [%f]", Engine.TimeManager.GetGlobalTimeMs(), object().movement().m_head.current.yaw,
 		object().movement().m_head.target.yaw);
 #endif
 
@@ -285,9 +285,9 @@ void CSightManager::Exec_Look(float dt)
 	head.current.yaw = angle_normalize_signed(head.current.yaw);
 	head.current.pitch = angle_normalize_signed(head.current.pitch);
 
-	Msg("%6d AFTER  BODY [%f] -> [%f]", Device.dwTimeGlobal, object().movement().m_body.current.yaw,
+	Msg("%6d AFTER  BODY [%f] -> [%f]", Engine.TimeManager.GetGlobalTimeMs(), object().movement().m_body.current.yaw,
 		object().movement().m_body.target.yaw);
-	Msg("%6d AFTER  HEAD [%f][%f] -> [%f][%f]", Device.dwTimeGlobal, object().movement().m_head.current.yaw,
+	Msg("%6d AFTER  HEAD [%f][%f] -> [%f][%f]", Engine.TimeManager.GetGlobalTimeMs(), object().movement().m_head.current.yaw,
 		object().movement().m_head.current.pitch, object().movement().m_head.target.yaw,
 		object().movement().m_head.target.pitch);
 #endif
@@ -350,7 +350,7 @@ void CSightManager::update()
 						 : m_max_right_angle))
 				{
 					m_turning_in_place = true;
-					//					Msg					("%6d started turning in place",Device.dwTimeGlobal);
+					//					Msg					("%6d started turning in place",Engine.TimeManager.GetGlobalTimeMs());
 					object().movement().m_body.target.yaw = object().movement().m_head.current.yaw;
 				}
 				else
@@ -370,7 +370,7 @@ void CSightManager::update()
 				else
 				{
 					m_turning_in_place = false;
-					//					Msg					("%6d stopped turning in place",Device.dwTimeGlobal);
+					//					Msg					("%6d stopped turning in place",Engine.TimeManager.GetGlobalTimeMs());
 					object().movement().m_body.target.yaw = object().movement().m_body.current.yaw;
 				}
 			}
@@ -379,7 +379,7 @@ void CSightManager::update()
 			m_turning_in_place = false;
 
 		//		Msg								("%6d :
-		//%f,%f",Device.dwTimeGlobal,object().movement().m_head.target.yaw,object().movement().m_head.target.pitch);
+		//%f,%f",Engine.TimeManager.GetGlobalTimeMs(),object().movement().m_head.target.yaw,object().movement().m_head.target.pitch);
 
 		inherited::update();
 	}

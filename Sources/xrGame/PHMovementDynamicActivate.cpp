@@ -321,7 +321,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	{
 		Fvector dif;
 		dif.sub(trying_poses[id], cast_fv(dBodyGetPosition(m_character->get_body())));
-		if (Device.dwTimeGlobal - trying_times[id] < 500 && dif.magnitude() < 0.05f)
+		if (Engine.TimeManager.GetGlobalTimeMs() - trying_times[id] < 500 && dif.magnitude() < 0.05f)
 			return false;
 	}
 	if (!m_character || m_character->PhysicsRefObject()->PPhysicsShell())
@@ -457,7 +457,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	saved_callback = 0;
 	if (!ret && character_exist)
 	{
-		trying_times[id] = Device.dwTimeGlobal;
+		trying_times[id] = Engine.TimeManager.GetGlobalTimeMs();
 		trying_poses[id].set(cast_fv(dBodyGetPosition(m_character->get_body())));
 	}
 	else

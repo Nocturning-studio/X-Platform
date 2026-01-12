@@ -137,7 +137,7 @@ class CMissile : public CHudItemObject
 	virtual void create_physic_shell();
 	IC void set_destroy_time(u32 delta_destroy_time)
 	{
-		m_dwDestroyTime = delta_destroy_time + Device.dwTimeGlobal;
+		m_dwDestroyTime = delta_destroy_time + Engine.TimeManager.GetGlobalTimeMs();
 	}
 
   protected:

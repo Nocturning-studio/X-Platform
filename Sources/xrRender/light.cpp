@@ -277,9 +277,9 @@ Fvector light::spatial_sector_point()
 // Xforms
 void light::xform_calc()
 {
-	if (Device.dwFrame == m_xform_frame)
+	if (Engine.TimeManager.GetFrameCount() == m_xform_frame)
 		return;
-	m_xform_frame = Device.dwFrame;
+	m_xform_frame = Engine.TimeManager.GetFrameCount();
 
 	// build final rotation / translation
 	Fvector L_dir, L_up, L_right;

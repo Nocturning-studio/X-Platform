@@ -407,7 +407,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	virtual void UpdateHudAdditonal(Fmatrix&);
 	IC void UpdateFireDependencies()
 	{
-		if (dwFP_Frame == Device.dwFrame)
+		if (dwFP_Frame == Engine.TimeManager.GetFrameCount())
 			return;
 		UpdateFireDependencies_internal();
 	};

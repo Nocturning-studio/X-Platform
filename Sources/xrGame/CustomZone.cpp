@@ -330,7 +330,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_dwPeriod = pSettings->r_u32(cNameSect(), "period");
 	m_owner_id = Z->m_owner_id;
 	if (m_owner_id != u32(-1))
-		m_ttl = Device.dwTimeGlobal + 40000; // 40 sec
+		m_ttl = Engine.TimeManager.GetGlobalTimeMs() + 40000; // 40 sec
 	else
 		m_ttl = u32(-1);
 
@@ -340,7 +340,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_TimeToDisable = Z->m_disabled_time * 1000;
 	m_TimeToEnable = Z->m_enabled_time * 1000;
 	m_TimeShift = Z->m_start_time_shift * 1000;
-	m_StartTime = Device.dwTimeGlobal;
+	m_StartTime = Engine.TimeManager.GetGlobalTimeMs();
 	m_zone_flags.set(eUseOnOffTime, (m_TimeToDisable != 0) && (m_TimeToEnable != 0));
 
 	// добавить источники света
@@ -370,7 +370,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	if (m_effector)
 		m_effector->SetRadius(CFORM()->getSphere().R);
 
-	m_dwLastTimeMoved = Device.dwTimeGlobal;
+	m_dwLastTimeMoved = Engine.TimeManager.GetGlobalTimeMs();
 	m_vPrevPos.set(Position());
 
 	m_fDistanceToCurEntity = flt_max;
@@ -520,7 +520,7 @@ void CCustomZone::UpdateCL()
 {
 	inherited::UpdateCL();
 	if (o_fastmode)
-		UpdateWorkload(Device.dwTimeDelta);
+		UpdateWorkload(Engine.TimeManager.GetDeltaTimeMs());
 }
 
 // called as usual
@@ -587,7 +587,7 @@ void CCustomZone::shedule_Update(u32 dt)
 
 	if (!IsGameTypeSingle() && Local())
 	{
-		if (Device.dwTimeGlobal > m_ttl)
+		if (Engine.TimeManager.GetGlobalTimeMs() > m_ttl)
 			DestroyObject();
 	}
 }
@@ -755,7 +755,7 @@ void CCustomZone::UpdateIdleLight()
 	VERIFY(m_pIdleLAnim);
 
 	int frame = 0;
-	u32 clr = m_pIdleLAnim->CalculateBGR(Device.fTimeGlobal, frame); // возвращает в формате BGR
+	u32 clr = m_pIdleLAnim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // возвращает в формате BGR
 	Fcolor fclr;
 	fclr.set((float)color_get_B(clr) / 255.f, (float)color_get_G(clr) / 255.f, (float)color_get_R(clr) / 255.f, 1.f);
 
@@ -985,7 +985,7 @@ void CCustomZone::UpdateBlowoutLight()
 {
 	if (m_fLightTimeLeft > 0)
 	{
-		m_fLightTimeLeft -= Device.fTimeDelta;
+		m_fLightTimeLeft -= Engine.TimeManager.GetDeltaTime();
 		clamp(m_fLightTimeLeft, 0.0f, m_fLightTime);
 
 		float scale = m_fLightTimeLeft / m_fLightTime;
@@ -1005,9 +1005,9 @@ void CCustomZone::UpdateBlowoutLight()
 
 void CCustomZone::AffectObjects()
 {
-	if (m_dwAffectFrameNum == Device.dwFrame)
+	if (m_dwAffectFrameNum == Engine.TimeManager.GetFrameCount())
 		return;
-	m_dwAffectFrameNum = Device.dwFrame;
+	m_dwAffectFrameNum = Engine.TimeManager.GetFrameCount();
 
 	if (Device.dwPrecacheFrame)
 		return;
@@ -1050,13 +1050,13 @@ void CCustomZone::OnMove()
 {
 	if (m_dwLastTimeMoved == 0)
 	{
-		m_dwLastTimeMoved = Device.dwTimeGlobal;
+		m_dwLastTimeMoved = Engine.TimeManager.GetGlobalTimeMs();
 		m_vPrevPos.set(Position());
 	}
 	else
 	{
-		float time_delta = float(Device.dwTimeGlobal - m_dwLastTimeMoved) / 1000.f;
-		m_dwLastTimeMoved = Device.dwTimeGlobal;
+		float time_delta = float(Engine.TimeManager.GetGlobalTimeMs() - m_dwLastTimeMoved) / 1000.f;
+		m_dwLastTimeMoved = Engine.TimeManager.GetGlobalTimeMs();
 
 		Fvector vel;
 
@@ -1434,7 +1434,7 @@ void CCustomZone::UpdateOnOffState()
 		return;
 
 	bool dest_state;
-	u32 t = (Device.dwTimeGlobal - m_StartTime + m_TimeShift) % (m_TimeToEnable + m_TimeToDisable);
+	u32 t = (Engine.TimeManager.GetGlobalTimeMs() - m_StartTime + m_TimeShift) % (m_TimeToEnable + m_TimeToDisable);
 	if (t < m_TimeToEnable)
 		dest_state = true;
 	else if (t >= (m_TimeToEnable + m_TimeToDisable))

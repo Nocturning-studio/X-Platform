@@ -41,7 +41,7 @@ bool CPHAICharacter::TryPosition(Fvector pos, bool exact_state)
 	displace.sub(pos, current_pos);
 	float disp_mag = displace.magnitude();
 
-	if (fis_zero(disp_mag) || fis_zero(Device.fTimeDelta))
+	if (fis_zero(disp_mag) || fis_zero(Engine.TimeManager.GetDeltaTime()))
 		return true;
 	const u32 max_steps = 15;
 	const float fmax_steps = float(max_steps);
@@ -99,7 +99,7 @@ bool CPHAICharacter::TryPosition(Fvector pos, bool exact_state)
 #endif
 
 	SetPosition(pos_new);
-	m_last_move.sub(pos_new, current_pos).mul(1.f / Device.fTimeDelta);
+	m_last_move.sub(pos_new, current_pos).mul(1.f / Engine.TimeManager.GetDeltaTime());
 	m_body_interpolation.UpdatePositions();
 	m_body_interpolation.UpdatePositions();
 	if (ret)

@@ -228,7 +228,7 @@ void CObjectActionStrapping::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[[%6d][%s]][%s] removing callback on callabck
-	//CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrapping::initialize()
@@ -247,7 +247,7 @@ void CObjectActionStrapping::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrapping::execute()
@@ -266,7 +266,7 @@ void CObjectActionStrapping::finalize()
 	if (!m_callback_removed)
 	{
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 
 		object().animation().torso().remove_callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end));
@@ -278,7 +278,7 @@ void CObjectActionStrapping::finalize()
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -318,7 +318,7 @@ void CObjectActionStrappingToIdle::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[%6d][%s] removing callback on callabck
-	//CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrappingToIdle::initialize()
@@ -335,7 +335,7 @@ void CObjectActionStrappingToIdle::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrappingToIdle::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrappingToIdle::execute()
@@ -358,14 +358,14 @@ void CObjectActionStrappingToIdle::finalize()
 
 		m_callback_removed = true;
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 	else
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrappingToIdle::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -405,7 +405,7 @@ void CObjectActionUnstrapping::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[%6d][%s] removing callback on callabck
-	//CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrapping::initialize()
@@ -424,7 +424,7 @@ void CObjectActionUnstrapping::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrapping::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrapping::execute()
@@ -447,14 +447,14 @@ void CObjectActionUnstrapping::finalize()
 
 		m_callback_removed = true;
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 	else
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrapping::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -494,7 +494,7 @@ void CObjectActionUnstrappingToIdle::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[%6d][%s] removing callback on callabck
-	//CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrappingToIdle::initialize()
@@ -511,7 +511,7 @@ void CObjectActionUnstrappingToIdle::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+	//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrappingToIdle::execute()
@@ -534,14 +534,14 @@ void CObjectActionUnstrappingToIdle::finalize()
 
 		m_callback_removed = true;
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 	else
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+		//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 

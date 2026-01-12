@@ -168,7 +168,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float
 		const SGameMtl* last_material = GMLib.GetMaterialByIdx(m_character->LastMaterialIDX());
 		if (last_material->Flags.test(SGameMtl::flInjurious))
 		{
-			gcontact_HealthLost += Device.fTimeDelta * last_material->fInjuriousSpeed;
+			gcontact_HealthLost += Engine.TimeManager.GetDeltaTime() * last_material->fInjuriousSpeed;
 		}
 	}
 

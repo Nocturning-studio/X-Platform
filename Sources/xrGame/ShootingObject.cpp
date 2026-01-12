@@ -176,9 +176,9 @@ void CShootingObject::Light_Start()
 	if (!light_render)
 		Light_Create();
 
-	if (Device.dwFrame != light_frame)
+	if (Engine.TimeManager.GetFrameCount() != light_frame)
 	{
-		light_frame = Device.dwFrame;
+		light_frame = Engine.TimeManager.GetFrameCount();
 		light_time = light_lifetime;
 
 		light_build_color.set(Random.randFs(light_var_color, light_base_color.r),
@@ -365,7 +365,7 @@ void CShootingObject::UpdateLight()
 {
 	if (light_render && light_time > 0)
 	{
-		light_time -= Device.fTimeDelta;
+		light_time -= Engine.TimeManager.GetDeltaTime();
 		if (light_time <= 0)
 			StopLight();
 	}
@@ -439,7 +439,7 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
 			}
 			else
 			{
-				if ((Device.fTimeGlobal - m_fPredBulletTime) >= m_fTimeToAim)
+				if ((Engine.TimeManager.GetGlobalTime() - m_fPredBulletTime) >= m_fTimeToAim)
 				{
 					aim_bullet = true;
 				}
@@ -458,7 +458,7 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
 	{
 		aim_bullet = false;
 	}
-	m_fPredBulletTime = Device.fTimeGlobal;
+	m_fPredBulletTime = Engine.TimeManager.GetGlobalTime();
 
 	float l_fHitPower;
 	if (ParentIsActor()) // если из оружия стреляет актёр(игрок)

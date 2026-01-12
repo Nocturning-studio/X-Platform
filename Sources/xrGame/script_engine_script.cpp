@@ -181,7 +181,7 @@ IC profile_timer_script operator+(const profile_timer_script& portion0, const pr
 #ifdef XRGAME_EXPORTS
 ICF u32 script_time_global()
 {
-	return Device.dwTimeGlobal;
+	return Engine.TimeManager.GetGlobalTimeMs();
 }
 #else
 ICF u32 script_time_global()

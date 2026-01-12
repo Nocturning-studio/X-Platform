@@ -350,8 +350,8 @@ void CUICarBodyWnd::Draw()
 
 void CUICarBodyWnd::Update()
 {
-	if (m_b_need_update || m_pOurObject->inventory().ModifyFrame() == Device.dwFrame ||
-		(m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Device.dwFrame))
+	if (m_b_need_update || m_pOurObject->inventory().ModifyFrame() == Engine.TimeManager.GetFrameCount() ||
+		(m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Engine.TimeManager.GetFrameCount()))
 
 		UpdateLists();
 

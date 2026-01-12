@@ -29,7 +29,7 @@ TEMPLATE_SPECIALIZATION
 bool CStateMonsterPanicRunAbstract::check_completion()
 {
 	float dist_to_enemy = object->Position().distance_to(object->EnemyMan.get_enemy_position());
-	u32 time_delta = Device.dwTimeGlobal - object->EnemyMan.get_enemy_time_last_seen();
+	u32 time_delta = Engine.TimeManager.GetGlobalTimeMs() - object->EnemyMan.get_enemy_time_last_seen();
 
 	if (dist_to_enemy < MIN_DIST_TO_ENEMY)
 		return false;

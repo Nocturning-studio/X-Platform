@@ -492,7 +492,7 @@ void CStalkerMovementManager::parse_velocity_mask()
 		{
 			setup_body_orientation();
 			object().sight().enable(false);
-			//			Msg						("%d FALSE",Device.dwTimeGlobal);
+			//			Msg						("%d FALSE",Engine.TimeManager.GetGlobalTimeMs());
 		}
 		if ((mental_state() != eMentalStateFree) ||
 			//				(object().sight().current_action().sight_type() != SightManager::eSightTypePathDirection) ||
@@ -500,7 +500,7 @@ void CStalkerMovementManager::parse_velocity_mask()
 		{
 			m_last_turn_index = detail().curr_travel_point_index();
 			object().sight().enable(true);
-			//			Msg						("%d TRUE",Device.dwTimeGlobal);
+			//			Msg						("%d TRUE",Engine.TimeManager.GetGlobalTimeMs());
 			if (detail().curr_travel_point_index() + 1 < path().size())
 			{
 				point = path()[detail().curr_travel_point_index() + 1];

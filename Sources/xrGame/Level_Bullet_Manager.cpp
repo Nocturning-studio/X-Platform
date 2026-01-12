@@ -163,7 +163,7 @@ void CBulletManager::AddBullet(const Fvector& position, const Fvector& direction
 	SBullet& bullet = m_Bullets.back();
 	bullet.Init(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type,
 				maximum_distance, cartridge, SendHit);
-	bullet.frame_num = Device.dwFrame;
+	bullet.frame_num = Engine.TimeManager.GetFrameCount();
 	bullet.flags.aim_bullet = AimBullet;
 	if (SendHit && GameID() != GAME_SINGLE)
 		Game().m_WeaponUsageStatistic->OnBullet_Fire(&bullet, cartridge);
@@ -173,7 +173,7 @@ void CBulletManager::AddBullet(const Fvector& position, const Fvector& direction
 void CBulletManager::UpdateWorkload()
 {
 	m_Lock.Enter();
-	u32 delta_time = Device.dwTimeDelta + m_dwTimeRemainder;
+	u32 delta_time = Engine.TimeManager.GetDeltaTimeMs() + m_dwTimeRemainder;
 	u32 step_num = delta_time / m_dwStepTime;
 	m_dwTimeRemainder = delta_time % m_dwStepTime;
 
@@ -190,7 +190,7 @@ void CBulletManager::UpdateWorkload()
 		// с 2х метров
 		u32 cur_step_num = step_num;
 
-		u32 frames_pass = Device.dwFrame - bullet.frame_num;
+		u32 frames_pass = Engine.TimeManager.GetFrameCount() - bullet.frame_num;
 		if (frames_pass == 0)
 			cur_step_num = 1;
 		else if (frames_pass == 1 && step_num > 0)
@@ -247,7 +247,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 	}
 	range = _max(EPS_L, range);
 
-	bullet->flags.skipped_frame = (Device.dwFrame >= bullet->frame_num);
+	bullet->flags.skipped_frame = (Engine.TimeManager.GetFrameCount() >= bullet->frame_num);
 
 	if (!bullet->flags.ricochet_was)
 	{

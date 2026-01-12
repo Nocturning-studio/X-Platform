@@ -21,7 +21,7 @@ IC float CSightControlAction::weight() const
 
 IC bool CSightControlAction::completed() const
 {
-	return (Device.dwTimeGlobal - m_start_time >= m_inertia_time);
+	return (Engine.TimeManager.GetGlobalTimeMs() - m_start_time >= m_inertia_time);
 }
 
 IC bool CSightControlAction::use_torso_look() const

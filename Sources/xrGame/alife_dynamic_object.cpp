@@ -214,7 +214,7 @@ void CSE_InventoryBox::add_online(const bool& update_registries)
 		//		if (psAI_Flags.test(aiALife))
 		//			Msg					("[LSS] Spawning item
 		//[%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeDynamicObject->ID);
-		Msg("[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'", Device.dwFrame, Device.dwTimeGlobal,
+		Msg("[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'", Engine.TimeManager.GetFrameCount(), Engine.TimeManager.GetGlobalTimeMs(),
 			l_tpALifeInventoryItem->base()->name_replace(), l_tpALifeInventoryItem->base()->ID, ID, name_replace(),
 			"*SERVER*");
 #endif
@@ -246,7 +246,7 @@ void CSE_InventoryBox::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_chi
 		//		if (psAI_Flags.test(aiALife))
 		//			Msg					("[LSS] Destroying item
 		//[%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
-		Msg("[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'", Device.dwFrame, Device.dwTimeGlobal,
+		Msg("[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'", Engine.TimeManager.GetFrameCount(), Engine.TimeManager.GetGlobalTimeMs(),
 			inventory_item->base()->name_replace(), inventory_item->base()->ID, ID, name_replace(), "*SERVER*");
 #endif
 

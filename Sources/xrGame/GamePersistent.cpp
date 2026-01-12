@@ -288,9 +288,9 @@ void CGamePersistent::WeathersUpdate()
 				R_ASSERT(idx < 20);
 				if (ambient_sound_next_time[idx] == 0) // first
 				{
-					ambient_sound_next_time[idx] = Device.dwTimeGlobal + ch.get_rnd_sound_first_time();
+					ambient_sound_next_time[idx] = Engine.TimeManager.GetGlobalTimeMs() + ch.get_rnd_sound_first_time();
 				}
-				else if (Device.dwTimeGlobal > ambient_sound_next_time[idx])
+				else if (Engine.TimeManager.GetGlobalTimeMs() > ambient_sound_next_time[idx])
 				{
 					ref_sound& snd = ch.get_rnd_sound();
 
@@ -310,26 +310,26 @@ void CGamePersistent::WeathersUpdate()
 
 					VERIFY(snd._handle());
 					ambient_sound_next_time[idx] =
-						Device.dwTimeGlobal + iFloor(snd.get_length_sec() * 1000.0f) + ch.get_rnd_sound_time();
+						Engine.TimeManager.GetGlobalTimeMs() + iFloor(snd.get_length_sec() * 1000.0f) + ch.get_rnd_sound_time();
 					//	Msg("- Playing ambient sound channel [%s]
 					//file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
 				}
 			}
 			// start effect
-			if ((FALSE == bIndoor) && (0 == ambient_particles) && (Device.dwTimeGlobal > ambient_effect_next_time) &&
+			if ((FALSE == bIndoor) && (0 == ambient_particles) && (Engine.TimeManager.GetGlobalTimeMs() > ambient_effect_next_time) &&
 				(ps_weather_ls_flags.test(WEATHER_EFFECTS)))
 			{
 				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
 				if (eff)
 				{
 					Environment().wind_gust_factor = eff->wind_gust_factor;
-					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
-					ambient_effect_stop_time = Device.dwTimeGlobal + eff->life_time;
-					ambient_effect_wind_start = Device.fTimeGlobal;
-					ambient_effect_wind_in_time = Device.fTimeGlobal + eff->wind_blast_in_time;
-					ambient_effect_wind_end = Device.fTimeGlobal + eff->life_time / 1000.f;
+					ambient_effect_next_time = Engine.TimeManager.GetGlobalTimeMs() + env_amb->get_rnd_effect_time();
+					ambient_effect_stop_time = Engine.TimeManager.GetGlobalTimeMs() + eff->life_time;
+					ambient_effect_wind_start = Engine.TimeManager.GetGlobalTime();
+					ambient_effect_wind_in_time = Engine.TimeManager.GetGlobalTime() + eff->wind_blast_in_time;
+					ambient_effect_wind_end = Engine.TimeManager.GetGlobalTime() + eff->life_time / 1000.f;
 					ambient_effect_wind_out_time =
-						Device.fTimeGlobal + eff->life_time / 1000.f + eff->wind_blast_out_time;
+						Engine.TimeManager.GetGlobalTime() + eff->life_time / 1000.f + eff->wind_blast_out_time;
 					ambient_effect_wind_on = true;
 
 					ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
@@ -358,14 +358,14 @@ void CGamePersistent::WeathersUpdate()
 				}
 			}
 		}
-		if (Device.fTimeGlobal >= ambient_effect_wind_start && Device.fTimeGlobal <= ambient_effect_wind_in_time &&
+		if (Engine.TimeManager.GetGlobalTime() >= ambient_effect_wind_start && Engine.TimeManager.GetGlobalTime() <= ambient_effect_wind_in_time &&
 			ambient_effect_wind_on)
 		{
 			float delta = ambient_effect_wind_in_time - ambient_effect_wind_start;
 			float t;
 			if (delta != 0.f)
 			{
-				float cur_in = Device.fTimeGlobal - ambient_effect_wind_start;
+				float cur_in = Engine.TimeManager.GetGlobalTime() - ambient_effect_wind_start;
 				t = cur_in / delta;
 			}
 			else
@@ -384,7 +384,7 @@ void CGamePersistent::WeathersUpdate()
 		}
 
 		// stop if time exceed or indoor
-		if (bIndoor || Device.dwTimeGlobal >= ambient_effect_stop_time)
+		if (bIndoor || Engine.TimeManager.GetGlobalTimeMs() >= ambient_effect_stop_time)
 		{
 			if (ambient_particles)
 				ambient_particles->Stop();
@@ -392,7 +392,7 @@ void CGamePersistent::WeathersUpdate()
 			Environment().wind_gust_factor = 0.f;
 		}
 
-		if (Device.fTimeGlobal >= ambient_effect_wind_end && ambient_effect_wind_on)
+		if (Engine.TimeManager.GetGlobalTime() >= ambient_effect_wind_end && ambient_effect_wind_on)
 		{
 			Environment().wind_blast_strength_start_value = Environment().wind_strength_factor;
 			Environment().wind_blast_strength_stop_value = 0.f;
@@ -400,13 +400,13 @@ void CGamePersistent::WeathersUpdate()
 			ambient_effect_wind_on = false;
 		}
 
-		if (Device.fTimeGlobal >= ambient_effect_wind_end && Device.fTimeGlobal <= ambient_effect_wind_out_time)
+		if (Engine.TimeManager.GetGlobalTime() >= ambient_effect_wind_end && Engine.TimeManager.GetGlobalTime() <= ambient_effect_wind_out_time)
 		{
 			float delta = ambient_effect_wind_out_time - ambient_effect_wind_end;
 			float t;
 			if (delta != 0.f)
 			{
-				float cur_in = Device.fTimeGlobal - ambient_effect_wind_end;
+				float cur_in = Engine.TimeManager.GetGlobalTime() - ambient_effect_wind_end;
 				t = cur_in / delta;
 			}
 			else
@@ -417,7 +417,7 @@ void CGamePersistent::WeathersUpdate()
 				Environment().wind_blast_strength_start_value +
 				t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
 		}
-		if (Device.fTimeGlobal > ambient_effect_wind_out_time && ambient_effect_wind_out_time != 0.f)
+		if (Engine.TimeManager.GetGlobalTime() > ambient_effect_wind_out_time && ambient_effect_wind_out_time != 0.f)
 		{
 			Environment().wind_strength_factor = 0.0;
 		}
@@ -480,7 +480,7 @@ void CGamePersistent::start_game_intro()
 			VERIFY(NULL == m_intro);
 			m_intro = xr_new<CUISequencer>();
 			m_intro->Start("intro_game");
-			Log("Intro start", Device.dwFrame);
+			Log("Intro start", Engine.TimeManager.GetFrameCount());
 		}
 	}
 }
@@ -576,7 +576,7 @@ void CGamePersistent::OnFrame()
 
 	if (0 != pDemoFile)
 	{
-		if (Device.dwTimeGlobal > uTime2Change)
+		if (Engine.TimeManager.GetGlobalTimeMs() > uTime2Change)
 		{
 			// Change level + play demo
 			if (pDemoFile->elapsed() < 3)
@@ -635,7 +635,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		Msg("Execute %s", cmd);
 		Console->Execute(cmd);
 		xr_free(demo);
-		uTime2Change = Device.TimerAsync() + u32(P2) * 1000;
+		uTime2Change = Engine.TimeManager.TimerAsync() + u32(P2) * 1000;
 	}
 }
 
@@ -780,8 +780,8 @@ void CGamePersistent::UpdateDof()
 	if (m_dof[1].similar(m_dof[0]))
 		return;
 
-	float TimeDelta = Device.fTimeDelta;
-	float Scale = 1.0f / Device.time_factor();
+	float TimeDelta = Engine.TimeManager.GetDeltaTime();
+	float Scale = 1.0f / Engine.TimeManager.GetTimeFactor();
 	Fvector diff;
 	diff.sub(m_dof[0], m_dof[2]);
 	diff.mul(TimeDelta / m_DofChangeSpeed);

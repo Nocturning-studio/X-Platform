@@ -32,7 +32,7 @@ CUISequenceSimpleItem::~CUISequenceSimpleItem()
 
 bool CUISequenceSimpleItem::IsPlaying()
 {
-	return (m_time_start + m_time_length) > (Device.dwTimeContinual / 1000.0f);
+	return (m_time_start + m_time_length) > (Engine.TimeManager.GetContinualTimeMs() / 1000.0f);
 }
 
 CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
@@ -136,7 +136,7 @@ void CUISequenceSimpleItem::SSubItem::Stop()
 
 void CUISequenceSimpleItem::Update()
 {
-	float gt = float(Device.dwTimeContinual) / 1000.0f;
+	float gt = float(Engine.TimeManager.GetContinualTimeMs()) / 1000.0f;
 	SubItemVecIt _I = m_subitems.begin();
 	SubItemVecIt _E = m_subitems.end();
 	for (; _I != _E; ++_I)
@@ -184,7 +184,7 @@ void CUISequenceSimpleItem::Start()
 		Device.Pause(TRUE, FALSE, TRUE, "simpleitem_start");
 
 	GetUICursor()->SetUICursorPosition(m_desired_cursor_pos);
-	m_time_start = float(Device.dwTimeContinual) / 1000.0f;
+	m_time_start = float(Engine.TimeManager.GetContinualTimeMs()) / 1000.0f;
 	m_owner->MainWnd()->AttachChild(m_UIWindow);
 
 	if (m_sound._handle())

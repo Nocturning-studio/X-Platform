@@ -183,14 +183,14 @@ void CTorch::UpdateSwitchNightVision()
 
 	/*if(m_bNightVisionOn)
 	{
-		m_NightVisionChargeTime			-= Device.fTimeDelta;
+		m_NightVisionChargeTime			-= Engine.TimeManager.GetDeltaTime();
 
 		if(m_NightVisionChargeTime<0.f)
 			SwitchNightVision(false);
 	}
 	else
 	{
-		m_NightVisionChargeTime			+= Device.fTimeDelta;
+		m_NightVisionChargeTime			+= Engine.TimeManager.GetDeltaTime();
 		clamp(m_NightVisionChargeTime, 0.f, m_NightVisionRechargeTime);
 	}*/
 }
@@ -344,9 +344,9 @@ void CTorch::UpdateCL()
 		if (actor)
 		{
 			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_FirstEye()->yaw, TORCH_INERTION_SPEED_MIN,
-											 TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+											 TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Engine.TimeManager.GetDeltaTime());
 			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN,
-											 TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+											 TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Engine.TimeManager.GetDeltaTime());
 
 			Fvector dir, right, up;
 			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
@@ -416,7 +416,7 @@ void CTorch::UpdateCL()
 			//			glow_render->set_position	(M.c);
 			//			glow_render->set_direction	(M.k);
 			//
-			//			time2hide					-= Device.fTimeDelta;
+			//			time2hide					-= Engine.TimeManager.GetDeltaTime();
 			//			if (time2hide<0)
 			{
 				m_switched_on = false;
@@ -436,7 +436,7 @@ void CTorch::UpdateCL()
 
 	int frame;
 	// возвращает в формате BGR
-	u32 clr = lanim->CalculateBGR(Device.fTimeGlobal, frame);
+	u32 clr = lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame);
 
 	Fcolor fclr;
 	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);

@@ -59,7 +59,7 @@ BOOL CAlienEffectorPP::Process(SPPInfo& pp)
 		target_factor = (target_factor > 0.5f) ? .3f : .6f;
 	}
 
-	def_lerp(factor, target_factor, PERIOD_SPEED, Device.fTimeDelta);
+	def_lerp(factor, target_factor, PERIOD_SPEED, Engine.TimeManager.GetDeltaTime());
 	pp.lerp(pp_identity, state, factor);
 
 	return TRUE;
@@ -132,17 +132,17 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	Mdef.c.set(info.p);
 
 	// set angle
-	if (angle_lerp(dangle_current.x, dangle_target.x, BSA_ANGLE_SPEED, Device.fTimeDelta))
+	if (angle_lerp(dangle_current.x, dangle_target.x, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		dangle_target.x = angle_normalize(Random.randFs(BSA_DELTA_ANGLE_X));
 	}
 
-	if (angle_lerp(dangle_current.y, dangle_target.y, BSA_ANGLE_SPEED, Device.fTimeDelta))
+	if (angle_lerp(dangle_current.y, dangle_target.y, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		dangle_target.y = angle_normalize(Random.randFs(BSA_DELTA_ANGLE_Y));
 	}
 
-	if (angle_lerp(dangle_current.z, dangle_target.z, BSA_ANGLE_SPEED, Device.fTimeDelta))
+	if (angle_lerp(dangle_current.z, dangle_target.z, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		dangle_target.z = angle_normalize(Random.randFs(BSA_DELTA_ANGLE_Z));
 	}
@@ -155,7 +155,7 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	float rel_dist = m_prev_eye_matrix.c.distance_to(cur_matrix.c) / BSA_MAX_CAMERA_DIST;
 	clamp(rel_dist, 0.f, 1.f);
 
-	def_lerp(m_inertion, 1 - rel_dist, rel_dist, Device.fTimeDelta);
+	def_lerp(m_inertion, 1 - rel_dist, rel_dist, Engine.TimeManager.GetDeltaTime());
 
 	// set pos and dir with inertion
 	m_prev_eye_matrix.c.inertion(cur_matrix.c, m_inertion);
@@ -170,7 +170,7 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	clamp(rel_speed, 0.f, 1.f);
 
 	float m_target_fov = BSA_MIN_FOV + (BSA_MAX_FOV - BSA_MIN_FOV) * rel_speed;
-	def_lerp(m_current_fov, m_target_fov, BSA_FOV_SPEED, Device.fTimeDelta);
+	def_lerp(m_current_fov, m_target_fov, BSA_FOV_SPEED, Engine.TimeManager.GetDeltaTime());
 
 	info.fFov = m_current_fov;
 	//////////////////////////////////////////////////////////////////////////

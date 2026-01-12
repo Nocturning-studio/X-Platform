@@ -41,7 +41,7 @@ void CMapSpot::Update()
 	if (m_bCursorOverWindow)
 	{
 		VERIFY(m_dwFocusReceiveTime >= 0);
-		if (Device.dwTimeGlobal > (m_dwFocusReceiveTime + 500))
+		if (Engine.TimeManager.GetGlobalTimeMs() > (m_dwFocusReceiveTime + 500))
 		{
 			GetMessageTarget()->SendMessage(this, MAP_SHOW_HINT, NULL);
 		}

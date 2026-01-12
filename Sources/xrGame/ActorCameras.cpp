@@ -266,7 +266,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		Cameras().UpdateFromCamera(cameras[eacFirstEye]);
 	}
 
-	fCurAVelocity = vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude() / Device.fTimeDelta;
+	fCurAVelocity = vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude() / Engine.TimeManager.GetDeltaTime();
 	vPrevCamDir = cameras[eacFirstEye]->vDirection;
 
 	if (Level().CurrentEntity() == this)

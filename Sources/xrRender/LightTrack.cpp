@@ -156,9 +156,9 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 void CROS_impl::update(IRenderable* O)
 {
 	// clip & verify
-	if (dwFrame == Device.dwFrame)
+	if (dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
-	dwFrame = Device.dwFrame;
+	dwFrame = Engine.TimeManager.GetFrameCount();
 	if (0 == O)
 		return;
 	if (0 == O->renderable.visual)
@@ -195,14 +195,14 @@ extern float ps_r_lt_smooth;
 
 void CROS_impl::update_smooth(IRenderable* O)
 {
-	if (dwFrameSmooth == Device.dwFrame)
+	if (dwFrameSmooth == Engine.TimeManager.GetFrameCount())
 		return;
-	dwFrameSmooth = Device.dwFrame;
+	dwFrameSmooth = Engine.TimeManager.GetFrameCount();
 
 	// Используем умное обновление для HEMI
 	smart_update(O);
 
-	float l_f = Device.fTimeDelta * ps_r_lt_smooth;
+	float l_f = Engine.TimeManager.GetDeltaTime() * ps_r_lt_smooth;
 	clamp(l_f, 0.f, 1.f);
 	float l_i = 1.f - l_f;
 	hemi_smooth = hemi_value * l_f + hemi_smooth * l_i;
@@ -216,14 +216,14 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 float CROS_impl::get_hemi()
 {
-	if (dwFrameSmooth != Device.dwFrame)
+	if (dwFrameSmooth != Engine.TimeManager.GetFrameCount())
 		update_smooth();
 	return hemi_smooth;
 }
 
 const float* CROS_impl::get_hemi_cube()
 {
-	if (dwFrameSmooth != Device.dwFrame)
+	if (dwFrameSmooth != Engine.TimeManager.GetFrameCount())
 		update_smooth();
 	return hemi_cube_smooth;
 }

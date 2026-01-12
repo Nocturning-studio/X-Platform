@@ -353,7 +353,7 @@ class CCC_TimeFactor : public IConsole_Command
 	{
 		float time_factor = (float)atof(args);
 		clamp(time_factor, 0.00001f, 100000000.0f);
-		Device.time_factor(time_factor);
+		Engine.TimeManager.SetTimeFactor(time_factor);
 	}
 };
 #endif // MASTER_GOLD
@@ -524,7 +524,7 @@ class CCC_ALifeSave : public IConsole_Command
 		if (psHUD_Flags.test(HUD_DRAW) || psHUD_Flags.test(HUD_DRAW_MESSAGES))
 		{
 			SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
-			_s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+			_s->m_endTime = Engine.TimeManager.GetGlobalTime() + 3.0f; // 3sec
 			string_path save_name;
 			strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
 			_s->wnd()->SetText(save_name);

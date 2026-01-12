@@ -83,7 +83,7 @@ void CTexture::apply_load(u32 dwStage)
 
 void CTexture::apply_theora(u32 dwStage)
 {
-	if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Device.dwTimeContinual))
+	if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Engine.TimeManager.GetContinualTimeMs()))
 	{
 		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
 		IDirect3DTexture9* T2D = static_cast<IDirect3DTexture9*>(pTempSurface);
@@ -129,7 +129,7 @@ void CTexture::apply_avi(u32 dwStage)
 void CTexture::apply_seq(u32 dwStage)
 {
 	// SEQ
-	u32 frame = Device.dwTimeContinual / seqMSPF; // Device.dwTimeGlobal
+	u32 frame = Engine.TimeManager.GetContinualTimeMs() / seqMSPF; // Engine.TimeManager.GetGlobalTimeMs()
 	u32 frame_data = seqDATA.size();
 	if (flags.seqCycles)
 	{
@@ -193,7 +193,7 @@ void CTexture::Load()
 		else
 		{
 			flags.MemoryUsage = pTheora->Width(true) * pTheora->Height(true) * 4;
-			pTheora->Play(TRUE, Device.dwTimeContinual);
+			pTheora->Play(TRUE, Engine.TimeManager.GetContinualTimeMs());
 
 			// Now create texture
 			u32 _w = pTheora->Width(false);
@@ -344,7 +344,7 @@ void CTexture::desc_update()
 void CTexture::video_Play(BOOL looped, u32 _time)
 {
 	if (pTheora)
-		pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Device.dwTimeContinual);
+		pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Engine.TimeManager.GetContinualTimeMs());
 }
 
 void CTexture::video_Pause(BOOL state)

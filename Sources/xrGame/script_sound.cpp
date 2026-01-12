@@ -49,7 +49,7 @@ void CScriptSound::Play(CScriptGameObject* object, float delay, int flags)
 {
 	THROW3(m_sound._handle(), "There is no sound", *m_caSoundToPlay);
 	//	Msg							("%6d : CScriptSound::Play (%s), delay %f, flags
-	//%d",Device.dwTimeGlobal,m_sound._handle()->file_name(),delay,flags);
+	//%d",Engine.TimeManager.GetGlobalTimeMs(),m_sound._handle()->file_name(),delay,flags);
 	m_sound.play(&object->object(), flags, delay);
 }
 

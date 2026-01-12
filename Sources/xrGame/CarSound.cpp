@@ -76,7 +76,7 @@ void CCar::SCarSound::UpdateStarting()
 	else
 	{
 
-		if (time_state_start + engine_start_delay < Device.dwTimeGlobal)
+		if (time_state_start + engine_start_delay < Engine.TimeManager.GetGlobalTimeMs())
 		{
 			snd_engine.play(pcar, sm_Looped);
 			UpdateDrive();
@@ -110,7 +110,7 @@ void CCar::SCarSound::UpdateDrive()
 void CCar::SCarSound::SwitchState(ESoundState new_state)
 {
 	eCarSound = new_state;
-	time_state_start = Device.dwTimeGlobal;
+	time_state_start = Engine.TimeManager.GetGlobalTimeMs();
 }
 void CCar::SCarSound::Update()
 {

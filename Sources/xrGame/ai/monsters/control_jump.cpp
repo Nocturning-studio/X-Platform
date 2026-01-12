@@ -471,7 +471,7 @@ void CControlJump::hit_test()
 
 bool CControlJump::can_jump(CObject* target)
 {
-	if (m_time_next_allowed > Device.dwTimeGlobal)
+	if (m_time_next_allowed > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	Fvector source_position = m_object->Position();

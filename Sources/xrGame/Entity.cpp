@@ -218,7 +218,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
 
 	if (!g_Alive())
 	{
-		m_level_death_time = Device.dwTimeGlobal;
+		m_level_death_time = Engine.TimeManager.GetGlobalTimeMs();
 		m_game_death_time = E->m_game_death_time;
 		;
 	}
@@ -317,7 +317,7 @@ void CEntity::reload(LPCSTR section)
 
 void CEntity::set_death_time()
 {
-	m_level_death_time = Device.dwTimeGlobal;
+	m_level_death_time = Engine.TimeManager.GetGlobalTimeMs();
 	m_game_death_time = Level().GetGameTime();
 }
 
@@ -349,7 +349,7 @@ void CEntity::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 	if (!getDestroy() && !g_Alive() && (m_killer_id != u16(-1)))
 	{
-		if (Device.dwTimeGlobal > m_level_death_time + FORGET_KILLER_TIME)
+		if (Engine.TimeManager.GetGlobalTimeMs() > m_level_death_time + FORGET_KILLER_TIME)
 		{
 			m_killer_id = u16(-1);
 			NET_Packet P;

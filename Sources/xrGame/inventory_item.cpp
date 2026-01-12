@@ -111,7 +111,7 @@ CInventoryItem::~CInventoryItem()
 			Msg("parent name is [%s]", p->cName().c_str());
 
 		Msg("! ERROR item_id[%d] H_Parent=[%s][%d] [%d]", object().ID(), p ? p->cName().c_str() : "none",
-			p ? p->ID() : -1, Device.dwFrame);
+			p ? p->ID() : -1, Engine.TimeManager.GetFrameCount());
 	}
 }
 

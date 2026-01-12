@@ -56,9 +56,9 @@ void CUILabel::Update()
 	if (m_lanim)
 	{
 		if (m_lainm_start_time < 0.0f)
-			m_lainm_start_time = Device.fTimeGlobal;
+			m_lainm_start_time = Engine.TimeManager.GetGlobalTime();
 		int frame;
-		u32 clr = m_lanim->CalculateRGB(Device.fTimeGlobal - m_lainm_start_time, frame);
+		u32 clr = m_lanim->CalculateRGB(Engine.TimeManager.GetGlobalTime() - m_lainm_start_time, frame);
 		SetColor(clr);
 		SetTextColor(clr);
 	}

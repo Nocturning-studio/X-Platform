@@ -278,9 +278,9 @@ void CAI_Crow::Die(CObject* who)
 };
 void CAI_Crow::UpdateWorkload(float fdt)
 {
-	if (o_workload_frame == Device.dwFrame)
+	if (o_workload_frame == Engine.TimeManager.GetFrameCount())
 		return;
-	o_workload_frame = Device.dwFrame;
+	o_workload_frame = Engine.TimeManager.GetFrameCount();
 	switch (st_current)
 	{
 	case eFlyIdle:
@@ -303,9 +303,9 @@ void CAI_Crow::UpdateCL()
 }
 void CAI_Crow::renderable_Render()
 {
-	UpdateWorkload(Device.fTimeDelta);
+	UpdateWorkload(Engine.TimeManager.GetDeltaTime());
 	inherited::renderable_Render();
-	o_workload_rframe = Device.dwFrame;
+	o_workload_rframe = Engine.TimeManager.GetFrameCount();
 }
 void CAI_Crow::shedule_Update(u32 DT)
 {
@@ -373,7 +373,7 @@ void CAI_Crow::shedule_Update(u32 DT)
 	m_Sounds.m_idle.SetPosition(Position());
 
 	// work
-	if (o_workload_rframe == (Device.dwFrame - 1))
+	if (o_workload_rframe == (Engine.TimeManager.GetFrameCount() - 1))
 		;
 	else
 		UpdateWorkload(fDT);

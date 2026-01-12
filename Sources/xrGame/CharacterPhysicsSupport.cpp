@@ -430,7 +430,7 @@ void CCharacterPhysicsSupport::in_Hit(float P, Fvector& dir, CObject* who, s16 e
 	if (m_flags.test(fl_block_hit))
 	{
 		VERIFY(!m_EntityAlife.g_Alive());
-		if (Device.dwTimeGlobal - m_EntityAlife.GetLevelDeathTime() >= 2000)
+		if (Engine.TimeManager.GetGlobalTimeMs() - m_EntityAlife.GetLevelDeathTime() >= 2000)
 			m_flags.set(fl_block_hit, FALSE);
 		else
 			return;
@@ -655,7 +655,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 		anim_mov_blend = m_EntityAlife.animation_movement()->ControlBlend();
 		/*
 		VERIFY( anim_mov_blend->blend != CBlend::eFREE_SLOT );
-		anim_mov_blend->timeCurrent -= 2 * Device.fTimeDelta * anim_mov_blend->speed;
+		anim_mov_blend->timeCurrent -= 2 * Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed;
 		blend_time = anim_mov_blend->timeCurrent;
 		anim_mov_blend->playing = true;
 
@@ -760,14 +760,14 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	//
 
 	if (anim_mov_ctrl && anim_mov_blend && anim_mov_blend->blend != CBlend::eFREE_SLOT &&
-		anim_mov_blend->timeCurrent + Device.fTimeDelta * anim_mov_blend->speed <
+		anim_mov_blend->timeCurrent + Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed <
 			anim_mov_blend->timeTotal - SAMPLE_SPF - EPS) //.
 	{
 		const Fmatrix sv_xform = mXFORM;
 		mXFORM.set(start_xform);
 		// anim_mov_blend->blendPower = 1;
-		anim_mov_blend->timeCurrent += Device.fTimeDelta * anim_mov_blend->speed;
-		m_pPhysicsShell->AnimToVelocityState(Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit);
+		anim_mov_blend->timeCurrent += Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed;
+		m_pPhysicsShell->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit);
 		mXFORM.set(sv_xform);
 	}
 }
@@ -998,9 +998,9 @@ void CCharacterPhysicsSupport::CalculateTimeDelta()
 	}
 	else
 	{
-		m_time_delta = Device.fTimeGlobal - m_Pred_Time;
+		m_time_delta = Engine.TimeManager.GetGlobalTime() - m_Pred_Time;
 	}
-	m_Pred_Time = Device.fTimeGlobal;
+	m_Pred_Time = Engine.TimeManager.GetGlobalTime();
 };
 
 void CCharacterPhysicsSupport::on_create_anim_mov_ctrl()

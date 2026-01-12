@@ -250,7 +250,7 @@ void CAI_Bloodsucker::BoneCallback(CBoneInstance* B)
 {
 	CAI_Bloodsucker* this_class = static_cast<CAI_Bloodsucker*>(B->Callback_Param);
 
-	this_class->Bones.Update(B, Device.dwTimeGlobal);
+	this_class->Bones.Update(B, Engine.TimeManager.GetGlobalTimeMs());
 }
 
 void CAI_Bloodsucker::vfAssignBones()

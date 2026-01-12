@@ -221,9 +221,9 @@ float CHM_Dynamic::Query(float x, float z)
 //
 float CHeightMap::Query(float x, float z)
 {
-	if (dwFrame != Device.dwFrame)
+	if (dwFrame != Engine.TimeManager.GetFrameCount())
 	{
-		dwFrame = Device.dwFrame;
+		dwFrame = Engine.TimeManager.GetFrameCount();
 		hm_static.Update();
 		hm_dynamic.Update();
 	}

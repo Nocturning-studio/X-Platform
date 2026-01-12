@@ -31,13 +31,6 @@ extern DWORD gSecondaryThreadId;
 // refs
 class ENGINE_API CRenderDevice
 {
-  public:
-	u32 Timer_MM_Delta;
-	CTimer_paused Timer;
-	CTimer_paused TimerGlobal;
-	CTimer TimerMM;
-	CTimer frame_timer;
-
   private:
 	// Main objects used for creating and rendering the 3D scene
 	u32 m_dwWindowStyle;
@@ -120,13 +113,6 @@ class ENGINE_API CRenderDevice
 	CStats* Statistic;
 	CGammaControl Gamma;
 
-	// Engine flow-control
-	float fTimeDelta;
-	float fTimeGlobal;
-	u32 dwTimeDelta;
-	u32 dwTimeGlobal;
-	u32 dwTimeContinual;
-
 	// Cameras & projection
 	Fvector vCameraPosition;
 	Fvector vCameraPosition_saved;
@@ -150,7 +136,6 @@ class ENGINE_API CRenderDevice
 	{
 		b_is_Active = FALSE;
 		b_is_Ready = FALSE;
-		Timer.Start();
 		m_bNearer = FALSE;
 	};
 
@@ -175,18 +160,6 @@ public:
 
 	// Mode control
 	void DumpFlags();
-	IC CTimer_paused* GetTimerGlobal()
-	{
-		return &TimerGlobal;
-	}
-	u32 TimerAsync()
-	{
-		return TimerGlobal.GetElapsed_ms();
-	}
-	u32 TimerAsync_MMT()
-	{
-		return TimerMM.GetElapsed_ms() + Timer_MM_Delta;
-	}
 
 	// Creation & Destroying
 	void Create(void);
@@ -200,12 +173,6 @@ public:
 	void ShutDown(void);
 
   public:
-	void time_factor(const float& time_factor);
-
-	IC const float& time_factor() const;
-
-	void stop_time();
-
 	// Multi-threading
 	std::recursive_mutex mt_csEnter;
 	std::recursive_mutex mt_csLeave;
@@ -224,10 +191,6 @@ public:
 			std::find(seqParallel.begin(), seqParallel.end(), delegate);
 		if (I != seqParallel.end())
 			seqParallel.erase(I);
-	}
-	IC u32 frame_elapsed()
-	{
-		return frame_timer.GetElapsed_ms();
 	}
 };
 

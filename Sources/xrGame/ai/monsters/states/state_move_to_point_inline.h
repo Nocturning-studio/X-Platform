@@ -38,7 +38,7 @@ bool CStateMonsterMoveToPointAbstract::check_completion()
 {
 	if (data.action.time_out != 0)
 	{
-		if (time_state_started + data.action.time_out < Device.dwTimeGlobal)
+		if (time_state_started + data.action.time_out < Engine.TimeManager.GetGlobalTimeMs())
 			return true;
 	}
 
@@ -94,7 +94,7 @@ bool CStateMonsterMoveToPointExAbstract::check_completion()
 {
 	if (data.action.time_out != 0)
 	{
-		if (time_state_started + data.action.time_out < Device.dwTimeGlobal)
+		if (time_state_started + data.action.time_out < Engine.TimeManager.GetGlobalTimeMs())
 			return true;
 	}
 

@@ -12,7 +12,6 @@
 #include "../xrEngine/IGame_Persistent.h"
 
 #include "../xrEngine/XR_IOConsole.h"
-// #include "script_engine.h"
 #include "ui/UIInventoryUtilities.h"
 
 #pragma warning(push)
@@ -20,7 +19,7 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-xrClientData::xrClientData() : IClient(Device.GetTimerGlobal())
+xrClientData::xrClientData() : IClient(Engine.TimeManager.GetTimerGlobal())
 {
 	ps = Level().Server->game->createPlayerState();
 	ps->clear();
@@ -45,7 +44,7 @@ xrClientData::~xrClientData()
 	xr_delete(ps);
 }
 
-xrServer::xrServer() : IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
+xrServer::xrServer() : IPureServer(Engine.TimeManager.GetTimerGlobal(), g_dedicated_server)
 {
 	m_iCurUpdatePacket = 0;
 	m_aUpdatePackets.push_back(NET_Packet());
@@ -180,7 +179,7 @@ void xrServer::client_Destroy(IClient* C)
 			{
 				NET_Packet P;
 				P.w_begin(M_EVENT);
-				P.w_u32(Level().timeServer()); // Device.TimerAsync());
+				P.w_u32(Level().timeServer()); // Engine.TimeManager.TimerAsync());
 				P.w_u16(GE_DESTROY);
 				P.w_u16(pS->ID);
 				SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
@@ -210,7 +209,7 @@ void xrServer::client_Destroy(IClient* C)
 			}
 			else
 			{
-				C->dwTime_LastUpdate = Device.dwTimeGlobal;
+				C->dwTime_LastUpdate = Engine.TimeManager.GetGlobalTimeMs();
 				net_Players_disconnected.push_back(C);
 				((xrClientData*)C)->Clear();
 			};
@@ -242,7 +241,7 @@ void xrServer::Update()
 	game->Update();
 
 	// spawn queue
-	u32 svT = Device.TimerAsync();
+	u32 svT = Engine.TimeManager.TimerAsync();
 	while (!(q_respawn.empty() || (svT < q_respawn.begin()->timestamp)))
 	{
 		// get
@@ -271,7 +270,7 @@ void xrServer::Update()
 	for (u32 DI = 0; DI < net_Players_disconnected.size();)
 	{
 		IClient* CL = net_Players_disconnected[DI];
-		if (CL->dwTime_LastUpdate + g_sv_Client_Reconnect_Time * 60000 < Device.dwTimeGlobal)
+		if (CL->dwTime_LastUpdate + g_sv_Client_Reconnect_Time * 60000 < Engine.TimeManager.GetGlobalTimeMs())
 		{
 			client_Destroy(CL);
 			continue;
@@ -284,7 +283,7 @@ void xrServer::Update()
 	Flush_Clients_Buffers();
 	csPlayers.Leave();
 
-	if (0 == (Device.dwFrame % 100)) // once per 100 frames
+	if (0 == (Engine.TimeManager.GetFrameCount() % 100)) // once per 100 frames
 	{
 		UpdateBannedList();
 	}
@@ -576,7 +575,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 		if (CL)
 		{
 			CL->net_Ready = TRUE;
-			CL->ps->DeathTime = Device.dwTimeGlobal;
+			CL->ps->DeathTime = Engine.TimeManager.GetGlobalTimeMs();
 			game->OnPlayerConnectFinished(sender);
 			CL->ps->setName(CL->name.c_str());
 
@@ -679,7 +678,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 			if (res)
 			{
 				CL->m_admin_rights.m_has_admin_rights = TRUE;
-				CL->m_admin_rights.m_dwLoginTime = Device.dwTimeGlobal;
+				CL->m_admin_rights.m_dwLoginTime = Engine.TimeManager.GetGlobalTimeMs();
 				Msg("# User [%s] logged as remote administrator.", user.c_str());
 			}
 			else
@@ -772,7 +771,7 @@ void xrServer::entity_Destroy(CSE_Abstract*& P)
 #endif
 	R_ASSERT(P);
 	entities.erase(P->ID);
-	m_tID_Generator.vfFreeID(P->ID, Device.TimerAsync());
+	m_tID_Generator.vfFreeID(P->ID, Engine.TimeManager.TimerAsync());
 
 	if (P->owner && P->owner->owner == P)
 		P->owner->owner = NULL;
@@ -984,10 +983,10 @@ void xrServer::PerformCheckClientsForMaxPing()
 		game_PlayerState* ps = Client->ps;
 
 		if (ps->ping > g_sv_dwMaxClientPing &&
-			Client->m_ping_warn.m_dwLastMaxPingWarningTime + g_sv_time_for_ping_check < Device.dwTimeGlobal)
+			Client->m_ping_warn.m_dwLastMaxPingWarningTime + g_sv_time_for_ping_check < Engine.TimeManager.GetGlobalTimeMs())
 		{
 			++Client->m_ping_warn.m_maxPingWarnings;
-			Client->m_ping_warn.m_dwLastMaxPingWarningTime = Device.dwTimeGlobal;
+			Client->m_ping_warn.m_dwLastMaxPingWarningTime = Engine.TimeManager.GetGlobalTimeMs();
 
 			if (Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
 			{ // kick
@@ -1020,7 +1019,7 @@ void xrServer::GetServerInfo(CServerInfo* si)
 
 	si->AddItem("Server port", itoa(GetPort(), tmp, 10), RGB(128, 128, 255));
 	LPCSTR time =
-		InventoryUtilities::GetTimeAsString(Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay).c_str();
+		InventoryUtilities::GetTimeAsString(Engine.TimeManager.GetGlobalTimeMs(), InventoryUtilities::etpTimeToSecondsAndDay).c_str();
 	si->AddItem("Uptime", time, RGB(255, 228, 0));
 
 	strcpy_s(tmp256, get_token_name(game_types, game->Type()));

@@ -14,7 +14,7 @@ smapvis::~smapvis()
 void smapvis::invalidate()
 {
 	state = state_counting;
-	frame_sleep = Device.dwFrame + ps_r_LightSleepFrames;
+	frame_sleep = Engine.TimeManager.GetFrameCount() + ps_r_LightSleepFrames;
 	invisible.clear();
 }
 void smapvis::begin()
@@ -67,7 +67,7 @@ void smapvis::end()
 			RenderImplementation.r_dsgraph_insert_static(testQ_V);
 			RenderImplementation.r_dsgraph_render_graph(0);
 			RenderImplementation.occq_end(testQ_id);
-			testQ_frame = Device.dwFrame + 1; // get result on next frame
+			testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame
 		}
 		break;
 	case state_usingTC:
@@ -78,7 +78,7 @@ void smapvis::end()
 
 void smapvis::flushoccq()
 {
-	if (testQ_frame != Device.dwFrame)
+	if (testQ_frame != Engine.TimeManager.GetFrameCount())
 		return;
 
 	// Проверка валидности query
@@ -120,7 +120,7 @@ void smapvis::flushoccq()
 
 void smapvis::resetoccq()
 {
-	if (testQ_frame == (Device.dwFrame + 1))
+	if (testQ_frame == (Engine.TimeManager.GetFrameCount() + 1))
 		testQ_frame--;
 	flushoccq();
 }

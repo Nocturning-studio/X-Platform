@@ -131,13 +131,13 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 	if (safe_fx_index != fx_index)
 	{
 		// Если индекс был скорректирован, выводим предупреждение
-		Msg("%6d [%s][FX][%s][%f] (index corrected %d->%d)", Device.dwTimeGlobal, *object().cName(), animation_name,
+		Msg("%6d [%s][FX][%s][%f] (index corrected %d->%d)", Engine.TimeManager.GetGlobalTimeMs(), *object().cName(), animation_name,
 			power_factor, fx_index, safe_fx_index);
 	}
 	else
 	{
 		// Обычное сообщение
-		Msg("%6d [%s][FX][%s][%f]", Device.dwTimeGlobal, *object().cName(), animation_name, power_factor);
+		Msg("%6d [%s][FX][%s][%f]", Engine.TimeManager.GetGlobalTimeMs(), *object().cName(), animation_name, power_factor);
 	}
 
 	// Воспроизведение анимации

@@ -186,7 +186,7 @@ void CSoundEnvironment::Update()
 	// Обычно оси совпадают, но если SDK ожидает Z-up, тут нужно менять.
 	Presence::float3 camPos(pos.x, pos.y, pos.z);
 
-	float dt = Device.fTimeDelta;
+	float dt = Engine.TimeManager.GetDeltaTime();
 
 	// Получаем погоду (туман влияет на поглощение ВЧ)
 	float fog_density = 0.0f;

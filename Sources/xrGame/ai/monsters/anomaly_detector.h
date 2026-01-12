@@ -31,7 +31,7 @@ class CAnomalyDetector
 
 		IC bool operator()(const SAnomalyInfo& info)
 		{
-			return (info.time_registered + time_remember < Device.dwTimeGlobal);
+			return (info.time_registered + time_remember < Engine.TimeManager.GetGlobalTimeMs());
 		}
 	};
 

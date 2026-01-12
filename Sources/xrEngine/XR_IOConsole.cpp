@@ -214,7 +214,7 @@ void CConsole::OnFrame()
 
 	m_editor->on_frame();
 
-	if (Device.dwFrame % 10 == 0)
+	if (Engine.TimeManager.GetFrameCount() % 10 == 0)
 	{
 		update_tips();
 	}

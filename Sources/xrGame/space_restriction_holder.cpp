@@ -211,7 +211,7 @@ IC void CSpaceRestrictionHolder::collect_garbage()
 	for (; I != E;)
 	{
 		if (!(*I).second->shape() && !(*I).second->m_ref_count &&
-			(Device.dwTimeGlobal >= (*I).second->m_last_time_dec + time_to_delete))
+			(Engine.TimeManager.GetGlobalTimeMs() >= (*I).second->m_last_time_dec + time_to_delete))
 		{
 			J = I;
 			++I;

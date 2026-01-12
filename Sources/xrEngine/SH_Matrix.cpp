@@ -3,9 +3,9 @@
 
 void CMatrix::Calculate()
 {
-	if (dwFrame == Device.dwFrame)
+	if (dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
-	dwFrame = Device.dwFrame;
+	dwFrame = Engine.TimeManager.GetFrameCount();
 
 	// Switch on mode
 	switch (dwMode)
@@ -15,7 +15,7 @@ void CMatrix::Calculate()
 		return;
 	case modeTCM: {
 		Fmatrix T;
-		float sU = 1, sV = 1, t = Device.fTimeGlobal;
+		float sU = 1, sV = 1, t = Engine.TimeManager.GetGlobalTime();
 		tc_trans(xform, .5f, .5f);
 		if (tcm & tcmRotate)
 		{

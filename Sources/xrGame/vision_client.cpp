@@ -59,7 +59,7 @@ void vision_client::eye_pp_s2()
 {
 	Device.Statistic->AI_Vis_RayTests.Begin();
 
-	u32 dwTime = Device.dwTimeGlobal;
+	u32 dwTime = Engine.TimeManager.GetGlobalTimeMs();
 	u32 dwDT = dwTime - m_time_stamp;
 	m_time_stamp = dwTime;
 	feel_vision_update(m_object, m_position, float(dwDT) / 1000.f, visual().transparency_threshold());

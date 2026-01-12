@@ -67,7 +67,7 @@ u32 lvInterpSteps = 0;
 //////////////////////////////////////////////////////////////////////
 
 CLevel::CLevel()
-	: IPureClient(Device.GetTimerGlobal())
+	: IPureClient(Engine.TimeManager.GetTimerGlobal())
 #ifdef PROFILE_CRITICAL_SECTIONS
 	  ,
 	  DemoCS(MUTEX_PROFILE_ID(DemoCS))
@@ -381,7 +381,7 @@ void CLevel::ProcessGameEvents()
 		/*
 		if (!game_events->queue.empty())
 			Msg("- d[%d],ts[%d] --
-		E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
+		E[svT=%d],[evT=%d]",Engine.TimeManager.GetGlobalTimeMs(),timeServer(),svT,game_events->queue.begin()->timestamp);
 		*/
 
 		while (game_events->available(svT))
@@ -1121,7 +1121,7 @@ void GlobalFeelTouch::update()
 	// we ignore P and R arguments, we need just delete evaled denied objects...
 	xr_vector<Feel::Touch::DenyTouch>::iterator new_end =
 		std::remove_if(feel_touch_disable.begin(), feel_touch_disable.end(),
-					   std::bind(delete_predicate_by_time(), std::placeholders::_1, Device.dwTimeGlobal));
+					   std::bind(delete_predicate_by_time(), std::placeholders::_1, Engine.TimeManager.GetGlobalTimeMs()));
 	feel_touch_disable.erase(new_end, feel_touch_disable.end());
 }
 

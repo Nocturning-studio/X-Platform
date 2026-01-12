@@ -122,7 +122,7 @@ void CHUDCrosshair::OnRender()
 	if (!fsimilar(target_radius, radius))
 	{
 		float sp = radius_speed_perc * scr_size.x;
-		float radius_change = sp * Device.fTimeDelta;
+		float radius_change = sp * Engine.TimeManager.GetDeltaTime();
 		clamp(radius_change, 0.0f, sp * 0.0165f); // clamp to 60 fps
 		clamp(radius_change, 0.0f, _abs(target_radius - radius));
 

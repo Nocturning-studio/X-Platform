@@ -21,7 +21,7 @@ void CControlDirectionBase::reinit()
 
 void CControlDirectionBase::face_target(const Fvector& position, u32 delay, float add_yaw)
 {
-	if (m_time_last_faced + delay > Device.dwTimeGlobal)
+	if (m_time_last_faced + delay > Engine.TimeManager.GetGlobalTimeMs())
 		return;
 
 	m_delay = delay;
@@ -38,7 +38,7 @@ void CControlDirectionBase::face_target(const Fvector& position, u32 delay, floa
 
 	m_heading.target = yaw;
 
-	m_time_last_faced = Device.dwTimeGlobal;
+	m_time_last_faced = Engine.TimeManager.GetGlobalTimeMs();
 }
 void CControlDirectionBase::face_target(const CObject* obj, u32 delay, float add_yaw)
 {

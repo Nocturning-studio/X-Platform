@@ -65,7 +65,7 @@ float CalcGustWave(float Time)
 
 void CEnvironment::CalcWindValues()
 {
-	float GustFactor = CalcGustWave(Device.fTimeGlobal);
+	float GustFactor = CalcGustWave(Engine.TimeManager.GetGlobalTime());
 
 	float BaseStrength = CurrentEnv->wind_strength;
 	// Уменьшили влияние порывов на итоговую цифру, чтобы не было скачков от 0 до 100

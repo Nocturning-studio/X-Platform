@@ -597,7 +597,7 @@ bool CActor::CanAccelerate()
 	bool can_accel = !conditions().IsLimping() && !character_physics_support()->movement()->PHCapture() &&
 					 //		&& !m_bZoomAimingMode
 					 //		&& !(mstate_real&mcLookout)
-					 (m_time_lock_accel < Device.dwTimeGlobal);
+					 (m_time_lock_accel < Engine.TimeManager.GetGlobalTimeMs());
 
 	return can_accel;
 }

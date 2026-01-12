@@ -221,15 +221,15 @@ void CUITradeWnd::Update()
 {
 	EListType et = eNone;
 
-	if (m_pInv->ModifyFrame() == Device.dwFrame && m_pOthersInv->ModifyFrame() == Device.dwFrame)
+	if (m_pInv->ModifyFrame() == Engine.TimeManager.GetFrameCount() && m_pOthersInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
 	{
 		et = eBoth;
 	}
-	else if (m_pInv->ModifyFrame() == Device.dwFrame)
+	else if (m_pInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
 	{
 		et = e1st;
 	}
-	else if (m_pOthersInv->ModifyFrame() == Device.dwFrame)
+	else if (m_pOthersInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
 	{
 		et = e2nd;
 	}
@@ -429,7 +429,7 @@ void CUITradeWnd::PerformTrade()
 		else
 			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
 
-		m_uidata->UIDealMsg->m_endTime = Device.fTimeGlobal + 2.0f; // sec
+		m_uidata->UIDealMsg->m_endTime = Engine.TimeManager.GetGlobalTime() + 2.0f; // sec
 	}
 	SetCurrentItem(NULL);
 }

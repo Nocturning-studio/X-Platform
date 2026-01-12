@@ -44,7 +44,7 @@ bool CStalkerActionDead::fire() const
 	if (!object().hammer_is_clutched())
 		return (false);
 
-	if (Device.dwTimeGlobal - object().GetLevelDeathTime() > 500)
+	if (Engine.TimeManager.GetGlobalTimeMs() - object().GetLevelDeathTime() > 500)
 		return (false);
 
 	return (true);

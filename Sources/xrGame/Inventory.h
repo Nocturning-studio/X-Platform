@@ -172,7 +172,7 @@ class CInventory
 	}
 	void InvalidateState()
 	{
-		m_dwModifyFrame = Device.dwFrame;
+		m_dwModifyFrame = Engine.TimeManager.GetFrameCount();
 	}
 	void Items_SetCurrentEntityHud(bool current_entity);
 	bool isBeautifulForActiveSlot(CInventoryItem* pIItem);

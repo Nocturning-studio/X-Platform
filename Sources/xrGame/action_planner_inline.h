@@ -64,7 +64,7 @@ void CPlanner::update()
 		{
 			show_current_world_state();
 			show_target_world_state();
-			Msg("%6d : Solution for object %s [%d vertices searched]", Device.dwTimeGlobal, object_name(),
+			Msg("%6d : Solution for object %s [%d vertices searched]", Engine.TimeManager.GetGlobalTimeMs(), object_name(),
 				ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
 			for (int i = 0; i < (int)solution().size(); ++i)
 				Msg("%s", action2string(solution()[i]));
@@ -79,7 +79,7 @@ void CPlanner::update()
 		show();
 
 		Msg("! ERROR : there is no action sequence, which can transfer current world state to the target one");
-		Msg("Time : %6d", Device.dwTimeGlobal);
+		Msg("Time : %6d", Engine.TimeManager.GetGlobalTimeMs());
 		Msg("Object : %s", object_name());
 
 		show_current_world_state();

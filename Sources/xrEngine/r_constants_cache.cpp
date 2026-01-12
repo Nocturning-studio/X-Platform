@@ -6,7 +6,7 @@
 // Кастыль для исправления ошибки зависимости от Device!!!
 u32 R_constant_array::getFrame()
 {
-	return Device.dwFrame;
+	return Engine.TimeManager.GetFrameCount();
 }
 
 void R_constants::flush_cache()
@@ -14,11 +14,11 @@ void R_constants::flush_cache()
 	// ВРЕМЕННО: ДЕБАГ ВЫВОД
 #ifdef DEBUG
 	static u32 lastDebugFrame = 0;
-	if (Device.dwFrame - lastDebugFrame > 60) // Раз в секунду
+	if (Engine.TimeManager.GetFrameCount() - lastDebugFrame > 60) // Раз в секунду
 	{
 		Msg("* CONSTANTS DEBUG: Frame %d, Pixel dirty: %d (needs_flush: %d), Vertex dirty: %d (needs_flush: %d)",
-			Device.dwFrame, a_pixel.b_dirty, a_pixel.needs_flush(), a_vertex.b_dirty, a_vertex.needs_flush());
-		lastDebugFrame = Device.dwFrame;
+			Engine.TimeManager.GetFrameCount(), a_pixel.b_dirty, a_pixel.needs_flush(), a_vertex.b_dirty, a_vertex.needs_flush());
+		lastDebugFrame = Engine.TimeManager.GetFrameCount();
 	}
 #endif
 

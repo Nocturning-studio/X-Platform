@@ -196,7 +196,7 @@ void CDetailManager::UpdateVisibleM()
 					continue;
 #endif
 
-				if (Device.dwFrame > S.frame)
+				if (Engine.TimeManager.GetFrameCount() > S.frame)
 				{
 					float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
 					if (dist_sq > fade_limit)
@@ -206,7 +206,7 @@ void CDetailManager::UpdateVisibleM()
 					float alpha_i = 1.f - alpha;
 					float dist_sq_rcp = 1.f / dist_sq;
 
-					S.frame = Device.dwFrame + Random.randI(15, 30);
+					S.frame = Engine.TimeManager.GetFrameCount() + Random.randI(15, 30);
 
 					if (alpha_i < 0.01f)
 						continue;
@@ -282,7 +282,7 @@ void CDetailManager::Render()
 
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	Device.Statistic->RenderDUMP_DT_Render.End();
-	m_frame_rendered = Device.dwFrame;
+	m_frame_rendered = Engine.TimeManager.GetFrameCount();
 }
 
 void __stdcall CDetailManager::MT_CALC()
@@ -299,8 +299,8 @@ void __stdcall CDetailManager::MT_CALC()
 #endif
 
 	MT.Enter();
-	if (m_frame_calc != Device.dwFrame)
-		if ((m_frame_rendered + 1) == Device.dwFrame) // already rendered
+	if (m_frame_calc != Engine.TimeManager.GetFrameCount())
+		if ((m_frame_rendered + 1) == Engine.TimeManager.GetFrameCount()) // already rendered
 		{
 			Fvector EYE = Device.vCameraPosition;
 			int s_x = iFloor(EYE.x / dm_slot_size + .5f);
@@ -311,7 +311,7 @@ void __stdcall CDetailManager::MT_CALC()
 			Device.Statistic->RenderDUMP_DT_Cache.End();
 
 			UpdateVisibleM();
-			m_frame_calc = Device.dwFrame;
+			m_frame_calc = Engine.TimeManager.GetFrameCount();
 		}
 	MT.Leave();
 }
@@ -827,5 +827,5 @@ void CDetailManager::ClearVisible()
 			m_visibles[i][j].clear_not_free();
 		}
 	}
-	m_frame_rendered = Device.dwFrame;
+	m_frame_rendered = Engine.TimeManager.GetFrameCount();
 }

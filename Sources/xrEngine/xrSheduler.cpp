@@ -96,8 +96,8 @@ void CSheduler::internal_Register(ISheduled* O, BOOL RT)
 	{
 		// Fill item structure
 		Item TNext;
-		TNext.dwTimeForExecute = Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
+		TNext.dwTimeForExecute = Engine.TimeManager.GetGlobalTimeMs();
+		TNext.dwTimeOfLastExecute = Engine.TimeManager.GetGlobalTimeMs();
 		TNext.Object = O;
 		TNext.scheduled_name = O->shedule_Name();
 		O->shedule.b_RT = TRUE;
@@ -108,8 +108,8 @@ void CSheduler::internal_Register(ISheduled* O, BOOL RT)
 	{
 		// Fill item structure
 		Item TNext;
-		TNext.dwTimeForExecute = Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
+		TNext.dwTimeForExecute = Engine.TimeManager.GetGlobalTimeMs();
+		TNext.dwTimeOfLastExecute = Engine.TimeManager.GetGlobalTimeMs();
 		TNext.Object = O;
 		TNext.scheduled_name = O->shedule_Name();
 		O->shedule.b_RT = FALSE;
@@ -300,7 +300,7 @@ void CSheduler::Pop()
 void CSheduler::ProcessStep()
 {
 	// Normal priority
-	u32 dwTime = Device.dwTimeGlobal;
+	u32 dwTime = Engine.TimeManager.GetGlobalTimeMs();
 	CTimer eTimer;
 	for (int i = 0; !Items.empty() && Top().dwTimeForExecute < dwTime; ++i)
 	{
@@ -352,9 +352,9 @@ void CSheduler::ProcessStep()
 		{
 #endif // DEBUG
 	   // Real update call
-	   // Msg						("------- %d:",Device.dwFrame);
+	   // Msg						("------- %d:",Engine.TimeManager.GetFrameCount());
 #ifdef DEBUG
-			T.Object->dbg_startframe = Device.dwFrame;
+			T.Object->dbg_startframe = Engine.TimeManager.GetFrameCount();
 			eTimer.Start();
 			LPCSTR _obj_name = T.Object->shedule_Name().c_str();
 #endif // DEBUG
@@ -453,11 +453,11 @@ void CSheduler::Update()
 	g_bSheduleInProgress = TRUE;
 
 #ifdef DEBUG_SCHEDULER
-	Msg("SCHEDULER: PROCESS STEP %d", Device.dwFrame);
+	Msg("SCHEDULER: PROCESS STEP %d", Engine.TimeManager.GetFrameCount());
 #endif // DEBUG_SCHEDULER
 	// Realtime priority
 	m_processing_now = true;
-	u32 dwTime = Device.dwTimeGlobal;
+	u32 dwTime = Engine.TimeManager.GetGlobalTimeMs();
 	for (u32 it = 0; it < ItemsRT.size(); it++)
 	{
 		Item& T = ItemsRT[it];
@@ -476,8 +476,8 @@ void CSheduler::Update()
 
 		u32 Elapsed = dwTime - T.dwTimeOfLastExecute;
 #ifdef DEBUG
-		VERIFY(T.Object->dbg_startframe != Device.dwFrame);
-		T.Object->dbg_startframe = Device.dwFrame;
+		VERIFY(T.Object->dbg_startframe != Engine.TimeManager.GetFrameCount());
+		T.Object->dbg_startframe = Engine.TimeManager.GetFrameCount();
 #endif
 		T.Object->shedule_Update(Elapsed);
 		T.dwTimeOfLastExecute = dwTime;
@@ -487,7 +487,7 @@ void CSheduler::Update()
 	ProcessStep();
 	m_processing_now = false;
 #ifdef DEBUG_SCHEDULER
-	Msg("SCHEDULER: PROCESS STEP FINISHED %d", Device.dwFrame);
+	Msg("SCHEDULER: PROCESS STEP FINISHED %d", Engine.TimeManager.GetFrameCount());
 #endif // DEBUG_SCHEDULER
 	clamp(psShedulerTarget, 3.f, 66.f);
 	psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;

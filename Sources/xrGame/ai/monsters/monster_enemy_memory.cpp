@@ -51,7 +51,7 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy)
 	SMonsterEnemy enemy_info;
 	enemy_info.position = enemy->Position();
 	enemy_info.vertex = enemy->ai_location().level_vertex_id();
-	enemy_info.time = Device.dwTimeGlobal;
+	enemy_info.time = Engine.TimeManager.GetGlobalTimeMs();
 	enemy_info.danger = 0.f;
 
 	ENEMIES_MAP_IT it = m_objects.find(enemy);
@@ -91,7 +91,7 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy, const Fvector& po
 
 void CMonsterEnemyMemory::remove_non_actual()
 {
-	TTime cur_time = Device.dwTimeGlobal;
+	TTime cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
 	for (ENEMIES_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)

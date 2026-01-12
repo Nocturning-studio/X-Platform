@@ -200,14 +200,14 @@ TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::ExecuteTeleStart()
 {
 	object->com_man().ta_activate(object->anim_triple_tele);
-	time_started = Device.dwTimeGlobal;
+	time_started = Engine.TimeManager.GetGlobalTimeMs();
 	object->ActivateShield();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::ExecuteTeleContinue()
 {
-	if (time_started + object->m_tele_time_to_hold > Device.dwTimeGlobal)
+	if (time_started + object->m_tele_time_to_hold > Engine.TimeManager.GetGlobalTimeMs())
 		return;
 
 	// найти объект для атаки
@@ -219,7 +219,7 @@ void CStateBurerAttackTeleAbstract::ExecuteTeleContinue()
 	{
 		tele_object = object->CTelekinesis::get_object_by_index(i);
 
-		if ((tele_object.get_state() == TS_Keep) && (tele_object.time_keep_started + 1500 < Device.dwTimeGlobal))
+		if ((tele_object.get_state() == TS_Keep) && (tele_object.time_keep_started + 1500 < Engine.TimeManager.GetGlobalTimeMs()))
 		{
 
 			object_found = true;
@@ -236,7 +236,7 @@ void CStateBurerAttackTeleAbstract::ExecuteTeleContinue()
 	}
 	else
 	{
-		if (!IsActiveObjects() || (time_started + MAX_TIME_CHECK_FAILURE < Device.dwTimeGlobal))
+		if (!IsActiveObjects() || (time_started + MAX_TIME_CHECK_FAILURE < Engine.TimeManager.GetGlobalTimeMs()))
 		{
 			object->com_man().ta_deactivate();
 			m_action = ACTION_COMPLETED;

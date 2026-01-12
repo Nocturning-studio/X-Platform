@@ -217,6 +217,9 @@
     <Filter Include="Engine\Windows %28Splash/Main window%29\Logo window">
       <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Time manager">
+      <UniqueIdentifier>{fb97fa90-365a-47d3-88d7-bcaf5f4f7a5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -644,6 +647,9 @@
     </ClInclude>
     <ClInclude Include="WindowManager.h">
       <Filter>Engine\Windows %28Splash/Main window%29\Window manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>Engine\Time manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1093,6 +1099,9 @@
     </ClCompile>
     <ClCompile Include="WindowManager.cpp">
       <Filter>Engine\Windows %28Splash/Main window%29\Window manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>Engine\Time manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

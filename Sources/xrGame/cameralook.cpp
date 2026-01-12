@@ -56,22 +56,22 @@ void CCameraLook::Move(int cmd, float val, float factor)
 	switch (cmd)
 	{
 	case kCAM_ZOOM_IN:
-		dist -= val ? val : (rot_speed.z * Device.fTimeDelta);
+		dist -= val ? val : (rot_speed.z * Engine.TimeManager.GetDeltaTime());
 		break;
 	case kCAM_ZOOM_OUT:
-		dist += val ? val : (rot_speed.z * Device.fTimeDelta);
+		dist += val ? val : (rot_speed.z * Engine.TimeManager.GetDeltaTime());
 		break;
 	case kDOWN:
-		pitch -= val ? val : (rot_speed.x * Device.fTimeDelta / factor);
+		pitch -= val ? val : (rot_speed.x * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	case kUP:
-		pitch += val ? val : (rot_speed.x * Device.fTimeDelta / factor);
+		pitch += val ? val : (rot_speed.x * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	case kLEFT:
-		yaw -= val ? val : (rot_speed.y * Device.fTimeDelta / factor);
+		yaw -= val ? val : (rot_speed.y * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	case kRIGHT:
-		yaw += val ? val : (rot_speed.y * Device.fTimeDelta / factor);
+		yaw += val ? val : (rot_speed.y * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	}
 	if (bClampYaw)
@@ -190,10 +190,10 @@ void CCameraLook2::UpdateAutoAim()
 	Fvector xyz;
 	_m.getXYZi(xyz);
 
-	yaw = angle_inertion_var(yaw, xyz.y, m_autoaim_inertion_yaw.x, m_autoaim_inertion_yaw.y, PI, Device.fTimeDelta);
+	yaw = angle_inertion_var(yaw, xyz.y, m_autoaim_inertion_yaw.x, m_autoaim_inertion_yaw.y, PI, Engine.TimeManager.GetDeltaTime());
 
 	pitch =
-		angle_inertion_var(pitch, xyz.x, m_autoaim_inertion_pitch.x, m_autoaim_inertion_pitch.y, PI, Device.fTimeDelta);
+		angle_inertion_var(pitch, xyz.x, m_autoaim_inertion_pitch.x, m_autoaim_inertion_pitch.y, PI, Engine.TimeManager.GetDeltaTime());
 }
 
 void CCameraLook2::Load(LPCSTR section)

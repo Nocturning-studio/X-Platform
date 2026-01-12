@@ -96,9 +96,9 @@ void CWeapon::Hit(SHit* pHDS)
 
 void CWeapon::UpdateXForm()
 {
-	if (Device.dwFrame != dwXF_Frame)
+	if (Engine.TimeManager.GetFrameCount() != dwXF_Frame)
 	{
-		dwXF_Frame = Device.dwFrame;
+		dwXF_Frame = Engine.TimeManager.GetFrameCount();
 
 		if (0 == H_Parent())
 			return;
@@ -161,9 +161,9 @@ void CWeapon::UpdateXForm()
 
 void CWeapon::UpdateFireDependencies_internal()
 {
-	if (Device.dwFrame != dwFP_Frame)
+	if (Engine.TimeManager.GetFrameCount() != dwFP_Frame)
 	{
-		dwFP_Frame = Device.dwFrame;
+		dwFP_Frame = Engine.TimeManager.GetFrameCount();
 
 		UpdateXForm();
 
@@ -1001,7 +1001,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 	if (m_pCurrentInventory->ModifyFrame() <= m_dwAmmoCurrentCalcFrame)
 		return l_count + iAmmoCurrent;
 
-	m_dwAmmoCurrentCalcFrame = Device.dwFrame;
+	m_dwAmmoCurrentCalcFrame = Engine.TimeManager.GetFrameCount();
 	iAmmoCurrent = 0;
 
 	for (int i = 0; i < (int)m_ammoTypes.size(); ++i)
@@ -1524,9 +1524,9 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		trans.mulB_43(hud_rotation);
 
 		if (pActor->IsZoomAimingMode())
-			m_fZoomRotationFactor += Device.fTimeDelta / m_fZoomRotateTime;
+			m_fZoomRotationFactor += Engine.TimeManager.GetDeltaTime() / m_fZoomRotateTime;
 		else
-			m_fZoomRotationFactor -= Device.fTimeDelta / m_fZoomRotateTime;
+			m_fZoomRotationFactor -= Engine.TimeManager.GetDeltaTime() / m_fZoomRotateTime;
 		clamp(m_fZoomRotationFactor, 0.f, 1.f);
 	}
 }

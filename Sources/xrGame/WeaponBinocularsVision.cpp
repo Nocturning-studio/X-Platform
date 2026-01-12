@@ -115,10 +115,10 @@ void SBinocVisibleObj::Update()
 	}
 	else
 	{
-		cur_rect.lt.x += (mn.x - cur_rect.lt.x) * m_upd_speed * Device.fTimeDelta;
-		cur_rect.lt.y += (mn.y - cur_rect.lt.y) * m_upd_speed * Device.fTimeDelta;
-		cur_rect.rb.x += (mx.x - cur_rect.rb.x) * m_upd_speed * Device.fTimeDelta;
-		cur_rect.rb.y += (mx.y - cur_rect.rb.y) * m_upd_speed * Device.fTimeDelta;
+		cur_rect.lt.x += (mn.x - cur_rect.lt.x) * m_upd_speed * Engine.TimeManager.GetDeltaTime();
+		cur_rect.lt.y += (mn.y - cur_rect.lt.y) * m_upd_speed * Engine.TimeManager.GetDeltaTime();
+		cur_rect.rb.x += (mx.x - cur_rect.rb.x) * m_upd_speed * Engine.TimeManager.GetDeltaTime();
+		cur_rect.rb.y += (mx.y - cur_rect.rb.y) * m_upd_speed * Engine.TimeManager.GetDeltaTime();
 		if (mn.similar(cur_rect.lt, 2.f) && mx.similar(cur_rect.rb, 2.f))
 		{
 			// target locked

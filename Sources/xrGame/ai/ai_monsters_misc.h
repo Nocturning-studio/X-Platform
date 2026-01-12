@@ -26,7 +26,7 @@ typedef xr_vector<CEntity*> MEMBER_REGISTRY;
 #ifdef WRITE_LOG
 #define WRITE_TO_LOG(S)                                                                                                \
 	{                                                                                                                  \
-		Msg("%s,%s,%d,p[%.2f,%.2f,%.2f],%.2f,h[%.2f,%.2f],t[%.2f,%.2f]", *cName(), S, Device.dwTimeGlobal,             \
+		Msg("%s,%s,%d,p[%.2f,%.2f,%.2f],%.2f,h[%.2f,%.2f],t[%.2f,%.2f]", *cName(), S, Engine.TimeManager.GetGlobalTimeMs(),             \
 			Position().x, Position().y, Position().z, m_fCurSpeed, m_head.current.yaw, m_head.target.yaw,              \
 			m_body.current.yaw, m_body.target.yaw);                                                                    \
 		vfUpdateDynamicObjects();                                                                                      \

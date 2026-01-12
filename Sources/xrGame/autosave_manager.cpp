@@ -23,7 +23,7 @@ CAutosaveManager::CAutosaveManager()
 
 	sscanf(pSettings->r_string(section, "autosave_interval"), "%d:%d:%d", &hours, &minutes, &seconds);
 	m_autosave_interval = (u32)generate_time(1, 1, 1, hours, minutes, seconds);
-	m_last_autosave_time = Device.dwTimeGlobal;
+	m_last_autosave_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	sscanf(pSettings->r_string(section, "delay_autosave_interval"), "%d:%d:%d", &hours, &minutes, &seconds);
 	m_delay_autosave_interval = (u32)generate_time(1, 1, 1, hours, minutes, seconds);
@@ -57,7 +57,7 @@ void CAutosaveManager::shedule_Update(u32 dt)
 	if (!ai().get_alife())
 		return;
 
-	if (last_autosave_time() + autosave_interval() >= Device.dwTimeGlobal)
+	if (last_autosave_time() + autosave_interval() >= Engine.TimeManager.GetGlobalTimeMs())
 		return;
 
 	if (!g_actor || !ready_for_autosave() || !Actor()->g_Alive())
@@ -83,5 +83,5 @@ void CAutosaveManager::shedule_Update(u32 dt)
 	MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
 
 	SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("autosave", true);
-	s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+	s->m_endTime = Engine.TimeManager.GetGlobalTime() + 3.0f; // 3sec
 }

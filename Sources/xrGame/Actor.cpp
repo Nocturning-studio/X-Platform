@@ -189,7 +189,7 @@ CActor::CActor() : CEntityAlive()
 	m_location_manager = xr_new<CLocationManager>(this);
 
 	m_fDamagePowerSaved = gh_damage_power;
-	m_fTimeFactorSaved = Device.time_factor();
+	m_fTimeFactorSaved = Engine.TimeManager.GetTimeFactor();
 	m_bLastChanceActivated = false;
 	m_bLastChanceAvailable = true;
 	m_bLastChanceTimeOutTimerStarted = false;
@@ -472,7 +472,7 @@ void CActor::Hit(SHit* pHDS)
 		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			bPlaySound = false;
-			if (Device.dwFrame != last_hit_frame && HDS.bone() != BI_NONE)
+			if (Engine.TimeManager.GetFrameCount() != last_hit_frame && HDS.bone() != BI_NONE)
 			{
 				// вычислить позицию и направленность партикла
 				Fmatrix pos;
@@ -492,7 +492,7 @@ void CActor::Hit(SHit* pHDS)
 			};
 		};
 
-		last_hit_frame = Device.dwFrame;
+		last_hit_frame = Engine.TimeManager.GetFrameCount();
 	};
 
 	if (!g_dedicated_server && !sndHit[HDS.hit_type].empty() && (ALife::eHitTypeTelepatic != HDS.hit_type))
@@ -902,7 +902,7 @@ void CActor::UpdateCL()
 	if (m_holder)
 		m_holder->UpdateEx(currentFOV());
 
-	m_snd_noise -= 0.3f * Device.fTimeDelta;
+	m_snd_noise -= 0.3f * Engine.TimeManager.GetDeltaTime();
 
 	VERIFY2(_valid(renderable.xform), *cName());
 	inherited::UpdateCL();
@@ -919,7 +919,7 @@ void CActor::UpdateCL()
 	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
 	Device.Statistic->TEST1.Begin();
-	cam_Update(float(Device.dwTimeDelta) / 1000.0f, currentFOV());
+	cam_Update(float(Engine.TimeManager.GetDeltaTimeMs()) / 1000.0f, currentFOV());
 	Device.Statistic->TEST1.End();
 
 	if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
@@ -1155,7 +1155,7 @@ void CActor::shedule_Update(u32 DT)
 		{
 			Msg("Last chance used");
 			gh_damage_power *= 0.25f;
-			Device.time_factor(0.75f);
+			Engine.TimeManager.SetTimeFactor(0.75f);
 			LastChanceActiveTimer.Start();
 			m_bLastChanceActivated = true;
 			m_bLastChanceAvailable = false;
@@ -1226,7 +1226,7 @@ void CActor::shedule_Update(u32 DT)
 		{
 			Msg("Last chance time is over");
 			gh_damage_power = m_fDamagePowerSaved;
-			Device.time_factor(m_fTimeFactorSaved);
+			Engine.TimeManager.SetTimeFactor(m_fTimeFactorSaved);
 			m_bLastChanceActivated = false;
 		}
 	}

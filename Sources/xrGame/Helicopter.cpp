@@ -53,7 +53,7 @@ void CHelicopter::init()
 	m_min_rocket_dist = 20.0f;
 	m_max_rocket_dist = 200.0f;
 	m_time_between_rocket_attack = 0;
-	m_last_rocket_attack = Device.dwTimeGlobal;
+	m_last_rocket_attack = Engine.TimeManager.GetGlobalTimeMs();
 
 	SetfHealth(1.0f);
 }
@@ -403,7 +403,7 @@ void CHelicopter::UpdateCL()
 
 	m_movement.Update();
 
-	m_stepRemains += Device.fTimeDelta;
+	m_stepRemains += Engine.TimeManager.GetDeltaTime();
 	while (m_stepRemains > STEP)
 	{
 		MoveStep();

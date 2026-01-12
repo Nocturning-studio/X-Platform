@@ -115,7 +115,7 @@ void CGrenade::State(u32 state)
 			if (Local())
 			{
 #ifdef DEBUG
-				Msg("Destroying local grenade[%d][%d]", ID(), Device.dwFrame);
+				Msg("Destroying local grenade[%d][%d]", ID(), Engine.TimeManager.GetFrameCount());
 #endif
 				DestroyObject();
 			}

@@ -41,14 +41,8 @@ BOOL CRenderDevice::Begin()
 
 	HW.Validate();
 	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
-	if (FAILED(_hr))
-	{
-		// Check if the device is ready to be reset
-		if (D3DERR_DEVICENOTRESET == _hr)
-		{
-			Reset();
-		}
-	}
+	if (FAILED(_hr) && D3DERR_DEVICENOTRESET == _hr)
+		Reset();
 
 	Engine.DebugUI.OnFrameBegin();
 
@@ -226,18 +220,6 @@ void CRenderDevice::PrepareEventLoop()
 
 	Threading::SpawnThread(SecondaryThreadProc, "X-RAY Secondary thread", 0, this);
 
-	// Startup timers and calculate timer delta
-	dwTimeGlobal = 0;
-	Timer_MM_Delta = 0;
-	{
-		u32 time_mm = timeGetTime();
-		while (timeGetTime() == time_mm)
-			; // wait for next tick
-		u32 time_system = timeGetTime();
-		u32 time_local = TimerAsync();
-		Timer_MM_Delta = time_system - time_local;
-	}
-
 	mt_bMustExit = FALSE;
 
 	// [Moved from StartEventLoop start]
@@ -360,41 +342,19 @@ void CRenderDevice::FrameMove()
 {
 	OPTICK_EVENT("CRenderDevice::FrameMove");
 
-	dwFrame++;
+	// ¬с€ логика расчета времени перенесена в Engine.TimeManager.Update(),
+	// который вызываетс€ в Engine.cpp перед DoFrame().
 
-	dwTimeContinual = TimerMM.GetElapsed_ms();
-	if (psDeviceFlags.test(rsConstantFPS))
-	{
-		// 20ms = 50fps
-		fTimeDelta = 0.020f;
-		fTimeGlobal += 0.020f;
-		dwTimeDelta = 20;
-		dwTimeGlobal += 20;
-	}
-	else
-	{
-		// Timer
-		float fPreviousFrameTime = Timer.GetElapsed_sec();
-		Timer.Start(); // previous frame
-		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
-		if (fTimeDelta > .1f)
-			fTimeDelta = .1f; // limit to 15fps minimum
-
-		if (Paused())
-			fTimeDelta = 0.0f;
-
-		fTimeGlobal = TimerGlobal.GetElapsed_sec();
-		u32 _old_global = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
-		dwTimeDelta = dwTimeGlobal - _old_global;
-	}
-
-	// Frame move
+	// Frame move logic
 	Statistic->EngineTOTAL.Begin();
+
+	// »спользуем Engine.TimeManager дл€ проверки загрузки, если нужно,
+	// или просто выполн€ем логику кадров.
 	if (!g_bLoaded)
 		ProcessLoading(rp_Frame);
 	else
 		seqFrame.Process(rp_Frame);
+
 	Statistic->EngineTOTAL.End();
 }
 
@@ -492,26 +452,6 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 			ShowCursor(TRUE);
 		}
 	}
-}
-
-void CRenderDevice::time_factor(const float& time_factor)
-{
-	Timer.time_factor(time_factor);
-	TimerGlobal.time_factor(time_factor);
-	psTimeFactor = time_factor;
-}
-
-IC const float& CRenderDevice::time_factor() const
-{
-	VERIFY(Timer.time_factor() == TimerGlobal.time_factor());
-	return (Timer.time_factor());
-}
-
-void CRenderDevice::stop_time()
-{
-	Timer.time_factor(0.0001f);
-	TimerGlobal.time_factor(0.0001f);
-	psTimeFactor = 0.0001f;
 }
 
 void CRenderDevice::_SetupStates()
@@ -694,11 +634,6 @@ void CRenderDevice::Reset(bool precache)
 	bool b_16_before = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 
 	ShowCursor(TRUE);
-	u32 tm_start = TimerAsync();
-	// if (g_pGamePersistent)
-	//{
-	//.		g_pGamePersistent->Environment().OnDeviceDestroy();
-	//}
 
 	RenderBackend.reset_begin();
 
@@ -717,10 +652,6 @@ void CRenderDevice::Reset(bool precache)
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
 	_SetupStates();
-	// if (precache)
-	//	PreCache(20);
-	u32 tm_end = TimerAsync();
-	Msg("*** RESET [%d ms]", tm_end - tm_start);
 
 #ifndef DEDICATED_SERVER
 	ShowCursor(FALSE);
@@ -746,27 +677,14 @@ void CRenderDevice::Initialize()
 	OPTICK_EVENT("CRenderDevice::Initialize");
 
 	Msg("Initializing Render Device...");
-	TimerGlobal.Start();
-	TimerMM.Start();
 
 	// Save window properties
 	m_dwWindowStyle = GetWindowLong(Engine.WindowManager.GetHandle(), GWL_STYLE);
 	GetWindowRect(Engine.WindowManager.GetHandle(), &m_rcWindowBounds);
 	GetClientRect(Engine.WindowManager.GetHandle(), &m_rcWindowClient);
 
-	// Command line
-	char* lpCmdLine = Core.Params;
-	if (strstr(lpCmdLine, "-gpu_sw") != NULL)
-		HW.Caps.bForceGPU_SW = TRUE;
-	else
 		HW.Caps.bForceGPU_SW = FALSE;
-	if (strstr(lpCmdLine, "-gpu_nopure") != NULL)
-		HW.Caps.bForceGPU_NonPure = TRUE;
-	else
 		HW.Caps.bForceGPU_NonPure = FALSE;
-	if (strstr(lpCmdLine, "-gpu_ref") != NULL)
-		HW.Caps.bForceGPU_REF = TRUE;
-	else
 		HW.Caps.bForceGPU_REF = FALSE;
 }
 
@@ -844,7 +762,7 @@ void CRenderDevice::overdrawEnd()
 		u32 _c = I * 256 / 13;
 		u32 c = D3DCOLOR_XRGB(_c, _c, _c);
 
-		FVF::TL pv[4];
+		FVF::TL pv[4]{};
 		pv[0].set(float(0), float(dwHeight), c, 0, 0);
 		pv[1].set(float(0), float(0), c, 0, 0);
 		pv[2].set(float(dwWidth), float(dwHeight), c, 0, 0);

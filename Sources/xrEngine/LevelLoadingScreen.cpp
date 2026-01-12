@@ -147,7 +147,7 @@ void CLevelLoadingScreen::ForceRender()
 	if (!bIsActive || g_appLoaded)
 		return;
 
-	Device.dwFrame += 1;
+	Engine.TimeManager.IncreaseFrameCount();
 
 	if (!Device.Begin())
 		return;

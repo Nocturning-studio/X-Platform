@@ -34,7 +34,7 @@ IC u32 CSoundPlayer::active_sound_count(bool only_playing) const
 	if (!only_playing)
 	{
 		for (; I != E; ++I)
-			if ((*I).m_sound->_feedback() || ((*I).m_start_time <= Device.dwTimeGlobal))
+			if ((*I).m_sound->_feedback() || ((*I).m_start_time <= Engine.TimeManager.GetGlobalTimeMs()))
 				++count;
 	}
 	else
@@ -66,7 +66,7 @@ IC bool CSoundPlayer::active_sound_type(u32 synchro_mask) const
 	xr_vector<CSoundSingle>::const_iterator E = m_playing_sounds.end();
 	for (; I != E; ++I)
 	{
-		if ((*I).m_sound->_feedback() || ((*I).m_start_time <= Device.dwTimeGlobal))
+		if ((*I).m_sound->_feedback() || ((*I).m_start_time <= Engine.TimeManager.GetGlobalTimeMs()))
 		{
 			if (synchro_mask == (*I).m_synchro_mask)
 			{

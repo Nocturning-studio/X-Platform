@@ -177,7 +177,7 @@ u32 last_hold_time = 0;
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
 {
-	if (dik == MOUSE_1 && (last_hold_time + 100) < Device.dwTimeContinual)
+	if (dik == MOUSE_1 && (last_hold_time + 100) < Engine.TimeManager.GetContinualTimeMs())
 	{
 		Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
 		Frect dec_rect;
@@ -188,13 +188,13 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
 		if (dec_rect.in(cursor_pos))
 		{
 			TryScrollDec();
-			last_hold_time = Device.dwTimeContinual;
+			last_hold_time = Engine.TimeManager.GetContinualTimeMs();
 			return true;
 		}
 		else if (inc_rect.in(cursor_pos))
 		{
 			TryScrollInc();
-			last_hold_time = Device.dwTimeContinual;
+			last_hold_time = Engine.TimeManager.GetContinualTimeMs();
 			return true;
 		}
 	}

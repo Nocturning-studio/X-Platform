@@ -268,15 +268,15 @@ void CUIMainIngameWnd::Draw()
 	bool IOActive = (FS.dwOpenCounter > 0);
 
 	if (IOActive)
-		UIStaticDiskIO_start_time = Device.fTimeGlobal;
+		UIStaticDiskIO_start_time = Engine.TimeManager.GetGlobalTime();
 
-	if ((UIStaticDiskIO_start_time + 1.0f) < Device.fTimeGlobal)
+	if ((UIStaticDiskIO_start_time + 1.0f) < Engine.TimeManager.GetGlobalTime())
 	{
 		UIStaticDiskIO.Show(false);
 	}
 	else
 	{
-		u32 alpha = clampr(iFloor(255.f * (1.f - (Device.fTimeGlobal - UIStaticDiskIO_start_time) / 1.f)), 0, 255);
+		u32 alpha = clampr(iFloor(255.f * (1.f - (Engine.TimeManager.GetGlobalTime() - UIStaticDiskIO_start_time) / 1.f)), 0, 255);
 		UIStaticDiskIO.Show(true);
 		UIStaticDiskIO.SetColor(color_rgba(255, 255, 255, alpha));
 	}
@@ -381,7 +381,7 @@ void CUIMainIngameWnd::Update()
 		return;
 	}
 
-	if (!(Device.dwFrame % 30) && IsGameTypeSingle())
+	if (!(Engine.TimeManager.GetFrameCount() % 30) && IsGameTypeSingle())
 	{
 		string256 text_str;
 		CPda* _pda = m_pActor->GetPDA();
@@ -397,10 +397,10 @@ void CUIMainIngameWnd::Update()
 		}
 	};
 
-	if (!(Device.dwFrame % 5))
+	if (!(Engine.TimeManager.GetFrameCount() % 5))
 	{
 
-		if (!(Device.dwFrame % 30))
+		if (!(Engine.TimeManager.GetFrameCount() % 30))
 		{
 			bool b_God = (GodMode() || (!Game().local_player))
 							 ? true
@@ -411,7 +411,7 @@ void CUIMainIngameWnd::Update()
 				SetWarningIconColor(ewiInvincible, 0x00ffffff);
 		}
 		// ewiArtefact
-		if ((GameID() == GAME_ARTEFACTHUNT) && !(Device.dwFrame % 30))
+		if ((GameID() == GAME_ARTEFACTHUNT) && !(Engine.TimeManager.GetFrameCount() % 30))
 		{
 			bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
 			if (b_Artefact)

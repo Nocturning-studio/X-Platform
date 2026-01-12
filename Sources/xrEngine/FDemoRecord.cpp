@@ -27,8 +27,8 @@ CDemoRecord::force_position CDemoRecord::g_position = {false, {0, 0, 0}};
 //////////////////////////////////////////////////////////////////////
 void CDemoRecord::update_whith_timescale(Fvector& v, const Fvector& v_delta)
 {
-	VERIFY(!fis_zero(Device.time_factor()));
-	float scale = 1.f / Device.time_factor();
+	VERIFY(!fis_zero(Engine.TimeManager.GetTimeFactor()));
+	float scale = 1.f / Engine.TimeManager.GetTimeFactor();
 	v.mad(v, v_delta, scale);
 }
 //////////////////////////////////////////////////////////////////////
@@ -403,8 +403,8 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 		ang_speed = m_fAngSpeed3;
 	}
 
-	m_vT.mul(m_vVelocity, Device.fTimeDelta * speed);
-	m_vR.mul(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
+	m_vT.mul(m_vVelocity, Engine.TimeManager.GetDeltaTime() * speed);
+	m_vR.mul(m_vAngularVelocity, Engine.TimeManager.GetDeltaTime() * ang_speed);
 
 	m_HPB.x -= m_vR.y;
 	m_HPB.y -= m_vR.x;
@@ -443,7 +443,7 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 	info.d.set(m_Camera.k);
 	info.p.set(m_Camera.c);
 
-	fLifeTime -= Device.fTimeDelta;
+	fLifeTime -= Engine.TimeManager.GetDeltaTime();
 
 	m_vT.set(0, 0, 0);
 	m_vR.set(0, 0, 0);

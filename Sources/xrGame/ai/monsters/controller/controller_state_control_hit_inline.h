@@ -103,14 +103,14 @@ void CStateControllerControlHitAbstract::execute_hit_prepare()
 	object->com_man().ta_activate(object->anim_triple_control);
 	object->play_control_sound_start();
 
-	time_control_started = Device.dwTimeGlobal;
+	time_control_started = Engine.TimeManager.GetGlobalTimeMs();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerControlHitAbstract::execute_hit_continue()
 {
 	// проверить на грави удар
-	if (time_control_started + CONTROL_PREPARE_TIME < Device.dwTimeGlobal)
+	if (time_control_started + CONTROL_PREPARE_TIME < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		m_action = eActionFire;
 	}

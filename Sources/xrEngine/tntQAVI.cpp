@@ -450,7 +450,7 @@ INT CAviPlayerCustom::SetSpeed(INT nPercent)
 DWORD CAviPlayerCustom::CalcFrame()
 {
 	if (0 == m_dwFirstFrameOffset)
-		m_dwFirstFrameOffset = Device.dwTimeContinual - 1;
+		m_dwFirstFrameOffset = Engine.TimeManager.GetContinualTimeMs() - 1;
 
-	return DWORD(floor((Device.dwTimeContinual - m_dwFirstFrameOffset) * m_fCurrentRate / 1000.0f)) % m_dwFrameTotal;
+	return DWORD(floor((Engine.TimeManager.GetContinualTimeMs() - m_dwFirstFrameOffset) * m_fCurrentRate / 1000.0f)) % m_dwFrameTotal;
 }

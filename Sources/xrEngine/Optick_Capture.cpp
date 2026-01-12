@@ -71,7 +71,7 @@ void COptickCapture::OnFrame()
 {
 	if (m_need_capture)
 	{
-		if (Device.dwFrame == m_end_capture_frame)
+		if (Engine.TimeManager.GetFrameCount() == m_end_capture_frame)
 		{
 			StopCapturing();
 			SaveCapturedFrames();
@@ -83,7 +83,7 @@ void COptickCapture::StartCapturing(int frames_to_capture)
 {
 	m_need_capture = true;
 	m_frames_to_capture = frames_to_capture;
-	m_start_capture_frame = Device.dwFrame;
+	m_start_capture_frame = Engine.TimeManager.GetFrameCount();
 	m_end_capture_frame = m_start_capture_frame + m_frames_to_capture;
 
 	StartCapturing();
@@ -136,7 +136,7 @@ void COptickCapture::SwitchProfiler()
 
 void COptickCapture::SwitchToCapturing()
 {
-	m_start_capture_frame = Device.dwFrame;
+	m_start_capture_frame = Engine.TimeManager.GetFrameCount();
 
 	StartCapturing();
 };
@@ -145,7 +145,7 @@ void COptickCapture::SwitchToSaving()
 {
 	StopCapturing();
 
-	m_frames_to_capture = Device.dwFrame - m_start_capture_frame;
+	m_frames_to_capture = Engine.TimeManager.GetFrameCount() - m_start_capture_frame;
 
 	Msg("- Saving %d frames", m_frames_to_capture);
 

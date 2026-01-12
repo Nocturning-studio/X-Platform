@@ -25,13 +25,13 @@ BOOL	AAA_test		()
 
 void CConstant::Calculate()
 {
-	if (dwFrame == Device.dwFrame)
+	if (dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
-	dwFrame = Device.dwFrame;
+	dwFrame = Engine.TimeManager.GetFrameCount();
 	if (modeProgrammable == dwMode)
 		return;
 
-	float t = Device.fTimeGlobal;
+	float t = Engine.TimeManager.GetGlobalTime();
 	set_float(_R.Calculate(t), _G.Calculate(t), _B.Calculate(t), _A.Calculate(t));
 }
 

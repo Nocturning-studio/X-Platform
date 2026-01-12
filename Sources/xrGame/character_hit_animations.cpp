@@ -47,15 +47,15 @@ IC void play_cycle(CKinematicsAnimated* CA, const MotionID& m, u8 channel, u32& 
 	const u32 dellay = 1;
 	const u32 dellay1 = 100;
 	float power = base_power;
-	if (Device.dwTimeGlobal > time_block)
+	if (Engine.TimeManager.GetGlobalTimeMs() > time_block)
 	{
 		CBlend* B = (CA->PlayCycle(m, mixin, 0, 0, channel));
 
-		if (Device.dwTimeGlobal < time_block + dellay1)
+		if (Engine.TimeManager.GetGlobalTimeMs() < time_block + dellay1)
 			power *= 0.5f;
 		B->blendAmount = power;
 		B->blendPower = power;
-		time_block = Device.dwTimeGlobal + dellay;
+		time_block = Engine.TimeManager.GetGlobalTimeMs() + dellay;
 	}
 }
 

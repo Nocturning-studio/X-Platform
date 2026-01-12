@@ -179,10 +179,10 @@ void CUIKickPlayer::Update()
 {
 	CUIDialogWnd::Update();
 
-	if (m_prev_upd_time > Device.dwTimeContinual - 1000)
+	if (m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 1000)
 		return;
 
-	m_prev_upd_time = Device.dwTimeContinual;
+	m_prev_upd_time = Engine.TimeManager.GetContinualTimeMs();
 #if 1
 	const game_cl_GameState::PLAYERS_MAP& items = Game().players;
 #else

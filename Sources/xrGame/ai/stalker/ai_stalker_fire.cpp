@@ -92,7 +92,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 		base *= 3.0f;
 
 	// [IMPROVEMENT] 2. Flinch
-	if (Device.dwTimeGlobal - m_dwLastHitTime < 1000)
+	if (Engine.TimeManager.GetGlobalTimeMs() - m_dwLastHitTime < 1000)
 		base *= 5.0f;
 
 	// [IMPROVEMENT] 3. Health Impact
@@ -120,7 +120,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 		{
 			// m_level_time - это время последнего обновления информации (Визуал ИЛИ Звук ИЛИ Хит)
 			u32 last_update_time = mem_info->m_level_time;
-			u32 time_since_update = Device.dwTimeGlobal - last_update_time;
+			u32 time_since_update = Engine.TimeManager.GetGlobalTimeMs() - last_update_time;
 
 			// Безопасный расчет дистанции до "фантома" в памяти
 			float dist = Position().distance_to(mem_info->m_object_params.m_position);
@@ -354,9 +354,9 @@ void CAI_Stalker::Hit(SHit* pHDS)
 	
 	if (suppression_duration > 3000) suppression_duration = 3000;
 
-	m_suppression_end_time = Device.dwTimeGlobal + suppression_duration;
+	m_suppression_end_time = Engine.TimeManager.GetGlobalTimeMs() + suppression_duration;
 	m_is_counter_attacking = false;
-	m_dwLastHitTime = Device.dwTimeGlobal;
+	m_dwLastHitTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	// хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	SHit HDS = *pHDS;
@@ -384,7 +384,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 			if (cover && pHDS->initiator() && (pHDS->initiator()->ID() != ID()) && !fis_zero(pHDS->damage()) &&
 				brain().affect_cover())
 				agent_manager().location().add(
-					xr_new<CDangerCoverLocation>(cover, Device.dwTimeGlobal, DANGER_INTERVAL, DANGER_DISTANCE));
+					xr_new<CDangerCoverLocation>(cover, Engine.TimeManager.GetGlobalTimeMs(), DANGER_INTERVAL, DANGER_DISTANCE));
 		}
 
 		const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());
@@ -871,10 +871,10 @@ float CAI_Stalker::pick_distance()
 
 void CAI_Stalker::update_can_kill_info()
 {
-	if (m_pick_frame_id == Device.dwFrame)
+	if (m_pick_frame_id == Engine.TimeManager.GetFrameCount())
 		return;
 
-	m_pick_frame_id = Device.dwFrame;
+	m_pick_frame_id = Engine.TimeManager.GetFrameCount();
 	m_can_kill_member = false;
 	m_can_kill_enemy = false;
 
@@ -886,7 +886,7 @@ void CAI_Stalker::update_can_kill_info()
 	// [IMPROVEMENT] Anti-Bodyblock: Если мы блокируем стрельбу долгое время
 	if (m_can_kill_member && !m_can_kill_enemy)
 	{
-		m_body_block_time += Device.dwTimeDelta;
+		m_body_block_time += Engine.TimeManager.GetDeltaTimeMs();
 	}
 	else
 	{
@@ -986,7 +986,7 @@ bool CAI_Stalker::fire_make_sense()
 
 	// [IMPROVEMENT] 1. Defensive Suppression
 	// Если враг далеко, а мы подавлены - сидим тихо.
-	if (Device.dwTimeGlobal < m_suppression_end_time)
+	if (Engine.TimeManager.GetGlobalTimeMs() < m_suppression_end_time)
 		return (false);
 
 	// [IMPROVEMENT] 2. Counter-Attack (Rage Mode)
@@ -1020,7 +1020,7 @@ bool CAI_Stalker::fire_make_sense()
 		return (false);
 
 	u32 last_time_seen = mem_info->m_level_time;
-	u32 time_delta = Device.dwTimeGlobal - last_time_seen;
+	u32 time_delta = Engine.TimeManager.GetGlobalTimeMs() - last_time_seen;
 
 	// Если с момента потери контакта прошло больше 5 секунд - прекращаем стрелять
 	if (time_delta > 5000)
@@ -1223,7 +1223,7 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
 	if (!agent_manager().member().registered_in_combat(this))
 		return (false);
 
-	//	Msg								("%6d executing critical hit",Device.dwTimeGlobal);
+	//	Msg								("%6d executing critical hit",Engine.TimeManager.GetGlobalTimeMs());
 	animation().global().make_inactual();
 	return (true);
 }
@@ -1296,7 +1296,7 @@ void CAI_Stalker::on_enemy_wounded_or_killed(const CAI_Stalker* wounded_or_kille
 {
 	// [IMPROVEMENT] Rage Mode: Если убили или ранили союзника/врага, включаем режим ярости на 5 секунд
 	// В этом режиме (fire_make_sense) мы стреляем агрессивнее.
-	m_rage_end_time = Device.dwTimeGlobal + 5000;
+	m_rage_end_time = Engine.TimeManager.GetGlobalTimeMs() + 5000;
 
 	if (!can_cry_enemy_is_wounded())
 		return;

@@ -188,7 +188,7 @@ void CMissile::UpdateCL()
 			CActor* actor = smart_cast<CActor*>(H_Parent());
 			if (actor)
 			{
-				m_fThrowForce += (m_fForceGrowSpeed * Device.dwTimeDelta) * .001f;
+				m_fThrowForce += (m_fForceGrowSpeed * Engine.TimeManager.GetDeltaTimeMs()) * .001f;
 				clamp(m_fThrowForce, m_fMinForce, m_fMaxForce);
 			}
 		}
@@ -343,9 +343,9 @@ void CMissile::UpdatePosition(const Fmatrix& trans)
 
 void CMissile::UpdateXForm()
 {
-	if (Device.dwFrame != dwXF_Frame)
+	if (Engine.TimeManager.GetFrameCount() != dwXF_Frame)
 	{
-		dwXF_Frame = Device.dwFrame;
+		dwXF_Frame = Engine.TimeManager.GetFrameCount();
 
 		if (0 == H_Parent())
 			return;
@@ -557,9 +557,9 @@ void CMissile::UpdateFireDependencies_internal()
 	if (0 == H_Parent())
 		return;
 
-	if (Device.dwFrame != dwFP_Frame)
+	if (Engine.TimeManager.GetFrameCount() != dwFP_Frame)
 	{
-		dwFP_Frame = Device.dwFrame;
+		dwFP_Frame = Engine.TimeManager.GetFrameCount();
 
 		UpdateXForm();
 

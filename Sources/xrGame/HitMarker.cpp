@@ -63,7 +63,7 @@ void CHitMarker::Hit(int id, const Fvector& dir)
 
 SHitMark::SHitMark(const ref_shader& sh, const Fvector& dir)
 {
-	m_StartTime = Device.fTimeGlobal;
+	m_StartTime = Engine.TimeManager.GetGlobalTime();
 	m_lanim = LALib.FindItem("hud_hit_mark");
 	m_HitDirection = dir.getH();
 	m_UIStaticItem = xr_new<CUIStaticItem>();
@@ -75,7 +75,7 @@ SHitMark::SHitMark(const ref_shader& sh, const Fvector& dir)
 void SHitMark::UpdateAnim()
 {
 	int frame;
-	u32 clr = m_lanim->CalculateRGB(Device.fTimeGlobal - m_StartTime, frame);
+	u32 clr = m_lanim->CalculateRGB(Engine.TimeManager.GetGlobalTime() - m_StartTime, frame);
 	m_UIStaticItem->SetColor(subst_alpha(m_UIStaticItem->GetColor(), color_get_A(clr)));
 }
 
@@ -86,7 +86,7 @@ SHitMark::~SHitMark()
 
 bool SHitMark::IsActive()
 {
-	return ((Device.fTimeGlobal - m_StartTime) < m_lanim->Length_sec());
+	return ((Engine.TimeManager.GetGlobalTime() - m_StartTime) < m_lanim->Length_sec());
 }
 
 void SHitMark::Draw(float cam_dir)

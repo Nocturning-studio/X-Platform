@@ -51,7 +51,7 @@ class CHOM
 			return;
 
 		// Áûסענאÿ ןנמגונךא ןונוה גûחמגמל MT_RENDER
-		if (MT_frame_rendered != Device.dwFrame)
+		if (MT_frame_rendered != Engine.TimeManager.GetFrameCount())
 		{
 			MT_RENDER();
 		}

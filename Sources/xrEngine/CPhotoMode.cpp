@@ -50,8 +50,8 @@ Flags32 CPhotoMode::s_dev_flags = { NULL };
 //////////////////////////////////////////////////////////////////////
 void CPhotoMode::update_whith_timescale(Fvector& v, const Fvector& v_delta)
 {
-	VERIFY(!fis_zero(Device.time_factor()));
-	float scale = 1.f / Device.time_factor();
+	VERIFY(!fis_zero(Engine.TimeManager.GetTimeFactor()));
+	float scale = 1.f / Engine.TimeManager.GetTimeFactor();
 	v.mad(v, v_delta, scale);
 }
 //////////////////////////////////////////////////////////////////////
@@ -88,8 +88,8 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	m_fGlobalFov = Device.fFOV;
 	m_fFov = m_fGlobalFov;
 
-	m_fGlobalTimeFactor = Device.time_factor();
-	Device.stop_time();
+	m_fGlobalTimeFactor = Engine.TimeManager.GetTimeFactor();
+	Engine.TimeManager.StopTime();
 
 	g_pGamePersistent->GetCurrentDof(m_vGlobalDepthOfFieldParameters);
 	m_fDOF.set(m_vGlobalDepthOfFieldParameters);
@@ -152,7 +152,7 @@ CPhotoMode::~CPhotoMode()
 	psHUD_Flags.set(HUD_DRAW, m_bGlobalHudDraw);
 	psHUD_Flags.set(HUD_CROSSHAIR, m_bGlobalCrosshairDraw);
 
-	Device.time_factor(m_fGlobalTimeFactor);
+	Engine.TimeManager.SetTimeFactor(m_fGlobalTimeFactor);
 }
 
 void CPhotoMode::ResetParameters()
@@ -320,8 +320,8 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 			ang_speed = m_fAngSpeed3;
 		}
 
-		m_vT.mul(m_vVelocity, Device.fTimeDelta * speed);
-		m_vR.mul(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
+		m_vT.mul(m_vVelocity, Engine.TimeManager.GetDeltaTime() * speed);
+		m_vR.mul(m_vAngularVelocity, Engine.TimeManager.GetDeltaTime() * ang_speed);
 
 		m_HPB.x -= m_vR.y;
 		m_HPB.y -= m_vR.x;
@@ -362,7 +362,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 		info.d.set(m_Camera.k);
 		info.p.set(m_Camera.c);
 
-		fLifeTime -= Device.fTimeDelta;
+		fLifeTime -= Engine.TimeManager.GetDeltaTime();
 
 		m_vT.set(0, 0, 0);
 		m_vR.set(0, 0, 0);

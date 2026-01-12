@@ -271,7 +271,7 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 	}
 
 	// 2. Время
-	fStartTime += Device.fTimeDelta;
+	fStartTime += Engine.TimeManager.GetDeltaTime();
 
 	// --- ПРОПУСК ВРЕМЕНИ ДЛЯ ТЕЛЕПОРТОВ ---
 	// Вычисляем, в каком мы сейчас кадре
@@ -360,18 +360,18 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 	info.p.set(m_Camera.c);
 	info.fFov = g_fFov;
 
-	fLifeTime -= Device.fTimeDelta;
+	fLifeTime -= Engine.TimeManager.GetDeltaTime();
 
 	// Скриншоты...
 	if (m_bBenchmarkMode && bNeedDrawResults)
 	{
-		if ((Device.dwTimeGlobal >= uTimeToScreenShot) && bNeedToTakeStatsResoultScreenShot)
+		if ((Engine.TimeManager.GetGlobalTimeMs() >= uTimeToScreenShot) && bNeedToTakeStatsResoultScreenShot)
 		{
 			bNeedToTakeStatsResoultScreenShot = false;
 			Screenshot();
 			SaveBenchmarkResults();
 		}
-		if (Device.dwTimeGlobal >= uTimeToQuit && !strstr(Core.Params, "-loop_demo"))
+		if (Engine.TimeManager.GetGlobalTimeMs() >= uTimeToQuit && !strstr(Core.Params, "-loop_demo"))
 			Console->Execute("quit");
 	}
 }
@@ -404,8 +404,8 @@ void CDemoPlay::EnableBenchmarkResultPrint()
 	if (bNeedDrawResults)
 		return;
 
-	uTimeToQuit = Device.dwTimeGlobal + 5000;
-	uTimeToScreenShot = Device.dwTimeGlobal + 1000;
+	uTimeToQuit = Engine.TimeManager.GetGlobalTimeMs() + 5000;
+	uTimeToScreenShot = Engine.TimeManager.GetGlobalTimeMs() + 1000;
 	bNeedDrawResults = true;
 	bNeedToTakeStatsResoultScreenShot = true;
 	fLifeTime = 1000; // Продлеваем жизнь эффектора, чтобы успеть показать статы
@@ -466,7 +466,7 @@ void CDemoPlay::SaveBenchmarkResults()
 	// Результаты
 	W->w_string("[ Results ]");
 
-	u32 dwFramesTotal = Device.dwFrame - stat_StartFrame;
+	u32 dwFramesTotal = Engine.TimeManager.GetFrameCount() - stat_StartFrame;
 	float stat_total_time = stat_Timer_total.GetElapsed_sec();
 
 	sprintf(tmp, " Total Frames:    %u", dwFramesTotal);
@@ -540,7 +540,7 @@ void CDemoPlay::PrintSummaryBenchmarkStatistic()
 	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 255, 255, 255));
 	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.Caps.id_description);
 
-	if (Device.dwTimeGlobal > uTimeToScreenShot)
+	if (Engine.TimeManager.GetGlobalTimeMs() > uTimeToScreenShot)
 		Engine.FontManager.GetSystemFont()->OutNext("Results saved to screenshots and log folder");
 }
 
@@ -552,7 +552,7 @@ void CDemoPlay::ResetPerFrameStatistic()
 	fFPS_avg = 0.0f;
 
 	stat_table.clear(); // Очищаем вектор статистики
-	stat_StartFrame = Device.dwFrame;
+	stat_StartFrame = Engine.TimeManager.GetFrameCount();
 	stat_Timer_total.Start();
 }
 
@@ -571,7 +571,7 @@ void CDemoPlay::ChooseTextColor(float FPSValue)
 void CDemoPlay::ShowPerFrameStatistic()
 {
 	// Считаем время кадра
-	float fps = 1.f / Device.fTimeDelta;
+	float fps = 1.f / Engine.TimeManager.GetDeltaTime();
 	float fOne = 0.3f;
 	float fInv = 1.f - fOne;
 	fFPS = fInv * fFPS + fOne * fps;
@@ -581,7 +581,7 @@ void CDemoPlay::ShowPerFrameStatistic()
 
 	// Средний FPS
 	float stat_total = stat_Timer_total.GetElapsed_sec();
-	u32 dwFramesTotal = Device.dwFrame - stat_StartFrame;
+	u32 dwFramesTotal = Engine.TimeManager.GetFrameCount() - stat_StartFrame;
 
 	if (stat_total > 0.001f)
 		fFPS_avg = float(dwFramesTotal) / stat_total;
@@ -605,7 +605,7 @@ void CDemoPlay::ShowPerFrameStatistic()
 	if (fFPS_avg > fFPS_max && fFPS_max > 0)
 	{
 		fFPS_avg = fFPS_max;
-		stat_StartFrame = Device.dwFrame;
+		stat_StartFrame = Engine.TimeManager.GetFrameCount();
 		stat_Timer_total.Start();
 	}
 

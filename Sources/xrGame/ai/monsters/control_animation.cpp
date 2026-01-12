@@ -118,7 +118,7 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
 		pos = fmodf(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
 #ifdef DEBUG
 		// CKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
-		// Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal,
+		// Msg				("%6d Playing animation : %s , %s , Object %s",Engine.TimeManager.GetGlobalTimeMs(),
 		// K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second,
 		// *(m_object->cName()));
 #endif
@@ -128,7 +128,7 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
 	///////////////////////////////////////////////////////////////////////////////
 	// #ifdef _DEBUG
 	//	Msg("Monster[%s] Time[%u] Anim[%s]",*(m_object->cName()),
-	//Device.dwTimeGlobal,*(m_object->anim().GetAnimTranslation(part.motion))); #endif
+	//Engine.TimeManager.GetGlobalTimeMs(),*(m_object->anim().GetAnimTranslation(part.motion))); #endif
 	///////////////////////////////////////////////////////////////////////////////
 
 	// synchronize prev and current animations
@@ -137,7 +137,7 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
 		part.blend->timeCurrent = part.blend->timeTotal * pos;
 	}
 
-	part.time_started = Device.dwTimeGlobal;
+	part.time_started = Engine.TimeManager.GetGlobalTimeMs();
 	part.actual = true;
 
 	m_man->notify(ControlCom::eventAnimationStart, 0);
@@ -188,7 +188,7 @@ void CControlAnimation::check_events(SAnimationPart& part)
 		{
 
 			float cur_perc =
-				float(Device.dwTimeGlobal - part.time_started) / ((part.blend->timeTotal / part.blend->speed) * 1000);
+				float(Engine.TimeManager.GetGlobalTimeMs() - part.time_started) / ((part.blend->timeTotal / part.blend->speed) * 1000);
 
 			for (ANIMATION_EVENT_VEC_IT event_it = it->second.begin(); event_it != it->second.end(); ++event_it)
 			{

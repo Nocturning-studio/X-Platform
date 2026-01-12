@@ -161,9 +161,9 @@ void CStats::Show()
 	}
 
 	// calc FPS & TPS
-	if (Device.fTimeDelta > EPS_S)
+	if (Engine.TimeManager.GetDeltaTime() > EPS_S)
 	{
-		float fps = 1.f / Device.fTimeDelta;
+		float fps = 1.f / Engine.TimeManager.GetDeltaTime();
 		// if (Engine.tune_enabled)	vtune.update	(fps);
 		float fOne = 0.3f;
 		float fInv = 1.f - fOne;
@@ -189,7 +189,7 @@ void CStats::Show()
 		return;
 	////////////////////////////////////////////////
 	int frm = 2000;
-	div_t ddd = div(Device.dwFrame, frm);
+	div_t ddd = div(Engine.TimeManager.GetFrameCount(), frm);
 	if (ddd.rem < frm / 2.0f)
 	{
 		pFont->SetColor(0xFFFFFFFF);

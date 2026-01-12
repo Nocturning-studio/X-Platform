@@ -449,7 +449,7 @@ void CAI_Stalker::OnHUDDraw(CCustomHUD* hud)
 										danger_type(memory().danger().selected()->type()));
 		HUD().Font().pFontStat->OutNext("%s%s%stime      : %.3f (%.3f)", indent, indent, indent,
 										float(memory().danger().selected()->time()) / 1000.f,
-										float(Device.dwTimeGlobal - memory().danger().selected()->time()) / 1000.f);
+										float(Engine.TimeManager.GetGlobalTimeMs() - memory().danger().selected()->time()) / 1000.f);
 		HUD().Font().pFontStat->OutNext("%s%s%sinitiator : %s", indent, indent, indent,
 										*memory().danger().selected()->object()->cName());
 		if (g_Alive() && memory().danger().selected()->object())
@@ -798,7 +798,7 @@ void CAI_Stalker::OnHUDDraw(CCustomHUD* hud)
 		for (; I != E; ++I)
 			HUD().Font().pFontStat->OutNext(
 				"%s%s%s[%s]%s", indent, indent, indent,
-				(Device.dwTimeGlobal < (*I).m_start_time) ? "not yet started"
+				(Engine.TimeManager.GetGlobalTimeMs() < (*I).m_start_time) ? "not yet started"
 														  : ((*I).m_sound->_feedback() ? "playing" : "already played"),
 				(*I).m_sound->_handle() ? (*I).m_sound->_handle()->file_name() : "no source");
 	}

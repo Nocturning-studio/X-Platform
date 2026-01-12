@@ -198,17 +198,17 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 	CEffectorPP::Process(PPInfo);
 
 	if (m_start_time < 0.0f)
-		m_start_time = Device.fTimeGlobal;
+		m_start_time = Engine.TimeManager.GetGlobalTime();
 
-	if (m_bCyclic && ((Device.fTimeGlobal - m_start_time) > f_length))
+	if (m_bCyclic && ((Engine.TimeManager.GetGlobalTime() - m_start_time) > f_length))
 		m_start_time += f_length;
 
-	Update(Device.fTimeGlobal - m_start_time);
+	Update(Engine.TimeManager.GetGlobalTime() - m_start_time);
 
 	if (m_bStop)
-		m_factor -= Device.fTimeDelta * m_factor_speed;
+		m_factor -= Engine.TimeManager.GetDeltaTime() * m_factor_speed;
 	else
-		m_factor += m_factor_speed * Device.fTimeDelta * (m_dest_factor - m_factor);
+		m_factor += m_factor_speed * Engine.TimeManager.GetDeltaTime() * (m_dest_factor - m_factor);
 
 	clamp(m_factor, 0.0001f, 1.0f);
 

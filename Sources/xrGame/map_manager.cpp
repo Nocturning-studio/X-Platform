@@ -285,7 +285,7 @@ Locations& CMapManager::Locations()
 void CheckUserLocation		(CMapLocation* ml)
 {
 	if(false == ml->IsUserDefined()) return;
-	Level().Server->FreeID(ml->ObjectID(),Device.TimerAsync());
+	Level().Server->FreeID(ml->ObjectID(),Engine.TimeManager.TimerAsync());
 
 	Actor()->GameTaskManager().RemoveUserTask(ml);
 }

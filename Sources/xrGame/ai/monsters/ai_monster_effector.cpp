@@ -61,7 +61,7 @@ CMonsterEffectorHit::CMonsterEffectorHit(float time, float amp, float periods, f
 
 BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 {
-	fLifeTime -= Device.fTimeDelta;
+	fLifeTime -= Engine.TimeManager.GetDeltaTime();
 	if (fLifeTime < 0)
 		return FALSE;
 

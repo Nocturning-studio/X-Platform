@@ -24,7 +24,7 @@ bool CControlMeleeJump::check_start_conditions()
 
 	if (!m_object->EnemyMan.get_enemy())
 		return false;
-	if (m_time_next_melee_jump > Device.dwTimeGlobal)
+	if (m_time_next_melee_jump > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	Fvector enemy_position;
@@ -86,7 +86,7 @@ void CControlMeleeJump::on_release()
 	m_man->unsubscribe(this, ControlCom::eventAnimationEnd);
 
 	m_time_next_melee_jump =
-		Device.dwTimeGlobal + Random.randI(MELEE_JMP_DELAY_MIN, MELEE_JMP_DELAY_MAX);
+		Engine.TimeManager.GetGlobalTimeMs() + Random.randI(MELEE_JMP_DELAY_MIN, MELEE_JMP_DELAY_MAX);
 }
 
 void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)

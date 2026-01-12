@@ -32,7 +32,7 @@ class smapvis : public R_feedback
 
 	IC bool sleep()
 	{
-		return Device.dwFrame > frame_sleep;
+		return Engine.TimeManager.GetFrameCount() > frame_sleep;
 	}
 
 	virtual void rfeedback_static(IRender_Visual* V);

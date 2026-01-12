@@ -298,8 +298,8 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 #ifdef DEBUG
 	if (!Device.Paused())
 	{
-		VERIFY(dbg_upd_frame != Device.dwFrame); // already updated !!!
-		dbg_upd_frame = Device.dwFrame;
+		VERIFY(dbg_upd_frame != Engine.TimeManager.GetFrameCount()); // already updated !!!
+		dbg_upd_frame = Engine.TimeManager.GetFrameCount();
 	}
 #endif // DEBUG
 	// camera
@@ -328,7 +328,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	m_cam_info.n.crossproduct(m_cam_info.d, m_cam_info.r);
 
 	float aspect = Device.fHeight_2 / Device.fWidth_2;
-	float src = 10 * Device.fTimeDelta;
+	float src = 10 * Engine.TimeManager.GetDeltaTime();
 	clamp(src, 0.f, 1.f);
 	float dst = 1 - src;
 	m_cam_info.fFov = m_cam_info.fFov * dst + fFOV_Dest * src;

@@ -221,13 +221,13 @@ void CLensFlare::OnFrame(shared_str id)
 {
 	OPTICK_EVENT("CLensFlare::OnFrame");
 
-	if (dwFrame == Device.dwFrame)
+	if (dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
 #ifndef _EDITOR
 	if (!g_pGameLevel)
 		return;
 #endif
-	dwFrame = Device.dwFrame;
+	dwFrame = Engine.TimeManager.GetFrameCount();
 
 	R_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir));
 	vSunDir.mul(g_pGamePersistent->Environment().CurrentEnv->sun_dir, -1);
@@ -251,17 +251,17 @@ void CLensFlare::OnFrame(shared_str id)
 			m_State = lfsHide;
 		break;
 	case lfsShow:
-		m_StateBlend = m_Current ? (m_StateBlend + m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf) : 1.f + EPS;
+		m_StateBlend = m_Current ? (m_StateBlend + m_Current->m_StateBlendUpSpeed * Engine.TimeManager.GetDeltaTime() * tf) : 1.f + EPS;
 		if (m_StateBlend >= 1.f)
 			m_State = lfsIdle;
 		break;
 	case lfsHide:
-		m_StateBlend = m_Current ? (m_StateBlend - m_Current->m_StateBlendDnSpeed * Device.fTimeDelta * tf) : 0.f - EPS;
+		m_StateBlend = m_Current ? (m_StateBlend - m_Current->m_StateBlendDnSpeed * Engine.TimeManager.GetDeltaTime() * tf) : 0.f - EPS;
 		if (m_StateBlend <= 0.f)
 		{
 			m_State = lfsShow;
 			m_Current = desc;
-			m_StateBlend = m_Current ? m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf : 0;
+			m_StateBlend = m_Current ? m_Current->m_StateBlendUpSpeed * Engine.TimeManager.GetDeltaTime() * tf : 0;
 		}
 		break;
 	}
@@ -329,9 +329,9 @@ void CLensFlare::OnFrame(shared_str id)
 #ifdef _EDITOR
 	float dist = UI->ZFar();
 	if (Tools->RayPick(Device.m_Camera.GetPosition(), vSunDir, dist))
-		fBlend = fBlend - BLEND_DEC_SPEED * Device.fTimeDelta;
+		fBlend = fBlend - BLEND_DEC_SPEED * Engine.TimeManager.GetDeltaTime();
 	else
-		fBlend = fBlend + BLEND_INC_SPEED * Device.fTimeDelta;
+		fBlend = fBlend + BLEND_INC_SPEED * Engine.TimeManager.GetDeltaTime();
 #else
 	CObject* o_main = g_pGameLevel->CurrentViewEntity();
 	STranspParam TP(this, Device.vCameraPosition, vSunDir, 1000.f, EPS_L);
@@ -356,7 +356,7 @@ void CLensFlare::OnFrame(shared_str id)
 				m_ray_cache.result = FALSE;
 		}
 	}
-	blend_lerp(fBlend, TP.vis, BLEND_DEC_SPEED, Device.fTimeDelta);
+	blend_lerp(fBlend, TP.vis, BLEND_DEC_SPEED, Engine.TimeManager.GetDeltaTime());
 
 #endif
 	clamp(fBlend, 0.0f, 1.0f);

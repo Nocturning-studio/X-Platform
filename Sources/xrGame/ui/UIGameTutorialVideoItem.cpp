@@ -95,7 +95,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 void CUISequenceVideoItem::Update()
 {
 	// deferred start
-	if (Device.dwTimeContinual >= m_time_start)
+	if (Engine.TimeManager.GetContinualTimeMs() >= m_time_start)
 	{
 		if (m_flags.test(etiDelayed))
 		{
@@ -107,7 +107,7 @@ void CUISequenceVideoItem::Update()
 	else
 		return;
 
-	u32 sync_tm = (0 == m_sound._handle()) ? Device.dwTimeContinual
+	u32 sync_tm = (0 == m_sound._handle()) ? Engine.TimeManager.GetContinualTimeMs()
 										   : (m_sound._feedback() ? m_sound._feedback()->play_time() : m_sync_time);
 	m_sync_time = sync_tm;
 	// processing A&V
@@ -171,7 +171,7 @@ void CUISequenceVideoItem::Start()
 	m_flags.set(etiNeedStart, TRUE);
 
 	m_sync_time = 0;
-	m_time_start = Device.dwTimeContinual + iFloor(m_delay * 1000.f);
+	m_time_start = Engine.TimeManager.GetContinualTimeMs() + iFloor(m_delay * 1000.f);
 	m_flags.set(etiDelayed, TRUE);
 
 	if (m_flags.test(etiBackVisible))

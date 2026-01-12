@@ -195,7 +195,7 @@ bool CInventory::DropItem(CGameObject* pObj, bool just_before_destroy, bool dont
 
 	if (pIItem->m_pCurrentInventory != this)
 	{
-		Msg("ahtung !!! [%d]", Device.dwFrame);
+		Msg("ahtung !!! [%d]", Engine.TimeManager.GetFrameCount());
 		Msg("CInventory::DropItem pIItem->m_pCurrentInventory!=this");
 		Msg("this = [%d]", GetOwner()->object_id());
 		Msg("pIItem->m_pCurrentInventory = [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
@@ -230,14 +230,14 @@ bool CInventory::DropItem(CGameObject* pObj, bool just_before_destroy, bool dont
 				if (just_before_destroy)
 				{
 #ifdef DEBUG
-					Msg("---DropItem activating slot [-1], forced, Frame[%d]", Device.dwFrame);
+					Msg("---DropItem activating slot [-1], forced, Frame[%d]", Engine.TimeManager.GetFrameCount());
 #endif // #ifdef DEBUG
 					Activate(NO_ACTIVE_SLOT, eGeneral, true);
 				}
 				else
 				{
 #ifdef DEBUG
-					Msg("---DropItem activating slot [-1], Frame[%d]", Device.dwFrame);
+					Msg("---DropItem activating slot [-1], Frame[%d]", Engine.TimeManager.GetFrameCount());
 #endif // #ifdef DEBUG
 					Activate(NO_ACTIVE_SLOT);
 				}
@@ -466,7 +466,7 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce)
 
 	bool res = false;
 
-	if (Device.dwFrame == m_iLoadActiveSlotFrame)
+	if (Engine.TimeManager.GetFrameCount() == m_iLoadActiveSlotFrame)
 	{
 		if ((m_iLoadActiveSlot == slot) && m_slots[slot].m_pIItem)
 			m_iLoadActiveSlotFrame = u32(-1);

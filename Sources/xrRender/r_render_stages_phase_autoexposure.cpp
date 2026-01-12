@@ -38,7 +38,7 @@ void CRender::downsample_scene_luminance()
 void CRender::prepare_scene_luminance()
 {
 	// Параметры автоэкспозиции
-	float TimeDelta = Device.fTimeDelta;
+	float TimeDelta = Engine.TimeManager.GetDeltaTime();
 	float adaptation_speed = ps_r_autoexposure_adaptation;
 
 	// Гарантируем разумные пределы

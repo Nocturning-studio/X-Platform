@@ -4,7 +4,7 @@ void CRender::set_light_accumulator()
 {
 	OPTICK_EVENT("CRenderTarget::set_light_accumulator");
 
-	if (dwAccumulatorClearMark == Device.dwFrame)
+	if (dwAccumulatorClearMark == Engine.TimeManager.GetFrameCount())
 	{
 		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Light_Accumulator);
 
@@ -12,7 +12,7 @@ void CRender::set_light_accumulator()
 	}
 	else
 	{
-		dwAccumulatorClearMark = Device.dwFrame;
+		dwAccumulatorClearMark = Engine.TimeManager.GetFrameCount();
 
 		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Light_Accumulator);
 

@@ -279,7 +279,7 @@ void CUICharacterInfo::Update()
 {
 	inherited::Update();
 
-	if (hasOwner() && (m_bForceUpdate || (Device.dwFrame % 100 == 0)))
+	if (hasOwner() && (m_bForceUpdate || (Engine.TimeManager.GetFrameCount() % 100 == 0)))
 	{
 		m_bForceUpdate = false;
 		CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);

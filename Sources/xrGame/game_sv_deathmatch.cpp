@@ -184,7 +184,7 @@ void game_sv_Deathmatch::OnRoundStart()
 		game_PlayerState* ps = l_pC->ps;
 
 		ps->clear();
-		ps->DeathTime = Device.dwTimeGlobal - 1001;
+		ps->DeathTime = Engine.TimeManager.GetGlobalTimeMs() - 1001;
 
 		SetPlayersDefItems(ps);
 		Money_SetStart(get_it_2_id(it));
@@ -256,7 +256,7 @@ void game_sv_Deathmatch::Processing_Victim(game_PlayerState* pVictim, game_Playe
 	pVictim->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 	pVictim->m_iDeaths++;
 	pVictim->m_iKillsInRowCurr = 0;
-	pVictim->DeathTime = Device.dwTimeGlobal;
+	pVictim->DeathTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	if (!pKiller)
 	{
@@ -486,7 +486,7 @@ void game_sv_Deathmatch::Update()
 	}
 	break;
 	case GAME_PHASE_PLAYER_SCORES: {
-		if (m_delayedRoundEnd && m_roundEndDelay < Device.TimerAsync())
+		if (m_delayedRoundEnd && m_roundEndDelay < Engine.TimeManager.TimerAsync())
 		{
 			OnRoundEnd(); // eRoundEnd_Finish
 		}
@@ -723,7 +723,7 @@ void game_sv_Deathmatch::OnPlayerReady(ClientID id)
 		CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 		if (pS)
 		{
-			if (xrSCData->ps->DeathTime + 1000 > Device.dwTimeGlobal)
+			if (xrSCData->ps->DeathTime + 1000 > Engine.TimeManager.GetGlobalTimeMs())
 			{
 				//					return;
 			}
@@ -1780,7 +1780,7 @@ void game_sv_Deathmatch::check_Player_for_Invincibility(game_PlayerState* ps)
 {
 	if (!ps)
 		return;
-	u32 CurTime = Device.dwTimeGlobal;
+	u32 CurTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	if ((ps->RespawnTime + GetDMBLimit() * 1000 < CurTime) && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 	{
@@ -1832,13 +1832,13 @@ void game_sv_Deathmatch::OnDelayedRoundEnd(ERoundEnd_Result reason)
 	round_end_reason = reason;
 
 	m_delayedRoundEnd = true;
-	m_roundEndDelay = Device.TimerAsync() + G_DELAYED_ROUND_TIME * 1000;
+	m_roundEndDelay = Engine.TimeManager.TimerAsync() + G_DELAYED_ROUND_TIME * 1000;
 }
 
 void game_sv_Deathmatch::OnDelayedTeamEliminated()
 {
 	m_delayedTeamEliminated = true;
-	m_TeamEliminatedDelay = Device.TimerAsync() + G_DELAYED_ROUND_TIME * 1000;
+	m_TeamEliminatedDelay = Engine.TimeManager.TimerAsync() + G_DELAYED_ROUND_TIME * 1000;
 }
 
 void game_sv_Deathmatch::check_ForceRespawn()
@@ -1856,7 +1856,7 @@ void game_sv_Deathmatch::check_ForceRespawn()
 			continue;
 		if (ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 			continue;
-		u32 CurTime = Device.dwTimeGlobal;
+		u32 CurTime = Engine.TimeManager.GetGlobalTimeMs();
 		if (ps->DeathTime + GetForceRespawn() * 1000 < CurTime)
 		{
 			SetPlayersDefItems(ps);

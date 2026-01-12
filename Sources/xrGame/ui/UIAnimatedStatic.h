@@ -67,7 +67,7 @@ class CUIAnimatedStatic : public CUIStatic
 	void Play()
 	{
 		m_bPlaying = true;
-		m_prevTime = Device.dwTimeContinual;
+		m_prevTime = Engine.TimeManager.GetContinualTimeMs();
 	}
 	void Stop()
 	{

@@ -41,7 +41,7 @@ void CUITextBanner::Update()
 	{
 		for (; it != m_StyleParams.end(); ++it)
 			if (it->second.bOn)
-				it->second.fTimePassed += Device.fTimeDelta;
+				it->second.fTimePassed += Engine.TimeManager.GetDeltaTime();
 	}
 }
 

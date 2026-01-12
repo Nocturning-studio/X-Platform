@@ -128,6 +128,8 @@ bool CEngine::Initialize()
 
 	WindowManager.Initialize();
 
+	TimeManager.Initialize();
+
 	// 8. Device Base Init (без создани€ окна/контекста, только структуры)
 	Device.Initialize();
 
@@ -314,6 +316,7 @@ void CEngine::ProcessEventLoop()
 			break; // ≈сли вернул false -> WM_QUIT -> выходим
 
 		// 2. »гровой кадр (Render Device)
+		TimeManager.Update();
 		Device.DoFrame();
 	}
 
@@ -355,6 +358,7 @@ void CEngine::Destroy()
 	WindowManager.Destroy();
 
 	// 6. Device & Scheduler
+	TimeManager.Destroy();
 	Device.Destroy();
 	Sheduler.Destroy();
 

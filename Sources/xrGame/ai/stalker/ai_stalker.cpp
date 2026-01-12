@@ -797,26 +797,26 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	if (g_Alive())
 	{
 		// 1. Окончание контратаки
-		if (m_is_counter_attacking && Device.dwTimeGlobal > m_counter_attack_end_time)
+		if (m_is_counter_attacking && Engine.TimeManager.GetGlobalTimeMs() > m_counter_attack_end_time)
 		{
 			m_is_counter_attacking = false;
 		}
 
 		// 2. Выход из подавления (Ускоренный)
-		if (!m_is_counter_attacking && m_suppression_end_time != 0 && Device.dwTimeGlobal > m_suppression_end_time)
+		if (!m_is_counter_attacking && m_suppression_end_time != 0 && Engine.TimeManager.GetGlobalTimeMs() > m_suppression_end_time)
 		{
 			// Ждем всего 0.3 - 0.8 сек после подавления (было 1 сек)
 			// Это делает их реактивнее
 			u32 reaction_delay = 300 + (1000 - Rank() * 10); // Мастера реагируют быстрее
 
-			if (Device.dwTimeGlobal > m_suppression_end_time + reaction_delay)
+			if (Engine.TimeManager.GetGlobalTimeMs() > m_suppression_end_time + reaction_delay)
 			{
 				// Повышаем шанс контратаки до 80%
 				if (memory().enemy().selected() && ::Random.randF() < 0.8f)
 				{
 					sound().play(eStalkerSoundNeedBackup);
 					m_is_counter_attacking = true;
-					m_counter_attack_end_time = Device.dwTimeGlobal + 4000;
+					m_counter_attack_end_time = Engine.TimeManager.GetGlobalTimeMs() + 4000;
 				}
 
 				m_suppression_end_time = 0;
@@ -836,7 +836,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		STOP_PROFILE
 	}
 	//	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
-	//		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
+	//		Msg				("[%6d][SH][%s]",Engine.TimeManager.GetGlobalTimeMs(),*cName());
 	// Queue shrink
 	VERIFY(_valid(Position()));
 	u32 dwTimeCL = Level().timeServer() - NET_Latency;
@@ -932,10 +932,10 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			ProcessScripts();
 		else
 #ifdef DEBUG
-			if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
+			if (Engine.TimeManager.GetFrameCount() > (spawn_time() + g_AI_inactive_time))
 #endif
 			Think();
-		m_dwLastUpdateTime = Device.dwTimeGlobal;
+		m_dwLastUpdateTime = Engine.TimeManager.GetGlobalTimeMs();
 		Device.Statistic->AI_Think.End();
 		VERIFY(_valid(Position()));
 
@@ -1013,7 +1013,7 @@ void CAI_Stalker::spawn_supplies()
 void CAI_Stalker::Think()
 {
 	START_PROFILE("stalker/schedule_update/think")
-	u32 update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
+	u32 update_delta = Engine.TimeManager.GetGlobalTimeMs() - m_dwLastUpdateTime;
 
 	START_PROFILE("stalker/schedule_update/think/brain")
 	//	try {

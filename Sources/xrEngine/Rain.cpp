@@ -151,14 +151,14 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 	dest.uv_set = Random.randI(2);
 	if (bHit)
 	{
-		dest.dwTime_Life = Device.dwTimeGlobal + iFloor(1000.f * height / dest.fSpeed) - Device.dwTimeDelta;
-		dest.dwTime_Hit = Device.dwTimeGlobal + iFloor(1000.f * height / dest.fSpeed) - Device.dwTimeDelta;
+		dest.dwTime_Life = Engine.TimeManager.GetGlobalTimeMs() + iFloor(1000.f * height / dest.fSpeed) - Engine.TimeManager.GetDeltaTimeMs();
+		dest.dwTime_Hit = Engine.TimeManager.GetGlobalTimeMs() + iFloor(1000.f * height / dest.fSpeed) - Engine.TimeManager.GetDeltaTimeMs();
 		dest.Phit.mad(dest.P, dest.D, height);
 	}
 	else
 	{
-		dest.dwTime_Life = Device.dwTimeGlobal + iFloor(1000.f * height / dest.fSpeed) - Device.dwTimeDelta;
-		dest.dwTime_Hit = Device.dwTimeGlobal + iFloor(2 * 1000.f * height / dest.fSpeed) - Device.dwTimeDelta;
+		dest.dwTime_Life = Engine.TimeManager.GetGlobalTimeMs() + iFloor(1000.f * height / dest.fSpeed) - Engine.TimeManager.GetDeltaTimeMs();
+		dest.dwTime_Hit = Engine.TimeManager.GetGlobalTimeMs() + iFloor(2 * 1000.f * height / dest.fSpeed) - Engine.TimeManager.GetDeltaTimeMs();
 		dest.Phit.set(dest.P);
 	}
 }
@@ -260,12 +260,12 @@ void CEffect_Rain::Render()
 		// physics and time control
 		Item& one = items[I];
 
-		if (one.dwTime_Hit < Device.dwTimeGlobal)
+		if (one.dwTime_Hit < Engine.TimeManager.GetGlobalTimeMs())
 			Hit(one.Phit);
-		if (one.dwTime_Life < Device.dwTimeGlobal)
+		if (one.dwTime_Life < Engine.TimeManager.GetGlobalTimeMs())
 			Born(one, source_radius);
 
-		float dt = Device.fTimeDelta;
+		float dt = Engine.TimeManager.GetDeltaTime();
 		one.P.mad(one.D, one.fSpeed * dt);
 
 		Device.Statistic->TEST1.Begin();
@@ -393,7 +393,7 @@ void CEffect_Rain::Render()
 
 	if (0)
 	{
-		float dt = Device.fTimeDelta;
+		float dt = Engine.TimeManager.GetDeltaTime();
 		IndexStream& _IS = RenderBackend.Index;
 		RenderBackend.set_Shader(DM_Drop->shader);
 

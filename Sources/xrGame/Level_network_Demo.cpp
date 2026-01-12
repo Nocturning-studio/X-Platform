@@ -325,11 +325,13 @@ void CLevel::Demo_Update()
 {
 	if (!IsDemoPlay() || m_aDemoData.empty() || !m_bDemoStarted)
 		return;
+
 	if (float(m_lDemoOfs) / lFileSize > 0.95f)
 	{
 		g_dwDemoDeltaFrame = 1;
 		dFrame = 1;
 	}
+
 	static u32 Pos = 0;
 
 	if (m_bDemoPlayByFrame)
@@ -340,41 +342,46 @@ void CLevel::Demo_Update()
 
 	if (!m_bDemoPlayByFrame)
 	{
-		for (Pos; Pos < m_aDemoData.size(); Pos++)
+		for (; Pos < m_aDemoData.size(); Pos++)
 		{
 			u32 CurTime = timeServer_Async();
 			DemoDataStruct* P = &(m_aDemoData[Pos]);
+
+			// ‘лаг дл€ выхода из цикла, если пакет из будущего
+			bool bStopProcessing = false;
+
+			switch (P->m_dwDataType)
 			{
-				switch (P->m_dwDataType)
-				{
-				case DATA_SERVER_PACKET:
-					break;
-				case DATA_CLIENT_PACKET: {
-					if (P->m_dwTimeReceive <= CurTime)
-					{
-						Msg("tReceive [%d] - CurTime [%d]", P->m_dwTimeReceive, CurTime);
-						IPureClient::OnMessage(P->Packet.B.data, P->Packet.B.count);
-					}
-					else
-					{
-						break;
-					};
-				}
+			case DATA_SERVER_PACKET:
 				break;
-				case DATA_FRAME:
-					if (P->m_dwTimeReceive <= CurTime)
-					{
-						Msg("tsReceive [%d] - CurTime [%d]", P->m_dwTimeReceive, CurTime);
-						Server->OnMessage(P->Packet, ClientID());
-					}
-					else
-					{
-						break;
-					};
-					break;
+			case DATA_CLIENT_PACKET: {
+				if (P->m_dwTimeReceive <= CurTime)
+				{
+					IPureClient::OnMessage(P->Packet.B.data, P->Packet.B.count);
+				}
+				else
+				{
+					// ѕакет пришел из будущего, рано обрабатывать.
+					// Ќужно прервать цикл, иначе Pos увеличитс€ и мы пропустим пакет навсегда.
+					bStopProcessing = true;
 				}
 			}
-		};
+			break;
+			case DATA_FRAME:
+				if (P->m_dwTimeReceive <= CurTime)
+				{
+					Server->OnMessage(P->Packet, ClientID());
+				}
+				else
+				{
+					bStopProcessing = true;
+				}
+				break;
+			}
+
+			if (bStopProcessing)
+				break;
+		}
 	}
 	else
 	{
@@ -385,16 +392,15 @@ void CLevel::Demo_Update()
 			if (P->m_dwFrame > m_dwCurDemoFrame)
 			{
 				break;
-			};
+			}
+
 			switch (P->m_dwDataType)
 			{
 			case DATA_FRAME: {
-				Device.dwTimeDelta = P->FrameTime.dwTimeDelta;
-				Device.dwTimeGlobal = P->FrameTime.dwTimeGlobal;
-				//					CurFrameTime.dwTimeServer		= Level().timeServer();
-				//					CurFrameTime.dwTimeServer_Delta = Level().timeServer_Delta();
-				Device.fTimeDelta = P->FrameTime.fTimeDelta;
-				Device.fTimeGlobal = P->FrameTime.fTimeGlobal;
+				Engine.TimeManager.SetDeltaTimeMs(P->FrameTime.dwTimeDelta);
+				Engine.TimeManager.SetGlobalTimeMs(P->FrameTime.dwTimeGlobal);
+				Engine.TimeManager.SetDeltaTime(P->FrameTime.fTimeDelta);
+				Engine.TimeManager.SetGlobalTime(P->FrameTime.fTimeGlobal);
 			}
 			break;
 			case DATA_CLIENT_PACKET: {
@@ -411,9 +417,11 @@ void CLevel::Demo_Update()
 			break;
 			}
 			m_aDemoData.pop_front();
-		};
-	};
+		}
+	}
+
 	//-------------------------------
+	// ќбновление UI
 	if (HUD().GetUI())
 	{
 		CUIGameDM* game_dm_ui = smart_cast<CUIGameDM*>(HUD().GetUI()->UIGame());
@@ -424,13 +432,6 @@ void CLevel::Demo_Update()
 				string1024 tmp;
 				if (m_bDemoPlayByFrame)
 				{
-					//					sprintf_s(tmp, "Demo Playing. %d perc.",
-					//u32(float(m_dwCurDemoFrame)/m_dwLastDemoFrame*100.0f));
-					if (float(m_lDemoOfs) / lFileSize > 0.9)
-					{
-						int x = 0;
-						x = x;
-					}
 					sprintf_s(tmp, "Demo Playing. %d perc.", u32(float(m_lDemoOfs) / lFileSize * 100.0f));
 				}
 				else
@@ -440,18 +441,18 @@ void CLevel::Demo_Update()
 				game_dm_ui->SetDemoPlayCaption(tmp);
 			}
 			else
+			{
 				game_dm_ui->SetDemoPlayCaption("");
+			}
 		}
 	}
 	//---------------------------------
 
-	//	m_dwCurDemoFrame++;
-
 	if (Pos >= m_aDemoData.size() || m_lDemoOfs > lFileSize)
 	{
 		Msg("! ------------- Demo Ended ------------");
-	};
-};
+	}
+}
 
 void CLevel::Demo_StartFrame()
 {
@@ -461,12 +462,12 @@ void CLevel::Demo_StartFrame()
 	DemoCS.Enter();
 
 	DemoFrameTime CurFrameTime;
-	CurFrameTime.dwTimeDelta = Device.dwTimeDelta;
-	CurFrameTime.dwTimeGlobal = Device.dwTimeGlobal;
+	CurFrameTime.dwTimeDelta = Engine.TimeManager.GetDeltaTimeMs();
+	CurFrameTime.dwTimeGlobal = Engine.TimeManager.GetGlobalTimeMs();
 	CurFrameTime.dwTimeServer = Level().timeServer();
 	CurFrameTime.dwTimeServer_Delta = Level().timeServer_Delta();
-	CurFrameTime.fTimeDelta = Device.fTimeDelta;
-	CurFrameTime.fTimeGlobal = Device.fTimeGlobal;
+	CurFrameTime.fTimeDelta = Engine.TimeManager.GetDeltaTime();
+	CurFrameTime.fTimeGlobal = Engine.TimeManager.GetGlobalTime();
 
 	Demo_StoreData(&CurFrameTime, sizeof(CurFrameTime), DATA_FRAME);
 

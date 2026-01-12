@@ -19,7 +19,7 @@ CEffectorFall::~CEffectorFall()
 BOOL CEffectorFall::ProcessCam(SCamEffectorInfo& info)
 
 {
-	fPhase += FALL_SPEED * Device.fTimeDelta;
+	fPhase += FALL_SPEED * Engine.TimeManager.GetDeltaTime();
 	if (fPhase < 1)
 		info.p.y -= FALL_MAXDIST * fPower * _sin(M_PI * fPhase + M_PI);
 	else
@@ -30,12 +30,12 @@ BOOL CEffectorFall::ProcessCam(SCamEffectorInfo& info)
 CEffectorDOF::CEffectorDOF(const Fvector4& dof) : CEffectorCam(eCEDOF, 100000)
 {
 	GamePersistent().SetEffectorDOF(Fvector().set(dof.x, dof.y, dof.z));
-	m_fPhase = Device.fTimeGlobal + dof.w;
+	m_fPhase = Engine.TimeManager.GetGlobalTime() + dof.w;
 }
 
 BOOL CEffectorDOF::ProcessCam(SCamEffectorInfo& info)
 {
-	if (m_fPhase < Device.fTimeGlobal)
+	if (m_fPhase < Engine.TimeManager.GetGlobalTime())
 	{
 		GamePersistent().RestoreEffectorDOF();
 		fLifeTime = -1;

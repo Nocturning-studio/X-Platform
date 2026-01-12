@@ -68,7 +68,7 @@ bool CStalkerAnimationManager::need_look_back() const
 	if (m_previous_speed_direction != eMovementDirectionBackward)
 		return (false);
 
-	if ((m_change_direction_time + need_look_back_time_delay) > Device.dwTimeGlobal)
+	if ((m_change_direction_time + need_look_back_time_delay) > Engine.TimeManager.GetGlobalTimeMs())
 		return (false);
 
 	m_looking_back = ::Random.randI(2) + 1;
@@ -79,22 +79,22 @@ void CStalkerAnimationManager::legs_assign_direction(float switch_factor, const 
 {
 	if (m_current_direction == direction)
 	{
-		m_direction_start = Device.dwTimeGlobal;
+		m_direction_start = Engine.TimeManager.GetGlobalTimeMs();
 		return;
 	}
 
 	if (m_target_direction != direction)
 	{
-		m_direction_start = Device.dwTimeGlobal;
+		m_direction_start = Engine.TimeManager.GetGlobalTimeMs();
 		m_target_direction = direction;
 		return;
 	}
 
-	VERIFY(m_direction_start <= Device.dwTimeGlobal);
-	if ((Device.dwTimeGlobal - m_direction_start) <= (u32)iFloor(switch_factor * direction_switch_interval))
+	VERIFY(m_direction_start <= Engine.TimeManager.GetGlobalTimeMs());
+	if ((Engine.TimeManager.GetGlobalTimeMs() - m_direction_start) <= (u32)iFloor(switch_factor * direction_switch_interval))
 		return;
 
-	m_direction_start = Device.dwTimeGlobal;
+	m_direction_start = Engine.TimeManager.GetGlobalTimeMs();
 	m_current_direction = direction;
 }
 
@@ -186,8 +186,8 @@ MotionID CStalkerAnimationManager::legs_move_animation()
 
 	if (m_previous_speed_direction != speed_direction)
 	{
-		if (m_change_direction_time < Device.dwTimeGlobal)
-			m_change_direction_time = Device.dwTimeGlobal;
+		if (m_change_direction_time < Engine.TimeManager.GetGlobalTimeMs())
+			m_change_direction_time = Engine.TimeManager.GetGlobalTimeMs();
 
 		if (!legs_switch_factor())
 		{
@@ -220,7 +220,7 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 			m_crouch_state = m_crouch_state_config;
 	}
 
-	m_change_direction_time = Device.dwTimeGlobal;
+	m_change_direction_time = Engine.TimeManager.GetGlobalTimeMs();
 	m_current_speed = 0.f;
 
 	EBodyState body_state = this->body_state();

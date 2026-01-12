@@ -47,13 +47,13 @@ void CStateManagerBurer::execute()
 			break;
 		}
 	}
-	else if (object->HitMemory.is_hit() && (object->HitMemory.get_last_hit_time() + 10000 > Device.dwTimeGlobal))
+	else if (object->HitMemory.is_hit() && (object->HitMemory.get_last_hit_time() + 10000 > Engine.TimeManager.GetGlobalTimeMs()))
 		state = eStateHitted;
 	else if (object->hear_dangerous_sound || object->hear_interesting_sound)
 	{
 		state = eStateHearInterestingSound;
 	}
-	else if (object->time_last_scan + SCAN_STATE_TIME > Device.dwTimeGlobal)
+	else if (object->time_last_scan + SCAN_STATE_TIME > Engine.TimeManager.GetGlobalTimeMs())
 	{
 		state = eStateBurerScanning;
 	}

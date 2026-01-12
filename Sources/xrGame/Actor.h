@@ -765,7 +765,7 @@ class CActor : public CEntityAlive,
 
 	IC void lock_accel_for(u32 time)
 	{
-		m_time_lock_accel = Device.dwTimeGlobal + time;
+		m_time_lock_accel = Engine.TimeManager.GetGlobalTimeMs() + time;
 	}
 
   private:

@@ -11,7 +11,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 
 #ifdef DEBUG
 	Msg("sv reject. id_parent %s id_entity %s [%d]", ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(),
-		Device.dwFrame);
+		Engine.TimeManager.GetFrameCount());
 #endif
 	VERIFY(e_parent && e_entity);
 	game->OnDetach(id_parent, id_entity);

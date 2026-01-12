@@ -45,7 +45,7 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive* corpse)
 	SMonsterCorpse corpse_info;
 	corpse_info.position = corpse->Position();
 	corpse_info.vertex = corpse->ai_location().level_vertex_id();
-	corpse_info.time = Device.dwTimeGlobal;
+	corpse_info.time = Engine.TimeManager.GetGlobalTimeMs();
 
 	CORPSE_MAP_IT it = m_objects.find(corpse);
 	if (it != m_objects.end())
@@ -62,7 +62,7 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive* corpse)
 
 void CMonsterCorpseMemory::remove_non_actual()
 {
-	TTime cur_time = Device.dwTimeGlobal;
+	TTime cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
 	for (CORPSE_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)

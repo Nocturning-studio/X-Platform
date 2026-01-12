@@ -273,13 +273,13 @@ void CCar::SDoor::Update()
 		if (pos_open * opened_angle < pos_open * GetAngle())
 		{
 			NeutralTorque(torque);
-			open_time = Device.dwTimeGlobal;
+			open_time = Engine.TimeManager.GetGlobalTimeMs();
 			state = opened;
 		}
 		break;
 	}
 	case opened: {
-		if (Device.dwTimeGlobal - open_time > 1000)
+		if (Engine.TimeManager.GetGlobalTimeMs() - open_time > 1000)
 		{
 			ApplyTorque(torque / 5.f, a_vel);
 			RemoveFromUpdate();

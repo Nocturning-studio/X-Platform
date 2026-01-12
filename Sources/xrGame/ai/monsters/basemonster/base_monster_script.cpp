@@ -331,8 +331,6 @@ void CBaseMonster::ProcessScripts()
 	m_script_state_must_execute = false;
 	inherited::ProcessScripts();
 
-	Device.dwTimeGlobal = Device.dwTimeGlobal;
-
 	// обновить мир (память, враги, объекты)
 	UpdateMemory();
 

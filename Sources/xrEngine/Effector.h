@@ -47,7 +47,7 @@ class ENGINE_API CEffectorCam : public SBaseEffector
 
 	virtual BOOL ProcessCam(SCamEffectorInfo& info)
 	{
-		fLifeTime -= Device.fTimeDelta;
+		fLifeTime -= Engine.TimeManager.GetDeltaTime();
 		return Valid();
 	};
 	;

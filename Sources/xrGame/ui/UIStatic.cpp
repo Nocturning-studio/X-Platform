@@ -265,7 +265,7 @@ void CUIStatic::Update()
 	{
 		if (m_lanim_clr.m_lanim_start_time < 0.0f)
 			ResetClrAnimation();
-		float t = Device.dwTimeContinual / 1000.0f;
+		float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 
 		if (t >= m_lanim_clr.m_lanim_start_time)
 		{
@@ -294,7 +294,7 @@ void CUIStatic::Update()
 	{
 		if (m_lanim_xform.m_lanim_start_time < 0.0f)
 			ResetXformAnimation();
-		float t = Device.dwTimeContinual / 1000.0f;
+		float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 
 		if (m_lanim_xform.m_lanimFlags.test(LA_CYCLIC) ||
 			t - m_lanim_xform.m_lanim_start_time < m_lanim_xform.m_lanim->Length_sec())
@@ -323,7 +323,7 @@ void CUIStatic::Update()
 	// Показываем, ТОЛЬКО если:
 	// Родители видимы И мы видимы И курсор на нас И есть текст И никто другой не занял хинт
 	if (bParentVisible && GetVisible() && CursorOverWindow() && m_hint_text.size() && !g_btnHint->Owner() &&
-		Device.dwTimeGlobal > m_dwFocusReceiveTime + 500)
+		Engine.TimeManager.GetGlobalTimeMs() > m_dwFocusReceiveTime + 500)
 	{
 		g_btnHint->SetHintText(this, *m_hint_text);
 
@@ -424,12 +424,12 @@ void CUIStatic::Update()
 
 void CUIStatic::ResetXformAnimation()
 {
-	m_lanim_xform.m_lanim_start_time = Device.dwTimeContinual / 1000.0f;
+	m_lanim_xform.m_lanim_start_time = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 }
 
 void CUIStatic::ResetClrAnimation()
 {
-	m_lanim_clr.m_lanim_start_time = Device.dwTimeContinual / 1000.0f + m_lanim_clr.m_lanim_delay_time / 1000.0f;
+	m_lanim_clr.m_lanim_start_time = Engine.TimeManager.GetContinualTimeMs() / 1000.0f + m_lanim_clr.m_lanim_delay_time / 1000.0f;
 }
 
 void CUIStatic::SetClrAnimDelay(float delay)
@@ -442,7 +442,7 @@ bool CUIStatic::IsClrAnimStoped()
 	if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || m_lanim_clr.m_lanim_start_time < 0.0f)
 		return false;
 
-	float t = Device.dwTimeContinual / 1000.0f;
+	float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 	if (t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
 		return false;
 	else

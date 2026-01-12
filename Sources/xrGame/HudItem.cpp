@@ -242,7 +242,7 @@ void CHudItem::UpdateHudInertion(Fmatrix& hud_trans)
 	}
 
 	// tend to forward
-	m_last_dir.mad(diff_dir, TENDTO_SPEED * Device.fTimeDelta);
+	m_last_dir.mad(diff_dir, TENDTO_SPEED * Engine.TimeManager.GetDeltaTime());
 	origin.mad(diff_dir, ORIGIN_OFFSET);
 
 	// pitch compensation
@@ -265,7 +265,7 @@ void CHudItem::UpdateHudInertion(Fmatrix& hud_trans)
 
 void CHudItem::UpdateCL()
 {
-	m_dwStateTime += Device.dwTimeDelta;
+	m_dwStateTime += Engine.TimeManager.GetDeltaTimeMs();
 
 	if (m_pHUD)
 		m_pHUD->Update();

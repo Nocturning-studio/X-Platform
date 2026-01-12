@@ -79,28 +79,28 @@ void CWeaponShotEffector::Update()
 		//		VERIFY(_valid(relax_speed_l));
 		//-------------------------------------------------------
 		if (fAngleHorz >= 0.f)
-			fAngleHorz -= relax_speed * Device.fTimeDelta;
+			fAngleHorz -= relax_speed * Engine.TimeManager.GetDeltaTime();
 		else
-			fAngleHorz += relax_speed * Device.fTimeDelta;
+			fAngleHorz += relax_speed * Engine.TimeManager.GetDeltaTime();
 
 		if (bSSActive)
 		{
 			if (fLastDeltaHorz >= 0.f)
-				fLastDeltaHorz -= relax_speed_l * Device.fTimeDelta;
+				fLastDeltaHorz -= relax_speed_l * Engine.TimeManager.GetDeltaTime();
 			else
-				fLastDeltaHorz += relax_speed_l * Device.fTimeDelta;
+				fLastDeltaHorz += relax_speed_l * Engine.TimeManager.GetDeltaTime();
 		}
 		//		VERIFY(_valid(fLastDeltaHorz));
 		//-------------------------------------------------------
 		if (fAngleVert >= 0.f)
 		{
-			fAngleVert -= fRelaxSpeed * Device.fTimeDelta;
+			fAngleVert -= fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
 			if (fAngleVert < 0.f)
 				bActive = FALSE;
 		}
 		else
 		{
-			fAngleVert += fRelaxSpeed * Device.fTimeDelta;
+			fAngleVert += fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
 			if (fAngleVert > 0.f)
 				bActive = FALSE;
 		}
@@ -109,13 +109,13 @@ void CWeaponShotEffector::Update()
 		{
 			if (fLastDeltaVert >= 0.f)
 			{
-				fLastDeltaVert -= fRelaxSpeed * Device.fTimeDelta;
+				fLastDeltaVert -= fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
 				if (fLastDeltaVert < 0.f)
 					bSSActive = FALSE;
 			}
 			else
 			{
-				fLastDeltaVert += fRelaxSpeed * Device.fTimeDelta;
+				fLastDeltaVert += fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
 				if (fLastDeltaVert > 0.f)
 					bSSActive = FALSE;
 			}

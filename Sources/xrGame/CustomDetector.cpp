@@ -165,7 +165,7 @@ void CCustomDetector::UpdateCL()
 			HUD_SOUND::PlaySound(zone_type.detect_snds, Fvector().set(0, 0, 0), this, true, false);
 		}
 		else
-			zone_info.snd_time += Device.dwTimeDelta;
+			zone_info.snd_time += Engine.TimeManager.GetDeltaTimeMs();
 	}
 }
 

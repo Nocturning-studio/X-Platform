@@ -203,7 +203,7 @@ void CHUDTarget::Render()
 						}
 					}
 
-					fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
+					fuzzyShowInfo += SHOW_INFO_SPEED * Engine.TimeManager.GetDeltaTime();
 				}
 				else if (l_pI && our_inv_owner && RQ.range < 2.0f * our_inv_owner->inventory().GetTakeDist() * 2.0f)
 				{
@@ -212,7 +212,7 @@ void CHUDTarget::Render()
 						F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
 						F->OutNext("%s", l_pI->Name /*Complex*/ ());
 					}
-					fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
+					fuzzyShowInfo += SHOW_INFO_SPEED * Engine.TimeManager.GetDeltaTime();
 				}
 			}
 			else
@@ -234,12 +234,12 @@ void CHUDTarget::Render()
 						{
 							float ddist = (RQ.range - recon_mindist()) / (recon_maxdist() - recon_mindist());
 							float dspeed = recon_minspeed() + (recon_maxspeed() - recon_minspeed()) * ddist;
-							fuzzyShowInfo += Device.fTimeDelta / dspeed;
+							fuzzyShowInfo += Engine.TimeManager.GetDeltaTime() / dspeed;
 						}
 						else
 						{
 							if (RQ.range < recon_mindist())
-								fuzzyShowInfo += recon_minspeed() * Device.fTimeDelta;
+								fuzzyShowInfo += recon_minspeed() * Engine.TimeManager.GetDeltaTime();
 							else
 								fuzzyShowInfo = 0;
 						};
@@ -258,7 +258,7 @@ void CHUDTarget::Render()
 		}
 		else
 		{
-			fuzzyShowInfo -= HIDE_INFO_SPEED * Device.fTimeDelta;
+			fuzzyShowInfo -= HIDE_INFO_SPEED * Engine.TimeManager.GetDeltaTime();
 		}
 		clamp(fuzzyShowInfo, 0.f, 1.f);
 	}

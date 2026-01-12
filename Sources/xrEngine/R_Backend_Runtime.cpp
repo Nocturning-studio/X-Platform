@@ -397,7 +397,7 @@ void CBackend::u_compute_texgen_screen(Fmatrix& m_Texgen)
 	m_Texgen.mul(m_TexelAdjust, RenderBackend.xforms.m_wvp);
 }
 
-void CBackend::set_viewport_geometry(float w, float h, ref_geom geometry, u32& vOffset)
+void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
 {
 	OPTICK_EVENT("CRenderTarget::set_viewport_geometry")
 
@@ -413,7 +413,7 @@ void CBackend::set_viewport_geometry(float w, float h, ref_geom geometry, u32& v
 
 	// Fill vertex buffer
 	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, geometry->vb_stride, vOffset);
-	pv->set_position(0, h, d_Z, d_W);
+	pv->set_position(0, (float)h, d_Z, d_W);
 	pv->set_color(C);
 	pv->set_uv(p0.x, p1.y);
 	pv++;
@@ -423,12 +423,12 @@ void CBackend::set_viewport_geometry(float w, float h, ref_geom geometry, u32& v
 	pv->set_uv(p0.x, p0.y);
 	pv++;
 
-	pv->set_position(w, h, d_Z, d_W);
+	pv->set_position((float)w, (float)h, d_Z, d_W);
 	pv->set_color(C);
 	pv->set_uv(p1.x, p1.y);
 	pv++;
 
-	pv->set_position(w, 0, d_Z, d_W);
+	pv->set_position((float)w, 0, d_Z, d_W);
 	pv->set_color(C);
 	pv->set_uv(p1.x, p0.y);
 	pv++;
@@ -438,26 +438,26 @@ void CBackend::set_viewport_geometry(float w, float h, ref_geom geometry, u32& v
 	RenderBackend.set_Geometry(geometry);
 }
 
-void CBackend::set_viewport_geometry(float w, float h, u32& vOffset)
+void CBackend::set_viewport_geometry(u32 w, u32 h, u32& vOffset)
 {
 	set_viewport_geometry(w, h, g_viewport, vOffset);
 }
 
 void CBackend::set_viewport_geometry(ref_geom geometry, u32& vOffset)
 {
-	float w = float(Device.dwWidth);
-	float h = float(Device.dwHeight);
+	u32 w = Device.dwWidth;
+	u32 h = Device.dwHeight;
 	set_viewport_geometry(w, h, geometry, vOffset);
 }
 
 void CBackend::set_viewport_geometry(u32& vOffset)
 {
-	float w = float(Device.dwWidth);
-	float h = float(Device.dwHeight);
+	u32 w = Device.dwWidth;
+	u32 h = Device.dwHeight;
 	set_viewport_geometry(w, h, g_viewport, vOffset);
 }
 
-void CBackend::render_viewport_geometry(float w, float h)
+void CBackend::render_viewport_geometry(u32 w, u32 h)
 {
 	u32 vOffset;
 	set_viewport_geometry(w, h, g_viewport, vOffset);
@@ -478,9 +478,9 @@ void CBackend::RenderViewportSurface(const ref_rt& _1, IDirect3DSurface9* zb)
 	render_viewport_geometry(_1->dwWidth, _1->dwHeight);
 }
 
-void CBackend::RenderViewportSurface(float w, float h, IDirect3DSurface9* _1, IDirect3DSurface9* zb)
+void CBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* _1, IDirect3DSurface9* zb)
 {
-	set_Render_Target_Surface((u32)w, (u32)h, _1);
+	set_Render_Target_Surface(w, h, _1);
 	set_Depth_Buffer(zb);
 	render_viewport_geometry(w, h);
 }
@@ -498,7 +498,7 @@ void CBackend::RenderViewportSurface(IDirect3DSurface9* _1)
 	render_viewport_geometry(desc.Width, desc.Height);
 }
 
-void CBackend::RenderViewportSurface(float w, float h, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4)
+void CBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4)
 {
 	set_Render_Target_Surface(_1, _2, _3, _4);
 	set_Depth_Buffer(NULL);
@@ -529,7 +529,7 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 	 SaveRenderState();
 
 	 // Рендерим
-	 RenderViewportSurface((float)width, (float)height, mip_surface);
+	 RenderViewportSurface(width, height, mip_surface);
 
 	 // Восстанавливаем состояние
 	 RestoreRenderState();
@@ -558,7 +558,7 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* sha
 	set_Element(shader, pass);
 
 	// Рендерим
-	RenderViewportSurface((float)width, (float)height, mip_surface);
+	RenderViewportSurface(width, height, mip_surface);
 
 	// Восстанавливаем состояние
 	RestoreRenderState();

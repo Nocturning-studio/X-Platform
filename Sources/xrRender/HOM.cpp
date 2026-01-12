@@ -18,14 +18,14 @@ void __stdcall CHOM::MT_RENDER()
 
 	// Быстрая проверка без блокировки
 	bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
-	if (MT_frame_rendered == Device.dwFrame || b_main_menu_is_active)
+	if (MT_frame_rendered == Engine.TimeManager.GetFrameCount() || b_main_menu_is_active)
 		return;
 
 	// Попытка захвата мьютекса без блокировки
 	if (MT.TryEnter())
 	{
 		// Двойная проверка после захвата мьютекса
-		if (MT_frame_rendered != Device.dwFrame && !b_main_menu_is_active)
+		if (MT_frame_rendered != Engine.TimeManager.GetFrameCount() && !b_main_menu_is_active)
 		{
 			CFrustum ViewBase;
 			ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
@@ -171,7 +171,7 @@ class pred_fb
 	ICF bool operator()(const CDB::RESULT& _1) const
 	{
 		occTri& T = m_pTris[_1.id];
-		return T.skip > Device.dwFrame;
+		return T.skip > Engine.TimeManager.GetFrameCount();
 	}
 };
 
@@ -271,7 +271,7 @@ void CHOM::Render_DB(CFrustum& base)
 
 	CFrustum clip;
 	clip.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_NEAR);
-	u32 _frame = Device.dwFrame;
+	u32 _frame = Engine.TimeManager.GetFrameCount();
 #ifdef DEBUG
 	tris_in_frame = xrc.r_count();
 	tris_in_frame_visible = 0;
@@ -305,7 +305,7 @@ void CHOM::Render(CFrustum& base)
 	Raster.clear();
 	Render_DB(base);
 	Raster.propagade();
-	MT_frame_rendered = Device.dwFrame;
+	MT_frame_rendered = Engine.TimeManager.GetFrameCount();
 	Device.Statistic->RenderCALC_HOM.End();
 }
 
@@ -392,7 +392,7 @@ BOOL CHOM::visible(vis_data& vis)
 {
 	OPTICK_EVENT("CHOM::visible");
 
-	if (Device.dwFrame < vis.hom_frame)
+	if (Engine.TimeManager.GetFrameCount() < vis.hom_frame)
 		return TRUE; // not at this time :)
 	if (!bEnabled)
 		return TRUE; // return - everything visible
@@ -402,7 +402,7 @@ BOOL CHOM::visible(vis_data& vis)
 	// false;
 	// 1. The object was visible, but we must to re-check it		- test		| frame-new, tested-???, hom_res = true;
 	// 2. New object slides into view								- delay test| frame-old, tested-old, hom_res = ???;
-	u32 frame_current = Device.dwFrame;
+	u32 frame_current = Engine.TimeManager.GetFrameCount();
 	// u32	frame_prev		= frame_current-1;
 
 #ifdef DEBUG

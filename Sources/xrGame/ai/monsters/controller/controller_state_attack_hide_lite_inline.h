@@ -52,7 +52,7 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerHideLiteAbstract::finalize()
 {
 	inherited::finalize();
-	m_time_finished = Device.dwTimeGlobal;
+	m_time_finished = Engine.TimeManager.GetGlobalTimeMs();
 }
 
 TEMPLATE_SPECIALIZATION

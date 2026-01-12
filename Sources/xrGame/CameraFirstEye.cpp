@@ -64,16 +64,16 @@ void CCameraFirstEye::Move(int cmd, float val, float factor)
 	switch (cmd)
 	{
 	case kDOWN:
-		pitch -= val ? val : (rot_speed.y * Device.fTimeDelta / factor);
+		pitch -= val ? val : (rot_speed.y * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	case kUP:
-		pitch += val ? val : (rot_speed.y * Device.fTimeDelta / factor);
+		pitch += val ? val : (rot_speed.y * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	case kLEFT:
-		yaw -= val ? val : (rot_speed.x * Device.fTimeDelta / factor);
+		yaw -= val ? val : (rot_speed.x * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	case kRIGHT:
-		yaw += val ? val : (rot_speed.x * Device.fTimeDelta / factor);
+		yaw += val ? val : (rot_speed.x * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	}
 	if (bClampYaw)

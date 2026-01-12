@@ -252,21 +252,21 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 				cameras[cam_active]->Move(cmd);
 			break;
 		case kFWD:
-			vmove.mad(C->vDirection, Device.fTimeDelta * Accel_mul);
+			vmove.mad(C->vDirection, Engine.TimeManager.GetDeltaTime() * Accel_mul);
 			break;
 		case kBACK:
-			vmove.mad(C->vDirection, -Device.fTimeDelta * Accel_mul);
+			vmove.mad(C->vDirection, -Engine.TimeManager.GetDeltaTime() * Accel_mul);
 			break;
 		case kR_STRAFE: {
 			Fvector right;
 			right.crossproduct(C->vNormal, C->vDirection);
-			vmove.mad(right, Device.fTimeDelta * Accel_mul);
+			vmove.mad(right, Engine.TimeManager.GetDeltaTime() * Accel_mul);
 		}
 		break;
 		case kL_STRAFE: {
 			Fvector right;
 			right.crossproduct(C->vNormal, C->vDirection);
-			vmove.mad(right, -Device.fTimeDelta * Accel_mul);
+			vmove.mad(right, -Engine.TimeManager.GetDeltaTime() * Accel_mul);
 		}
 		break;
 		}

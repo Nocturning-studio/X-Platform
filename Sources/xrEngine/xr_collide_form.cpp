@@ -105,7 +105,7 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O, cftObject)
 
 void CCF_Skeleton::BuildState()
 {
-	dwFrame = Device.dwFrame;
+	dwFrame = Engine.TimeManager.GetFrameCount();
 	CKinematics* K = PKinematics(owner->Visual());
 	K->CalculateBones();
 	const Fmatrix& L2W = owner->XFORM();
@@ -180,7 +180,7 @@ void CCF_Skeleton::BuildState()
 
 void CCF_Skeleton::BuildTopLevel()
 {
-	dwFrameTL = Device.dwFrame;
+	dwFrameTL = Engine.TimeManager.GetFrameCount();
 	IRender_Visual* K = owner->Visual();
 	Fbox& B = K->vis.box;
 	bv_box.min.average(B.min);
@@ -194,7 +194,7 @@ void CCF_Skeleton::BuildTopLevel()
 
 BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
-	if (dwFrameTL != Device.dwFrame)
+	if (dwFrameTL != Engine.TimeManager.GetFrameCount())
 		BuildTopLevel();
 
 	Fsphere w_bv_sphere;
@@ -209,7 +209,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	if ((Fsphere::rpNone == res) || ((Fsphere::rpOriginOutside == res) && (aft[0] > tgt_dist)))
 		return FALSE;
 
-	if (dwFrame != Device.dwFrame)
+	if (dwFrame != Engine.TimeManager.GetFrameCount())
 		BuildState();
 	else
 	{
@@ -217,7 +217,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 		if (K->LL_GetBonesVisible() != vis_mask)
 		{
 			// Model changed between ray-picks
-			dwFrame = Device.dwFrame - 1;
+			dwFrame = Engine.TimeManager.GetFrameCount() - 1;
 			BuildState();
 		}
 	}

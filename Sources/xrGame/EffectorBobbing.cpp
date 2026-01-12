@@ -63,18 +63,18 @@ void CEffectorBobbing::SetState(u32 mstate, bool limping, bool ZoomMode)
 
 BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 {
-	fTime += Device.fTimeDelta;
+	fTime += Engine.TimeManager.GetDeltaTime();
 	if (dwMState & ACTOR_DEFS::mcAnyMove)
 	{
 		if (fReminderFactor < 1.f)
-			fReminderFactor += SPEED_REMINDER * Device.fTimeDelta;
+			fReminderFactor += SPEED_REMINDER * Engine.TimeManager.GetDeltaTime();
 		else
 			fReminderFactor = 1.f;
 	}
 	else
 	{
 		if (fReminderFactor > 0.f)
-			fReminderFactor -= SPEED_REMINDER * Device.fTimeDelta;
+			fReminderFactor -= SPEED_REMINDER * Engine.TimeManager.GetDeltaTime();
 		else
 			fReminderFactor = 0.f;
 	}
@@ -142,7 +142,7 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 			if (dwMState & ACTOR_DEFS::mcCrouch)
 				fov_modifier = CROUCH_WALK_FOV_MODIFIER_FACTOR;
 
-			info.fFov *= fov_modifier + Device.fTimeDelta;
+			info.fFov *= fov_modifier + Engine.TimeManager.GetDeltaTime();
 		}
 
 		float _sinA = _abs(_sin(ST * Intencity) * A) * fReminderFactor;

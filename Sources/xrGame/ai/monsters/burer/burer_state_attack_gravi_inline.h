@@ -122,7 +122,7 @@ void CStateBurerAttackGraviAbstract::ExecuteGraviStart()
 {
 	object->com_man().ta_activate(object->anim_triple_gravi);
 
-	time_gravi_started = Device.dwTimeGlobal;
+	time_gravi_started = Engine.TimeManager.GetGlobalTimeMs();
 
 	object->StartGraviPrepare();
 	object->ActivateShield();
@@ -138,7 +138,7 @@ void CStateBurerAttackGraviAbstract::ExecuteGraviContinue()
 	clamp(time_to_hold, 0.f, 1.f);
 	time_to_hold *= float(object->m_gravi_time_to_hold);
 
-	if (time_gravi_started + u32(time_to_hold) < Device.dwTimeGlobal)
+	if (time_gravi_started + u32(time_to_hold) < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		m_action = ACTION_GRAVI_FIRE;
 	}

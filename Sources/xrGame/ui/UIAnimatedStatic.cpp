@@ -41,8 +41,8 @@ void CUIAnimatedStatic::Update()
 	}
 
 	// Прибавляем время кадра
-	m_uTimeElapsed += Device.dwTimeContinual - m_prevTime;
-	m_prevTime = Device.dwTimeContinual;
+	m_uTimeElapsed += Engine.TimeManager.GetContinualTimeMs() - m_prevTime;
+	m_prevTime = Engine.TimeManager.GetContinualTimeMs();
 
 	// Если анимация закончилась
 	if (m_uTimeElapsed > m_uAnimationDuration)

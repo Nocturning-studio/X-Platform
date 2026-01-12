@@ -101,7 +101,7 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 			pA->set_visual(SkinName);
 
 		ps_who->resetFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-		ps_who->RespawnTime = Device.dwTimeGlobal;
+		ps_who->RespawnTime = Engine.TimeManager.GetGlobalTimeMs();
 
 		E->o_Position.set(rp.P);
 		E->o_Angle.set(rp.A);

@@ -55,7 +55,7 @@ void CStalkerActionSolveZonePuzzle::initialize()
 	inherited::initialize();
 
 #ifndef GRENADE_TEST
-	m_stop_weapon_handling_time = Device.dwTimeGlobal;
+	m_stop_weapon_handling_time = Engine.TimeManager.GetGlobalTimeMs();
 	if (object().inventory().ActiveItem() && object().best_weapon() &&
 		(object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
 		m_stop_weapon_handling_time += ::Random32.random(30000) + 30000;
@@ -110,7 +110,7 @@ void CStalkerActionSolveZonePuzzle::execute()
 	inherited::execute();
 
 #ifndef GRENADE_TEST
-	if (Device.dwTimeGlobal >= m_stop_weapon_handling_time)
+	if (Engine.TimeManager.GetGlobalTimeMs() >= m_stop_weapon_handling_time)
 		if (!object().best_weapon())
 			object().CObjectHandler::set_goal(eObjectActionIdle);
 		else
@@ -141,8 +141,8 @@ void CStalkerActionSolveZonePuzzle::execute()
 		(object().inventory().ActiveItem() == object().inventory().m_slots[1].m_pIItem))
 	{
 		if (!m_time_to_strap)
-			m_time_to_strap = Device.dwTimeGlobal + 10000;
-		if (Device.dwTimeGlobal >= m_time_to_strap)
+			m_time_to_strap = Engine.TimeManager.GetGlobalTimeMs() + 10000;
+		if (Engine.TimeManager.GetGlobalTimeMs() >= m_time_to_strap)
 		{
 			m_time_to_idle = 0;
 			object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
@@ -155,8 +155,8 @@ void CStalkerActionSolveZonePuzzle::execute()
 		if (weapon->strapped_mode())
 		{
 			if (!m_time_to_idle)
-				m_time_to_idle = Device.dwTimeGlobal + 10000;
-			if (Device.dwTimeGlobal >= m_time_to_idle)
+				m_time_to_idle = Engine.TimeManager.GetGlobalTimeMs() + 10000;
+			if (Engine.TimeManager.GetGlobalTimeMs() >= m_time_to_idle)
 			{
 				m_time_to_strap = 0;
 				object().CObjectHandler::set_goal(eObjectActionIdle, object().inventory().m_slots[1].m_pIItem);

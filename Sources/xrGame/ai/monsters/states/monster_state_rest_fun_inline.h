@@ -47,7 +47,7 @@ void CStateMonsterRestFunAbstract::execute()
 
 	object->set_state_sound(MonsterSound::eMonsterSoundIdle);
 
-	if ((dist < object->db().m_fDistToCorpse + 0.5f) && (time_last_hit + REST_FUN_MIN_DELAY < Device.dwTimeGlobal))
+	if ((dist < object->db().m_fDistToCorpse + 0.5f) && (time_last_hit + REST_FUN_MIN_DELAY < Engine.TimeManager.GetGlobalTimeMs()))
 	{
 		CEntityAlive* corpse = const_cast<CEntityAlive*>(object->CorpseMan.get_corpse());
 		CPhysicsShellHolder* target = smart_cast<CPhysicsShellHolder*>(corpse);
@@ -70,7 +70,7 @@ void CStateMonsterRestFunAbstract::execute()
 							 target->m_pPhysicsShell->Elements().size());
 			}
 
-			time_last_hit = Device.dwTimeGlobal;
+			time_last_hit = Engine.TimeManager.GetGlobalTimeMs();
 		}
 	}
 }
@@ -86,7 +86,7 @@ bool CStateMonsterRestFunAbstract::check_completion()
 {
 	if (!object->CorpseMan.get_corpse())
 		return true;
-	if (time_state_started + REST_FUN_TIME_IN_STATE < Device.dwTimeGlobal)
+	if (time_state_started + REST_FUN_TIME_IN_STATE < Engine.TimeManager.GetGlobalTimeMs())
 		return true;
 	return false;
 }

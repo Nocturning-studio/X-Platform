@@ -153,7 +153,7 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 		return FALSE;
 
 	const Fmatrix& m = m_objectAnimator->XFORM();
-	m_objectAnimator->Update(Device.fTimeDelta);
+	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
 	if (!m_bAbsolutePositioning)
 	{
@@ -185,7 +185,7 @@ BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 		return FALSE;
 
 	const Fmatrix& m = m_objectAnimator->XFORM();
-	m_objectAnimator->Update(Device.fTimeDelta);
+	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
 	Fmatrix Mdef;
 	Mdef.identity();
@@ -270,7 +270,7 @@ BOOL SndShockEffector::InWork()
 
 float SndShockEffector::GetFactor()
 {
-	float f = (m_end_time - Device.fTimeGlobal) / m_life_time;
+	float f = (m_end_time - Engine.TimeManager.GetGlobalTime()) / m_life_time;
 
 	float ff = f * m_life_time / 8.0f;
 	return clampr(ff, 0.0f, 1.0f);
@@ -291,14 +291,14 @@ void SndShockEffector::Start(CActor* A, float snd_length, float power)
 	static float xxx = 6.0f / 1.50f; // 6sec on max power(1.5)
 
 	m_life_time = power * xxx;
-	m_end_time = Device.fTimeGlobal + m_life_time;
+	m_end_time = Engine.TimeManager.GetGlobalTime() + m_life_time;
 
 	AddEffector(A, effHit, "snd_shock_effector", this);
 }
 
 void SndShockEffector::Update()
 {
-	m_cur_length += Device.dwTimeDelta;
+	m_cur_length += Engine.TimeManager.GetDeltaTimeMs();
 	float x = float(m_cur_length) / m_snd_length;
 	float y = 2.f * x - 1;
 	if (y > 0.f)
@@ -339,7 +339,7 @@ BOOL DeathEffector::InWork()
 
 float DeathEffector::GetFactor()
 {
-	float f = (m_end_time - Device.fTimeGlobal) / m_life_time;
+	float f = (m_end_time - Engine.TimeManager.GetGlobalTime()) / m_life_time;
 
 	float ff = f * m_life_time / 8.0f;
 	return clampr(ff, 0.0f, 1.0f);
@@ -356,7 +356,7 @@ void DeathEffector::Start(CActor* A)
 	m_cur_length = 0;
 
 	m_life_time = 100000.0f;
-	m_end_time = Device.fTimeGlobal + m_life_time;
+	m_end_time = Engine.TimeManager.GetGlobalTime() + m_life_time;
 }
 
 void DeathEffector::Update()
@@ -365,7 +365,7 @@ void DeathEffector::Update()
 	if (!bMenu)
 	{
 		float FadeOutTime = 5.0f;
-		float Delta = Device.dwTimeDelta / FadeOutTime;
+		float Delta = Engine.TimeManager.GetDeltaTimeMs() / FadeOutTime;
 		if (psSoundVFactor > Delta)
 			psSoundVFactor -= Delta;
 		else
@@ -414,17 +414,17 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 
 	//////////////////////////////////////////////////////////////////////////
 
-	if (angle_lerp(m_dangle_current.x, m_dangle_target.x, ACTOR_EFF_ANGLE_SPEED, Device.fTimeDelta))
+	if (angle_lerp(m_dangle_current.x, m_dangle_target.x, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		m_dangle_target.x = angle_normalize(Random.randFs(ACTOR_EFF_DELTA_ANGLE_X));
 	}
 
-	if (angle_lerp(m_dangle_current.y, m_dangle_target.y, ACTOR_EFF_ANGLE_SPEED, Device.fTimeDelta))
+	if (angle_lerp(m_dangle_current.y, m_dangle_target.y, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		m_dangle_target.y = angle_normalize(Random.randFs(ACTOR_EFF_DELTA_ANGLE_Y));
 	}
 
-	if (angle_lerp(m_dangle_current.z, m_dangle_target.z, ACTOR_EFF_ANGLE_SPEED, Device.fTimeDelta))
+	if (angle_lerp(m_dangle_current.z, m_dangle_target.z, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		m_dangle_target.z = angle_normalize(Random.randFs(ACTOR_EFF_DELTA_ANGLE_Z));
 	}
@@ -440,7 +440,7 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 	Mdef.c.mad(m_position_source, m_direction, cur_dist);
 	info.fFov = _base_fov - _max_fov_add * perc_past;
 
-	m_time_current += Device.fTimeDelta;
+	m_time_current += Engine.TimeManager.GetDeltaTime();
 
 	//////////////////////////////////////////////////////////////////////////
 

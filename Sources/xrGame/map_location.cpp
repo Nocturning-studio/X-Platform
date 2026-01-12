@@ -92,7 +92,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	if (m_ttl > 0)
 	{
 		m_flags.set(eTTL, TRUE);
-		m_actual_time = Device.dwTimeGlobal + m_ttl * 1000;
+		m_actual_time = Engine.TimeManager.GetGlobalTimeMs() + m_ttl * 1000;
 	}
 
 	s = g_uiSpotXml->ReadAttrib(path_base, 0, "pos_to_actor", NULL);
@@ -162,7 +162,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 
 Fvector2 CMapLocation::Position()
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_Position;
 
 	Fvector2 pos;
@@ -202,7 +202,7 @@ Fvector2 CMapLocation::Position()
 
 Fvector2 CMapLocation::Direction()
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_Direction;
 
 	Fvector2 res;
@@ -243,7 +243,7 @@ Fvector2 CMapLocation::Direction()
 
 shared_str CMapLocation::LevelName()
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_LevelName;
 
 	if (ai().get_alife() && ai().get_game_graph())
@@ -279,15 +279,15 @@ bool CMapLocation::Update() // returns actual
 {
 	OPTICK_EVENT("CMapLocation::update");
 
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_Actuality;
 
 	if (m_flags.test(eTTL))
 	{
-		if (m_actual_time < Device.dwTimeGlobal)
+		if (m_actual_time < Engine.TimeManager.GetGlobalTimeMs())
 		{
 			m_cached.m_Actuality = false;
-			m_cached.m_updatedFrame = Device.dwFrame;
+			m_cached.m_updatedFrame = Engine.TimeManager.GetFrameCount();
 			return m_cached.m_Actuality;
 		}
 	}
@@ -301,7 +301,7 @@ bool CMapLocation::Update() // returns actual
 		Position();
 		Direction();
 		LevelName();
-		m_cached.m_updatedFrame = Device.dwFrame;
+		m_cached.m_updatedFrame = Engine.TimeManager.GetFrameCount();
 		return m_cached.m_Actuality;
 	}
 
@@ -312,7 +312,7 @@ bool CMapLocation::Update() // returns actual
 		Position();
 		Direction();
 		LevelName();
-		m_cached.m_updatedFrame = Device.dwFrame;
+		m_cached.m_updatedFrame = Engine.TimeManager.GetFrameCount();
 		return m_cached.m_Actuality;
 	}
 
@@ -325,12 +325,12 @@ bool CMapLocation::Update() // returns actual
 			Direction();
 			LevelName();
 		}
-		m_cached.m_updatedFrame = Device.dwFrame;
+		m_cached.m_updatedFrame = Engine.TimeManager.GetFrameCount();
 		return m_cached.m_Actuality;
 	}
 
 	m_cached.m_Actuality = false;
-	m_cached.m_updatedFrame = Device.dwFrame;
+	m_cached.m_updatedFrame = Engine.TimeManager.GetFrameCount();
 	return m_cached.m_Actuality;
 }
 
@@ -525,7 +525,7 @@ u16 CMapLocation::AddRef()
 	++m_refCount;
 	if (m_flags.test(eTTL))
 	{
-		m_actual_time = Device.dwTimeGlobal + m_ttl * 1000;
+		m_actual_time = Engine.TimeManager.GetGlobalTimeMs() + m_ttl * 1000;
 	}
 
 	return m_refCount;

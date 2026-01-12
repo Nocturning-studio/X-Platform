@@ -362,7 +362,7 @@ void CUICustomEdit::Update()
 	{
 		static u32 last_time;
 
-		u32 cur_time = Device.TimerAsync();
+		u32 cur_time = Engine.TimeManager.TimerAsync();
 
 		if (m_iKeyPressAndHold)
 		{

@@ -86,10 +86,10 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 #ifdef DEBUG
 	if (m_use_log)
 	{
-		Msg("%6d : Active item %s", Device.dwTimeGlobal,
+		Msg("%6d : Active item %s", Engine.TimeManager.GetGlobalTimeMs(),
 			object().inventory().ActiveItem() ? *object().inventory().ActiveItem()->object().cName()
 											  : "no active items");
-		Msg("%6d : Goal %s", Device.dwTimeGlobal, property2string(condition_id));
+		Msg("%6d : Goal %s", Engine.TimeManager.GetGlobalTimeMs(), property2string(condition_id));
 	}
 #endif
 	CState condition;
@@ -105,7 +105,7 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 
 	if ((m_min_queue_size != min_queue_size) || (m_max_queue_size != max_queue_size) ||
 		(m_min_queue_interval != min_queue_interval) || (m_max_queue_interval != max_queue_interval) ||
-		(m_next_time_change <= Device.dwTimeGlobal))
+		(m_next_time_change <= Engine.TimeManager.GetGlobalTimeMs()))
 	{
 		m_min_queue_size = min_queue_size;
 		m_max_queue_size = max_queue_size;
@@ -122,7 +122,7 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 		else
 			m_queue_interval = ::Random.randI(m_min_queue_interval, m_max_queue_interval);
 
-		m_next_time_change = Device.dwTimeGlobal + m_queue_interval;
+		m_next_time_change = Engine.TimeManager.GetGlobalTimeMs() + m_queue_interval;
 
 		weapon->SetQueueSize(m_queue_size);
 		this->action(uid(weapon->ID(), eWorldOperatorQueueWait1))

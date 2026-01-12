@@ -41,7 +41,7 @@ void CLevel::remove_objects()
 		psNET_Flags.set(NETFLAG_MINIMIZEUPDATES, FALSE);
 		// ugly hack for checks that update is twice on frame
 		// we need it since we do updates for checking network messages
-		++(Device.dwFrame);
+		Engine.TimeManager.IncreaseFrameCount();
 		psDeviceFlags.set(rsDisableObjectsAsCrows, TRUE);
 		ClientReceive();
 		ProcessGameEvents();
@@ -84,14 +84,12 @@ void CLevel::remove_objects()
 
 	for (int i = 0; i < 6; i++)
 	{
-		++(Device.dwFrame);
+		Engine.TimeManager.IncreaseFrameCount();
 		Objects.Update(true);
 	}
 
 	g_pGamePersistent->destroy_particles(false);
 
-	//.	xr_delete									(m_seniority_hierarchy_holder);
-	//.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
 	if (!IsGameTypeSingle())
 		Msg("CLevel::remove_objects - End");
 }

@@ -134,7 +134,7 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
 	if (pGameSP)
 		pGameSP->ChangeLevel(m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b);
 
-	m_entrance_time = Device.fTimeGlobal;
+	m_entrance_time = Engine.TimeManager.GetGlobalTime();
 }
 
 bool CLevelChanger::get_reject_pos(Fvector& p, Fvector& r)
@@ -181,14 +181,14 @@ void CLevelChanger::update_actor_invitation()
 		CActor* l_tpActor = smart_cast<CActor*>(*it);
 		VERIFY(l_tpActor);
 
-		if (m_entrance_time + 5.0f < Device.fTimeGlobal)
+		if (m_entrance_time + 5.0f < Engine.TimeManager.GetGlobalTime())
 		{
 			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 			Fvector p, r;
 			bool b = get_reject_pos(p, r);
 			if (pGameSP)
 				pGameSP->ChangeLevel(m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b);
-			m_entrance_time = Device.fTimeGlobal;
+			m_entrance_time = Engine.TimeManager.GetGlobalTime();
 		}
 	}
 }

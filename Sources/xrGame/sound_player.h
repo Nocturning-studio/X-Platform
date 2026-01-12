@@ -109,7 +109,7 @@ class CSoundPlayer : public CRandom32
 		{
 			VERIFY(sound.m_sound);
 			bool result = (sound.m_synchro_mask & m_sound_mask) ||
-						  (!sound.m_sound->_feedback() && (sound.m_stop_time <= Device.dwTimeGlobal));
+						  (!sound.m_sound->_feedback() && (sound.m_stop_time <= Engine.TimeManager.GetGlobalTimeMs()));
 			if (result)
 				sound.destroy();
 			return (result);

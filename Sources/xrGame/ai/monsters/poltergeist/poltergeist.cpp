@@ -273,7 +273,7 @@ void CPoltergeist::UpdateHeight()
 	if (!state_invisible)
 		return;
 
-	u32 cur_time = Device.dwTimeGlobal;
+	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	if (time_height_updated < cur_time)
 	{

@@ -272,7 +272,7 @@ void CUIMMShniaga::Draw()
 void CUIMMShniaga::Update()
 {
 	//	static bool playing = false;
-	if (m_start_time > Device.dwTimeContinual - m_run_time)
+	if (m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time)
 	{
 		//		playing = true;
 		Fvector2 pos = m_shniaga->GetWndPos();
@@ -282,13 +282,13 @@ void CUIMMShniaga::Update()
 		m_anims[0]->SetHeading(-a);
 		m_anims[1]->SetHeading(a);
 
-		pos.y = this->pos(m_origin, m_destination, Device.dwTimeContinual - m_start_time);
+		pos.y = this->pos(m_origin, m_destination, Engine.TimeManager.GetContinualTimeMs() - m_start_time);
 		m_shniaga->SetWndPos(pos);
 	}
 	else
 		ProcessEvent(E_Stop);
 
-	if (m_start_time > Device.dwTimeContinual - m_run_time * 10 / 100)
+	if (m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time * 10 / 100)
 		ProcessEvent(E_Finilize);
 
 	ProcessEvent(E_Update);
@@ -401,7 +401,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 		m_sound->whell_Play();
 
 		// calculate moving params
-		m_start_time = Device.dwTimeContinual;
+		m_start_time = Engine.TimeManager.GetContinualTimeMs();
 		m_origin = m_shniaga->GetWndPos().y;
 		//				float border = GetHeight() - m_shniaga->GetHeight();
 		//				float y = m_selected->GetWndPos().y;

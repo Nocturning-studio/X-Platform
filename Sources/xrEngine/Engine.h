@@ -19,6 +19,7 @@ struct xrDispatchTable;
 #include "debug_ui.h"
 #include "pure.h"
 #include "WindowManager.h"
+#include "TimeManager.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Class creation/destroying interface
 extern "C"
@@ -59,6 +60,7 @@ class ENGINE_API CEngine
 	CGameStateManager GameStateManager;
 	CDebugUI DebugUI;
 	CWindowManager WindowManager;
+	CTimeManager TimeManager;
 
   public:
 	// Конструктор/Деструктор

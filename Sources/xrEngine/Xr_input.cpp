@@ -493,7 +493,7 @@ void CInput::OnFrame(void)
 	OPTICK_EVENT("CInput::OnFrame");
 
 	Device.Statistic->Input.Begin();
-	dwCurTime = Device.TimerAsync_MMT();
+	dwCurTime = Engine.TimeManager.TimerAsync_MMT();
 	if (pKeyboard)
 		KeyUpdate();
 	if (pMouse)

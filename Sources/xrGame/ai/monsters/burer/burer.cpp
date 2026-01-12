@@ -206,7 +206,7 @@ void CBurer::UpdateGraviObject()
 		return;
 	}
 
-	float dt = float(Device.dwTimeGlobal - m_gravi_object.time_last_update);
+	float dt = float(Engine.TimeManager.GetGlobalTimeMs() - m_gravi_object.time_last_update);
 	float dist = dt * float(m_gravi_speed) / 1000.f;
 
 	if (dist < m_gravi_step)
@@ -264,7 +264,7 @@ void CBurer::UpdateGraviObject()
 	}
 
 	m_gravi_object.cur_pos = new_pos;
-	m_gravi_object.time_last_update = Device.dwTimeGlobal;
+	m_gravi_object.time_last_update = Engine.TimeManager.GetGlobalTimeMs();
 
 	// ---------------------------------------------------------------------
 	// draw particle
@@ -312,7 +312,7 @@ void CBurer::UpdateGraviObject()
 void CBurer::UpdateCL()
 {
 	inherited::UpdateCL();
-	TScanner::frame_update(Device.dwTimeDelta);
+	TScanner::frame_update(Engine.TimeManager.GetDeltaTimeMs());
 
 	UpdateGraviObject();
 
@@ -360,7 +360,7 @@ void CBurer::StopTeleObjectParticle(CGameObject* pO)
 // ALife::EHitType hit_type)
 void CBurer::Hit(SHit* pHDS)
 {
-	if (m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != last_hit_frame))
+	if (m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != last_hit_frame))
 	{
 
 		// вычислить позицию и направленность партикла
@@ -378,7 +378,7 @@ void CBurer::Hit(SHit* pHDS)
 		//				inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 		inherited::Hit(pHDS);
 
-	last_hit_frame = Device.dwFrame;
+	last_hit_frame = Engine.TimeManager.GetFrameCount();
 }
 
 void CBurer::Die(CObject* who)
@@ -393,7 +393,7 @@ void CBurer::Die(CObject* who)
 
 void CBurer::on_scanning()
 {
-	time_last_scan = Device.dwTimeGlobal;
+	time_last_scan = Engine.TimeManager.GetGlobalTimeMs();
 }
 
 void CBurer::on_scan_success()

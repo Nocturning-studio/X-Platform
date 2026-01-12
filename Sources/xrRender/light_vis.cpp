@@ -17,7 +17,7 @@ void light::vis_prepare()
 	//		. camera inside light volume	= visible,	shedule for 'small' interval
 	//		. perform testing				= ???,		pending
 
-	u32 frame = Device.dwFrame;
+	u32 frame = Engine.TimeManager.GetFrameCount();
 	if (frame < vis.frame2test)
 		return;
 
@@ -67,7 +67,7 @@ void light::vis_update()
 	if (!vis.pending)
 		return;
 
-	u32 frame = Device.dwFrame;
+	u32 frame = Engine.TimeManager.GetFrameCount();
 	u32 fragments = RenderImplementation.occq_get(vis.query_id);
 	// Log					("",fragments);
 	vis.visible = (fragments > cullfragments);

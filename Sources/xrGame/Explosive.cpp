@@ -342,7 +342,7 @@ void CExplosive::Explode()
 		DBG_DrawPoint(pos, 0.3f, D3DCOLOR_XRGB(255, 0, 0));
 	}
 #endif
-	//	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
+	//	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Engine.TimeManager.GetFrameCount());
 	OnBeforeExplosion();
 	// играем звук взрыва
 	Sound->play_at_pos(sndExplode, 0, pos, false);
@@ -496,11 +496,11 @@ void CExplosive::UpdateCL()
 
 		StopLight();
 
-		//		Msg("---------CExplosive OnAfterExplosion [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
+		//		Msg("---------CExplosive OnAfterExplosion [%d] frame[%d]",cast_game_object()->ID(), Engine.TimeManager.GetFrameCount());
 	}
 	else
 	{
-		m_fExplodeDuration -= Device.fTimeDelta;
+		m_fExplodeDuration -= Engine.TimeManager.GetDeltaTime();
 		if (!m_bHideInExplosion && !m_bAlreadyHidden)
 		{
 			if (m_fExplodeHideDurationMax <= (m_fExplodeDurationMax - m_fExplodeDuration))
@@ -546,7 +546,7 @@ void CExplosive::OnBeforeExplosion()
 	{
 		HideExplosive();
 		//	Msg("---------CExplosive OnBeforeExplosion setVisible(false) [%d] frame[%d]",cast_game_object()->ID(),
-		//Device.dwFrame);
+		//Engine.TimeManager.GetFrameCount());
 	}
 }
 void CExplosive::HideExplosive()

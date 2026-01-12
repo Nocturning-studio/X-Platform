@@ -199,7 +199,7 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 		if (H_Parent())
 		{
 			Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%d]", ID(), cName().c_str(),
-				H_Parent()->ID(), H_Parent()->cName().c_str(), Device.dwFrame);
+				H_Parent()->ID(), H_Parent()->cName().c_str(), Engine.TimeManager.GetFrameCount());
 		}
 #endif
 		setDestroy(TRUE);
@@ -214,7 +214,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 {
 	VERIFY(!m_spawned);
 	m_spawned = true;
-	m_spawn_time = Device.dwFrame;
+	m_spawn_time = Engine.TimeManager.GetFrameCount();
 	CSE_Abstract* E = (CSE_Abstract*)DC;
 	VERIFY(E);
 
@@ -578,7 +578,7 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 
 #ifdef _DEBUG
 //	Msg								("%6d Searching for node for object %s (%.5f
-//seconds)",Device.dwTimeGlobal,*cName(),timer.GetElapsed_sec());
+//seconds)",Engine.TimeManager.GetGlobalTimeMs(),*cName(),timer.GetElapsed_sec());
 #endif
 	VERIFY(ai().level_graph().valid_vertex_id(l_dwNewLevelVertexID));
 
@@ -821,7 +821,7 @@ void CGameObject::shedule_Update(u32 dt)
 	if (!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
-		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Device.dwFrame);
+		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Engine.TimeManager.GetFrameCount());
 #endif
 		DestroyObject();
 	}

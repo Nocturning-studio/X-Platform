@@ -46,6 +46,6 @@ class CHudItemObject : public CInventoryItemObject, public CHudItem
 
 	virtual bool use_parent_ai_locations() const
 	{
-		return (Device.dwFrame != dwXF_Frame);
+		return (Engine.TimeManager.GetFrameCount() != dwXF_Frame);
 	}
 };

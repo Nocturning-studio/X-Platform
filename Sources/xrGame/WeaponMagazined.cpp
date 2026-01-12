@@ -34,7 +34,7 @@ CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapo
 	m_iQueueSize = WEAPON_ININITE_QUEUE;
 	m_bLockType = false;
 
-	m_fSavedTimeFactor = Device.time_factor();
+	m_fSavedTimeFactor = Engine.TimeManager.GetTimeFactor();
 	GamePersistent().GetCurrentDof(m_SavedDof);
 }
 
@@ -446,7 +446,7 @@ void CWeaponMagazined::OnStateSwitch(u32 S)
 void CWeaponMagazined::UpdateCL()
 {
 	inherited::UpdateCL();
-	float dt = Device.fTimeDelta;
+	float dt = Engine.TimeManager.GetDeltaTime();
 
 	// когда происходит апдейт состояния оружия
 	// ничего другого не делать
@@ -494,10 +494,10 @@ void CWeaponMagazined::UpdateCL()
 
 void CWeaponMagazined::UpdateSounds()
 {
-	if (Device.dwFrame == dwUpdateSounds_Frame)
+	if (Engine.TimeManager.GetFrameCount() == dwUpdateSounds_Frame)
 		return;
 
-	dwUpdateSounds_Frame = Device.dwFrame;
+	dwUpdateSounds_Frame = Engine.TimeManager.GetFrameCount();
 
 	// ref_sound positions
 	if (sndShow.playing())
@@ -1162,8 +1162,8 @@ void CWeaponMagazined::OnZoomIn()
 
 		if (psActorFlags.test(AF_ZOOM_TIME_SLOW_MO))
 		{
-			m_fSavedTimeFactor = Device.time_factor();
-			Device.time_factor(0.5f);
+			m_fSavedTimeFactor = Engine.TimeManager.GetTimeFactor();
+			Engine.TimeManager.SetTimeFactor(0.5f);
 		}
 
 		if (psActorFlags.test(AF_NEED_DOF)) // && !IsScopeAttached())
@@ -1189,7 +1189,7 @@ void CWeaponMagazined::OnZoomOut()
 		pActor->Cameras().RemoveCamEffector(eCEZoom);
 
 		if (psActorFlags.test(AF_ZOOM_TIME_SLOW_MO))
-			Device.time_factor(m_fSavedTimeFactor);
+			Engine.TimeManager.SetTimeFactor(m_fSavedTimeFactor);
 
 		if (psActorFlags.test(AF_NEED_DOF)) // && !IsScopeAttached())
 		{

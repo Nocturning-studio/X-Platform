@@ -82,7 +82,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend* blend)
 	if (m_object->character_ik_controller())
 		m_object->character_ik_controller()->PlayLegs(blend);
 
-	m_time_anim_started = Device.dwTimeGlobal;
+	m_time_anim_started = Engine.TimeManager.GetGlobalTimeMs();
 
 	// искать текущую анимацию в STEPS_MAP
 	STEPS_MAP_IT it = m_steps_map.find(motion_id);
@@ -122,7 +122,7 @@ void CStepManager::update()
 
 	// получить параметры шага
 	SStepParam& step = m_step_info.params;
-	u32 cur_time = Device.dwTimeGlobal;
+	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// время одного цикла анимации
 	float cycle_anim_time = get_blend_time() / step.cycles;

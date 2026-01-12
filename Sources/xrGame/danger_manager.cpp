@@ -232,7 +232,7 @@ float CDangerManager::do_evaluate(const CDangerObject& object) const
 	}
 
 	result *= 10.f;
-	result += float(Device.dwTimeGlobal - object.time());
+	result += float(Engine.TimeManager.GetGlobalTimeMs() - object.time());
 
 	return (result);
 }

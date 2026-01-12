@@ -85,7 +85,7 @@ BOOL CCustomRocket::net_Spawn(CSE_Abstract* DC)
 
 void CCustomRocket::net_Destroy()
 {
-	//	Msg("---------net_Destroy [%d] frame[%d]",ID(), Device.dwFrame);
+	//	Msg("---------net_Destroy [%d] frame[%d]",ID(), Engine.TimeManager.GetFrameCount());
 	inherited::net_Destroy();
 	CPHUpdateObject::Deactivate();
 
@@ -103,7 +103,7 @@ void CCustomRocket::SetLaunchParams(const Fmatrix& xform, const Fvector& vel, co
 	//		Msg("set p start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
 	//	}
 	m_vLaunchAngularVelocity = angular_vel;
-	m_time_to_explode = Device.fTimeGlobal + pSettings->r_float(cNameSect(), "force_explode_time") / 1000.0f;
+	m_time_to_explode = Engine.TimeManager.GetGlobalTime() + pSettings->r_float(cNameSect(), "force_explode_time") / 1000.0f;
 #ifdef DEBUG
 	gbg_rocket_speed1 = 0;
 	gbg_rocket_speed2 = 0;
@@ -361,13 +361,13 @@ void CCustomRocket::OnH_B_Chield()
 {
 	VERIFY(m_eState == eInactive);
 	inherited::OnH_B_Chield();
-	//	Msg("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
+	//	Msg("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Engine.TimeManager.GetFrameCount());
 }
 void CCustomRocket::OnH_A_Chield()
 {
 	VERIFY(m_eState == eInactive);
 	inherited::OnH_A_Chield();
-	//	Msg("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
+	//	Msg("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Engine.TimeManager.GetFrameCount());
 }
 
 void CCustomRocket::OnH_B_Independent(bool just_before_destroy)
@@ -387,7 +387,7 @@ void CCustomRocket::OnH_A_Independent()
 	setVisible(true);
 	StartFlying();
 	StartEngine();
-	//	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.dwFrame);
+	//	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Engine.TimeManager.GetFrameCount());
 }
 
 void CCustomRocket::UpdateCL()
@@ -411,7 +411,7 @@ void CCustomRocket::UpdateCL()
 	}
 	if (m_eState == eEngine || m_eState == eFlying)
 	{
-		if (m_time_to_explode < Device.fTimeGlobal)
+		if (m_time_to_explode < Engine.TimeManager.GetGlobalTime())
 		{
 			Contact(Position(), Direction());
 			//			Msg("--contact");
@@ -455,7 +455,7 @@ void CCustomRocket::UpdateEnginePh()
 {
 	if (Level().In_NetCorrectionPrediction())
 		return;
-	float force = m_fEngineImpulse * fixed_step; // * Device.fTimeDelta;
+	float force = m_fEngineImpulse * fixed_step; // * Engine.TimeManager.GetDeltaTime();
 	float k_back = 1.f;
 	Fvector l_pos, l_dir;
 	l_pos.set(0, 0, -2.f);
@@ -468,7 +468,7 @@ void CCustomRocket::UpdateEnginePh()
 	l_dir.invert();
 	m_pPhysicsShell->applyImpulseTrace(l_pos, l_dir, force);
 	l_dir.set(0, 1.f, 0);
-	force = m_fEngineImpulseUp * fixed_step; // * Device.fTimeDelta;
+	force = m_fEngineImpulseUp * fixed_step; // * Engine.TimeManager.GetDeltaTime();
 	m_pPhysicsShell->applyImpulse(l_dir, force);
 
 	// m_pPhysicsShell->set_AngularVel()
@@ -483,7 +483,7 @@ void CCustomRocket::UpdateEngine()
 
 	if (!getVisible())
 	{
-		Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%d]", ID(), Device.dwFrame);
+		Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%d]", ID(), Engine.TimeManager.GetFrameCount());
 	}
 
 	if (m_dwEngineTime <= 0)
@@ -493,7 +493,7 @@ void CCustomRocket::UpdateEngine()
 		return;
 	}
 
-	m_dwEngineTime -= Device.dwTimeDelta;
+	m_dwEngineTime -= Engine.TimeManager.GetDeltaTimeMs();
 }
 
 //////////////////////////////////////////////////////////////////////////

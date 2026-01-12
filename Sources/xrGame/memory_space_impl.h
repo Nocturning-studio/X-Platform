@@ -72,7 +72,7 @@ template <typename T> IC void CMemoryObject<T>::fill(const T* game_object, const
 	m_game_time = Level().GetGameTime();
 #endif
 #ifdef USE_LEVEL_TIME
-	m_level_time = Device.dwTimeGlobal;
+	m_level_time = Engine.TimeManager.GetGlobalTimeMs();
 #endif
 	m_object = game_object;
 	m_object_params.fill(game_object);

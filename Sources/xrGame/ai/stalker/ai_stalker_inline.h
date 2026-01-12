@@ -44,10 +44,10 @@ IC CStalkerMovementManager& CAI_Stalker::movement() const
 
 IC bool CAI_Stalker::frame_check(u32& frame)
 {
-	if (Device.dwFrame == frame)
+	if (Engine.TimeManager.GetFrameCount() == frame)
 		return (false);
 
-	frame = Device.dwFrame;
+	frame = Engine.TimeManager.GetFrameCount();
 	return (true);
 }
 

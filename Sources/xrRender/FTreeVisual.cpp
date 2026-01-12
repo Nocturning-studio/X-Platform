@@ -105,12 +105,12 @@ struct FTreeVisual_setup
 
 	void calculate()
 	{
-		dwFrame = Device.dwFrame;
+		dwFrame = Engine.TimeManager.GetFrameCount();
 
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 
 		// Calc wind-vector3, scale
-		float tm_rot = PI_MUL_2 * Device.fTimeGlobal / desc->m_fTreeRotation;
+		float tm_rot = PI_MUL_2 * Engine.TimeManager.GetGlobalTime() / desc->m_fTreeRotation;
 		wind.set(_sin(tm_rot), 0, _cos(tm_rot), 0);
 		wind.normalize();
 		wind.mul(desc->m_fTreeAmplitude); // dir1*amplitude
@@ -118,7 +118,7 @@ struct FTreeVisual_setup
 
 		// setup constants
 		wave.set(desc->m_fTreeWave.x, desc->m_fTreeWave.y, desc->m_fTreeWave.z,
-				 Device.fTimeGlobal * desc->m_fTreeSpeed); // wave
+				 Engine.TimeManager.GetGlobalTime() * desc->m_fTreeSpeed); // wave
 		wave.div(PI_MUL_2);
 	}
 };
@@ -126,7 +126,7 @@ struct FTreeVisual_setup
 void FTreeVisual::Render(float LOD)
 {
 	static FTreeVisual_setup tvs;
-	if (tvs.dwFrame != Device.dwFrame)
+	if (tvs.dwFrame != Engine.TimeManager.GetFrameCount())
 		tvs.calculate();
 	// setup constants
 	Fmatrix xform_v;

@@ -179,7 +179,7 @@ void CCustomMonster::reinit()
 	sound().reinit();
 
 	m_client_update_delta = 0;
-	m_last_client_update_time = Device.dwTimeGlobal;
+	m_last_client_update_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	eye_pp_stage = 0;
 	m_dwLastUpdateTime = 0xffffffff;
@@ -322,7 +322,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 	if (dt > 3)
 		return;
 
-	m_dwCurrentTime = Device.dwTimeGlobal;
+	m_dwCurrentTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	VERIFY(_valid(Position()));
 	if (Remote())
@@ -338,10 +338,10 @@ void CCustomMonster::shedule_Update(u32 DT)
 			ProcessScripts();
 		else
 		{
-			if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
+			if (Engine.TimeManager.GetFrameCount() > spawn_time() + g_AI_inactive_time)
 				Think();
 		}
-		m_dwLastUpdateTime = Device.dwTimeGlobal;
+		m_dwLastUpdateTime = Engine.TimeManager.GetGlobalTimeMs();
 		Device.Statistic->TEST1.End();
 		Device.Statistic->AI_Think.End();
 
@@ -409,8 +409,8 @@ void CCustomMonster::UpdateCL()
 	OPTICK_EVENT("CCustomMonster::UpdateCL");
 
 	START_PROFILE("CustomMonster/client_update")
-	m_client_update_delta = Device.dwTimeGlobal - m_last_client_update_time;
-	m_last_client_update_time = Device.dwTimeGlobal;
+	m_client_update_delta = Engine.TimeManager.GetGlobalTimeMs() - m_last_client_update_time;
+	m_last_client_update_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	START_PROFILE("CustomMonster/client_update/inherited")
 	inherited::UpdateCL();
@@ -443,7 +443,7 @@ void CCustomMonster::UpdateCL()
 		return;
 	}
 
-	m_dwCurrentTime = Device.dwTimeGlobal;
+	m_dwCurrentTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	// distinguish interpolation/extrapolation
 	u32 dwTime = Level().timeServer() - NET_Latency;
@@ -686,7 +686,7 @@ BOOL CCustomMonster::net_Spawn(CSE_Abstract* DC)
 	{
 		set_death_time();
 		//		Msg						("%6d : Object [%d][%s][%s] is spawned
-		//DEAD",Device.dwTimeGlobal,ID(),*cName(),*cNameSect());
+		//DEAD",Engine.TimeManager.GetGlobalTimeMs(),ID(),*cName(),*cNameSect());
 	}
 
 	if (ai().get_level_graph() && UsedAI_Locations() && (e->ID_Parent == 0xffff))
@@ -1026,19 +1026,19 @@ bool CCustomMonster::update_critical_wounded(const u16& bone_id, const float& po
 	// object should not be critical wounded
 	VERIFY(m_critical_wound_type == u32(-1));
 	// check 'multiple updates during last hit' situation
-	VERIFY(Device.dwTimeGlobal >= m_last_hit_time);
+	VERIFY(Engine.TimeManager.GetGlobalTimeMs() >= m_last_hit_time);
 
 	if (m_critical_wound_threshold < 0)
 		return (false);
 
-	float time_delta = m_last_hit_time ? float(Device.dwTimeGlobal - m_last_hit_time) / 1000.f : 0.f;
+	float time_delta = m_last_hit_time ? float(Engine.TimeManager.GetGlobalTimeMs() - m_last_hit_time) / 1000.f : 0.f;
 	m_critical_wound_accumulator += power - m_critical_wound_decrease_quant * time_delta;
 	clamp(m_critical_wound_accumulator, 0.f, m_critical_wound_threshold);
 
 #if 0  // def _DEBUG
 	Msg								(
 		"%6d [%s] update_critical_wounded: %f[%f] (%f,%f) [%f]",
-		Device.dwTimeGlobal,
+		Engine.TimeManager.GetGlobalTimeMs(),
 		*cName(),
 		m_critical_wound_accumulator,
 		power,
@@ -1048,7 +1048,7 @@ bool CCustomMonster::update_critical_wounded(const u16& bone_id, const float& po
 	);
 #endif // DEBUG
 
-	m_last_hit_time = Device.dwTimeGlobal;
+	m_last_hit_time = Engine.TimeManager.GetGlobalTimeMs();
 	if (m_critical_wound_accumulator < m_critical_wound_threshold)
 		return (false);
 

@@ -214,12 +214,12 @@ void CEntityAlive::shedule_Update(u32 dt)
 		if (conditions().GetWhoHitLastTime())
 		{
 			//			Msg			("%6d : KillEntity from CEntityAlive (using who hit last time) for object
-			//%s",Device.dwTimeGlobal,*cName());
+			//%s",Engine.TimeManager.GetGlobalTimeMs(),*cName());
 			KillEntity(conditions().GetWhoHitLastTimeID());
 		}
 		else
 		{
-			//			Msg			("%6d : KillEntity from CEntityAlive for object %s",Device.dwTimeGlobal,*cName());
+			//			Msg			("%6d : KillEntity from CEntityAlive for object %s",Engine.TimeManager.GetGlobalTimeMs(),*cName());
 			KillEntity(ID());
 		}
 	}
@@ -556,12 +556,12 @@ void CEntityAlive::UpdateBloodDrops()
 			continue;
 		}
 
-		if (pWound->m_fDropTime < Device.fTimeGlobal)
+		if (pWound->m_fDropTime < Engine.TimeManager.GetGlobalTime())
 		{
 			float size_k = blood_size - m_fStopBloodWoundSize;
 			size_k = size_k < 1.f ? size_k : 1.f;
 			pWound->m_fDropTime =
-				Device.fTimeGlobal +
+				Engine.TimeManager.GetGlobalTime() +
 				(m_fBloodDropTimeMax - (m_fBloodDropTimeMax - m_fBloodDropTimeMin) * size_k) * Random.randF(0.8f, 1.2f);
 			VERIFY(m_pBloodDropsVector);
 			if (pWound->GetBoneNum() != BI_NONE)

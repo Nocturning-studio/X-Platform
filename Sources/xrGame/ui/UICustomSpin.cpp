@@ -115,9 +115,9 @@ void CUICustomSpin::Update()
 
 	if (CUIButton::BUTTON_PUSHED == m_pBtnUp->GetButtonsState() && m_pBtnUp->CursorOverWindow())
 	{
-		if (m_time_begin < Device.dwTimeContinual - m_p_delay)
+		if (m_time_begin < Engine.TimeManager.GetContinualTimeMs() - m_p_delay)
 		{
-			m_time_begin = Device.dwTimeContinual;
+			m_time_begin = Engine.TimeManager.GetContinualTimeMs();
 			float tmp = float(m_u_delay);
 			float step = powf(tmp, 0.7f);
 			while (tmp > 0)
@@ -134,9 +134,9 @@ void CUICustomSpin::Update()
 	}
 	else if (CUIButton::BUTTON_PUSHED == m_pBtnDown->GetButtonsState() && m_pBtnDown->CursorOverWindow())
 	{
-		if (m_time_begin < Device.dwTimeContinual - m_p_delay)
+		if (m_time_begin < Engine.TimeManager.GetContinualTimeMs() - m_p_delay)
 		{
-			m_time_begin = Device.dwTimeContinual;
+			m_time_begin = Engine.TimeManager.GetContinualTimeMs();
 			float tmp = float(m_u_delay);
 			float step = powf(tmp, 0.7f);
 			while (tmp > 0)

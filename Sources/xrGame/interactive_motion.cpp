@@ -63,7 +63,7 @@ void interactive_motion::state_end(CPhysicsShell* s)
 	s->Enable();
 	s->remove_ObjectContactCallback(get_depth);
 	////set and velocities
-	s->AnimToVelocityState(Device.fTimeDelta, default_l_limit * 10, default_w_limit * 10);
+	s->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), default_l_limit * 10, default_w_limit * 10);
 }
 
 void interactive_motion::update(CPhysicsShell* s)
@@ -149,7 +149,7 @@ void imotion_velocity::collide(CPhysicsShell* s)
 
 void imotion_velocity::move_update(CPhysicsShell* s)
 {
-	if (!s->AnimToVelocityState(Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit))
+	if (!s->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit))
 		flags.set(fl_switch_dm_toragdoll, TRUE);
 	Fmatrix sv;
 	sv.set(s->mXFORM);

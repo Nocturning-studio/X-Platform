@@ -152,7 +152,7 @@ void CWeaponMounted::UpdateCL()
 
 		if (OwnerActor() && OwnerActor()->IsMyCamera())
 		{
-			cam_Update(Device.fTimeDelta, g_fov);
+			cam_Update(Engine.TimeManager.GetDeltaTime(), g_fov);
 			OwnerActor()->Cameras().UpdateFromCamera(Camera());
 			OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
 		}
@@ -339,7 +339,7 @@ void CWeaponMounted::OnShot()
 
 void CWeaponMounted::UpdateFire()
 {
-	fTime -= Device.fTimeDelta;
+	fTime -= Engine.TimeManager.GetDeltaTime();
 
 	CShootingObject::UpdateFlameParticles();
 	CShootingObject::UpdateLight();
@@ -358,8 +358,8 @@ void CWeaponMounted::UpdateFire()
 	}
 	else
 	{
-		angle_lerp(m_dAngle.x, 0.f, 5.f, Device.fTimeDelta);
-		angle_lerp(m_dAngle.y, 0.f, 5.f, Device.fTimeDelta);
+		angle_lerp(m_dAngle.x, 0.f, 5.f, Engine.TimeManager.GetDeltaTime());
+		angle_lerp(m_dAngle.y, 0.f, 5.f, Engine.TimeManager.GetDeltaTime());
 	}
 }
 

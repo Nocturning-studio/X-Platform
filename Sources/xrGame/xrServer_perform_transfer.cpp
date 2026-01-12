@@ -10,7 +10,7 @@ void xrServer::Perform_transfer(NET_Packet& PR, NET_Packet& PT, CSE_Abstract* wh
 	R_ASSERT(what && from && to);
 	R_ASSERT(from != to);
 	R_ASSERT(what->ID_Parent == from->ID);
-	u32 time = Device.dwTimeGlobal;
+	u32 time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// 1. Perform migration if need it
 	if (from->owner != to->owner)
@@ -44,7 +44,7 @@ void xrServer::Perform_reject(CSE_Abstract* what, CSE_Abstract* from, int delta)
 	R_ASSERT(what->ID_Parent == from->ID);
 
 	NET_Packet P;
-	u32 time = Device.dwTimeGlobal - delta;
+	u32 time = Engine.TimeManager.GetGlobalTimeMs() - delta;
 
 	P.w_begin(M_EVENT);
 	P.w_u32(time);

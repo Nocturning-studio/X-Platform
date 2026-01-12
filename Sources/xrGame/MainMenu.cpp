@@ -137,8 +137,8 @@ void CMainMenu::Activate(bool bActivate)
 		return;
 	if (m_Flags.test(flGameSaveScreenshot))
 		return;
-	if ((m_screenshotFrame == Device.dwFrame) || (m_screenshotFrame == Device.dwFrame - 1) ||
-		(m_screenshotFrame == Device.dwFrame + 1))
+	if ((m_screenshotFrame == Engine.TimeManager.GetFrameCount()) || (m_screenshotFrame == Engine.TimeManager.GetFrameCount() - 1) ||
+		(m_screenshotFrame == Engine.TimeManager.GetFrameCount() + 1))
 		return;
 
 	bool b_is_single = IsGameTypeSingle();
@@ -197,7 +197,7 @@ void CMainMenu::Activate(bool bActivate)
 	}
 	else
 	{
-		m_deactivated_frame = Device.dwFrame;
+		m_deactivated_frame = Engine.TimeManager.GetFrameCount();
 		m_Flags.set(flActive, FALSE);
 		m_Flags.set(flNeedChangeCapture, TRUE);
 
@@ -432,7 +432,7 @@ void CMainMenu::OnFrame()
 	CDialogHolder::OnFrame();
 
 	// screenshot stuff
-	if (m_Flags.test(flGameSaveScreenshot) && Device.dwFrame > m_screenshotFrame)
+	if (m_Flags.test(flGameSaveScreenshot) && Engine.TimeManager.GetFrameCount() > m_screenshotFrame)
 	{
 		m_Flags.set(flGameSaveScreenshot, FALSE);
 		::Render->Screenshot(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
@@ -473,7 +473,7 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 			Device.seqFrame.Add(g_pGameLevel);
 			Device.seqRender.Add(g_pGameLevel);
 		};
-		m_screenshotFrame = Device.dwFrame + 1;
+		m_screenshotFrame = Engine.TimeManager.GetFrameCount() + 1;
 		//m_Flags.set(flRestoreConsole, Console->bVisible);
 		Console->Hide();
 	}
@@ -510,7 +510,7 @@ void CMainMenu::SwitchToMultiplayerMenu()
 
 void CMainMenu::DestroyInternal(bool bForce)
 {
-	if (m_startDialog && ((m_deactivated_frame < Device.dwFrame + 4) || bForce))
+	if (m_startDialog && ((m_deactivated_frame < Engine.TimeManager.GetFrameCount() + 4) || bForce))
 		xr_delete(m_startDialog);
 }
 
@@ -602,10 +602,10 @@ void CMainMenu::OnDownloadPatchSuccess()
 
 void CMainMenu::OnSessionTerminate(LPCSTR reason)
 {
-	if (m_NeedErrDialog == SessionTerminate && (Device.dwTimeGlobal - m_start_time) < 8000)
+	if (m_NeedErrDialog == SessionTerminate && (Engine.TimeManager.GetGlobalTimeMs() - m_start_time) < 8000)
 		return;
 
-	m_start_time = Device.dwTimeGlobal;
+	m_start_time = Engine.TimeManager.GetGlobalTimeMs();
 	string1024 Text;
 	strcpy_s(Text, sizeof(Text), "Client disconnected. ");
 	strcat_s(Text, sizeof(Text), reason);

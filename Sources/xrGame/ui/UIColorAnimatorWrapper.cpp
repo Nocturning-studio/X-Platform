@@ -6,7 +6,7 @@
 //  Оберточка над LightAnimLibrary, в которой реализуется более удобная
 //	работа с анимацией, и прикручен апдейт времени специфичный для UI: так
 //	как UI апдейтится не на кажом кадре, то кормить функции интерполяции
-//	Device.fTimeDelta нельзя - анимация тормознутая получается. Приходится
+//	Engine.TimeManager.GetDeltaTime() нельзя - анимация тормознутая получается. Приходится
 //	постоянно считать время между апдейтами.
 //=============================================================================
 
@@ -19,14 +19,14 @@
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper()
 	: colorAnimation(NULL), animationTime(0), color(NULL), isDone(false), reverse(false), kRev(0.0f)
 {
-	prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+	prevGlobalTime = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 	currColor = 0xffff0000;
 }
 
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32* colorToModify)
 	: colorAnimation(NULL), animationTime(0), color(NULL), isDone(false), reverse(false), kRev(0.0f)
 {
-	prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+	prevGlobalTime = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 	color = colorToModify;
 	currColor = 0xffff0000;
 }
@@ -37,7 +37,7 @@ CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName
 	  kRev(0.0f)
 {
 	VERIFY(colorAnimation);
-	prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+	prevGlobalTime = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 	currColor = 0xffff0000;
 }
 
@@ -76,7 +76,7 @@ void CUIColorAnimatorWrapper::Update()
 				currColor = color_rgba(color_get_B(currColor), color_get_G(currColor), color_get_R(currColor),
 									   color_get_A(currColor));
 				// обновим время
-				animationTime += Device.dwTimeContinual / 1000.0f - prevGlobalTime;
+				animationTime += Engine.TimeManager.GetContinualTimeMs() / 1000.0f - prevGlobalTime;
 			}
 			else
 			{
@@ -91,7 +91,7 @@ void CUIColorAnimatorWrapper::Update()
 		}
 		else
 		{
-			currColor = colorAnimation->CalculateBGR(Device.dwTimeContinual / 1000.0f, currFrame);
+			currColor = colorAnimation->CalculateBGR(Engine.TimeManager.GetContinualTimeMs() / 1000.0f, currFrame);
 			currColor = color_rgba(color_get_B(currColor), color_get_G(currColor), color_get_R(currColor),
 								   color_get_A(currColor));
 		}
@@ -102,14 +102,14 @@ void CUIColorAnimatorWrapper::Update()
 		}
 	}
 
-	prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+	prevGlobalTime = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 void CUIColorAnimatorWrapper::Reset()
 {
-	prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+	prevGlobalTime = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 	animationTime = 0;
 	isDone = false;
 }
@@ -148,7 +148,7 @@ void CUIColorAnimatorWrapper::Reverese(bool value)
 
 void CUIColorAnimatorWrapper::GoToEnd()
 {
-	prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+	prevGlobalTime = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 	this->currFrame = colorAnimation->iFrameCount;
 	animationTime = colorAnimation->iFrameCount / colorAnimation->fFPS;
 	this->isDone = false;

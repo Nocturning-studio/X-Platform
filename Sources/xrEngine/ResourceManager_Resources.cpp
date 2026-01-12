@@ -24,14 +24,13 @@
 //--------------------------------------------------------------------------------------------------------------
 SState* CResourceManager::_CreateState(SimulatorStates& state_code)
 {
-	// Search equal state-code
-	concurrency::parallel_for((u32)0, v_states.size(), [&](u32 it) {
-		SState* C = v_states[it];
+	for (SState* C : v_states)
+	{
 		SimulatorStates& base = C->state_code;
 
 		if (base.equal(state_code))
 			return C;
-	});
+	}
 
 	// Create New
 	v_states.push_back(xr_new<SState>());
@@ -56,10 +55,13 @@ void CResourceManager::_DeleteState(const SState* state)
 SPass* CResourceManager::_CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable,
 									 ref_texture_list& _T, ref_matrix_list& _M, ref_constant_list& _C)
 {
-	concurrency::parallel_for((u32)0, v_passes.size(), [&](u32 it) {
-		if (v_passes[it]->equal(_state, _ps, _vs, _ctable, _T, _M, _C))
-			return v_passes[it];
-	});
+	// ИСПРАВЛЕНИЕ: Заменяем parallel_for на стандартный цикл.
+	// Это позволяет корректно вернуть найденный pass и не создавать дубликаты.
+	for (SPass* pass : v_passes)
+	{
+		if (pass->equal(_state, _ps, _vs, _ctable, _T, _M, _C))
+			return pass;
+	}
 
 	SPass* P = xr_new<SPass>();
 	P->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -104,13 +106,11 @@ static BOOL dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 
 SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 {
-	// Search equal code
-	concurrency::parallel_for((u32)0, v_declarations.size(), [&](u32 it) {
-		SDeclaration* D = v_declarations[it];
-
+	for (SDeclaration* D : v_declarations)
+	{
 		if (dcl_equal(dcl, &*D->dcl_code.begin()))
 			return D;
-	});
+	}
 
 	// Create _new
 	SDeclaration* D = xr_new<SDeclaration>();
@@ -137,10 +137,11 @@ R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
 	if (C.empty())
 		return NULL;
 
-	concurrency::parallel_for((u32)0, v_constant_tables.size(), [&](u32 it) {
-		if (v_constant_tables[it]->equal(C))
-			return v_constant_tables[it];
-	});
+	for (R_constant_table* table : v_constant_tables)
+	{
+		if (table->equal(C))
+			return table;
+	}
 
 	v_constant_tables.push_back(xr_new<R_constant_table>(C));
 	v_constant_tables.back()->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -247,13 +248,13 @@ SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, IDirect3DVertex
 	SDeclaration* dcl = _CreateDecl(decl);
 	u32 vb_stride = D3DXGetDeclVertexSize(decl, 0);
 
-	// ***** first pass - search already loaded shader
-	concurrency::parallel_for((u32)0, v_geoms.size(), [&](u32 it) {
-		SGeometry& G = *(v_geoms[it]);
-		if ((G.dcl == dcl) && (G.vb == vb) && (G.ib == ib) && (G.vb_stride == vb_stride))
-			return v_geoms[it];
-	});
+	for (SGeometry* G : v_geoms)
+	{
+		if ((G->dcl == dcl) && (G->vb == vb) && (G->ib == ib) && (G->vb_stride == vb_stride))
+			return G;
+	}
 
+	// Если не нашли - создаем новый
 	SGeometry* Geom = xr_new<SGeometry>();
 	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	Geom->dcl = dcl;
@@ -418,14 +419,15 @@ bool cmp_tl(const std::pair<u32, ref_texture>& _1, const std::pair<u32, ref_text
 }
 STextureList* CResourceManager::_CreateTextureList(STextureList& L)
 {
-	concurrency::parallel_sort(L.begin(), L.end(), cmp_tl);
+	std::sort(L.begin(), L.end(), cmp_tl);
 
-	concurrency::parallel_for((u32)0, lst_textures.size(), [&](u32 it) {
-		STextureList* base = lst_textures[it];
+	for (STextureList* base : lst_textures)
+	{
 		if (L.equal(*base))
 			return base;
-	});
+	}
 
+	// 3. Создание нового.
 	STextureList* lst = xr_new<STextureList>(L);
 	lst->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	lst_textures.push_back(lst);
@@ -452,11 +454,11 @@ SMatrixList* CResourceManager::_CreateMatrixList(SMatrixList& L)
 	if (bEmpty)
 		return NULL;
 
-	concurrency::parallel_for((u32)0, lst_matrices.size(), [&](u32 it) {
-		SMatrixList* base = lst_matrices[it];
+	for (SMatrixList* base : lst_matrices)
+	{
 		if (L.equal(*base))
 			return base;
-	});
+	}
 
 	SMatrixList* lst = xr_new<SMatrixList>(L);
 	lst->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -484,17 +486,40 @@ SConstantList* CResourceManager::_CreateConstantList(SConstantList& L)
 	if (bEmpty)
 		return NULL;
 
-	concurrency::parallel_for((u32)0, lst_constants.size(), [&](u32 it) {
+	// 1. Создаем переменную для хранения результата поиска
+	// Используем std::atomic или просто volatile переменную, так как пишем указатель
+	SConstantList* found = NULL;
+
+	// Используем мьютекс для потокобезопасной записи (хотя для одного указателя это не критично, но правильно)
+	// В X-Ray обычно есть врапперы, но std::mutex тоже подойдет.
+	// Если concurrency::parallel_for из PPL, там своя специфика, но простейший вариант:
+
+	concurrency::parallel_for((u32)0, (u32)lst_constants.size(), [&](u32 it) {
+		// Оптимизация: если другой поток уже нашел, прерываем выполнение этой итерации
+		if (found != NULL)
+			return;
+
 		SConstantList* base = lst_constants[it];
 		if (L.equal(*base))
-			return base;
+		{
+			// Нашли совпадение - сохраняем
+			found = base;
+			// PPL позволяет отменить остальные задачи, но это сложнее.
+			// Простого присваивания достаточно.
+		}
 	});
 
+	// 2. Если нашли дубликат - возвращаем его
+	if (found)
+		return found;
+
+	// 3. Если не нашли - создаем новый
 	SConstantList* lst = xr_new<SConstantList>(L);
 	lst->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	lst_constants.push_back(lst);
 	return lst;
 }
+
 void CResourceManager::_DeleteConstantList(const SConstantList* L)
 {
 	if (0 == (L->dwFlags & xr_resource_flagged::RF_REGISTERED))

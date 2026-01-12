@@ -88,7 +88,7 @@ void CStateBloodsuckerVampireAbstract::finalize()
 	inherited::finalize();
 
 	object->stop_invisible_predator();
-	m_time_last_vampire = Device.dwTimeGlobal;
+	m_time_last_vampire = Engine.TimeManager.GetGlobalTimeMs();
 }
 
 TEMPLATE_SPECIALIZATION
@@ -97,7 +97,7 @@ void CStateBloodsuckerVampireAbstract::critical_finalize()
 	inherited::critical_finalize();
 
 	object->stop_invisible_predator();
-	m_time_last_vampire = Device.dwTimeGlobal;
+	m_time_last_vampire = Engine.TimeManager.GetGlobalTimeMs();
 }
 
 TEMPLATE_SPECIALIZATION
@@ -122,7 +122,7 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 	if (actor->input_external_handler_installed())
 		return false;
 
-	if (m_time_last_vampire + object->m_vampire_min_delay > Device.dwTimeGlobal)
+	if (m_time_last_vampire + object->m_vampire_min_delay > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	return true;

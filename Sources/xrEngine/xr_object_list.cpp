@@ -101,20 +101,20 @@ void CObjectList::SingleUpdate(CObject* O)
 {
 	OPTICK_EVENT("CObjectList::SingleUpdate");
 
-	if (O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
+	if (O->processing_enabled() && (Engine.TimeManager.GetFrameCount() != O->dwFrame_UpdateCL))
 	{
 		if (O->H_Parent())
 			SingleUpdate(O->H_Parent());
 		Device.Statistic->UpdateClient_updated++;
-		O->dwFrame_UpdateCL = Device.dwFrame;
+		O->dwFrame_UpdateCL = Engine.TimeManager.GetFrameCount();
 		O->IAmNotACrowAnyMore();
 		O->UpdateCL();
-		VERIFY3(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'", *O->cName());
+		VERIFY3(O->dbg_update_cl == Engine.TimeManager.GetFrameCount(), "Broken sequence of calls to 'UpdateCL'", *O->cName());
 		//		if (O->getDestroy())
 		//		{
 		//			destroy_queue.push_back(O);
 		//.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(),
-		//Device.dwFrame);
+		//Engine.TimeManager.GetFrameCount());
 		//		}
 		//		else
 		if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
@@ -127,11 +127,11 @@ void CObjectList::SingleUpdate(CObject* O)
 		}
 	}
 #ifdef DEBUG
-	if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
+	if (O->getDestroy() && (Engine.TimeManager.GetFrameCount() != O->dwFrame_UpdateCL))
 	{
 		//		destroy_queue.push_back(O);
 		Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(),
-			Device.dwFrame);
+			Engine.TimeManager.GetFrameCount());
 	}
 #endif
 }
@@ -150,7 +150,7 @@ void CObjectList::Update(bool bForce)
 	if (!(Device.Paused() && !bForce))
 	{
 		// Clients
-		if (Device.fTimeDelta > EPS_S || bForce)
+		if (Engine.TimeManager.GetDeltaTime() > EPS_S || bForce)
 		{
 			// Select Crow-Mode
 			Device.Statistic->UpdateClient_updated = 0;
@@ -229,7 +229,7 @@ void CObjectList::Update(bool bForce)
 			CObject* O = destroy_queue[it];
 			//			Msg				("Object [%x]", O);
 #ifdef DEBUG
-			Msg("Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), *O->cName(), Device.dwFrame);
+			Msg("Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), *O->cName(), Engine.TimeManager.GetFrameCount());
 #endif // DEBUG
 			O->net_Destroy();
 			Destroy(O);
@@ -463,7 +463,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
 		if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
 		{
 			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(),
-				O->ID(), Device.dwFrame);
+				O->ID(), Engine.TimeManager.GetFrameCount());
 			O->setDestroy(TRUE);
 		}
 	}
@@ -476,7 +476,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
 		if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
 		{
 			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(),
-				O->ID(), Device.dwFrame);
+				O->ID(), Engine.TimeManager.GetFrameCount());
 			O->setDestroy(TRUE);
 		}
 	}

@@ -255,7 +255,7 @@ void CSE_ALifeItem::UPDATE_Write(NET_Packet& tNetPacket)
 	inherited2::UPDATE_Write(tNetPacket);
 
 #ifdef XRGAME_EXPORTS
-	m_last_update_time = Device.dwTimeGlobal;
+	m_last_update_time = Engine.TimeManager.GetGlobalTimeMs();
 #endif // XRGAME_EXPORTS
 };
 
@@ -282,7 +282,7 @@ BOOL CSE_ALifeItem::Net_Relevant()
 		return (true);
 
 #ifdef XRGAME_EXPORTS
-	if (Device.dwTimeGlobal < (m_last_update_time + update_rate()))
+	if (Engine.TimeManager.GetGlobalTimeMs() < (m_last_update_time + update_rate()))
 		return (false);
 #endif // XRGAME_EXPORTS
 

@@ -528,13 +528,13 @@ void CKinematicsAnimated::UpdateTracks()
 	OPTICK_EVENT("CKinematicsAnimated::UpdateTracks");
 
 	_DBG_SINGLE_USE_MARKER;
-	if (Update_LastTime == Device.dwTimeGlobal)
+	if (Update_LastTime == Engine.TimeManager.GetGlobalTimeMs())
 		return;
-	u32 DT = Device.dwTimeGlobal - Update_LastTime;
+	u32 DT = Engine.TimeManager.GetGlobalTimeMs() - Update_LastTime;
 	if (DT > 66)
 		DT = 66;
 	float dt = float(DT) / 1000.f;
-	Update_LastTime = Device.dwTimeGlobal;
+	Update_LastTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	BlendSVecIt I, E;
 
@@ -549,9 +549,9 @@ void CKinematicsAnimated::UpdateTracks()
 		for (; I != E; I++)
 		{
 			CBlend& B = *(*I);
-			if (B.dwFrame == Device.dwFrame)
+			if (B.dwFrame == Engine.TimeManager.GetFrameCount())
 				continue;
-			B.dwFrame = Device.dwFrame;
+			B.dwFrame = Engine.TimeManager.GetFrameCount();
 			UpdateBlendTime(B, dt);
 			switch (B.blend)
 			{
@@ -987,7 +987,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 		Log("blend", B->blend);
 
 		Log("dwFrame", B->dwFrame);
-		Log("Device.dwFrame", Device.dwFrame);
+		Log("Engine.TimeManager.GetFrameCount()", Engine.TimeManager.GetFrameCount());
 		Log("Blend-------end");
 
 		Log("Bone",LL_BoneName_dbg(SelfID));

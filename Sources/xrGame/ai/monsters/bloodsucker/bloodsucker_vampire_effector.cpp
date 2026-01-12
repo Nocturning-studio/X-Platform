@@ -82,7 +82,7 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const Fvector& src, c
 
 BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	fLifeTime -= Device.fTimeDelta;
+	fLifeTime -= Engine.TimeManager.GetDeltaTime();
 	if (fLifeTime < 0)
 		return FALSE;
 
@@ -113,24 +113,24 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 		dangle_target.y = 0.f;
 		dangle_target.z = 0.f;
 
-		angle_lerp(dangle_current.x, dangle_target.x, _abs(dangle_current.x / fLifeTime + 0.001f), Device.fTimeDelta);
-		angle_lerp(dangle_current.y, dangle_target.y, _abs(dangle_current.y / fLifeTime + 0.001f), Device.fTimeDelta);
-		angle_lerp(dangle_current.z, dangle_target.z, _abs(dangle_current.z / fLifeTime + 0.001f), Device.fTimeDelta);
+		angle_lerp(dangle_current.x, dangle_target.x, _abs(dangle_current.x / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
+		angle_lerp(dangle_current.y, dangle_target.y, _abs(dangle_current.y / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
+		angle_lerp(dangle_current.z, dangle_target.z, _abs(dangle_current.z / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
 	}
 	else
 	{
 
-		if (angle_lerp(dangle_current.x, dangle_target.x, V_EFF_ANGLE_SPEED, Device.fTimeDelta))
+		if (angle_lerp(dangle_current.x, dangle_target.x, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 		{
 			dangle_target.x = Random.randFs(V_EFF_DELTA_ANGLE_X);
 		}
 
-		if (angle_lerp(dangle_current.y, dangle_target.y, V_EFF_ANGLE_SPEED, Device.fTimeDelta))
+		if (angle_lerp(dangle_current.y, dangle_target.y, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 		{
 			dangle_target.y = Random.randFs(V_EFF_DELTA_ANGLE_Y);
 		}
 
-		if (angle_lerp(dangle_current.z, dangle_target.z, V_EFF_ANGLE_SPEED, Device.fTimeDelta))
+		if (angle_lerp(dangle_current.z, dangle_target.z, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 		{
 			dangle_target.z = Random.randFs(V_EFF_DELTA_ANGLE_Z);
 		}
