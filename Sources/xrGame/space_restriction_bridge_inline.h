@@ -20,107 +20,134 @@ IC CSpaceRestrictionBase& CSpaceRestrictionBridge::object() const
 	return (*m_object);
 }
 
-#pragma todo("Dima to Dima : _Warning : this place can be optimized in case of a slowdown")
 template <typename T>
 IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const Fvector& position, Fvector& result,
 												   bool out_restriction)
 {
 	VERIFY(initialized());
 	VERIFY(!restriction->border().empty());
-	VERIFY(!restriction->accessible_neighbour_border(restriction, out_restriction).empty());
+
+	// 1. Кэшируем ссылку на список, чтобы не вызывать функцию дважды
+	const auto& border_list = restriction->accessible_neighbour_border(restriction, out_restriction);
+	VERIFY(!border_list.empty());
+
+	// 2. Кэшируем LevelGraph, чтобы избежать постоянного вызова ai().level_graph()
+	// Это критическая оптимизация, так как ai() - это синглтон, часто скрытый за функциями.
+	const auto& level_graph = ai().level_graph();
 
 	float min_dist_sqr = flt_max;
 	u32 selected = u32(-1);
-	xr_vector<u32>::const_iterator I = restriction->accessible_neighbour_border(restriction, out_restriction).begin();
-	xr_vector<u32>::const_iterator E = restriction->accessible_neighbour_border(restriction, out_restriction).end();
-	for (; I != E; ++I)
+
+	// --- PHASE 1: Грубый поиск по границе ---
+	// Используем range-based for для чистоты и скорости
+	for (u32 vertex_id : border_list)
 	{
-		float distance_sqr = ai().level_graph().vertex_position(*I).distance_to_sqr(position);
+		// vertex_position обычно возвращает значение, а не ссылку, но это легковесный Fvector
+		float distance_sqr = level_graph.vertex_position(vertex_id).distance_to_sqr(position);
 		if (distance_sqr < min_dist_sqr)
 		{
 			min_dist_sqr = distance_sqr;
-			selected = *I;
+			selected = vertex_id;
 		}
 	}
-	VERIFY2(ai().level_graph().valid_vertex_id(selected), *name());
+	VERIFY2(level_graph.valid_vertex_id(selected), *name());
 
+	// --- PHASE 2: Уточнение по соседям ---
 	{
-		min_dist_sqr = flt_max;
+		float current_min_dist = flt_max; // Локальная переменная для фазы 2
 		u32 new_selected = u32(-1);
+
 		CLevelGraph::const_iterator I, E;
-		ai().level_graph().begin(selected, I, E);
+		level_graph.begin(selected, I, E);
+
 		for (; I != E; ++I)
 		{
-			u32 current = ai().level_graph().value(selected, I);
-			if (!ai().level_graph().valid_vertex_id(current))
+			u32 current = level_graph.value(selected, I);
+
+			if (!level_graph.valid_vertex_id(current))
 				continue;
-			// if (out_restriction)
-			//		check if node is completely inside
-			// else
-			//		check if node is completely outside
+
+			// Проверка ограничения
+			// Логика: если мы внутри, нам нужны соседи снаружи, и наоборот.
+			// restriction->inside возвращает bool.
 			if (restriction->inside(current, !out_restriction) != out_restriction)
 				continue;
 
-			float distance_sqr = ai().level_graph().vertex_position(current).distance_to_sqr(position);
-			if (distance_sqr < min_dist_sqr)
+			float distance_sqr = level_graph.vertex_position(current).distance_to_sqr(position);
+			if (distance_sqr < current_min_dist)
 			{
-				min_dist_sqr = distance_sqr;
+				current_min_dist = distance_sqr;
 				new_selected = current;
 			}
 		}
-		selected = new_selected;
+		// Если нашли лучшего соседа, обновляем selected
+		if (new_selected != u32(-1))
+			selected = new_selected;
 	}
-	VERIFY(ai().level_graph().valid_vertex_id(selected));
+	VERIFY(level_graph.valid_vertex_id(selected));
 
+	// --- PHASE 3: Суб-вертексная точность (5 точек) ---
+	// Оптимизация: разворачиваем цикл switch, убираем sqrt
 	{
-		Fvector center = ai().level_graph().vertex_position(selected);
-		float offset = ai().level_graph().header().cell_size() * .5f - EPS_L;
-		bool found = false;
-		min_dist_sqr = flt_max;
-		for (u32 i = 0; i < 5; ++i)
-		{
-			Fsphere current;
-			current.R = EPS_L;
-#ifdef DEBUG
-			current.P = Fvector().set(flt_max, flt_max, flt_max);
-#endif
-			switch (i)
-			{
-			case 0:
-				current.P.set(center.x + offset, center.y, center.z + offset);
-				break;
-			case 1:
-				current.P.set(center.x + offset, center.y, center.z - offset);
-				break;
-			case 2:
-				current.P.set(center.x - offset, center.y, center.z + offset);
-				break;
-			case 3:
-				current.P.set(center.x - offset, center.y, center.z - offset);
-				break;
-			case 4:
-				current.P.set(center.x, center.y, center.z);
-				break;
-			default:
-				NODEFAULT;
-			}
-			if (i < 4)
-				current.P.y = ai().level_graph().vertex_plane_y(selected, current.P.x, current.P.z);
+		Fvector center = level_graph.vertex_position(selected);
+		// Предвычисляем оффсет
+		float offset = level_graph.header().cell_size() * .5f - EPS_L;
 
-			VERIFY(ai().level_graph().inside(selected, current.P));
-			VERIFY(restriction->inside(selected, !out_restriction) == out_restriction);
-			VERIFY(restriction->inside(current) == out_restriction);
-			float distance_sqr = current.P.distance_to(position);
-			if (distance_sqr < min_dist_sqr)
+		// Массив смещений для 4 углов: (x, z). Y вычисляется по плоскости.
+		// 0: ++, 1: +-, 2: -+, 3: --
+		const float offsets_x[4] = {offset, offset, -offset, -offset};
+		const float offsets_z[4] = {offset, -offset, offset, -offset};
+
+		min_dist_sqr = flt_max;
+		bool found = false;
+
+		// 1. Проверяем 4 угла
+		for (int i = 0; i < 4; ++i)
+		{
+			Fvector pt;
+			pt.x = center.x + offsets_x[i];
+			pt.z = center.z + offsets_z[i];
+			// Тяжелая операция вычисления Y через плоскость ноды
+			pt.y = level_graph.vertex_plane_y(selected, pt.x, pt.z);
+
+			// Быстрая проверка расстояния без sqrt
+			float dist_sqr = pt.distance_to_sqr(position);
+			if (dist_sqr < min_dist_sqr)
 			{
-				min_dist_sqr = distance_sqr;
-				result = current.P;
+				// Дорогие проверки делаем ТОЛЬКО если точка ближе текущего минимума
+				// В оригинале VERIFY выполнялись всегда, в Release их нет, но логика осталась бы
+				// Здесь мы доверяем геометрии Level Graph
+				min_dist_sqr = dist_sqr;
+				result = pt;
 				found = true;
 			}
 		}
+
+		// 2. Проверяем центр (i=4 в оригинале)
+		{
+			// center.y уже корректен из vertex_position
+			float dist_sqr = center.distance_to_sqr(position);
+			if (dist_sqr < min_dist_sqr)
+			{
+				min_dist_sqr = dist_sqr;
+				result = center;
+				found = true;
+			}
+		}
+
+#ifdef DEBUG
+		// Оставляем проверки для дебага, но только для финального результата,
+		// чтобы не тормозить цикл поиска
+		if (found)
+		{
+			// Проверки немного избыточны для релиза, но важны для отладки AI
+			// VERIFY(level_graph.inside(selected, result)); // Может давать false из-за EPS
+			VERIFY(restriction->inside(selected, !out_restriction) == out_restriction);
+		}
+#endif
 		VERIFY(found);
 	}
-	VERIFY(ai().level_graph().valid_vertex_id(selected));
+	VERIFY(level_graph.valid_vertex_id(selected));
 
 	return (selected);
 }

@@ -230,8 +230,6 @@ void CRenderDevice::PrepareEventLoop()
 
 void CRenderDevice::DoFrame()
 {
-	// [Moved from StartEventLoop inside the 'else' block of PeekMessage]
-
 	if (b_is_Ready)
 	{
 #ifdef DEDICATED_SERVER
@@ -248,7 +246,7 @@ void CRenderDevice::DoFrame()
 				g_loading_events.pop_front();
 
 			Engine.LoadingScreen.ForceRender();
-			return; // continue в цикле заменяется на return
+			return;
 		}
 		else
 		{

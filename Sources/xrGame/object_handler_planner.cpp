@@ -133,151 +133,135 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 }
 
 #ifdef LOG_ACTION
+// Helper для безопасной конкатенации
+IC void safe_cat(LPSTR dest, LPCSTR src, size_t dest_size)
+{
+	if (xr_strlen(dest) + xr_strlen(src) < dest_size)
+		strcat(dest, src);
+}
+
 LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type& id)
 {
 	LPSTR S = m_temp_string;
-	if (action_object_id(id) != 0xffff)
-		if (Level().Objects.net_Find(action_object_id(id)))
-			strcpy(S, *Level().Objects.net_Find(action_object_id(id))->cName());
+	S[0] = 0; // Clear string
+
+	u16 obj_id = action_object_id(id);
+	if (obj_id != 0xffff)
+	{
+		CObject* obj = Level().Objects.net_Find(obj_id);
+		if (obj)
+			xr_strcpy(S, sizeof(m_temp_string), *obj->cName());
 		else
-			strcpy(S, "no_items");
+			xr_strcpy(S, sizeof(m_temp_string), "no_items");
+	}
 	else
-		strcpy(S, "no_items");
-	strcat(S, ":");
+	{
+		xr_strcpy(S, sizeof(m_temp_string), "no_items");
+	}
+
+	safe_cat(S, ":", sizeof(m_temp_string));
+
 	switch (action_state_id(id))
 	{
-	case ObjectHandlerSpace::eWorldOperatorShow: {
-		strcat(S, "Show");
+	case ObjectHandlerSpace::eWorldOperatorShow:
+		safe_cat(S, "Show", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorHide: {
-		strcat(S, "Hide");
+	case ObjectHandlerSpace::eWorldOperatorHide:
+		safe_cat(S, "Hide", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorDrop: {
-		strcat(S, "Drop");
+	case ObjectHandlerSpace::eWorldOperatorDrop:
+		safe_cat(S, "Drop", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorStrapping: {
-		strcat(S, "Strapping");
+	case ObjectHandlerSpace::eWorldOperatorStrapping:
+		safe_cat(S, "Strapping", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorStrapping2Idle: {
-		strcat(S, "Strapping to idle");
+	case ObjectHandlerSpace::eWorldOperatorStrapping2Idle:
+		safe_cat(S, "Strapping to idle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorUnstrapping: {
-		strcat(S, "Unstrapping");
+	case ObjectHandlerSpace::eWorldOperatorUnstrapping:
+		safe_cat(S, "Unstrapping", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorUnstrapping2Idle: {
-		strcat(S, "Unstrapping to idle");
+	case ObjectHandlerSpace::eWorldOperatorUnstrapping2Idle:
+		safe_cat(S, "Unstrapping to idle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorStrapped: {
-		strcat(S, "StrappedIdle");
+	case ObjectHandlerSpace::eWorldOperatorStrapped:
+		safe_cat(S, "StrappedIdle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorIdle: {
-		strcat(S, "Idle");
+	case ObjectHandlerSpace::eWorldOperatorIdle:
+		safe_cat(S, "Idle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorAim1: {
-		strcat(S, "Aim1");
+	case ObjectHandlerSpace::eWorldOperatorAim1:
+		safe_cat(S, "Aim1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorAim2: {
-		strcat(S, "Aim2");
+	case ObjectHandlerSpace::eWorldOperatorAim2:
+		safe_cat(S, "Aim2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorReload1: {
-		strcat(S, "Reload1");
+	case ObjectHandlerSpace::eWorldOperatorReload1:
+		safe_cat(S, "Reload1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorReload2: {
-		strcat(S, "Reload2");
+	case ObjectHandlerSpace::eWorldOperatorReload2:
+		safe_cat(S, "Reload2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorForceReload1: {
-		strcat(S, "Force Reload1");
+	case ObjectHandlerSpace::eWorldOperatorForceReload1:
+		safe_cat(S, "Force Reload1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorForceReload2: {
-		strcat(S, "Force Reload2");
+	case ObjectHandlerSpace::eWorldOperatorForceReload2:
+		safe_cat(S, "Force Reload2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorFire1: {
-		strcat(S, "Fire1");
+	case ObjectHandlerSpace::eWorldOperatorFire1:
+		safe_cat(S, "Fire1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorFire2: {
-		strcat(S, "Fire2");
+	case ObjectHandlerSpace::eWorldOperatorFire2:
+		safe_cat(S, "Fire2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorAimingReady1: {
-		strcat(S, "AimingReady1");
+	case ObjectHandlerSpace::eWorldOperatorAimingReady1:
+		safe_cat(S, "AimingReady1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorAimingReady2: {
-		strcat(S, "AimingReady2");
+	case ObjectHandlerSpace::eWorldOperatorAimingReady2:
+		safe_cat(S, "AimingReady2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorSwitch1: {
-		strcat(S, "Switch1");
+	case ObjectHandlerSpace::eWorldOperatorSwitch1:
+		safe_cat(S, "Switch1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorSwitch2: {
-		strcat(S, "Switch2");
+	case ObjectHandlerSpace::eWorldOperatorSwitch2:
+		safe_cat(S, "Switch2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorQueueWait1: {
-		strcat(S, "QueueWait1");
+	case ObjectHandlerSpace::eWorldOperatorQueueWait1:
+		safe_cat(S, "QueueWait1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorQueueWait2: {
-		strcat(S, "QueueWait1");
+	case ObjectHandlerSpace::eWorldOperatorQueueWait2:
+		safe_cat(S, "QueueWait2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorThrowStart: {
-		strcat(S, "ThrowStart");
+	case ObjectHandlerSpace::eWorldOperatorThrowStart:
+		safe_cat(S, "ThrowStart", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorThrowIdle: {
-		strcat(S, "ThrowIdle");
+	case ObjectHandlerSpace::eWorldOperatorThrowIdle:
+		safe_cat(S, "ThrowIdle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorThrow: {
-		strcat(S, "Throwing");
+	case ObjectHandlerSpace::eWorldOperatorThrow:
+		safe_cat(S, "Throwing", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorThreaten: {
-		strcat(S, "Threaten");
+	case ObjectHandlerSpace::eWorldOperatorThreaten:
+		safe_cat(S, "Threaten", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorPrepare: {
-		strcat(S, "Preparing");
+	case ObjectHandlerSpace::eWorldOperatorPrepare:
+		safe_cat(S, "Preparing", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorUse: {
-		strcat(S, "Using");
+	case ObjectHandlerSpace::eWorldOperatorUse:
+		safe_cat(S, "Using", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorGetAmmo1: {
-		strcat(S, "GetAmmo1");
+	case ObjectHandlerSpace::eWorldOperatorGetAmmo1:
+		safe_cat(S, "GetAmmo1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorGetAmmo2: {
-		strcat(S, "GetAmmo2");
+	case ObjectHandlerSpace::eWorldOperatorGetAmmo2:
+		safe_cat(S, "GetAmmo2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorAimForceFull1: {
-		strcat(S, "AimForceFull1");
+	case ObjectHandlerSpace::eWorldOperatorAimForceFull1:
+		safe_cat(S, "AimForceFull1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldOperatorAimForceFull2: {
-		strcat(S, "AimForceFull2");
+	case ObjectHandlerSpace::eWorldOperatorAimForceFull2:
+		safe_cat(S, "AimForceFull2", sizeof(m_temp_string));
 		break;
-	}
 	default:
 		NODEFAULT;
 	}
@@ -287,158 +271,134 @@ LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type& id)
 LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
 {
 	LPSTR S = m_temp_string;
-	if (action_object_id(id) != 0xffff)
-		if (Level().Objects.net_Find(action_object_id(id)))
-			strcpy(S, *Level().Objects.net_Find(action_object_id(id))->cName());
+	S[0] = 0;
+
+	u16 obj_id = action_object_id(id);
+	if (obj_id != 0xffff)
+	{
+		CObject* obj = Level().Objects.net_Find(obj_id);
+		if (obj)
+			xr_strcpy(S, sizeof(m_temp_string), *obj->cName());
 		else
-			strcpy(S, "no_items");
+			xr_strcpy(S, sizeof(m_temp_string), "no_items");
+	}
 	else
-		strcpy(S, "no_items");
-	strcat(S, ":");
+	{
+		xr_strcpy(S, sizeof(m_temp_string), "no_items");
+	}
+
+	safe_cat(S, ":", sizeof(m_temp_string));
+
 	switch (action_state_id(id))
 	{
-	case ObjectHandlerSpace::eWorldPropertyHidden: {
-		strcat(S, "Hidden");
+	case ObjectHandlerSpace::eWorldPropertyHidden:
+		safe_cat(S, "Hidden", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyStrapped: {
-		strcat(S, "Strapped");
+	case ObjectHandlerSpace::eWorldPropertyStrapped:
+		safe_cat(S, "Strapped", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyStrapped2Idle: {
-		strcat(S, "Strapped to idle");
+	case ObjectHandlerSpace::eWorldPropertyStrapped2Idle:
+		safe_cat(S, "Strapped to idle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertySwitch1: {
-		strcat(S, "Switch1");
+	case ObjectHandlerSpace::eWorldPropertySwitch1:
+		safe_cat(S, "Switch1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertySwitch2: {
-		strcat(S, "Switch2");
+	case ObjectHandlerSpace::eWorldPropertySwitch2:
+		safe_cat(S, "Switch2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAimed1: {
-		strcat(S, "Aimed1");
+	case ObjectHandlerSpace::eWorldPropertyAimed1:
+		safe_cat(S, "Aimed1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAimed2: {
-		strcat(S, "Aimed2");
+	case ObjectHandlerSpace::eWorldPropertyAimed2:
+		safe_cat(S, "Aimed2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAimForceFull1: {
-		strcat(S, "AimedForceFull1");
+	case ObjectHandlerSpace::eWorldPropertyAimForceFull1:
+		safe_cat(S, "AimedForceFull1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAimForceFull2: {
-		strcat(S, "AimedForceFull2");
+	case ObjectHandlerSpace::eWorldPropertyAimForceFull2:
+		safe_cat(S, "AimedForceFull2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAiming1: {
-		strcat(S, "Aiming1");
+	case ObjectHandlerSpace::eWorldPropertyAiming1:
+		safe_cat(S, "Aiming1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAiming2: {
-		strcat(S, "Aiming2");
+	case ObjectHandlerSpace::eWorldPropertyAiming2:
+		safe_cat(S, "Aiming2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyEmpty1: {
-		strcat(S, "Empty1");
+	case ObjectHandlerSpace::eWorldPropertyEmpty1:
+		safe_cat(S, "Empty1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyEmpty2: {
-		strcat(S, "Empty2");
+	case ObjectHandlerSpace::eWorldPropertyEmpty2:
+		safe_cat(S, "Empty2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyFull1: {
-		strcat(S, "Full1");
+	case ObjectHandlerSpace::eWorldPropertyFull1:
+		safe_cat(S, "Full1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyFull2: {
-		strcat(S, "Full2");
+	case ObjectHandlerSpace::eWorldPropertyFull2:
+		safe_cat(S, "Full2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyReady1: {
-		strcat(S, "Ready1");
+	case ObjectHandlerSpace::eWorldPropertyReady1:
+		safe_cat(S, "Ready1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyReady2: {
-		strcat(S, "Ready2");
+	case ObjectHandlerSpace::eWorldPropertyReady2:
+		safe_cat(S, "Ready2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyFiring1: {
-		strcat(S, "Firing1");
+	case ObjectHandlerSpace::eWorldPropertyFiring1:
+		safe_cat(S, "Firing1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyFiring2: {
-		strcat(S, "Firing2");
+	case ObjectHandlerSpace::eWorldPropertyFiring2:
+		safe_cat(S, "Firing2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAimingReady1: {
-		strcat(S, "AimingReady1");
+	case ObjectHandlerSpace::eWorldPropertyAimingReady1:
+		safe_cat(S, "AimingReady1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAimingReady2: {
-		strcat(S, "AimingReady2");
+	case ObjectHandlerSpace::eWorldPropertyAimingReady2:
+		safe_cat(S, "AimingReady2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAmmo1: {
-		strcat(S, "Ammo1");
+	case ObjectHandlerSpace::eWorldPropertyAmmo1:
+		safe_cat(S, "Ammo1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyAmmo2: {
-		strcat(S, "Ammo2");
+	case ObjectHandlerSpace::eWorldPropertyAmmo2:
+		safe_cat(S, "Ammo2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyIdle: {
-		strcat(S, "Idle");
+	case ObjectHandlerSpace::eWorldPropertyIdle:
+		safe_cat(S, "Idle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyIdleStrap: {
-		strcat(S, "IdleStrap");
+	case ObjectHandlerSpace::eWorldPropertyIdleStrap:
+		safe_cat(S, "IdleStrap", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyDropped: {
-		strcat(S, "Dropped");
+	case ObjectHandlerSpace::eWorldPropertyDropped:
+		safe_cat(S, "Dropped", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyQueueWait1: {
-		strcat(S, "QueueWait1");
+	case ObjectHandlerSpace::eWorldPropertyQueueWait1:
+		safe_cat(S, "QueueWait1", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyQueueWait2: {
-		strcat(S, "QueueWait2");
+	case ObjectHandlerSpace::eWorldPropertyQueueWait2:
+		safe_cat(S, "QueueWait2", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyThrowStarted: {
-		strcat(S, "ThrowStarted");
+	case ObjectHandlerSpace::eWorldPropertyThrowStarted:
+		safe_cat(S, "ThrowStarted", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyThrowIdle: {
-		strcat(S, "ThrowIdle");
+	case ObjectHandlerSpace::eWorldPropertyThrowIdle:
+		safe_cat(S, "ThrowIdle", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyThrow: {
-		strcat(S, "Throwing");
+	case ObjectHandlerSpace::eWorldPropertyThrow:
+		safe_cat(S, "Throwing", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyThreaten: {
-		strcat(S, "Threaten");
+	case ObjectHandlerSpace::eWorldPropertyThreaten:
+		safe_cat(S, "Threaten", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyPrepared: {
-		strcat(S, "Prepared");
+	case ObjectHandlerSpace::eWorldPropertyPrepared:
+		safe_cat(S, "Prepared", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyUsed: {
-		strcat(S, "Used");
+	case ObjectHandlerSpace::eWorldPropertyUsed:
+		safe_cat(S, "Used", sizeof(m_temp_string));
 		break;
-	}
-	case ObjectHandlerSpace::eWorldPropertyUseEnough: {
-		strcat(S, "UseEnough");
+	case ObjectHandlerSpace::eWorldPropertyUseEnough:
+		safe_cat(S, "UseEnough", sizeof(m_temp_string));
 		break;
-	}
 	case ObjectHandlerSpace::eWorldPropertyItemID: {
-		S[xr_strlen(S) - 1] = 0;
+		if (xr_strlen(S) > 0)
+			S[xr_strlen(S) - 1] = 0;
 		break;
 	}
 	default:
@@ -448,27 +408,54 @@ LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
 }
 #endif
 
-#pragma todo("Dima to Dima : safe, but not optimal!")
+// OPTIMIZED: Удаление диапазоном вместо поштучного удаления
 void CObjectHandlerPlanner::remove_evaluators(CObject* object)
 {
-	for (;;)
+	// UID конструируется так, что ID объекта находится в старших битах.
+	// Поэтому все эвалуаторы одного объекта идут подряд в сортированном контейнере.
+
+	u16 id = object->ID();
+	// Нижняя граница (ID, тип 0)
+	EVALUATORS::iterator I = m_evaluators.lower_bound(uid(id, 0));
+	// Верхняя граница (ID+1, тип 0) - т.е. начало следующего ID
+	EVALUATORS::iterator E = m_evaluators.lower_bound(uid(id + 1, 0));
+
+	// Сначала очищаем память эвалуаторов
+	for (auto it = I; it != E; ++it)
 	{
-		EVALUATORS::iterator I = m_evaluators.lower_bound(uid(object->ID(), 0));
-		if (!object_action((*I).first, object))
-			break;
-		remove_evaluator((*I).first);
+		xr_delete(it->second);
 	}
+
+	// Затем удаляем диапазон из map (это быстро)
+	m_evaluators.erase(I, E);
 }
 
-#pragma todo("Dima to Dima : safe, but not optimal!")
+// OPTIMIZED: Удаление диапазоном
 void CObjectHandlerPlanner::remove_operators(CObject* object)
 {
-	for (;;)
+	u16 id = object->ID();
+
+	// Находим начало диапазона операторов для данного объекта
+	OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), uid(id, 0));
+
+	// Ищем конец диапазона (пока ID совпадает)
+	OPERATOR_VECTOR::iterator E = I;
+	for (; E != m_operators.end(); ++E)
 	{
-		OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), uid(object->ID(), 0));
-		if (!object_action((*I).m_operator_id, object))
+		if (action_object_id((*E).m_operator_id) != id)
 			break;
-		remove_operator((*I).m_operator_id);
+
+		// ВАЖНО: Предполагается, что remove_operator делал xr_delete(op).
+		// Если операторы владеют ресурсами, их нужно очистить здесь.
+		// Обычно в GOAP X-Ray операторы хранятся по значению или смарт-поинтеру,
+		// но если там raw pointer - добавить xr_delete(*E);
+		xr_delete((*E).m_operator);
+	}
+
+	// Удаляем весь блок из вектора за раз
+	if (I != E)
+	{
+		m_operators.erase(I, E);
 	}
 }
 
