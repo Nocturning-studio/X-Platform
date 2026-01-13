@@ -306,8 +306,6 @@ struct zero_vis_pred
 };
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
-	PROFILE_FUNCTION_FULL();
-
 	CParticleEffect* PE = static_cast<CParticleEffect*>(_effect);
 	if (PE)
 	{
@@ -439,8 +437,6 @@ CParticleGroup::~CParticleGroup()
 
 void CParticleGroup::OnFrame(u32 u_dt)
 {
-	PROFILE_FUNCTION_FULL();
-
 	if (m_Def && m_RT_Flags.is(flRT_Playing))
 	{
 		float ct = m_CurrentTime;

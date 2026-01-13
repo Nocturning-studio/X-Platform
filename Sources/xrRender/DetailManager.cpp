@@ -424,8 +424,6 @@ void CDetailManager::cache_Initialize()
 
 CDetailManager::Slot* CDetailManager::cache_Query(int r_x, int r_z)
 {
-	PROFILE_FUNCTION();
-
 	int gx = w2cg_X(r_x + cache_cx);
 	VERIFY(gx >= 0 && gx < dm_cache_line);
 	int gz = w2cg_Z(r_z + cache_cz);
@@ -435,8 +433,6 @@ CDetailManager::Slot* CDetailManager::cache_Query(int r_x, int r_z)
 
 void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 {
-	PROFILE_FUNCTION();
-
 	int sx = cg2w_X(gx);
 	int sz = cg2w_Z(gz);
 	DetailSlot& DS = QueryDB(sx, sz);
@@ -471,8 +467,6 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 
 BOOL CDetailManager::cache_Validate()
 {
-	PROFILE_FUNCTION();
-
 	for (int z = 0; z < dm_cache_line; z++)
 	{
 		for (int x = 0; x < dm_cache_line; x++)
@@ -492,8 +486,6 @@ BOOL CDetailManager::cache_Validate()
 
 void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
 {
-	PROFILE_FUNCTION();
-
 	bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
 
 	// Сдвиг кеша (оставляем код сдвига)
@@ -594,8 +586,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
 
 DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 {
-	PROFILE_FUNCTION();
-
 	int db_x = sx + dtH.offs_x;
 	int db_z = sz + dtH.offs_z;
 	if ((db_x >= 0) && (db_x < int(dtH.size_x)) && (db_z >= 0) && (db_z < int(dtH.size_z)))
@@ -616,8 +606,6 @@ DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 
 void CDetailManager::InvalidateCache()
 {
-	PROFILE_FUNCTION();
-
 	MT.Enter();
 
 	cache_task.clear();

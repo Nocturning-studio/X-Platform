@@ -165,8 +165,6 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 
 void CEffect_Rain::OnFrame()
 {
-	PROFILE_FUNCTION();
-
 #ifndef _EDITOR
 	if (!g_pGameLevel)
 		return;

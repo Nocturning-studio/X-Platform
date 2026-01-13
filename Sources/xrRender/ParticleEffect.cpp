@@ -90,8 +90,6 @@ void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BO
 
 void CParticleEffect::OnFrame(u32 frame_dt)
 {
-	PROFILE_FUNCTION();
-
 	if (m_Def && m_RT_Flags.is(flRT_Playing))
 	{
 		m_MemDT += frame_dt;

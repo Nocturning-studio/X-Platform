@@ -10,8 +10,6 @@
 
 void CBackend::OnFrameEnd()
 {
-	PROFILE_FUNCTION();
-
 #ifndef DEDICATED_SERVER
 	for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
 		CHK_DX(HW.pDevice->SetTexture(0, 0));
@@ -25,8 +23,6 @@ void CBackend::OnFrameEnd()
 
 void CBackend::OnFrameBegin()
 {
-	PROFILE_FUNCTION();
-
 #ifndef DEDICATED_SERVER
 	Memory.mem_fill(&stat, 0, sizeof(stat));
 	Vertex.Flush();

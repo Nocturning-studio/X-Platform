@@ -1047,8 +1047,6 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 {
-	PROFILE_FUNCTION();
-
 	// Check frustum visibility and calculate distance to visual's center
 	Fvector Tpos; // transformed position
 	EFC_Visible VIS;
@@ -1191,8 +1189,6 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 
 void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 {
-	PROFILE_FUNCTION();
-
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible VIS;
 	vis_data& vis = pVisual->vis;

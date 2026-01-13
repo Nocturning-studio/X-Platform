@@ -21,8 +21,6 @@ line_editor::~line_editor()
 
 void line_editor::on_frame()
 {
-	PROFILE_FUNCTION();
-
 	m_control.on_frame();
 }
 

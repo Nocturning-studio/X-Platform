@@ -37,11 +37,7 @@ void COptickCapture::StartCapturing()
 {
 	OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION | 
 											Optick::Mode::TAGS |
-											Optick::Mode::AUTOSAMPLING | 
-											Optick::Mode::SWITCH_CONTEXT |
-											Optick::Mode::IO | 
-											Optick::Mode::SYS_CALLS |
-											Optick::Mode::OTHER_PROCESSES));
+											Optick::Mode::IO));
 	Msg("- Optick capturing started");
 }
 

@@ -161,8 +161,6 @@ void CDetailManager::hw_Render()
 }
 void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 {
-	PROFILE_FUNCTION();
-
 	Device.Statistic->RenderDUMP_DT_Count = 0;
 
 	u32 vOffset = 0;
