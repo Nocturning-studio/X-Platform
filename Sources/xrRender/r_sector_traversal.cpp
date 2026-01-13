@@ -16,7 +16,7 @@ xr_vector<IRender_Sector*> dbg_sectors;
 
 void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options)
 {
-	OPTICK_EVENT("CPortalTraverser::traverse");
+	////OPTICK_EVENT("CPortalTraverser::traverse");
 
 	Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f,		   0.0f,
 							 0.0f,		0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0,
@@ -62,14 +62,14 @@ void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBa
 
 void CPortalTraverser::fade_portal(CPortal* _p, float ssa)
 {
-	OPTICK_EVENT("CPortalTraverser::fade_portal");
+	////OPTICK_EVENT("CPortalTraverser::fade_portal");
 
 	f_portals.push_back(mk_pair(_p, ssa));
 }
 
 void CPortalTraverser::initialize()
 {
-	OPTICK_EVENT("CPortalTraverser::initialize");
+	////OPTICK_EVENT("CPortalTraverser::initialize");
 
 	f_shader.create("portal");
 	f_geom.create(FVF::F_L, RenderBackend.Vertex.Buffer(), 0);
@@ -77,7 +77,7 @@ void CPortalTraverser::initialize()
 
 void CPortalTraverser::destroy()
 {
-	OPTICK_EVENT("CPortalTraverser::destroy");
+	////OPTICK_EVENT("CPortalTraverser::destroy");
 
 	f_geom.destroy();
 	f_shader.destroy();
@@ -95,7 +95,7 @@ extern float r_ssaLOD_A, r_ssaLOD_B;
 
 void CPortalTraverser::fade_render()
 {
-	OPTICK_EVENT("CPortalTraverser::fade_render");
+	////OPTICK_EVENT("CPortalTraverser::fade_render");
 
 	if (f_portals.empty())
 		return;
@@ -154,7 +154,7 @@ void CPortalTraverser::fade_render()
 #ifdef DEBUG
 void CPortalTraverser::dbg_draw()
 {
-	OPTICK_EVENT("CPortalTraverser::dbg_draw");
+	////OPTICK_EVENT("CPortalTraverser::dbg_draw");
 
 	RenderBackend.OnFrameEnd();
 	RenderBackend.set_xform_world(Fidentity);

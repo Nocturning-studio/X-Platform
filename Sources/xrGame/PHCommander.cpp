@@ -66,7 +66,7 @@ void CPHCommander::clear()
 
 void CPHCommander::update()
 {
-	OPTICK_EVENT("CPHCommander::update");
+	//OPTICK_EVENT("CPHCommander::update");
 
 	for (u32 i = 0; i < m_calls.size(); i++)
 	{

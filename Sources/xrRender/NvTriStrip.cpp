@@ -78,7 +78,7 @@ void SetMinStripSize(const unsigned int _minStripSize)
 //
 void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<PrimitiveGroup>& primGroups)
 {
-	OPTICK_EVENT("NvTriStrip::GenerateStrips");
+	////OPTICK_EVENT("NvTriStrip::GenerateStrips");
 
 	// put data in format that the stripifier likes
 	WordVec tempIndices;
@@ -235,7 +235,7 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 void RemapIndices(const xr_vector<PrimitiveGroup>& in_primGroups, const u16 numVerts,
 				  xr_vector<PrimitiveGroup>& remappedGroups)
 {
-	OPTICK_EVENT("NvTriStrip::RemapIndices");
+	////OPTICK_EVENT("NvTriStrip::RemapIndices");
 
 	int numGroups = in_primGroups.size();
 	remappedGroups.resize(numGroups);

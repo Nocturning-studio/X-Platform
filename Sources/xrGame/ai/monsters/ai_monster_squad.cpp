@@ -78,6 +78,8 @@ bool CMonsterSquad::SquadActive()
 
 void CMonsterSquad::UpdateGoal(CEntity* pE, const SMemberGoal& goal)
 {
+	//PROFILE_FUNCTION();
+
 	MEMBER_GOAL_MAP_IT it = m_goals.find(pE);
 	VERIFY(it != m_goals.end());
 
@@ -86,6 +88,8 @@ void CMonsterSquad::UpdateGoal(CEntity* pE, const SMemberGoal& goal)
 
 void CMonsterSquad::UpdateCommand(CEntity* pE, const SSquadCommand& com)
 {
+	//PROFILE_FUNCTION();
+
 	MEMBER_COMMAND_MAP_IT it = m_commands.find(pE);
 	VERIFY(it != m_commands.end());
 
@@ -119,6 +123,8 @@ void CMonsterSquad::GetCommand(CEntity* pE, SSquadCommand& com)
 
 void CMonsterSquad::UpdateSquadCommands()
 {
+	//PROFILE_FUNCTION();
+
 	// Отменить все команды в группе
 	for (MEMBER_COMMAND_MAP_IT it = m_commands.begin(); it != m_commands.end(); it++)
 	{

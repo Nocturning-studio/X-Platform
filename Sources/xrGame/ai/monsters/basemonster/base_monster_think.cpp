@@ -12,7 +12,7 @@
 
 void CBaseMonster::Think()
 {
-	OPTICK_EVENT("CBaseMonster::Think");
+	//OPTICK_EVENT("CBaseMonster::Think");
 
 	START_PROFILE("Base Monster/Think");
 
@@ -43,7 +43,7 @@ void CBaseMonster::Think()
 
 void CBaseMonster::update_fsm()
 {
-	OPTICK_EVENT("CBaseMonster::update_fsm");
+	//OPTICK_EVENT("CBaseMonster::update_fsm");
 
 	StateMan->update();
 

@@ -17,7 +17,7 @@
 
 IRender_Mesh::~IRender_Mesh()
 {
-	OPTICK_EVENT("IRender_Mesh::~IRender_Mesh");
+	//OPTICK_EVENT("IRender_Mesh::~IRender_Mesh");
 
 	_RELEASE(p_rm_Vertices);
 	_RELEASE(p_rm_Indices);
@@ -25,7 +25,7 @@ IRender_Mesh::~IRender_Mesh()
 
 IRender_Visual::IRender_Visual()
 {
-	OPTICK_EVENT("IRender_Visual::IRender_Visual");
+	//OPTICK_EVENT("IRender_Visual::IRender_Visual");
 
 	Type = 0;
 	shader = 0;
@@ -34,13 +34,13 @@ IRender_Visual::IRender_Visual()
 
 IRender_Visual::~IRender_Visual()
 {
-	OPTICK_EVENT("IRender_Visual::~IRender_Visual");
+	//OPTICK_EVENT("IRender_Visual::~IRender_Visual");
 
 }
 
 void IRender_Visual::Release()
 {
-	OPTICK_EVENT("IRender_Visual::Release");
+	//OPTICK_EVENT("IRender_Visual::Release");
 
 }
 
@@ -48,7 +48,7 @@ CStatTimer tscreate;
 
 void IRender_Visual::Load(const char* N, IReader* data, u32)
 {
-	OPTICK_EVENT("IRender_Visual::Load");
+	//OPTICK_EVENT("IRender_Visual::Load");
 
 #ifdef DEBUG
 	dbg_name = N;
@@ -91,7 +91,7 @@ void IRender_Visual::Load(const char* N, IReader* data, u32)
 #define PCOPY(a) a = pFrom->a
 void IRender_Visual::Copy(IRender_Visual* pFrom)
 {
-	OPTICK_EVENT("IRender_Visual::Copy");
+	//OPTICK_EVENT("IRender_Visual::Copy");
 
 	PCOPY(Type);
 	PCOPY(shader);

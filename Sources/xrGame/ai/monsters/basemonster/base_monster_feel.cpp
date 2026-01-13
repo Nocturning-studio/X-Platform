@@ -84,7 +84,7 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 
 void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir)
 {
-	OPTICK_EVENT("CBaseMonster::HitEntity");
+	//OPTICK_EVENT("CBaseMonster::HitEntity");
 
 	if (!g_Alive())
 		return;

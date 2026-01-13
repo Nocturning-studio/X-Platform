@@ -63,7 +63,7 @@ void CWeaponShotEffector::Shot(float angle)
 
 void CWeaponShotEffector::Update()
 {
-	OPTICK_EVENT("CWeaponShotEffector::Update");
+	//OPTICK_EVENT("CWeaponShotEffector::Update");
 
 	if (bActive)
 	{

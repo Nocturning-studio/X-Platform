@@ -42,7 +42,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 	Device.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/search")
-	OPTICK_EVENT("CGraphEngine::search");
+	//OPTICK_EVENT("CGraphEngine::search");
 #endif
 	typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 		CPathManagerGeneric;
@@ -71,7 +71,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 	Device.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/search")
-	OPTICK_EVENT("CGraphEngine::search");
+	//OPTICK_EVENT("CGraphEngine::search");
 #endif
 	typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 		CPathManagerGeneric;
@@ -101,7 +101,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 	Device.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/search")
-	OPTICK_EVENT("CGraphEngine::search");
+	//OPTICK_EVENT("CGraphEngine::search");
 #endif
 	path_manager.setup(&graph, &m_algorithm->data_storage(), node_path, start_node, dest_node, parameters);
 
@@ -128,7 +128,7 @@ IC bool CGraphEngine::search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8
 	Device.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/proble_solver")
-	OPTICK_EVENT("CGraphEngine::search graph_engine/proble_solver");
+	//OPTICK_EVENT("CGraphEngine::search graph_engine/proble_solver");
 #endif
 	typedef CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8> CSProblemSolver;
 	typedef CPathManager<CSProblemSolver, CSolverAlgorithm::CDataStorage, _Parameters, _solver_dist_type,

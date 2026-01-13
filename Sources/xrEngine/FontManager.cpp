@@ -161,13 +161,15 @@ void CFontManager::Destroy()
 
 void CFontManager::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	if (pSystemFont)
 		pSystemFont->Clear();
 }
 
 void CFontManager::Render()
 {
-	OPTICK_EVENT("CFontManager::Render");
+	//OPTICK_EVENT("CFontManager::Render");
 
 	// Рендерим только игровые шрифты. Системный рендерится сам через seqRender.
 	FONTS_VEC_IT it = m_all_fonts.begin();

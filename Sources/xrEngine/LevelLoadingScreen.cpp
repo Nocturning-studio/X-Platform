@@ -198,7 +198,7 @@ u32 CLevelLoadingScreen::CalcProgressColor(u32 idx, u32 total, int stage, int ma
 #pragma optimize("g", off)
 void CLevelLoadingScreen::DrawInternal()
 {
-	OPTICK_EVENT("CApplication::load_draw_internal");
+	//OPTICK_EVENT("CApplication::load_draw_internal");
 
 	if (!sh_progress)
 	{

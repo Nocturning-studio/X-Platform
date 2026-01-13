@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::RenderMenu()
 {
-	OPTICK_EVENT("CRender::RenderMenu");
+	PROFILE_FUNCTION();
 
 	u32 FrameStartTime = Engine.TimeManager.GetTimerGlobal()->GetElapsed_ms();
 

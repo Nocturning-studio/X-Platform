@@ -10,7 +10,7 @@
 
 void CBackend::OnFrameEnd()
 {
-	OPTICK_EVENT("CBackend::OnFrameEnd");
+	PROFILE_FUNCTION();
 
 #ifndef DEDICATED_SERVER
 	for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
@@ -25,7 +25,7 @@ void CBackend::OnFrameEnd()
 
 void CBackend::OnFrameBegin()
 {
-	OPTICK_EVENT("CBackend::OnFrameBegin");
+	PROFILE_FUNCTION();
 
 #ifndef DEDICATED_SERVER
 	Memory.mem_fill(&stat, 0, sizeof(stat));
@@ -37,7 +37,7 @@ void CBackend::OnFrameBegin()
 
 void CBackend::Invalidate()
 {
-	OPTICK_EVENT("CBackend::Invalidate");
+	//OPTICK_EVENT("CBackend::Invalidate");
 
 	bBlend = FALSE;
 	srcBlend = D3DBLEND_ONE;
@@ -178,7 +178,7 @@ void CBackend::set_Textures(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					OPTICK_EVENT("set_Textures - load_surf");
+					//OPTICK_EVENT("set_Textures - load_surf");
 					load_surf->bind(load_id);
 					//					load_surf->Apply	(load_id);
 				}
@@ -198,7 +198,7 @@ void CBackend::set_Textures(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					OPTICK_EVENT("set_Textures - load_surf");
+					//OPTICK_EVENT("set_Textures - load_surf");
 					load_surf->bind(load_id);
 					//					load_surf->Apply	(load_id);
 				}

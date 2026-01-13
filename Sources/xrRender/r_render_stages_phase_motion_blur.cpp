@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::motion_blur_pass_prepare_dilation_map()
 {
-	OPTICK_EVENT("CRenderTarget::motion_blur_pass_prepare_dilation_map");
+	////OPTICK_EVENT("CRenderTarget::motion_blur_pass_prepare_dilation_map");
 
 	// (new-camera) -> (world) -> (old_viewproj)
 	Fmatrix m_previous, m_current, m_invview;
@@ -42,7 +42,7 @@ void CRender::motion_blur_pass_prepare_dilation_map()
 
 void CRender::motion_blur_pass_blur()
 {
-	OPTICK_EVENT("CRenderTarget::motion_blur_pass_blur");
+	////OPTICK_EVENT("CRenderTarget::motion_blur_pass_blur");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -54,7 +54,7 @@ void CRender::motion_blur_pass_blur()
 
 void CRender::motion_blur_pass_save_depth()
 {
-	OPTICK_EVENT("CRenderTarget::motion_blur_pass_save_depth");
+	////OPTICK_EVENT("CRenderTarget::motion_blur_pass_save_depth");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -65,7 +65,7 @@ void CRender::motion_blur_pass_save_depth()
 
 void CRender::render_motion_blur()
 {
-	OPTICK_EVENT("CRenderTarget::render_motion_blur");
+	////OPTICK_EVENT("CRenderTarget::render_motion_blur");
 
 	// Важно: Порядок вызовов.
 	// 1. Сначала считаем векторы (нужен текущий depth и предыдущий depth)

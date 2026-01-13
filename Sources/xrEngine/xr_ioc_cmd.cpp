@@ -268,7 +268,7 @@ class CCC_Help : public IConsole_Command
 //-----------------------------------------------------------------------
 void crashthread(void*)
 {
-	OPTICK_EVENT("X-Ray Crash thread");
+	//OPTICK_EVENT("X-Ray Crash thread");
 	OPTICK_FRAME("X-Ray Crash thread");
 
 	Sleep(1000);

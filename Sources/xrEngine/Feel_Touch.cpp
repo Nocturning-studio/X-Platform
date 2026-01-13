@@ -27,7 +27,7 @@ void Touch::feel_touch_deny(CObject* O, DWORD T)
 
 void Touch::feel_touch_update(Fvector& C, float R)
 {
-	OPTICK_EVENT("Touch::feel_touch_update");
+	//OPTICK_EVENT("Touch::feel_touch_update");
 
 	// Check if denied objects expire in time
 	DWORD dwT = Engine.TimeManager.GetGlobalTimeMs();

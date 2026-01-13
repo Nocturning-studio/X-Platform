@@ -34,7 +34,7 @@ CHitMarker::~CHitMarker()
 const static float fShowTime = 0.5f;
 void CHitMarker::Render()
 {
-	OPTICK_EVENT("CHitMarker::Render");
+	//OPTICK_EVENT("CHitMarker::Render");
 
 	float h1, p1;
 	Device.vCameraDirection.getHP(h1, p1);

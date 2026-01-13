@@ -14,7 +14,7 @@ float psOSSR = .001f;
 
 void __stdcall CHOM::MT_RENDER()
 {
-	OPTICK_EVENT("CHOM::MT_RENDER");
+	////OPTICK_EVENT("CHOM::MT_RENDER");
 
 	// Быстрая проверка без блокировки
 	bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
@@ -42,7 +42,7 @@ void __stdcall CHOM::MT_RENDER()
 
 CHOM::CHOM()
 {
-	OPTICK_EVENT("CHOM::CHOM");
+	//////OPTICK_EVENT("CHOM::CHOM");
 
 	bEnabled = FALSE;
 	m_pModel = 0;
@@ -54,7 +54,7 @@ CHOM::CHOM()
 
 CHOM::~CHOM()
 {
-	OPTICK_EVENT("CHOM::~CHOM");
+	//////OPTICK_EVENT("CHOM::~CHOM");
 
 #ifdef DEBUG
 	Device.seqRender.Remove(this);
@@ -81,7 +81,7 @@ IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
 
 void CHOM::Load()
 {
-	OPTICK_EVENT("CHOM::Load");
+	//////OPTICK_EVENT("CHOM::Load");
 
 	// Find and open file
 	string_path fName;
@@ -142,7 +142,7 @@ void CHOM::Load()
 
 void CHOM::Unload()
 {
-	OPTICK_EVENT("CHOM::Unload");
+	//////OPTICK_EVENT("CHOM::Unload");
 
 	xr_delete(m_pModel);
 	xr_free(m_pTris);
@@ -227,7 +227,7 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 
 void CHOM::Render_DB(CFrustum& base)
 {
-	OPTICK_EVENT("CHOM::Render_DB");
+	//////OPTICK_EVENT("CHOM::Render_DB");
 
 	// Query DB
 	xrc.frustum_options(0);
@@ -296,7 +296,7 @@ void CHOM::Render_DB(CFrustum& base)
 
 void CHOM::Render(CFrustum& base)
 {
-	OPTICK_EVENT("CHOM::Render");
+	//////OPTICK_EVENT("CHOM::Render");
 
 	if (!bEnabled)
 		return;
@@ -370,7 +370,7 @@ IC BOOL _visible(Fbox& B, Fmatrix& m_xform_01)
 
 BOOL CHOM::visible(Fbox3& B)
 {
-	OPTICK_EVENT("CHOM::visible");
+	//////OPTICK_EVENT("CHOM::visible");
 
 	if (!bEnabled)
 		return TRUE;
@@ -381,7 +381,7 @@ BOOL CHOM::visible(Fbox3& B)
 
 BOOL CHOM::visible(Fbox2& B, float depth)
 {
-	OPTICK_EVENT("CHOM::visible");
+	//////OPTICK_EVENT("CHOM::visible");
 
 	if (!bEnabled)
 		return TRUE;
@@ -390,7 +390,7 @@ BOOL CHOM::visible(Fbox2& B, float depth)
 
 BOOL CHOM::visible(vis_data& vis)
 {
-	OPTICK_EVENT("CHOM::visible");
+	//////OPTICK_EVENT("CHOM::visible");
 
 	if (Engine.TimeManager.GetFrameCount() < vis.hom_frame)
 		return TRUE; // not at this time :)
@@ -430,7 +430,7 @@ BOOL CHOM::visible(vis_data& vis)
 
 BOOL CHOM::visible(sPoly& P)
 {
-	OPTICK_EVENT("CHOM::visible");
+	//////OPTICK_EVENT("CHOM::visible");
 
 	if (!bEnabled)
 		return TRUE;
@@ -449,14 +449,14 @@ BOOL CHOM::visible(sPoly& P)
 
 void CHOM::Disable()
 {
-	OPTICK_EVENT("CHOM::Disable");
+	//////OPTICK_EVENT("CHOM::Disable");
 
 	bEnabled = FALSE;
 }
 
 void CHOM::Enable()
 {
-	OPTICK_EVENT("CHOM::Enable");
+	//////OPTICK_EVENT("CHOM::Enable");
 
 	bEnabled = m_pModel ? TRUE : FALSE;
 }
@@ -464,7 +464,7 @@ void CHOM::Enable()
 #ifdef DEBUG
 void CHOM::OnRender()
 {
-	OPTICK_EVENT("CHOM::OnRender");
+	//////OPTICK_EVENT("CHOM::OnRender");
 
 	if (psDeviceFlags.is(rsOcclusionDraw))
 	{
@@ -519,7 +519,7 @@ void CHOM::OnRender()
 }
 void CHOM::stats()
 {
-	OPTICK_EVENT("CHOM::stats");
+	//////OPTICK_EVENT("CHOM::stats");
 
 	if (m_pModel)
 	{

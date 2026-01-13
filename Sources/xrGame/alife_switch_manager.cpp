@@ -54,7 +54,7 @@ CALifeSwitchManager::~CALifeSwitchManager()
 
 void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update_registries)
 {
-	OPTICK_EVENT("CALifeSwitchManager::add_online");
+	//OPTICK_EVENT("CALifeSwitchManager::add_online");
 
 	START_PROFILE("ALife/switch/add_online")
 	VERIFY((ai().game_graph().vertex(object->m_tGraphID)->level_id() == graph().level().level_id()));
@@ -83,7 +83,7 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update
 
 void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject* object, bool update_registries)
 {
-	OPTICK_EVENT("CALifeSwitchManager::remove_online");
+	//OPTICK_EVENT("CALifeSwitchManager::remove_online");
 
 	START_PROFILE("ALife/switch/remove_online")
 	object->m_bOnline = false;
@@ -114,7 +114,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject* object, bool upd
 
 void CALifeSwitchManager::switch_online(CSE_ALifeDynamicObject* object)
 {
-	OPTICK_EVENT("CALifeSwitchManager::switch_online");
+	//OPTICK_EVENT("CALifeSwitchManager::switch_online");
 
 	START_PROFILE("ALife/switch/switch_online")
 #ifdef DEBUG
@@ -129,7 +129,7 @@ void CALifeSwitchManager::switch_online(CSE_ALifeDynamicObject* object)
 
 void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject* object)
 {
-	OPTICK_EVENT("CALifeSwitchManager::switch_offline");
+	//OPTICK_EVENT("CALifeSwitchManager::switch_offline");
 
 	START_PROFILE("ALife/switch/switch_offline")
 #ifdef DEBUG
@@ -144,7 +144,7 @@ void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject* object)
 
 bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 {
-	OPTICK_EVENT("CALifeSwitchManager::synchronize_location");
+	//OPTICK_EVENT("CALifeSwitchManager::synchronize_location");
 
 	START_PROFILE("ALife/switch/synchronize_location")
 #ifdef DEBUG
@@ -181,7 +181,7 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 
 void CALifeSwitchManager::try_switch_online(CSE_ALifeDynamicObject* I)
 {
-	OPTICK_EVENT("CALifeSwitchManager::try_switch_online");
+	//OPTICK_EVENT("CALifeSwitchManager::try_switch_online");
 
 	START_PROFILE("ALife/switch/try_switch_online")
 	// so, the object is offline
@@ -234,7 +234,7 @@ void CALifeSwitchManager::try_switch_online(CSE_ALifeDynamicObject* I)
 
 void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 {
-	OPTICK_EVENT("CALifeSwitchManager::try_switch_offline");
+	//OPTICK_EVENT("CALifeSwitchManager::try_switch_offline");
 
 	START_PROFILE("ALife/switch/try_switch_offline")
 	// checking if the object is not attached

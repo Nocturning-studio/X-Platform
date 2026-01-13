@@ -228,7 +228,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 
 void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 {
-	OPTICK_EVENT("CEffect_Thunderbolt::OnFrame");
+	PROFILE_FUNCTION();
 
 	BOOL enabled = !!(id.size());
 	if (bEnabled != enabled)
@@ -275,7 +275,7 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 
 void CEffect_Thunderbolt::Render()
 {
-	OPTICK_EVENT("CEffect_Thunderbolt::Render");
+	//OPTICK_EVENT("CEffect_Thunderbolt::Render");
 
 	if (state == stWorking)
 	{

@@ -349,6 +349,8 @@ BOOL CAI_Bloodsucker::net_Spawn(CSE_Abstract* DC)
 
 void CAI_Bloodsucker::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 	CControlledActor::frame_update();
 

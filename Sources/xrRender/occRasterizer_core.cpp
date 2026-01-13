@@ -9,7 +9,7 @@ const int BOTTOM = 0, TOP = 1;
 
 void i_order(float* A, float* B, float* C)
 {
-	OPTICK_EVENT("occRasterizer::i_order");
+	////OPTICK_EVENT("occRasterizer::i_order");
 
 	float *min, *max, *mid;
 	if (A[1] <= B[1])
@@ -91,7 +91,7 @@ const float one_div_3 = 1.f / 3.f;
 // Rasterize a scan line between given X point values, corresponding Z values and current color
 void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float startZ, float endZ)
 {
-	OPTICK_EVENT("occRasterizer::i_scan");
+	////OPTICK_EVENT("occRasterizer::i_scan");
 
 	// calculate span(s)
 	float start_c = leftX + lhx;
@@ -197,7 +197,7 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
 
 IC void i_test_micro(int x, int y)
 {
-	OPTICK_EVENT("occRasterizer::i_test_micro");
+	////OPTICK_EVENT("occRasterizer::i_test_micro");
 
 	if (x < 1)
 		return;
@@ -227,7 +227,7 @@ IC void i_test_micro(int x, int y)
 }
 void i_test(int x, int y)
 {
-	OPTICK_EVENT("occRasterizer::i_test");
+	////OPTICK_EVENT("occRasterizer::i_test");
 
 	i_test_micro(x, y - 1);
 	i_test_micro(x, y + 1);
@@ -236,7 +236,7 @@ void i_test(int x, int y)
 
 void i_edge(int x1, int y1, int x2, int y2)
 {
-	OPTICK_EVENT("occRasterizer::i_edge");
+	////OPTICK_EVENT("occRasterizer::i_edge");
 
 	int dx = _abs(x2 - x1);
 	int dy = _abs(y2 - y1);
@@ -293,7 +293,7 @@ E1 E2 are the triangle edge differences of the 2 bounding edges for this section
 
 IC void i_section(int Sect, BOOL bMiddle)
 {
-	OPTICK_EVENT("occRasterizer::i_section");
+	////OPTICK_EVENT("occRasterizer::i_section");
 
 	// Find the start/end Y pixel coord, set the starting pts for scan line ends
 	int startY, endY;
@@ -426,7 +426,7 @@ void __stdcall i_section_t1()
 
 u32 occRasterizer::rasterize(occTri* T)
 {
-	OPTICK_EVENT("occRasterizer::rasterize");
+	////OPTICK_EVENT("occRasterizer::rasterize");
 
 	// Order the vertices by Y
 	currentTri = T;

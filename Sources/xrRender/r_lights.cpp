@@ -9,7 +9,7 @@ IC bool pred_area(light* _1, light* _2)
 
 void CRender::render_lights(light_Package& LP)
 {
-	OPTICK_EVENT("CRender::render_lights");
+	PROFILE_FUNCTION_FULL();
 
     // Фильтрация нулевых указателей и невалидных источников
 	auto is_valid_light = [](light* L) {
@@ -41,7 +41,7 @@ void CRender::render_lights(light_Package& LP)
 	//////////////////////////////////////////////////////////////////////////
 	// 1. Оптимизированная фильтрация и подготовка теневых источников
 	{
-		OPTICK_EVENT("CRender::render_lights - Refactor order based");
+		////OPTICK_EVENT("CRender::render_lights - Refactor order based");
 
 		xr_vector<light*>& source = LP.v_shadowed;
 
@@ -60,7 +60,7 @@ void CRender::render_lights(light_Package& LP)
 
 	// 2. Оптимизированная упаковка shadow maps
 	{
-		OPTICK_EVENT("CRender::render_lights - refactor");
+		////OPTICK_EVENT("CRender::render_lights - refactor");
 
 		xr_vector<light*>& source = LP.v_shadowed;
 		if (source.empty())
@@ -117,7 +117,7 @@ void CRender::render_lights(light_Package& LP)
 
 	while (!LP.v_shadowed.empty())
 	{
-		OPTICK_EVENT("CRender::render_lights - Shadow map rendering");
+		////OPTICK_EVENT("CRender::render_lights - Shadow map rendering");
 
 		stats.s_used++;
 		clear_shadow_map_spot();
@@ -181,7 +181,7 @@ void CRender::render_lights(light_Package& LP)
 
 		// 4. Оптимизированное накопление света
 		{
-			OPTICK_EVENT("CRender::render_lights - Light accumulation");
+			////OPTICK_EVENT("CRender::render_lights - Light accumulation");
 
 			set_light_accumulator();
 			HOM.Disable();
@@ -189,7 +189,7 @@ void CRender::render_lights(light_Package& LP)
 			// Быстрое накопление point lights
 			if (!LP.v_point.empty())
 			{
-				OPTICK_EVENT("CRender::render_lights - accum point batch");
+				////OPTICK_EVENT("CRender::render_lights - accum point batch");
 
 				// Обрабатываем несколько источников за проход
 				for (size_t i = 0; i < LP.v_point.size();)
@@ -214,7 +214,7 @@ void CRender::render_lights(light_Package& LP)
 			// Быстрое накопление spot lights
 			if (!LP.v_spot.empty())
 			{
-				OPTICK_EVENT("CRender::render_lights - accum spot batch");
+				////OPTICK_EVENT("CRender::render_lights - accum spot batch");
 
 				for (size_t i = 0; i < LP.v_spot.size();)
 				{
@@ -238,7 +238,7 @@ void CRender::render_lights(light_Package& LP)
 			// Накопление теневых источников из текущей группы
 			if (!current_batch.empty())
 			{
-				OPTICK_EVENT("CRender::render_lights - accum spot shadowed");
+				////OPTICK_EVENT("CRender::render_lights - accum spot shadowed");
 
 				for (light* L : current_batch)
 				{
@@ -266,12 +266,12 @@ void CRender::render_lights(light_Package& LP)
 // Вспомогательная функция для обработки оставшихся источников
 void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
 {
-	OPTICK_EVENT("CRender::ProcessRemainingLightsOptimized");
+	////OPTICK_EVENT("CRender::ProcessRemainingLightsOptimized");
 
 	// Point lights
 	if (!LP.v_point.empty())
 	{
-		OPTICK_EVENT("CRender::render_lights - remaining point");
+		////OPTICK_EVENT("CRender::render_lights - remaining point");
 
 		// Пакетное обновление видимости
 		for (light* L : LP.v_point)
@@ -295,7 +295,7 @@ void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
 	// Spot lights
 	if (!LP.v_spot.empty())
 	{
-		OPTICK_EVENT("CRender::render_lights - remaining spot");
+		////OPTICK_EVENT("CRender::render_lights - remaining spot");
 
 		// Предварительное вычисление матриц для видимых источников
 		for (light* L : LP.v_spot)

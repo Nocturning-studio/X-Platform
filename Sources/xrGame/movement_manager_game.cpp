@@ -25,7 +25,7 @@
 
 void CMovementManager::process_game_path()
 {
-	OPTICK_EVENT("CMovementManager::process_game_path");
+	//OPTICK_EVENT("CMovementManager::process_game_path");
 	START_PROFILE("Build Path/Process Game Path");
 
 	if (m_path_state != ePathStateTeleport)

@@ -638,7 +638,7 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 
 void CAI_Stalker::update_object_handler()
 {
-	OPTICK_EVENT("CAI_Stalker::update_object_handler");
+	//OPTICK_EVENT("CAI_Stalker::update_object_handler");
 
 	if (!g_Alive())
 		return;
@@ -695,7 +695,7 @@ void CAI_Stalker::destroy_anim_mov_ctrl()
 
 void CAI_Stalker::UpdateCL()
 {
-	OPTICK_EVENT("CAI_Stalker::UpdateCL");
+	//PROFILE_FUNCTION();
 
 	START_PROFILE("stalker")
 	START_PROFILE("stalker/client_update")
@@ -791,7 +791,7 @@ CPHDestroyable* CAI_Stalker::ph_destroyable()
 
 void CAI_Stalker::shedule_Update(u32 DT)
 {
-	OPTICK_EVENT("CAI_Stalker::shedule_Update");
+	//OPTICK_EVENT("CAI_Stalker::shedule_Update");
 
 	// --- [IMPROVEMENT START] ---
 	if (g_Alive())
@@ -1078,7 +1078,7 @@ void CAI_Stalker::Think()
 
 void CAI_Stalker::SelectAnimation(const Fvector& view, const Fvector& move, float speed)
 {
-	OPTICK_EVENT("CAI_Stalker::SelectAnimation");
+	//OPTICK_EVENT("CAI_Stalker::SelectAnimation");
 
 	if (!Device.Paused())
 		animation().update();

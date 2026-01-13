@@ -24,7 +24,7 @@ NvStripifier::~NvStripifier()
 //
 NvEdgeInfo* NvStripifier::FindEdgeInfo(NvEdgeInfoVec& edgeInfos, int v0, int v1)
 {
-	OPTICK_EVENT("NvStripifier::FindEdgeInfo");
+	////OPTICK_EVENT("NvStripifier::FindEdgeInfo");
 
 	// we can get to it through either array
 	// because the edge infos have a v0 and v1
@@ -60,7 +60,7 @@ NvEdgeInfo* NvStripifier::FindEdgeInfo(NvEdgeInfoVec& edgeInfos, int v0, int v1)
 //
 NvFaceInfo* NvStripifier::FindOtherFace(NvEdgeInfoVec& edgeInfos, int v0, int v1, NvFaceInfo* faceInfo)
 {
-	OPTICK_EVENT("NvStripifier::FindOtherFace");
+	////OPTICK_EVENT("NvStripifier::FindOtherFace");
 
 	NvEdgeInfo* edgeInfo = FindEdgeInfo(edgeInfos, v0, v1);
 	assert(edgeInfo != NULL);
@@ -69,7 +69,7 @@ NvFaceInfo* NvStripifier::FindOtherFace(NvEdgeInfoVec& edgeInfos, int v0, int v1
 
 bool NvStripifier::AlreadyExists(NvFaceInfo* faceInfo, NvFaceInfoVec& faceInfos)
 {
-	OPTICK_EVENT("NvStripifier::AlreadyExists");
+	////OPTICK_EVENT("NvStripifier::AlreadyExists");
 
 	for (int i = 0; i < faceInfos.size(); i++)
 	{
@@ -88,7 +88,7 @@ bool NvStripifier::AlreadyExists(NvFaceInfo* faceInfo, NvFaceInfoVec& faceInfos)
 //
 void NvStripifier::BuildStripifyInfo(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& edgeInfos)
 {
-	OPTICK_EVENT("NvStripifier::BuildStripifyInfo");
+	////OPTICK_EVENT("NvStripifier::BuildStripifyInfo");
 
 	// reserve space for the face infos, but do not resize them.
 	int numIndices = indices.size();
@@ -204,7 +204,7 @@ void NvStripifier::BuildStripifyInfo(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& ed
 //
 int NvStripifier::FindStartPoint(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& edgeInfos)
 {
-	OPTICK_EVENT("NvStripifier::FindStartPoint");
+	////OPTICK_EVENT("NvStripifier::FindStartPoint");
 
 	for (int i = 0; i < faceInfos.size(); i++)
 	{
@@ -231,7 +231,7 @@ int NvStripifier::FindStartPoint(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& edgeIn
 //
 NvFaceInfo* NvStripifier::FindGoodResetPoint(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& edgeInfos)
 {
-	OPTICK_EVENT("NvStripifier::FindGoodResetPoint");
+	////OPTICK_EVENT("NvStripifier::FindGoodResetPoint");
 
 	// we hop into different areas of the mesh to try to get
 	// other large open spans done.  Areas of small strips can
@@ -288,7 +288,7 @@ NvFaceInfo* NvStripifier::FindGoodResetPoint(NvFaceInfoVec& faceInfos, NvEdgeInf
 //
 int NvStripifier::GetUniqueVertexInB(NvFaceInfo* faceA, NvFaceInfo* faceB)
 {
-	OPTICK_EVENT("NvStripifier::GetUniqueVertexInB");
+	////OPTICK_EVENT("NvStripifier::GetUniqueVertexInB");
 
 	int facev0 = faceB->m_v0;
 	if (facev0 != faceA->m_v0 && facev0 != faceA->m_v1 && facev0 != faceA->m_v2)
@@ -313,7 +313,7 @@ int NvStripifier::GetUniqueVertexInB(NvFaceInfo* faceA, NvFaceInfo* faceB)
 //
 int NvStripifier::GetSharedVertex(NvFaceInfo* faceA, NvFaceInfo* faceB)
 {
-	OPTICK_EVENT("NvStripifier::GetSharedVertex");
+	////OPTICK_EVENT("NvStripifier::GetSharedVertex");
 
 	int facev0 = faceB->m_v0;
 	if (facev0 == faceA->m_v0 || facev0 == faceA->m_v1 || facev0 == faceA->m_v2)
@@ -338,7 +338,7 @@ int NvStripifier::GetSharedVertex(NvFaceInfo* faceA, NvFaceInfo* faceB)
 //
 IC int NvStripifier::GetNextIndex(const WordVec& indices, NvFaceInfo* face)
 {
-	OPTICK_EVENT("NvStripifier::GetNextIndex");
+	////OPTICK_EVENT("NvStripifier::GetNextIndex");
 
 	int numIndices = indices.size();
 	assert(numIndices >= 2);
@@ -392,7 +392,7 @@ IC int NvStripifier::GetNextIndex(const WordVec& indices, NvFaceInfo* face)
 // for, then it is marked and unavailable
 IC bool NvStripInfo::IsMarked(NvFaceInfo* faceInfo)
 {
-	OPTICK_EVENT("NvStripInfo::IsMarked");
+	////OPTICK_EVENT("NvStripInfo::IsMarked");
 
 	return (faceInfo->m_stripId >= 0) || (IsExperiment() && faceInfo->m_experimentId == m_experimentId);
 }
@@ -404,7 +404,7 @@ IC bool NvStripInfo::IsMarked(NvFaceInfo* faceInfo)
 //
 IC void NvStripInfo::MarkTriangle(NvFaceInfo* faceInfo)
 {
-	OPTICK_EVENT("NvStripInfo::MarkTriangle");
+	////OPTICK_EVENT("NvStripInfo::MarkTriangle");
 
 	assert(!IsMarked(faceInfo));
 	if (IsExperiment())
@@ -422,7 +422,7 @@ IC void NvStripInfo::MarkTriangle(NvFaceInfo* faceInfo)
 
 bool NvStripInfo::Unique(NvFaceInfoVec& faceVec, NvFaceInfo* face)
 {
-	OPTICK_EVENT("NvStripInfo::Unique");
+	////OPTICK_EVENT("NvStripInfo::Unique");
 
 	bool bv0, bv1, bv2; // bools to indicate whether a vertex is in the faceVec or not
 	bv0 = bv1 = bv2 = false;
@@ -466,7 +466,7 @@ bool NvStripInfo::Unique(NvFaceInfoVec& faceVec, NvFaceInfo* face)
 //
 void NvStripInfo::Build(NvEdgeInfoVec& edgeInfos, NvFaceInfoVec& faceInfos)
 {
-	OPTICK_EVENT("NvStripInfo::Build");
+	////OPTICK_EVENT("NvStripInfo::Build");
 
 	// used in building the strips forward and backward
 	static WordVec scratchIndices;
@@ -567,7 +567,7 @@ void NvStripInfo::Build(NvEdgeInfoVec& edgeInfos, NvFaceInfoVec& faceInfos)
 //
 void NvStripInfo::Combine(const NvFaceInfoVec& forward, const NvFaceInfoVec& backward)
 {
-	OPTICK_EVENT("NvStripInfo::Combine");
+	////OPTICK_EVENT("NvStripInfo::Combine");
 
 	// add backward faces
 	int numFaces = backward.size();
@@ -587,7 +587,7 @@ void NvStripInfo::Combine(const NvFaceInfoVec& forward, const NvFaceInfoVec& bac
 //
 bool NvStripInfo::SharesEdge(const NvFaceInfo* faceInfo, NvEdgeInfoVec& edgeInfos)
 {
-	OPTICK_EVENT("NvStripInfo::SharesEdge");
+	////OPTICK_EVENT("NvStripInfo::SharesEdge");
 
 	// check v0->v1 edge
 	NvEdgeInfo* currEdge = NvStripifier::FindEdgeInfo(edgeInfos, faceInfo->m_v0, faceInfo->m_v1);
@@ -618,7 +618,7 @@ bool NvStripInfo::SharesEdge(const NvFaceInfo* faceInfo, NvEdgeInfoVec& edgeInfo
 //
 void NvStripifier::CommitStrips(NvStripInfoVec& allStrips, const NvStripInfoVec& strips)
 {
-	OPTICK_EVENT("NvStripifier::CommitStrips");
+	////OPTICK_EVENT("NvStripifier::CommitStrips");
 
 	// Iterate through strips
 	int numStrips = strips.size();
@@ -652,7 +652,7 @@ void NvStripifier::CommitStrips(NvStripInfoVec& allStrips, const NvStripInfoVec&
 bool NvStripifier::FindTraversal(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& edgeInfos, NvStripInfo* strip,
 								 NvStripStartInfo& startInfo)
 {
-	OPTICK_EVENT("NvStripifier::FindTraversal");
+	////OPTICK_EVENT("NvStripifier::FindTraversal");
 
 	// if the strip was v0->v1 on the edge, then v1 will be a vertex in the next edge.
 	int v = (strip->m_startInfo.m_toV1 ? strip->m_startInfo.m_startEdge->m_v1 : strip->m_startInfo.m_startEdge->m_v0);
@@ -699,7 +699,7 @@ bool NvStripifier::FindTraversal(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& edgeIn
 //
 void NvStripifier::RemoveSmallStrips(NvStripInfoVec& allStrips, NvStripInfoVec& allBigStrips, NvFaceInfoVec& faceList)
 {
-	OPTICK_EVENT("NvStripifier::RemoveSmallStrips");
+	////OPTICK_EVENT("NvStripifier::RemoveSmallStrips");
 
 	faceList.clear();
 	allBigStrips.clear(); // make sure these are empty
@@ -767,7 +767,7 @@ void NvStripifier::RemoveSmallStrips(NvStripInfoVec& allStrips, NvStripInfoVec& 
 //
 bool NvStripifier::NextIsCW(const int numIndices)
 {
-	OPTICK_EVENT("NvStripifier::NextIsCW");
+	////OPTICK_EVENT("NvStripifier::NextIsCW");
 
 	return ((numIndices % 2) == 0);
 }
@@ -779,7 +779,7 @@ bool NvStripifier::NextIsCW(const int numIndices)
 //
 bool NvStripifier::IsCW(NvFaceInfo* faceInfo, int v0, int v1)
 {
-	OPTICK_EVENT("NvStripifier::IsCW");
+	////OPTICK_EVENT("NvStripifier::IsCW");
 
 	if (faceInfo->m_v0 == v0)
 		return (faceInfo->m_v1 == v1);
@@ -799,7 +799,7 @@ bool NvStripifier::IsCW(NvFaceInfo* faceInfo, int v0, int v1)
 void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIndices, const bool bStitchStrips,
 								unsigned int& numSeparateStrips)
 {
-	OPTICK_EVENT("NvStripifier::CreateStrips");
+	////OPTICK_EVENT("NvStripifier::CreateStrips");
 
 	assert(numSeparateStrips == 0);
 
@@ -922,7 +922,7 @@ void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIn
 void NvStripifier::Stripify(const WordVec& in_indices, const int in_cacheSize, const int in_minStripLength,
 							NvStripInfoVec& outStrips, NvFaceInfoVec& outFaceList)
 {
-	OPTICK_EVENT("NvStripifier::Stripify");
+	////OPTICK_EVENT("NvStripifier::Stripify");
 
 	meshJump = 0.0f;
 	bFirstTimeResetPoint = true; // used in FindGoodResetPoint()
@@ -979,7 +979,7 @@ void NvStripifier::Stripify(const WordVec& in_indices, const int in_cacheSize, c
 void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoVec& allStrips, NvStripInfoVec& outStrips,
 											NvEdgeInfoVec& edgeInfos, NvFaceInfoVec& outFaceList)
 {
-	OPTICK_EVENT("NvStripifier::SplitUpStripsAndOptimize");
+	////OPTICK_EVENT("NvStripifier::SplitUpStripsAndOptimize");
 
 	int threshold = cacheSize;
 	NvStripInfoVec tempStrips;
@@ -1115,7 +1115,7 @@ void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoVec& allStrips, NvStripIn
 //
 void NvStripifier::UpdateCacheStrip(VertexCache* vcache, NvStripInfo* strip)
 {
-	OPTICK_EVENT("NvStripifier::UpdateCacheStrip");
+	////OPTICK_EVENT("NvStripifier::UpdateCacheStrip");
 
 	for (int i = 0; i < strip->m_faces.size(); i++)
 	{
@@ -1137,7 +1137,7 @@ void NvStripifier::UpdateCacheStrip(VertexCache* vcache, NvStripInfo* strip)
 //
 void NvStripifier::UpdateCacheFace(VertexCache* vcache, NvFaceInfo* face)
 {
-	OPTICK_EVENT("NvStripifier::UpdateCacheFace");
+	////OPTICK_EVENT("NvStripifier::UpdateCacheFace");
 
 	if (!vcache->InCache(face->m_v0))
 		vcache->AddEntry(face->m_v0);
@@ -1156,7 +1156,7 @@ void NvStripifier::UpdateCacheFace(VertexCache* vcache, NvFaceInfo* face)
 //
 float NvStripifier::CalcNumHitsStrip(VertexCache* vcache, NvStripInfo* strip)
 {
-	OPTICK_EVENT("NvStripifier::CalcNumHitsStrip");
+	////OPTICK_EVENT("NvStripifier::CalcNumHitsStrip");
 
 	int numHits = 0;
 	int numFaces = 0;
@@ -1185,7 +1185,7 @@ float NvStripifier::CalcNumHitsStrip(VertexCache* vcache, NvStripInfo* strip)
 //
 int NvStripifier::CalcNumHitsFace(VertexCache* vcache, NvFaceInfo* face)
 {
-	OPTICK_EVENT("NvStripifier::CalcNumHitsFace");
+	////OPTICK_EVENT("NvStripifier::CalcNumHitsFace");
 
 	int numHits = 0;
 
@@ -1208,7 +1208,7 @@ int NvStripifier::CalcNumHitsFace(VertexCache* vcache, NvFaceInfo* face)
 //
 int NvStripifier::NumNeighbors(NvFaceInfo* face, NvEdgeInfoVec& edgeInfoVec)
 {
-	OPTICK_EVENT("NvStripifier::NumNeighbors");
+	////OPTICK_EVENT("NvStripifier::NumNeighbors");
 
 	int numNeighbors = 0;
 
@@ -1237,7 +1237,7 @@ int NvStripifier::NumNeighbors(NvFaceInfo* face, NvEdgeInfoVec& edgeInfoVec)
 //
 float NvStripifier::AvgStripSize(const NvStripInfoVec& strips)
 {
-	OPTICK_EVENT("NvStripifier::AvgStripSize");
+	////OPTICK_EVENT("NvStripifier::AvgStripSize");
 
 	int sizeAccum = 0;
 	int numStrips = strips.size();
@@ -1262,7 +1262,7 @@ float NvStripifier::AvgStripSize(const NvStripInfoVec& strips)
 void NvStripifier::FindAllStrips(NvStripInfoVec& allStrips, NvFaceInfoVec& allFaceInfos, NvEdgeInfoVec& allEdgeInfos,
 								 int numSamples)
 {
-	OPTICK_EVENT("NvStripifier::FindAllStrips");
+	////OPTICK_EVENT("NvStripifier::FindAllStrips");
 
 	// the experiments
 	int experimentIdGlobal = 0;
@@ -1426,7 +1426,7 @@ void NvStripifier::FindAllStrips(NvStripInfoVec& allStrips, NvFaceInfoVec& allFa
 //
 int NvStripifier::CountRemainingTris(xr_list<NvStripInfo*>::iterator iter, xr_list<NvStripInfo*>::iterator end)
 {
-	OPTICK_EVENT("NvStripifier::CountRemainingTris");
+	////OPTICK_EVENT("NvStripifier::CountRemainingTris");
 
 	int count = 0;
 	while (iter != end)

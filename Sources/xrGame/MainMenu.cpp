@@ -352,7 +352,7 @@ bool CMainMenu::OnRenderPPUI_query()
 extern void draw_wnds_rects();
 void CMainMenu::OnRender()
 {
-	OPTICK_EVENT("CMainMenu::OnRender");
+	//OPTICK_EVENT("CMainMenu::OnRender");
 
 	if (m_Flags.test(flGameSaveScreenshot))
 		return;
@@ -371,7 +371,7 @@ void CMainMenu::OnRender()
 
 void CMainMenu::OnRenderPPUI_main()
 {
-	OPTICK_EVENT("CMainMenu::OnRenderPPUI_main");
+	//OPTICK_EVENT("CMainMenu::OnRenderPPUI_main");
 
 	if (!IsActive())
 		return;
@@ -392,7 +392,7 @@ void CMainMenu::OnRenderPPUI_main()
 
 void CMainMenu::OnRenderPPUI_PP()
 {
-	OPTICK_EVENT("CMainMenu::OnRenderPPUI_PP");
+	//OPTICK_EVENT("CMainMenu::OnRenderPPUI_PP");
 
 	if (!IsActive())
 		return;
@@ -419,7 +419,7 @@ void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 // pureFrame
 void CMainMenu::OnFrame()
 {
-	OPTICK_EVENT("CMainMenu::OnFrame");
+	//PROFILE_FUNCTION();
 
 	if (m_Flags.test(flNeedChangeCapture))
 	{

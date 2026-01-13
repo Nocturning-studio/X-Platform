@@ -99,7 +99,7 @@ IC void CSelectorTemplate::select_location(const _vertex_id_type start_vertex_id
 TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::perform_search(const _vertex_id_type vertex_id)
 {
-	OPTICK_EVENT("CSelectorTemplate::perform_search");
+	//OPTICK_EVENT("CSelectorTemplate::perform_search");
 
 	START_PROFILE("Build Path/Selector Path");
 

@@ -52,7 +52,7 @@ void CALifeGraphRegistry::on_load()
 
 void CALifeGraphRegistry::update(CSE_ALifeDynamicObject* object)
 {
-	OPTICK_EVENT("CALifeGraphRegistry::update");
+	//OPTICK_EVENT("CALifeGraphRegistry::update");
 
 	if (!object->m_bDirectControl)
 		return;

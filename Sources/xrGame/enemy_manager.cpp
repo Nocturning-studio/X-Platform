@@ -380,7 +380,7 @@ void CEnemyManager::try_change_enemy()
 
 void CEnemyManager::update()
 {
-	OPTICK_EVENT("CEnemyManager::update");
+	//OPTICK_EVENT("CEnemyManager::update");
 
 	START_PROFILE("Memory Manager/enemies::update")
 

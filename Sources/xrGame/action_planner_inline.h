@@ -52,7 +52,7 @@ IC _object_type& CPlanner::object() const
 TEMPLATE_SPECIALIZATION
 void CPlanner::update()
 {
-	OPTICK_EVENT("CPlanner::update");
+	//OPTICK_EVENT("CPlanner::update");
 
 	solve();
 

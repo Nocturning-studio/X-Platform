@@ -305,6 +305,8 @@ bool CEngine::Initialize()
 
 void CEngine::ProcessEventLoop()
 {
+	PROFILE_FUNCTION();
+
 	// Подготовка потоков (из предыдущего шага)
 	Device.PrepareEventLoop();
 

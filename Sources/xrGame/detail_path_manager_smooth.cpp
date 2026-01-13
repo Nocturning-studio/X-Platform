@@ -827,7 +827,7 @@ void CDetailPathManager::add_patrol_point()
 
 void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32 intermediate_index)
 {
-	OPTICK_EVENT("CDetailPathManager::build_smooth_path");
+	//OPTICK_EVENT("CDetailPathManager::build_smooth_path");
 
 	START_PROFILE("Build Path/Detail Path");
 

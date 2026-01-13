@@ -70,7 +70,7 @@ float CItemManager::evaluate(const CGameObject* object) const
 
 void CItemManager::update()
 {
-	OPTICK_EVENT("CItemManager::update");
+	//OPTICK_EVENT("CItemManager::update");
 	START_PROFILE("Memory Manager/items::update")
 
 #ifdef DEBUG

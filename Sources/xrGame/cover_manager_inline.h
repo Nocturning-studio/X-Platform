@@ -56,7 +56,7 @@ template <typename _evaluator_type, typename _restrictor_type>
 IC const CCoverPoint* CCoverManager::best_cover(const Fvector& position, float radius, _evaluator_type& evaluator,
 												const _restrictor_type& restrictor) const
 {
-	OPTICK_EVENT("CCoverManager::best_cover");
+	//OPTICK_EVENT("CCoverManager::best_cover");
 
 	START_PROFILE("Covers/best_cover")
 

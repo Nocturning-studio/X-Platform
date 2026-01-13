@@ -435,7 +435,7 @@ bool DemoStarted = false;
 
 void CLevel::OnFrame()
 {
-	OPTICK_EVENT("CLevel::OnFrame");
+	//PROFILE_FUNCTION();
 
 #ifdef DEBUG_MEMORY_MANAGER
 	debug_memory_guard __guard__;
@@ -619,7 +619,7 @@ extern void draw_wnds_rects();
 
 void CLevel::OnRender()
 {
-	OPTICK_EVENT("CLevel::OnRender");
+	//OPTICK_EVENT("CLevel::OnRender");
 
 	inherited::OnRender();
 
@@ -1116,7 +1116,7 @@ struct objects_ptrs_equal
 
 void GlobalFeelTouch::update()
 {
-	OPTICK_EVENT("GlobalFeelTouch::update");
+	//OPTICK_EVENT("GlobalFeelTouch::update");
 
 	// we ignore P and R arguments, we need just delete evaled denied objects...
 	xr_vector<Feel::Touch::DenyTouch>::iterator new_end =

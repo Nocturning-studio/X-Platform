@@ -378,6 +378,7 @@ class CRender : public R_dsgraph_structure
 	void render_bent_normals();
 
 	virtual void Calculate();
+	void PrepareToRender();
 	virtual void Render();
 	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
 	virtual void OnFrame();

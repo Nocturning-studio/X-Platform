@@ -49,7 +49,7 @@ struct TL_2c3uv
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_effectors_pass_generate_radiation_noise()
 {
-	OPTICK_EVENT("CRenderTarget::render_effectors_pass_generate_radiation_noise");
+	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_generate_radiation_noise");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -72,7 +72,7 @@ void CRender::render_effectors_pass_generate_radiation_noise()
 
 void CRender::render_effectors_pass_color_blind_filter()
 {
-	OPTICK_EVENT("CRenderTarget::render_effectors_pass_color_blind_filter");
+	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_color_blind_filter");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -144,7 +144,7 @@ void CRender::render_effectors_pass_color_blind_filter()
 
 void CRender::render_effectors_pass_combine()
 {
-	OPTICK_EVENT("CRenderTarget::render_effectors_pass_combine");
+	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_combine");
 
 	// combination/postprocess
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
@@ -206,7 +206,7 @@ void CRender::render_effectors_pass_combine()
 
 void CRender::render_effectors_pass_resolve_gamma()
 {
-	OPTICK_EVENT("CRenderTarget::render_effectors_pass_resolve_gamma");
+	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_resolve_gamma");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -217,7 +217,7 @@ void CRender::render_effectors_pass_resolve_gamma()
 
 void CRender::render_effectors_pass_lut()
 {
-	OPTICK_EVENT("CRenderTarget::render_effectors_pass_lut");
+	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_lut");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);

@@ -101,7 +101,7 @@ void CAgentManager::update_impl()
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
 void CAgentManager::shedule_Update(u32 time_delta)
 {
-	OPTICK_EVENT("CAgentManager::shedule_Update");
+	//OPTICK_EVENT("CAgentManager::shedule_Update");
 
 	START_PROFILE("Agent_Manager")
 

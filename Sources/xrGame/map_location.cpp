@@ -277,7 +277,7 @@ shared_str CMapLocation::LevelName()
 
 bool CMapLocation::Update() // returns actual
 {
-	OPTICK_EVENT("CMapLocation::update");
+	//OPTICK_EVENT("CMapLocation::update");
 
 	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_Actuality;

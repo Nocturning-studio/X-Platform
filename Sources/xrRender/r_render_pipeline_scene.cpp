@@ -8,13 +8,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::RenderScene()
 {
-	OPTICK_EVENT("CRender::RenderScene");
+	PROFILE_FUNCTION();
 
 	if (m_bFirstFrameAfterReset)
 	{
 		m_saved_viewproj.set(Device.mFullTransform);
 		m_saved_invview.invert(Device.mView);
 	}
+
+	PrepareToRender();
 
 	// Configure
 	m_need_render_sun = need_render_sun();

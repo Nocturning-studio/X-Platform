@@ -42,7 +42,7 @@ void CUICursor::InitInternal()
 u32 last_render_frame = 0;
 void CUICursor::OnRender()
 {
-	OPTICK_EVENT("CUICursor::OnRender");
+	//OPTICK_EVENT("CUICursor::OnRender");
 
 	if (!IsVisible())
 		return;

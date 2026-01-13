@@ -153,7 +153,7 @@ void CUISequencer::Stop()
 
 void CUISequencer::OnFrame()
 {
-	OPTICK_EVENT("CUISequencer::OnFrame");
+	//PROFILE_FUNCTION();
 
 	if (!m_bActive)
 		return;
@@ -182,7 +182,7 @@ void CUISequencer::OnFrame()
 
 void CUISequencer::OnRender()
 {
-	OPTICK_EVENT("CUISequencer::OnRender");
+	//OPTICK_EVENT("CUISequencer::OnRender");
 
 	if (m_UIWindow->IsShown())
 		m_UIWindow->Draw();

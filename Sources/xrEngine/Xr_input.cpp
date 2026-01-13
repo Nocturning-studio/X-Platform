@@ -490,7 +490,7 @@ void CInput::OnAppDeactivate(void)
 
 void CInput::OnFrame(void)
 {
-	OPTICK_EVENT("CInput::OnFrame");
+	PROFILE_FUNCTION();
 
 	Device.Statistic->Input.Begin();
 	dwCurTime = Engine.TimeManager.TimerAsync_MMT();

@@ -8,7 +8,7 @@ occRasterizer Raster;
 
 void __stdcall fillDW_8x(void* _p, u32 size, u32 value)
 {
-	OPTICK_EVENT("fillDW_8x");
+	//////OPTICK_EVENT("fillDW_8x");
 
 	LPDWORD ptr = LPDWORD(_p);
 	LPDWORD end = ptr + size;
@@ -21,7 +21,7 @@ void __stdcall fillDW_8x(void* _p, u32 size, u32 value)
 
 IC void propagade_depth(LPVOID p_dest, LPVOID p_src, int dim)
 {
-	OPTICK_EVENT("propagade_depth");
+	//////OPTICK_EVENT("propagade_depth");
 
 	occD* dest = (occD*)p_dest;
 	occD* src = (occD*)p_src;
@@ -62,7 +62,7 @@ occRasterizer::~occRasterizer()
 
 void occRasterizer::clear()
 {
-	OPTICK_EVENT("occRasterizer::clear");
+	//////OPTICK_EVENT("occRasterizer::clear");
 
 	u32 size = occ_dim * occ_dim;
 	float f = 1.f;
@@ -72,7 +72,7 @@ void occRasterizer::clear()
 
 IC BOOL shared(occTri* T1, occTri* T2)
 {
-	OPTICK_EVENT("occRasterizer::shared");
+	//////OPTICK_EVENT("occRasterizer::shared");
 
 	if (T1 == T2)
 		return TRUE;
@@ -87,7 +87,7 @@ IC BOOL shared(occTri* T1, occTri* T2)
 
 void occRasterizer::propagade()
 {
-	OPTICK_EVENT("occRasterizer::propagade");
+	//////OPTICK_EVENT("occRasterizer::propagade");
 
 	// Clip-and-propagade zero level
 	occTri** pFrame = get_frame();
@@ -145,7 +145,7 @@ void occRasterizer::propagade()
 
 IC BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float _y1, occD z)
 {
-	OPTICK_EVENT("occRasterizer::test_Level");
+	//////OPTICK_EVENT("occRasterizer::test_Level");
 
 	int x0 = iFloor(_x0 * dim + .5f);
 	clamp(x0, 0, dim - 1);
@@ -173,7 +173,7 @@ IC BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float 
 
 BOOL occRasterizer::test(float _x0, float _y0, float _x1, float _y1, float _z)
 {
-	OPTICK_EVENT("occRasterizer::test");
+	//////OPTICK_EVENT("occRasterizer::test");
 
 	occD z = df_2_s32up(_z) + 1;
 	return test_Level(get_depth_level(0), occ_dim_0, _x0, _y0, _x1, _y1, z);

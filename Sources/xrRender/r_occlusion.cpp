@@ -3,21 +3,21 @@
 
 R_occlusion::R_occlusion(void)
 {
-	OPTICK_EVENT("R_occlusion::R_occlusion");
+	////OPTICK_EVENT("R_occlusion::R_occlusion");
 
 	enabled = ps_render_flags.test(RFLAG_EXP_HW_OCC);
 }
 
 R_occlusion::~R_occlusion(void)
 {
-	OPTICK_EVENT("R_occlusion::~R_occlusion");
+	////OPTICK_EVENT("R_occlusion::~R_occlusion");
 
 	occq_destroy();
 }
 
 void R_occlusion::occq_create(u32 limit)
 {
-	OPTICK_EVENT("R_occlusion::occq_create");
+	////OPTICK_EVENT("R_occlusion::occq_create");
 
 	pool.reserve(limit);
 	used.reserve(limit);
@@ -35,7 +35,7 @@ void R_occlusion::occq_create(u32 limit)
 
 void R_occlusion::occq_destroy()
 {
-	OPTICK_EVENT("R_occlusion::occq_destroy");
+	////OPTICK_EVENT("R_occlusion::occq_destroy");
 
 	while (!used.empty())
 	{
@@ -71,7 +71,7 @@ void R_occlusion::occq_destroy()
 
 u32 R_occlusion::occq_begin(u32& ID)
 {
-	OPTICK_EVENT("R_occlusion::occq_begin");
+	////OPTICK_EVENT("R_occlusion::occq_begin");
 
 	if (!enabled)
 		return 0;
@@ -132,7 +132,7 @@ u32 R_occlusion::occq_begin(u32& ID)
 
 void R_occlusion::occq_end(u32& ID)
 {
-	OPTICK_EVENT("R_occlusion::occq_end");
+	////OPTICK_EVENT("R_occlusion::occq_end");
 
 	if (!enabled || ID == 0xffffffff || ID >= used.size() || used[ID].Q == nullptr)
 		return;
@@ -146,7 +146,7 @@ void R_occlusion::occq_end(u32& ID)
 
 u32 R_occlusion::occq_get(u32& ID)
 {
-	OPTICK_EVENT("R_occlusion::occq_get");
+	////OPTICK_EVENT("R_occlusion::occq_get");
 
 	if (!enabled)
 		return 0xffffffff;

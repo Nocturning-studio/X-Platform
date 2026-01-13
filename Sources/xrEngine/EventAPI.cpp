@@ -179,7 +179,7 @@ void msParse(LPCSTR c)
 
 void CEventAPI::OnFrame()
 {
-	OPTICK_EVENT("CEventAPI::OnFrame");
+	PROFILE_FUNCTION();
 
 #ifdef DEBUG
 	msRead();

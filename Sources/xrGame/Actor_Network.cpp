@@ -1456,7 +1456,7 @@ void dbg_draw_piramid(Fvector pos, Fvector dir, float size, float xdir, u32 colo
 
 void CActor::OnRender_Network()
 {
-	OPTICK_EVENT("CActor::OnRender_Network");
+	//OPTICK_EVENT("CActor::OnRender_Network");
 
 	RenderBackend.OnFrameEnd();
 

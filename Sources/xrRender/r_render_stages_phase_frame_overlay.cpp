@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_screen_overlays()
 {
-	OPTICK_EVENT("CRenderTarget::render_screen_overlays");
+	////OPTICK_EVENT("CRenderTarget::render_screen_overlays");
 
 	int GridEnabled = 0;
 	int CinemaBordersEnabled = 0;

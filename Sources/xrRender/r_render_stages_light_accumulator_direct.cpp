@@ -35,7 +35,7 @@ static u16 facetable[16][3] =
 
 void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias)
 {
-	OPTICK_EVENT("CRender::accumulate_sun");
+	////OPTICK_EVENT("CRender::accumulate_sun");
 
 	// *** assume accumulator setted up ***
 	light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
@@ -218,7 +218,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 bool bVolumetricSunTextureCleared = false;
 void CRender::accumulate_volumetric_sun(u32 sub_phase, Fmatrix m_shadow, Fvector L_dir)
 {
-	OPTICK_EVENT("CRender::accumulate_volumetric_sun");
+	////OPTICK_EVENT("CRender::accumulate_volumetric_sun");
 
 	if (!(g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity > 0.05f) || !ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
 	{

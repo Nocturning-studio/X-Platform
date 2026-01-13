@@ -294,6 +294,8 @@ void CAI_Crow::UpdateWorkload(float fdt)
 }
 void CAI_Crow::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 	if (m_pPhysicsShell)
 	{

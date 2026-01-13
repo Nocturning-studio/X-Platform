@@ -314,7 +314,7 @@ struct CRemoveOfflinePredicate
 
 void CSoundMemoryManager::update()
 {
-	OPTICK_EVENT("CSoundMemoryManager::Update");
+	//OPTICK_EVENT("CSoundMemoryManager::Update");
 
 	START_PROFILE("Memory Manager/sounds::update")
 

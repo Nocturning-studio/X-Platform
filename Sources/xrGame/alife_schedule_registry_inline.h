@@ -25,7 +25,7 @@ IC void CALifeScheduleRegistry::objects_per_update(const u32& objects_per_update
 
 IC void CALifeScheduleRegistry::update()
 {
-	OPTICK_EVENT("CALifeScheduleRegistry::update");
+	//OPTICK_EVENT("CALifeScheduleRegistry::update");
 
 	//	u32							count =
 	objects().empty() ? 0 : inherited::update(CUpdatePredicate(m_objects_per_update));

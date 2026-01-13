@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::Render()
 {
-	OPTICK_EVENT("CRender::Render");
+	PROFILE_FUNCTION();
 
 	if (g_dedicated_server)
 		return;

@@ -47,7 +47,7 @@ void CGameStateManager::Destroy()
 
 void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 {
-	OPTICK_EVENT("CGameStateManager::OnEvent");
+	//OPTICK_EVENT("CGameStateManager::OnEvent");
 
 	if (E == eQuit)
 	{
@@ -99,7 +99,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGameStateManager::OnFrame()
 {
-	OPTICK_EVENT("CGameStateManager::OnFrame");
+	PROFILE_FUNCTION();
 
 	// Обработка событий
 	Engine.Event.OnFrame();

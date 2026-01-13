@@ -1300,7 +1300,7 @@ extern Flags32 dbg_net_Draw_Flags;
 
 void game_sv_ArtefactHunt::OnRender()
 {
-	OPTICK_EVENT("game_sv_ArtefactHunt::OnRender");
+	//OPTICK_EVENT("game_sv_ArtefactHunt::OnRender");
 
 	if (dbg_net_Draw_Flags.test(1 << 9))
 	{

@@ -90,7 +90,7 @@ void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BO
 
 void CParticleEffect::OnFrame(u32 frame_dt)
 {
-	OPTICK_EVENT("CParticleEffect::OnFrame");
+	PROFILE_FUNCTION();
 
 	if (m_Def && m_RT_Flags.is(flRT_Playing))
 	{

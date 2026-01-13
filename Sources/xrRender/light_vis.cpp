@@ -10,7 +10,7 @@ const u32 cullfragments = 4;
 
 void light::vis_prepare()
 {
-	OPTICK_EVENT("light::vis_prepare");
+	////OPTICK_EVENT("light::vis_prepare");
 
 	//	. test is sheduled for future	= keep old result
 	//	. test time comes :)
@@ -56,7 +56,7 @@ void light::vis_prepare()
 
 void light::vis_update()
 {
-	OPTICK_EVENT("light::vis_update");
+	////OPTICK_EVENT("light::vis_update");
 
 	//	. not pending	->>> return (early out)
 	//	. test-result:	visible:

@@ -180,14 +180,14 @@ bool CUIDragItem::OnMouse(float x, float y, EUIMessages mouse_action)
 
 void CUIDragItem::OnRender()
 {
-	OPTICK_EVENT("CUIDragItem::OnRender");
+	//OPTICK_EVENT("CUIDragItem::OnRender");
 
 	Draw();
 }
 
 void CUIDragItem::OnFrame()
 {
-	OPTICK_EVENT("CUIDragItem::OnFrame");
+	//PROFILE_FUNCTION();
 
 	Update();
 }

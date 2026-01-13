@@ -303,7 +303,7 @@ bool CUIGameDM::IR_OnKeyboardRelease(int dik)
 
 void CUIGameDM::OnFrame()
 {
-	OPTICK_EVENT("CUIGameDM::OnFrame");
+	//PROFILE_FUNCTION();
 
 	inherited::OnFrame();
 	m_pMoneyIndicator->Update();
@@ -316,7 +316,7 @@ void CUIGameDM::OnFrame()
 
 void CUIGameDM::Render()
 {
-	OPTICK_EVENT("CUIGameDM::Render");
+	//OPTICK_EVENT("CUIGameDM::Render");
 
 	inherited::Render();
 	m_pMoneyIndicator->Draw();

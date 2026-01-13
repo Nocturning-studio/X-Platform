@@ -217,6 +217,8 @@ void CTextConsole::ProcessOutput()
 
 void CTextConsole::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	// inherited::OnFrame(); // НЕ вызываем родительский метод, там логика GUI нам не нужна
 
 	// 1. Выводим новые логи

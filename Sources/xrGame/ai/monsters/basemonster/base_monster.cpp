@@ -104,6 +104,8 @@ CBaseMonster::~CBaseMonster()
 
 void CBaseMonster::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 
 	if (g_Alive())

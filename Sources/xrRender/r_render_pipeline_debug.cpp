@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::render_stage_main_geometry()
 {
-	OPTICK_EVENT("CRender::render_stage_main_geometry");
+	PROFILE_FUNCTION();
 
 	RenderBackend.set_ColorWriteEnable(TRUE);
 
@@ -62,6 +62,8 @@ void CRender::render_stage_main_geometry()
 
 void CRender::RenderDebug()
 {
+	PROFILE_FUNCTION();
+
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
 	HOM.Enable();

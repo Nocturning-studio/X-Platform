@@ -137,7 +137,7 @@ void CUIGameAHunt::SetBuyMsgCaption(LPCSTR str)
 
 void CUIGameAHunt::Render()
 {
-	OPTICK_EVENT("CUIGameAHunt::Render");
+	//OPTICK_EVENT("CUIGameAHunt::Render");
 
 	m_pReinforcementInidcator->Draw();
 	inherited::Render();
@@ -145,7 +145,7 @@ void CUIGameAHunt::Render()
 
 void CUIGameAHunt::OnFrame()
 {
-	OPTICK_EVENT("CUIGameAHunt::OnFrame");
+	//PROFILE_FUNCTION();
 
 	inherited::OnFrame();
 	m_pReinforcementInidcator->Update();

@@ -19,7 +19,7 @@ CUICustomItem::~CUICustomItem()
 
 void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos, u32 color, float x1, float y1, float x2, float y2)
 {
-	OPTICK_EVENT("CUICustomItem::Render");
+	//OPTICK_EVENT("CUICustomItem::Render");
 
 	CTexture* T = RenderBackend.get_ActiveTexture(0);
 	Fvector2 ts;
@@ -81,7 +81,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos, u32 color, fl
 //--------------------------------------------------------------------
 void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos, u32 color)
 {
-	OPTICK_EVENT("CUICustomItem::Render");
+	//OPTICK_EVENT("CUICustomItem::Render");
 
 	Render(Pointer, pos, color, iVisRect.x1, iVisRect.y1, iVisRect.x2, iVisRect.y2);
 }
@@ -89,7 +89,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos, u32 color)
 
 void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos_ns, u32 color, float angle)
 {
-	OPTICK_EVENT("CUICustomItem::Render");
+	//OPTICK_EVENT("CUICustomItem::Render");
 
 	//.	angle = -0.3f;
 	CTexture* T = RenderBackend.get_ActiveTexture(0);

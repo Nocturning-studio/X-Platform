@@ -47,7 +47,7 @@ CPhysicsShellAnimator::~CPhysicsShellAnimator()
 
 void CPhysicsShellAnimator::OnFrame()
 {
-	OPTICK_EVENT("CPhysicsShellAnimator::OnFrame");
+	//PROFILE_FUNCTION();
 
 	m_pPhysicsShell->Enable();
 

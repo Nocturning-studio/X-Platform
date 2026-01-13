@@ -167,7 +167,7 @@ void CPHWorld::SetGravity(float g)
 
 void CPHWorld::OnFrame()
 {
-	OPTICK_EVENT("CPHWorld::OnFrame");
+	//PROFILE_FUNCTION();
 
 	// Msg									("------------- physics: %d / %d",u32(Engine.TimeManager.GetFrameCount()),u32(m_steps_num));
 	// просчитать полет пуль

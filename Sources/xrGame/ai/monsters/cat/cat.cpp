@@ -147,6 +147,8 @@ void CCat::CheckSpecParams(u32 spec_params)
 
 void CCat::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 }
 

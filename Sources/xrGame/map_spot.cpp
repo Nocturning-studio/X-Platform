@@ -35,7 +35,7 @@ LPCSTR CMapSpot::GetHint()
 
 void CMapSpot::Update()
 {
-	OPTICK_EVENT("CMapSpot::update");
+	//OPTICK_EVENT("CMapSpot::update");
 
 	inherited::Update();
 	if (m_bCursorOverWindow)

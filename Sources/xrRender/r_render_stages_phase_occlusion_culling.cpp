@@ -2,7 +2,7 @@
 
 void CRender::phase_occq()
 {
-	OPTICK_EVENT("CRenderTarget::phase_occq");
+	////OPTICK_EVENT("CRenderTarget::phase_occq");
 
 	RenderBackend.set_Render_Target_Surface(Device.dwWidth, Device.dwHeight, HW.pBaseRT);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);

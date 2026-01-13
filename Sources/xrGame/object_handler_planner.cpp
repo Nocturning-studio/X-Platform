@@ -531,7 +531,7 @@ void CObjectHandlerPlanner::remove_item(CInventoryItem* inventory_item)
 
 void CObjectHandlerPlanner::update()
 {
-	OPTICK_EVENT("CObjectHandlerPlanner::update");
+	//OPTICK_EVENT("CObjectHandlerPlanner::update");
 
 #ifdef LOG_ACTION
 	if ((psAI_Flags.test(aiGOAPObject) && !m_use_log) || (!psAI_Flags.test(aiGOAPObject) && m_use_log))

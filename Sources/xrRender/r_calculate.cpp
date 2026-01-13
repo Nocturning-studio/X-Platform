@@ -13,7 +13,7 @@ extern float r_ssaGLOD_start, r_ssaGLOD_end;
 
 void CRender::Calculate()
 {
-	OPTICK_EVENT("CRender::Calculate");
+	PROFILE_FUNCTION();
 
 	// Transfer to global space to avoid deep pointer access
 	IRender_Target* T = getTarget();

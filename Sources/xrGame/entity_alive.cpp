@@ -194,7 +194,7 @@ void CEntityAlive::reload(LPCSTR section)
 
 void CEntityAlive::shedule_Update(u32 dt)
 {
-	OPTICK_EVENT("CEntityAlive::shedule_Update");
+	//OPTICK_EVENT("CEntityAlive::shedule_Update");
 
 	inherited::shedule_Update(dt);
 

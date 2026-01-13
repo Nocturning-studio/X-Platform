@@ -104,7 +104,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 
 void CHUDTarget::CursorOnFrame()
 {
-	OPTICK_EVENT("CHUDTarget::OnFrame");
+	//PROFILE_FUNCTION();
 
 	Fvector p1, dir;
 
@@ -129,7 +129,7 @@ void CHUDTarget::CursorOnFrame()
 extern ENGINE_API BOOL g_bRendering;
 void CHUDTarget::Render()
 {
-	OPTICK_EVENT("CHUDTarget::Render");
+	//OPTICK_EVENT("CHUDTarget::Render");
 
 	VERIFY(g_bRendering);
 

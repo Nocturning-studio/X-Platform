@@ -233,7 +233,7 @@ bool CSightManager::need_correction(float x1, float x2, float x3)
 
 void CSightManager::Exec_Look(float dt)
 {
-	OPTICK_EVENT("CSightManager::Exec_Look");
+	//OPTICK_EVENT("CSightManager::Exec_Look");
 	START_PROFILE("Sight Manager")
 
 	typedef MonsterSpace::SBoneRotation CBoneRotation;
@@ -335,7 +335,7 @@ void CSightManager::setup(const CSightAction& sight_action)
 
 void CSightManager::update()
 {
-	OPTICK_EVENT("CSightManager::update");
+	//OPTICK_EVENT("CSightManager::update");
 
 	START_PROFILE("Sight Manager")
 	if (enabled())

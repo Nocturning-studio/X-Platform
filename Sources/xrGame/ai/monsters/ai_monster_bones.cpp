@@ -107,6 +107,8 @@ void bonesManipulation::SetMotion(CBoneInstance* bone, u8 axis, float target_yaw
 
 void bonesManipulation::Update(CBoneInstance* bone, u32 cur_time)
 {
+	//PROFILE_FUNCTION();
+
 	// провести обработку всех костей
 	bool bones_were_turned = false;
 

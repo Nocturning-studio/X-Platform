@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::output_frame_to_screen()
 {
-	OPTICK_EVENT("CRender::output_frame_to_screen");
+	////OPTICK_EVENT("CRender::output_frame_to_screen");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);

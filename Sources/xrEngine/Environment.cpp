@@ -456,7 +456,7 @@ void CEnvironment::lerp(float& current_weight)
 
 void CEnvironment::OnFrame()
 {
-	OPTICK_EVENT("CEnvironment::OnFrame");
+	PROFILE_FUNCTION();
 
 #ifdef _EDITOR
 	SetGameTime(fGameTime + Engine.TimeManager.GetDeltaTime() * fTimeFactor, fTimeFactor);

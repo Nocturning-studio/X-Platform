@@ -105,6 +105,18 @@ class CDetailManager
 	};
 
 	typedef xr_vector<xr_vector<SlotItemVec*>> vis_list;
+
+	// === ИЗМЕНЕНИЕ: Двойной буфер ===
+	// [2] - два набора данных
+	// [3] - три волны (Static, Wave1, Wave2)
+	vis_list m_visibles[2][3];
+
+	u32 m_vis_render_id; // Индекс буфера, который сейчас рисуем
+	u32 m_vis_calc_id;	 // Индекс буфера, который сейчас считаем
+
+	// Сохраненная позиция камеры для расчета в потоке (чтобы не было гонок данных с Device)
+	Fvector m_vCameraPos_calc; 
+	Fmatrix m_mFullTransform_calc;
 	typedef svector<CDetail*, dm_max_objects> DetailVec;
 	typedef DetailVec::iterator DetailIt;
 	typedef poolSS<SlotItem, 4096> PSS;
@@ -117,7 +129,6 @@ class CDetailManager
 	DetailSlot DS_empty;
 
 	DetailVec objects;
-	vis_list m_visibles[3];
 
 	IDirect3DVertexBuffer9* hw_InstanceVB;
 	u32 hw_MaxInstances;
@@ -189,6 +200,7 @@ class CDetailManager
 	void Load();
 	void Unload();
 	void Render();
+	void PrepareToCalc();
 	void ClearVisible();
 
 	xrCriticalSection MT;
@@ -196,12 +208,6 @@ class CDetailManager
 	volatile u32 m_frame_rendered;
 
 	void __stdcall MT_CALC();
-	ICF void MT_SYNC()
-	{
-		if (m_frame_calc == Engine.TimeManager.GetFrameCount())
-			return;
-		MT_CALC();
-	}
 
 	CDetailManager();
 	virtual ~CDetailManager();

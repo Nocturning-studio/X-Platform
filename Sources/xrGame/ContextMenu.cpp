@@ -32,7 +32,7 @@ void CContextMenu::Load(CInifile* INI, LPCSTR SECT)
 }
 void CContextMenu::Render(CGameFont* F, u32 cT, u32 cI, float s)
 {
-	OPTICK_EVENT("CContextMenu::Render");
+	//OPTICK_EVENT("CContextMenu::Render");
 
 	F->SetHeightI(0.05f);
 	F->SetColor(cT);

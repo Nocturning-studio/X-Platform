@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_antialiasing()
 {
-	OPTICK_EVENT("CRender::render_antialiasing");
+	////OPTICK_EVENT("CRender::render_antialiasing");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);

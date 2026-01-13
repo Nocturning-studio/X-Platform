@@ -585,7 +585,7 @@ void game_sv_GameState::u_EventSend(NET_Packet& P, u32 dwFlags)
 
 void game_sv_GameState::Update()
 {
-	OPTICK_EVENT("game_sv_GameState::update");
+	//OPTICK_EVENT("game_sv_GameState::update");
 
 	for (u32 it = 0; it < m_server->client_Count(); ++it)
 	{

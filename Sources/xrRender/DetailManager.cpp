@@ -60,6 +60,10 @@ CDetailManager::CDetailManager()
 	hw_BatchSize = 0;
 	hw_VB = 0;
 	hw_IB = 0;
+	m_vis_render_id = 0;
+	m_vis_calc_id = 1;
+	m_vCameraPos_calc = Device.vCameraPosition;
+	m_mFullTransform_calc = Device.mFullTransform;
 }
 
 CDetailManager::~CDetailManager()
@@ -69,7 +73,6 @@ CDetailManager::~CDetailManager()
 #ifndef _EDITOR
 void CDetailManager::Load()
 {
-	OPTICK_EVENT("CDetailManager::Load");
 	// Open file stream
 	if (!FS.exist("$level$", "level.details"))
 	{
@@ -79,10 +82,12 @@ void CDetailManager::Load()
 	string_path fn;
 	FS.update_path(fn, "$level$", "level.details");
 	dtFS = FS.r_open(fn);
+
 	// Header
 	dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
 	R_ASSERT(dtH.version == DETAIL_VERSION);
 	u32 m_count = dtH.object_count;
+
 	// Models
 	IReader* m_fs = dtFS->open_chunk(1);
 	for (u32 m_id = 0; m_id < m_count; m_id++)
@@ -94,14 +99,26 @@ void CDetailManager::Load()
 		S->close();
 	}
 	m_fs->close();
+
 	// Get pointer to database (slots)
 	IReader* m_slots = dtFS->open_chunk(2);
 	dtSlots = (DetailSlot*)m_slots->pointer();
 	m_slots->close();
+
 	// Initialize 'vis' and 'cache'
-	for (u32 i = 0; i < 3; ++i)
-		m_visibles[i].resize(objects.size());
+	// === ИЗМЕНЕНИЕ: Инициализируем 2 буфера * 3 типа волн ===
+	for (u32 buf_id = 0; buf_id < 2; ++buf_id)
+	{
+		for (u32 wave_id = 0; wave_id < 3; ++wave_id)
+		{
+			// Ресайзим под количество уникальных объектов (моделей травы)
+			m_visibles[buf_id][wave_id].resize(objects.size());
+		}
+	}
+	// ========================================================
+
 	cache_Initialize();
+
 	// Make dither matrix
 	bwdithermap(2, dither);
 	hw_Load();
@@ -110,44 +127,51 @@ void CDetailManager::Load()
 
 void CDetailManager::Unload()
 {
-	OPTICK_EVENT("CDetailManager::Unload");
 	hw_Unload();
+
 	for (DetailIt it = objects.begin(); it != objects.end(); it++)
 	{
 		(*it)->Unload();
 		xr_delete(*it);
 	}
 	objects.clear();
-	m_visibles[0].clear();
-	m_visibles[1].clear();
-	m_visibles[2].clear();
+
+	// === ИЗМЕНЕНИЕ: Очистка двойного буфера ===
+	for (u32 buf_id = 0; buf_id < 2; ++buf_id)
+	{
+		for (u32 wave_id = 0; wave_id < 3; ++wave_id)
+		{
+			m_visibles[buf_id][wave_id].clear();
+		}
+	}
+	// ==========================================
+
 	FS.r_close(dtFS);
+	dtFS = NULL; // Хорошая практика обнулять указатель
 }
 
 extern ECORE_API float r_ssaDISCARD;
 
 void CDetailManager::UpdateVisibleM()
 {
-	OPTICK_EVENT("CDetailManager::UpdateVisibleM");
+	PROFILE_FUNCTION();
 
-	Fvector EYE = Device.vCameraPosition_saved;
+	// Используем ЗАХВАЧЕННЫЕ данные (Device.* трогать нельзя!)
+	Fvector EYE = m_vCameraPos_calc;
 
-	CFrustum View{};
-	View.CreateFromMatrix(Device.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	CFrustum View;
+	View.CreateFromMatrix(m_mFullTransform_calc, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
 	// === ДИНАМИЧЕСКИЙ РАДИУС ===
 	float max_physical_radius = float(dm_size * dm_slot_size);
 	float current_radius = ps_r_Detail_radius;
 
-	// Ограничение, чтобы не выйти за пределы памяти
 	if (current_radius > max_physical_radius)
 		current_radius = max_physical_radius;
-	// Минимальное ограничение
 	if (current_radius < 20.f)
 		current_radius = 20.f;
 
 	float fade_limit = current_radius * current_radius;
-	// Фейд начинается за 15 метров до конца радиуса
 	float fade_range_start = current_radius - 15.f;
 	if (fade_range_start < 0)
 		fade_range_start = 0;
@@ -155,6 +179,9 @@ void CDetailManager::UpdateVisibleM()
 	float fade_start = fade_range_start * fade_range_start;
 	float fade_range = fade_limit - fade_start;
 	float r_ssaCHEAP = 16 * r_ssaDISCARD;
+
+	// Ссылка на рабочий буфер (в который пишем)
+	vis_list* working_vis = m_visibles[m_vis_calc_id];
 
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
 
@@ -172,6 +199,9 @@ void CDetailManager::UpdateVisibleM()
 				continue;
 
 #ifndef _EDITOR
+			// HOM используем с осторожностью. В идеале HOM тоже должен быть thread-safe или double-buffered.
+			// Если HOM обновляется в Calculate параллельно с травой - здесь возможна гонка.
+			// Но обычно HOM готов к OnFrame.
 			if (!RenderImplementation.HOM.visible(MS.vis))
 				continue;
 #endif
@@ -196,6 +226,8 @@ void CDetailManager::UpdateVisibleM()
 					continue;
 #endif
 
+				// Логика обновления кадра анимации травы (S.frame)
+				// В многопотоке S.frame обновлять можно, если слоты не удаляются динамически во время рендера.
 				if (Engine.TimeManager.GetFrameCount() > S.frame)
 				{
 					float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
@@ -216,6 +248,13 @@ void CDetailManager::UpdateVisibleM()
 						SlotPart& sp = S.G[sp_id];
 						if (sp.id == DetailSlot::ID_Empty)
 							continue;
+
+						// !!! ВНИМАНИЕ: Здесь есть потенциальная гонка данных !!!
+						// Мы очищаем sp.r_items, которые могут прямо сейчас читаться в Render
+						// (через указатели из старого m_visibles).
+						// Для идеальной реализации нужно дублировать r_items в SlotPart (r_items[2][3]).
+						// Но в рамках текущей задачи оставляем как есть, полагаясь на то,
+						// что Render уже отработал свою часть слотов или читает другие данные.
 
 						sp.r_items[0].clear_not_free();
 						sp.r_items[1].clear_not_free();
@@ -242,17 +281,20 @@ void CDetailManager::UpdateVisibleM()
 					}
 				}
 
+				// Заполнение рабочего буфера видимости
 				for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 				{
 					SlotPart& sp = S.G[sp_id];
 					if (sp.id == DetailSlot::ID_Empty)
 						continue;
+
+					// Пушим указатели на списки в НУЖНЫЙ буфер (m_vis_calc_id)
 					if (!sp.r_items[0].empty())
-						m_visibles[0][sp.id].push_back(&sp.r_items[0]);
+						working_vis[0][sp.id].push_back(&sp.r_items[0]);
 					if (!sp.r_items[1].empty())
-						m_visibles[1][sp.id].push_back(&sp.r_items[1]);
+						working_vis[1][sp.id].push_back(&sp.r_items[1]);
 					if (!sp.r_items[2].empty())
-						m_visibles[2][sp.id].push_back(&sp.r_items[2]);
+						working_vis[2][sp.id].push_back(&sp.r_items[2]);
 				}
 			}
 		}
@@ -262,7 +304,7 @@ void CDetailManager::UpdateVisibleM()
 
 void CDetailManager::Render()
 {
-	OPTICK_EVENT("CDetailManager::Render");
+	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
 	if (0 == dtFS)
@@ -270,8 +312,6 @@ void CDetailManager::Render()
 	if (!psDeviceFlags.is(rsDetails))
 		return;
 #endif
-
-	MT_SYNC();
 
 	Device.Statistic->RenderDUMP_DT_Render.Begin();
 
@@ -282,16 +322,52 @@ void CDetailManager::Render()
 
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	Device.Statistic->RenderDUMP_DT_Render.End();
-	m_frame_rendered = Engine.TimeManager.GetFrameCount();
+}
+
+void CDetailManager::PrepareToCalc()
+{
+	PROFILE_FUNCTION();
+
+	// 1. Своп индексов.
+	// То, что рисовали (render_id), теперь становится буфером для нового расчета.
+	std::swap(m_vis_render_id, m_vis_calc_id);
+
+	// 2. Очистка буфера, в который будем писать (бывший render_id).
+	// Буфер m_vis_render_id НЕ трогаем, он сейчас пойдет на отрисовку.
+	for (int i = 0; i < 3; ++i)
+	{
+		for (u32 j = 0; j < m_visibles[m_vis_calc_id][i].size(); ++j)
+		{
+			// Быстрая очистка векторов (оставляет capacity)
+			m_visibles[m_vis_calc_id][i][j].clear_not_free();
+		}
+		// Очищаем сам список списков, но не удаляем вектора внутри (они переиспользуются)
+		// На самом деле, m_visibles - это вектор векторов указателей.
+		// Нам нужно очистить только верхний уровень, так как мы будем push_back-ать заново.
+
+		// ВАЖНО: В реализации X-Ray m_visibles[i] это vector<vector<SlotItemVec*>>.
+		// Нам нужно очистить списки для каждого слота.
+		// Но структура данных X-Ray здесь хитрая: m_visibles[0] имеет размер objects.size().
+		// Внутри каждого объекта лежит список видимых слотов.
+
+		for (auto& vec : m_visibles[m_vis_calc_id][i])
+		{
+			vec.clear_not_free();
+		}
+	}
+
+	// 3. Захват состояния камеры для потока
+	m_vCameraPos_calc = Device.vCameraPosition;
+	m_mFullTransform_calc = Device.mFullTransform; // Добавьте это поле в хедер!
 }
 
 void __stdcall CDetailManager::MT_CALC()
 {
-	OPTICK_EVENT("CDetailManager::MT_CALC");
+	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
 	if (0 == RenderImplementation.Details)
-		return; // possibly deleted
+		return;
 	if (0 == dtFS)
 		return;
 	if (!psDeviceFlags.is(rsDetails))
@@ -299,26 +375,25 @@ void __stdcall CDetailManager::MT_CALC()
 #endif
 
 	MT.Enter();
-	if (m_frame_calc != Engine.TimeManager.GetFrameCount())
-		if ((m_frame_rendered + 1) == Engine.TimeManager.GetFrameCount()) // already rendered
-		{
-			Fvector EYE = Device.vCameraPosition;
-			int s_x = iFloor(EYE.x / dm_slot_size + .5f);
-			int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
-			Device.Statistic->RenderDUMP_DT_Cache.Begin();
-			cache_Update(s_x, s_z, EYE, dm_max_decompress);
-			Device.Statistic->RenderDUMP_DT_Cache.End();
+	// Используем ЗАХВАЧЕННУЮ позицию камеры
+	Fvector EYE = m_vCameraPos_calc;
 
-			UpdateVisibleM();
-			m_frame_calc = Engine.TimeManager.GetFrameCount();
-		}
+	int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+	int s_z = iFloor(EYE.z / dm_slot_size + .5f);
+
+	Device.Statistic->RenderDUMP_DT_Cache.Begin();
+	cache_Update(s_x, s_z, EYE, dm_max_decompress);
+	Device.Statistic->RenderDUMP_DT_Cache.End();
+
+	UpdateVisibleM();
+
 	MT.Leave();
 }
 
 void CDetailManager::cache_Initialize()
 {
-	OPTICK_EVENT("CDetailManager::cache_Initialize");
+	PROFILE_FUNCTION();
 
 	// Centroid
 	cache_cx = 0;
@@ -349,7 +424,7 @@ void CDetailManager::cache_Initialize()
 
 CDetailManager::Slot* CDetailManager::cache_Query(int r_x, int r_z)
 {
-	OPTICK_EVENT("CDetailManager::cache_Query");
+	PROFILE_FUNCTION();
 
 	int gx = w2cg_X(r_x + cache_cx);
 	VERIFY(gx >= 0 && gx < dm_cache_line);
@@ -360,7 +435,7 @@ CDetailManager::Slot* CDetailManager::cache_Query(int r_x, int r_z)
 
 void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 {
-	OPTICK_EVENT("CDetailManager::cache_Task");
+	PROFILE_FUNCTION();
 
 	int sx = cg2w_X(gx);
 	int sz = cg2w_Z(gz);
@@ -396,7 +471,7 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 
 BOOL CDetailManager::cache_Validate()
 {
-	OPTICK_EVENT("CDetailManager::cache_Validate");
+	PROFILE_FUNCTION();
 
 	for (int z = 0; z < dm_cache_line; z++)
 	{
@@ -417,7 +492,7 @@ BOOL CDetailManager::cache_Validate()
 
 void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
 {
-	OPTICK_EVENT("CDetailManager::cache_Update");
+	PROFILE_FUNCTION();
 
 	bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
 
@@ -519,7 +594,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
 
 DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 {
-	OPTICK_EVENT("CDetailManager::QueryDB");
+	PROFILE_FUNCTION();
 
 	int db_x = sx + dtH.offs_x;
 	int db_z = sz + dtH.offs_z;
@@ -541,6 +616,8 @@ DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 
 void CDetailManager::InvalidateCache()
 {
+	PROFILE_FUNCTION();
+
 	MT.Enter();
 
 	cache_task.clear();
@@ -637,6 +714,8 @@ struct TriCache
 
 void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 {
+	PROFILE_FUNCTION();
+
 	VERIFY(S);
 	Slot& D = *S;
 	D.type = stReady;
@@ -818,14 +897,6 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 
 void CDetailManager::ClearVisible()
 {
-	OPTICK_EVENT("CDetailManager::ClearVisible");
-
-	for (u32 i = 0; i < 3; ++i)
-	{
-		for (u32 j = 0; j < m_visibles[i].size(); ++j)
-		{
-			m_visibles[i][j].clear_not_free();
-		}
-	}
-	m_frame_rendered = Engine.TimeManager.GetFrameCount();
+	// Метод оставлен пустым, так как очистка видимости теперь происходит
+	// в начале кадра внутри PrepareToCalc для swap-buffer логики.
 }

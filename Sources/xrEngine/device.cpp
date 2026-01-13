@@ -37,7 +37,7 @@ ref_light precache_light = 0;
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
-	OPTICK_EVENT("CRenderDevice::Begin");
+	//OPTICK_EVENT("CRenderDevice::Begin");
 
 	HW.Validate();
 	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
@@ -67,7 +67,7 @@ void CRenderDevice::Clear()
 
 void Present()
 {
-	OPTICK_EVENT("PRESENT");
+	PROFILE_FUNCTION();
 
 	Device.Statistic->RenderPresentation.Begin();
 
@@ -79,7 +79,7 @@ void Present()
 void CRenderDevice::End(void)
 {
 #ifndef DEDICATED_SERVER
-	OPTICK_EVENT("CRenderDevice::End");
+	PROFILE_FUNCTION();
 
 	VERIFY(HW.pDevice);
 
@@ -138,6 +138,7 @@ void CRenderDevice::SecondaryThreadProc(void* context)
 {
 	OPTICK_THREAD("X-Ray Secondary Thread");
 	OPTICK_FRAME("X-Ray Secondary Thread");
+	PROFILE_FUNCTION();
 
 	auto& device = *static_cast<CRenderDevice*>(context);
 	while (true)
@@ -159,31 +160,10 @@ void CRenderDevice::SecondaryThreadProc(void* context)
 	}
 }
 
-void CRenderDevice::RenderThreadProc(void* context)
-{
-	OPTICK_THREAD("X-Ray Render Thread");
-	OPTICK_FRAME("CRenderDevice::SecondaryThreadProc()");
-
-	auto& device = *static_cast<CRenderDevice*>(context);
-	while (true)
-	{
-		device.renderProcessFrame.Wait();
-		if (device.mt_bMustExit)
-		{
-			device.renderThreadExit.Set();
-			return;
-		}
-		device.seqRender.Process(rp_Render);
-		device.renderFrameDone.Set();
-	}
-}
-
 #include "igame_level.h"
 #include <ThreadUtil.h>
 void CRenderDevice::PreCache(u32 amount)
 {
-	OPTICK_EVENT("CRenderDevice::PreCache");
-
 	if (HW.Caps.bForceGPU_REF)
 		amount = 0;
 #ifdef DEDICATED_SERVER
@@ -208,8 +188,6 @@ ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
 void CRenderDevice::PrepareEventLoop()
 {
-	OPTICK_EVENT("CRenderDevice::PrepareEventLoop");
-
 	g_bLoaded = FALSE;
 
 	Msg("Preparing event loop...");
@@ -230,6 +208,8 @@ void CRenderDevice::PrepareEventLoop()
 
 void CRenderDevice::DoFrame()
 {
+	PROFILE_FUNCTION();
+
 	if (b_is_Ready)
 	{
 #ifdef DEDICATED_SERVER
@@ -321,8 +301,6 @@ void CRenderDevice::DoFrame()
 
 void CRenderDevice::EndEventLoop()
 {
-	OPTICK_EVENT("CRenderDevice::EndEventLoop");
-
 	Msg("Ending event loop...");
 
 	seqAppEnd.Process(rp_AppEnd);
@@ -338,7 +316,7 @@ void CRenderDevice::EndEventLoop()
 void ProcessLoading(RP_FUNC* f);
 void CRenderDevice::FrameMove()
 {
-	OPTICK_EVENT("CRenderDevice::FrameMove");
+	PROFILE_FUNCTION();
 
 	// Вся логика расчета времени перенесена в Engine.TimeManager.Update(),
 	// который вызывается в Engine.cpp перед DoFrame().
@@ -366,8 +344,6 @@ ENGINE_API BOOL bShowPauseString = TRUE;
 
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
-	OPTICK_EVENT("CRenderDevice::Pause");
-
 	static int snd_emitters_ = -1;
 
 #ifdef DEBUG
@@ -427,8 +403,6 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
-	OPTICK_EVENT("CRenderDevice::OnWM_Activate");
-
 	u16 fActive = LOWORD(wParam);
 	BOOL fMinimized = (BOOL)HIWORD(wParam);
 	BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
@@ -454,8 +428,6 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 
 void CRenderDevice::_SetupStates()
 {
-	OPTICK_EVENT("CRenderDevice::_SetupStates");
-
 	// General Render States
 	mView.identity();
 	mProject.identity();
@@ -509,8 +481,6 @@ void CRenderDevice::_SetupStates()
 
 void CRenderDevice::_Create(LPCSTR shName)
 {
-	OPTICK_EVENT("CRenderDevice::_Create");
-
 	Memory.mem_compact();
 
 	// after creation
@@ -536,8 +506,6 @@ void CRenderDevice::_Create(LPCSTR shName)
 
 void CRenderDevice::Create()
 {
-	OPTICK_EVENT("CRenderDevice::Create");
-
 	if (b_is_Ready)
 		return; // prevent double call
 	Statistic = xr_new<CStats>();
@@ -569,8 +537,6 @@ void CRenderDevice::Create()
 
 void CRenderDevice::_Destroy(BOOL bKeepTextures)
 {
-	OPTICK_EVENT("CRenderDevice::_Destroy");
-
 	DU.OnDeviceDestroy();
 	m_WireShader.destroy();
 	m_SelectionShader.destroy();
@@ -588,8 +554,6 @@ void CRenderDevice::_Destroy(BOOL bKeepTextures)
 
 void CRenderDevice::Destroy(void)
 {
-	OPTICK_EVENT("CRenderDevice::Destroy");
-
 	if (!b_is_Ready)
 		return;
 
@@ -622,8 +586,6 @@ void CRenderDevice::Destroy(void)
 #include "CustomHUD.h"
 void CRenderDevice::Reset(bool precache)
 {
-	OPTICK_EVENT("CRenderDevice::Reset");
-
 	Engine.DebugUI.OnResetBegin();
 
 #ifdef DEBUG
@@ -672,8 +634,6 @@ void CRenderDevice::Reset(bool precache)
 
 void CRenderDevice::Initialize()
 {
-	OPTICK_EVENT("CRenderDevice::Initialize");
-
 	Msg("Initializing Render Device...");
 
 	// Save window properties
@@ -713,8 +673,6 @@ void CRenderDevice::DumpFlags()
 
 void CRenderDevice::overdrawBegin()
 {
-	OPTICK_EVENT("CRenderDevice::overdrawBegin");
-
 	// Turn stenciling
 	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE));
 	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS));
@@ -738,8 +696,6 @@ void CRenderDevice::overdrawBegin()
 
 void CRenderDevice::overdrawEnd()
 {
-	OPTICK_EVENT("CRenderDevice::overdrawEnd");
-
 	// Set up the stencil states
 	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP));
 	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP));

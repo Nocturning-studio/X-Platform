@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_additional_postprocess()
 {
-	OPTICK_EVENT("CRender::combine_additional_postprocess");
+	////OPTICK_EVENT("CRender::combine_additional_postprocess");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -22,7 +22,7 @@ void CRender::combine_additional_postprocess()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_sun_shafts()
 {
-	OPTICK_EVENT("CRender::combine_sun_shafts");
+	////OPTICK_EVENT("CRender::combine_sun_shafts");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
@@ -35,7 +35,7 @@ void CRender::combine_sun_shafts()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_skybox()
 {
-	OPTICK_EVENT("CRender::render_skybox");
+	////OPTICK_EVENT("CRender::render_skybox");
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(NULL);
@@ -51,7 +51,7 @@ void CRender::render_skybox()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::precombine_scene()
 {
-	OPTICK_EVENT("CRender::combine_additional_postprocess");
+	////OPTICK_EVENT("CRender::combine_additional_postprocess");
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);

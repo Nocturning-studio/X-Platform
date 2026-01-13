@@ -150,7 +150,7 @@ const xr_vector<DetailPathManager::STravelPathPoint>& CMovementManager::path() c
 
 void CMovementManager::update_path()
 {
-	OPTICK_EVENT("CMovementManager::update_path");
+	//OPTICK_EVENT("CMovementManager::update_path");
 	START_PROFILE("Build Path::update")
 
 	if (!enabled() || wait_for_distributed_computation())
@@ -346,7 +346,7 @@ bool CMovementManager::can_use_distributed_compuations(u32 option) const
 
 void CMovementManager::on_frame(CPHMovementControl* movement_control, Fvector& dest_position)
 {
-	OPTICK_EVENT("CMovementManager::on_frame");
+	//OPTICK_EVENT("CMovementManager::on_frame");
 
 	if (enabled() && (m_path_state != ePathStatePathVerification) && (m_path_state != ePathStatePathCompleted))
 		update_path();

@@ -6,6 +6,10 @@
 #include "stdafx.h"
 #include "r_render_stages.h"
 ////////////////////////////////////////////////////////////////////////////////
+void CRender::PrepareToRender()
+{
+}
+
 IC bool pred_sp_sort(ISpatial* _1, ISpatial* _2)
 {
 	float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
@@ -40,7 +44,7 @@ void CRender::check_distort()
 
 void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 {
-	OPTICK_EVENT("CRender::render_main");
+	PROFILE_FUNCTION();
 
 	marker++;
 
@@ -182,7 +186,7 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 
 void CRender::query_wait()
 {
-	OPTICK_EVENT("CRender::Render - Sync point");
+	PROFILE_FUNCTION();
 
 	Device.Statistic->RenderDUMP_Wait_S.Begin();
 
@@ -212,7 +216,7 @@ void CRender::query_wait()
 
 void CRender::update_shadow_map_visibility()
 {
-	OPTICK_EVENT("CRender::update_shadow_map_visibility");
+	PROFILE_FUNCTION();
 
 	if (Lights_LastFrame.empty())
 		return;
@@ -242,7 +246,7 @@ void CRender::update_shadow_map_visibility()
 
 void CRender::render_depth_prepass()
 {
-	OPTICK_EVENT("CRender::render_depth_prepass()");
+	PROFILE_FUNCTION();
 
 	r_pmask(true, false); // enable priority "0"
 
@@ -276,7 +280,7 @@ void CRender::render_depth_prepass()
 
 void CRender::render_gbuffer_primary()
 {
-	OPTICK_EVENT("CRender::render_gbuffer_primary()");
+	PROFILE_FUNCTION();
 
 	r_pmask(true, false, true); // enable priority "0",+ capture wmarks
 
@@ -315,7 +319,7 @@ void CRender::render_gbuffer_primary()
 
 void CRender::render_gbuffer_secondary()
 {
-	OPTICK_EVENT("CRender::render_gbuffer_secondary()");
+	PROFILE_FUNCTION();
 
 	PortalTraverser.fade_render();
 
@@ -345,6 +349,8 @@ void CRender::render_gbuffer_secondary()
 
 void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 {
+	PROFILE_FUNCTION();
+
 	if (lights.empty())
 		return;
 
@@ -536,7 +542,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 void CRender::render_stage_forward()
 {
-	OPTICK_EVENT("CRender::render_stage_forward()");
+	PROFILE_FUNCTION();
 
 	VERIFY(0 == mapDistort.size());
 
@@ -597,7 +603,7 @@ void CRender::render_stage_forward()
 	RenderBackend.set_ZWriteEnable(FALSE);
 
 	// Заново наполняем граф из кэша.
-	render_main(Device.mFullTransform, false);
+	//render_main(Device.mFullTransform, false);
 	r_dsgraph_render_reuse();
 	r_dsgraph_render_graph(1);
 	r_dsgraph_render_sorted();
@@ -612,7 +618,7 @@ void CRender::render_stage_forward()
 
 void CRender::render_hom()
 {
-	OPTICK_EVENT("CRender::render_hom");
+	PROFILE_FUNCTION();
 
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View = 0;
@@ -626,7 +632,7 @@ void CRender::render_hom()
 
 void CRender::render_stage_occlusion_culling()
 {
-	OPTICK_EVENT("CRender::OcclusionCulling");
+	PROFILE_FUNCTION();
 
 	phase_occq();
 
@@ -634,7 +640,7 @@ void CRender::render_stage_occlusion_culling()
 	LP_pending.clear();
 
 	{
-		OPTICK_EVENT("CRender::OcclusionCulling-Tests");
+		////OPTICK_EVENT("CRender::OcclusionCulling-Tests");
 
 		light_Package& LP = Lights.package;
 
@@ -688,7 +694,7 @@ void CRender::render_stage_occlusion_culling()
 
 void CRender::render_sun()
 {
-	OPTICK_EVENT("CRender::render_sun");
+	PROFILE_FUNCTION();
 
 	Device.Statistic->RenderCALC_SUN.Begin();
 
@@ -701,7 +707,7 @@ void CRender::render_sun()
 
 void CRender::render_lights()
 {
-	OPTICK_EVENT("CRender::render_lights()");
+	PROFILE_FUNCTION();
 
 	Device.Statistic->RenderCALC_LIGHTS.Begin();
 
@@ -725,6 +731,8 @@ void CRender::render_lights()
 
 void CRender::combine_scene()
 {
+	PROFILE_FUNCTION();
+
 	if (ps_r_shading_mode == 1)
 		render_bent_normals();
 
@@ -749,7 +757,7 @@ void CRender::combine_scene()
 
 void CRender::render_postprocess()
 {
-	OPTICK_EVENT("CRender::render_postprocess");
+	PROFILE_FUNCTION();
 
 	Device.Statistic->RenderCALC_POSTPROCESS.Begin();
 

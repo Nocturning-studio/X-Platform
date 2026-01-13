@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::clear_gbuffer()
 {
-	OPTICK_EVENT("CRenderTarget::clear_gbuffer");
+	////OPTICK_EVENT("CRenderTarget::clear_gbuffer");
 
 	if (ps_r_shading_mode == 0)
 		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
@@ -25,7 +25,7 @@ void CRender::clear_gbuffer()
 
 void CRender::set_gbuffer()
 {
-	OPTICK_EVENT("CRenderTarget::set_gbuffer");
+	////OPTICK_EVENT("CRenderTarget::set_gbuffer");
 
 	if (ps_r_shading_mode == 0)
 		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 

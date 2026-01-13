@@ -15,7 +15,7 @@
 // Зрение, слух, вероятность победы, выгодность противника
 void CBaseMonster::UpdateMemory()
 {
-	OPTICK_EVENT("CBaseMonster::UpdateMemory");
+	//PROFILE_FUNCTION();
 
 	// Обновить память
 	EnemyMemory.update();

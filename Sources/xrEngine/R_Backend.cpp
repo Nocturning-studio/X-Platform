@@ -6,7 +6,7 @@ ENGINE_API CBackend RenderBackend;
 // Create Quad-IB
 void CBackend::CreateQuadIB()
 {
-	OPTICK_EVENT("CBackend::CreateQuadIB");
+	//OPTICK_EVENT("CBackend::CreateQuadIB");
 
 	const u32 dwTriCount = 4 * 1024;
 	const u32 dwIdxCount = dwTriCount * 2 * 3;
@@ -38,7 +38,7 @@ void CBackend::CreateQuadIB()
 // Device dependance
 void CBackend::OnDeviceCreate()
 {
-	OPTICK_EVENT("CBackend::OnDeviceCreate");
+	//OPTICK_EVENT("CBackend::OnDeviceCreate");
 
 	CreateQuadIB();
 
@@ -56,7 +56,7 @@ void CBackend::OnDeviceCreate()
 
 void CBackend::OnDeviceDestroy()
 {
-	OPTICK_EVENT("CBackend::OnDeviceDestroy");
+	//OPTICK_EVENT("CBackend::OnDeviceDestroy");
 
 	// streams
 	Index.Destroy();

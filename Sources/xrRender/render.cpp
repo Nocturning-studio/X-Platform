@@ -54,8 +54,6 @@ float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
 ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq)
 {
-	OPTICK_EVENT("CRender::rimp_select_sh_static");
-
 	if (!pVisual)
 	{
 		return 0;
@@ -96,8 +94,6 @@ ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdi
 
 ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq)
 {
-	OPTICK_EVENT("CRender::rimp_select_sh_dynamic");
-
 	if (!pVisual)
 	{
 		return 0;
@@ -224,8 +220,6 @@ static class cl_is_hud_render_phase : public R_constant_setup
 //////////////////////////////////////////////////////////////////////////
 void CRender::CheckHWRenderSupporting()
 {
-	OPTICK_EVENT("CRender::CheckHWRenderSupporting");
-
 	R_ASSERT2(CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor) >= CAP_VERSION(3, 0),
 			  make_string("Your graphics accelerator don`t meet minimal mod system requirements (DX9.0c supporting)"));
 
@@ -251,8 +245,6 @@ void CRender::CheckHWRenderSupporting()
 // update with vid_restart
 void CRender::update_options()
 {
-	OPTICK_EVENT("CRender::update_options");
-
 	o.smapsize = 1024;
 
 	o.nvdbt = HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
@@ -263,8 +255,6 @@ void CRender::update_options()
 //////////////////////////////////////////////////////////////////////
 CShaderMacros CRender::FetchShaderMacros()
 {
-	OPTICK_EVENT("CRender::FetchShaderMacros");
-
 	CShaderMacros macros;
 
 	macros.add(m_skinning < 0, "SKIN_NONE", "1");
@@ -283,8 +273,6 @@ CShaderMacros CRender::FetchShaderMacros()
 //////////////////////////////////////////////////////////////////////////
 void CRender::create()
 {
-	OPTICK_EVENT("CRender::create");
-
 	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
 
 	CheckHWRenderSupporting();
@@ -329,8 +317,6 @@ void CRender::create()
 
 void CRender::destroy()
 {
-	OPTICK_EVENT("CRender::destroy");
-
 	::PortalTraverser.destroy();
 	_RELEASE(q_sync_point[1]);
 	_RELEASE(q_sync_point[0]);
@@ -345,8 +331,6 @@ void CRender::destroy()
 
 void CRender::reset_begin()
 {
-	OPTICK_EVENT("CRender::reset_begin");
-
 	// Update incremental shadowmap-visibility solver
 	// BUG-ID: 10646
 	{
@@ -375,8 +359,6 @@ void CRender::reset_begin()
 
 void CRender::reset_end()
 {
-	OPTICK_EVENT("CRender::reset_end");
-
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 	HWOCC.occq_create(occq_size);
@@ -395,66 +377,59 @@ void CRender::reset_end()
 
 void CRender::OnFrame()
 {
-	OPTICK_EVENT("CRender::OnFrame");
+	PROFILE_FUNCTION();
 
 	Models->DeleteQueue();
-	if (ps_render_flags.test(RFLAG_EXP_MT_CALC) && !g_dedicated_server)
-	{
-		// MT-details (@front)
-		Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
 
-		// MT-HOM (@front)
-		Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::FastDelegate0<>(&HOM, &CHOM::MT_RENDER));
+	if (Details && Details->dtFS)
+	{
+		// 1. Подготовка: Своп буферов (новые данные -> в рендер, старые -> на перезапись)
+		// и захват позиции камеры.
+		Details->PrepareToCalc();
+
+		// 2. Запуск задачи в параллель.
+		// Details->MT_CALC() теперь работает с "теневым" буфером и не мешает рендеру.
+		Device.seqParallel.insert(Device.seqParallel.begin(),
+								  fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
 	}
+
+	// MT-HOM (@front)
+	Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::FastDelegate0<>(&HOM, &CHOM::MT_RENDER));
 }
 
 // Implementation
 IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent)
 {
-	OPTICK_EVENT("CRender::ros_create");
-
 	return xr_new<CROS_impl>();
 }
 
 void CRender::ros_destroy(IRender_ObjectSpecific*& p)
 {
-	OPTICK_EVENT("CRender::ros_destroy");
-
 	xr_delete(p);
 }
 
 IRender_Visual* CRender::model_Create(LPCSTR name, IReader* data)
 {
-	OPTICK_EVENT("CRender::model_Create");
-
 	return Models->Create(name, data);
 }
 
 IRender_Visual* CRender::model_CreateChild(LPCSTR name, IReader* data)
 {
-	OPTICK_EVENT("CRender::model_CreateChild");
-
 	return Models->CreateChild(name, data);
 }
 
 IRender_Visual* CRender::model_Duplicate(IRender_Visual* V)
 {
-	OPTICK_EVENT("CRender::model_Duplicate");
-
 	return Models->Instance_Duplicate(V);
 }
 
 void CRender::model_Delete(IRender_Visual*& V, BOOL bDiscard)
 {
-	OPTICK_EVENT("CRender::model_Delete");
-
 	Models->Delete(V, bDiscard);
 }
 
 IRender_DetailModel* CRender::model_CreateDM(IReader* F)
 {
-	OPTICK_EVENT("CRender::model_CreateDM");
-
 	CDetail* D = xr_new<CDetail>();
 	D->Load(F);
 	return D;
@@ -462,8 +437,6 @@ IRender_DetailModel* CRender::model_CreateDM(IReader* F)
 
 void CRender::model_Delete(IRender_DetailModel*& F)
 {
-	OPTICK_EVENT("CRender::model_Delete");
-
 	if (F)
 	{
 		CDetail* D = (CDetail*)F;
@@ -475,8 +448,6 @@ void CRender::model_Delete(IRender_DetailModel*& F)
 
 IRender_Visual* CRender::model_CreatePE(LPCSTR name)
 {
-	OPTICK_EVENT("CRender::model_CreatePE");
-
 	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	R_ASSERT3(SE, "Particle effect doesn't exist", name);
 	return Models->CreatePE(SE);
@@ -484,8 +455,6 @@ IRender_Visual* CRender::model_CreatePE(LPCSTR name)
 
 IRender_Visual* CRender::model_CreateParticles(LPCSTR name)
 {
-	OPTICK_EVENT("CRender::model_CreateParticles");
-
 	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	if (SE)
 		return Models->CreatePE(SE);
@@ -499,60 +468,44 @@ IRender_Visual* CRender::model_CreateParticles(LPCSTR name)
 
 void CRender::models_Prefetch()
 {
-	OPTICK_EVENT("CRender::models_Prefetch");
-
 	Models->Prefetch();
 }
 
 void CRender::models_Clear(BOOL b_complete)
 {
-	OPTICK_EVENT("CRender::models_Clear");
-
 	Models->ClearPool(b_complete);
 }
 
 ref_shader CRender::getShader(int id)
 {
-	OPTICK_EVENT("CRender::getShader");
-
 	VERIFY(id < int(Shaders.size()));
 	return Shaders[id];
 }
 
 IRender_Portal* CRender::getPortal(int id)
 {
-	OPTICK_EVENT("CRender::getPortal");
-
 	VERIFY(id < int(Portals.size()));
 	return Portals[id];
 }
 IRender_Sector* CRender::getSector(int id)
 {
-	OPTICK_EVENT("CRender::getSector");
-
 	VERIFY(id < int(Sectors.size()));
 	return Sectors[id];
 }
 
 IRender_Sector* CRender::getSectorActive()
 {
-	OPTICK_EVENT("CRender::getSectorActive");
-
 	return pLastSector;
 }
 
 IRender_Visual* CRender::getVisual(int id)
 {
-	OPTICK_EVENT("CRender::getVisual");
-
 	VERIFY(id < int(Visuals.size()));
 	return Visuals[id];
 }
 
 D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
 {
-	OPTICK_EVENT("CRender::getVB_Format");
-
 	if (_alt)
 	{
 		VERIFY(id < int(xDC.size()));
@@ -567,8 +520,6 @@ D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
 
 IDirect3DVertexBuffer9* CRender::getVB(int id, BOOL _alt)
 {
-	OPTICK_EVENT("CRender::getVB");
-
 	if (_alt)
 	{
 		VERIFY(id < int(xVB.size()));
@@ -583,8 +534,6 @@ IDirect3DVertexBuffer9* CRender::getVB(int id, BOOL _alt)
 
 IDirect3DIndexBuffer9* CRender::getIB(int id, BOOL _alt)
 {
-	OPTICK_EVENT("CRender::getIB");
-
 	if (_alt)
 	{
 		VERIFY(id < int(xIB.size()));
@@ -599,86 +548,62 @@ IDirect3DIndexBuffer9* CRender::getIB(int id, BOOL _alt)
 
 FSlideWindowItem* CRender::getSWI(int id)
 {
-	OPTICK_EVENT("CRender::getSWI");
-
 	VERIFY(id < int(SWIs.size()));
 	return &SWIs[id];
 }
 
 IRender_Target* CRender::getTarget()
 {
-	OPTICK_EVENT("CRender::getTarget");
-
 	return RenderTarget;
 }
 
 IEffectorsManager* CRender::getEffectorsManager()
 {
-	OPTICK_EVENT("CRender::getEffectorsManager");
-
 	return EffectorsManager;
 }
 
 IRender_Light* CRender::light_create()
 {
-	OPTICK_EVENT("CRender::light_create");
-
 	return Lights.Create();
 }
 
 IRender_Glow* CRender::glow_create()
 {
-	OPTICK_EVENT("CRender::glow_create");
-
 	return xr_new<CGlow>();
 }
 
 void CRender::flush()
 {
-	OPTICK_EVENT("CRender::flush");
-
 	r_dsgraph_render_graph(0);
 }
 
 BOOL CRender::occ_visible(vis_data& P)
 {
-	OPTICK_EVENT("CRender::occ_visible");
-
 	return HOM.visible(P);
 }
 
 BOOL CRender::occ_visible(sPoly& P)
 {
-	OPTICK_EVENT("CRender::occ_visible");
-
 	return HOM.visible(P);
 }
 
 BOOL CRender::occ_visible(Fbox& P)
 {
-	OPTICK_EVENT("CRender::occ_visible");
-
 	return HOM.visible(P);
 }
 
 void CRender::add_Visual(IRender_Visual* V)
 {
-	OPTICK_EVENT("CRender::add_Visual");
-
 	add_leafs_Dynamic(V);
 }
 
 void CRender::add_Geometry(IRender_Visual* V)
 {
-	OPTICK_EVENT("CRender::add_Geometry");
-
 	add_Static(V, View->getMask());
 }
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
-	OPTICK_EVENT("CRender::add_StaticWallmark");
-
 	if (g_dedicated_server)
 		return;
 
@@ -690,37 +615,27 @@ void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::
 
 void CRender::clear_static_wallmarks()
 {
-	OPTICK_EVENT("CRender::clear_static_wallmarks");
-
 	Wallmarks->clear();
 }
 
 void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
-	OPTICK_EVENT("CRender::add_SkeletonWallmark");
-
 	Wallmarks->AddSkeletonWallmark(wm);
 }
 
 void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start,
 								   const Fvector& dir, float size)
 {
-	OPTICK_EVENT("CRender::add_SkeletonWallmark");
-
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
-	OPTICK_EVENT("CRender::add_Occluder");
-
 	HOM.occlude(bb_screenspace);
 }
 
 void CRender::set_Object(IRenderable* O)
 {
-	OPTICK_EVENT("CRender::set_Object");
-
 	val_pObject = O;
 }
 
@@ -755,8 +670,6 @@ void CRender::set_render_mode(int mode)
 //////////////////////////////////////////////////////////////////////
 CRender::CRender() : m_bFirstFrameAfterReset(false)
 {
-	OPTICK_EVENT("CRender::CRender");
-
 	LPCSTR CompilerName = "D3DCompiler_43.dll";
 	Msg("Loading d3d compiler DLL: %s", CompilerName);
 	hCompiler = LoadLibrary(CompilerName);
@@ -771,8 +684,6 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 CRender::~CRender()
 {
-	OPTICK_EVENT("CRender::~CRender");
-
 	if (hCompiler)
 	{
 		FreeLibrary(hCompiler);
@@ -784,8 +695,6 @@ CRender::~CRender()
 // #include "../xrRender/xrRender_console.cpp"
 void CRender::Statistics(CGameFont* _F)
 {
-	OPTICK_EVENT("CRender::Statistics");
-
 	CGameFont& F = *_F;
 	F.OutNext(" **** LT:%2d,LV:%2d **** ", stats.l_total, stats.l_visible);
 	stats.l_visible = 0;

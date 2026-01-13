@@ -111,7 +111,7 @@ void CDangerManager::reload(LPCSTR section)
 
 void CDangerManager::update()
 {
-	OPTICK_EVENT("CDangerManager::update");
+	//OPTICK_EVENT("CDangerManager::update");
 
 	START_PROFILE("Memory Manager/dangers::update")
 	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), CRemoveByTimePredicate(time_line(), this)),

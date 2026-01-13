@@ -38,7 +38,7 @@ void CHUDManager::Load()
 //--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
-	OPTICK_EVENT("CHUDManager::OnFrame");
+	//PROFILE_FUNCTION();
 
 	if (!b_online)
 		return;

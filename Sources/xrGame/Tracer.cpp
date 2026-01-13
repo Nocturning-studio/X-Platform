@@ -95,7 +95,7 @@ IC void FillSprite_Line(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, f
 void CTracer::Render(FVF::LIT*& verts, const Fvector& pos, const Fvector& center, const Fvector& dir, float length,
 					 float width, u8 colorID)
 {
-	OPTICK_EVENT("CTracer::Render");
+	//OPTICK_EVENT("CTracer::Render");
 
 	if (::Render->ViewBase.testSphere_dirty((Fvector&)center, length * .5f))
 	{

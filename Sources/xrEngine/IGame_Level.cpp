@@ -135,7 +135,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 
 void IGame_Level::OnRender()
 {
-	OPTICK_EVENT("IGame_Level::OnRender");
+	//OPTICK_EVENT("IGame_Level::OnRender");
 
 #ifndef DEDICATED_SERVER
 		Render->Calculate();
@@ -145,7 +145,7 @@ void IGame_Level::OnRender()
 
 void IGame_Level::OnFrame()
 {
-	OPTICK_EVENT("IGame_Level::OnFrame");
+	PROFILE_FUNCTION();
 
 	// Update all objects
 	VERIFY(bReady);

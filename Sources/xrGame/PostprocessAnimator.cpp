@@ -163,7 +163,7 @@ float CPostprocessAnimator::GetLength()
 
 void CPostprocessAnimator::Update(float tm)
 {
-	OPTICK_EVENT("CPostprocessAnimator::Update");
+	//OPTICK_EVENT("CPostprocessAnimator::Update");
 
 	for (int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
 		m_Params[a]->update(tm);

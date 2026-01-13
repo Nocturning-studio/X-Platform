@@ -20,7 +20,7 @@ extern CUIButtonHint* g_btnHint;
 
 void CUIHint::OnRender()
 {
-	OPTICK_EVENT("CUIHint::OnRender");
+	//OPTICK_EVENT("CUIHint::OnRender");
 
 	bool bGlobalHierarchyVisible = false;
 

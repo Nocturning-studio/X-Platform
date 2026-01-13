@@ -152,7 +152,7 @@ BOOL CTeamBaseZone::feel_touch_contact(CObject* O)
 extern Flags32 dbg_net_Draw_Flags;
 void CTeamBaseZone::OnRender()
 {
-	OPTICK_EVENT("CTeamBaseZone::OnFrame");
+	//PROFILE_FUNCTION();
 
 	if (!bDebug)
 		return;

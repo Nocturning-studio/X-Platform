@@ -164,7 +164,7 @@ bool CUIGameTDM::IR_OnKeyboardRelease(int dik)
 
 void CUIGameTDM::OnFrame()
 {
-	OPTICK_EVENT("CUIGameTDM::OnFrame");
+	//PROFILE_FUNCTION();
 
 	inherited::OnFrame();
 	m_team1_icon->Update();
@@ -175,7 +175,7 @@ void CUIGameTDM::OnFrame()
 
 void CUIGameTDM::Render()
 {
-	OPTICK_EVENT("CUIGameTDM::Render");
+	//OPTICK_EVENT("CUIGameTDM::Render");
 
 	inherited::Render();
 	m_team1_icon->Draw();

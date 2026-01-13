@@ -399,14 +399,14 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
-	OPTICK_EVENT("CCustomMonster::update_sound_player");
+	//OPTICK_EVENT("CCustomMonster::update_sound_player");
 
 	sound().update(client_update_fdelta());
 }
 
 void CCustomMonster::UpdateCL()
 {
-	OPTICK_EVENT("CCustomMonster::UpdateCL");
+	//OPTICK_EVENT("CCustomMonster::UpdateCL");
 
 	START_PROFILE("CustomMonster/client_update")
 	m_client_update_delta = Engine.TimeManager.GetGlobalTimeMs() - m_last_client_update_time;
@@ -1078,7 +1078,7 @@ void draw_visiblity_rays(CCustomMonster* self, const CObject* object, collide::r
 
 void CCustomMonster::OnRender()
 {
-	OPTICK_EVENT("CCustomMonster::OnFrame");
+	//PROFILE_FUNCTION();
 
 	RenderBackend.OnFrameEnd();
 

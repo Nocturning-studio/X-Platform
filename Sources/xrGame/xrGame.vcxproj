@@ -950,7 +950,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OrderInUnityFile>100</OrderInUnityFile>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <IncludeInUnityFile>true</IncludeInUnityFile>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
     </ClCompile>
     <ResourceCompile>

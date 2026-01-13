@@ -190,7 +190,7 @@ void CStalkerAnimationManager::update_impl()
 
 void CStalkerAnimationManager::update()
 {
-	OPTICK_EVENT("CStalkerAnimationManager::update");
+	//OPTICK_EVENT("CStalkerAnimationManager::update");
 	START_PROFILE("stalker/client_update/animations")
 	try
 	{

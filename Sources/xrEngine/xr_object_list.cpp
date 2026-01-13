@@ -99,7 +99,7 @@ void CObjectList::o_sleep(CObject* O)
 
 void CObjectList::SingleUpdate(CObject* O)
 {
-	OPTICK_EVENT("CObjectList::SingleUpdate");
+	//OPTICK_EVENT("CObjectList::SingleUpdate");
 
 	if (O->processing_enabled() && (Engine.TimeManager.GetFrameCount() != O->dwFrame_UpdateCL))
 	{
@@ -145,7 +145,7 @@ void clear_crow_vec(xr_vector<CObject*>& o)
 
 void CObjectList::Update(bool bForce)
 {
-	OPTICK_EVENT("CObjectList::Update");
+	//OPTICK_EVENT("CObjectList::Update");
 
 	if (!(Device.Paused() && !bForce))
 	{

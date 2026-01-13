@@ -231,7 +231,7 @@ ICF void CBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
 
 ICF void CBackend::Apply(u32 countV, u32 PC)
 {
-	OPTICK_EVENT("CBackend::Apply");
+	//OPTICK_EVENT("CBackend::Apply");
 
 	stat.calls++;
 	stat.verts += countV;

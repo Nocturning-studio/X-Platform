@@ -376,7 +376,7 @@ void CClimableObject::ObjectContactCallback(bool& do_colide, bool bo1, dContact&
 extern Flags32 dbg_net_Draw_Flags;
 void CClimableObject ::OnRender()
 {
-	OPTICK_EVENT("CClimableObject::OnRender");
+	//OPTICK_EVENT("CClimableObject::OnRender");
 
 	if (!dbg_net_Draw_Flags.test(1 << 10) && !ph_dbg_draw_mask.test(phDbgLadder))
 		return;

@@ -2,7 +2,7 @@
 
 void CRender::set_light_accumulator()
 {
-	OPTICK_EVENT("CRenderTarget::set_light_accumulator");
+	////OPTICK_EVENT("CRenderTarget::set_light_accumulator");
 
 	if (dwAccumulatorClearMark == Engine.TimeManager.GetFrameCount())
 	{

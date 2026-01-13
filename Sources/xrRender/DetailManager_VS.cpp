@@ -39,8 +39,6 @@ short QC(float v)
 }
 void CDetailManager::hw_Load()
 {
-	OPTICK_EVENT("CDetailManager::hw_Load");
-
 	// Настраиваем максимальное количество инстансов за один вызов
 	// 32768 * 64 байта (размер InstanceData) = 2 MБ буфер. Это нормально.
 	hw_MaxInstances = 32768;
@@ -138,7 +136,6 @@ void CDetailManager::hw_Load()
 }
 void CDetailManager::hw_Unload()
 {
-	OPTICK_EVENT("CDetailManager::hw_Unload");
 	hwc_array = nullptr;
 	hwc_s_array = nullptr;
 
@@ -150,7 +147,8 @@ void CDetailManager::hw_Unload()
 }
 void CDetailManager::hw_Render()
 {
-	OPTICK_EVENT("CDetailManager::hw_Render");
+	PROFILE_FUNCTION();
+
 	// Setup geometry
 	// Внимание: hw_Geom.create привязал hw_VB как Stream 0.
 	// Stream 1 (инстансы) мы привяжем вручную.
@@ -163,16 +161,18 @@ void CDetailManager::hw_Render()
 }
 void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 {
-	OPTICK_EVENT("CDetailManager::hw_Render_dump");
+	PROFILE_FUNCTION();
+
 	Device.Statistic->RenderDUMP_DT_Count = 0;
 
-	// Смещения в глобальных буферах геометрии
 	u32 vOffset = 0;
 	u32 iOffset = 0;
 
-	vis_list& list = m_visibles[var_id];
+	// === ГЛАВНОЕ ИЗМЕНЕНИЕ ===
+	// Читаем из буфера РЕНДЕРА, который гарантированно не меняется сейчас
+	vis_list& list = m_visibles[m_vis_render_id][var_id];
+	// =========================
 
-	// Подготовка цветов окружения
 	CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 	Fvector c_sun, c_ambient, c_hemi;
 	c_sun.set(desc->sun_color.x, desc->sun_color.y, desc->sun_color.z);
@@ -180,22 +180,14 @@ void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 	c_ambient.set(desc->ambient.x, desc->ambient.y, desc->ambient.z);
 	c_hemi.set(desc->hemi_color.x, desc->hemi_color.y, desc->hemi_color.z);
 
-	// Устанавливаем геометрию один раз глобально (но будем страховать перед Draw)
 	RenderBackend.set_Geometry(hw_Geom);
 
-	// Итерируемся по типам объектов (моделям травы)
 	for (u32 O = 0; O < objects.size(); O++)
 	{
 		CDetail& Object = *objects[O];
-
-		// === ИСПРАВЛЕНИЕ 1: Защита от нулевой геометрии ===
-		// Если у модели нет треугольников, отрисовка сломает видеодрайвер в режиме инстансинга.
-		// Это частая причина "бага с проекцией на экран".
 		u32 primCount = Object.number_indices / 3;
 		if (primCount == 0)
 		{
-			// ВАЖНО: Даже если мы не рисуем, мы ОБЯЗАНЫ сдвинуть оффсеты,
-			// так как буферы вершин/индексов едины для всех моделей.
 			vOffset += Object.number_vertices;
 			iOffset += Object.number_indices;
 			continue;
@@ -205,17 +197,13 @@ void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 
 		if (!vis.empty())
 		{
-			// Выбор шейдера (анимированный или статика)
 			int id = (lod_id == 0) ? SE_DETAIL_NORMAL_ANIMATED : SE_DETAIL_NORMAL_STATIC;
-
 			RenderBackend.set_Element(Object.shader->E[id]);
 			RenderImplementation.apply_lmaterial();
 
-			// === ЦИКЛ ЗАПОЛНЕНИЯ ИНСТАНСОВ ===
 			u32 currentInstanceCount = 0;
 			InstanceData* pInstances = nullptr;
 
-			// Блокируем буфер с флагом DISCARD (говорим драйверу, что старые данные не нужны)
 			HRESULT hr =
 				hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances, D3DLOCK_DISCARD);
 			if (FAILED(hr))
@@ -232,42 +220,25 @@ void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 
 				for (; _iI != _iE; ++_iI)
 				{
-					// Если буфер переполнен -> рисуем то, что накопили
 					if (currentInstanceCount >= hw_MaxInstances)
 					{
 						hw_InstanceVB->Unlock();
-
-						// --- ОТРИСОВКА ПАКЕТА ---
-						RenderBackend.set_Geometry(hw_Geom); // Страховка состояния
-
-						// Привязываем буфер инстансов к Stream 1
+						RenderBackend.set_Geometry(hw_Geom);
 						HW.pDevice->SetStreamSource(1, hw_InstanceVB, 0, sizeof(InstanceData));
-
-						// Включаем Hardware Instancing
-						// Stream 0 (Геометрия): Использовать индексы, делить на кол-во инстансов
 						HW.pDevice->SetStreamSourceFreq(0, (D3DSTREAMSOURCE_INDEXEDDATA | currentInstanceCount));
-						// Stream 1 (Матрицы): 1 элемент данных на 1 инстанс
 						HW.pDevice->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
-
-						// Рисуем
 						RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset,
 											 primCount);
 
-						// Обновляем статистику
 						Device.Statistic->RenderDUMP_DT_Count += currentInstanceCount;
 						RenderBackend.stat.r.s_details.add(currentInstanceCount * Object.number_vertices);
-						// -----------------------
 
-						// Снова блокируем буфер для следующей порции
 						currentInstanceCount = 0;
 						hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
 											D3DLOCK_DISCARD);
 					}
 
 					SlotItem& Instance = **_iI;
-
-					// Заполняем данные инстанса
-					// Транспонирование матрицы для mul(m, v) в HLSL
 					float scale = Instance.scale_calculated;
 					Fmatrix& M = Instance.mRotY;
 
@@ -275,7 +246,6 @@ void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 					pInstances[currentInstanceCount].Mat1.set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
 					pInstances[currentInstanceCount].Mat2.set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
 
-					// Упаковка цвета и хеми
 					float h = Instance.c_hemi;
 					float s = Instance.c_sun;
 					pInstances[currentInstanceCount].Color.set(s, s, s, h);
@@ -283,33 +253,24 @@ void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 					currentInstanceCount++;
 				}
 			}
-
 			hw_InstanceVB->Unlock();
 
-			// === ОТРИСОВКА ОСТАТКА (ХВОСТА) ===
 			if (currentInstanceCount > 0)
 			{
 				RenderBackend.set_Geometry(hw_Geom);
 				HW.pDevice->SetStreamSource(1, hw_InstanceVB, 0, sizeof(InstanceData));
-
 				HW.pDevice->SetStreamSourceFreq(0, (D3DSTREAMSOURCE_INDEXEDDATA | currentInstanceCount));
 				HW.pDevice->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
-
 				RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);
-
 				Device.Statistic->RenderDUMP_DT_Count += currentInstanceCount;
 				RenderBackend.stat.r.s_details.add(currentInstanceCount * Object.number_vertices);
 			}
 
-			// === ВАЖНО: ОЧИСТКА СОСТОЯНИЯ ===
-			// Обязательно сбрасываем Frequency и отвязываем буфер,
-			// иначе следующая отрисовка (UI, партиклы) попытается использовать инстансинг.
 			HW.pDevice->SetStreamSource(1, NULL, 0, 0);
 			HW.pDevice->SetStreamSourceFreq(0, 1);
 			HW.pDevice->SetStreamSourceFreq(1, 1);
 		}
 
-		// Сдвигаем указатели в общем буфере вершин/индексов для следующей модели
 		vOffset += Object.number_vertices;
 		iOffset += Object.number_indices;
 	}

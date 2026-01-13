@@ -35,7 +35,7 @@ IC void CALifeObjectRegistry::remove(const ALife::_OBJECT_ID& id, bool no_assert
 
 IC CSE_ALifeDynamicObject* CALifeObjectRegistry::object(const ALife::_OBJECT_ID& id, bool no_assert) const
 {
-	OPTICK_EVENT("CALifeObjectRegistry::object");
+	//OPTICK_EVENT("CALifeObjectRegistry::object");
 
 	START_PROFILE("ALife/objects::object")
 	OBJECT_REGISTRY::const_iterator I = objects().find(id);

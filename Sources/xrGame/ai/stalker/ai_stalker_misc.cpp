@@ -152,7 +152,7 @@ void CAI_Stalker::react_on_member_death()
 
 void CAI_Stalker::process_enemies()
 {
-	OPTICK_EVENT("CAI_Stalker::process_enemies");
+	//OPTICK_EVENT("CAI_Stalker::process_enemies");
 
 	if (memory().enemy().selected())
 		return;

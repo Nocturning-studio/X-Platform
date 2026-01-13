@@ -196,7 +196,7 @@ struct CRemoveOfflinePredicate
 
 void CHitMemoryManager::update()
 {
-	OPTICK_EVENT("CHitMemoryManager::update");
+	//OPTICK_EVENT("CHitMemoryManager::update");
 	START_PROFILE("Memory Manager/hits::update")
 
 	clear_delayed_objects();

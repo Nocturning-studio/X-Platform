@@ -219,7 +219,7 @@ IC void blend_lerp(float& cur, float tgt, float speed, float dt)
 
 void CLensFlare::OnFrame(shared_str id)
 {
-	OPTICK_EVENT("CLensFlare::OnFrame");
+	PROFILE_FUNCTION();
 
 	if (dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
@@ -393,7 +393,7 @@ float CLensFlare::GetBlendFactor()
 
 void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 {
-	OPTICK_EVENT("CLensFlare::Render");
+	//OPTICK_EVENT("CLensFlare::Render");
 
 	if (!bRender)
 		return;

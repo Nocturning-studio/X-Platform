@@ -38,7 +38,7 @@ CSQuadTree::~CQuadTree()
 TEMPLATE_SPECIALIZATION
 IC void CSQuadTree::clear()
 {
-	OPTICK_EVENT("CSQuadTree::clear");
+	//OPTICK_EVENT("CSQuadTree::clear");
 	START_PROFILE("Covers/clear")
 	m_nodes->clear();
 	m_list_items->clear();
@@ -86,7 +86,7 @@ IC u32 CSQuadTree::neighbour_index(const Fvector& position, Fvector& center, flo
 TEMPLATE_SPECIALIZATION
 IC void CSQuadTree::insert(_object_type* object)
 {
-	OPTICK_EVENT("CSQuadTree::insert");
+	//OPTICK_EVENT("CSQuadTree::insert");
 	START_PROFILE("Covers/insert")
 	Fvector center = m_center;
 	float distance = m_radius;
@@ -147,7 +147,7 @@ IC _object_type* CSQuadTree::find(const Fvector& position)
 TEMPLATE_SPECIALIZATION
 IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, bool clear) const
 {
-	OPTICK_EVENT("CSQuadTree::nearest");
+	//OPTICK_EVENT("CSQuadTree::nearest");
 	START_PROFILE("Covers/nearest")
 	if (clear)
 		objects.clear();
@@ -262,7 +262,7 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
 TEMPLATE_SPECIALIZATION
 IC _object_type* CSQuadTree::remove(const _object_type* object)
 {
-	OPTICK_EVENT("CSQuadTree::remove");
+	//OPTICK_EVENT("CSQuadTree::remove");
 	START_PROFILE("Covers/remove")
 	_object_type* _object = remove(object, m_root, m_center, m_radius, 0);
 	return (_object);

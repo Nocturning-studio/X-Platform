@@ -54,7 +54,7 @@ game_sv_mp::~game_sv_mp()
 
 void game_sv_mp::Update()
 {
-	OPTICK_EVENT("game_sv_mp::update");
+	//OPTICK_EVENT("game_sv_mp::update");
 
 	inherited::Update();
 

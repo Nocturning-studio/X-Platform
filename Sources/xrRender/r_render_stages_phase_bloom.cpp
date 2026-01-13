@@ -78,7 +78,7 @@ void CRender::apply_bloom()
 
 void CRender::render_bloom()
 {
-	OPTICK_EVENT("CRender::render_bloom");
+	////OPTICK_EVENT("CRender::render_bloom");
 
 	if (ps_r_postprocess_flags.test(RFLAG_BLOOM))
 	{

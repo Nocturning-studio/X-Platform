@@ -57,7 +57,7 @@ void CMovementManager::apply_collision_hit(CPHMovementControl* movement_control)
 
 void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fvector& dest_position, float time_delta)
 {
-	OPTICK_EVENT("CMovementManager::move_along_path");
+	//OPTICK_EVENT("CMovementManager::move_along_path");
 	START_PROFILE("Build Path/Move Along Path")
 	VERIFY(movement_control);
 	Fvector motion;

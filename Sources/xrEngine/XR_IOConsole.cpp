@@ -210,7 +210,7 @@ void CConsole::RemoveCommand(IConsole_Command* cc)
 
 void CConsole::OnFrame()
 {
-	OPTICK_EVENT("CConsole::OnFrame");
+	PROFILE_FUNCTION();
 
 	m_editor->on_frame();
 
@@ -267,7 +267,7 @@ void CConsole::OnScreenResolutionChanged()
 
 void CConsole::OnRender()
 {
-	OPTICK_EVENT("CConsole::OnRender");
+	//OPTICK_EVENT("CConsole::OnRender");
 
 	if (!bVisible)
 		return;

@@ -5,14 +5,14 @@
 #include <optick/optick.h>
 #pragma comment(lib, "OptickCore.lib")
 #else
-#define OPTICK_EVENT(...)
+#define //OPTICK_EVENT(...)
 #define OPTICK_CATEGORY(NAME, CATEGORY)
 #define OPTICK_FRAME(NAME)
 #define OPTICK_THREAD(THREAD_NAME)
 #define OPTICK_START_THREAD(THREAD_NAME)
 #define OPTICK_STOP_THREAD()
 #define OPTICK_TAG(NAME, DATA)
-#define OPTICK_EVENT_DYNAMIC(NAME)
+#define //OPTICK_EVENT_DYNAMIC(NAME)
 #define OPTICK_PUSH_DYNAMIC(NAME)
 #define OPTICK_PUSH(NAME)
 #define OPTICK_POP()

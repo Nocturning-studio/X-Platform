@@ -288,6 +288,8 @@ void CAI_Trader::net_Destroy()
 
 void CAI_Trader::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 	sound().update(Engine.TimeManager.GetDeltaTime());
 

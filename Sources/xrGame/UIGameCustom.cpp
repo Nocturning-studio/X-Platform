@@ -49,7 +49,7 @@ bool g_b_ClearGameCaptions = false;
 
 void CUIGameCustom::OnFrame()
 {
-	OPTICK_EVENT("CUIGameCustom::OnFrame");
+	//PROFILE_FUNCTION();
 
 	st_vec::iterator it = m_custom_statics.begin();
 	for (; it != m_custom_statics.end(); ++it)
@@ -67,7 +67,7 @@ void CUIGameCustom::OnFrame()
 
 void CUIGameCustom::Render()
 {
-	OPTICK_EVENT("CUIGameCustom::Render");
+	//OPTICK_EVENT("CUIGameCustom::Render");
 
 	GameCaptions()->Draw();
 	st_vec::iterator it = m_custom_statics.begin();

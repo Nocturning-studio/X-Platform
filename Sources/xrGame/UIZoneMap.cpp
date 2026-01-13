@@ -62,7 +62,7 @@ void CUIZoneMap::Init()
 
 void CUIZoneMap::Render()
 {
-	OPTICK_EVENT("CUIZoneMap::Render");
+	//OPTICK_EVENT("CUIZoneMap::Render");
 
 	m_clipFrame.Draw();
 	m_background.Draw();

@@ -87,7 +87,7 @@ const u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
 extern ENGINE_API float psHUD_FOV;
 void CEnvironment::RenderSky()
 {
-	OPTICK_EVENT("CEnvironment::RenderSky");
+	//OPTICK_EVENT("CEnvironment::RenderSky");
 
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
@@ -145,7 +145,7 @@ void CEnvironment::RenderSky()
 
 void CEnvironment::RenderClouds()
 {
-	OPTICK_EVENT("CEnvironment::RenderClouds");
+	//OPTICK_EVENT("CEnvironment::RenderClouds");
 
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
@@ -196,7 +196,7 @@ void CEnvironment::RenderClouds()
 
 void CEnvironment::RenderFlares()
 {
-	OPTICK_EVENT("CEnvironment::RenderFlares");
+	//OPTICK_EVENT("CEnvironment::RenderFlares");
 
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
@@ -213,7 +213,7 @@ float CEnvironment::GetFlaresBlendFactor()
 
 void CEnvironment::RenderThunderbolt()
 {
-	OPTICK_EVENT("CEnvironment::RenderThunderbolt");
+	//OPTICK_EVENT("CEnvironment::RenderThunderbolt");
 
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
@@ -225,7 +225,7 @@ void CEnvironment::RenderThunderbolt()
 
 void CEnvironment::RenderRain()
 {
-	OPTICK_EVENT("CEnvironment::RenderRain");
+	//OPTICK_EVENT("CEnvironment::RenderRain");
 
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
@@ -237,7 +237,7 @@ void CEnvironment::RenderRain()
 
 void CEnvironment::OnDeviceCreate()
 {
-	OPTICK_EVENT("CEnvironment::OnDeviceCreate");
+	//OPTICK_EVENT("CEnvironment::OnDeviceCreate");
 
 	//.	bNeed_re_create_env			= TRUE;
 	sh_2sky.create(&m_b_skybox, "skybox_2t");
@@ -270,7 +270,7 @@ void CEnvironment::OnDeviceCreate()
 
 void CEnvironment::OnDeviceDestroy()
 {
-	OPTICK_EVENT("CEnvironment::OnDeviceDestroy");
+	//OPTICK_EVENT("CEnvironment::OnDeviceDestroy");
 
 	tsky0->surface_set(NULL);
 	tsky1->surface_set(NULL);
@@ -306,7 +306,7 @@ void CEnvironment::OnDeviceDestroy()
 #ifdef _EDITOR
 void CEnvironment::ED_Reload()
 {
-	OPTICK_EVENT("CEnvironment::ED_Reload");
+	//OPTICK_EVENT("CEnvironment::ED_Reload");
 
 	OnDeviceDestroy();
 	OnDeviceCreate();

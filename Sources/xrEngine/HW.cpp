@@ -29,7 +29,7 @@ IDirect3DStateBlock9* dwDebugSB = 0;
 //-----------------------------------------------------------------------------
 void CHW::Reset(HWND hwnd)
 {
-	OPTICK_EVENT("CHW::Reset");
+	//OPTICK_EVENT("CHW::Reset");
 
 #ifdef DEBUG
 	_RELEASE(dwDebugSB);
@@ -96,7 +96,7 @@ xr_token* vid_mode_token = NULL;
 
 void CHW::CreateD3D()
 {
-	OPTICK_EVENT("CHW::CreateD3D");
+	//OPTICK_EVENT("CHW::CreateD3D");
 	Msg("Creating Direct3D9Ex");
 
 	HRESULT hr = Direct3DCreate9Ex(D3D_SDK_VERSION, &this->pD3D);
@@ -109,7 +109,7 @@ void CHW::CreateD3D()
 
 void CHW::DestroyD3D()
 {
-	OPTICK_EVENT("CHW::DestroyD3D");
+	//OPTICK_EVENT("CHW::DestroyD3D");
 	_RELEASE(this->pD3D);
 }
 
@@ -121,7 +121,7 @@ D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
 
 void CHW::DestroyDevice()
 {
-	OPTICK_EVENT("CHW::DestroyDevice");
+	//OPTICK_EVENT("CHW::DestroyDevice");
 
 	_RELEASE(pBaseZB);
 	_RELEASE(pBaseRT);
@@ -140,7 +140,7 @@ void CHW::DestroyDevice()
 //-----------------------------------------------------------------------------
 void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 {
-	OPTICK_EVENT("CHW::selectResolution");
+	//OPTICK_EVENT("CHW::selectResolution");
 
 	fill_vid_mode_list(this);
 
@@ -175,7 +175,7 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 
 void CHW::CreateDevice(HWND m_hWnd)
 {
-	OPTICK_EVENT("CHW::CreateDevice");
+	//OPTICK_EVENT("CHW::CreateDevice");
 
 	CreateD3D();
 
@@ -358,7 +358,7 @@ BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
 //-----------------------------------------------------------------------------
 void CHW::updateWindowProps(HWND m_hWnd)
 {
-	OPTICK_EVENT("CHW::updateWindowProps");
+	//OPTICK_EVENT("CHW::updateWindowProps");
 
 #ifdef DEDICATED_SERVER
 	// 1. Делаем окно "только для сообщений". Это удаляет его из таскбара, списка приложений и отрисовки рабочего стола.

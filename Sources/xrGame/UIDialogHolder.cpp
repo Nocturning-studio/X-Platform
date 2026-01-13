@@ -216,7 +216,7 @@ void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 
 void CDialogHolder::OnFrame()
 {
-	OPTICK_EVENT("CDialogHolder::OnFrame");
+	//PROFILE_FUNCTION();
 
 	xr_vector<dlgItem>::iterator it = m_dialogsToRender.begin();
 	for (; it != m_dialogsToRender.end(); ++it)

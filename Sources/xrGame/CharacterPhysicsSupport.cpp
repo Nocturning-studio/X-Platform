@@ -313,7 +313,7 @@ void CCharacterPhysicsSupport::in_Init()
 
 void CCharacterPhysicsSupport::in_shedule_Update(u32 DT)
 {
-	OPTICK_EVENT("CCharacterPhysicsSupport::in_shedule_Update");
+	//OPTICK_EVENT("CCharacterPhysicsSupport::in_shedule_Update");
 
 	// CPHSkeleton::Update(DT);
 	if (!m_EntityAlife.use_simplified_visual())
@@ -482,7 +482,7 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 
 void CCharacterPhysicsSupport::in_UpdateCL()
 {
-	OPTICK_EVENT("CCharacterPhysicsSupport::in_UpdateCL");
+	//OPTICK_EVENT("CCharacterPhysicsSupport::in_UpdateCL");
 
 	if (m_eState == esRemoved)
 	{

@@ -16,7 +16,7 @@ void CRender::clear_reflections()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::create_backbuffer_mip_chain()
 {
-	OPTICK_EVENT("CRender::downsample_scene_luminance");
+	////OPTICK_EVENT("CRender::downsample_scene_luminance");
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
@@ -54,7 +54,7 @@ void CRender::render_reflections()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_screen_space_reflections()
 {
-	OPTICK_EVENT("CRender::render_screen_space_reflections");
+	////OPTICK_EVENT("CRender::render_screen_space_reflections");
 
 	clear_reflections();
 

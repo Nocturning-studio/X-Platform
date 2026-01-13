@@ -224,7 +224,7 @@ extern Flags32 dbg_net_Draw_Flags;
 
 void CSpaceRestrictor::OnRender()
 {
-	OPTICK_EVENT("CSpaceRestrictor::OnFrame");
+	//PROFILE_FUNCTION();
 
 	if (!bDebug)
 		return;

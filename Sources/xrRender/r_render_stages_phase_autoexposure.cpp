@@ -4,14 +4,14 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::save_scene_luminance()
 {
-	OPTICK_EVENT("CRender::save_scene_luminance");
+	////OPTICK_EVENT("CRender::save_scene_luminance");
 
 	RenderBackend.CopyViewportSurface(RenderTarget->rt_SceneLuminance, RenderTarget->rt_SceneLuminancePrevious);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::downsample_scene_luminance()
 {
-	OPTICK_EVENT("CRender::downsample_scene_luminance");
+	////OPTICK_EVENT("CRender::downsample_scene_luminance");
 
 	// Инициализируем цепь уровней - начинаем с 0, генерируем в него luminance из generic1
 	ref_rt MipChain = RenderTarget->rt_LUM_Mip_Chain;
@@ -55,7 +55,7 @@ void CRender::prepare_scene_luminance()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::apply_exposure()
 {
-	OPTICK_EVENT("CRender::apply_exposure");
+	////OPTICK_EVENT("CRender::apply_exposure");
 
 	// Параметры автоэкспозиции
 	Fvector3 _none, _full, _result;
@@ -71,7 +71,7 @@ void CRender::apply_exposure()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_autoexposure()
 {
-	OPTICK_EVENT("CRender::render_autoexposure");
+	////OPTICK_EVENT("CRender::render_autoexposure");
 
 	save_scene_luminance();
 	downsample_scene_luminance();

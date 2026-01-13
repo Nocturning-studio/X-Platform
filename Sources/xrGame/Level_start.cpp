@@ -146,7 +146,6 @@ bool CLevel::net_start2()
 		{
 			net_start_result_total = false;
 			Msg("! Failed to start server.");
-			//			Console->Execute("main_menu on");
 			return true;
 		}
 		Server->SLS_Default();

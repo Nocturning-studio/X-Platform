@@ -140,7 +140,7 @@ void CUISequenceVideoItem::Update()
 
 void CUISequenceVideoItem::OnRender()
 {
-	OPTICK_EVENT("CUISequenceVideoItem::OnRender");
+	//OPTICK_EVENT("CUISequenceVideoItem::OnRender");
 
 	if (NULL == m_texture && m_wnd->GetShader())
 	{

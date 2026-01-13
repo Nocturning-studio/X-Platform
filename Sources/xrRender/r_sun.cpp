@@ -586,8 +586,6 @@ Fvector3 wform(Fmatrix& m, Fvector3 const& v)
 
 void CRender::init_cacades()
 {
-	OPTICK_EVENT("CRender::init_cacades");
-
 	float fBias = -0.0000025f;
 	float size = MAP_SIZE_START;
 	u32 cascade_count = 3;
@@ -614,7 +612,7 @@ void CRender::init_cacades()
 
 void CRender::render_sun_cascades()
 {
-	OPTICK_EVENT("CRender::render_sun_cascades");
+	PROFILE_FUNCTION();
 
 	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
 		render_sun_cascade(i);
@@ -622,7 +620,7 @@ void CRender::render_sun_cascades()
 
 void CRender::render_sun_cascade(u32 cascade_ind)
 {
-	OPTICK_EVENT("CRender::render_sun_cascade");
+	PROFILE_FUNCTION_FULL();
 
 	light* sun = (light*)Lights.sun_adapted._get();
 

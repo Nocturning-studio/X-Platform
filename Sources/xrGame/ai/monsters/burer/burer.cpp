@@ -311,6 +311,8 @@ void CBurer::UpdateGraviObject()
 
 void CBurer::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 	TScanner::frame_update(Engine.TimeManager.GetDeltaTimeMs());
 

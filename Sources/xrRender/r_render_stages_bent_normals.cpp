@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_bent_normals()
 {
-	OPTICK_EVENT("CRender::render_bent_normals");
+	////OPTICK_EVENT("CRender::render_bent_normals");
 	RenderBackend.set_ColorWriteEnable();
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);

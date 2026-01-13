@@ -887,6 +887,8 @@ float CActor::currentFOV()
 
 void CActor::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	if (m_feel_touch_characters > 0)
 	{
 		for (xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)

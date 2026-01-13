@@ -293,12 +293,16 @@ void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixT
 
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
+	PROFILE_FUNCTION_FULL();
+
 	Device.Statistic->RenderDUMP.Begin();
 
 	// **************************************************** NORMAL
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
 	{
+		//OPTICK_EVENT("NORMAL");
+
 		RenderBackend.set_xform_world(Fidentity);
 		mapNormalVS& vs = mapNormal[_priority];
 		vs.getANY_P(nrmVS);
@@ -376,6 +380,8 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
 	{
+		//OPTICK_EVENT("MATRIX");
+
 		mapMatrixVS& vs = mapMatrix[_priority];
 		vs.getANY_P(matVS);
 		//std::sort(matVS.begin(), matVS.end(), cmp_vs_mat);
@@ -452,7 +458,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud()
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_hud");
+	PROFILE_FUNCTION();
 
 	ENGINE_API extern float psHUD_FOV;
 
@@ -479,7 +485,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_sorted()
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_sorted");
+	PROFILE_FUNCTION();
 
 	// Sorted (back to front)
 	mapSorted.traverseRL(sorted_L1);
@@ -490,7 +496,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_emissive()
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_emissive");
+	PROFILE_FUNCTION();
 
 	// Sorted (back to front)
 	mapEmissive.traverseLR(sorted_L1);
@@ -501,7 +507,7 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_wmarks");
+	PROFILE_FUNCTION();
 
 	// Sorted (back to front)
 	mapWmark.traverseLR(sorted_L1);
@@ -512,7 +518,7 @@ void R_dsgraph_structure::r_dsgraph_render_wmarks()
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_distort()
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_distort");
+	PROFILE_FUNCTION();
 
 	// Sorted (back to front)
 	mapDistort.traverseRL(sorted_L1);
@@ -524,7 +530,7 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop,
 													BOOL _dynamic, BOOL _precise_portals)
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_subspace");
+	PROFILE_FUNCTION_FULL();
 
 	CFrustum temp;
 	temp.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
@@ -535,7 +541,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, Fma
 void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined,
 													Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
 {
-	OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_render_subspace");
+	PROFILE_FUNCTION();
 
 	VERIFY(_sector);
 	RenderImplementation.marker++; // !!! critical here
@@ -616,6 +622,8 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 
 void CRender::r_dsgraph_render_reuse()
 {
+	PROFILE_FUNCTION();
+
 	// Статика
 	for (IRender_Visual* V : m_visuals_static_visible)
 	{

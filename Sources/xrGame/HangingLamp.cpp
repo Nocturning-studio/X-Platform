@@ -206,6 +206,8 @@ void CHangingLamp::shedule_Update(u32 dt)
 
 void CHangingLamp::UpdateCL()
 {
+	//PROFILE_FUNCTION();
+
 	inherited::UpdateCL();
 
 	if (m_pPhysicsShell)

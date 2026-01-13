@@ -275,7 +275,7 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 
 void CLevel::net_Update()
 {
-	OPTICK_EVENT("CLevel::net_Update");
+	//OPTICK_EVENT("CLevel::net_Update");
 
 	if (game_configured)
 	{
@@ -297,7 +297,7 @@ struct _NetworkProcessor : public pureFrame
 {
 	virtual void OnFrame()
 	{
-		OPTICK_EVENT("_NetworkProcessor::OnFrame");
+		//PROFILE_FUNCTION();
 
 		if (g_pGameLevel && !Device.Paused())
 			g_pGameLevel->net_Update();
