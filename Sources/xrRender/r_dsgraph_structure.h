@@ -5,6 +5,9 @@
 #include "r_dsgraph_types.h"
 #include "r_sector.h"
 
+// Forward declaration
+class CRender;
+
 //////////////////////////////////////////////////////////////////////////
 // feedback	for receiving visuals										//
 //////////////////////////////////////////////////////////////////////////
@@ -15,9 +18,9 @@ class R_feedback
 };
 
 //////////////////////////////////////////////////////////////////////////
-// common part of interface implementation for all D3D renderers		//
+// Структура для хранения и сортировки рендер-элементов (Scene Graph)
 //////////////////////////////////////////////////////////////////////////
-class R_dsgraph_structure : public IRender_interface, public pureFrame
+class R_dsgraph_structure
 {
   public:
 	IRenderable* val_pObject;
@@ -82,20 +85,21 @@ class R_dsgraph_structure : public IRender_interface, public pureFrame
 	xr_vector<DReuseItem> m_visuals_dynamic_visible;
 
   public:
-	virtual void set_Transform(Fmatrix* M)
+	// Методы управления состоянием (ранее были виртуальными из IRender_interface)
+	void set_Transform(Fmatrix* M)
 	{
 		VERIFY(M);
 		val_pTransform = M;
 	}
-	virtual void set_HUD(BOOL V)
+	void set_HUD(BOOL V)
 	{
 		val_bHUD = V;
 	}
-	virtual BOOL get_HUD()
+	BOOL get_HUD()
 	{
 		return val_bHUD;
 	}
-	virtual void set_Invisible(BOOL V)
+	void set_Invisible(BOOL V)
 	{
 		val_bInvisible = V;
 	}
@@ -189,18 +193,12 @@ class R_dsgraph_structure : public IRender_interface, public pureFrame
 	void r_dsgraph_render_emissive();
 	void r_dsgraph_render_wmarks();
 	void r_dsgraph_render_distort();
+
 	void r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop,
 								   BOOL _dynamic, BOOL _precise_portals = FALSE);
 	void r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 								   BOOL _precise_portals = FALSE);
 
-  public:
-	virtual u32 memory_usage()
-	{
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return ((u32)dlmallinfo().uordblks);
-#else  // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return (0);
-#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-	}
+	// Вспомогательная функция для переиспользования списков отрисовки
+	void r_dsgraph_render_reuse();
 };

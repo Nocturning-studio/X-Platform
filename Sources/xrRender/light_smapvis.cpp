@@ -19,7 +19,7 @@ void smapvis::invalidate()
 }
 void smapvis::begin()
 {
-	RenderImplementation.clear_Counters();
+	RenderImplementation.SceneGraph.clear_Counters();
 	switch (state)
 	{
 	case state_counting:
@@ -30,7 +30,7 @@ void smapvis::begin()
 		testQ_V = 0;
 		testQ_id = 0;
 		mark();
-		RenderImplementation.set_Feedback(this, test_current);
+		RenderImplementation.SceneGraph.set_Feedback(this, test_current);
 		break;
 	case state_usingTC:
 		// just mark
@@ -42,9 +42,9 @@ void smapvis::end()
 {
 	// Gather stats
 	u32 ts, td;
-	RenderImplementation.get_Counters(ts, td);
+	RenderImplementation.SceneGraph.get_Counters(ts, td);
 	RenderImplementation.stats.ic_total += ts;
-	RenderImplementation.set_Feedback(0, 0);
+	RenderImplementation.SceneGraph.set_Feedback(0, 0);
 
 	switch (state)
 	{
@@ -63,9 +63,9 @@ void smapvis::end()
 		if (testQ_V)
 		{
 			RenderImplementation.occq_begin(testQ_id);
-			RenderImplementation.marker += 1;
-			RenderImplementation.r_dsgraph_insert_static(testQ_V);
-			RenderImplementation.r_dsgraph_render_graph(0);
+			RenderImplementation.SceneGraph.marker += 1;
+			RenderImplementation.SceneGraph.r_dsgraph_insert_static(testQ_V);
+			RenderImplementation.SceneGraph.r_dsgraph_render_graph(0);
 			RenderImplementation.occq_end(testQ_id);
 			testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame
 		}
@@ -128,7 +128,7 @@ void smapvis::resetoccq()
 void smapvis::mark()
 {
 	RenderImplementation.stats.ic_culled += invisible.size();
-	u32 marker = RenderImplementation.marker + 1; // we are called befor marker increment
+	u32 marker = RenderImplementation.SceneGraph.marker + 1; // we are called befor marker increment
 	for (u32 it = 0; it < invisible.size(); it++)
 		invisible[it]->vis.marker = marker; // this effectively disables processing
 }
@@ -136,5 +136,5 @@ void smapvis::mark()
 void smapvis::rfeedback_static(IRender_Visual* V)
 {
 	testQ_V = V;
-	RenderImplementation.set_Feedback(0, 0);
+	RenderImplementation.SceneGraph.set_Feedback(0, 0);
 }

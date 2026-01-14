@@ -34,53 +34,57 @@ ICF float CalcSSA(float& distSQ, Fvector& C, float R)
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 {
+	// Для доступа к методам CRender (например, rimp_select_sh_dynamic)
 	CRender& RI = RenderImplementation;
 
-	if (pVisual->vis.marker == RI.marker)
+	// 'marker' теперь член R_dsgraph_structure, обращаемся напрямую
+	if (pVisual->vis.marker == marker)
 		return;
-	pVisual->vis.marker = RI.marker;
+	pVisual->vis.marker = marker;
 
 	float distSQ;
 	float SSA = CalcSSA(distSQ, Center, pVisual);
 	if (SSA <= r_ssaDISCARD)
 		return;
 
-	// Distortive geometry should be marked and R2 special-cases it
-	// a) Allow to optimize RT order
-	// b) Should be rendered to special distort buffer in another pass
+	// Distortive geometry
 	VERIFY(pVisual->shader._get());
 	ShaderElement* sh_d = &*pVisual->shader->E[4];
+
+	// pmask - член R_dsgraph_structure
 	if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
 	{
 		mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
-		N->val.pObject = RI.val_pObject;
+		// val_pObject и val_pTransform - члены R_dsgraph_structure
+		N->val.pObject = val_pObject;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *RI.val_pTransform;
+		N->val.Matrix = *val_pTransform;
 		N->val.se = sh_d; // 4=L_special
 	}
 
-	// Select shader
-	ShaderElement* sh = RenderImplementation.rimp_select_sh_dynamic(pVisual, distSQ);
+	// Select shader - метод остался в CRender
+	ShaderElement* sh = RI.rimp_select_sh_dynamic(pVisual, distSQ);
 	if (0 == sh)
 		return;
 	if (!pmask[sh->flags.iPriority / 2])
 		return;
 
 	// Create common node
-	// NOTE: Invisible elements exist only in R1
-	_MatrixItem item = {SSA, RI.val_pObject, pVisual, *RI.val_pTransform};
+	// Invisible elements exist only in R1
+	_MatrixItem item = {SSA, val_pObject, pVisual, *val_pTransform};
 
 	// HUD rendering
-	if (RI.val_bHUD)
+	// val_bHUD - член R_dsgraph_structure
+	if (val_bHUD)
 	{
 		if (sh->flags.bStrictB2F)
 		{
 			mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
 			N->val.ssa = SSA;
-			N->val.pObject = RI.val_pObject;
+			N->val.pObject = val_pObject;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *RI.val_pTransform;
+			N->val.Matrix = *val_pTransform;
 			N->val.se = sh;
 			return;
 		}
@@ -88,15 +92,16 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 		{
 			mapHUD_Node* N = mapHUD.insertInAnyWay(distSQ);
 			N->val.ssa = SSA;
-			N->val.pObject = RI.val_pObject;
+			N->val.pObject = val_pObject;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *RI.val_pTransform;
+			N->val.Matrix = *val_pTransform;
 			N->val.se = sh;
 			return;
 		}
 	}
 
-	if (RI.val_bInvisible)
+	// val_bInvisible - член R_dsgraph_structure
+	if (val_bInvisible)
 		return;
 
 	// strict-sorting selection
@@ -104,34 +109,32 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 	{
 		mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
-		N->val.pObject = RI.val_pObject;
+		N->val.pObject = val_pObject;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *RI.val_pTransform;
+		N->val.Matrix = *val_pTransform;
 		N->val.se = sh;
 		return;
 	}
 
-	// Emissive geometry should be marked and R2 special-cases it
-	// a) Allow to skeep already lit pixels
-	// b) Allow to make them 100% lit and really bright
-	// c) Should not cast shadows
-	// d) Should be rendered to accumulation buffer in the second pass
+	// Emissive geometry
 	if (sh->flags.bEmissive)
 	{
 		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
-		N->val.pObject = RI.val_pObject;
+		N->val.pObject = val_pObject;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *RI.val_pTransform;
+		N->val.Matrix = *val_pTransform;
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
+
+	// pmask_wmark - член R_dsgraph_structure
 	if (sh->flags.bWmark && pmask_wmark)
 	{
 		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
-		N->val.pObject = RI.val_pObject;
+		N->val.pObject = val_pObject;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *RI.val_pTransform;
+		N->val.Matrix = *val_pTransform;
 		N->val.se = sh;
 		return;
 	}
@@ -174,10 +177,11 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 		}
 	}
 
+	// val_recorder - член R_dsgraph_structure
 	if (val_recorder)
 	{
 		Fbox3 temp;
-		Fmatrix& xf = *RI.val_pTransform;
+		Fmatrix& xf = *val_pTransform;
 		temp.xform(pVisual->vis.box, xf);
 		val_recorder->push_back(temp);
 	}
@@ -187,20 +191,21 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 {
 	CRender& RI = RenderImplementation;
 
-	if (pVisual->vis.marker == RI.marker)
+	// 'marker' - член R_dsgraph_structure
+	if (pVisual->vis.marker == marker)
 		return;
-	pVisual->vis.marker = RI.marker;
+	pVisual->vis.marker = marker;
 
 	float distSQ;
 	float SSA = CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
 	if (SSA <= r_ssaDISCARD)
 		return;
 
-	// Distortive geometry should be marked and R2 special-cases it
-	// a) Allow to optimize RT order
-	// b) Should be rendered to special distort buffer in another pass
+	// Distortive geometry
 	VERIFY(pVisual->shader._get());
 	ShaderElement* sh_d = &*pVisual->shader->E[4];
+
+	// pmask - член R_dsgraph_structure
 	if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
 	{
 		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Distort");
@@ -213,8 +218,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
 
-	// Select shader
-	ShaderElement* sh = RenderImplementation.rimp_select_sh_static(pVisual, distSQ);
+	// Select shader - вызываем метод CRender
+	ShaderElement* sh = RI.rimp_select_sh_static(pVisual, distSQ);
 
 	if (0 == sh)
 		return;
@@ -235,11 +240,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		return;
 	}
 
-	// Emissive geometry should be marked and R2 special-cases it
-	// a) Allow to skeep already lit pixels
-	// b) Allow to make them 100% lit and really bright
-	// c) Should not cast shadows
-	// d) Should be rendered to accumulation buffer in the second pass
+	// Emissive geometry
 	if (sh->flags.bEmissive)
 	{
 		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Emissive");
@@ -252,6 +253,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
 
+	// pmask_wmark - член R_dsgraph_structure
 	if (sh->flags.bWmark && pmask_wmark)
 	{
 		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Wmark");
@@ -265,6 +267,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		return;
 	}
 
+	// val_feedback, counter_S, val_feedback_breakp - члены R_dsgraph_structure
 	if (val_feedback && counter_S == val_feedback_breakp)
 		val_feedback->rfeedback_static(pVisual);
 
@@ -309,6 +312,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		}
 	}
 
+	// val_recorder - член R_dsgraph_structure
 	if (val_recorder)
 	{
 		val_recorder->push_back(pVisual->vis.box);
@@ -803,7 +807,6 @@ IC bool IsValuableToRender(IRender_Visual* pVisual, bool isStatic, bool sm, Fmat
 	return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 {
 	//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Dynamic");
@@ -811,7 +814,8 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 	if (0 == pVisual)
 		return;
 
-	if (!IsValuableToRender(pVisual, false, RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH, *val_pTransform, false))
+	// SceneGraph.val_pTransform вместо val_pTransform
+	if (!IsValuableToRender(pVisual, false, active_phase() == PHASE_SHADOW_DEPTH, *SceneGraph.val_pTransform, false))
 		return;
 
 	// Visual is 100% visible - simply add it
@@ -832,8 +836,7 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 				 pit != PE_It._children_related.end(); pit++)
 				add_leafs_Dynamic(*pit);
 			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-				 pit != PE_It._children_free.end();
-				 pit++)
+				 pit != PE_It._children_free.end(); pit++)
 				add_leafs_Dynamic(*pit);
 		}
 	}
@@ -858,7 +861,8 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 		{
 			Fvector Tpos;
 			float D;
-			val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);
+			// SceneGraph.val_pTransform вместо val_pTransform
+			SceneGraph.val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);
 			float ssa = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f); // assume dynamics never consume full sphere
 			if (ssa < r_ssaLOD_A)
 				_use_lod = TRUE;
@@ -871,7 +875,8 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 		{
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 			Fvector pos;
-			val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+			// SceneGraph.val_pTransform вместо val_pTransform
+			SceneGraph.val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distane = GetDistFromCamera(pos);
 			float switch_distance = 100.0f;
 			switch (ps_geometry_quality_mode)
@@ -904,17 +909,20 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 		// General type of visual
 		// Calculate distance to it's center
 		Fvector Tpos;
-		val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+		// SceneGraph.val_pTransform вместо val_pTransform
+		SceneGraph.val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
 		if (active_phase() == PHASE_NORMAL)
 		{
-			DReuseItem item;
+			// Использование структуры из R_dsgraph_structure
+			R_dsgraph_structure::DReuseItem item;
 			item.visual = pVisual;
-			item.matrix = *val_pTransform; // Копируем текущую матрицу
-			m_visuals_dynamic_visible.push_back(item);
+			item.matrix = *SceneGraph.val_pTransform; // Копируем текущую матрицу из SceneGraph
+			SceneGraph.m_visuals_dynamic_visible.push_back(item);
 		}
 
-		r_dsgraph_insert_dynamic(pVisual, Tpos);
+		// Вызов метода через объект SceneGraph
+		SceneGraph.r_dsgraph_insert_dynamic(pVisual, Tpos);
 	}
 
 		return;
@@ -928,12 +936,13 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 	if (!HOM.visible(pVisual->vis))
 		return;
 
-	if (!IsValuableToRender(pVisual, true, RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH, *val_pTransform, false))
+	// SceneGraph.val_pTransform вместо val_pTransform
+	if (!IsValuableToRender(pVisual, true, active_phase() == PHASE_SHADOW_DEPTH, *SceneGraph.val_pTransform, false))
 		return;
 
 	if (active_phase() == PHASE_NORMAL)
 	{
-		m_visuals_static_visible.push_back(pVisual);
+		SceneGraph.m_visuals_static_visible.push_back(pVisual);
 	}
 
 	// Visual is 100% visible - simply add it
@@ -954,8 +963,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 				 pit != PE_It._children_related.end(); pit++)
 				add_leafs_Dynamic(*pit);
 			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-				 pit != PE_It._children_free.end();
-				 pit++)
+				 pit != PE_It._children_free.end(); pit++)
 				add_leafs_Dynamic(*pit);
 		}
 	}
@@ -974,9 +982,10 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 	case MT_SKELETON_RIGID: {
 		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Skeleton");
 
-		#pragma todo(NSDeathman to NSDeathman - разобраться)
+#pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
-		val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+		// SceneGraph.val_pTransform вместо val_pTransform
+		SceneGraph.val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
 		float adjusted_distane = GetDistFromCamera(pos);
 		float switch_distance = 100.0f;
 		switch (ps_geometry_quality_mode)
@@ -1012,7 +1021,8 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 		{
 			if (ssa < r_ssaDISCARD)
 				return;
-			mapLOD_Node* N = mapLOD.insertInAnyWay(D);
+			// Вставка в mapLOD через SceneGraph
+			mapLOD_Node* N = SceneGraph.mapLOD.insertInAnyWay(D);
 			N->val.ssa = ssa;
 			N->val.pVisual = pVisual;
 		}
@@ -1030,13 +1040,15 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 	case MT_TREE_ST: {
 		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Tree");
 		// General type of visual
-		r_dsgraph_insert_static(pVisual);
+		// Вызов метода через SceneGraph
+		SceneGraph.r_dsgraph_insert_static(pVisual);
 	}
 		return;
 	default: {
 		// General type of visual
 		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - static");
-		r_dsgraph_insert_static(pVisual);
+		// Вызов метода через SceneGraph
+		SceneGraph.r_dsgraph_insert_static(pVisual);
 	}
 		return;
 	}
@@ -1051,12 +1063,14 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	Fvector Tpos; // transformed position
 	EFC_Visible VIS;
 
-	val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+	// SceneGraph.val_pTransform вместо val_pTransform
+	SceneGraph.val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 	VIS = View->testSphere(Tpos, pVisual->vis.sphere.R, planes);
 	if (fcvNone == VIS)
 		return FALSE;
 
-	if (!IsValuableToRender(pVisual, false, RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH, *val_pTransform, false))
+	// SceneGraph.val_pTransform вместо val_pTransform
+	if (!IsValuableToRender(pVisual, false, active_phase() == PHASE_SHADOW_DEPTH, *SceneGraph.val_pTransform, false))
 		return FALSE;
 
 	// If we get here visual is visible or partially visible
@@ -1065,7 +1079,7 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	switch (pVisual->Type)
 	{
 	case MT_PARTICLE_GROUP: {
-		//OPTICK_EVENT("MT_PARTICLE_GROUP");
+		// OPTICK_EVENT("MT_PARTICLE_GROUP");
 		// Add all children, doesn't perform any tests
 		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
 		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
@@ -1079,8 +1093,7 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 					 pit != PE_It._children_related.end(); pit++)
 					add_Dynamic(*pit, planes);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end();
-					 pit++)
+					 pit != PE_It._children_free.end(); pit++)
 					add_Dynamic(*pit, planes);
 			}
 			else
@@ -1091,15 +1104,14 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 					 pit != PE_It._children_related.end(); pit++)
 					add_leafs_Dynamic(*pit);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end();
-					 pit++)
+					 pit != PE_It._children_free.end(); pit++)
 					add_leafs_Dynamic(*pit);
 			}
 		}
 	}
 	break;
 	case MT_HIERRARHY: {
-		//OPTICK_EVENT("MT_HIERRARHY");
+		// OPTICK_EVENT("MT_HIERRARHY");
 		// Add all children
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		I = pV->children.begin();
@@ -1118,7 +1130,7 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	break;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
-		//OPTICK_EVENT("MT_SKELETON_ANIM - MT_SKELETON_RIGID");
+		// OPTICK_EVENT("MT_SKELETON_ANIM - MT_SKELETON_RIGID");
 		// Add all children, doesn't perform any tests
 		CKinematics* pV = (CKinematics*)pVisual;
 		BOOL _use_lod = FALSE;
@@ -1126,7 +1138,8 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 		{
 			Fvector fTpos;
 			float D;
-			val_pTransform->transform_tiny(fTpos, pV->vis.sphere.P);
+			// SceneGraph.val_pTransform вместо val_pTransform
+			SceneGraph.val_pTransform->transform_tiny(fTpos, pV->vis.sphere.P);
 			float ssa = CalcSSA(D, fTpos, pV->vis.sphere.R / 2.f); // assume dynamics never consume full sphere
 			if (ssa < r_ssaLOD_A)
 				_use_lod = TRUE;
@@ -1139,7 +1152,8 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 		{
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 			Fvector pos;
-			val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+			// SceneGraph.val_pTransform вместо val_pTransform
+			SceneGraph.val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distance = GetDistFromCamera(pos);
 			float switch_distance = 100.0f;
 			switch (ps_geometry_quality_mode)
@@ -1178,9 +1192,10 @@ BOOL CRender::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	}
 	break;
 	default: {
-		//OPTICK_EVENT("default");
+		// OPTICK_EVENT("default");
 		// General type of visual
-		r_dsgraph_insert_dynamic(pVisual, Tpos);
+		// Вызов метода через SceneGraph
+		SceneGraph.r_dsgraph_insert_dynamic(pVisual, Tpos);
 	}
 	break;
 	}
@@ -1198,7 +1213,8 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 	if (!HOM.visible(vis))
 		return;
 
-	if (!IsValuableToRender(pVisual, true, RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH, *val_pTransform, false))
+	// SceneGraph.val_pTransform вместо val_pTransform
+	if (!IsValuableToRender(pVisual, true, active_phase() == PHASE_SHADOW_DEPTH, *SceneGraph.val_pTransform, false))
 		return;
 
 	// If we get here visual is visible or partially visible
@@ -1207,7 +1223,7 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 	switch (pVisual->Type)
 	{
 	case MT_PARTICLE_GROUP: {
-		//OPTICK_EVENT("MT_PARTICLE_GROUP");
+		// OPTICK_EVENT("MT_PARTICLE_GROUP");
 		// Add all children, doesn't perform any tests
 		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
 		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
@@ -1221,8 +1237,7 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 					 pit != PE_It._children_related.end(); pit++)
 					add_Dynamic(*pit, planes);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end();
-					 pit++)
+					 pit != PE_It._children_free.end(); pit++)
 					add_Dynamic(*pit, planes);
 			}
 			else
@@ -1233,15 +1248,14 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 					 pit != PE_It._children_related.end(); pit++)
 					add_leafs_Dynamic(*pit);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end();
-					 pit++)
+					 pit != PE_It._children_free.end(); pit++)
 					add_leafs_Dynamic(*pit);
 			}
 		}
 	}
 	break;
 	case MT_HIERRARHY: {
-		//OPTICK_EVENT("MT_HIERRARHY");
+		// OPTICK_EVENT("MT_HIERRARHY");
 		// Add all children
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		I = pV->children.begin();
@@ -1260,10 +1274,11 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 	break;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
-		//OPTICK_EVENT("SKELETON");
+		// OPTICK_EVENT("SKELETON");
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
-		val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+		// SceneGraph.val_pTransform вместо val_pTransform
+		SceneGraph.val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
 		float adjusted_distance = GetDistFromCamera(pos);
 		float switch_distance = 100.0f;
 		switch (ps_geometry_quality_mode)
@@ -1300,7 +1315,7 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 	}
 	break;
 	case MT_LOD: {
-		//OPTICK_EVENT("MT_LOD");
+		// OPTICK_EVENT("MT_LOD");
 		FLOD* pV = (FLOD*)pVisual;
 		float D;
 		float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
@@ -1309,7 +1324,8 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 		{
 			if (ssa < r_ssaDISCARD)
 				return;
-			mapLOD_Node* N = mapLOD.insertInAnyWay(D);
+			// Вставка в mapLOD через SceneGraph
+			mapLOD_Node* N = SceneGraph.mapLOD.insertInAnyWay(D);
 			N->val.ssa = ssa;
 			N->val.pVisual = pVisual;
 		}
@@ -1325,15 +1341,17 @@ void CRender::add_Static(IRender_Visual* pVisual, u32 planes)
 	break;
 	case MT_TREE_ST:
 	case MT_TREE_PM: {
-		//OPTICK_EVENT("TREE");
+		// OPTICK_EVENT("TREE");
 		// General type of visual
-		r_dsgraph_insert_static(pVisual);
+		// Вызов метода через SceneGraph
+		SceneGraph.r_dsgraph_insert_static(pVisual);
 	}
 		return;
 	default: {
-		//OPTICK_EVENT("default");
+		// OPTICK_EVENT("default");
 		// General type of visual
-		r_dsgraph_insert_static(pVisual);
+		// Вызов метода через SceneGraph
+		SceneGraph.r_dsgraph_insert_static(pVisual);
 	}
 	break;
 	}

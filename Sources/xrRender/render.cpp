@@ -307,7 +307,7 @@ void CRender::create()
 	PSLibrary.OnCreate();
 	HWOCC.occq_create(occq_size);
 
-	marker = 0;
+	SceneGraph.marker = 0;
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 
@@ -325,7 +325,7 @@ void CRender::destroy()
 	xr_delete(RenderTarget);
 	PSLibrary.OnDestroy();
 	Device.seqFrame.Remove(this);
-	r_dsgraph_destroy();
+	SceneGraph.r_dsgraph_destroy();
 	xr_delete(EffectorsManager);
 }
 
@@ -574,7 +574,7 @@ IRender_Glow* CRender::glow_create()
 
 void CRender::flush()
 {
-	r_dsgraph_render_graph(0);
+	SceneGraph.r_dsgraph_render_graph(0);
 }
 
 BOOL CRender::occ_visible(vis_data& P)
@@ -636,7 +636,7 @@ void CRender::add_Occluder(Fbox2& bb_screenspace)
 
 void CRender::set_Object(IRenderable* O)
 {
-	val_pObject = O;
+	SceneGraph.val_pObject = O;
 }
 
 void CRender::set_render_mode(int mode)

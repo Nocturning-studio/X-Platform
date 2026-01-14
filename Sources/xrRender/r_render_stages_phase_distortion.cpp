@@ -16,7 +16,7 @@ void CRender::create_distortion_mask()
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
 
-	RenderImplementation.r_dsgraph_render_distort();
+	RenderImplementation.SceneGraph.r_dsgraph_render_distort();
 }
 
 void CRender::render_distortion()

@@ -31,7 +31,7 @@ void CRender::level_Load(IReader* fs)
 	////OPTICK_EVENT("CRender::level_Load");
 
 	R_ASSERT(0 != g_pGameLevel);
-	R_ASSERT(!b_loaded);
+	R_ASSERT(!SceneGraph.b_loaded);
 
 	// Группа задач для Визуалов
 	concurrency::task_group tg_visuals;
@@ -197,11 +197,11 @@ void CRender::level_Load(IReader* fs)
 
 	Engine.LoadingScreen.Hide();
 
-	lstLODs.clear();
-	lstLODgroups.clear();
-	mapLOD.clear();
+	SceneGraph.lstLODs.clear();
+	SceneGraph.lstLODgroups.clear();
+	SceneGraph.mapLOD.clear();
 
-	b_loaded = TRUE;
+	SceneGraph.b_loaded = TRUE;
 }
 
 void CRender::level_Unload()
@@ -210,7 +210,7 @@ void CRender::level_Unload()
 
 	if (0 == g_pGameLevel)
 		return;
-	if (!b_loaded)
+	if (!SceneGraph.b_loaded)
 		return;
 
 	u32 I;
@@ -288,7 +288,7 @@ void CRender::level_Unload()
 	g_pGamePersistent->LoadTitle("st_unloading_shaders");
 	Shaders.clear_and_free();
 
-	b_loaded = FALSE;
+	SceneGraph.b_loaded = FALSE;
 }
 
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)

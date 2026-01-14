@@ -137,15 +137,16 @@ void CRender::render_lights(light_Package& LP)
 
 		// Batch рендер shadow maps для всей группы
 		set_active_phase(PHASE_SHADOW_DEPTH);
-		r_pmask(true, false);
+		SceneGraph.r_pmask(true, false);
 
 		for (light* L : current_batch)
 		{
 			L->get_smapvis().begin();
-			r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
+			SceneGraph.r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
 
-			bool bNormal = mapNormal[0].size() || mapMatrix[0].size();
-			bool bSpecial = mapNormal[1].size() || mapMatrix[1].size() || mapSorted.size();
+			bool bNormal = SceneGraph.mapNormal[0].size() || SceneGraph.mapMatrix[0].size();
+			bool bSpecial =
+				SceneGraph.mapNormal[1].size() || SceneGraph.mapMatrix[1].size() || SceneGraph.mapSorted.size();
 
 			if (bNormal || bSpecial)
 			{
@@ -158,15 +159,15 @@ void CRender::render_lights(light_Package& LP)
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 					Details->Render();
 
-				r_dsgraph_render_graph(0);
+				SceneGraph.r_dsgraph_render_graph(0);
 				L->X.S.transluent = FALSE;
 
 				if (bSpecial)
 				{
 					L->X.S.transluent = TRUE;
 					render_shadow_map_spot_transluent(L);
-					r_dsgraph_render_graph(1);
-					r_dsgraph_render_sorted();
+					SceneGraph.r_dsgraph_render_graph(1);
+					SceneGraph.r_dsgraph_render_sorted();
 				}
 			}
 			else
@@ -177,7 +178,7 @@ void CRender::render_lights(light_Package& LP)
 			L->get_smapvis().end();
 		}
 
-		r_pmask(true, false);
+		SceneGraph.r_pmask(true, false);
 
 		// 4. Оптимизированное накопление света
 		{

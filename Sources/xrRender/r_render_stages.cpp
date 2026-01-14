@@ -36,7 +36,7 @@ bool CRender::is_dynamic_sun_enabled()
 
 void CRender::check_distort()
 {
-	if (!(mapDistort.size() == 0))
+	if (!(SceneGraph.mapDistort.size() == 0))
 	{
 		Msg("! mapDistort isn't deleted correctly!");
 	}
@@ -46,7 +46,8 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 {
 	PROFILE_FUNCTION();
 
-	marker++;
+	// marker теперь в SceneGraph
+	SceneGraph.marker++;
 
 	// Calculate sector(s) and their objects
 	if (pLastSector)
@@ -56,11 +57,13 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 		//!!!
 		{
 			// Traverse object database
-			g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE + STYPE_LIGHTSOURCE,
-									  ViewBase);
+			// lstRenderables теперь в SceneGraph
+			g_SpatialSpace->q_frustum(SceneGraph.lstRenderables, ISpatial_DB::O_ORDERED,
+									  STYPE_RENDERABLE + STYPE_LIGHTSOURCE, ViewBase);
 
 			// (almost) Exact sorting order (front-to-back)
-			concurrency::parallel_sort(lstRenderables.begin(), lstRenderables.end(), pred_sp_sort);
+			concurrency::parallel_sort(SceneGraph.lstRenderables.begin(), SceneGraph.lstRenderables.end(),
+									   pred_sp_sort);
 
 			// Determine visibility for dynamic part of scene
 			set_Object(0);
@@ -68,8 +71,8 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 			if (active_phase() == PHASE_NORMAL)
 			{
 				uLastLTRACK++;
-				if (lstRenderables.size())
-					uID_LTRACK = uLastLTRACK % lstRenderables.size();
+				if (SceneGraph.lstRenderables.size())
+					uID_LTRACK = uLastLTRACK % SceneGraph.lstRenderables.size();
 
 				// update light-vis for current entity / actor
 				CObject* O = g_pGameLevel->CurrentViewEntity();
@@ -82,9 +85,9 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 
 				// update light-vis for selected entity
 				// track lighting environment
-				if (lstRenderables.size())
+				if (SceneGraph.lstRenderables.size())
 				{
-					IRenderable* renderable = lstRenderables[uID_LTRACK]->dcast_Renderable();
+					IRenderable* renderable = SceneGraph.lstRenderables[uID_LTRACK]->dcast_Renderable();
 					if (renderable)
 					{
 						CROS_impl* T = (CROS_impl*)renderable->renderable_ROS();
@@ -112,9 +115,9 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 		}
 
 		// Traverse frustums
-		for (u32 o_it = 0; o_it < lstRenderables.size(); o_it++)
+		for (u32 o_it = 0; o_it < SceneGraph.lstRenderables.size(); o_it++)
 		{
-			ISpatial* spatial = lstRenderables[o_it];
+			ISpatial* spatial = SceneGraph.lstRenderables[o_it];
 			spatial->spatial_updatesector();
 			CSector* sector = (CSector*)spatial->spatial.sector;
 			if (0 == sector)
@@ -183,7 +186,6 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 			g_pGameLevel->pHUD->Render_Last(); // HUD
 	}
 }
-
 void CRender::query_wait()
 {
 	PROFILE_FUNCTION();
@@ -248,9 +250,9 @@ void CRender::render_depth_prepass()
 {
 	PROFILE_FUNCTION();
 
-	r_pmask(true, false); // enable priority "0"
+	SceneGraph.r_pmask(true, false); // enable priority "0"
 
-	set_Recorder(NULL);
+	SceneGraph.set_Recorder(NULL);
 
 	set_active_phase(PHASE_DEPTH_PREPASS);
 
@@ -266,11 +268,11 @@ void CRender::render_depth_prepass()
 	if (Details)
 		Details->Render();
 
-	r_dsgraph_render_hud();
+	SceneGraph.r_dsgraph_render_hud();
 
-	r_dsgraph_render_graph(0);
+	SceneGraph.r_dsgraph_render_graph(0);
 
-	r_dsgraph_render_lods(true, true);
+	SceneGraph.r_dsgraph_render_lods(true, true);
 
 	RenderBackend.disable_anisotropy_filtering();
 
@@ -282,17 +284,17 @@ void CRender::render_gbuffer_primary()
 {
 	PROFILE_FUNCTION();
 
-	r_pmask(true, false, true); // enable priority "0",+ capture wmarks
+	SceneGraph.r_pmask(true, false, true); // enable priority "0",+ capture wmarks
 
 	if (m_need_render_sun)
-		set_Recorder(&main_coarse_structure);
+		SceneGraph.set_Recorder(&main_coarse_structure);
 	else
-		set_Recorder(NULL);
+		SceneGraph.set_Recorder(NULL);
 
 	set_active_phase(PHASE_NORMAL);
 	render_main(Device.mFullTransform, true);
-	set_Recorder(NULL);
-	r_pmask(true, false); // disable priority "1"
+	SceneGraph.set_Recorder(NULL);
+	SceneGraph.r_pmask(true, false); // disable priority "1"
 
 	Device.Statistic->RenderCALC_GBuffer.Begin();
 	RenderBackend.enable_anisotropy_filtering();
@@ -305,7 +307,7 @@ void CRender::render_gbuffer_primary()
 	if (psDeviceFlags.test(rsWireframe))
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
 
-	r_dsgraph_render_graph(0);
+	SceneGraph.r_dsgraph_render_graph(0);
 
 	if (Details)
 		Details->Render();
@@ -335,10 +337,10 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	r_dsgraph_render_lods(true, true);
+	SceneGraph.r_dsgraph_render_lods(true, true);
 
 	set_active_phase(PHASE_HUD);
-	r_dsgraph_render_hud();
+	SceneGraph.r_dsgraph_render_hud();
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
@@ -490,9 +492,9 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		// --- RENDER GEOMETRY ---
 		set_active_phase(phase);
 		RenderImplementation.set_Transform(0);
-		marker++;
+		SceneGraph.marker++;
 
-		for (IRender_Visual* V : m_visuals_static_visible)
+		for (IRender_Visual* V : SceneGraph.m_visuals_static_visible)
 		{
 			ShaderElement* E = rimp_select_sh_static(V, 0.0f);
 			if (!E || E->passes.empty())
@@ -503,7 +505,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 				add_leafs_Static(V);
 		}
 
-		for (auto& item : m_visuals_dynamic_visible)
+		for (auto& item : SceneGraph.m_visuals_dynamic_visible)
 		{
 			ShaderElement* E = rimp_select_sh_dynamic(item.visual, 0.0f);
 			if (!E || E->passes.empty())
@@ -530,8 +532,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
 		RenderBackend.set_CullMode(CULL_BACKFACE);
 
-		r_dsgraph_render_graph(1);
-		r_dsgraph_render_sorted();
+		SceneGraph.r_dsgraph_render_graph(1);
+		SceneGraph.r_dsgraph_render_sorted();
 
 		// CLEANUP
 		dwLightMarkerID += 2;
@@ -547,8 +549,8 @@ void CRender::render_stage_forward()
 	VERIFY(0 == mapDistort.size());
 
 	// Очищаем списки с прошлого кадра
-	m_visuals_static_visible.clear();
-	m_visuals_dynamic_visible.clear();
+	SceneGraph.m_visuals_static_visible.clear();
+	SceneGraph.m_visuals_dynamic_visible.clear();
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
@@ -563,7 +565,7 @@ void CRender::render_stage_forward()
 		RenderBackend.set_ColorWriteEnable();
 		RenderBackend.set_ZWriteEnable(TRUE);
 
-		r_pmask(false, true);
+		SceneGraph.r_pmask(false, true);
 
 		// !!! ИСПРАВЛЕНИЕ: Базовая фаза должна быть NORMAL, чтобы заполнился кэш !!!
 		set_active_phase(PHASE_NORMAL);
@@ -572,8 +574,8 @@ void CRender::render_stage_forward()
 		// И ЗАПОЛНИТ наши списки m_visuals_... благодаря правкам в add_leafs
 		render_main(Device.mFullTransform, false);
 
-		r_dsgraph_render_graph(1);
-		r_dsgraph_render_sorted();
+		SceneGraph.r_dsgraph_render_graph(1);
+		SceneGraph.r_dsgraph_render_sorted();
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
@@ -605,8 +607,8 @@ void CRender::render_stage_forward()
 	// Заново наполняем граф из кэша.
 	//render_main(Device.mFullTransform, false);
 	r_dsgraph_render_reuse();
-	r_dsgraph_render_graph(1);
-	r_dsgraph_render_sorted();
+	SceneGraph.r_dsgraph_render_graph(1);
+	SceneGraph.r_dsgraph_render_sorted();
 
 	// ============================================
 	// PASS 4: Debug

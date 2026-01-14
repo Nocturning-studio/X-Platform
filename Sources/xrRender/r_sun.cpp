@@ -834,22 +834,22 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// Begin SMAP-render
-	bool bSpecialFull = mapNormal[1].size() || mapMatrix[1].size() || mapSorted.size();
+	bool bSpecialFull = SceneGraph.mapNormal[1].size() || SceneGraph.mapMatrix[1].size() || SceneGraph.mapSorted.size();
 	VERIFY(!bSpecialFull);
 	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
-	r_pmask(true, false);
+	SceneGraph.r_pmask(true, false);
 
 	// Fill the database
-	r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
+	SceneGraph.r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
 
 	// Finalize & Cleanup
 	sun->X.D.combine = cull_xform;
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
-	bool bNormal = mapNormal[0].size() || mapMatrix[0].size();
-	bool bSpecial = mapNormal[1].size() || mapMatrix[1].size() || mapSorted.size();
+	bool bNormal = SceneGraph.mapNormal[0].size() || SceneGraph.mapMatrix[0].size();
+	bool bSpecial = SceneGraph.mapNormal[1].size() || SceneGraph.mapMatrix[1].size() || SceneGraph.mapSorted.size();
 
 	if (bNormal || bSpecial)
 	{
@@ -867,7 +867,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && (!SE_SUN_FAR == cascade_ind))
 			Details->Render();
 
-		r_dsgraph_render_graph(0);
+		SceneGraph.r_dsgraph_render_graph(0);
 
 		if (m_SunOccluder)
 			m_SunOccluder->Render();
@@ -884,7 +884,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// End SMAP-render
-	r_pmask(true, false);
+	SceneGraph.r_pmask(true, false);
 
 	// Accumulate
 	set_light_accumulator();

@@ -471,10 +471,10 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
 	RenderBackend.set_xform_project(Device.mProject);
 
 	// Rendering
-	set_render_mode(CRender::MODE_NEAR);
+	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
 	mapHUD.traverseLR(sorted_L1);
 	mapHUD.clear();
-	set_render_mode(CRender::MODE_NORMAL);
+	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
 
 	// Restore projection
 	Device.mProject = Pold;
@@ -544,12 +544,12 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 	PROFILE_FUNCTION();
 
 	VERIFY(_sector);
-	RenderImplementation.marker++; // !!! critical here
+	marker++; // !!! critical here
 
 	// Save and build new frustum, disable HOM
-	CFrustum ViewSave = ViewBase;
-	ViewBase = *_frustum;
-	View = &ViewBase;
+	CFrustum ViewSave = RenderImplementation.ViewBase;
+	RenderImplementation.ViewBase = *_frustum;
+	RenderImplementation.View = &RenderImplementation.ViewBase;
 
 	if (_precise_portals && RenderImplementation.rmPortals)
 	{
@@ -566,7 +566,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 	}
 
 	// Traverse sector/portal structure
-	PortalTraverser.traverse(_sector, ViewBase, _cop, mCombined, 0);
+	PortalTraverser.traverse(_sector, RenderImplementation.ViewBase, _cop, mCombined, 0);
 
 	// Determine visibility for static geometry hierrarhy
 	for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
@@ -575,17 +575,18 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 		IRender_Visual* root = sector->root();
 		for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 		{
-			set_Frustum(&(sector->r_frustums[v_it]));
-			add_Geometry(root);
+			RenderImplementation.set_Frustum(&(sector->r_frustums[v_it]));
+			RenderImplementation.add_Geometry(root);
 		}
 	}
 
 	if (_dynamic)
 	{
-		set_Object(0);
+		RenderImplementation.set_Object(0);
 
 		// Traverse object database
-		g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, ViewBase);
+		g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE,
+								  RenderImplementation.ViewBase);
 
 		// Determine visibility for dynamic part of scene
 		for (u32 o_it = 0; o_it < lstRenderables.size(); o_it++)
@@ -598,8 +599,8 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 				continue; // inactive (untouched) sector
 			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 			{
-				set_Frustum(&(sector->r_frustums[v_it]));
-				if (!View->testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+				RenderImplementation.set_Frustum(&(sector->r_frustums[v_it]));
+				if (!RenderImplementation.View->testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 					continue;
 
 				// renderable
@@ -616,8 +617,8 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 		g_pGameLevel->pHUD->Render_Actor_Shadow(); // ACtor Shadow
 
 	// Restore
-	ViewBase = ViewSave;
-	View = 0;
+	RenderImplementation.ViewBase = ViewSave;
+	RenderImplementation.View = 0;
 }
 
 void CRender::r_dsgraph_render_reuse()
@@ -625,7 +626,7 @@ void CRender::r_dsgraph_render_reuse()
 	PROFILE_FUNCTION();
 
 	// Статика
-	for (IRender_Visual* V : m_visuals_static_visible)
+	for (IRender_Visual* V : SceneGraph.m_visuals_static_visible)
 	{
 		// Вызываем добавление ЛИСТА.
 		// Важно: мы не вызываем полную рекурсию add_Static, а сразу идем к листовой логике.
@@ -639,7 +640,7 @@ void CRender::r_dsgraph_render_reuse()
 	}
 
 	// Динамика
-	for (auto& it : m_visuals_dynamic_visible)
+	for (auto& it : SceneGraph.m_visuals_dynamic_visible)
 	{
 		RenderImplementation.set_Transform(&it.matrix); // Восстанавливаем матрицу
 		add_leafs_Dynamic(it.visual);

@@ -357,7 +357,7 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 		::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)
 		return;
 
-	if (!::RenderImplementation.val_bHUD)
+	if (!::RenderImplementation.SceneGraph.val_bHUD)
 	{
 		lock.Enter();
 		// search if similar wallmark exists
@@ -525,7 +525,7 @@ void CWallmarksEngine::Render()
 	lock.Leave(); // Physics may add wallmarks in parallel with rendering
 
 	// Level-wmarks
-	RenderImplementation.r_dsgraph_render_wmarks();
+	RenderImplementation.SceneGraph.r_dsgraph_render_wmarks();
 	Device.Statistic->RenderDUMP_WM.End();
 
 	// Projection

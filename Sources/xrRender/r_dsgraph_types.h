@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixedmap.h"
+#include <atomic>
 
 #ifndef USE_MEMORY_MONITOR
 #define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
@@ -8,6 +9,18 @@
 
 #ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 #include "doug_lea_memory_allocator.h"
+
+// CPU Pause для эффективного спинлока
+#if defined(_MSC_VER)
+#include <windows.h>
+#define CPU_PAUSE() YieldProcessor()
+#else
+#include <immintrin.h>
+#define CPU_PAUSE() _mm_pause()
+#endif
+
+// Глобальный атомарный флаг для синхронизации dlmalloc (Spinlock)
+static std::atomic_flag g_render_dl_lock = ATOMIC_FLAG_INIT;
 
 template <class T> class doug_lea_alloc
 {
@@ -48,29 +61,54 @@ template <class T> class doug_lea_alloc
 	{
 		return (*this);
 	}
+
 	pointer allocate(size_type n, const void* p = 0) const
 	{
-		return (T*)dlmalloc(sizeof(T) * (u32)n);
+		// Spinlock Acquire
+		while (g_render_dl_lock.test_and_set(std::memory_order_acquire))
+		{
+			CPU_PAUSE();
+		}
+
+		void* ptr = dlmalloc(sizeof(T) * (u32)n);
+
+		// Spinlock Release
+		g_render_dl_lock.clear(std::memory_order_release);
+		return (T*)ptr;
 	}
+
 	char* __charalloc(size_type n)
 	{
 		return (char*)allocate(n);
 	}
+
 	void deallocate(pointer p, size_type n) const
 	{
+		while (g_render_dl_lock.test_and_set(std::memory_order_acquire))
+		{
+			CPU_PAUSE();
+		}
 		dlfree(p);
+		g_render_dl_lock.clear(std::memory_order_release);
 	}
+
 	void deallocate(void* p, size_type n) const
 	{
+		while (g_render_dl_lock.test_and_set(std::memory_order_acquire))
+		{
+			CPU_PAUSE();
+		}
 		dlfree(p);
+		g_render_dl_lock.clear(std::memory_order_release);
 	}
+
 	void construct(pointer p, const T& _Val)
 	{
 		::new ((void*)p) value_type(_Val);
 	}
 	void destroy(pointer p)
 	{
-		std::_Destroy_in_place(p);
+		p->~T(); // Более переносимо, чем _Destroy_in_place
 	}
 	size_type max_size() const
 	{
@@ -97,11 +135,23 @@ struct doug_lea_allocator
 
 	static void* alloc(const u32& n)
 	{
-		return dlmalloc((u32)n);
+		while (g_render_dl_lock.test_and_set(std::memory_order_acquire))
+		{
+			CPU_PAUSE();
+		}
+		void* p = dlmalloc((u32)n);
+		g_render_dl_lock.clear(std::memory_order_release);
+		return p;
 	}
+
 	template <typename T> static void dealloc(T*& p)
 	{
+		while (g_render_dl_lock.test_and_set(std::memory_order_acquire))
+		{
+			CPU_PAUSE();
+		}
 		dlfree(p);
+		g_render_dl_lock.clear(std::memory_order_release);
 		p = 0;
 	}
 };

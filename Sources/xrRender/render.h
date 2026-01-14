@@ -29,7 +29,7 @@
 #include "EffectorsManager.h"
 
 // definition
-class CRender : public R_dsgraph_structure
+class CRender : public IRender_interface, public pureFrame
 {
   public:
 	enum
@@ -91,6 +91,8 @@ class CRender : public R_dsgraph_structure
 	CDB::MODEL* rmPortals;
 	CHOM HOM;
 	R_occlusion HWOCC;
+
+	R_dsgraph_structure SceneGraph;
 
 	CSunOccluder* m_SunOccluder;
 
@@ -382,6 +384,33 @@ class CRender : public R_dsgraph_structure
 	virtual void Render();
 	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
 	virtual void OnFrame();
+
+	virtual void set_Transform(Fmatrix* M)
+	{
+		SceneGraph.set_Transform(M);
+	}
+
+	virtual void set_HUD(BOOL V)
+	{
+		SceneGraph.set_HUD(V);
+	}
+	virtual BOOL get_HUD()
+	{
+		return SceneGraph.get_HUD();
+	}
+	virtual void set_Invisible(BOOL V)
+	{
+		SceneGraph.set_Invisible(V);
+	}
+
+	virtual u32 memory_usage()
+	{
+#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+		return ((u32)dlmallinfo().uordblks);
+#else
+		return (0);
+#endif
+	}
 
 	// Render mode
 	virtual void set_render_mode(int mode);
