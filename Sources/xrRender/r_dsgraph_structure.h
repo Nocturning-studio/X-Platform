@@ -202,6 +202,8 @@ class CSceneGraph
 	// Вспомогательная функция для переиспользования списков отрисовки
 	void render_reuse();
 
+	bool IsValuableToRender(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize);
+
 	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes); // normal processing
 	void add_Static(IRender_Visual* pVisual, u32 planes);
 	void add_leafs_Dynamic(IRender_Visual* pVisual); // if detected node's full visibility
