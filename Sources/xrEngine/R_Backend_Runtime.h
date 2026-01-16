@@ -106,6 +106,11 @@ ICF void CBackend::set_States(IDirect3DStateBlock9* _state)
 	}
 }
 
+ICF void CBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
+{
+	CHK_DX(HW.pDevice->SetRenderState(State, Value));
+};
+
 #ifdef _EDITOR
 IC void CBackend::set_Matrices(SMatrixList* _M)
 {
@@ -271,13 +276,13 @@ IC void CBackend::set_Scissor(Irect* R)
 {
 	if (R)
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE));
+		SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
 		RECT* clip = (RECT*)R;
 		CHK_DX(HW.pDevice->SetScissorRect(clip));
 	}
 	else
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
+		SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 	}
 }
 
@@ -288,44 +293,44 @@ IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _
 	if (stencil_enable != _enable)
 	{
 		stencil_enable = _enable;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILENABLE, _enable));
+		SetRenderState(D3DRS_STENCILENABLE, _enable);
 	}
 	if (!stencil_enable)
 		return;
 	if (stencil_func != _func)
 	{
 		stencil_func = _func;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFUNC, _func));
+		SetRenderState(D3DRS_STENCILFUNC, _func);
 	}
 	if (stencil_ref != _ref)
 	{
 		stencil_ref = _ref;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILREF, _ref));
+		SetRenderState(D3DRS_STENCILREF, _ref);
 	}
 	if (stencil_mask != _mask)
 	{
 		stencil_mask = _mask;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILMASK, _mask));
+		SetRenderState(D3DRS_STENCILMASK, _mask);
 	}
 	if (stencil_writemask != _writemask)
 	{
 		stencil_writemask = _writemask;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILWRITEMASK, _writemask));
+		SetRenderState(D3DRS_STENCILWRITEMASK, _writemask);
 	}
 	if (stencil_fail != _fail)
 	{
 		stencil_fail = _fail;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFAIL, _fail));
+		SetRenderState(D3DRS_STENCILFAIL, _fail);
 	}
 	if (stencil_pass != _pass)
 	{
 		stencil_pass = _pass;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILPASS, _pass));
+		SetRenderState(D3DRS_STENCILPASS, _pass);
 	}
 	if (stencil_zfail != _zfail)
 	{
 		stencil_zfail = _zfail;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, _zfail));
+		SetRenderState(D3DRS_STENCILZFAIL, _zfail);
 	}
 }
 IC void CBackend::set_ColorWriteEnable(u32 _mask)
@@ -333,10 +338,10 @@ IC void CBackend::set_ColorWriteEnable(u32 _mask)
 	if (colorwrite_mask != _mask)
 	{
 		colorwrite_mask = _mask;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, _mask));
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE1, _mask));
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE2, _mask));
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE3, _mask));
+		SetRenderState(D3DRS_COLORWRITEENABLE, _mask);
+		SetRenderState(D3DRS_COLORWRITEENABLE1, _mask);
+		SetRenderState(D3DRS_COLORWRITEENABLE2, _mask);
+		SetRenderState(D3DRS_COLORWRITEENABLE3, _mask);
 	}
 }
 IC void CBackend::set_ZWriteEnable(bool write_state)
@@ -344,7 +349,7 @@ IC void CBackend::set_ZWriteEnable(bool write_state)
 	if (zwrite != write_state)
 	{
 		zwrite = write_state;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, write_state));
+		SetRenderState(D3DRS_ZWRITEENABLE, write_state);
 	}
 }
 ICF void CBackend::set_CullMode(u32 _mode)
@@ -352,7 +357,7 @@ ICF void CBackend::set_CullMode(u32 _mode)
 	if (cull_mode != _mode)
 	{
 		cull_mode = _mode;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_CULLMODE, _mode));
+		SetRenderState(D3DRS_CULLMODE, _mode);
 	}
 }
 

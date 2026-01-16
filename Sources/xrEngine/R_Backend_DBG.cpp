@@ -152,9 +152,9 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 	}
 
 	set_xform_world(T);
-	HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces, 224);
-	HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
 
 #endif

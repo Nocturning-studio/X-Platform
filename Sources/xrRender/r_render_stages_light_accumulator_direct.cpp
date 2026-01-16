@@ -35,7 +35,7 @@ static u16 facetable[16][3] =
 
 void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias)
 {
-	////OPTICK_EVENT("CRender::accumulate_sun");
+	OPTICK_EVENT("accumulate_sun");
 
 	// *** assume accumulator setted up ***
 	light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
@@ -196,11 +196,11 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 
 	// Setup depth testing
 	if ((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
-		HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
+		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
 	else if (!ps_r_lighting_flags.is(RFLAGEXT_SUN_ZCULLING))
-		HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 	else
-		HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
 
 	// Setup stencil
 	if (SE_SUN_NEAR == sub_phase || sub_phase == SE_SUN_MIDDLE)

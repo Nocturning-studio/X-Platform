@@ -70,7 +70,7 @@ void CUIStaticItem::Render()
 	VERIFY(hShader);
 	RenderBackend.set_Shader(hShader);
 	if (alpha_ref != -1)
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF, alpha_ref));
+		RenderBackend.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
 	Fvector2 bp;
 	UI()->ClientToScreenScaled(bp, float(iPos.x), float(iPos.y));
@@ -110,7 +110,7 @@ void CUIStaticItem::Render()
 	if (p_cnt != 0)
 		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
 	if (alpha_ref != -1)
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF, 0));
+		RenderBackend.SetRenderState(D3DRS_ALPHAREF, 0);
 	UI()->PopScissor();
 }
 
@@ -123,7 +123,7 @@ void CUIStaticItem::Render(float angle)
 	VERIFY(hShader);
 	RenderBackend.set_Shader(hShader);
 	if (alpha_ref != -1)
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF, alpha_ref));
+		RenderBackend.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
 	Fvector2 bp_ns;
 	bp_ns.set(iPos);
@@ -140,5 +140,5 @@ void CUIStaticItem::Render(float angle)
 	if (p_cnt > 2)
 		RenderBackend.Render(D3DPT_TRIANGLEFAN, vOffset, u32(p_cnt - 2));
 	if (alpha_ref != -1)
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF, 0));
+		RenderBackend.SetRenderState(D3DRS_ALPHAREF, 0);
 }

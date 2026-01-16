@@ -153,7 +153,7 @@ public:
 	BOOL Begin();
 	void Clear();
 	void End();
-	void FrameMove();
+	void OnFrame();
 
 	void overdrawBegin();
 	void overdrawEnd();

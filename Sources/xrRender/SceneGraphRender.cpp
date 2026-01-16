@@ -198,7 +198,7 @@ void CSceneGraph::Render(SceneGraphRenderType type, u32 priority, bool clear, bo
 
 void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 {
-	PROFILE_FUNCTION_FULL();
+	OPTICK_EVENT("RenderOpaque");
 	Device.Statistic->RenderDUMP.Begin();
 
 	// **************************************************** NORMAL
@@ -357,7 +357,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 
 void CSceneGraph::_RenderHUD()
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("RenderHUD");
 	ENGINE_API extern float psHUD_FOV;
 
 	Fmatrix Pold = Device.mProject;
@@ -380,35 +380,35 @@ void CSceneGraph::_RenderHUD()
 
 void CSceneGraph::_RenderTranslucent()
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("RenderTranslucent");
 	mapSorted.traverseRL(sorted_L1);
 	mapSorted.clear();
 }
 
 void CSceneGraph::_RenderEmissive()
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("RenderEmissive");
 	mapEmissive.traverseLR(sorted_L1);
 	mapEmissive.clear();
 }
 
 void CSceneGraph::_RenderWmarks()
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("RenderWmarks");
 	mapWmark.traverseLR(sorted_L1);
 	mapWmark.clear();
 }
 
 void CSceneGraph::_RenderDistortion()
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("RenderDistortion");
 	mapDistort.traverseRL(sorted_L1);
 	mapDistort.clear();
 }
 
 void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("RenderLODs");
 
 	if (_setup_zb)
 		mapLOD.getLR(lstLODs); // front-to-back
@@ -558,7 +558,7 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 								  BOOL _precise_portals)
 {
-	PROFILE_FUNCTION_FULL();
+	OPTICK_EVENT("render_subspace - shortcut");
 
 	CFrustum temp;
 	temp.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
@@ -569,7 +569,7 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, F
 void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop,
 								  BOOL _dynamic, BOOL _precise_portals)
 {
-	PROFILE_FUNCTION();
+	OPTICK_EVENT("render_subspace - main");
 
 	VERIFY(_sector);
 	marker++; // !!! critical here

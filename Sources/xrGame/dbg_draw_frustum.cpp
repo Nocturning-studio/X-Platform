@@ -111,7 +111,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 	ProjDirs[3].sub(sPts[3], COP);
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff));
+	RenderBackend.SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 
 	Fvector _F[4];
 	_F[0].mad(COP, ProjDirs[0], _FAR);
@@ -139,6 +139,6 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 	Level().debug_renderer().draw_line(M, _F[3], _F[0], CL);
 
 	RenderBackend.set_CullMode(CULL_BACKFACE);
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_AMBIENT, 0));
+	RenderBackend.SetRenderState(D3DRS_AMBIENT, 0);
 }
 #endif

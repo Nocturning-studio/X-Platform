@@ -89,7 +89,7 @@ void CRender::accumulate_point_lights(light* L)
 	}
 
 	dwLightMarkerID += 2; // keep lowest bit always setted up
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
+	RenderBackend.SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 
 	u_DBT_disable();
 }

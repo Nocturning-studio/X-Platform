@@ -217,6 +217,8 @@ class ENGINE_API CBackend
 		set_States(_state->state);
 	}
 
+	ICF void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value);
+
 	ICF void set_Format(IDirect3DVertexDeclaration9* _decl);
 
 	ICF void set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n = 0);

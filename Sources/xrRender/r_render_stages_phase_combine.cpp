@@ -44,9 +44,9 @@ void CRender::render_skybox()
 	RenderBackend.set_ColorWriteEnable();
 
 	// Draw full-screen quad textured with our scene image draw skybox
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, FALSE));
+	RenderBackend.SetRenderState(D3DRS_ZENABLE, FALSE);
 	g_pGamePersistent->Environment().RenderSky();
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, TRUE));
+	RenderBackend.SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::precombine_scene()

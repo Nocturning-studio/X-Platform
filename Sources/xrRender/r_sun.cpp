@@ -596,7 +596,7 @@ void CRender::init_cacades()
 	m_sun_cascades[0].size = ps_r_sun_near;
 	m_sun_cascades[0].bias = m_sun_cascades[0].size * fBias;
 
-	m_sun_cascades[1].size = 60;
+	m_sun_cascades[1].size = ps_r_sun_near * 3;
 	m_sun_cascades[1].bias = m_sun_cascades[1].size * fBias;
 
 	m_sun_cascades[2].size = ps_r_sun_far;
@@ -614,14 +614,27 @@ void CRender::render_sun_cascades()
 {
 	PROFILE_FUNCTION();
 
-	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-		render_sun_cascade(i);
+	//for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+		//render_sun_cascade(i);
+
+	{
+		OPTICK_EVENT("Near cascade");
+		render_sun_cascade(0);
+	}
+
+	{
+		OPTICK_EVENT("Middle cascade");
+		render_sun_cascade(1);
+	}
+
+	{
+		OPTICK_EVENT("Far cascade");
+		render_sun_cascade(2);
+	}
 }
 
 void CRender::render_sun_cascade(u32 cascade_ind)
 {
-	PROFILE_FUNCTION_FULL();
-
 	light* sun = (light*)Lights.sun_adapted._get();
 
 	// calculate view-frustum bounds in world space
@@ -860,18 +873,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 	if (bNormal || bSpecial)
 	{
-		if (cascade_ind == 0)
-			render_shadow_map_sun(sun, SE_SUN_NEAR);
-		else if (cascade_ind < m_sun_cascades.size() - 1)
-			render_shadow_map_sun(sun, SE_SUN_MIDDLE);
-		else
-			render_shadow_map_sun(sun, SE_SUN_FAR);
+		render_shadow_map_sun(sun, cascade_ind);
 
 		RenderBackend.set_xform_world(Fidentity);
 		RenderBackend.set_xform_view(Fidentity);
 		RenderBackend.set_xform_project(sun->X.D.combine);
 
-		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && (!SE_SUN_FAR == cascade_ind))
+		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && ((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
 			Details->Render();
 
 		SceneGraph.Render(SceneGraphRenderType::Opaque);
@@ -885,12 +893,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	// Accumulate
 	set_light_accumulator();
 
-	if (cascade_ind == 0)
-		accumulate_sun(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
-	else if (cascade_ind < m_sun_cascades.size() - 1)
-		accumulate_sun(SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-	else
-		accumulate_sun(SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
 
 	// Restore XForms
 	RenderBackend.set_xform_world(Fidentity);

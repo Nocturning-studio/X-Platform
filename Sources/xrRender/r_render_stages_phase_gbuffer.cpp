@@ -42,7 +42,7 @@ void CRender::set_gbuffer()
 	RenderBackend.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
 	// Misc	- draw only front-faces
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE));
+	RenderBackend.SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE);
 
 	//Set backface culling
 	RenderBackend.set_CullMode(CULL_BACKFACE);

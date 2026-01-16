@@ -105,7 +105,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 		return;
 	if (!_enable)
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
+		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
 		return;
 	}
 
@@ -128,7 +128,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 
 	// Enable them
 	u32 e_mask = (1 << count) - 1;
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask));
+	SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask);
 }
 
 #ifndef DEDICATED_SREVER
@@ -138,7 +138,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask
 		return;
 	if (!_enable)
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
+		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
 		return;
 	}
 	VERIFY(_xform && fmask);
@@ -293,15 +293,15 @@ void CBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 		srcBlend = src;
 		dstBlend = dest;
 
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, enable));
+		SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
 
 		if (enable)
 		{
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_SRCBLEND, src));
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_DESTBLEND, dest));
+			SetRenderState(D3DRS_SRCBLEND, src);
+			SetRenderState(D3DRS_DESTBLEND, dest);
 
 			// Также установим правильные состояния для альфа-тестинга если нужно
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE));
+			SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 		}
 	}
 }
@@ -330,7 +330,7 @@ void CBackend::set_Blend_Default()
 void CBackend::set_Blend_Subtract()
 {
 	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT));
+	SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
 }
 
 void CBackend::set_Blend_Screen()
@@ -356,15 +356,15 @@ void CBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP 
 		srcBlend = src;
 		dstBlend = dest;
 
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, enable));
+		SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
 
 		if (enable)
 		{
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_SRCBLEND, src));
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_DESTBLEND, dest));
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_BLENDOP, op));
+			SetRenderState(D3DRS_SRCBLEND, src);
+			SetRenderState(D3DRS_DESTBLEND, dest);
+			SetRenderState(D3DRS_BLENDOP, op);
 
-			CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE));
+			SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 		}
 	}
 }

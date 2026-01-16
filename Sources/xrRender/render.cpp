@@ -761,9 +761,9 @@ BOOL CRender::u_DBT_enable(float zMin, float zMax)
 		return FALSE;
 
 	// enable cheat
-	HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
-	HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
-	HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
+	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
+	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
+	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
 
 	return TRUE;
 }
@@ -771,7 +771,7 @@ BOOL CRender::u_DBT_enable(float zMin, float zMax)
 void CRender::u_DBT_disable()
 {
 	if (RenderImplementation.o.nvdbt && ps_r_ls_flags.test(RFLAG_USE_NVDBT))
-		HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
+		RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
 }
 
 float CRender::hclip(float v, float dim)

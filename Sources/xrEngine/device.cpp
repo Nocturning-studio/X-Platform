@@ -230,7 +230,7 @@ void CRenderDevice::DoFrame()
 		}
 		else
 		{
-			FrameMove();
+			OnFrame();
 		}
 
 		// Precache
@@ -314,7 +314,7 @@ void CRenderDevice::EndEventLoop()
 }
 
 void ProcessLoading(RP_FUNC* f);
-void CRenderDevice::FrameMove()
+void CRenderDevice::OnFrame()
 {
 	PROFILE_FUNCTION();
 
@@ -447,35 +447,35 @@ void CRenderDevice::_SetupStates()
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
 	}
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_DITHERENABLE, TRUE));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORVERTEX, TRUE));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, TRUE));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_LOCALVIEWER, TRUE));
+	RenderBackend.SetRenderState(D3DRS_DITHERENABLE, TRUE);
+	RenderBackend.SetRenderState(D3DRS_COLORVERTEX, TRUE);
+	RenderBackend.SetRenderState(D3DRS_ZENABLE, TRUE);
+	RenderBackend.SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
+	RenderBackend.SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	RenderBackend.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	RenderBackend.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
 
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, D3DMCS_COLOR1));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE));
+	RenderBackend.SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
+	RenderBackend.SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+	RenderBackend.SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL);
+	RenderBackend.SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, D3DMCS_COLOR1);
+	RenderBackend.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+	RenderBackend.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID));
+	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	// ******************** Fog parameters
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGCOLOR, 0));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_RANGEFOGENABLE, FALSE));
+	RenderBackend.SetRenderState(D3DRS_FOGCOLOR, 0);
+	RenderBackend.SetRenderState(D3DRS_RANGEFOGENABLE, FALSE);
 	if (HW.Caps.bTableFog)
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_EXP2));
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE));
+		RenderBackend.SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_EXP2);
+		RenderBackend.SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE);
 	}
 	else
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_NONE));
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_EXP2));
+		RenderBackend.SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_NONE);
+		RenderBackend.SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_EXP2);
 	}
 }
 
@@ -674,34 +674,34 @@ void CRenderDevice::DumpFlags()
 void CRenderDevice::overdrawBegin()
 {
 	// Turn stenciling
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILREF, 0));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILMASK, 0x00000000));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff));
+	RenderBackend.SetRenderState(D3DRS_STENCILENABLE, TRUE);
+	RenderBackend.SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+	RenderBackend.SetRenderState(D3DRS_STENCILREF, 0);
+	RenderBackend.SetRenderState(D3DRS_STENCILMASK, 0x00000000);
+	RenderBackend.SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
 
 	// Increment the stencil buffer for each pixel drawn
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT));
+	RenderBackend.SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+	RenderBackend.SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT);
 
 	if (1 == HW.Caps.SceneMode)
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP));
+		RenderBackend.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
 	} // Overdraw
 	else
 	{
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT));
+		RenderBackend.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT);
 	} // ZB access
 }
 
 void CRenderDevice::overdrawEnd()
 {
 	// Set up the stencil states
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILMASK, 0xff));
+	RenderBackend.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+	RenderBackend.SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+	RenderBackend.SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
+	RenderBackend.SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
+	RenderBackend.SetRenderState(D3DRS_STENCILMASK, 0xff);
 
 	// Set the background to black
 	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_XRGB(255, 0, 0), 0, 0);
@@ -722,8 +722,8 @@ void CRenderDevice::overdrawEnd()
 		pv[2].set(float(dwWidth), float(dwHeight), c, 0, 0);
 		pv[3].set(float(dwWidth), float(0), c, 0, 0);
 
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILREF, I));
+		RenderBackend.SetRenderState(D3DRS_STENCILREF, I);
 		CHK_DX(HW.pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
 	}
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE));
+	RenderBackend.SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }

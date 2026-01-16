@@ -267,12 +267,11 @@ void CRender::render_depth_prepass()
 	RenderBackend.set_ColorWriteEnable(FALSE);
 	RenderBackend.set_ZWriteEnable(TRUE);
 
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL));
+	RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
 	RenderBackend.enable_anisotropy_filtering();
 
-	if (Details)
-		Details->Render();
+	if (Details) Details->Render();
 
 	SceneGraph.Render(SceneGraphRenderType::HUD);
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
@@ -322,19 +321,18 @@ void CRender::render_gbuffer_primary()
 	set_gbuffer();
 
 	if (ps_r_ls_flags.test(RFLAG_Z_PREPASS))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL));
+		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
 
 	if (psDeviceFlags.test(rsWireframe))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	// Отрисовка собранного Opaque (Priority 0)
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 
-	if (Details)
-		Details->Render();
+	if (Details) Details->Render();
 
 	if (psDeviceFlags.test(rsWireframe))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID));
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
 	Device.Statistic->RenderCALC_GBuffer.End();
@@ -351,10 +349,10 @@ void CRender::render_gbuffer_secondary()
 	set_gbuffer();
 
 	if (psDeviceFlags.test(rsWireframe))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	if (ps_r_ls_flags.test(RFLAG_Z_PREPASS))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL));
+		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
@@ -365,7 +363,7 @@ void CRender::render_gbuffer_secondary()
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID));
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
 }
@@ -414,7 +412,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderBackend.set_Element(RenderTarget->s_accum_mask->E[mask_id]);
 
 		// принудительное отключение цвета
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0));
+		RenderBackend.SetRenderState(D3DRS_COLORWRITEENABLE, 0);
 		RenderBackend.set_ZWriteEnable(FALSE);
 
 		// Мы хотим ГАРАНТИРОВАННО пометить пиксели стенсилом, не завися от того,
@@ -544,13 +542,13 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 		// Включаем обратно цвет
 		RenderBackend.set_ColorWriteEnable(TRUE);
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0xF));
+		RenderBackend.SetRenderState(D3DRS_COLORWRITEENABLE, 0xF);
 		RenderBackend.set_ZWriteEnable(FALSE);
 
 		// СТЕНСИЛ ТЕСТ для воды: рисуем только если маска == dwLightMarkerID
 		RenderBackend.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
 
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
+		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 		RenderBackend.set_CullMode(CULL_BACKFACE);
 
 		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
@@ -558,7 +556,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 		// CLEANUP
 		dwLightMarkerID += 2;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
+		RenderBackend.SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 		RenderBackend.set_Stencil(FALSE);
 	}
 }
@@ -624,7 +622,7 @@ void CRender::render_stage_forward()
 
 	RenderBackend.set_ColorWriteEnable();
 
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
+	RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 
 	// Z-Write должен быть FALSE для аддитивного солнца
 	// Иначе оно будет перезаписывать глубину и "бороться" с базовой геометрией.
