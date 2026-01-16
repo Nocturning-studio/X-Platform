@@ -217,6 +217,8 @@ void CParticlesObject::PerformAllTheWork(u32 _dt)
 
 void CParticlesObject::PerformAllTheWork_mt()
 {
+	PROFILE_FUNCTION();
+
 	if (g_dedicated_server)
 		return;
 

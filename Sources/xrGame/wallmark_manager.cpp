@@ -89,6 +89,8 @@ float Distance(const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, 
 
 void CWalmarkManager::StartWorkflow()
 {
+	PROFILE_FUNCTION();
+
 	LPCSTR sect = "explosion_marks";
 	float m_trace_dist = pSettings->r_float(sect, "dist");
 	float m_wallmark_size = pSettings->r_float(sect, "size");

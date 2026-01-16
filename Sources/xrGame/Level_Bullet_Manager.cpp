@@ -172,6 +172,8 @@ void CBulletManager::AddBullet(const Fvector& position, const Fvector& direction
 
 void CBulletManager::UpdateWorkload()
 {
+	PROFILE_FUNCTION();
+
 	m_Lock.Enter();
 	u32 delta_time = Engine.TimeManager.GetDeltaTimeMs() + m_dwTimeRemainder;
 	u32 step_num = delta_time / m_dwStepTime;

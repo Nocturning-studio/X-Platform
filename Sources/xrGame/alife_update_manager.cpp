@@ -106,7 +106,7 @@ void CALifeUpdateManager::update_scheduled(bool init_ef)
 
 void CALifeUpdateManager::update()
 {
-	//OPTICK_EVENT("CALifeUpdateManager::update");
+	PROFILE_FUNCTION();
 
 	update_switch();
 	update_scheduled(false);

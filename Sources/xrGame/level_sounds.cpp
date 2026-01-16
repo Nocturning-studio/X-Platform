@@ -206,7 +206,7 @@ void CLevelSoundManager::Unload()
 
 void CLevelSoundManager::Update()
 {
-	//OPTICK_EVENT("CLevelSoundManager::update");
+	PROFILE_FUNCTION();
 
 	if (Device.Paused())
 		return;

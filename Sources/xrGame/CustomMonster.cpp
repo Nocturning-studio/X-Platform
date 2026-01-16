@@ -399,7 +399,7 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
-	//OPTICK_EVENT("CCustomMonster::update_sound_player");
+	PROFILE_FUNCTION();
 
 	sound().update(client_update_fdelta());
 }
@@ -614,6 +614,8 @@ void CCustomMonster::eye_pp_s2()
 
 void CCustomMonster::Exec_Visibility()
 {
+	PROFILE_FUNCTION();
+
 	if (getDestroy() || !m_entity_condition)
 		return;
 
