@@ -594,12 +594,12 @@ BOOL CRender::occ_visible(Fbox& P)
 
 void CRender::add_Visual(IRender_Visual* V)
 {
-	add_leafs_Dynamic(V);
+	SceneGraph.add_leafs_Dynamic(V);
 }
 
 void CRender::add_Geometry(IRender_Visual* V)
 {
-	add_Static(V, View->getMask());
+	SceneGraph.add_Static(V, View->getMask());
 }
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)

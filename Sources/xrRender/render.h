@@ -154,11 +154,6 @@ class CRender : public IRender_interface, public pureFrame
 	void LoadSectors(IReader* fs);
 	void LoadSWIs(CStreamReader* fs);
 
-	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes); // normal processing
-	void add_Static(IRender_Visual* pVisual, u32 planes);
-	void add_leafs_Dynamic(IRender_Visual* pVisual); // if detected node's full visibility
-	void add_leafs_Static(IRender_Visual* pVisual);	 // if detected node's full visibility
-
   public:
 	void RenderScene();
 	void RenderDebug();
@@ -439,7 +434,6 @@ class CRender : public IRender_interface, public pureFrame
 	HMODULE hCompiler;
   private:
 	FS_FileSet m_file_set;
-	void r_dsgraph_render_reuse();
 };
 
 extern CRender RenderImplementation;

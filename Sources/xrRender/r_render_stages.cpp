@@ -502,7 +502,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 			float R_sum = V->vis.sphere.R + L_range;
 			if (V->vis.sphere.P.distance_to_sqr(L_pos) < (R_sum * R_sum))
-				add_leafs_Static(V);
+				SceneGraph.add_leafs_Static(V);
 		}
 
 		for (auto& item : SceneGraph.m_visuals_dynamic_visible)
@@ -517,7 +517,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 			if (sphere_center_world.distance_to_sqr(L_pos) < (R_sum * R_sum))
 			{
 				RenderImplementation.set_Transform(&item.matrix);
-				add_leafs_Dynamic(item.visual);
+				SceneGraph.add_leafs_Dynamic(item.visual);
 			}
 		}
 
@@ -606,7 +606,7 @@ void CRender::render_stage_forward()
 
 	// Заново наполняем граф из кэша.
 	//render_main(Device.mFullTransform, false);
-	r_dsgraph_render_reuse();
+	SceneGraph.r_dsgraph_render_reuse();
 	SceneGraph.r_dsgraph_render_graph(1);
 	SceneGraph.r_dsgraph_render_sorted();
 

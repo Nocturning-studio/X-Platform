@@ -621,12 +621,12 @@ void CSceneGraph::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _
 	RenderImplementation.View = 0;
 }
 
-void CRender::r_dsgraph_render_reuse()
+void CSceneGraph::r_dsgraph_render_reuse()
 {
 	PROFILE_FUNCTION();
 
 	// Статика
-	for (IRender_Visual* V : SceneGraph.m_visuals_static_visible)
+	for (IRender_Visual* V : m_visuals_static_visible)
 	{
 		// Вызываем добавление ЛИСТА.
 		// Важно: мы не вызываем полную рекурсию add_Static, а сразу идем к листовой логике.
@@ -640,7 +640,7 @@ void CRender::r_dsgraph_render_reuse()
 	}
 
 	// Динамика
-	for (auto& it : SceneGraph.m_visuals_dynamic_visible)
+	for (auto& it : m_visuals_dynamic_visible)
 	{
 		RenderImplementation.set_Transform(&it.matrix); // Восстанавливаем матрицу
 		add_leafs_Dynamic(it.visual);
