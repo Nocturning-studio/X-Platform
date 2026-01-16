@@ -841,7 +841,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	SceneGraph.r_pmask(true, false);
 
 	// Fill the database
-	SceneGraph.r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
+	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
 
 	// Finalize & Cleanup
 	sun->X.D.combine = cull_xform;
@@ -867,7 +867,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && (!SE_SUN_FAR == cascade_ind))
 			Details->Render();
 
-		SceneGraph.r_dsgraph_render_graph(0);
+		SceneGraph.render_graph(0);
 
 		if (m_SunOccluder)
 			m_SunOccluder->Render();
@@ -878,8 +878,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		//{
 		//	sun->X.D.transluent = TRUE;
 		//	RenderTarget->render_shadow_map_sun_transluent(sun, SE_SUN_FAR);
-		//	r_dsgraph_render_graph(1); // normal level, secondary priority
-		//	r_dsgraph_render_sorted(); // strict-sorted geoms
+		//	render_graph(1); // normal level, secondary priority
+		//	render_sorted(); // strict-sorted geoms
 		//}
 	}
 

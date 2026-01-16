@@ -32,7 +32,7 @@ ICF float CalcSSA(float& distSQ, Fvector& C, float R)
 	return R / distSQ;
 }
 
-void CSceneGraph::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
+void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 {
 	// Для доступа к методам CRender (например, rimp_select_sh_dynamic)
 	CRender& RI = RenderImplementation;
@@ -187,7 +187,7 @@ void CSceneGraph::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvector& Cen
 	}
 }
 
-void CSceneGraph::r_dsgraph_insert_static(IRender_Visual* pVisual)
+void CSceneGraph::insert_static(IRender_Visual* pVisual)
 {
 	CRender& RI = RenderImplementation;
 
@@ -905,7 +905,7 @@ void CSceneGraph::add_leafs_Dynamic(IRender_Visual* pVisual)
 			m_visuals_dynamic_visible.push_back(item);
 		}
 
-		r_dsgraph_insert_dynamic(pVisual, Tpos);
+		insert_dynamic(pVisual, Tpos);
 	}
 		return;
 	}
@@ -1008,11 +1008,11 @@ void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
 		return;
 	case MT_TREE_PM:
 	case MT_TREE_ST: {
-		r_dsgraph_insert_static(pVisual);
+		insert_static(pVisual);
 	}
 		return;
 	default: {
-		r_dsgraph_insert_static(pVisual);
+		insert_static(pVisual);
 	}
 		return;
 	}
@@ -1140,7 +1140,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	break;
 	default: {
 		// Вызываем метод вставки динамики (который мы ранее перенесли в CSceneGraph)
-		r_dsgraph_insert_dynamic(pVisual, Tpos);
+		insert_dynamic(pVisual, Tpos);
 	}
 	break;
 	}
@@ -1281,12 +1281,12 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 	case MT_TREE_ST:
 	case MT_TREE_PM: {
 		// Вызов метода через текущий объект
-		r_dsgraph_insert_static(pVisual);
+		insert_static(pVisual);
 	}
 		return;
 	default: {
 		// OPTICK_EVENT("default");
-		r_dsgraph_insert_static(pVisual);
+		insert_static(pVisual);
 	}
 	break;
 	}

@@ -325,7 +325,7 @@ void CRender::destroy()
 	xr_delete(RenderTarget);
 	PSLibrary.OnDestroy();
 	Device.seqFrame.Remove(this);
-	SceneGraph.r_dsgraph_destroy();
+	SceneGraph.destroy();
 	xr_delete(EffectorsManager);
 }
 
@@ -574,7 +574,7 @@ IRender_Glow* CRender::glow_create()
 
 void CRender::flush()
 {
-	SceneGraph.r_dsgraph_render_graph(0);
+	SceneGraph.render_graph(0);
 }
 
 BOOL CRender::occ_visible(vis_data& P)

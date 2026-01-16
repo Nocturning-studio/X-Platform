@@ -140,7 +140,7 @@ class CSceneGraph
 		b_loaded = FALSE;
 	};
 
-	void r_dsgraph_destroy()
+	void destroy()
 	{
 		nrmVS.clear();
 		nrmPS.clear();
@@ -183,24 +183,24 @@ class CSceneGraph
 		pmask_wmark = _wm;
 	}
 
-	void r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvector& Center);
-	void r_dsgraph_insert_static(IRender_Visual* pVisual);
+	void insert_dynamic(IRender_Visual* pVisual, Fvector& Center);
+	void insert_static(IRender_Visual* pVisual);
 
-	void r_dsgraph_render_graph(u32 _priority, bool _clear = true);
-	void r_dsgraph_render_hud();
-	void r_dsgraph_render_lods(bool _setup_zb, bool _clear);
-	void r_dsgraph_render_sorted();
-	void r_dsgraph_render_emissive();
-	void r_dsgraph_render_wmarks();
-	void r_dsgraph_render_distort();
+	void render_graph(u32 _priority, bool _clear = true);
+	void render_hud();
+	void render_lods(bool _setup_zb, bool _clear);
+	void render_sorted();
+	void render_emissive();
+	void render_wmarks();
+	void render_distort();
 
-	void r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop,
+	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop,
 								   BOOL _dynamic, BOOL _precise_portals = FALSE);
-	void r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
+	void render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 								   BOOL _precise_portals = FALSE);
 
 	// Вспомогательная функция для переиспользования списков отрисовки
-	void r_dsgraph_render_reuse();
+	void render_reuse();
 
 	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes); // normal processing
 	void add_Static(IRender_Visual* pVisual, u32 planes);

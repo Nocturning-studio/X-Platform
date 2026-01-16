@@ -18,7 +18,7 @@ static bool pred_dot_std(const std::pair<float, u32>& _1, const std::pair<float,
 	return _1.first < _2.first;
 }
 
-void CSceneGraph::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
+void CSceneGraph::render_lods(bool _setup_zb, bool _clear)
 {
 	PROFILE_FUNCTION();
 
@@ -140,7 +140,7 @@ void CSceneGraph::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 	}
 
 	// *** 4. RENDER ***
-	////OPTICK_EVENT("CSceneGraph::r_dsgraph_render_lods - render");
+	////OPTICK_EVENT("CSceneGraph::render_lods - render");
 
 	int current = 0;
 	RenderBackend.set_xform_world(Fidentity);

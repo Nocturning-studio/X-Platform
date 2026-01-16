@@ -268,11 +268,11 @@ void CRender::render_depth_prepass()
 	if (Details)
 		Details->Render();
 
-	SceneGraph.r_dsgraph_render_hud();
+	SceneGraph.render_hud();
 
-	SceneGraph.r_dsgraph_render_graph(0);
+	SceneGraph.render_graph(0);
 
-	SceneGraph.r_dsgraph_render_lods(true, true);
+	SceneGraph.render_lods(true, true);
 
 	RenderBackend.disable_anisotropy_filtering();
 
@@ -307,7 +307,7 @@ void CRender::render_gbuffer_primary()
 	if (psDeviceFlags.test(rsWireframe))
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
 
-	SceneGraph.r_dsgraph_render_graph(0);
+	SceneGraph.render_graph(0);
 
 	if (Details)
 		Details->Render();
@@ -337,10 +337,10 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	SceneGraph.r_dsgraph_render_lods(true, true);
+	SceneGraph.render_lods(true, true);
 
 	set_active_phase(PHASE_HUD);
-	SceneGraph.r_dsgraph_render_hud();
+	SceneGraph.render_hud();
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
@@ -532,8 +532,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
 		RenderBackend.set_CullMode(CULL_BACKFACE);
 
-		SceneGraph.r_dsgraph_render_graph(1);
-		SceneGraph.r_dsgraph_render_sorted();
+		SceneGraph.render_graph(1);
+		SceneGraph.render_sorted();
 
 		// CLEANUP
 		dwLightMarkerID += 2;
@@ -574,8 +574,8 @@ void CRender::render_stage_forward()
 		// И ЗАПОЛНИТ наши списки m_visuals_... благодаря правкам в add_leafs
 		render_main(Device.mFullTransform, false);
 
-		SceneGraph.r_dsgraph_render_graph(1);
-		SceneGraph.r_dsgraph_render_sorted();
+		SceneGraph.render_graph(1);
+		SceneGraph.render_sorted();
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
@@ -606,9 +606,9 @@ void CRender::render_stage_forward()
 
 	// Заново наполняем граф из кэша.
 	//render_main(Device.mFullTransform, false);
-	SceneGraph.r_dsgraph_render_reuse();
-	SceneGraph.r_dsgraph_render_graph(1);
-	SceneGraph.r_dsgraph_render_sorted();
+	SceneGraph.render_reuse();
+	SceneGraph.render_graph(1);
+	SceneGraph.render_sorted();
 
 	// ============================================
 	// PASS 4: Debug

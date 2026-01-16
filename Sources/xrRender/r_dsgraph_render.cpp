@@ -291,7 +291,7 @@ void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixT
 	}
 }
 
-void CSceneGraph::r_dsgraph_render_graph(u32 _priority, bool _clear)
+void CSceneGraph::render_graph(u32 _priority, bool _clear)
 {
 	PROFILE_FUNCTION_FULL();
 
@@ -456,7 +456,7 @@ void CSceneGraph::r_dsgraph_render_graph(u32 _priority, bool _clear)
 }
 //////////////////////////////////////////////////////////////////////////
 // HUD render
-void CSceneGraph::r_dsgraph_render_hud()
+void CSceneGraph::render_hud()
 {
 	PROFILE_FUNCTION();
 
@@ -483,7 +483,7 @@ void CSceneGraph::r_dsgraph_render_hud()
 }
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void CSceneGraph::r_dsgraph_render_sorted()
+void CSceneGraph::render_sorted()
 {
 	PROFILE_FUNCTION();
 
@@ -494,7 +494,7 @@ void CSceneGraph::r_dsgraph_render_sorted()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void CSceneGraph::r_dsgraph_render_emissive()
+void CSceneGraph::render_emissive()
 {
 	PROFILE_FUNCTION();
 
@@ -505,7 +505,7 @@ void CSceneGraph::r_dsgraph_render_emissive()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void CSceneGraph::r_dsgraph_render_wmarks()
+void CSceneGraph::render_wmarks()
 {
 	PROFILE_FUNCTION();
 
@@ -516,7 +516,7 @@ void CSceneGraph::r_dsgraph_render_wmarks()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void CSceneGraph::r_dsgraph_render_distort()
+void CSceneGraph::render_distort()
 {
 	PROFILE_FUNCTION();
 
@@ -527,18 +527,18 @@ void CSceneGraph::r_dsgraph_render_distort()
 
 //////////////////////////////////////////////////////////////////////////
 // sub-space rendering - shortcut to render with frustum extracted from matrix
-void CSceneGraph::r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop,
+void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop,
 													BOOL _dynamic, BOOL _precise_portals)
 {
 	PROFILE_FUNCTION_FULL();
 
 	CFrustum temp;
 	temp.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
-	r_dsgraph_render_subspace(_sector, &temp, mCombined, _cop, _dynamic, _precise_portals);
+	render_subspace(_sector, &temp, mCombined, _cop, _dynamic, _precise_portals);
 }
 
 // sub-space rendering - main procedure
-void CSceneGraph::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined,
+void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined,
 													Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
 {
 	PROFILE_FUNCTION();
@@ -621,7 +621,7 @@ void CSceneGraph::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _
 	RenderImplementation.View = 0;
 }
 
-void CSceneGraph::r_dsgraph_render_reuse()
+void CSceneGraph::render_reuse()
 {
 	PROFILE_FUNCTION();
 

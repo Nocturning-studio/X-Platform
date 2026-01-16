@@ -142,7 +142,7 @@ void CRender::render_lights(light_Package& LP)
 		for (light* L : current_batch)
 		{
 			L->get_smapvis().begin();
-			SceneGraph.r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
+			SceneGraph.render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
 
 			bool bNormal = SceneGraph.mapNormal[0].size() || SceneGraph.mapMatrix[0].size();
 			bool bSpecial =
@@ -159,15 +159,15 @@ void CRender::render_lights(light_Package& LP)
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 					Details->Render();
 
-				SceneGraph.r_dsgraph_render_graph(0);
+				SceneGraph.render_graph(0);
 				L->X.S.transluent = FALSE;
 
 				if (bSpecial)
 				{
 					L->X.S.transluent = TRUE;
 					render_shadow_map_spot_transluent(L);
-					SceneGraph.r_dsgraph_render_graph(1);
-					SceneGraph.r_dsgraph_render_sorted();
+					SceneGraph.render_graph(1);
+					SceneGraph.render_sorted();
 				}
 			}
 			else
