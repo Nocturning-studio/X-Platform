@@ -20,7 +20,7 @@ class R_feedback
 //////////////////////////////////////////////////////////////////////////
 // Структура для хранения и сортировки рендер-элементов (Scene Graph)
 //////////////////////////////////////////////////////////////////////////
-class R_dsgraph_structure
+class CSceneGraph
 {
   public:
 	IRenderable* val_pObject;
@@ -125,7 +125,7 @@ class R_dsgraph_structure
 	}
 
   public:
-	R_dsgraph_structure()
+	CSceneGraph()
 	{
 		val_pObject = NULL;
 		val_pTransform = NULL;

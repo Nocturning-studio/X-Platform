@@ -92,7 +92,7 @@ class CRender : public IRender_interface, public pureFrame
 	CHOM HOM;
 	R_occlusion HWOCC;
 
-	R_dsgraph_structure SceneGraph;
+	CSceneGraph SceneGraph;
 
 	CSunOccluder* m_SunOccluder;
 

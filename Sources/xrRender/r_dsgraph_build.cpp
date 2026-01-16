@@ -32,12 +32,12 @@ ICF float CalcSSA(float& distSQ, Fvector& C, float R)
 	return R / distSQ;
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
+void CSceneGraph::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 {
 	// Для доступа к методам CRender (например, rimp_select_sh_dynamic)
 	CRender& RI = RenderImplementation;
 
-	// 'marker' теперь член R_dsgraph_structure, обращаемся напрямую
+	// 'marker' теперь член CSceneGraph, обращаемся напрямую
 	if (pVisual->vis.marker == marker)
 		return;
 	pVisual->vis.marker = marker;
@@ -51,12 +51,12 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 	VERIFY(pVisual->shader._get());
 	ShaderElement* sh_d = &*pVisual->shader->E[4];
 
-	// pmask - член R_dsgraph_structure
+	// pmask - член CSceneGraph
 	if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
 	{
 		mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
-		// val_pObject и val_pTransform - члены R_dsgraph_structure
+		// val_pObject и val_pTransform - члены CSceneGraph
 		N->val.pObject = val_pObject;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = *val_pTransform;
@@ -75,7 +75,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 	_MatrixItem item = {SSA, val_pObject, pVisual, *val_pTransform};
 
 	// HUD rendering
-	// val_bHUD - член R_dsgraph_structure
+	// val_bHUD - член CSceneGraph
 	if (val_bHUD)
 	{
 		if (sh->flags.bStrictB2F)
@@ -100,7 +100,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 		}
 	}
 
-	// val_bInvisible - член R_dsgraph_structure
+	// val_bInvisible - член CSceneGraph
 	if (val_bInvisible)
 		return;
 
@@ -127,7 +127,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
 
-	// pmask_wmark - член R_dsgraph_structure
+	// pmask_wmark - член CSceneGraph
 	if (sh->flags.bWmark && pmask_wmark)
 	{
 		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
@@ -177,7 +177,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 		}
 	}
 
-	// val_recorder - член R_dsgraph_structure
+	// val_recorder - член CSceneGraph
 	if (val_recorder)
 	{
 		Fbox3 temp;
@@ -187,11 +187,11 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual* pVisual, Fvec
 	}
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
+void CSceneGraph::r_dsgraph_insert_static(IRender_Visual* pVisual)
 {
 	CRender& RI = RenderImplementation;
 
-	// 'marker' - член R_dsgraph_structure
+	// 'marker' - член CSceneGraph
 	if (pVisual->vis.marker == marker)
 		return;
 	pVisual->vis.marker = marker;
@@ -205,10 +205,10 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 	VERIFY(pVisual->shader._get());
 	ShaderElement* sh_d = &*pVisual->shader->E[4];
 
-	// pmask - член R_dsgraph_structure
+	// pmask - член CSceneGraph
 	if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
 	{
-		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Distort");
+		//////OPTICK_EVENT("CSceneGraph::r_dsgraph_insert_static - Distort");
 
 		mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
@@ -230,7 +230,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 	// strict-sorting selection
 	if (sh->flags.bStrictB2F)
 	{
-		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - bStrictB2F");
+		//////OPTICK_EVENT("CSceneGraph::r_dsgraph_insert_static - bStrictB2F");
 
 		mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
 		N->val.pObject = NULL;
@@ -243,7 +243,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 	// Emissive geometry
 	if (sh->flags.bEmissive)
 	{
-		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Emissive");
+		//////OPTICK_EVENT("CSceneGraph::r_dsgraph_insert_static - Emissive");
 
 		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
@@ -253,10 +253,10 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
 
-	// pmask_wmark - член R_dsgraph_structure
+	// pmask_wmark - член CSceneGraph
 	if (sh->flags.bWmark && pmask_wmark)
 	{
-		//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Wmark");
+		//////OPTICK_EVENT("CSceneGraph::r_dsgraph_insert_static - Wmark");
 
 		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
@@ -267,12 +267,12 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		return;
 	}
 
-	// val_feedback, counter_S, val_feedback_breakp - члены R_dsgraph_structure
+	// val_feedback, counter_S, val_feedback_breakp - члены CSceneGraph
 	if (val_feedback && counter_S == val_feedback_breakp)
 		val_feedback->rfeedback_static(pVisual);
 
 	counter_S++;
-	//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - insert");
+	//////OPTICK_EVENT("CSceneGraph::r_dsgraph_insert_static - insert");
 	SPass& pass = *sh->passes.front();
 	mapNormal_T& map = mapNormal[sh->flags.iPriority / 2];
 #ifdef USE_RESOURCE_DEBUGGER
@@ -290,7 +290,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 	items.push_back(item);
 
 	// Need to sort for HZB efficient use
-	//////OPTICK_EVENT("R_dsgraph_structure::r_dsgraph_insert_static - Sort");
+	//////OPTICK_EVENT("CSceneGraph::r_dsgraph_insert_static - Sort");
 	if (SSA > Ntex->val.ssa)
 	{
 		Ntex->val.ssa = SSA;
@@ -312,7 +312,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual* pVisual)
 		}
 	}
 
-	// val_recorder - член R_dsgraph_structure
+	// val_recorder - член CSceneGraph
 	if (val_recorder)
 	{
 		val_recorder->push_back(pVisual->vis.box);
@@ -809,7 +809,7 @@ IC bool IsValuableToRender(IRender_Visual* pVisual, bool isStatic, bool sm, Fmat
 
 void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 {
-	//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Dynamic");
+	//////OPTICK_EVENT("CSceneGraph::add_leafs_Dynamic");
 
 	if (0 == pVisual)
 		return;
@@ -824,7 +824,7 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 	switch (pVisual->Type)
 	{
 	case MT_PARTICLE_GROUP: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Dynamic - Particle group");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Dynamic - Particle group");
 		// Add all children, doesn't perform any tests
 		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
 		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
@@ -842,7 +842,7 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 	}
 		return;
 	case MT_HIERRARHY: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Dynamic - hierrarhy");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Dynamic - hierrarhy");
 		// Add all children, doesn't perform any tests
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		I = pV->children.begin();
@@ -853,7 +853,7 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 		return;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Dynamic - skeleton");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Dynamic - skeleton");
 		// Add all children, doesn't perform any tests
 		CKinematics* pV = (CKinematics*)pVisual;
 		BOOL _use_lod = FALSE;
@@ -914,8 +914,8 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 
 		if (active_phase() == PHASE_NORMAL)
 		{
-			// Использование структуры из R_dsgraph_structure
-			R_dsgraph_structure::DReuseItem item;
+			// Использование структуры из CSceneGraph
+			CSceneGraph::DReuseItem item;
 			item.visual = pVisual;
 			item.matrix = *SceneGraph.val_pTransform; // Копируем текущую матрицу из SceneGraph
 			SceneGraph.m_visuals_dynamic_visible.push_back(item);
@@ -931,7 +931,7 @@ void CRender::add_leafs_Dynamic(IRender_Visual* pVisual)
 
 void CRender::add_leafs_Static(IRender_Visual* pVisual)
 {
-	//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static");
+	//////OPTICK_EVENT("CSceneGraph::add_leafs_Static");
 
 	if (!HOM.visible(pVisual->vis))
 		return;
@@ -951,7 +951,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 	switch (pVisual->Type)
 	{
 	case MT_PARTICLE_GROUP: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Particle group");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Static - Particle group");
 		// Add all children, doesn't perform any tests
 		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
 		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
@@ -969,7 +969,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 	}
 		return;
 	case MT_HIERRARHY: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Hierrarhy");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Static - Hierrarhy");
 		// Add all children, doesn't perform any tests
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		I = pV->children.begin();
@@ -980,7 +980,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 		return;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Skeleton");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Static - Skeleton");
 
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
@@ -1012,7 +1012,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 	}
 		return;
 	case MT_LOD: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Lod");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Static - Lod");
 		FLOD* pV = (FLOD*)pVisual;
 		float D;
 		float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
@@ -1038,7 +1038,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 		return;
 	case MT_TREE_PM:
 	case MT_TREE_ST: {
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - Tree");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Static - Tree");
 		// General type of visual
 		// Вызов метода через SceneGraph
 		SceneGraph.r_dsgraph_insert_static(pVisual);
@@ -1046,7 +1046,7 @@ void CRender::add_leafs_Static(IRender_Visual* pVisual)
 		return;
 	default: {
 		// General type of visual
-		//////OPTICK_EVENT("R_dsgraph_structure::add_leafs_Static - static");
+		//////OPTICK_EVENT("CSceneGraph::add_leafs_Static - static");
 		// Вызов метода через SceneGraph
 		SceneGraph.r_dsgraph_insert_static(pVisual);
 	}

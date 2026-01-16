@@ -291,7 +291,7 @@ void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixT
 	}
 }
 
-void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
+void CSceneGraph::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
 	PROFILE_FUNCTION_FULL();
 
@@ -456,7 +456,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 }
 //////////////////////////////////////////////////////////////////////////
 // HUD render
-void R_dsgraph_structure::r_dsgraph_render_hud()
+void CSceneGraph::r_dsgraph_render_hud()
 {
 	PROFILE_FUNCTION();
 
@@ -483,7 +483,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
 }
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_sorted()
+void CSceneGraph::r_dsgraph_render_sorted()
 {
 	PROFILE_FUNCTION();
 
@@ -494,7 +494,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_emissive()
+void CSceneGraph::r_dsgraph_render_emissive()
 {
 	PROFILE_FUNCTION();
 
@@ -505,7 +505,7 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_wmarks()
+void CSceneGraph::r_dsgraph_render_wmarks()
 {
 	PROFILE_FUNCTION();
 
@@ -516,7 +516,7 @@ void R_dsgraph_structure::r_dsgraph_render_wmarks()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_distort()
+void CSceneGraph::r_dsgraph_render_distort()
 {
 	PROFILE_FUNCTION();
 
@@ -527,7 +527,7 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 
 //////////////////////////////////////////////////////////////////////////
 // sub-space rendering - shortcut to render with frustum extracted from matrix
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop,
+void CSceneGraph::r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop,
 													BOOL _dynamic, BOOL _precise_portals)
 {
 	PROFILE_FUNCTION_FULL();
@@ -538,7 +538,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, Fma
 }
 
 // sub-space rendering - main procedure
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined,
+void CSceneGraph::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined,
 													Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
 {
 	PROFILE_FUNCTION();
