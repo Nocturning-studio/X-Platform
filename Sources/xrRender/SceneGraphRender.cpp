@@ -1,56 +1,56 @@
 #include "stdafx.h"
+#include "SceneGraph.h"
+#include "flod.h"
+#include "render.h"
 
-#include "..\xrEngine\render.h"
-#include "..\xrEngine\irenderable.h"
-#include "..\xrEngine\igame_persistent.h"
-#include "..\xrEngine\environment.h"
-#include "..\xrEngine\customhud.h"
-#include "..\xrEngine\SkeletonCustom.h"
+#include <ppl.h> // Для concurrency::parallel_for
 
-using namespace R_dsgraph;
-
-extern float r_ssaDISCARD;
-extern float r_ssaDONTSORT;
-extern float r_ssaHZBvsTEX;
+// Глобальные переменные (пока что)
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
+extern float r_ssaHZBvsTEX;
+extern float r_ssaLOD_A;
+extern float r_ssaLOD_B;
 
+using namespace SceneGraphTypes;
+
+// ===============================================================================================
+//  Internal Helpers & Predicates (Anonymous Namespace)
+// ===============================================================================================
+namespace
+{
+// --- LOD Calculation ---
 ICF float calcLOD(float ssa /*fDistSq*/, float R)
 {
 	return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 }
 
-// NORMAL
-IC bool cmp_normal_items(const _NormalItem& N1, const _NormalItem& N2)
+// --- LOD Sorting Helper ---
+static bool pred_dot_std(const std::pair<float, u32>& _1, const std::pair<float, u32>& _2)
 {
-	return (N1.ssa > N2.ssa);
+	return _1.first < _2.first;
 }
 
-void __fastcall mapNormal_Render(mapNormalItems& N)
+// --- Normal Sorting Helper ---
+static void mapNormal_Render(SceneGraphTypes::mapNormalItems& N)
 {
-	// *** DIRECT ***
-	std::sort(N.begin(), N.end(), cmp_normal_items);
-	_NormalItem *I = &*N.begin(), *E = &*N.end();
-	for (; I != E; I++)
+	// Сортировка по SSA (screen space area)
+	std::sort(N.begin(), N.end(),
+			  [](const SceneGraphTypes::_NormalItem& N1, const SceneGraphTypes::_NormalItem& N2) { return (N1.ssa > N2.ssa); });
+
+	for (auto& Ni : N)
 	{
-		_NormalItem& Ni = *I;
 		Ni.pVisual->Render(calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R));
 	}
 }
 
-// Matrix
-IC bool cmp_matrix_items(const _MatrixItem& N1, const _MatrixItem& N2)
+// --- Matrix Sorting Helper ---
+static void mapMatrix_Render(SceneGraphTypes::mapMatrixItems& N)
 {
-	return (N1.ssa > N2.ssa);
-}
+	std::sort(N.begin(), N.end(),
+			  [](const SceneGraphTypes::_MatrixItem& N1, const SceneGraphTypes::_MatrixItem& N2) { return (N1.ssa > N2.ssa); });
 
-void __fastcall mapMatrix_Render(mapMatrixItems& N)
-{
-	// *** DIRECT ***
-	std::sort(N.begin(), N.end(), cmp_matrix_items);
-	_MatrixItem *I = &*N.begin(), *E = &*N.end();
-	for (; I != E; I++)
+	for (auto& Ni : N)
 	{
-		_MatrixItem& Ni = *I;
 		RenderBackend.set_xform_world(Ni.Matrix);
 		RenderImplementation.apply_object(Ni.pObject);
 		RenderImplementation.apply_lmaterial();
@@ -59,8 +59,8 @@ void __fastcall mapMatrix_Render(mapMatrixItems& N)
 	N.clear();
 }
 
-// ALPHA
-void __fastcall sorted_L1(mapSorted_Node* N)
+// --- Sorted Node Render Callback (for traversers) ---
+static void __fastcall sorted_L1(SceneGraphTypes::mapSorted_Node* N)
 {
 	VERIFY(N);
 	IRender_Visual* V = N->val.pVisual;
@@ -72,43 +72,8 @@ void __fastcall sorted_L1(mapSorted_Node* N)
 	V->Render(calcLOD(N->key, V->vis.sphere.R));
 }
 
-IC bool cmp_vs_nrm(mapNormalVS::TNode* N1, mapNormalVS::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-IC bool cmp_vs_mat(mapMatrixVS::TNode* N1, mapMatrixVS::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-
-IC bool cmp_ps_nrm(mapNormalPS::TNode* N1, mapNormalPS::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-IC bool cmp_ps_mat(mapMatrixPS::TNode* N1, mapMatrixPS::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-
-IC bool cmp_cs_nrm(mapNormalCS::TNode* N1, mapNormalCS::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-IC bool cmp_cs_mat(mapMatrixCS::TNode* N1, mapMatrixCS::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-
-IC bool cmp_states_nrm(mapNormalStates::TNode* N1, mapNormalStates::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-IC bool cmp_states_mat(mapMatrixStates::TNode* N1, mapMatrixStates::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-
-IC bool cmp_textures_lex2_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::TNode* N2)
+// --- Texture Sorting Predicates ---
+template <typename TNode> bool cmp_textures_lex2(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
@@ -118,23 +83,10 @@ IC bool cmp_textures_lex2_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::T
 		return false;
 	if ((*t1)[1] < (*t2)[1])
 		return true;
-	else
-		return false;
+	return false;
 }
-IC bool cmp_textures_lex2_mat(mapMatrixTextures::TNode* N1, mapMatrixTextures::TNode* N2)
-{
-	STextureList* t1 = N1->key;
-	STextureList* t2 = N2->key;
-	if ((*t1)[0] < (*t2)[0])
-		return true;
-	if ((*t1)[0] > (*t2)[0])
-		return false;
-	if ((*t1)[1] < (*t2)[1])
-		return true;
-	else
-		return false;
-}
-IC bool cmp_textures_lex3_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::TNode* N2)
+
+template <typename TNode> bool cmp_textures_lex3(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
@@ -148,65 +100,37 @@ IC bool cmp_textures_lex3_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::T
 		return false;
 	if ((*t1)[2] < (*t2)[2])
 		return true;
-	else
-		return false;
+	return false;
 }
-IC bool cmp_textures_lex3_mat(mapMatrixTextures::TNode* N1, mapMatrixTextures::TNode* N2)
-{
-	STextureList* t1 = N1->key;
-	STextureList* t2 = N2->key;
-	if ((*t1)[0] < (*t2)[0])
-		return true;
-	if ((*t1)[0] > (*t2)[0])
-		return false;
-	if ((*t1)[1] < (*t2)[1])
-		return true;
-	if ((*t1)[1] > (*t2)[1])
-		return false;
-	if ((*t1)[2] < (*t2)[2])
-		return true;
-	else
-		return false;
-}
-IC bool cmp_textures_lexN_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::TNode* N2)
+
+template <typename TNode> bool cmp_textures_lexN(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
 	return std::lexicographical_compare(t1->begin(), t1->end(), t2->begin(), t2->end());
 }
-IC bool cmp_textures_lexN_mat(mapMatrixTextures::TNode* N1, mapMatrixTextures::TNode* N2)
-{
-	STextureList* t1 = N1->key;
-	STextureList* t2 = N2->key;
-	return std::lexicographical_compare(t1->begin(), t1->end(), t2->begin(), t2->end());
-}
-IC bool cmp_textures_ssa_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::TNode* N2)
-{
-	return (N1->val.ssa > N2->val.ssa);
-}
-IC bool cmp_textures_ssa_mat(mapMatrixTextures::TNode* N1, mapMatrixTextures::TNode* N2)
+
+template <typename TNode> bool cmp_textures_ssa(TNode* N1, TNode* N2)
 {
 	return (N1->val.ssa > N2->val.ssa);
 }
 
-void sort_tlist_nrm(xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalTextures::TNode*>>& lst,
-					xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalTextures::TNode*>>& temp,
-					mapNormalTextures& textures, BOOL bSSA)
+// --- Texture Sorting Logic ---
+template <typename MapTextures, typename VecTypes>
+void sort_tlist(VecTypes& lst, VecTypes& temp, MapTextures& textures, BOOL bSSA)
 {
 	int amount = textures.begin()->key->size();
 	if (bSSA)
 	{
 		if (amount <= 1)
 		{
-			// Just sort by SSA
 			textures.getANY_P(lst);
-			std::sort(lst.begin(), lst.end(), cmp_textures_ssa_nrm);
+			std::sort(lst.begin(), lst.end(), cmp_textures_ssa<typename MapTextures::TNode>);
 		}
 		else
 		{
-			// Split into 2 parts
-			mapNormalTextures::TNode* _it = textures.begin();
-			mapNormalTextures::TNode* _end = textures.end();
+			auto _it = textures.begin();
+			auto _end = textures.end();
 			for (; _it != _end; _it++)
 			{
 				if (_it->val.ssa > r_ssaHZBvsTEX)
@@ -215,16 +139,15 @@ void sort_tlist_nrm(xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalT
 					temp.push_back(_it);
 			}
 
-			// 1st - part - SSA, 2nd - lexicographically
-			std::sort(lst.begin(), lst.end(), cmp_textures_ssa_nrm);
-			if (2 == amount)
-				std::sort(temp.begin(), temp.end(), cmp_textures_lex2_nrm);
-			else if (3 == amount)
-				std::sort(temp.begin(), temp.end(), cmp_textures_lex3_nrm);
-			else
-				std::sort(temp.begin(), temp.end(), cmp_textures_lexN_nrm);
+			std::sort(lst.begin(), lst.end(), cmp_textures_ssa<typename MapTextures::TNode>);
 
-			// merge lists
+			if (2 == amount)
+				std::sort(temp.begin(), temp.end(), cmp_textures_lex2<typename MapTextures::TNode>);
+			else if (3 == amount)
+				std::sort(temp.begin(), temp.end(), cmp_textures_lex3<typename MapTextures::TNode>);
+			else
+				std::sort(temp.begin(), temp.end(), cmp_textures_lexN<typename MapTextures::TNode>);
+
 			lst.insert(lst.end(), temp.begin(), temp.end());
 		}
 	}
@@ -232,81 +155,60 @@ void sort_tlist_nrm(xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalT
 	{
 		textures.getANY_P(lst);
 		if (2 == amount)
-			std::sort(lst.begin(), lst.end(), cmp_textures_lex2_nrm);
+			std::sort(lst.begin(), lst.end(), cmp_textures_lex2<typename MapTextures::TNode>);
 		else if (3 == amount)
-			std::sort(lst.begin(), lst.end(), cmp_textures_lex3_nrm);
+			std::sort(lst.begin(), lst.end(), cmp_textures_lex3<typename MapTextures::TNode>);
 		else
-			std::sort(lst.begin(), lst.end(), cmp_textures_lexN_nrm);
+			std::sort(lst.begin(), lst.end(), cmp_textures_lexN<typename MapTextures::TNode>);
 	}
 }
+} // namespace
 
-void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixTextures::TNode*>>& lst,
-					xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixTextures::TNode*>>& temp,
-					mapMatrixTextures& textures, BOOL bSSA)
+// ===============================================================================================
+//  CSceneGraph Implementation
+// ===============================================================================================
+
+void CSceneGraph::Render(SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
 {
-	int amount = textures.begin()->key->size();
-	if (bSSA)
+	switch (type)
 	{
-		if (amount <= 1)
-		{
-			// Just sort by SSA
-			textures.getANY_P(lst);
-			std::sort(lst.begin(), lst.end(), cmp_textures_ssa_mat);
-		}
-		else
-		{
-			// Split into 2 parts
-			mapMatrixTextures::TNode* _it = textures.begin();
-			mapMatrixTextures::TNode* _end = textures.end();
-			for (; _it != _end; _it++)
-			{
-				if (_it->val.ssa > r_ssaHZBvsTEX)
-					lst.push_back(_it);
-				else
-					temp.push_back(_it);
-			}
-
-			// 1st - part - SSA, 2nd - lexicographically
-			std::sort(lst.begin(), lst.end(), cmp_textures_ssa_mat);
-			if (2 == amount)
-				std::sort(temp.begin(), temp.end(), cmp_textures_lex2_mat);
-			else if (3 == amount)
-				std::sort(temp.begin(), temp.end(), cmp_textures_lex3_mat);
-			else
-				std::sort(temp.begin(), temp.end(), cmp_textures_lexN_mat);
-
-			// merge lists
-			lst.insert(lst.end(), temp.begin(), temp.end());
-		}
-	}
-	else
-	{
-		textures.getANY_P(lst);
-		if (2 == amount)
-			std::sort(lst.begin(), lst.end(), cmp_textures_lex2_mat);
-		else if (3 == amount)
-			std::sort(lst.begin(), lst.end(), cmp_textures_lex3_mat);
-		else
-			std::sort(lst.begin(), lst.end(), cmp_textures_lexN_mat);
+	case SceneGraphRenderType::Opaque:
+		_RenderOpaque(priority, clear);
+		break;
+	case SceneGraphRenderType::Transparent:
+		_RenderTranslucent();
+		break;
+	case SceneGraphRenderType::HUD:
+		_RenderHUD();
+		break;
+	case SceneGraphRenderType::LOD:
+		_RenderLODs(setup_zb, clear);
+		break;
+	case SceneGraphRenderType::Emissive:
+		_RenderEmissive();
+		break;
+	case SceneGraphRenderType::Wallmarks:
+		_RenderWmarks();
+		break;
+	case SceneGraphRenderType::Distortion:
+		_RenderDistortion();
+		break;
 	}
 }
 
-void CSceneGraph::render_graph(u32 _priority, bool _clear)
+void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 {
 	PROFILE_FUNCTION_FULL();
-
 	Device.Statistic->RenderDUMP.Begin();
 
 	// **************************************************** NORMAL
-	// Perform sorting based on ScreenSpaceArea
-	// Sorting by SSA and changes minimizations
 	{
-		//OPTICK_EVENT("NORMAL");
-
+		// OPTICK_EVENT("NORMAL");
 		RenderBackend.set_xform_world(Fidentity);
+
 		mapNormalVS& vs = mapNormal[_priority];
 		vs.getANY_P(nrmVS);
-		//std::sort(nrmVS.begin(), nrmVS.end(), cmp_vs_nrm);
+
 		for (u32 vs_id = 0; vs_id < nrmVS.size(); vs_id++)
 		{
 			mapNormalVS::TNode* Nvs = nrmVS[vs_id];
@@ -315,7 +217,6 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 			mapNormalPS& ps = Nvs->val;
 			ps.ssa = 0;
 			ps.getANY_P(nrmPS);
-			//std::sort(nrmPS.begin(), nrmPS.end(), cmp_ps_nrm);
 			for (u32 ps_id = 0; ps_id < nrmPS.size(); ps_id++)
 			{
 				mapNormalPS::TNode* Nps = nrmPS[ps_id];
@@ -324,7 +225,6 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 				mapNormalCS& cs = Nps->val;
 				cs.ssa = 0;
 				cs.getANY_P(nrmCS);
-				//std::sort(nrmCS.begin(), nrmCS.end(), cmp_cs_nrm);
 				for (u32 cs_id = 0; cs_id < nrmCS.size(); cs_id++)
 				{
 					mapNormalCS::TNode* Ncs = nrmCS[cs_id];
@@ -333,7 +233,6 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 					mapNormalStates& states = Ncs->val;
 					states.ssa = 0;
 					states.getANY_P(nrmStates);
-					//std::sort(nrmStates.begin(), nrmStates.end(), cmp_states_nrm);
 					for (u32 state_id = 0; state_id < nrmStates.size(); state_id++)
 					{
 						mapNormalStates::TNode* Nstate = nrmStates[state_id];
@@ -341,7 +240,9 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 
 						mapNormalTextures& tex = Nstate->val;
 						tex.ssa = 0;
-						sort_tlist_nrm(nrmTextures, nrmTexturesTemp, tex, true);
+
+						sort_tlist(nrmTextures, nrmTexturesTemp, tex, TRUE);
+
 						for (u32 tex_id = 0; tex_id < nrmTextures.size(); tex_id++)
 						{
 							mapNormalTextures::TNode* Ntex = nrmTextures[tex_id];
@@ -350,7 +251,7 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 
 							mapNormalItems& items = Ntex->val;
 							items.ssa = 0;
-							mapNormal_Render(items);
+							mapNormal_Render(items); // Local helper
 							if (_clear)
 								items.clear();
 						}
@@ -377,14 +278,11 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 	}
 
 	// **************************************************** MATRIX
-	// Perform sorting based on ScreenSpaceArea
-	// Sorting by SSA and changes minimizations
 	{
-		//OPTICK_EVENT("MATRIX");
-
+		// OPTICK_EVENT("MATRIX");
 		mapMatrixVS& vs = mapMatrix[_priority];
 		vs.getANY_P(matVS);
-		//std::sort(matVS.begin(), matVS.end(), cmp_vs_mat);
+
 		for (u32 vs_id = 0; vs_id < matVS.size(); vs_id++)
 		{
 			mapMatrixVS::TNode* Nvs = matVS[vs_id];
@@ -393,7 +291,7 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 			mapMatrixPS& ps = Nvs->val;
 			ps.ssa = 0;
 			ps.getANY_P(matPS);
-			//std::sort(matPS.begin(), matPS.end(), cmp_ps_mat);
+
 			for (u32 ps_id = 0; ps_id < matPS.size(); ps_id++)
 			{
 				mapMatrixPS::TNode* Nps = matPS[ps_id];
@@ -402,7 +300,7 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 				mapMatrixCS& cs = Nps->val;
 				cs.ssa = 0;
 				cs.getANY_P(matCS);
-				//std::sort(matCS.begin(), matCS.end(), cmp_cs_mat);
+
 				for (u32 cs_id = 0; cs_id < matCS.size(); cs_id++)
 				{
 					mapMatrixCS::TNode* Ncs = matCS[cs_id];
@@ -411,7 +309,7 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 					mapMatrixStates& states = Ncs->val;
 					states.ssa = 0;
 					states.getANY_P(matStates);
-					//std::sort(matStates.begin(), matStates.end(), cmp_states_mat);
+
 					for (u32 state_id = 0; state_id < matStates.size(); state_id++)
 					{
 						mapMatrixStates::TNode* Nstate = matStates[state_id];
@@ -419,7 +317,9 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 
 						mapMatrixTextures& tex = Nstate->val;
 						tex.ssa = 0;
-						sort_tlist_mat(matTextures, matTexturesTemp, tex, true);
+
+						sort_tlist(matTextures, matTexturesTemp, tex, TRUE);
+
 						for (u32 tex_id = 0; tex_id < matTextures.size(); tex_id++)
 						{
 							mapMatrixTextures::TNode* Ntex = matTextures[tex_id];
@@ -454,81 +354,209 @@ void CSceneGraph::render_graph(u32 _priority, bool _clear)
 
 	Device.Statistic->RenderDUMP.End();
 }
-//////////////////////////////////////////////////////////////////////////
-// HUD render
-void CSceneGraph::render_hud()
+
+void CSceneGraph::_RenderHUD()
 {
 	PROFILE_FUNCTION();
-
 	ENGINE_API extern float psHUD_FOV;
 
-	// Change projection
 	Fmatrix Pold = Device.mProject;
 	Fmatrix FTold = Device.mFullTransform;
-	Device.mProject.build_projection(deg2rad(psHUD_FOV * Device.fFOV), Device.fASPECT, VIEWPORT_NEAR_HUD, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+	Device.mProject.build_projection(deg2rad(psHUD_FOV * Device.fFOV), Device.fASPECT, VIEWPORT_NEAR_HUD,
+									 g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
 	RenderBackend.set_xform_project(Device.mProject);
 
-	// Rendering
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
-	mapHUD.traverseLR(sorted_L1);
+	mapHUD.traverseLR(sorted_L1); // Local helper
 	mapHUD.clear();
 	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
 
-	// Restore projection
 	Device.mProject = Pold;
 	Device.mFullTransform = FTold;
 	RenderBackend.set_xform_project(Device.mProject);
 }
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void CSceneGraph::render_sorted()
+
+void CSceneGraph::_RenderTranslucent()
 {
 	PROFILE_FUNCTION();
-
-	// Sorted (back to front)
 	mapSorted.traverseRL(sorted_L1);
 	mapSorted.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void CSceneGraph::render_emissive()
+void CSceneGraph::_RenderEmissive()
 {
 	PROFILE_FUNCTION();
-
-	// Sorted (back to front)
 	mapEmissive.traverseLR(sorted_L1);
 	mapEmissive.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void CSceneGraph::render_wmarks()
+void CSceneGraph::_RenderWmarks()
 {
 	PROFILE_FUNCTION();
-
-	// Sorted (back to front)
 	mapWmark.traverseLR(sorted_L1);
 	mapWmark.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void CSceneGraph::render_distort()
+void CSceneGraph::_RenderDistortion()
 {
 	PROFILE_FUNCTION();
-
-	// Sorted (back to front)
 	mapDistort.traverseRL(sorted_L1);
 	mapDistort.clear();
 }
 
+void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
+{
+	PROFILE_FUNCTION();
+
+	if (_setup_zb)
+		mapLOD.getLR(lstLODs); // front-to-back
+	else
+		mapLOD.getRL(lstLODs); // back-to-front
+
+	if (lstLODs.empty())
+		return;
+
+	// *** 1. Подготовка буфера и констант ***
+	u32 shid = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
+	FLOD* firstV = (FLOD*)lstLODs[0].pVisual;
+
+	u32 vOffset;
+	// Блокируем память один раз для всех LODов
+	FLOD::_hw* V_start = (FLOD::_hw*)RenderBackend.Vertex.Lock(lstLODs.size() * 4, firstV->geom->vb_stride, vOffset);
+
+	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
+	if (ssaRange < EPS_S)
+		ssaRange = EPS_S;
+
+	// Захват переменных для PPL
+	const float f_ssaLOD_B = r_ssaLOD_B;
+	const Fvector vCameraPos = Device.vCameraPosition;
+
+	// *** 2. ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
+	concurrency::parallel_for(size_t(0), lstLODs.size(), [&](size_t i) {
+		// Получаем указатель на 4 вершины, принадлежащие этому LOD-у
+		FLOD::_hw* V = V_start + (i * 4);
+		SceneGraphTypes::_LodItem& P = lstLODs[i];
+
+		// calculate alpha
+		float ssaDiff = P.ssa - f_ssaLOD_B;
+		float scale = ssaDiff / ssaRange;
+		int iA = iFloor((1.0f - scale) * 255.f);
+		u32 uA = u32(clampr(iA, 0, 255));
+
+		// calculate direction and shift
+		FLOD* lodV = (FLOD*)P.pVisual;
+		Fvector Ldir, shift;
+		Ldir.sub(lodV->vis.sphere.P, vCameraPos).normalize();
+		shift.mul(Ldir, -.5f * lodV->vis.sphere.R);
+
+		// gen geometry
+		FLOD::_face* facets = lodV->facets;
+
+		// Используем локальный svector, это безопасно для потоков
+		svector<std::pair<float, u32>, 8> selector;
+		for (u32 s = 0; s < 8; s++)
+			selector.push_back(mk_pair(Ldir.dotproduct(facets[s].N), s));
+
+		// Используем std::sort с локальным предикатом
+		std::sort(selector.begin(), selector.end(), pred_dot_std);
+
+		float dot_best = selector[selector.size() - 1].first;
+		float dot_next = selector[selector.size() - 2].first;
+		float dot_next_2 = selector[selector.size() - 3].first;
+		u32 id_best = selector[selector.size() - 1].second;
+		u32 id_next = selector[selector.size() - 2].second;
+
+		// Now we have two "best" planes, calculate factor, and approx normal
+		float fA = dot_best, fB = dot_next, fC = dot_next_2;
+		float alpha = 0.5f + 0.5f * (1 - (fB - fC) / (fA - fC));
+		int iF = iFloor(alpha * 255.5f);
+		u32 uF = u32(clampr(iF, 0, 255));
+
+		// Fill VB
+		FLOD::_face& FA = facets[id_best];
+		FLOD::_face& FB = facets[id_next];
+
+		static const int vid[4] = {3, 0, 2, 1}; // const для безопасности
+
+		for (u32 vit = 0; vit < 4; vit++)
+		{
+			int id = vid[vit];
+			// Пишем прямо в память по вычисленному смещению
+			V[vit].p0.add(FB.v[id].v, shift);
+			V[vit].p1.add(FA.v[id].v, shift);
+			V[vit].n0 = FB.N;
+			V[vit].n1 = FA.N;
+			V[vit].sun_af = color_rgba(FB.v[id].c_sun, FA.v[id].c_sun, uA, uF);
+			V[vit].t0 = FB.v[id].t;
+			V[vit].t1 = FA.v[id].t;
+			V[vit].rgbh0 = FB.v[id].c_rgb_hemi;
+			V[vit].rgbh1 = FA.v[id].c_rgb_hemi;
+		}
+	});
+
+	// Разблокируем буфер — данные уже там
+	RenderBackend.Vertex.Unlock(lstLODs.size() * 4, firstV->geom->vb_stride);
+
+	// *** 3. ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка ***
+	if (!lstLODs.empty())
+	{
+		ref_selement cur_S = lstLODs[0].pVisual->shader->E[shid];
+		int cur_count = 0;
+
+		for (u32 i = 0; i < lstLODs.size(); i++)
+		{
+			SceneGraphTypes::_LodItem& P = lstLODs[i];
+			if (P.pVisual->shader->E[shid] == cur_S)
+			{
+				cur_count++;
+			}
+			else
+			{
+				lstLODgroups.push_back(cur_count);
+				cur_S = P.pVisual->shader->E[shid];
+				cur_count = 1;
+			}
+		}
+		lstLODgroups.push_back(cur_count);
+	}
+
+	// *** 4. RENDER ***
+	////OPTICK_EVENT("CSceneGraph::render_lods - render");
+
+	int current = 0;
+	RenderBackend.set_xform_world(Fidentity);
+
+	for (u32 g = 0; g < lstLODgroups.size(); g++)
+	{
+		int p_count = lstLODgroups[g];
+
+		if (p_count > 0)
+		{
+			RenderBackend.set_Element(lstLODs[current].pVisual->shader->E[shid]);
+			RenderBackend.set_Geometry(firstV->geom);
+			RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4 * p_count, 0, 2 * p_count);
+			RenderBackend.stat.r.s_flora_lods.add(4 * p_count);
+
+			current += p_count;
+			vOffset += 4 * p_count;
+		}
+	}
+
+	// *** 5. Cleanup ***
+	lstLODs.clear();
+	lstLODgroups.clear();
+
+	if (_clear)
+		mapLOD.clear();
+}
+
 //////////////////////////////////////////////////////////////////////////
 // sub-space rendering - shortcut to render with frustum extracted from matrix
-void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop,
-													BOOL _dynamic, BOOL _precise_portals)
+void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
+								  BOOL _precise_portals)
 {
 	PROFILE_FUNCTION_FULL();
 
@@ -538,8 +566,8 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, F
 }
 
 // sub-space rendering - main procedure
-void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined,
-													Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
+void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop,
+								  BOOL _dynamic, BOOL _precise_portals)
 {
 	PROFILE_FUNCTION();
 
@@ -560,7 +588,11 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, F
 		RenderImplementation.Sectors_xrc.box_query(RenderImplementation.rmPortals, _cop, box_radius);
 		for (int K = 0; K < RenderImplementation.Sectors_xrc.r_count(); K++)
 		{
-			CPortal* pPortal = (CPortal*)RenderImplementation.Portals[RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy];
+			CPortal* pPortal =
+				(CPortal*)
+					RenderImplementation.Portals[RenderImplementation.rmPortals
+													 ->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id]
+													 .dummy];
 			pPortal->bDualRender = TRUE;
 		}
 	}

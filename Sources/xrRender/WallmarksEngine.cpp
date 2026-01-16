@@ -525,7 +525,7 @@ void CWallmarksEngine::Render()
 	lock.Leave(); // Physics may add wallmarks in parallel with rendering
 
 	// Level-wmarks
-	RenderImplementation.SceneGraph.render_wmarks();
+	RenderImplementation.SceneGraph.Render(SceneGraphRenderType::Wallmarks);
 	Device.Statistic->RenderDUMP_WM.End();
 
 	// Projection

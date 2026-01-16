@@ -9,7 +9,71 @@
 #include "particlegroup.h"
 #include "FTreeVisual.h"
 
-using namespace R_dsgraph;
+using namespace SceneGraphTypes;
+
+CSceneGraph::CSceneGraph()
+{
+	val_pObject = NULL;
+	val_pTransform = NULL;
+	val_bHUD = FALSE;
+	val_bInvisible = FALSE;
+	val_bRecordMP = FALSE;
+	val_feedback = 0;
+	val_feedback_breakp = 0;
+	val_recorder = 0;
+	marker = 0;
+	r_pmask(true, true); // Вызов своего же метода
+	b_loaded = FALSE;
+
+	// Инициализация счетчиков (было в хедере, лучше здесь)
+	counter_S = 0;
+	counter_D = 0;
+}
+
+void CSceneGraph::destroy()
+{
+	// Очистка runtime структур
+	nrmVS.clear();
+	nrmPS.clear();
+	nrmCS.clear();
+	nrmStates.clear();
+	nrmTextures.clear();
+	nrmTexturesTemp.clear();
+
+	matVS.clear();
+	matPS.clear();
+	matCS.clear();
+	matStates.clear();
+	matTextures.clear();
+	matTexturesTemp.clear();
+
+	lstLODs.clear();
+	lstLODgroups.clear();
+	lstRenderables.clear();
+	lstSpatial.clear();
+	lstVisuals.clear();
+
+	lstRecorded.clear();
+
+	// Очистка fixed maps
+	mapNormal[0].destroy();
+	mapNormal[1].destroy();
+	mapMatrix[0].destroy();
+	mapMatrix[1].destroy();
+	mapSorted.destroy();
+	mapHUD.destroy();
+	mapLOD.destroy();
+	mapDistort.destroy();
+	mapWmark.destroy();
+	mapEmissive.destroy();
+}
+
+void CSceneGraph::r_pmask(bool _1, bool _2, bool _wm)
+{
+	pmask[0] = _1;
+	pmask[1] = _2;
+	pmask_wmark = _wm;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Scene graph actual insertion and sorting ////////////////////////////////////////////////////////

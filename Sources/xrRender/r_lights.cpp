@@ -159,15 +159,15 @@ void CRender::render_lights(light_Package& LP)
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 					Details->Render();
 
-				SceneGraph.render_graph(0);
+				SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 				L->X.S.transluent = FALSE;
 
 				if (bSpecial)
 				{
 					L->X.S.transluent = TRUE;
 					render_shadow_map_spot_transluent(L);
-					SceneGraph.render_graph(1);
-					SceneGraph.render_sorted();
+					SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
+					SceneGraph.Render(SceneGraphRenderType::Transparent);
 				}
 			}
 			else

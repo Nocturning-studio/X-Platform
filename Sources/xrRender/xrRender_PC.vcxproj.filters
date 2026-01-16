@@ -575,9 +575,6 @@
     <ClCompile Include="r_dsgraph_render.cpp">
       <Filter>Core\Dynamic scene graph</Filter>
     </ClCompile>
-    <ClCompile Include="r_dsgraph_render_lods.cpp">
-      <Filter>Core\Dynamic scene graph</Filter>
-    </ClCompile>
     <ClCompile Include="r_calculate.cpp">
       <Filter>Render pipeline\Core</Filter>
     </ClCompile>

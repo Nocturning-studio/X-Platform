@@ -574,7 +574,7 @@ IRender_Glow* CRender::glow_create()
 
 void CRender::flush()
 {
-	SceneGraph.render_graph(0);
+	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 }
 
 BOOL CRender::occ_visible(vis_data& P)

@@ -65,7 +65,7 @@ void smapvis::end()
 			RenderImplementation.occq_begin(testQ_id);
 			RenderImplementation.SceneGraph.marker += 1;
 			RenderImplementation.SceneGraph.insert_static(testQ_V);
-			RenderImplementation.SceneGraph.render_graph(0);
+			RenderImplementation.SceneGraph.Render(SceneGraphRenderType::Opaque);
 			RenderImplementation.occq_end(testQ_id);
 			testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame
 		}

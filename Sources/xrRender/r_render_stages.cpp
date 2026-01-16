@@ -268,11 +268,9 @@ void CRender::render_depth_prepass()
 	if (Details)
 		Details->Render();
 
-	SceneGraph.render_hud();
-
-	SceneGraph.render_graph(0);
-
-	SceneGraph.render_lods(true, true);
+	SceneGraph.Render(SceneGraphRenderType::HUD);
+	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
+	SceneGraph.Render(SceneGraphRenderType::LOD, 0, true, true);
 
 	RenderBackend.disable_anisotropy_filtering();
 
@@ -307,7 +305,7 @@ void CRender::render_gbuffer_primary()
 	if (psDeviceFlags.test(rsWireframe))
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
 
-	SceneGraph.render_graph(0);
+	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 
 	if (Details)
 		Details->Render();
@@ -337,10 +335,10 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	SceneGraph.render_lods(true, true);
+	SceneGraph.Render(SceneGraphRenderType::LOD, 0, true, true);
 
 	set_active_phase(PHASE_HUD);
-	SceneGraph.render_hud();
+	SceneGraph.Render(SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
@@ -532,8 +530,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS));
 		RenderBackend.set_CullMode(CULL_BACKFACE);
 
-		SceneGraph.render_graph(1);
-		SceneGraph.render_sorted();
+		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
+		SceneGraph.Render(SceneGraphRenderType::Transparent);
 
 		// CLEANUP
 		dwLightMarkerID += 2;
@@ -574,8 +572,8 @@ void CRender::render_stage_forward()
 		// И ЗАПОЛНИТ наши списки m_visuals_... благодаря правкам в add_leafs
 		render_main(Device.mFullTransform, false);
 
-		SceneGraph.render_graph(1);
-		SceneGraph.render_sorted();
+		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
+		SceneGraph.Render(SceneGraphRenderType::Transparent);
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
@@ -607,8 +605,8 @@ void CRender::render_stage_forward()
 	// Заново наполняем граф из кэша.
 	//render_main(Device.mFullTransform, false);
 	SceneGraph.render_reuse();
-	SceneGraph.render_graph(1);
-	SceneGraph.render_sorted();
+	SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
+	SceneGraph.Render(SceneGraphRenderType::Transparent);
 
 	// ============================================
 	// PASS 4: Debug

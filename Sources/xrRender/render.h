@@ -1,6 +1,6 @@
 #pragma once
 
-#include "r_dsgraph_structure.h"
+#include "SceneGraph.h"
 #include "r_occlusion.h"
 
 #include "PSLibrary.h"

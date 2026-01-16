@@ -867,20 +867,12 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && (!SE_SUN_FAR == cascade_ind))
 			Details->Render();
 
-		SceneGraph.render_graph(0);
+		SceneGraph.Render(SceneGraphRenderType::Opaque);
 
 		if (m_SunOccluder)
 			m_SunOccluder->Render();
 
 		sun->X.D.transluent = FALSE;
-
-		//if (bSpecial || (cascade_ind < m_sun_cascades.size() - 1))
-		//{
-		//	sun->X.D.transluent = TRUE;
-		//	RenderTarget->render_shadow_map_sun_transluent(sun, SE_SUN_FAR);
-		//	render_graph(1); // normal level, secondary priority
-		//	render_sorted(); // strict-sorted geoms
-		//}
 	}
 
 	// End SMAP-render
