@@ -139,7 +139,7 @@ class CSceneGraph
 		val_feedback_breakp = id;
 		val_feedback = V;
 	}
-	void set_Recorder(xr_vector<Fbox3, render_alloc<Fbox3>>* dest)
+	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest)
 	{
 		val_recorder = dest;
 		if (dest)

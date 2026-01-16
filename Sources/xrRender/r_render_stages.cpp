@@ -258,7 +258,7 @@ void CRender::render_depth_prepass()
 
 	SceneGraph.SetFetchConfig(DepthPrepassFetchConfig);
 
-	SceneGraph.set_Recorder(NULL);
+	SceneGraph.SetCullingBoundsCollector(NULL);
 
 	set_active_phase(PHASE_DEPTH_PREPASS);
 
@@ -299,16 +299,16 @@ void CRender::render_gbuffer_primary()
 
 	// 2. Конфигурация рекордера (Сбор баундов для теней)
 	if (m_need_render_sun)
-		SceneGraph.set_Recorder(&main_coarse_structure);
+		SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
 	else
-		SceneGraph.set_Recorder(NULL);
+		SceneGraph.SetCullingBoundsCollector(NULL);
 
 	// 3. Фаза наполнения графа (Traverse & Cull)
 	set_active_phase(PHASE_NORMAL);
 	render_main(Device.mFullTransform, true); // Самый дорогой вызов - наполняет мапы SceneGraph
 
 	// 4. Очистка состояния сбора (чтобы не повлиять на следующие этапы)
-	SceneGraph.set_Recorder(NULL);
+	SceneGraph.SetCullingBoundsCollector(NULL);
 
 	// Сброс конфига на "дефолтный безопасный" (только Pri0)
 	GBufferPassFetchConfig.fetch_wallmarks = false;
