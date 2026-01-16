@@ -145,21 +145,28 @@ void CDetailManager::hw_Unload()
 	// Освобождаем буфер инстансов
 	_RELEASE(hw_InstanceVB);
 }
-void CDetailManager::hw_Render()
+void CDetailManager::hw_Render(DetailsRenderMode Mode)
 {
-	PROFILE_FUNCTION();
-
 	// Setup geometry
 	// Внимание: hw_Geom.create привязал hw_VB как Stream 0.
 	// Stream 1 (инстансы) мы привяжем вручную.
 	RenderBackend.set_Geometry(hw_Geom);
 
 	// Рендерим статику и волны (разные LOD-ы)
-	hw_Render_dump(1, 0); // Wave 1
-	hw_Render_dump(2, 0); // Wave 2
-	hw_Render_dump(0, 1); // Still (Static)
+	{
+		OPTICK_EVENT("Wave 1");
+		hw_Render_dump(1, 0, Mode); // Wave 1
+	}
+	{
+		OPTICK_EVENT("Wave 2");
+		hw_Render_dump(2, 0, Mode); // Wave 1
+	}
+	{
+		OPTICK_EVENT("Still (Static)");
+		hw_Render_dump(0, 1, Mode); // Still (Static)
+	}
 }
-void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
+void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id, DetailsRenderMode Mode)
 {
 	Device.Statistic->RenderDUMP_DT_Count = 0;
 
@@ -195,7 +202,18 @@ void CDetailManager::hw_Render_dump(u32 var_id, u32 lod_id)
 
 		if (!vis.empty())
 		{
-			int id = (lod_id == 0) ? SE_DETAIL_NORMAL_ANIMATED : SE_DETAIL_NORMAL_STATIC;
+			int id = 0;
+			
+			switch (Mode)
+			{
+			case DetailsRenderMode::Default:
+				id = (lod_id == 0) ? SE_DETAIL_NORMAL_ANIMATED : SE_DETAIL_NORMAL_STATIC;
+				break;
+			case DetailsRenderMode::DepthOnly:
+				id = (lod_id == 0) ? SE_DETAIL_SHADOW_DEPTH_ANIMATED : SE_DETAIL_SHADOW_DEPTH_STATIC;
+				break;
+			}
+
 			RenderBackend.set_Element(Object.shader->E[id]);
 			RenderImplementation.apply_lmaterial();
 

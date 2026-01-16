@@ -880,7 +880,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		RenderBackend.set_xform_project(sun->X.D.combine);
 
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && ((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
-			Details->Render();
+			Details->Render(DetailsRenderMode::DepthOnly);
 
 		SceneGraph.Render(SceneGraphRenderType::Opaque);
 

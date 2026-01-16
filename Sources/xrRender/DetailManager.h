@@ -33,6 +33,12 @@ extern float ps_r_Detail_scale;
 extern float ps_r_Detail_height;
 extern u32 ps_r_Detail_quality;
 
+enum class DetailsRenderMode
+{
+	Default,
+	DepthOnly
+};
+
 class CDetailManager
 {
   public:
@@ -162,8 +168,8 @@ class CDetailManager
 	IDirect3DIndexBuffer9* hw_IB;
 	void hw_Load();
 	void hw_Unload();
-	void hw_Render();
-	void hw_Render_dump(u32 var_id, u32 lod_id);
+	void hw_Render(DetailsRenderMode Mode);
+	void hw_Render_dump(u32 var_id, u32 lod_id, DetailsRenderMode Mode);
 
 	DetailSlot& QueryDB(int sx, int sz);
 
@@ -199,7 +205,7 @@ class CDetailManager
 
 	void Load();
 	void Unload();
-	void Render();
+	void Render(DetailsRenderMode Mode);
 	void PrepareToCalc();
 	void ClearVisible();
 

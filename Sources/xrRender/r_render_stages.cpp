@@ -271,7 +271,8 @@ void CRender::render_depth_prepass()
 
 	RenderBackend.enable_anisotropy_filtering();
 
-	if (Details) Details->Render();
+	if (Details)
+		Details->Render(DetailsRenderMode::DepthOnly);
 
 	SceneGraph.Render(SceneGraphRenderType::HUD);
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
@@ -329,7 +330,8 @@ void CRender::render_gbuffer_primary()
 	// Отрисовка собранного Opaque (Priority 0)
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 
-	if (Details) Details->Render();
+	if (Details)
+		Details->Render(DetailsRenderMode::Default);
 
 	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);

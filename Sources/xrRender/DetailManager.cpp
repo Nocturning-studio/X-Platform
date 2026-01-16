@@ -302,7 +302,7 @@ void CDetailManager::UpdateVisibleM()
 	Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
-void CDetailManager::Render()
+void CDetailManager::Render(DetailsRenderMode Mode)
 {
 	PROFILE_FUNCTION();
 
@@ -318,7 +318,7 @@ void CDetailManager::Render()
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_xform_world(Fidentity);
 
-	hw_Render();
+	hw_Render(Mode);
 
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	Device.Statistic->RenderDUMP_DT_Render.End();
