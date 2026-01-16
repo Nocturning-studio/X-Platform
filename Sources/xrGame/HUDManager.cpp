@@ -38,7 +38,7 @@ void CHUDManager::Load()
 //--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	PROFILE_FUNCTION();
 
 	if (!b_online)
 		return;

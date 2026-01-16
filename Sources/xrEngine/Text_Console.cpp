@@ -35,7 +35,6 @@ void CTextConsole::Initialize()
 {
 	inherited::Initialize();
 
-	// Привязка глобальной переменной
 	if (!Console)
 		Console = this;
 
@@ -57,26 +56,30 @@ void CTextConsole::Initialize()
 
 		// Цветной приветственный текст
 		SetConsoleTextAttribute(m_hStdOut, C_GREEN);
-		printf("================================================================================\n");
-		printf(" STALKER DEDICATED SERVER CONSOLE READY\n");
-		printf("================================================================================\n");
+
+		DWORD written;
+		const char* msg1 = "================================================================================\n";
+		const char* msg2 = " STALKER DEDICATED SERVER CONSOLE READY\n";
+		const char* msg3 = "================================================================================\n";
+
+		WriteConsole(m_hStdOut, msg1, (DWORD)xr_strlen(msg1), &written, NULL);
+		WriteConsole(m_hStdOut, msg2, (DWORD)xr_strlen(msg2), &written, NULL);
+		WriteConsole(m_hStdOut, msg3, (DWORD)xr_strlen(msg3), &written, NULL);
+		// ---------------------------------------------------
+
 		SetConsoleTextAttribute(m_hStdOut, C_DEFAULT);
 
-		// Рисуем промпт сразу
-		printf("%s", ioc_prompt);
+		// Рисуем промпт
+		WriteConsole(m_hStdOut, ioc_prompt, (DWORD)xr_strlen(ioc_prompt), &written, NULL);
 	}
 
 	if (LogFile)
 		m_dwLastLogIndex = LogFile->size();
 
-	// --- ЗАПУСК ПОТОКА ВВОДА ---
 	m_bConsoleRunning = true;
 	unsigned threadID;
 	m_hConsoleThread = (HANDLE)_beginthreadex(NULL, 0, ConsoleThreadEntry, this, 0, &threadID);
 
-	// !!! САМОЕ ВАЖНОЕ ИСПРАВЛЕНИЕ !!!
-	// Принудительно регистрируем консоль в цикле обновлений движка.
-	// 2 = приоритет (чтобы срабатывало после ввода, но до рендера, хотя на сервере это не критично)
 	Device.seqFrame.Add(this, REG_PRIORITY_NORMAL);
 }
 
@@ -217,6 +220,8 @@ void CTextConsole::ProcessOutput()
 
 void CTextConsole::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	// inherited::OnFrame(); // НЕ вызываем родительский метод, там логика GUI нам не нужна
 
 	// 1. Выводим новые логи

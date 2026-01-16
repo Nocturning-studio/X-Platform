@@ -161,15 +161,6 @@ class CRenderTarget : public IRender_Target
 	ref_shader s_menu_gamma;
 
   public:
-#pragma todo("NSDeathman to NSDeathman: вынести из рендертаргета")
-	float im_noise_time;
-	u32 im_noise_shift_w;
-	u32 im_noise_shift_h;
-
-	//	Igor: used for volumetric lights
-	bool m_bHasActiveVolumetric;
-
-  public:
 	CRenderTarget();
 	~CRenderTarget();
 

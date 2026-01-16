@@ -19,6 +19,8 @@
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"
 #include "../../ai_space.h"
+#include <medkit.h>
+#include <FoodItem.h>
 
 CWeapon* CAI_Stalker::GetCurrentWeapon() const
 {
@@ -37,15 +39,32 @@ u32 CAI_Stalker::GetWeaponAmmo() const
 //     return inventory().m_slots[OUTFIT_SLOT].m_pIItem;
 // }
 
-#pragma todo("Dima to Dima : Return correct medikit")
 CInventoryItem* CAI_Stalker::GetMedikit() const
 {
+	// Ищем аптечку в инвентаре
+	TIItemContainer::const_iterator I = inventory().m_all.begin();
+	TIItemContainer::const_iterator E = inventory().m_all.end();
+	for (; I != E; ++I)
+	{
+		// Пытаемся привести предмет к CMedkit
+		// Если это аптечка, smart_cast вернет не null
+		if (smart_cast<CMedkit*>(*I))
+			return (*I);
+	}
 	return (0);
 }
 
-#pragma todo("Dima to Dima : Return correct food")
 CInventoryItem* CAI_Stalker::GetFood() const
 {
+	// Ищем еду в инвентаре
+	TIItemContainer::const_iterator I = inventory().m_all.begin();
+	TIItemContainer::const_iterator E = inventory().m_all.end();
+	for (; I != E; ++I)
+	{
+		// Пытаемся привести предмет к CFoodItem
+		if (smart_cast<CFoodItem*>(*I))
+			return (*I);
+	}
 	return (0);
 }
 

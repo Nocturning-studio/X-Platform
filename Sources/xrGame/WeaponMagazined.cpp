@@ -1140,7 +1140,6 @@ void CWeaponMagazined::PlayAnimShoot()
 	m_pHUD->animPlay(random_anim(mhud.mhud_shots), TRUE, this, GetState());
 }
 
-#pragma todo(NSDeathman - убрать эти блядские кастыли с глубиной резкости)
 void CWeaponMagazined::OnZoomIn()
 {
 	inherited::OnZoomIn();

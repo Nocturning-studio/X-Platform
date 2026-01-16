@@ -1150,18 +1150,18 @@ void CPHElement::add_Shape(const SBoneShape& shape)
 	CPHGeometryOwner::add_Shape(shape);
 }
 
-#pragma todo(remake it using Geometry functions)
 void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass,
 						  CPHFracture* fracture)
 {
-
 	dMass m;
 	dMatrix3 DMatx;
+
 	switch (shape.type)
 	{
 	case SBoneShape::stBox: {
 		dMassSetBox(&m, 1.f, shape.box.m_halfsize.x * 2.f, shape.box.m_halfsize.y * 2.f, shape.box.m_halfsize.z * 2.f);
 		dMassAdjust(&m, mass);
+
 		Fmatrix box_transform;
 		shape.box.xform_get(box_transform);
 		PHDynamicData::FMX33toDMX(shape.box.m_rotate, DMatx);
@@ -1171,7 +1171,6 @@ void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const 
 		break;
 	}
 	case SBoneShape::stSphere: {
-		shape.sphere;
 		dMassSetSphere(&m, 1.f, shape.sphere.R);
 		dMassAdjust(&m, mass);
 		dMassTranslate(&m, shape.sphere.P.x - mass_center.x, shape.sphere.P.y - mass_center.y,
@@ -1185,6 +1184,7 @@ void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const 
 		l.sub(pos, mass_center);
 		dMassSetCylinder(&m, 1.f, 2, shape.cylinder.m_radius, shape.cylinder.m_height);
 		dMassAdjust(&m, mass);
+
 		dMatrix3 DMatx;
 		Fmatrix33 m33;
 		m33.j.set(shape.cylinder.m_direction);
@@ -1196,30 +1196,39 @@ void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const 
 	}
 
 	case SBoneShape::stNone:
+		dMassSetZero(&m);
 		break;
 	default:
 		NODEFAULT;
 	}
+
 	PHDynamicData::FMXtoDMX(offset, DMatx);
 	dMassRotate(&m, DMatx);
 
 	Fvector mc;
 	offset.transform_tiny(mc, mass_center);
-	// calculate _new mass_center
-	// new_mc=(m_mass_center*m_mass.mass+mc*mass)/(mass+m_mass.mass)
+
+	// calculate new mass_center
+	// new_mc = (m_mass_center * m_mass.mass + mc * mass) / (mass + m_mass.mass)
 	Fvector tmp1;
 	tmp1.set(m_mass_center);
 	tmp1.mul(m_mass.mass);
+
 	Fvector tmp2;
 	tmp2.set(mc);
 	tmp2.mul(mass);
+
 	Fvector new_mc;
 	new_mc.add(tmp1, tmp2);
-	new_mc.mul(1.f / (mass + m_mass.mass));
+
+	if (mass + m_mass.mass > EPS)
+		new_mc.mul(1.f / (mass + m_mass.mass));
+
 	mc.sub(new_mc);
 	dMassTranslate(&m, mc.x, mc.y, mc.z);
 	m_mass_center.sub(new_mc);
 	dMassTranslate(&m_mass, m_mass_center.x, m_mass_center.y, m_mass_center.z);
+
 	if (m_fratures_holder)
 	{
 		m_fratures_holder->DistributeAdditionalMass(u16(m_geoms.size() - 1), m);
@@ -1228,6 +1237,7 @@ void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const 
 	{
 		fracture->MassAddToSecond(m);
 	}
+
 	R_ASSERT2(dMass_valide(&m), "bad bone mass params");
 	dMassAdd(&m_mass, &m);
 	R_ASSERT2(dMass_valide(&m), "bad result mass params");
@@ -1554,12 +1564,3 @@ void CPHElement::ClearDestroyInfo()
 {
 	xr_delete(m_fratures_holder);
 }
-// bool CPHElement::CheckBreakConsistent()
-//{
-//	if(!m_fratures_holder) return true;
-//	m_fratures_holder->m_fractures
-//	m_fratures_holder->Fracture()
-// }) return true;
-//	m_fratures_holder->m_fractures
-//	m_fratures_holder->Fracture()
-// }

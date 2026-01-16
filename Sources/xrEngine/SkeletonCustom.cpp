@@ -266,16 +266,16 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 	bone_instances = NULL;
 
 	// Load bones
-#pragma todo("container is created in stack!")
-	xr_vector<shared_str> L_parents;
-
 	R_ASSERT(data->find_chunk(OGF_S_BONE_NAMES));
 
 	visimask.zero();
 	int dwCount = data->r_u32();
-	// Msg				("!!! %d bones",dwCount);
-	// if (dwCount >= 64)	Msg			("!!! More than 64 bones is a crazy thing! (%d), %s",dwCount,N);
+
 	VERIFY3(dwCount < 64, "More than 64 bones is a crazy thing!", N);
+
+	xr_vector<shared_str> L_parents;
+	L_parents.reserve(dwCount); 
+
 	for (; dwCount; dwCount--)
 	{
 		string256 buf;
@@ -410,12 +410,11 @@ void CKinematics::LL_Validate()
 	{
 		BOOL bValidBreakable = TRUE;
 
-#pragma todo("container is created in stack!")
 		xr_vector<xr_vector<u16>> groups;
 		LL_GetBoneGroups(groups);
 
-#pragma todo("container is created in stack!")
 		xr_vector<u16> b_parts(LL_BoneCount(), BI_NONE);
+
 		CBoneData* root = &LL_GetData(LL_GetBoneRoot());
 		u16 last_id = 0;
 		iBuildGroups(root, b_parts, 0, last_id);
@@ -423,13 +422,18 @@ void CKinematics::LL_Validate()
 		for (u16 g = 0; g < (u16)groups.size(); ++g)
 		{
 			xr_vector<u16>& group = groups[g];
+			if (group.empty())
+				continue; // На всякий случай защита от пустых групп
+
 			u16 bp_id = b_parts[group[0]];
-			for (u32 b = 1; b < groups[g].size(); b++)
-				if (bp_id != b_parts[groups[g][b]])
+			for (u32 b = 1; b < group.size(); b++)
+			{
+				if (bp_id != b_parts[group[b]])
 				{
 					bValidBreakable = FALSE;
 					break;
 				}
+			}
 		}
 
 		if (bValidBreakable == FALSE)

@@ -228,6 +228,8 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 
 void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 {
+	PROFILE_FUNCTION();
+
 	BOOL enabled = !!(id.size());
 	if (bEnabled != enabled)
 	{

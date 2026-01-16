@@ -99,6 +99,8 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGameStateManager::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	// Обработка событий
 	Engine.Event.OnFrame();
 

@@ -145,6 +145,8 @@ void IGame_Level::OnRender()
 
 void IGame_Level::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	// Update all objects
 	VERIFY(bReady);
 	Objects.Update(false);

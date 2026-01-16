@@ -848,7 +848,6 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
 		K->CalculateBones();
 	}
 
-#pragma todo(" replace below by P_build_Shell or call inherited")
 	m_pPhysicsShell = P_create_Shell();
 	m_pPhysicsShell->build_FromKinematics(smart_cast<CKinematics*>(Visual()), &bone_map);
 	m_pPhysicsShell->set_PhysicsRefObject(this);

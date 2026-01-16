@@ -435,7 +435,7 @@ bool DemoStarted = false;
 
 void CLevel::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	PROFILE_FUNCTION();
 
 #ifdef DEBUG_MEMORY_MANAGER
 	debug_memory_guard __guard__;

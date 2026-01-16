@@ -161,6 +161,8 @@ void CFontManager::Destroy()
 
 void CFontManager::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	if (pSystemFont)
 		pSystemFont->Clear();
 }

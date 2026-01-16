@@ -1115,7 +1115,6 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 	return ret;
 }
 
-#pragma todo(optimize factor == 0.f)
 //****************************************************************************
 
 int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
@@ -1207,8 +1206,18 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 	cos1 = dDOT14(Ax, R + 0);
 	cos3 = dDOT14(Ax, R + 2);
 	factor = dSqrt(cos1 * cos1 + cos3 * cos3);
-	cos1 /= factor;
-	cos3 /= factor;
+	// Если сфера находится строго на оси цилиндра, factor будет ~0.
+	if (factor > EPS) // Используем EPS (малое число) вместо точного 0
+	{
+		cos1 /= factor;
+		cos3 /= factor;
+	}
+	else
+	{
+		// Сфера на оси цилиндра, радиального смещения нет.
+		cos1 = 0.f;
+		cos3 = 0.f;
+	}
 	for (i = 0; i < 3; ++i)
 		pa[i] += cos1 * cylRadius * R[i * 4];
 	sign = (dDOT14(Ax, R + 1) > 0) ? REAL(1.0) : REAL(-1.0);

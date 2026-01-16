@@ -26,7 +26,6 @@ void CScanningAbilityAbstract::load(LPCSTR section)
 
 	VERIFY(!fis_zero(scan_trace_time_freq));
 
-	#pragma todo("NSDeathman to NSDeathman: Отрефакторить")
 	// load scan effector
 	LPCSTR ppi_section = pSettings->r_string(section, "scan_effector_section");
 	m_effector_info.duality.h = pSettings->r_float(ppi_section, "duality_h");

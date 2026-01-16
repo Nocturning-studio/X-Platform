@@ -179,7 +179,6 @@ float CEnvironment::TimeWeight(float val, float min_t, float max_t)
 }
 
 #pragma todo("NSDeathman to NSDeathman: Сделать setenvtime для одиночной игры")
-// Kondr48: ������� ��������� �������
 void CEnvironment::ChangeGameTime(float game_time)
 {
 	fGameTime = NormalizeTime(fGameTime + game_time);
@@ -456,6 +455,8 @@ void CEnvironment::lerp(float& current_weight)
 
 void CEnvironment::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 #ifdef _EDITOR
 	SetGameTime(fGameTime + Engine.TimeManager.GetDeltaTime() * fTimeFactor, fTimeFactor);
 	if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f))
@@ -524,17 +525,6 @@ void CEnvironment::OnFrame()
 	shared_str t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
 	eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
 	eff_Rain->OnFrame();
-
-	// ******************** Environment params (setting) (R1 specific fog)
-#pragma todo("NSDeathman to NSDeathman: Отрефакторить Environment")
-	/*
-	u32 FogFar = CurrentEnv->far_plane;
-	u32 FogNear = FogFar * (1.0f - CurrentEnv->fog_density * 10.0f);
-
-	CHK_DX(HW.pDevice->SetRenderState(
-		D3DRS_FOGCOLOR, color_rgba_f(CurrentEnv->fog_color.x, CurrentEnv->fog_color.y, CurrentEnv->fog_color.z, 0)));
-	CHK_DX(HW.pDevice->SetRenderState(D3DRS_FOGDENSITY, CurrentEnv->fog_density));
-	*/
 }
 
 void CEnvironment::set_static_sun_dir()

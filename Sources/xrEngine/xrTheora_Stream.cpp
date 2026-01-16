@@ -118,7 +118,7 @@ BOOL CTheoraStream::ParseHeaders()
 			}
 			if (theora_decode_header(&t_info, &t_comment, &o_packet))
 			{
-				printf("Error parsing Theora stream headers; corrupt stream?\n");
+				Msg("Error parsing Theora stream headers; corrupt stream?\n");
 				exit(1);
 			}
 			header_count++;

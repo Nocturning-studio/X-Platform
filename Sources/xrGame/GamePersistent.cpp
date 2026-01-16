@@ -498,7 +498,7 @@ extern CUISequencer* g_tutorial2;
 
 void CGamePersistent::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	PROFILE_FUNCTION();
 
 	if (g_tutorial2)
 	{

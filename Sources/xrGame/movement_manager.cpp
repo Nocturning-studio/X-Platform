@@ -162,13 +162,42 @@ void CMovementManager::update_path()
 	if (!level_path().evaluator())
 		level_path().set_evaluator(base_level_params());
 
-#pragma todo("Optimize this in case of slowdown or not intended behaviour")
+	// ОПТИМИЗАЦИЯ
 	if (!restrictions().actual())
 	{
-		m_path_actuality = false;
-	}
+		// 1. Сначала применяем новые ограничения, чтобы методы accessible() работали с актуальными данными
+		restrictions().actual(true);
 
-	restrictions().actual(true);
+		// 2. Вместо слепого сброса, проверяем валидность текущего пути
+		bool bPathStillValid = true;
+
+		// Если у нас вообще есть путь
+		if (!detail().path().empty())
+		{
+			// Пробегаем только по ОСТАВШИМСЯ точкам пути (от текущей до конца)
+			// detail().curr_travel_point_index() указывает на точку, к которой мы идем сейчас
+			for (u32 i = detail().curr_travel_point_index(); i < detail().path().size(); ++i)
+			{
+				// Проверяем, доступна ли точка с учетом НОВЫХ ограничений
+				if (!restrictions().accessible(detail().path()[i].position))
+				{
+					bPathStillValid = false;
+					break; // Путь перекрыт, дальше проверять нет смысла
+				}
+			}
+		}
+		else
+		{
+			// Если пути не было, но рестрикторы изменились, лучше пересчитать логику (вдруг проход открылся)
+			bPathStillValid = false;
+		}
+
+		// 3. Сбрасываем актуальность только если путь реально стал непроходимым
+		if (!bPathStillValid)
+		{
+			m_path_actuality = false;
+		}
+	}
 
 	if (!actual())
 	{

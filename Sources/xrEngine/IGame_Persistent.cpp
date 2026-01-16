@@ -150,6 +150,8 @@ void IGame_Persistent::OnGameEnd()
 
 void IGame_Persistent::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 #ifndef DEDICATED_SERVER
 	if (!Device.Paused() || Device.dwPrecacheFrame)
 	{

@@ -210,6 +210,8 @@ void CConsole::RemoveCommand(IConsole_Command* cc)
 
 void CConsole::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	m_editor->on_frame();
 
 	if (Engine.TimeManager.GetFrameCount() % 10 == 0)

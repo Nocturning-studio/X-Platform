@@ -219,6 +219,8 @@ IC void blend_lerp(float& cur, float tgt, float speed, float dt)
 
 void CLensFlare::OnFrame(shared_str id)
 {
+	PROFILE_FUNCTION();
+
 	if (dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
 #ifndef _EDITOR

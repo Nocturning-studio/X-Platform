@@ -47,7 +47,7 @@ CPhysicsShellAnimator::~CPhysicsShellAnimator()
 
 void CPhysicsShellAnimator::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	PROFILE_FUNCTION();
 
 	m_pPhysicsShell->Enable();
 

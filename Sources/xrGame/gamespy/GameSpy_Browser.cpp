@@ -352,6 +352,23 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo* pServerInfo, int idx)
 		}                                                                                                              \
 	}
 
+#define ADD_FLOAT_INFO_N(i, s, m, t1, t2, k)                                                                                                                                            \
+	{                                                                                                                                                                                   \
+		/* Получаем значение один раз, чтобы не вызывать функцию дважды (оптимизация и читаемость) */          \
+		float val = xrGS_SBServerGetFloatValue(s, m_pQR2->xrGS_RegisteredKey(k), 0);                                                                                                    \
+		if (val != 0) /* Или другая проверка на валидность, если 0 - это валидное значение, то проверка неверна */ \
+		{                                                                                                                                                                               \
+			string256 tmp;                                                                                                                                                              \
+			/* Убрали жесткий %f, теперь t2 полностью управляет форматом */                                                                \
+			sprintf_s(tmp, t2, val* m);                                                                                                                                                 \
+			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                                                                                                   \
+		}                                                                                                                                                                               \
+		else                                                                                                                                                                            \
+		{                                                                                                                                                                               \
+			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                                                                                                             \
+		}                                                                                                                                                                               \
+	}
+
 #define ADD_TIME_INFO(i, s, m, t1, t2, t3, k)                                                                          \
 	{                                                                                                                  \
 		if (xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                                             \
@@ -508,7 +525,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_indicators"), G_FRIENDLY_INDICATORS_KEY);
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_names"), G_FRIENDLY_NAMES_KEY);
 
-		ADD_INT_INFO_N(pServerInfo, pServer, 1.0f / 100.0f, *st.translate("mp_si_friendly_fire"), " %f", (int)G_FRIENDLY_FIRE_KEY);
+		ADD_FLOAT_INFO_N(pServerInfo, pServer, 1.0f / 100.0f, *st.translate("mp_si_friendly_fire"), " %f", (int)G_FRIENDLY_FIRE_KEY);
 	};
 
 	if (pServerInfo->m_GameType == GAME_ARTEFACTHUNT)

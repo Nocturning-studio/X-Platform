@@ -681,7 +681,6 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 {
 	if (g_Alive())
 	{
-
 		// stop-motion
 		if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
 			character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
@@ -699,11 +698,14 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 		D.getHP(yaw, pitch);
 		CKinematicsAnimated* tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
 		VERIFY(tpKinematics);
-#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
+
+		// ≈сли разница углов <= 90 (импульс сонаправлен взгл€ду), значит удар в спину -> берем анимацию 1.
+		// »наче удар спереди -> берем анимацию 0.
 		MotionID motion_ID =
 			m_anims->m_normal
 				.m_damage[iFloor(tpKinematics->LL_GetBoneInstance(element).get_param(1) +
-								 (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
+								 (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 1 : 0))];
+
 		float power_factor = perc / 100.f;
 		clamp(power_factor, 0.f, 1.f);
 		VERIFY(motion_ID.valid());

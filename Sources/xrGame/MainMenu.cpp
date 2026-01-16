@@ -419,7 +419,7 @@ void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 // pureFrame
 void CMainMenu::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	PROFILE_FUNCTION();
 
 	if (m_Flags.test(flNeedChangeCapture))
 	{
