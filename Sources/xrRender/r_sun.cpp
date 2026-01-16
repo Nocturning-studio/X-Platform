@@ -838,7 +838,14 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	VERIFY(!bSpecialFull);
 	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
-	SceneGraph.r_pmask(true, false);
+
+	SceneGraphFetchConfig ShadowPassFetchConfig;
+
+	ShadowPassFetchConfig.fetch_priority_0 = true;
+	ShadowPassFetchConfig.fetch_priority_1 = false;
+	ShadowPassFetchConfig.fetch_wallmarks = false;
+
+	SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
 
 	// Fill the database
 	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
@@ -874,9 +881,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 		sun->X.D.transluent = FALSE;
 	}
-
-	// End SMAP-render
-	SceneGraph.r_pmask(true, false);
 
 	// Accumulate
 	set_light_accumulator();

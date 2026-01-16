@@ -119,6 +119,14 @@ void CRender::render_lights(light_Package& LP)
 	{
 		////OPTICK_EVENT("CRender::render_lights - Shadow map rendering");
 
+		SceneGraphFetchConfig ShadowPassFetchConfig;
+
+		ShadowPassFetchConfig.fetch_priority_0 = true;
+		ShadowPassFetchConfig.fetch_priority_1 = false;
+		ShadowPassFetchConfig.fetch_wallmarks = false;
+
+		SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
+
 		stats.s_used++;
 		clear_shadow_map_spot();
 
@@ -137,7 +145,6 @@ void CRender::render_lights(light_Package& LP)
 
 		// Batch рендер shadow maps для всей группы
 		set_active_phase(PHASE_SHADOW_DEPTH);
-		SceneGraph.r_pmask(true, false);
 
 		for (light* L : current_batch)
 		{
@@ -177,8 +184,6 @@ void CRender::render_lights(light_Package& LP)
 
 			L->get_smapvis().end();
 		}
-
-		SceneGraph.r_pmask(true, false);
 
 		// 4. Оптимизированное накопление света
 		{

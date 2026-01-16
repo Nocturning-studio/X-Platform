@@ -285,10 +285,10 @@
     <ClInclude Include="xrRender_console.h">
       <Filter>Render Console</Filter>
     </ClInclude>
-    <ClInclude Include="r_dsgraph_structure.h">
+    <ClInclude Include="SceneGraph.h">
       <Filter>Core\Dynamic scene graph</Filter>
     </ClInclude>
-    <ClInclude Include="r_dsgraph_types.h">
+    <ClInclude Include="SceneGraphTypes.h">
       <Filter>Core\Dynamic scene graph</Filter>
     </ClInclude>
     <ClInclude Include="du_sphere_part.h">
@@ -386,6 +386,9 @@
     </ClInclude>
     <ClInclude Include="EffectorsManager.h">
       <Filter>Core\Effectors</Filter>
+    </ClInclude>
+    <ClInclude Include="doug_lea_allocator_wrapper.h">
+      <Filter>Core\Memory allocation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -569,10 +572,10 @@
     <ClCompile Include="xrRender_console.cpp">
       <Filter>Render Console</Filter>
     </ClCompile>
-    <ClCompile Include="r_dsgraph_build.cpp">
+    <ClCompile Include="SceneGraphBuild.cpp">
       <Filter>Core\Dynamic scene graph</Filter>
     </ClCompile>
-    <ClCompile Include="r_dsgraph_render.cpp">
+    <ClCompile Include="SceneGraphRender.cpp">
       <Filter>Core\Dynamic scene graph</Filter>
     </ClCompile>
     <ClCompile Include="r_calculate.cpp">

@@ -963,6 +963,7 @@
     <ClInclude Include="Blender_multiple_usage.h" />
     <ClInclude Include="DetailManager.h" />
     <ClInclude Include="DetailModel.h" />
+    <ClInclude Include="doug_lea_allocator_wrapper.h" />
     <ClInclude Include="EffectorsManager.h" />
     <ClInclude Include="FLOD.h" />
     <ClInclude Include="FProgressive.h" />
@@ -983,8 +984,8 @@
     <ClInclude Include="PSLibrary.h" />
     <ClInclude Include="r_render_stages.h" />
     <ClInclude Include="r_color_converting.h" />
-    <ClInclude Include="r_dsgraph_structure.h" />
-    <ClInclude Include="r_dsgraph_types.h" />
+    <ClInclude Include="SceneGraph.h" />
+    <ClInclude Include="SceneGraphTypes.h" />
     <ClInclude Include="r_occlusion.h" />
     <ClInclude Include="r_render_pipeline.h" />
     <ClInclude Include="r_sector.h" />
@@ -1095,8 +1096,8 @@
     <ClCompile Include="ParticleGroup.cpp" />
     <ClCompile Include="PSLibrary.cpp" />
     <ClCompile Include="r_render_stages.cpp" />
-    <ClCompile Include="r_dsgraph_build.cpp" />
-    <ClCompile Include="r_dsgraph_render.cpp" />
+    <ClCompile Include="SceneGraphBuild.cpp" />
+    <ClCompile Include="SceneGraphRender.cpp" />
     <ClCompile Include="r_occlusion.cpp" />
     <ClCompile Include="r_render_pipeline_debug.cpp" />
     <ClCompile Include="r_render_pipeline_scene.cpp" />

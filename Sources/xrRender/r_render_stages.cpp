@@ -250,7 +250,13 @@ void CRender::render_depth_prepass()
 {
 	PROFILE_FUNCTION();
 
-	SceneGraph.r_pmask(true, false); // enable priority "0"
+	SceneGraphFetchConfig DepthPrepassFetchConfig;
+
+	DepthPrepassFetchConfig.fetch_priority_0 = true;
+	DepthPrepassFetchConfig.fetch_priority_1 = false;
+	DepthPrepassFetchConfig.fetch_wallmarks = false;
+
+	SceneGraph.SetFetchConfig(DepthPrepassFetchConfig);
 
 	SceneGraph.set_Recorder(NULL);
 
@@ -282,18 +288,34 @@ void CRender::render_gbuffer_primary()
 {
 	PROFILE_FUNCTION();
 
-	SceneGraph.r_pmask(true, false, true); // enable priority "0",+ capture wmarks
+	// 1. Конфигурация сбора (Fetch Config)
+	SceneGraphFetchConfig GBufferPassFetchConfig;
 
+	GBufferPassFetchConfig.fetch_priority_0 = true;
+	GBufferPassFetchConfig.fetch_priority_1 = false;
+	GBufferPassFetchConfig.fetch_wallmarks = true;
+
+	SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+
+	// 2. Конфигурация рекордера (Сбор баундов для теней)
 	if (m_need_render_sun)
 		SceneGraph.set_Recorder(&main_coarse_structure);
 	else
 		SceneGraph.set_Recorder(NULL);
 
+	// 3. Фаза наполнения графа (Traverse & Cull)
 	set_active_phase(PHASE_NORMAL);
-	render_main(Device.mFullTransform, true);
-	SceneGraph.set_Recorder(NULL);
-	SceneGraph.r_pmask(true, false); // disable priority "1"
+	render_main(Device.mFullTransform, true); // Самый дорогой вызов - наполняет мапы SceneGraph
 
+	// 4. Очистка состояния сбора (чтобы не повлиять на следующие этапы)
+	SceneGraph.set_Recorder(NULL);
+
+	// Сброс конфига на "дефолтный безопасный" (только Pri0)
+	GBufferPassFetchConfig.fetch_wallmarks = false;
+
+	SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+
+	// 5. Фаза отрисовки (Render Backend)
 	Device.Statistic->RenderCALC_GBuffer.Begin();
 	RenderBackend.enable_anisotropy_filtering();
 
@@ -305,6 +327,7 @@ void CRender::render_gbuffer_primary()
 	if (psDeviceFlags.test(rsWireframe))
 		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
 
+	// Отрисовка собранного Opaque (Priority 0)
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 
 	if (Details)
@@ -563,7 +586,13 @@ void CRender::render_stage_forward()
 		RenderBackend.set_ColorWriteEnable();
 		RenderBackend.set_ZWriteEnable(TRUE);
 
-		SceneGraph.r_pmask(false, true);
+		SceneGraphFetchConfig ForwardPassFetchConfig;
+
+		ForwardPassFetchConfig.fetch_priority_0 = false;
+		ForwardPassFetchConfig.fetch_priority_1 = true;
+		ForwardPassFetchConfig.fetch_wallmarks = false;
+
+		SceneGraph.SetFetchConfig(ForwardPassFetchConfig);
 
 		// !!! ИСПРАВЛЕНИЕ: Базовая фаза должна быть NORMAL, чтобы заполнился кэш !!!
 		set_active_phase(PHASE_NORMAL);

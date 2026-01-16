@@ -22,7 +22,7 @@ CSceneGraph::CSceneGraph()
 	val_feedback_breakp = 0;
 	val_recorder = 0;
 	marker = 0;
-	r_pmask(true, true); // Вызов своего же метода
+	m_fetch_config = SceneGraphFetchConfig(true, true, false); 
 	b_loaded = FALSE;
 
 	// Инициализация счетчиков (было в хедере, лучше здесь)
@@ -68,11 +68,9 @@ void CSceneGraph::destroy()
 	mapEmissive.destroy();
 }
 
-void CSceneGraph::r_pmask(bool _1, bool _2, bool _wm)
+void CSceneGraph::SetFetchConfig(const SceneGraphFetchConfig& config)
 {
-	pmask[0] = _1;
-	pmask[1] = _2;
-	pmask_wmark = _wm;
+	m_fetch_config = config;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,22 +114,30 @@ void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 	ShaderElement* sh_d = &*pVisual->shader->E[4];
 
 	// pmask - член CSceneGraph
-	if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
+	if (sh_d && sh_d->flags.bDistort)
 	{
-		mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
-		// val_pObject и val_pTransform - члены CSceneGraph
-		N->val.pObject = val_pObject;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = *val_pTransform;
-		N->val.se = sh_d; // 4=L_special
+		// Проверяем приоритет дисторшена (обычно он 1, но проверим честно)
+		bool allowed = (sh_d->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0 : m_fetch_config.fetch_priority_1;
+		if (allowed)
+		{
+			mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
+			N->val.ssa = SSA;
+			// val_pObject и val_pTransform - члены CSceneGraph
+			N->val.pObject = val_pObject;
+			N->val.pVisual = pVisual;
+			N->val.Matrix = *val_pTransform;
+			N->val.se = sh_d; // 4=L_special
+		}
 	}
 
 	// Select shader - метод остался в CRender
 	ShaderElement* sh = RI.rimp_select_sh_dynamic(pVisual, distSQ);
 	if (0 == sh)
 		return;
-	if (!pmask[sh->flags.iPriority / 2])
+	u32 priority = sh->flags.iPriority / 2;
+	if (priority == 0 && !m_fetch_config.fetch_priority_0)
+		return;
+	if (priority == 1 && !m_fetch_config.fetch_priority_1)
 		return;
 
 	// Create common node
@@ -192,7 +198,7 @@ void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 	}
 
 	// pmask_wmark - член CSceneGraph
-	if (sh->flags.bWmark && pmask_wmark)
+	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
 	{
 		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
@@ -270,14 +276,18 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	ShaderElement* sh_d = &*pVisual->shader->E[4];
 
 	// pmask - член CSceneGraph
-	if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
+	if (sh_d && sh_d->flags.bDistort)
 	{
-		mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
-		N->val.pObject = NULL;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = Fidentity;
-		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
+		bool allowed = (sh_d->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0 : m_fetch_config.fetch_priority_1;
+		if (allowed)
+		{
+			mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
+			N->val.ssa = SSA;
+			N->val.pObject = NULL;
+			N->val.pVisual = pVisual;
+			N->val.Matrix = Fidentity;
+			N->val.se = &*pVisual->shader->E[4]; // 4=L_special
+		}
 	}
 
 	// Select shader - вызываем метод CRender
@@ -286,7 +296,10 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	if (0 == sh)
 		return;
 
-	if (!pmask[sh->flags.iPriority / 2])
+	u32 priority = sh->flags.iPriority / 2;
+	if (priority == 0 && !m_fetch_config.fetch_priority_0)
+		return;
+	if (priority == 1 && !m_fetch_config.fetch_priority_1)
 		return;
 
 	// strict-sorting selection
@@ -312,7 +325,7 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	}
 
 	// pmask_wmark - член CSceneGraph
-	if (sh->flags.bWmark && pmask_wmark)
+	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
 	{
 
 		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);

@@ -22,6 +22,22 @@ enum class SceneGraphRenderType
 	Distortion	 // Искажения
 };
 
+struct SceneGraphFetchConfig
+{
+	bool fetch_priority_0 : 1; // Priority 0 (Base Opaque)
+	bool fetch_priority_1 : 1; // Priority 1 (Secondary/AlphaTest)
+	bool fetch_wallmarks : 1;  // Wallmarks
+
+	// Конструктор по умолчанию (все включено, как в старом коде по дефолту)
+	SceneGraphFetchConfig() : fetch_priority_0(true), fetch_priority_1(true), fetch_wallmarks(false)
+	{
+	}
+
+	SceneGraphFetchConfig(bool p0, bool p1, bool wm) : fetch_priority_0(p0), fetch_priority_1(p1), fetch_wallmarks(wm)
+	{
+	}
+};
+
 //////////////////////////////////////////////////////////////////////////
 // feedback	for receiving visuals										//
 //////////////////////////////////////////////////////////////////////////
@@ -48,8 +64,7 @@ class CSceneGraph
 	xr_vector<Fbox3, render_alloc<Fbox3>>* val_recorder; // coarse structure recorder
 	u32 render_phase;
 	u32 marker;
-	bool pmask[2];
-	bool pmask_wmark;
+	SceneGraphFetchConfig m_fetch_config;
 
   public:
 	// Dynamic scene graph containers
@@ -145,7 +160,7 @@ class CSceneGraph
 
 	void destroy(); // Деструктор/Очистка ресурсов
 
-	void r_pmask(bool _1, bool _2, bool _wm = false);
+	void SetFetchConfig(const SceneGraphFetchConfig& config);
 
 	// Низкоуровневая вставка в граф (используется внутри add_leafs)
 	void insert_dynamic(IRender_Visual* pVisual, Fvector& Center);
