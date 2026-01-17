@@ -218,7 +218,7 @@ class CDetailManager
 	PSS poolSI;
 	xrCriticalSection pool_lock; // ћьютекс
 
-	void UpdateVisibleM();
+	void UpdateVisibility();
 
 #ifdef _EDITOR
 	virtual ObjectList* GetSnapList() = 0;
