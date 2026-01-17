@@ -638,8 +638,6 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 
 void CAI_Stalker::update_object_handler()
 {
-	PROFILE_FUNCTION();
-
 	if (!g_Alive())
 		return;
 

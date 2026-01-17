@@ -455,8 +455,6 @@ void CEnvironment::lerp(float& current_weight)
 
 void CEnvironment::OnFrame()
 {
-	PROFILE_FUNCTION();
-
 #ifdef _EDITOR
 	SetGameTime(fGameTime + Engine.TimeManager.GetDeltaTime() * fTimeFactor, fTimeFactor);
 	if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f))

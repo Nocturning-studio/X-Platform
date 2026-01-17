@@ -572,11 +572,6 @@ IRender_Glow* CRender::glow_create()
 	return xr_new<CGlow>();
 }
 
-void CRender::flush()
-{
-	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
-}
-
 BOOL CRender::occ_visible(vis_data& P)
 {
 	return HOM.visible(P);

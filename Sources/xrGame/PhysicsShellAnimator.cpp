@@ -47,8 +47,6 @@ CPhysicsShellAnimator::~CPhysicsShellAnimator()
 
 void CPhysicsShellAnimator::OnFrame()
 {
-	PROFILE_FUNCTION();
-
 	m_pPhysicsShell->Enable();
 
 	for (xr_vector<CPhysicsShellAnimatorBoneData>::iterator i = m_bones_data.begin(); i != m_bones_data.end(); i++)

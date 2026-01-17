@@ -399,8 +399,6 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
-	PROFILE_FUNCTION();
-
 	sound().update(client_update_fdelta());
 }
 

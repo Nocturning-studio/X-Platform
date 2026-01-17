@@ -155,7 +155,7 @@ bool CLevel::net_start_client6()
 			g_hud->OnConnected();
 
 		g_pGamePersistent->LoadTitle("st_client_synchronising");
-		Device.PreCache(15);
+		Device.PreCache(30);
 		net_start_result_total = TRUE;
 	}
 	else

@@ -42,6 +42,36 @@ enum class DetailsRenderMode
 class CDetailManager
 {
   public:
+	// Структура для передачи параметров рендеринга
+	struct SDetailRenderContext
+	{
+		DetailsRenderMode mode;
+		const Fmatrix* cullMatrix;
+		const CFrustum* cullFrustum;
+		Fvector c_sun;
+		Fvector c_ambient;
+		Fvector c_hemi;
+
+		SDetailRenderContext() : mode(DetailsRenderMode::Default), cullMatrix(nullptr), cullFrustum(nullptr)
+		{
+		}
+	};
+
+	// Индексы для списков видимости m_visibles[id][INDEX]
+	enum EDetailVisibilityList
+	{
+		DVL_Static = 0,
+		DVL_Wave1 = 1,
+		DVL_Wave2 = 2
+	};
+
+	// Тип шейдера (для выбора внутри шейдерного элемента объекта)
+	enum EDetailShaderType
+	{
+		DST_Animated = 0,
+		DST_Static = 1
+	};
+
 	// Структуры
 	struct SlotItem
 	{
@@ -66,8 +96,8 @@ class CDetailManager
 	struct SlotPart
 	{
 		u32 id;
-		SlotItemVec items;
-		SlotItemVec r_items[3];
+		SlotItemVec items;		   // Все айтемы
+		SlotItemVec r_items[2][3]; // [buffer_id][wave_type]
 	};
 
 	enum SlotType
@@ -127,6 +157,18 @@ class CDetailManager
 	typedef DetailVec::iterator DetailIt;
 	typedef poolSS<SlotItem, 4096> PSS;
 
+  private:
+	// Внутренние методы рендеринга (Single Responsibility)
+	void ExecuteRenderPasses(const SDetailRenderContext& ctx);
+	void ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
+						EDetailShaderType shaderType);
+
+	// Хелпер для отрисовки батча
+	void FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset, u32& iOffset);
+
+	// Хелпер для выбора шейдера
+	ref_selement SelectShader(CDetail& Object, DetailsRenderMode mode, EDetailShaderType shaderType);
+
   public:
 	int dither[16][16];
 	IReader* dtFS;
@@ -168,8 +210,7 @@ class CDetailManager
 	IDirect3DIndexBuffer9* hw_IB;
 	void hw_Load();
 	void hw_Unload();
-	void hw_Render(DetailsRenderMode Mode);
-	void hw_Render_dump(u32 var_id, u32 lod_id, DetailsRenderMode Mode);
+	void Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix = nullptr);
 
 	DetailSlot& QueryDB(int sx, int sz);
 
@@ -205,7 +246,6 @@ class CDetailManager
 
 	void Load();
 	void Unload();
-	void Render(DetailsRenderMode Mode);
 	void PrepareToCalc();
 	void ClearVisible();
 

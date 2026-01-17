@@ -156,13 +156,12 @@ void CDetailManager::UpdateVisibleM()
 {
 	PROFILE_FUNCTION();
 
-	// Используем ЗАХВАЧЕННЫЕ данные (Device.* трогать нельзя!)
+	// Используем ЗАХВАЧЕННЫЕ данные
 	Fvector EYE = m_vCameraPos_calc;
 
 	CFrustum View;
 	View.CreateFromMatrix(m_mFullTransform_calc, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-	// === ДИНАМИЧЕСКИЙ РАДИУС ===
 	float max_physical_radius = float(dm_size * dm_slot_size);
 	float current_radius = ps_r_Detail_radius;
 
@@ -180,10 +179,13 @@ void CDetailManager::UpdateVisibleM()
 	float fade_range = fade_limit - fade_start;
 	float r_ssaCHEAP = 16 * r_ssaDISCARD;
 
-	// Ссылка на рабочий буфер (в который пишем)
+	// Ссылка на рабочий буфер
 	vis_list* working_vis = m_visibles[m_vis_calc_id];
 
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
+
+	// Получаем текущий кадр один раз
+	u32 current_frame = Engine.TimeManager.GetFrameCount();
 
 	for (int _mz = 0; _mz < dm_cache1_line; _mz++)
 	{
@@ -199,9 +201,6 @@ void CDetailManager::UpdateVisibleM()
 				continue;
 
 #ifndef _EDITOR
-			// HOM используем с осторожностью. В идеале HOM тоже должен быть thread-safe или double-buffered.
-			// Если HOM обновляется в Calculate параллельно с травой - здесь возможна гонка.
-			// Но обычно HOM готов к OnFrame.
 			if (!RenderImplementation.HOM.visible(MS.vis))
 				continue;
 #endif
@@ -213,6 +212,7 @@ void CDetailManager::UpdateVisibleM()
 				if (S.empty)
 					continue;
 
+				// Тест видимости слота
 				if (fcvPartial == res)
 				{
 					u32 _mask = mask;
@@ -226,102 +226,97 @@ void CDetailManager::UpdateVisibleM()
 					continue;
 #endif
 
-				// Логика обновления кадра анимации травы (S.frame)
-				// В многопотоке S.frame обновлять можно, если слоты не удаляются динамически во время рендера.
-				if (Engine.TimeManager.GetFrameCount() > S.frame)
-				{
-					float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
-					if (dist_sq > fade_limit)
-						continue;
+				// Дистанция до слота
+				float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
+				if (dist_sq > fade_limit)
+					continue;
 
+				// === 1. МАТЕМАТИКА (Оптимизация: раз в N кадров) ===
+				// Обновляем параметры (scale, alpha) в исходных айтемах
+				if (current_frame > S.frame)
+				{
 					float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
 					float alpha_i = 1.f - alpha;
 					float dist_sq_rcp = 1.f / dist_sq;
 
-					S.frame = Engine.TimeManager.GetFrameCount() + Random.randI(15, 30);
+					S.frame = current_frame + Random.randI(15, 30);
 
-					if (alpha_i < 0.01f)
-						continue;
-
-					for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+					if (alpha_i > 0.01f)
 					{
-						SlotPart& sp = S.G[sp_id];
-						if (sp.id == DetailSlot::ID_Empty)
-							continue;
-
-						// !!! ВНИМАНИЕ: Здесь есть потенциальная гонка данных !!!
-						// Мы очищаем sp.r_items, которые могут прямо сейчас читаться в Render
-						// (через указатели из старого m_visibles).
-						// Для идеальной реализации нужно дублировать r_items в SlotPart (r_items[2][3]).
-						// Но в рамках текущей задачи оставляем как есть, полагаясь на то,
-						// что Render уже отработал свою часть слотов или читает другие данные.
-
-						sp.r_items[0].clear_not_free();
-						sp.r_items[1].clear_not_free();
-						sp.r_items[2].clear_not_free();
-
-						float R = objects[sp.id]->bv_sphere.R;
-						float Rq_drcp = R * R * dist_sq_rcp;
-
-						SlotItem **siIT = &(*sp.items.begin()), **siEND = &(*sp.items.end());
-						for (; siIT != siEND; siIT++)
+						for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 						{
-							SlotItem& Item = *(*siIT);
-							float scale = Item.scale_calculated = Item.scale * alpha_i;
-							float ssa = scale * scale * Rq_drcp;
-							if (ssa < r_ssaDISCARD)
+							SlotPart& sp = S.G[sp_id];
+							if (sp.id == DetailSlot::ID_Empty)
 								continue;
 
-							u32 vis_id = 0;
-							if (ssa > r_ssaCHEAP)
-								vis_id = Item.vis_ID;
+							float R = objects[sp.id]->bv_sphere.R;
+							float Rq_drcp = R * R * dist_sq_rcp;
 
-							sp.r_items[vis_id].push_back(*siIT);
+							SlotItem **siIT = &(*sp.items.begin()), **siEND = &(*sp.items.end());
+							for (; siIT != siEND; siIT++)
+							{
+								SlotItem& Item = *(*siIT);
+								// Обновляем данные в самом айтеме!
+								Item.scale_calculated = Item.scale * alpha_i;
+								float ssa = Item.scale_calculated * Item.scale_calculated * Rq_drcp;
+
+								// Сохраняем ID видимости в айтеме, чтобы не пересчитывать
+								if (ssa < r_ssaDISCARD)
+									Item.vis_ID = 0xff; // Невидим
+								else if (ssa > r_ssaCHEAP)
+									Item.vis_ID = Item.vis_ID; // Оставляем оригинальный (Wave/Static)
+								else
+									Item.vis_ID = 0; // Static (LOD)
+							}
 						}
 					}
 				}
 
-				// Заполнение рабочего буфера видимости
+				// === 2. ЗАПОЛНЕНИЕ БУФЕРА (Каждый кадр) ===
+				// Копируем указатели в рабочий буфер текущего кадра
 				for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 				{
 					SlotPart& sp = S.G[sp_id];
 					if (sp.id == DetailSlot::ID_Empty)
 						continue;
 
-					// Пушим указатели на списки в НУЖНЫЙ буфер (m_vis_calc_id)
-					if (!sp.r_items[0].empty())
-						working_vis[0][sp.id].push_back(&sp.r_items[0]);
-					if (!sp.r_items[1].empty())
-						working_vis[1][sp.id].push_back(&sp.r_items[1]);
-					if (!sp.r_items[2].empty())
-						working_vis[2][sp.id].push_back(&sp.r_items[2]);
+					// Очищаем вектора текущего буфера
+					auto& buffer_static = sp.r_items[m_vis_calc_id][0];
+					auto& buffer_wave1 = sp.r_items[m_vis_calc_id][1];
+					auto& buffer_wave2 = sp.r_items[m_vis_calc_id][2];
+
+					buffer_static.clear_not_free();
+					buffer_wave1.clear_not_free();
+					buffer_wave2.clear_not_free();
+
+					// Перебираем исходные айтемы и раскидываем по спискам
+					// Это быстро, так как мы только читаем готовые флаги
+					SlotItem **siIT = &(*sp.items.begin()), **siEND = &(*sp.items.end());
+					for (; siIT != siEND; siIT++)
+					{
+						SlotItem* pItem = *siIT;
+						// Используем сохраненные или только что посчитанные данные
+						// (vis_ID = 0xff - маркер невидимости, который мы поставили выше)
+						if (pItem->scale_calculated > EPS && pItem->vis_ID != 0xff)
+						{
+							// vis_ID может быть 0, 1 или 2
+							u32 v_id = (pItem->vis_ID > 2) ? 0 : pItem->vis_ID;
+							sp.r_items[m_vis_calc_id][v_id].push_back(pItem);
+						}
+					}
+
+					// Пушим в глобальный список для рендера
+					if (!buffer_static.empty())
+						working_vis[0][sp.id].push_back(&buffer_static);
+					if (!buffer_wave1.empty())
+						working_vis[1][sp.id].push_back(&buffer_wave1);
+					if (!buffer_wave2.empty())
+						working_vis[2][sp.id].push_back(&buffer_wave2);
 				}
 			}
 		}
 	}
 	Device.Statistic->RenderDUMP_DT_VIS.End();
-}
-
-void CDetailManager::Render(DetailsRenderMode Mode)
-{
-	PROFILE_FUNCTION();
-
-#ifndef _EDITOR
-	if (0 == dtFS)
-		return;
-	if (!psDeviceFlags.is(rsDetails))
-		return;
-#endif
-
-	Device.Statistic->RenderDUMP_DT_Render.Begin();
-
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_xform_world(Fidentity);
-
-	hw_Render(Mode);
-
-	RenderBackend.set_CullMode(CULL_BACKFACE);
-	Device.Statistic->RenderDUMP_DT_Render.End();
 }
 
 void CDetailManager::PrepareToCalc()
@@ -358,7 +353,7 @@ void CDetailManager::PrepareToCalc()
 
 	// 3. Захват состояния камеры для потока
 	m_vCameraPos_calc = Device.vCameraPosition;
-	m_mFullTransform_calc = Device.mFullTransform; // Добавьте это поле в хедер!
+	m_mFullTransform_calc = Device.mFullTransform;
 }
 
 void __stdcall CDetailManager::MT_CALC()
@@ -619,6 +614,7 @@ void CDetailManager::InvalidateCache()
 			{
 				for (u32 i = 0; i < dm_obj_in_slot; i++)
 				{
+					// Очищаем основной пул айтемов
 					for (u32 clr = 0; clr < S->G[i].items.size(); clr++)
 					{
 						pool_lock.Enter();
@@ -626,9 +622,15 @@ void CDetailManager::InvalidateCache()
 						pool_lock.Leave();
 					}
 					S->G[i].items.clear();
-					S->G[i].r_items[0].clear();
-					S->G[i].r_items[1].clear();
-					S->G[i].r_items[2].clear();
+
+					// === FIX: Очищаем ОБА буфера рендера ===
+					// Чтобы не осталось висячих ссылок при смене уровня или настроек
+					for (int buf = 0; buf < 2; ++buf)
+					{
+						S->G[i].r_items[buf][0].clear();
+						S->G[i].r_items[buf][1].clear();
+						S->G[i].r_items[buf][2].clear();
+					}
 				}
 				S->vis.clear();
 			}

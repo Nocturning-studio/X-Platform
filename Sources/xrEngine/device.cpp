@@ -182,6 +182,18 @@ void CRenderDevice::PreCache(u32 amount)
 	}
 }
 
+void CRenderDevice::PreCache()
+{
+	float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+	float angle = PI_MUL_2 * factor;
+	vCameraDirection.set(_sin(angle), 0, _cos(angle));
+	vCameraDirection.normalize();
+	vCameraTop.set(0, 1, 0);
+	vCameraRight.crossproduct(vCameraTop, vCameraDirection);
+
+	mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
+}
+
 int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
@@ -206,94 +218,91 @@ void CRenderDevice::PrepareEventLoop()
 	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
+void CRenderDevice::RenderFrame()
+{
+	PROFILE_FUNCTION();
+
+	Statistic->RenderTOTAL_Real.FrameStart();
+	Statistic->RenderTOTAL_Real.Begin();
+	if (b_is_Active)
+	{
+		if (Begin())
+		{
+			Engine.DebugUI.DrawUI();
+			seqRender.Process(rp_Render);
+
+			if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+				Statistic->Show();
+
+			End();
+		}
+	}
+	Statistic->RenderTOTAL_Real.End();
+	Statistic->RenderTOTAL_Real.FrameEnd();
+}
+
 void CRenderDevice::DoFrame()
 {
 	PROFILE_FUNCTION();
 
-	if (b_is_Ready)
+	if (!b_is_Ready)
 	{
-#ifdef DEDICATED_SERVER
-		u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
-#endif
-		if (psDeviceFlags.test(rsStatistic))
-			g_bEnableStatGather = TRUE;
-		else
-			g_bEnableStatGather = FALSE;
-
-		if (g_loading_events.size())
-		{
-			if (g_loading_events.front()())
-				g_loading_events.pop_front();
-
-			Engine.LoadingScreen.ForceRender();
-			return;
-		}
-		else
-		{
-			OnFrame();
-		}
-
-		// Precache
-		if (dwPrecacheFrame)
-		{
-			float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
-			float angle = PI_MUL_2 * factor;
-			vCameraDirection.set(_sin(angle), 0, _cos(angle));
-			vCameraDirection.normalize();
-			vCameraTop.set(0, 1, 0);
-			vCameraRight.crossproduct(vCameraTop, vCameraDirection);
-
-			mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
-		}
-
-		// Matrices
-		mFullTransform.mul(mProject, mView);
-		RenderBackend.set_xform_view(mView);
-		RenderBackend.set_xform_project(mProject);
-		D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
-
-		syncProcessFrame.Set(); // allow secondary thread to do its job
-
-#ifndef DEDICATED_SERVER
-		Statistic->RenderTOTAL_Real.FrameStart();
-		Statistic->RenderTOTAL_Real.Begin();
-		if (b_is_Active)
-		{
-			if (Begin())
-			{
-				Engine.DebugUI.DrawUI();
-				seqRender.Process(rp_Render);
-
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-					Statistic->Show();
-
-				End();
-			}
-		}
-		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
-		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
-#endif
-
-		vCameraPosition_saved = vCameraPosition;
-		mFullTransform_saved = mFullTransform;
-
-		syncFrameDone.Wait();
+		Sleep(100);
+		return;
+	}
 
 #ifdef DEDICATED_SERVER
-		u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
-		u32 FrameTime = (FrameEndTime - FrameStartTime);
-		u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
-		if (FrameTime < DSUpdateDelta)
-		{
-			Sleep(DSUpdateDelta - FrameTime);
-		}
+	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 #endif
+
+	if (psDeviceFlags.test(rsStatistic))
+		g_bEnableStatGather = TRUE;
+	else
+		g_bEnableStatGather = FALSE;
+
+	if (g_loading_events.size())
+	{
+		if (g_loading_events.front()())
+			g_loading_events.pop_front();
+
+		Engine.LoadingScreen.ForceRender();
+		return;
 	}
 	else
 	{
-		Sleep(100);
+		OnFrame();
 	}
+
+	// Precache
+	if (dwPrecacheFrame)
+		PreCache();
+
+	// Matrices
+	mFullTransform.mul(mProject, mView);
+	RenderBackend.set_xform_view(mView);
+	RenderBackend.set_xform_project(mProject);
+	D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+
+	syncProcessFrame.Set(); // allow secondary thread to do its job
+
+#ifndef DEDICATED_SERVER
+	RenderFrame();
+#endif
+
+	vCameraPosition_saved = vCameraPosition;
+	mFullTransform_saved = mFullTransform;
+
+	syncFrameDone.Wait();
+
+#ifdef DEDICATED_SERVER
+	u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
+	u32 FrameTime = (FrameEndTime - FrameStartTime);
+	u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
+	if (FrameTime < DSUpdateDelta)
+	{
+		Sleep(DSUpdateDelta - FrameTime);
+	}
+#endif
 
 	if (!b_is_Active)
 		Sleep(1);
@@ -532,7 +541,7 @@ void CRenderDevice::Create()
 	Resources = xr_new<CResourceManager>();
 	_Create(fname);
 
-	PreCache(0);
+	PreCache(30);
 }
 
 void CRenderDevice::_Destroy(BOOL bKeepTextures)

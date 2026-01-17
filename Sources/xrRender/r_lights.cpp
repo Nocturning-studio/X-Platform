@@ -164,7 +164,7 @@ void CRender::render_lights(light_Package& LP)
 				RenderBackend.set_xform_project(L->X.S.project);
 
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-					Details->Render(DetailsRenderMode::DepthOnly);
+					Details->Render(DetailsRenderMode::DepthOnly, &L->X.S.combine);
 
 				SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 				L->X.S.transluent = FALSE;

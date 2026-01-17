@@ -150,6 +150,7 @@ public:
 
 	// Scene control
 	void PreCache(u32 frames);
+	void PreCache();
 	BOOL Begin();
 	void Clear();
 	void End();
@@ -165,6 +166,7 @@ public:
 	void Create(void);
 	void PrepareEventLoop();
 	void DoFrame();
+	void RenderFrame();
 	void EndEventLoop();
 	void Destroy(void);
 	void Reset(bool precache = true);

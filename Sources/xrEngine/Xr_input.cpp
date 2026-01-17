@@ -490,8 +490,6 @@ void CInput::OnAppDeactivate(void)
 
 void CInput::OnFrame(void)
 {
-	PROFILE_FUNCTION();
-
 	Device.Statistic->Input.Begin();
 	dwCurTime = Engine.TimeManager.TimerAsync_MMT();
 	if (pKeyboard)

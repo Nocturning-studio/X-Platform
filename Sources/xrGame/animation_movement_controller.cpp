@@ -30,8 +30,6 @@ void animation_movement_controller::deinitialize()
 }
 void animation_movement_controller::OnFrame()
 {
-	PROFILE_FUNCTION();
-
 	m_pKinematicsC->CalculateBones();
 
 	if (CBlend::eFREE_SLOT == m_control_blend->blend)
