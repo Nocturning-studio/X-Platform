@@ -224,7 +224,7 @@ class CDetailManager
 	IDirect3DIndexBuffer9* hw_IB;
 	void hw_Load();
 	void hw_Unload();
-	void Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix = nullptr);
+	void Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix = nullptr, const CFrustum* pExternalCull = nullptr);
 
 	DetailSlot& QueryDB(int sx, int sz);
 

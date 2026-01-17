@@ -178,7 +178,7 @@ void CalculateCullAABB(const Fmatrix& viewProj, float& minX, float& maxX, float&
 	}
 }
 
-void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix)
+void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix, const CFrustum* pExternalCull)
 {
 	PROFILE_FUNCTION();
 
@@ -195,14 +195,29 @@ void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix)
 	ctx.cullMatrix = pCullMatrix;
 
 	CFrustum localFrustum;
-	if (pCullMatrix)
+
+	// === ВЫБОР ФРУСТУМА ОТСЕЧЕНИЯ ===
+	// Логика:
+	// 1. Если передан pExternalCull (из r_sun.cpp) — используем его.
+	//    Это точное пересечение конуса камеры и объема света. Это решает проблему 3ms.
+	// 2. Если нет, но есть матрица (pCullMatrix) — строим фрустум по ней (старый метод).
+	// 3. Если нет ни того, ни другого — куллинг по фрустуму не выполняется (рисуем всё, что в списке видимости).
+
+	if (pExternalCull)
 	{
-		// 1. Создаем точный фрустум (для детальной проверки на границах)
+		ctx.cullFrustum = pExternalCull;
+	}
+	else if (pCullMatrix)
+	{
 		localFrustum.CreateFromMatrix(*pCullMatrix, FRUSTUM_P_ALL);
 		ctx.cullFrustum = &localFrustum;
+	}
 
-		// 2. === НОВОЕ: Вычисляем AABB для сверхбыстрого отсечения ===
-		// Это делается 1 раз на каскад, стоимость ничтожна
+	// === FAST REJECT (AABB) ===
+	// Даже если мы используем внешний фрустум, нам все равно полезно знать
+	// границы проекции (текстуры) света, чтобы быстро отсечь объекты, выходящие за края шэдоу-мапы.
+	if (pCullMatrix)
+	{
 		CalculateCullAABB(*pCullMatrix, ctx.minX, ctx.maxX, ctx.minZ, ctx.maxZ);
 		ctx.useAABB = true;
 
