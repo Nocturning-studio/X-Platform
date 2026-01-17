@@ -202,6 +202,7 @@ class CDetailManager
 
 	IDirect3DVertexBuffer9* hw_InstanceVB;
 	u32 hw_MaxInstances;
+	u32 hw_BatchOffset;
 
 #ifndef _EDITOR
 	xrXRC xrc; // Глобальный XRC (не для потоков)

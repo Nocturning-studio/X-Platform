@@ -37,18 +37,24 @@ short QC(float v)
 	clamp(t, -32768, 32767);
 	return short(t & 0xffff);
 }
+#include "stdafx.h"
+#pragma hdrstop
+#include "detailmanager.h"
+
+// ... (Оставляем начальные инклуды и структуры вершин без изменений) ...
+
 void CDetailManager::hw_Load()
 {
-	// Настраиваем максимальное количество инстансов за один вызов
-	// 32768 * 64 байта (размер InstanceData) = 2 MБ буфер. Это нормально.
-	hw_MaxInstances = 32768;
+	// Увеличиваем буфер. 128k * 64 байта = 8 МБ.
+	// Это гарантирует, что мы сможем отрисовать огромное количество травы
+	// без частых сбросов (DISCARD), что уберет "фризы" CPU.
+	hw_MaxInstances = 128 * 1024;
+	hw_BatchOffset = 0; // Сброс оффсета в начало
 
 	// Pre-process objects
 	u32 dwVerts = 0;
 	u32 dwIndices = 0;
 
-	// Считаем общее количество вершин и индексов БЕЗ умножения на BatchSize
-	// Нам нужна только ОДНА копия каждой модельки
 	for (u32 o = 0; o < objects.size(); o++)
 	{
 		CDetail& D = *objects[o];
@@ -57,33 +63,25 @@ void CDetailManager::hw_Load()
 	}
 
 	u32 vSize = sizeof(vertHW);
-	Msg("* [DETAILS] Instancing enabled. V(%d), P(%d)", dwVerts, dwIndices / 3);
+	Msg("* [DETAILS] Instancing enabled. V(%d), P(%d), BufferSize(%d items)", dwVerts, dwIndices / 3, hw_MaxInstances);
 
 	// Create VB/IB for Geometry
-	// D3DPOOL_MANAGED лучше для статики в DX9, но DEFAULT тоже ок
 	R_CHK(HW.pDevice->CreateVertexBuffer(dwVerts * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &hw_VB, 0));
 	R_CHK(HW.pDevice->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
 
-	// === НОВОЕ: Создаем динамический буфер для инстансов ===
-	// D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY обязателен для частого обновления
+	// Create Instance VB (DYNAMIC !!!)
 	R_CHK(HW.pDevice->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
 										 0, D3DPOOL_DEFAULT, &hw_InstanceVB, 0));
 
-	// Fill Geometry VB
+	// Заполнение геометрии (без изменений)
 	{
-		// Lock buffer
 		vertHW* pV;
 		R_CHK(hw_VB->Lock(0, 0, (void**)&pV, 0));
-
 		for (u32 o = 0; o < objects.size(); o++)
 		{
 			CDetail& D = *objects[o];
-
-			// 1. Вычисляем высоту модели
 			float fMinY = D.bv_bb.min.y;
 			float fHeight = D.bv_bb.max.y - fMinY;
-
-			// Защита от деления на ноль для плоских объектов
 			if (fHeight < EPS_S)
 				fHeight = EPS_S;
 
@@ -94,23 +92,12 @@ void CDetailManager::hw_Load()
 			for (u32 v = 0; v < D.number_vertices; v++)
 			{
 				Fvector& vP = D.vertices[v].P;
-
 				pV->x = vP.x;
-
-				// 2. ИСПРАВЛЕНИЕ ПАРЕНИЯ:
-				// Сдвигаем вершину так, чтобы самая нижняя точка модели всегда была на 0.0
 				pV->y = vP.y - fMinY;
-
 				pV->z = vP.z;
-
 				pV->u = QC(D.vertices[v].u);
 				pV->v = QC(D.vertices[v].v);
-
-				// 3. ИСПРАВЛЕНИЕ ГРАДИЕНТА ВЕТРА (t):
-				// Градиент должен быть от 0 (низ) до 1 (верх).
-				// Раньше формула была vP.y / Height, что давало ошибку, если fMinY != 0.
 				pV->t = QC((vP.y - fMinY) / fHeight);
-
 				pV->mid = 0;
 				pV++;
 			}
@@ -118,7 +105,7 @@ void CDetailManager::hw_Load()
 		R_CHK(hw_VB->Unlock());
 	}
 
-	// Fill Geometry IB
+	// Заполнение индексов (без изменений)
 	{
 		u16* pI;
 		R_CHK(hw_IB->Lock(0, 0, (void**)(&pI), 0));
@@ -131,7 +118,6 @@ void CDetailManager::hw_Load()
 		R_CHK(hw_IB->Unlock());
 	}
 
-	// Declare geometry
 	hw_Geom.create(dwDecl_Details, hw_VB, hw_IB);
 }
 
@@ -290,9 +276,10 @@ ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mod
 void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
 									EDetailShaderType shaderType)
 {
+	// Сбрасываем счетчик статистики
 	Device.Statistic->RenderDUMP_DT_Count = 0;
-	vis_list& list = m_visibles[m_vis_render_id][visListType];
 
+	vis_list& list = m_visibles[m_vis_render_id][visListType];
 	u32 vOffset = 0;
 	u32 iOffset = 0;
 
@@ -300,7 +287,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 	{
 		CDetail& Object = *objects[O];
 		u32 primCount = Object.number_indices / 3;
-		xr_vector<DetailRenderVec*>& vis = list[O]; // Вектор векторов PrecalculatedData
+		xr_vector<DetailBatch*>& vis = list[O];
 
 		if (primCount == 0 || vis.empty())
 		{
@@ -309,96 +296,124 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 			continue;
 		}
 
+		// Установка шейдера
 		RenderBackend.set_Element(SelectShader(Object, ctx.mode, shaderType));
 		RenderImplementation.apply_lmaterial();
 
-		u32 currentInstanceCount = 0;
-		InstanceData* pInstances = nullptr;
-		bool bBufferLocked = false;
+		// Переменные для батчинга внутри одного объекта
+		u32 currentBatchCount = 0;
+		InstanceData* pLockedData = nullptr;
+		bool bLocked = false;
 
-		// --- ЦИКЛ ПО СЛОТАМ (vis содержит указатели на DetailBatch) ---
+		// --- ЦИКЛ ПО БАТЧАМ ---
 		for (auto slotIt = vis.begin(); slotIt != vis.end(); ++slotIt)
 		{
 			DetailBatch* batch = *slotIt;
 			if (batch->empty())
 				continue;
 
-			// 1. === FAST CULLING (AABB) ===
-			// Читаем pos из отдельного вектора positions.
-			// Так как мы читаем только float3, это более эффективно для кеша, чем прыгать через InstanceData (64
-			// байта).
+			// 1. AABB/Frustum Culling (CPU)
+			// Читаем из отдельного вектора positions, чтобы не грузить в кэш лишние данные
 			if (ctx.useAABB)
 			{
 				const Fvector& pos = batch->positions[0];
-
 				if (pos.x < ctx.minX || pos.x > ctx.maxX || pos.z < ctx.minZ || pos.z > ctx.maxZ)
-				{
 					continue;
-				}
 
-				if (!ctx.cullFrustum->testSphere_dirty(const_cast<Fvector&>(pos), 2.0f))
+				// Точный Frustum тест (если передан внешний фрустум)
+				if (ctx.cullFrustum && !ctx.cullFrustum->testSphere_dirty(const_cast<Fvector&>(pos), 2.0f))
 					continue;
 			}
 
-			// Лочим буфер лениво
-			if (!bBufferLocked)
-			{
-				HRESULT hr = hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
-												 D3DLOCK_DISCARD);
-				if (FAILED(hr))
-					return;
-				bBufferLocked = true;
-			}
-
-			// === 2. БЫСТРОЕ КОПИРОВАНИЕ (MEMCPY) ===
-			// Теперь данные GPU лежат в batch->instances сплошным массивом.
-
+			u32 itemsInBatch = (u32)batch->instances.size();
 			const InstanceData* srcData = batch->instances.data();
-			u32 itemsCount = (u32)batch->instances.size();
 			u32 processed = 0;
 
-			while (processed < itemsCount)
+			// Обработка данных (копирование частями, если батч огромен или мы у края буфера)
+			while (processed < itemsInBatch)
 			{
-				// Если буфер полон — сбрасываем (Draw Call)
-				if (currentInstanceCount >= hw_MaxInstances)
+				// Логика блокировки буфера: Dynamic Buffer Pattern
+				if (!bLocked)
 				{
-					hw_InstanceVB->Unlock();
-					FlushBatch(Object, currentInstanceCount, vOffset, iOffset);
+					// Проверяем, влезем ли мы в остаток буфера?
+					// Если мы у края буфера — сбрасываем в начало.
+					if (hw_BatchOffset >= hw_MaxInstances)
+					{
+						hw_BatchOffset = 0;
+					}
 
-					// Ре-лок
-					currentInstanceCount = 0;
-					HRESULT hr = hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
-													 D3DLOCK_DISCARD);
+					// Если пишем в начало - DISCARD (говорим драйверу "старое не нужно, дай новую память").
+					// Если пишем дальше - NOOVERWRITE (говорим "мы пишем в конец, не трогая то, что GPU рисует из
+					// начала").
+					u32 dwLockFlags = (hw_BatchOffset == 0) ? D3DLOCK_DISCARD : D3DLOCK_NOOVERWRITE;
+
+					// Лочим "хвост" буфера.
+					void* ptr = nullptr;
+					HRESULT hr = hw_InstanceVB->Lock(hw_BatchOffset * sizeof(InstanceData),
+													 (hw_MaxInstances - hw_BatchOffset) * sizeof(InstanceData), &ptr,
+													 dwLockFlags);
+
 					if (FAILED(hr))
-						return;
+						return; // Критическая ошибка
+
+					pLockedData = (InstanceData*)ptr;
+					bLocked = true;
+					currentBatchCount = 0; // Сколько мы записали за этот конкретный Lock
 				}
 
-				u32 available = hw_MaxInstances - currentInstanceCount;
-				u32 toCopy = (itemsCount - processed) < available ? (itemsCount - processed) : available;
+				// Сколько места есть до конца физического буфера?
+				u32 availableSpace = hw_MaxInstances - (hw_BatchOffset + currentBatchCount);
+				u32 toCopy = (itemsInBatch - processed);
 
-				// Копируем пачку данных одной командой. Это максимально быстро.
-				memcpy(pInstances + currentInstanceCount, srcData + processed, toCopy * sizeof(InstanceData));
+				if (toCopy > availableSpace)
+				{
+					// Если места не хватает даже для части данных — нужно сбросить буфер и начать сначала.
 
-				currentInstanceCount += toCopy;
+					// 1. Анлок и отрисовка того, что уже накопили (если есть)
+					if (currentBatchCount > 0)
+					{
+						hw_InstanceVB->Unlock();
+						// Рисуем накопленное
+						FlushBatch(Object, currentBatchCount, vOffset, iOffset);
+						// Сдвигаем глобальный оффсет, чтобы следующий Lock был корректным
+						hw_BatchOffset += currentBatchCount;
+					}
+					else
+					{
+						// Если мы только что залочили и места нет (странная ситуация, но возможная), просто анлочим
+						hw_InstanceVB->Unlock();
+					}
+
+					// 2. Сброс состояния для следующей итерации (начнет с D3DLOCK_DISCARD)
+					hw_BatchOffset = 0;
+					bLocked = false;
+					pLockedData = nullptr;
+					currentBatchCount = 0;
+
+					// Переходим на следующую итерацию while, где сработает if (!bLocked) с флагом DISCARD
+					continue;
+				}
+
+				// БЫСТРОЕ КОПИРОВАНИЕ (MEMCPY)
+				// Копируем сразу массив структур. Это работает очень быстро.
+				memcpy(pLockedData + currentBatchCount, srcData + processed, toCopy * sizeof(InstanceData));
+
+				currentBatchCount += toCopy;
 				processed += toCopy;
 			}
 		}
 
-		if (bBufferLocked)
+		// Завершаем работу с объектом (рисуем остаток накопленного)
+		if (bLocked)
 		{
 			hw_InstanceVB->Unlock();
-		}
 
-		if (currentInstanceCount > 0)
-		{
-			FlushBatch(Object, currentInstanceCount, vOffset, iOffset);
-		}
-
-		if (bBufferLocked || currentInstanceCount > 0)
-		{
-			HW.pDevice->SetStreamSource(1, NULL, 0, 0);
-			HW.pDevice->SetStreamSourceFreq(0, 1);
-			HW.pDevice->SetStreamSourceFreq(1, 1);
+			if (currentBatchCount > 0)
+			{
+				FlushBatch(Object, currentBatchCount, vOffset, iOffset);
+				// Сдвигаем глобальный оффсет для следующего объекта
+				hw_BatchOffset += currentBatchCount;
+			}
 		}
 
 		vOffset += Object.number_vertices;
@@ -408,22 +423,23 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 
 void CDetailManager::FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset, u32& iOffset)
 {
-	// Привязываем геометрию (на случай, если она отвалилась, хотя set_Geometry был выше)
 	RenderBackend.set_Geometry(hw_Geom);
 
-	// Stream 0: Геометрия (Indexed Data, частота делителя = instanceCount, но в DX9 это работает иначе для Instancing)
-	// В DX9 Instancing: Stream 0 - геометрия (Vertex Data), Stream 1 - Instance Data.
-	// D3DSTREAMSOURCE_INDEXEDDATA | instanceCount — говорит, сколько раз рисовать геометрию.
+	// Устанавливаем стрим инстансинга.
+	// Stream 1 (Instance Data) стартует с байтового смещения hw_BatchOffset.
+	// hw_BatchOffset указывает на начало данных, которые мы только что скопировали для этого вызова.
+	u32 offsetInBytes = hw_BatchOffset * sizeof(InstanceData);
 
-	HW.pDevice->SetStreamSource(1, hw_InstanceVB, 0, sizeof(InstanceData));
+	HW.pDevice->SetStreamSource(1, hw_InstanceVB, offsetInBytes, sizeof(InstanceData));
+
+	// Настройка Hardware Instancing для DX9
 	HW.pDevice->SetStreamSourceFreq(0, (D3DSTREAMSOURCE_INDEXEDDATA | instanceCount));
 	HW.pDevice->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
 
 	u32 primCount = Object.number_indices / 3;
-
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);
 
-	// Статистика
+	// Обновляем статистику
 	Device.Statistic->RenderDUMP_DT_Count += instanceCount;
 	RenderBackend.stat.r.s_details.add(instanceCount * Object.number_vertices);
 }
