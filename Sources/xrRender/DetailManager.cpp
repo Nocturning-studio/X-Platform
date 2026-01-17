@@ -279,33 +279,32 @@ void CDetailManager::UpdateVisibleM()
 						{
 							u32 v_id = (pItem->vis_ID > 2) ? 0 : pItem->vis_ID;
 
-							// === МАТЕМАТИКА ПЕРЕНЕСЕНА СЮДА ===
-							// Мы рассчитываем InstanceData прямо здесь, в фоновом потоке.
-							// В Render мы будем просто копировать эти байты.
+							// Выбираем нужный батч
+							DetailBatch& destBatch = sp.r_items[m_vis_calc_id][v_id];
 
-							DetailRenderVec& destVec = sp.r_items[m_vis_calc_id][v_id];
-
-							// Создаем новый элемент в векторе (резервируем место)
-							destVec.resize(destVec.size() + 1);
-							PrecalculatedData& dest = destVec.back();
-
-							// 1. Сохраняем позицию для быстрого куллинга в рендере
-							dest.pos = pItem->mRotY.c;
+							// 1. Сохраняем позицию для CPU (быстрый куллинг)
+							destBatch.positions.push_back(pItem->mRotY.c);
 
 							// 2. Рассчитываем матрицы для GPU
 							float scale = pItem->scale_calculated;
 							Fmatrix& M = pItem->mRotY;
 
-							dest.data.Mat0.set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
-							dest.data.Mat1.set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
-							dest.data.Mat2.set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
+							// Создаем временную структуру InstanceData
+							InstanceData inst;
+							inst.Mat0.set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
+							inst.Mat1.set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
+							inst.Mat2.set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
 
 							float h = pItem->c_hemi;
 							float s = pItem->c_sun;
-							dest.data.Color.set(s, s, s, h);
+							inst.Color.set(s, s, s, h);
+
+							// Пушим в вектор для GPU
+							destBatch.instances.push_back(inst);
 						}
 					}
 
+					// Добавляем указатели в список видимости, если батч не пустой
 					if (!buffer_static.empty())
 						working_vis[0][sp.id].push_back(&buffer_static);
 					if (!buffer_wave1.empty())
@@ -627,9 +626,9 @@ void CDetailManager::InvalidateCache()
 					// Чтобы не осталось висячих ссылок при смене уровня или настроек
 					for (int buf = 0; buf < 2; ++buf)
 					{
-						S->G[i].r_items[buf][0].clear();
-						S->G[i].r_items[buf][1].clear();
-						S->G[i].r_items[buf][2].clear();
+						S->G[i].r_items[buf][0].clear_not_free();
+						S->G[i].r_items[buf][1].clear_not_free();
+						S->G[i].r_items[buf][2].clear_not_free();
 					}
 				}
 				S->vis.clear();

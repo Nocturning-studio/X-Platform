@@ -87,6 +87,7 @@ class CDetailManager
 		float c_hemi;
 		float c_sun;
 	};
+	DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
 
 	struct InstanceData
 	{
@@ -96,16 +97,23 @@ class CDetailManager
 		Fvector4 Color;
 	};
 
-	// Структура, хранящая уже посчитанные данные для отрисовки.
-	// Хранится линейно в векторе, что идеально для кэша процессора.
-	struct PrecalculatedData
+	struct DetailBatch
 	{
-		Fvector pos;	   // Центр объекта (для Culling в Render)
-		InstanceData data; // Готовая структура для GPU (для memcpy)
-	};
+		xr_vector<Fvector> positions;	   // Для CPU (Culling)
+		xr_vector<InstanceData> instances; // Для GPU (Memcpy)
 
-	DEFINE_VECTOR(PrecalculatedData, DetailRenderVec, DetailRenderVecIt);
-	DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
+		void clear_not_free()
+		{
+			positions.clear_not_free();
+			instances.clear_not_free();
+		}
+
+		bool empty() const
+		{
+			return instances.empty();
+		}
+	};
+	typedef DetailBatch DetailRenderVec;
 
 	struct SlotPart
 	{

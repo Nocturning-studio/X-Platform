@@ -316,20 +316,20 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		InstanceData* pInstances = nullptr;
 		bool bBufferLocked = false;
 
-		// --- ЦИКЛ ПО СЛОТАМ (vis содержит указатели на вектора PrecalculatedData) ---
+		// --- ЦИКЛ ПО СЛОТАМ (vis содержит указатели на DetailBatch) ---
 		for (auto slotIt = vis.begin(); slotIt != vis.end(); ++slotIt)
 		{
-			DetailRenderVec* items = *slotIt;
-			if (items->empty())
+			DetailBatch* batch = *slotIt;
+			if (batch->empty())
 				continue;
 
 			// 1. === FAST CULLING (AABB) ===
-			// Теперь мы читаем pos из линейного массива PrecalculatedData[0].pos.
-			// Это намного быстрее, чем лезть в SlotItem->mRotY.c
+			// Читаем pos из отдельного вектора positions.
+			// Так как мы читаем только float3, это более эффективно для кеша, чем прыгать через InstanceData (64
+			// байта).
 			if (ctx.useAABB)
 			{
-				// Берем первый элемент (он представитель слота)
-				const Fvector& pos = (*items)[0].pos;
+				const Fvector& pos = batch->positions[0];
 
 				if (pos.x < ctx.minX || pos.x > ctx.maxX || pos.z < ctx.minZ || pos.z > ctx.maxZ)
 				{
@@ -351,15 +351,15 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 			}
 
 			// === 2. БЫСТРОЕ КОПИРОВАНИЕ (MEMCPY) ===
-			// Вместо цикла с расчетами мы просто копируем данные пачками
+			// Теперь данные GPU лежат в batch->instances сплошным массивом.
 
-			const PrecalculatedData* srcData = items->data();
-			u32 itemsCount = (u32)items->size();
+			const InstanceData* srcData = batch->instances.data();
+			u32 itemsCount = (u32)batch->instances.size();
 			u32 processed = 0;
 
 			while (processed < itemsCount)
 			{
-				// Если буфер полон — сбрасываем
+				// Если буфер полон — сбрасываем (Draw Call)
 				if (currentInstanceCount >= hw_MaxInstances)
 				{
 					hw_InstanceVB->Unlock();
@@ -376,24 +376,8 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 				u32 available = hw_MaxInstances - currentInstanceCount;
 				u32 toCopy = (itemsCount - processed) < available ? (itemsCount - processed) : available;
 
-				// Копируем данные из precalculated cache прямо в вершинный буфер
-				// Но у нас структура PrecalculatedData {pos, data}. Нам нужно копировать только data.
-				// К сожалению, прямой memcpy всего массива не выйдет из-за поля 'pos',
-				// но копирование в цикле без математики всё равно будет сверхбыстрым.
-
-				// Оптимизированный цикл копирования
-				for (u32 k = 0; k < toCopy; ++k)
-				{
-					pInstances[currentInstanceCount + k] = srcData[processed + k].data;
-				}
-
-				/*
-				// АЛЬТЕРНАТИВА (если пожертвовать Culling-ом):
-				// Если убрать 'pos' из PrecalculatedData и хранить 'pos' в отдельном параллельном векторе,
-				// то здесь можно было бы сделать один memcpy:
-				// memcpy(pInstances + currentInstanceCount, src_data_ptr, toCopy * sizeof(InstanceData));
-				// Но пока цикл копирования структур — это отлично.
-				*/
+				// Копируем пачку данных одной командой. Это максимально быстро.
+				memcpy(pInstances + currentInstanceCount, srcData + processed, toCopy * sizeof(InstanceData));
 
 				currentInstanceCount += toCopy;
 				processed += toCopy;
