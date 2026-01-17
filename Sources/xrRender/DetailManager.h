@@ -51,8 +51,13 @@ class CDetailManager
 		Fvector c_sun;
 		Fvector c_ambient;
 		Fvector c_hemi;
+		float minX, maxX;
+		float minZ, maxZ;
+		bool useAABB;
 
-		SDetailRenderContext() : mode(DetailsRenderMode::Default), cullMatrix(nullptr), cullFrustum(nullptr)
+		SDetailRenderContext()
+			: mode(DetailsRenderMode::Default), cullMatrix(nullptr), cullFrustum(nullptr), minX(0), maxX(0), minZ(0),
+			  maxZ(0), useAABB(false)
 		{
 		}
 	};

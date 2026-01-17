@@ -134,6 +134,7 @@ void CDetailManager::hw_Load()
 	// Declare geometry
 	hw_Geom.create(dwDecl_Details, hw_VB, hw_IB);
 }
+
 void CDetailManager::hw_Unload()
 {
 	hwc_array = nullptr;
@@ -145,6 +146,38 @@ void CDetailManager::hw_Unload()
 	// Освобождаем буфер инстансов
 	_RELEASE(hw_InstanceVB);
 }
+
+void CalculateCullAABB(const Fmatrix& viewProj, float& minX, float& maxX, float& minZ, float& maxZ)
+{
+	// Инвертируем матрицу ViewProj, чтобы перевести куб NDC (-1..1) в мировые координаты
+	Fmatrix inv;
+	inv.invert(viewProj);
+
+	// 8 углов NDC куба
+	Fvector corners[8] = {{-1, -1, 0}, {-1, -1, 1}, {-1, 1, 0}, {-1, 1, 1},
+						  {1, -1, 0},  {1, -1, 1},	{1, 1, 0},	{1, 1, 1}};
+
+	minX = minZ = FLT_MAX;
+	maxX = maxZ = -FLT_MAX;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		// Трансформируем точку из NDC в World Space
+		Fvector& p = corners[i];
+		inv.transform(p);
+
+		// Находим экстремумы
+		if (p.x < minX)
+			minX = p.x;
+		if (p.x > maxX)
+			maxX = p.x;
+		if (p.z < minZ)
+			minZ = p.z;
+		if (p.z > maxZ)
+			maxZ = p.z;
+	}
+}
+
 void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix)
 {
 	PROFILE_FUNCTION();
@@ -161,15 +194,28 @@ void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix)
 	ctx.mode = Mode;
 	ctx.cullMatrix = pCullMatrix;
 
-	// Создаем фрустум один раз, если есть матрица
 	CFrustum localFrustum;
 	if (pCullMatrix)
 	{
+		// 1. Создаем точный фрустум (для детальной проверки на границах)
 		localFrustum.CreateFromMatrix(*pCullMatrix, FRUSTUM_P_ALL);
 		ctx.cullFrustum = &localFrustum;
+
+		// 2. === НОВОЕ: Вычисляем AABB для сверхбыстрого отсечения ===
+		// Это делается 1 раз на каскад, стоимость ничтожна
+		CalculateCullAABB(*pCullMatrix, ctx.minX, ctx.maxX, ctx.minZ, ctx.maxZ);
+		ctx.useAABB = true;
+
+		// Добавляем запас (padding) равный размеру слота (2м) + запас на наклон травы,
+		// чтобы не обрезать траву на границе кадра
+		const float cullingPadding = 2.5f;
+		ctx.minX -= cullingPadding;
+		ctx.minZ -= cullingPadding;
+		ctx.maxX += cullingPadding;
+		ctx.maxZ += cullingPadding;
 	}
 
-	// Кэшируем цвета окружения (чтобы не дергать их в цикле)
+	// Кэшируем цвета окружения
 	CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 	ctx.c_sun.set(desc->sun_color.x, desc->sun_color.y, desc->sun_color.z).mul(0.5f);
 	ctx.c_ambient.set(desc->ambient.x, desc->ambient.y, desc->ambient.z);
@@ -229,22 +275,28 @@ ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mod
 void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
 									EDetailShaderType shaderType)
 {
-	// Сбрасываем счетчик статистики для этого прохода
+	PROFILE_FUNCTION();
+
+	// Сбрасываем счетчик статистики
 	Device.Statistic->RenderDUMP_DT_Count = 0;
 
-	// Получаем нужный список видимости из буфера рендера
 	vis_list& list = m_visibles[m_vis_render_id][visListType];
 
 	u32 vOffset = 0;
 	u32 iOffset = 0;
 
-	// Проходим по всем типам объектов (моделей травы)
+	// Порог количества слотов, после которого включаем PPL.
+	// Если слотов мало, накладные расходы на потоки будут дороже самой работы.
+	const size_t ppl_threshold = 32;
+
+	// Используем combinable для сбора данных из разных потоков без блокировок
+	concurrency::combinable<xr_vector<InstanceData>> instance_accumulator;
+
 	for (u32 O = 0; O < objects.size(); O++)
 	{
 		CDetail& Object = *objects[O];
 		u32 primCount = Object.number_indices / 3;
 
-		// Если объект пустой или невидимый в этом кадре — пропускаем, но смещаем оффсеты!
 		xr_vector<SlotItemVec*>& vis = list[O];
 		if (primCount == 0 || vis.empty())
 		{
@@ -253,89 +305,137 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 			continue;
 		}
 
-		// Выбираем шейдер
+		// Выбираем шейдер (глобальное состояние)
 		RenderBackend.set_Element(SelectShader(Object, ctx.mode, shaderType));
 		RenderImplementation.apply_lmaterial();
 
-		// Подготовка к инстансингу
-		u32 currentInstanceCount = 0;
-		InstanceData* pInstances = nullptr;
+		// Очищаем аккумуляторы потоков перед новым объектом
+		instance_accumulator.clear();
 
-		// Блокируем буфер первый раз
-		HRESULT hr =
-			hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances, D3DLOCK_DISCARD);
-		if (FAILED(hr))
-			return;
-
-		// --- ЦИКЛ ПО СЛОТАМ ---
-		for (auto slotIt = vis.begin(); slotIt != vis.end(); ++slotIt)
-		{
-			SlotItemVec* items = *slotIt;
+		// Лямбда для обработки одного слота (будет выполняться параллельно)
+		auto ProcessSlotLambda = [&](SlotItemVec* items) {
 			if (items->empty())
-				continue;
+				return;
 
-			// 1. Culling (Отсечение по слоту)
-			if (ctx.cullFrustum)
+			// 1. === FAST CULLING (AABB) ===
+			if (ctx.useAABB)
 			{
-				// Берем позицию первого элемента как референс для слота
 				SlotItem& firstItem = *(*items)[0];
-				Fvector slotPos = firstItem.mRotY.c;
-				// Радиус 2.0f — аппроксимация размера слота
-				if (!ctx.cullFrustum->testSphere_dirty(slotPos, 2.0f))
-					continue;
-			}
+				Fvector pos = firstItem.mRotY.c;
 
-			// --- ЦИКЛ ПО ИНСТАНСАМ ---
-			for (auto itemIt = items->begin(); itemIt != items->end(); ++itemIt)
-			{
-				// 2. Проверка переполнения буфера
-				if (currentInstanceCount >= hw_MaxInstances)
+				if (pos.x < ctx.minX || pos.x > ctx.maxX || pos.z < ctx.minZ || pos.z > ctx.maxZ)
 				{
-					// Буфер полон — рисуем, сбрасываем счетчик и лочим снова
-					hw_InstanceVB->Unlock();
-					FlushBatch(Object, currentInstanceCount, vOffset, iOffset);
-					currentInstanceCount = 0;
-
-					hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
-										D3DLOCK_DISCARD);
+					return;
 				}
 
-				// 3. Заполнение данных инстанса
+				// 2. === PRECISE CULLING (Frustum) ===
+				if (!ctx.cullFrustum->testSphere_dirty(pos, 2.0f))
+					return;
+			}
+
+			// Получаем локальный вектор текущего потока
+			xr_vector<InstanceData>& local_buffer = instance_accumulator.local();
+
+			// Опционально: резервируем память, если это первый запуск в потоке
+			// (хотя xr_vector сам растет, это микро-оптимизация)
+			// if (local_buffer.capacity() < 128) local_buffer.reserve(256);
+
+			// Математика инстансинга (самая тяжелая часть, теперь параллельна)
+			for (auto itemIt = items->begin(); itemIt != items->end(); ++itemIt)
+			{
 				SlotItem& Instance = **itemIt;
 				float scale = Instance.scale_calculated;
 				Fmatrix& M = Instance.mRotY;
 
-				// Заполняем матрицы (Transposed для HLSL mul(v, M))
-				InstanceData& dst = pInstances[currentInstanceCount];
-
+				InstanceData dst;
 				dst.Mat0.set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
 				dst.Mat1.set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
 				dst.Mat2.set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
 
-				// Цвет и хеми
 				float h = Instance.c_hemi;
 				float s = Instance.c_sun;
 				dst.Color.set(s, s, s, h);
 
-				currentInstanceCount++;
+				local_buffer.push_back(dst);
+			}
+		};
+
+		// --- ВЫБОР РЕЖИМА: PPL или Serial ---
+		if (vis.size() > ppl_threshold)
+		{
+			// Параллельная обработка
+			concurrency::parallel_for_each(vis.begin(), vis.end(), ProcessSlotLambda);
+		}
+		else
+		{
+			// Последовательная обработка (для малого количества объектов быстрее)
+			for (auto slot : vis)
+				ProcessSlotLambda(slot);
+		}
+
+		// --- СБОРКА И ОТРИСОВКА (SERIAL PHASE) ---
+		// Теперь нам нужно собрать данные из всех потоков и отправить в GPU
+
+		u32 totalInstanceCount = 0;
+		InstanceData* pInstances = nullptr;
+		bool bBufferLocked = false;
+		u32 instancesInCurrentLock = 0;
+
+		// Итерируемся по всем локальным буферам потоков
+		instance_accumulator.combine_each([&](const xr_vector<InstanceData>& local_vec) {
+			if (local_vec.empty())
+				return;
+
+			u32 processedLocal = 0;
+			u32 remainingLocal = (u32)local_vec.size();
+
+			while (remainingLocal > 0)
+			{
+				// Если буфер не залочен или переполнен — лочим
+				if (!bBufferLocked)
+				{
+					HRESULT hr = hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
+													 D3DLOCK_DISCARD);
+					if (FAILED(hr))
+						return; // Критическая ошибка, выходим
+					bBufferLocked = true;
+					instancesInCurrentLock = 0;
+				}
+
+				// Сколько можем записать в текущий лок
+				u32 spaceAvailable = hw_MaxInstances - instancesInCurrentLock;
+				u32 toCopy = (remainingLocal < spaceAvailable) ? remainingLocal : spaceAvailable;
+
+				// Быстрое копирование памяти (memcpy)
+				CopyMemory(pInstances + instancesInCurrentLock, &local_vec[processedLocal],
+						   toCopy * sizeof(InstanceData));
+
+				instancesInCurrentLock += toCopy;
+				processedLocal += toCopy;
+				remainingLocal -= toCopy;
+
+				// Если буфер заполнился — отрисовываем и перелочиваем
+				if (instancesInCurrentLock >= hw_MaxInstances)
+				{
+					hw_InstanceVB->Unlock();
+					bBufferLocked = false; // Сброс флага
+
+					FlushBatch(Object, instancesInCurrentLock, vOffset, iOffset);
+					instancesInCurrentLock = 0;
+				}
+			}
+		});
+
+		// Финальная отрисовка остатка
+		if (bBufferLocked)
+		{
+			hw_InstanceVB->Unlock();
+			if (instancesInCurrentLock > 0)
+			{
+				FlushBatch(Object, instancesInCurrentLock, vOffset, iOffset);
 			}
 		}
 
-		// Финальная разблокировка
-		hw_InstanceVB->Unlock();
-
-		// Отрисовка остатка
-		if (currentInstanceCount > 0)
-		{
-			FlushBatch(Object, currentInstanceCount, vOffset, iOffset);
-		}
-
-		// Очистка стримов после объекта
-		HW.pDevice->SetStreamSource(1, NULL, 0, 0);
-		HW.pDevice->SetStreamSourceFreq(0, 1);
-		HW.pDevice->SetStreamSourceFreq(1, 1);
-
-		// Смещаем оффсеты геометрии для следующего объекта
 		vOffset += Object.number_vertices;
 		iOffset += Object.number_indices;
 	}
