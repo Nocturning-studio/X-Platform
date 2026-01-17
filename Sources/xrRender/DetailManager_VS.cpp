@@ -275,29 +275,18 @@ ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mod
 void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
 									EDetailShaderType shaderType)
 {
-	PROFILE_FUNCTION();
-
-	// Сбрасываем счетчик статистики
 	Device.Statistic->RenderDUMP_DT_Count = 0;
-
 	vis_list& list = m_visibles[m_vis_render_id][visListType];
 
 	u32 vOffset = 0;
 	u32 iOffset = 0;
 
-	// Порог количества слотов, после которого включаем PPL.
-	// Если слотов мало, накладные расходы на потоки будут дороже самой работы.
-	const size_t ppl_threshold = 32;
-
-	// Используем combinable для сбора данных из разных потоков без блокировок
-	concurrency::combinable<xr_vector<InstanceData>> instance_accumulator;
-
 	for (u32 O = 0; O < objects.size(); O++)
 	{
 		CDetail& Object = *objects[O];
 		u32 primCount = Object.number_indices / 3;
+		xr_vector<DetailRenderVec*>& vis = list[O]; // Вектор векторов PrecalculatedData
 
-		xr_vector<SlotItemVec*>& vis = list[O];
 		if (primCount == 0 || vis.empty())
 		{
 			vOffset += Object.number_vertices;
@@ -305,135 +294,112 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 			continue;
 		}
 
-		// Выбираем шейдер (глобальное состояние)
 		RenderBackend.set_Element(SelectShader(Object, ctx.mode, shaderType));
 		RenderImplementation.apply_lmaterial();
 
-		// Очищаем аккумуляторы потоков перед новым объектом
-		instance_accumulator.clear();
+		u32 currentInstanceCount = 0;
+		InstanceData* pInstances = nullptr;
+		bool bBufferLocked = false;
 
-		// Лямбда для обработки одного слота (будет выполняться параллельно)
-		auto ProcessSlotLambda = [&](SlotItemVec* items) {
+		// --- ЦИКЛ ПО СЛОТАМ (vis содержит указатели на вектора PrecalculatedData) ---
+		for (auto slotIt = vis.begin(); slotIt != vis.end(); ++slotIt)
+		{
+			DetailRenderVec* items = *slotIt;
 			if (items->empty())
-				return;
+				continue;
 
 			// 1. === FAST CULLING (AABB) ===
+			// Теперь мы читаем pos из линейного массива PrecalculatedData[0].pos.
+			// Это намного быстрее, чем лезть в SlotItem->mRotY.c
 			if (ctx.useAABB)
 			{
-				SlotItem& firstItem = *(*items)[0];
-				Fvector pos = firstItem.mRotY.c;
+				// Берем первый элемент (он представитель слота)
+				const Fvector& pos = (*items)[0].pos;
 
 				if (pos.x < ctx.minX || pos.x > ctx.maxX || pos.z < ctx.minZ || pos.z > ctx.maxZ)
 				{
-					return;
+					continue;
 				}
 
-				// 2. === PRECISE CULLING (Frustum) ===
-				if (!ctx.cullFrustum->testSphere_dirty(pos, 2.0f))
+				if (!ctx.cullFrustum->testSphere_dirty(const_cast<Fvector&>(pos), 2.0f))
+					continue;
+			}
+
+			// Лочим буфер лениво
+			if (!bBufferLocked)
+			{
+				HRESULT hr = hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
+												 D3DLOCK_DISCARD);
+				if (FAILED(hr))
 					return;
+				bBufferLocked = true;
 			}
 
-			// Получаем локальный вектор текущего потока
-			xr_vector<InstanceData>& local_buffer = instance_accumulator.local();
+			// === 2. БЫСТРОЕ КОПИРОВАНИЕ (MEMCPY) ===
+			// Вместо цикла с расчетами мы просто копируем данные пачками
 
-			// Опционально: резервируем память, если это первый запуск в потоке
-			// (хотя xr_vector сам растет, это микро-оптимизация)
-			// if (local_buffer.capacity() < 128) local_buffer.reserve(256);
+			const PrecalculatedData* srcData = items->data();
+			u32 itemsCount = (u32)items->size();
+			u32 processed = 0;
 
-			// Математика инстансинга (самая тяжелая часть, теперь параллельна)
-			for (auto itemIt = items->begin(); itemIt != items->end(); ++itemIt)
+			while (processed < itemsCount)
 			{
-				SlotItem& Instance = **itemIt;
-				float scale = Instance.scale_calculated;
-				Fmatrix& M = Instance.mRotY;
-
-				InstanceData dst;
-				dst.Mat0.set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
-				dst.Mat1.set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
-				dst.Mat2.set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
-
-				float h = Instance.c_hemi;
-				float s = Instance.c_sun;
-				dst.Color.set(s, s, s, h);
-
-				local_buffer.push_back(dst);
-			}
-		};
-
-		// --- ВЫБОР РЕЖИМА: PPL или Serial ---
-		if (vis.size() > ppl_threshold)
-		{
-			// Параллельная обработка
-			concurrency::parallel_for_each(vis.begin(), vis.end(), ProcessSlotLambda);
-		}
-		else
-		{
-			// Последовательная обработка (для малого количества объектов быстрее)
-			for (auto slot : vis)
-				ProcessSlotLambda(slot);
-		}
-
-		// --- СБОРКА И ОТРИСОВКА (SERIAL PHASE) ---
-		// Теперь нам нужно собрать данные из всех потоков и отправить в GPU
-
-		u32 totalInstanceCount = 0;
-		InstanceData* pInstances = nullptr;
-		bool bBufferLocked = false;
-		u32 instancesInCurrentLock = 0;
-
-		// Итерируемся по всем локальным буферам потоков
-		instance_accumulator.combine_each([&](const xr_vector<InstanceData>& local_vec) {
-			if (local_vec.empty())
-				return;
-
-			u32 processedLocal = 0;
-			u32 remainingLocal = (u32)local_vec.size();
-
-			while (remainingLocal > 0)
-			{
-				// Если буфер не залочен или переполнен — лочим
-				if (!bBufferLocked)
+				// Если буфер полон — сбрасываем
+				if (currentInstanceCount >= hw_MaxInstances)
 				{
+					hw_InstanceVB->Unlock();
+					FlushBatch(Object, currentInstanceCount, vOffset, iOffset);
+
+					// Ре-лок
+					currentInstanceCount = 0;
 					HRESULT hr = hw_InstanceVB->Lock(0, hw_MaxInstances * sizeof(InstanceData), (void**)&pInstances,
 													 D3DLOCK_DISCARD);
 					if (FAILED(hr))
-						return; // Критическая ошибка, выходим
-					bBufferLocked = true;
-					instancesInCurrentLock = 0;
+						return;
 				}
 
-				// Сколько можем записать в текущий лок
-				u32 spaceAvailable = hw_MaxInstances - instancesInCurrentLock;
-				u32 toCopy = (remainingLocal < spaceAvailable) ? remainingLocal : spaceAvailable;
+				u32 available = hw_MaxInstances - currentInstanceCount;
+				u32 toCopy = (itemsCount - processed) < available ? (itemsCount - processed) : available;
 
-				// Быстрое копирование памяти (memcpy)
-				CopyMemory(pInstances + instancesInCurrentLock, &local_vec[processedLocal],
-						   toCopy * sizeof(InstanceData));
+				// Копируем данные из precalculated cache прямо в вершинный буфер
+				// Но у нас структура PrecalculatedData {pos, data}. Нам нужно копировать только data.
+				// К сожалению, прямой memcpy всего массива не выйдет из-за поля 'pos',
+				// но копирование в цикле без математики всё равно будет сверхбыстрым.
 
-				instancesInCurrentLock += toCopy;
-				processedLocal += toCopy;
-				remainingLocal -= toCopy;
-
-				// Если буфер заполнился — отрисовываем и перелочиваем
-				if (instancesInCurrentLock >= hw_MaxInstances)
+				// Оптимизированный цикл копирования
+				for (u32 k = 0; k < toCopy; ++k)
 				{
-					hw_InstanceVB->Unlock();
-					bBufferLocked = false; // Сброс флага
-
-					FlushBatch(Object, instancesInCurrentLock, vOffset, iOffset);
-					instancesInCurrentLock = 0;
+					pInstances[currentInstanceCount + k] = srcData[processed + k].data;
 				}
-			}
-		});
 
-		// Финальная отрисовка остатка
+				/*
+				// АЛЬТЕРНАТИВА (если пожертвовать Culling-ом):
+				// Если убрать 'pos' из PrecalculatedData и хранить 'pos' в отдельном параллельном векторе,
+				// то здесь можно было бы сделать один memcpy:
+				// memcpy(pInstances + currentInstanceCount, src_data_ptr, toCopy * sizeof(InstanceData));
+				// Но пока цикл копирования структур — это отлично.
+				*/
+
+				currentInstanceCount += toCopy;
+				processed += toCopy;
+			}
+		}
+
 		if (bBufferLocked)
 		{
 			hw_InstanceVB->Unlock();
-			if (instancesInCurrentLock > 0)
-			{
-				FlushBatch(Object, instancesInCurrentLock, vOffset, iOffset);
-			}
+		}
+
+		if (currentInstanceCount > 0)
+		{
+			FlushBatch(Object, currentInstanceCount, vOffset, iOffset);
+		}
+
+		if (bBufferLocked || currentInstanceCount > 0)
+		{
+			HW.pDevice->SetStreamSource(1, NULL, 0, 0);
+			HW.pDevice->SetStreamSourceFreq(0, 1);
+			HW.pDevice->SetStreamSourceFreq(1, 1);
 		}
 
 		vOffset += Object.number_vertices;

@@ -96,14 +96,25 @@ class CDetailManager
 		Fvector4 Color;
 	};
 
+	// Структура, хранящая уже посчитанные данные для отрисовки.
+	// Хранится линейно в векторе, что идеально для кэша процессора.
+	struct PrecalculatedData
+	{
+		Fvector pos;	   // Центр объекта (для Culling в Render)
+		InstanceData data; // Готовая структура для GPU (для memcpy)
+	};
+
+	DEFINE_VECTOR(PrecalculatedData, DetailRenderVec, DetailRenderVecIt);
 	DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
 
 	struct SlotPart
 	{
 		u32 id;
-		SlotItemVec items;		   // Все айтемы
-		SlotItemVec r_items[2][3]; // [buffer_id][wave_type]
+		SlotItemVec items;			   // Исходные айтемы (для логики)
+		DetailRenderVec r_items[2][3]; // Готовые данные [buffer][wave]
 	};
+
+	typedef xr_vector<xr_vector<DetailRenderVec*>> vis_list;
 
 	enum SlotType
 	{
@@ -144,8 +155,6 @@ class CDetailManager
 			vis.clear();
 		}
 	};
-
-	typedef xr_vector<xr_vector<SlotItemVec*>> vis_list;
 
 	// === ИЗМЕНЕНИЕ: Двойной буфер ===
 	// [2] - два набора данных

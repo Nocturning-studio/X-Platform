@@ -156,7 +156,6 @@ void CDetailManager::UpdateVisibleM()
 {
 	PROFILE_FUNCTION();
 
-	// Используем ЗАХВАЧЕННЫЕ данные
 	Fvector EYE = m_vCameraPos_calc;
 
 	CFrustum View;
@@ -164,7 +163,6 @@ void CDetailManager::UpdateVisibleM()
 
 	float max_physical_radius = float(dm_size * dm_slot_size);
 	float current_radius = ps_r_Detail_radius;
-
 	if (current_radius > max_physical_radius)
 		current_radius = max_physical_radius;
 	if (current_radius < 20.f)
@@ -174,18 +172,14 @@ void CDetailManager::UpdateVisibleM()
 	float fade_range_start = current_radius - 15.f;
 	if (fade_range_start < 0)
 		fade_range_start = 0;
-
 	float fade_start = fade_range_start * fade_range_start;
 	float fade_range = fade_limit - fade_start;
 	float r_ssaCHEAP = 16 * r_ssaDISCARD;
 
-	// Ссылка на рабочий буфер
 	vis_list* working_vis = m_visibles[m_vis_calc_id];
+	u32 current_frame = Engine.TimeManager.GetFrameCount();
 
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
-
-	// Получаем текущий кадр один раз
-	u32 current_frame = Engine.TimeManager.GetFrameCount();
 
 	for (int _mz = 0; _mz < dm_cache1_line; _mz++)
 	{
@@ -212,7 +206,6 @@ void CDetailManager::UpdateVisibleM()
 				if (S.empty)
 					continue;
 
-				// Тест видимости слота
 				if (fcvPartial == res)
 				{
 					u32 _mask = mask;
@@ -226,13 +219,11 @@ void CDetailManager::UpdateVisibleM()
 					continue;
 #endif
 
-				// Дистанция до слота
 				float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
 				if (dist_sq > fade_limit)
 					continue;
 
-				// === 1. МАТЕМАТИКА (Оптимизация: раз в N кадров) ===
-				// Обновляем параметры (scale, alpha) в исходных айтемах
+				// === 1. ОБНОВЛЕНИЕ ПАРАМЕТРОВ (редко) ===
 				if (current_frame > S.frame)
 				{
 					float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
@@ -252,35 +243,28 @@ void CDetailManager::UpdateVisibleM()
 							float R = objects[sp.id]->bv_sphere.R;
 							float Rq_drcp = R * R * dist_sq_rcp;
 
-							SlotItem **siIT = &(*sp.items.begin()), **siEND = &(*sp.items.end());
-							for (; siIT != siEND; siIT++)
+							for (auto item : sp.items)
 							{
-								SlotItem& Item = *(*siIT);
-								// Обновляем данные в самом айтеме!
-								Item.scale_calculated = Item.scale * alpha_i;
-								float ssa = Item.scale_calculated * Item.scale_calculated * Rq_drcp;
-
-								// Сохраняем ID видимости в айтеме, чтобы не пересчитывать
+								item->scale_calculated = item->scale * alpha_i;
+								float ssa = item->scale_calculated * item->scale_calculated * Rq_drcp;
 								if (ssa < r_ssaDISCARD)
-									Item.vis_ID = 0xff; // Невидим
+									item->vis_ID = 0xff;
 								else if (ssa > r_ssaCHEAP)
-									Item.vis_ID = Item.vis_ID; // Оставляем оригинальный (Wave/Static)
+									item->vis_ID = item->vis_ID;
 								else
-									Item.vis_ID = 0; // Static (LOD)
+									item->vis_ID = 0;
 							}
 						}
 					}
 				}
 
-				// === 2. ЗАПОЛНЕНИЕ БУФЕРА (Каждый кадр) ===
-				// Копируем указатели в рабочий буфер текущего кадра
+				// === 2. ЗАПОЛНЕНИЕ ДАННЫХ ДЛЯ GPU (всегда, В ПАРАЛЛЕЛЬНОМ ПОТОКЕ) ===
 				for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 				{
 					SlotPart& sp = S.G[sp_id];
 					if (sp.id == DetailSlot::ID_Empty)
 						continue;
 
-					// Очищаем вектора текущего буфера
 					auto& buffer_static = sp.r_items[m_vis_calc_id][0];
 					auto& buffer_wave1 = sp.r_items[m_vis_calc_id][1];
 					auto& buffer_wave2 = sp.r_items[m_vis_calc_id][2];
@@ -289,23 +273,39 @@ void CDetailManager::UpdateVisibleM()
 					buffer_wave1.clear_not_free();
 					buffer_wave2.clear_not_free();
 
-					// Перебираем исходные айтемы и раскидываем по спискам
-					// Это быстро, так как мы только читаем готовые флаги
-					SlotItem **siIT = &(*sp.items.begin()), **siEND = &(*sp.items.end());
-					for (; siIT != siEND; siIT++)
+					for (auto pItem : sp.items)
 					{
-						SlotItem* pItem = *siIT;
-						// Используем сохраненные или только что посчитанные данные
-						// (vis_ID = 0xff - маркер невидимости, который мы поставили выше)
 						if (pItem->scale_calculated > EPS && pItem->vis_ID != 0xff)
 						{
-							// vis_ID может быть 0, 1 или 2
 							u32 v_id = (pItem->vis_ID > 2) ? 0 : pItem->vis_ID;
-							sp.r_items[m_vis_calc_id][v_id].push_back(pItem);
+
+							// === МАТЕМАТИКА ПЕРЕНЕСЕНА СЮДА ===
+							// Мы рассчитываем InstanceData прямо здесь, в фоновом потоке.
+							// В Render мы будем просто копировать эти байты.
+
+							DetailRenderVec& destVec = sp.r_items[m_vis_calc_id][v_id];
+
+							// Создаем новый элемент в векторе (резервируем место)
+							destVec.resize(destVec.size() + 1);
+							PrecalculatedData& dest = destVec.back();
+
+							// 1. Сохраняем позицию для быстрого куллинга в рендере
+							dest.pos = pItem->mRotY.c;
+
+							// 2. Рассчитываем матрицы для GPU
+							float scale = pItem->scale_calculated;
+							Fmatrix& M = pItem->mRotY;
+
+							dest.data.Mat0.set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
+							dest.data.Mat1.set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
+							dest.data.Mat2.set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
+
+							float h = pItem->c_hemi;
+							float s = pItem->c_sun;
+							dest.data.Color.set(s, s, s, h);
 						}
 					}
 
-					// Пушим в глобальный список для рендера
 					if (!buffer_static.empty())
 						working_vis[0][sp.id].push_back(&buffer_static);
 					if (!buffer_wave1.empty())
