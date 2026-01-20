@@ -143,15 +143,15 @@ CUIDragItem::CUIDragItem(CUICellItem* parent)
 	m_back_list = NULL;
 	m_pParent = parent;
 	AttachChild(&m_static);
-	Device.seqRender.Add(this, REG_PRIORITY_LOW - 5000);
-	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 5000);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_LOW - 5000);
 	VERIFY(m_pParent->GetMessageTarget());
 }
 
 CUIDragItem::~CUIDragItem()
 {
-	Device.seqRender.Remove(this);
-	Device.seqFrame.Remove(this);
+	Engine.Events.Render.Remove(this);
+	Engine.Events.Frame.Remove(this);
 }
 
 void CUIDragItem::Init(const ref_shader& sh, const Frect& rect, const Frect& text_rect)

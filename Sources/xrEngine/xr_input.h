@@ -84,6 +84,8 @@ class ENGINE_API CInput
 	CInput(BOOL bExclusive = true, int deviceForInit = default_key);
 	~CInput();
 
+	void Initialize();
+
 	virtual void OnFrame(void);
 	virtual void OnAppActivate(void);
 	virtual void OnAppDeactivate(void);

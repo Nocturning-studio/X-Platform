@@ -36,6 +36,17 @@ extern "C"
 	typedef void __cdecl VTResume(void);
 };
 
+struct ENGINE_API CEngineEvents
+{
+	CRegistrator<pureFrame> Frame;
+	CRegistrator<pureRender> Render;
+	CRegistrator<pureAppActivate> AppActivate;
+	CRegistrator<pureAppDeactivate> AppDeactivate;
+	CRegistrator<pureAppStart> AppStart;
+	CRegistrator<pureAppEnd> AppEnd;
+	CRegistrator<pureDeviceReset> DeviceReset;
+};
+
 class ENGINE_API CEngine
 {
   private:
@@ -63,6 +74,7 @@ class ENGINE_API CEngine
 	CWindowManager WindowManager;
 	CTimeManager TimeManager;
 	CThreadManager ThreadManager;
+	CEngineEvents Events;
 
   public:
 	// Конструктор/Деструктор

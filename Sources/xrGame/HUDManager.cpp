@@ -202,7 +202,7 @@ void CHUDManager::OnDisconnected()
 	//.	if(!b_online)			return;
 	b_online = false;
 	if (pUI)
-		Device.seqFrame.Remove(pUI);
+		Engine.Events.Frame.Remove(pUI);
 }
 
 void CHUDManager::OnConnected()
@@ -212,7 +212,7 @@ void CHUDManager::OnConnected()
 	b_online = true;
 	if (pUI)
 	{
-		Device.seqFrame.Add(pUI, REG_PRIORITY_LOW - 1000);
+		Engine.Events.Frame.Add(pUI, REG_PRIORITY_LOW - 1000);
 	}
 }
 

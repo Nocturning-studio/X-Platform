@@ -7,7 +7,7 @@ CUIButtonHint* g_btnHint = NULL;
 
 CUIButtonHint::CUIButtonHint() : m_ownerWnd(NULL), m_enabledOnFrame(false)
 {
-	Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
 
 	CUIXmlInit xml_init;
 	CUIXml uiXml;
@@ -29,7 +29,7 @@ CUIButtonHint::CUIButtonHint() : m_ownerWnd(NULL), m_enabledOnFrame(false)
 
 CUIButtonHint::~CUIButtonHint()
 {
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 }
 
 void CUIButtonHint::OnRender()

@@ -102,7 +102,7 @@ CGamePersistent::CGamePersistent(void)
 		{
 			Msg("- playing in demo mode '%s'", fname);
 			pDemoFile = FS.r_open(fname);
-			Device.seqFrame.Add(this);
+			Engine.Events.Frame.Add(this);
 			eDemoStart = Engine.Event.Handler_Attach("GAME:demo", this);
 			uTime2Change = 0;
 		}
@@ -132,7 +132,7 @@ CGamePersistent::~CGamePersistent(void)
 {
 	CWeaponHUD::DestroySharedContainer();
 	FS.r_close(pDemoFile);
-	Device.seqFrame.Remove(this);
+	Engine.Events.Frame.Remove(this);
 	Engine.Event.Handler_Detach(eDemoStart, this);
 	Engine.Event.Handler_Detach(eQuickLoad, this);
 }

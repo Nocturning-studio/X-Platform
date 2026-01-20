@@ -34,15 +34,12 @@ CFontManager::CFontManager()
 	m_all_fonts.push_back(&pFontGraffiti50Russian);
 	m_all_fonts.push_back(&pFontLetterica25);
 	m_all_fonts.push_back(&pFontStat);
-
-	// Регистрируемся на сброс устройства
-	Device.seqDeviceReset.Add(this, REG_PRIORITY_HIGH);
 }
 
 CFontManager::~CFontManager()
 {
 	Destroy();
-	Device.seqDeviceReset.Remove(this);
+	Engine.Events.DeviceReset.Remove(this);
 }
 
 void CFontManager::Initialize()
@@ -117,7 +114,8 @@ void CFontManager::InitializeFonts()
 	if (!pSystemFont)
 	{
 		pSystemFont = xr_new<CGameFont>("font", sys_font_tex, 0);
-		Device.seqRender.Add(pSystemFont, REG_PRIORITY_LOW - 1000);
+		Engine.Events.DeviceReset.Add(this, REG_PRIORITY_HIGH);
+		Engine.Events.Render.Add(pSystemFont, REG_PRIORITY_LOW - 1000);
 	}
 	else
 	{
@@ -146,7 +144,7 @@ void CFontManager::Destroy()
 	// Удаляем системный шрифт
 	if (pSystemFont)
 	{
-		Device.seqRender.Remove(pSystemFont);
+		Engine.Events.Render.Remove(pSystemFont);
 		xr_delete(pSystemFont);
 	}
 

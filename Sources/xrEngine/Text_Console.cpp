@@ -80,13 +80,13 @@ void CTextConsole::Initialize()
 	unsigned threadID;
 	m_hConsoleThread = (HANDLE)_beginthreadex(NULL, 0, ConsoleThreadEntry, this, 0, &threadID);
 
-	Device.seqFrame.Add(this, REG_PRIORITY_NORMAL);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_NORMAL);
 }
 
 void CTextConsole::Destroy()
 {
 	// !!! ”ƒ¿Àﬂ≈Ã »« ÷» À¿ !!!
-	Device.seqFrame.Remove(this);
+	Engine.Events.Frame.Remove(this);
 
 	inherited::Destroy();
 

@@ -273,7 +273,7 @@ CShaderMacros CRender::FetchShaderMacros()
 //////////////////////////////////////////////////////////////////////////
 void CRender::create()
 {
-	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
 
 	CheckHWRenderSupporting();
 	xrRender_console_apply_conditions();
@@ -324,7 +324,7 @@ void CRender::destroy()
 	xr_delete(Models);
 	xr_delete(RenderTarget);
 	PSLibrary.OnDestroy();
-	Device.seqFrame.Remove(this);
+	Engine.Events.Frame.Remove(this);
 	SceneGraph.destroy();
 	xr_delete(EffectorsManager);
 }

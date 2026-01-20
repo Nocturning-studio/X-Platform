@@ -188,12 +188,12 @@ void CMainMenu::Activate(bool bActivate)
 		{
 			if (b_is_single)
 			{
-				Device.seqFrame.Remove(g_pGameLevel);
+				Engine.Events.Frame.Remove(g_pGameLevel);
 			}
-			Device.seqRender.Remove(g_pGameLevel);
+			Engine.Events.Render.Remove(g_pGameLevel);
 			CCameraManager::ResetPP();
 		};
-		Device.seqRender.Add(this, 4); // 1-console 2-cursor 3-tutorial
+		Engine.Events.Render.Add(this, 4); // 1-console 2-cursor 3-tutorial
 	}
 	else
 	{
@@ -201,7 +201,7 @@ void CMainMenu::Activate(bool bActivate)
 		m_Flags.set(flActive, FALSE);
 		m_Flags.set(flNeedChangeCapture, TRUE);
 
-		Device.seqRender.Remove(this);
+		Engine.Events.Render.Remove(this);
 
 		bool b = !!Console->bVisible;
 		if (b)
@@ -221,9 +221,9 @@ void CMainMenu::Activate(bool bActivate)
 		{
 			if (b_is_single)
 			{
-				Device.seqFrame.Add(g_pGameLevel);
+				Engine.Events.Frame.Add(g_pGameLevel);
 			}
-			Device.seqRender.Add(g_pGameLevel);
+			Engine.Events.Render.Add(g_pGameLevel);
 		};
 		if (m_Flags.test(flRestoreConsole))
 			Console->Show();
@@ -437,8 +437,8 @@ void CMainMenu::OnFrame()
 
 		if (g_pGameLevel && m_Flags.test(flActive))
 		{
-			Device.seqFrame.Remove(g_pGameLevel);
-			Device.seqRender.Remove(g_pGameLevel);
+			Engine.Events.Frame.Remove(g_pGameLevel);
+			Engine.Events.Render.Remove(g_pGameLevel);
 		};
 
 		//if (m_Flags.test(flRestoreConsole))
@@ -468,8 +468,8 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		strcpy(m_screenshot_name, name);
 		if (g_pGameLevel && m_Flags.test(flActive))
 		{
-			Device.seqFrame.Add(g_pGameLevel);
-			Device.seqRender.Add(g_pGameLevel);
+			Engine.Events.Frame.Add(g_pGameLevel);
+			Engine.Events.Render.Add(g_pGameLevel);
 		};
 		m_screenshotFrame = Engine.TimeManager.GetFrameCount() + 1;
 		//m_Flags.set(flRestoreConsole, Console->bVisible);

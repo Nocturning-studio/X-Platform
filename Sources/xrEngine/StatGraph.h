@@ -77,6 +77,7 @@ class ENGINE_API CStatGraph : public pureRender
   public:
 	CStatGraph();
 	~CStatGraph();
+	void Initialize();
 	virtual void OnRender();
 	void OnDeviceCreate();
 	void OnDeviceDestroy();

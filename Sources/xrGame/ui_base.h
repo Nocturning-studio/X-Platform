@@ -11,11 +11,11 @@ class CDeviceResetNotifier : public pureDeviceReset
   public:
 	CDeviceResetNotifier()
 	{
-		Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL);
+		Engine.Events.DeviceReset.Add(this, REG_PRIORITY_NORMAL);
 	};
 	virtual ~CDeviceResetNotifier()
 	{
-		Device.seqDeviceReset.Remove(this);
+		Engine.Events.DeviceReset.Remove(this);
 	};
 	virtual void OnDeviceReset(){};
 };

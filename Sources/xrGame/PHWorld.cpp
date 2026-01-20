@@ -152,7 +152,7 @@ void CPHWorld::Destroy()
 	dCylinderClassUser = -1;
 	dRayMotionsClassUser = -1;
 	Engine.ThreadManager.seqFrameMT.Remove(this);
-	Device.seqFrame.Remove(this);
+	Engine.Events.Frame.Remove(this);
 	b_exist = false;
 }
 void CPHWorld::SetGravity(float g)

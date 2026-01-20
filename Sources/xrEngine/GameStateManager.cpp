@@ -22,7 +22,7 @@ void CGameStateManager::Initialize()
 	eStartLoad = Engine.Event.Handler_Attach("KERNEL:load", this);
 	eDisconnect = Engine.Event.Handler_Attach("KERNEL:disconnect", this);
 
-	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 1000);
 
 	DiscordAPI.Init();
 
@@ -37,7 +37,7 @@ void CGameStateManager::Destroy()
 	OptickCapture.Destroy();
 #endif
 
-	Device.seqFrame.Remove(this);
+	Engine.Events.Frame.Remove(this);
 
 	Engine.Event.Handler_Detach(eDisconnect, this);
 	Engine.Event.Handler_Detach(eStartLoad, this);

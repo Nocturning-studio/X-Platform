@@ -708,28 +708,29 @@ void CAI_Stalker::UpdateCL()
 
 	if (g_Alive())
 	{
-		if (CObjectHandler::planner().initialized())
+#pragma todo(Deathman to ALL : Починить многопоточный update_object_handler);
+		// Проверяем глобальный конфиг многопоточности и готовность планировщика
+		if(0)// (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
 		{
-			// 1. Создаем делегат (один раз, чтобы не дублировать код)
+			// Создаем делегат
 			auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 
 #ifdef DEBUG
-			// 2. Только проверка на дубликаты.
-			// Если задача уже есть — это баг логики (двойной вызов Update), поэтому мы просто ассертим.
-			// Удалять её тут не нужно, список и так пуст или готовится к исполнению.
+			// Проверяем через менеджер, что задачи еще нет в очереди
 			VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
-#endif // DEBUG
-
-			// 3. Просто добавляем задачу
-			Engine.ThreadManager.AddParallelTask(taskDelegate);
+#endif
+			// Добавляем задачу в пул потоков с ВЫСОКИМ приоритетом
+			Engine.ThreadManager.AddParallelTask(taskDelegate, CThreadManager::TaskPriority::High);
 		}
 		else
 		{
+			// Выполняем синхронно в главном потоке (если MT выключен или не готов)
 			START_PROFILE("stalker/client_update/object_handler")
 			update_object_handler();
 			STOP_PROFILE
 		}
 
+		// Логика звуков (остается без изменений, выполняется в основном потоке)
 		if ((movement().speed(character_physics_support()->movement()) > EPS_L) &&
 			(eMovementTypeStand != movement().movement_type()) && (eMentalStateDanger == movement().mental_state()))
 		{

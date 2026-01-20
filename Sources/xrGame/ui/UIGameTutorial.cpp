@@ -84,8 +84,8 @@ CUISequencer::CUISequencer()
 void CUISequencer::Start(LPCSTR tutor_name)
 {
 	VERIFY(m_items.size() == 0);
-	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 10000);
-	Device.seqRender.Add(this, 3);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_LOW - 10000);
+	Engine.Events.Render.Add(this, 3);
 
 	m_UIWindow = xr_new<CUIWindow>();
 
@@ -124,8 +124,8 @@ void CUISequencer::Start(LPCSTR tutor_name)
 
 void CUISequencer::Destroy()
 {
-	Device.seqFrame.Remove(this);
-	Device.seqRender.Remove(this);
+	Engine.Events.Frame.Remove(this);
+	Engine.Events.Render.Remove(this);
 	delete_data(m_items);
 	delete_data(m_UIWindow);
 	IR_Release();

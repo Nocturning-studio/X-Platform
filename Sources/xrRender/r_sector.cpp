@@ -14,14 +14,14 @@
 CPortal::CPortal()
 {
 #ifdef DEBUG
-	Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
 #endif
 }
 
 CPortal::~CPortal()
 {
 #ifdef DEBUG
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 #endif
 }
 

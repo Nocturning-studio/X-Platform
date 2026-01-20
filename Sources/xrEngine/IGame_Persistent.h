@@ -86,6 +86,7 @@ class ENGINE_API IGame_Persistent :
 
 	virtual void OnAppStart();
 	virtual void OnAppEnd();
+	virtual void Initialize();
 	virtual void OnAppActivate();
 	virtual void OnAppDeactivate();
 	virtual void OnFrame();

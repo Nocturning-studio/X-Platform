@@ -63,20 +63,14 @@ CInput::CInput(BOOL bExclusive, int deviceForInit)
 							  MOUSEBUFFERSIZE));
 
 	Debug.set_on_dialog(&on_error_dialog);
-
-#ifdef ENGINE_BUILD
-	Device.seqAppActivate.Add(this);
-	Device.seqAppDeactivate.Add(this);
-	Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
-#endif
 }
 
 CInput::~CInput(void)
 {
 #ifdef ENGINE_BUILD
-	Device.seqFrame.Remove(this);
-	Device.seqAppDeactivate.Remove(this);
-	Device.seqAppActivate.Remove(this);
+	Engine.Events.Frame.Remove(this);
+	Engine.Events.AppDeactivate.Remove(this);
+	Engine.Events.AppActivate.Remove(this);
 #endif
 	//_______________________
 
@@ -95,6 +89,15 @@ CInput::~CInput(void)
 
 	_SHOW_REF("Input: ", pDI);
 	_RELEASE(pDI);
+}
+
+void CInput::Initialize()
+{
+#ifdef ENGINE_BUILD
+	Engine.Events.AppActivate.Add(this);
+	Engine.Events.AppDeactivate.Add(this);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH);
+#endif
 }
 
 //-----------------------------------------------------------------------------

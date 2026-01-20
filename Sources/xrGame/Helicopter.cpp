@@ -240,7 +240,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 	if (pUserData->section_exist("destroyed"))
 		CPHDestroyable::Load(pUserData, "destroyed");
 #ifdef DEBUG
-	Device.seqRender.Add(this, REG_PRIORITY_LOW - 1);
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1);
 #endif
 
 	return TRUE;
@@ -260,7 +260,7 @@ void CHelicopter::net_Destroy()
 	m_light_render.destroy();
 	m_movement.net_Destroy();
 #ifdef DEBUG
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 #endif
 }
 

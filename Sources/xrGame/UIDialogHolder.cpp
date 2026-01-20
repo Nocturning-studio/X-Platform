@@ -41,13 +41,13 @@ CDialogHolder::CDialogHolder()
 	shedule.t_min = 5;
 	shedule.t_max = 20;
 	shedule_register();
-	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 1000);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_LOW - 1000);
 }
 
 CDialogHolder::~CDialogHolder()
 {
 	shedule_unregister();
-	Device.seqFrame.Remove(this);
+	Engine.Events.Frame.Remove(this);
 }
 #include "HUDManager.h"
 

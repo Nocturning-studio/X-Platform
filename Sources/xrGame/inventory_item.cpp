@@ -226,12 +226,12 @@ void CInventoryItem::UpdateCL()
 	{
 		if (dbg_net_Draw_Flags.test(1 << 4))
 		{
-			Device.seqRender.Remove(this);
-			Device.seqRender.Add(this);
+			Engine.Events.Render.Remove(this);
+			Engine.Events.Render.Add(this);
 		}
 		else
 		{
-			Device.seqRender.Remove(this);
+			Engine.Events.Render.Remove(this);
 		}
 	}
 

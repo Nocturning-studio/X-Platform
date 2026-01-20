@@ -140,6 +140,7 @@ bool CEngine::Initialize()
 			bCaptureInput = FALSE;
 
 		pInput = xr_new<CInput>(bCaptureInput);
+		pInput->Initialize();
 	}
 
 	// 10. Console
@@ -291,6 +292,7 @@ bool CEngine::Initialize()
 	Engine.ThreadManager.seqFrameMT.Add(&SoundProcessor);
 
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+	g_pGamePersistent->Initialize();
 
 	g_SpatialSpace = xr_new<ISpatial_DB>();
 	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
@@ -317,7 +319,8 @@ void CEngine::ProcessFrame()
 
 void CEngine::ProcessEventLoop()
 {
-	// Подготовка потоков (из предыдущего шага)
+	Msg("Preparing event loop...");
+	Events.AppStart.Process(rp_AppStart);
 	Device.PrepareEventLoop();
 
 	// Основной цикл теперь выглядит так:
@@ -368,9 +371,13 @@ void CEngine::Destroy()
 
 	// 6. Device & Scheduler
 	TimeManager.Destroy();
+
 	Device.Destroy();
+
 	ThreadManager.seqFrameMT.Remove(&SoundProcessor);
+
 	ThreadManager.Destroy();
+
 	Sheduler.Destroy();
 
 #ifdef DEBUG_MEMORY_MANAGER

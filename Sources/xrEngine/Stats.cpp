@@ -76,13 +76,17 @@ CStats::CStats()
 	pFont = 0;
 	fMem_calls = 0;
 	RenderDUMP_DT_Count = 0;
-	Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 }
 
 CStats::~CStats()
 {
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 	xr_delete(pFont);
+}
+
+void CStats::Initialize()
+{
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
 }
 
 void _draw_cam_pos(CGameFont* pFont)

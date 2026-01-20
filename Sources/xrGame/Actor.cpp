@@ -146,7 +146,7 @@ CActor::CActor() : CEntityAlive()
 	m_holderID = u16(-1);
 
 #ifdef DEBUG
-	Device.seqRender.Add(this, REG_PRIORITY_LOW);
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW);
 #endif
 
 	// разрешить использование пояса в inventory
@@ -204,7 +204,7 @@ CActor::~CActor()
 	xr_delete(encyclopedia_registry);
 	xr_delete(game_news_registry);
 #ifdef DEBUG
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 #endif
 	// xr_delete(Weapons);
 	for (int i = 0; i < eacMaxCam; ++i)

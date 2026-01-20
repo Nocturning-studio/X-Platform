@@ -47,7 +47,7 @@ CLevelLoadingScreen::~CLevelLoadingScreen()
 {
 	if (pFontSystem)
 	{
-		Device.seqRender.Remove(pFontSystem);
+		Engine.Events.Render.Remove(pFontSystem);
 		xr_delete(pFontSystem);
 	}
 	hLevelLogo.destroy();
@@ -63,7 +63,7 @@ void CLevelLoadingScreen::InitializeFont()
 	if (!pFontSystem)
 	{
 		pFontSystem = xr_new<CGameFont>("font", font_tex_name, 0);
-		Device.seqRender.Add(pFontSystem, REG_PRIORITY_LOW - 1000);
+		Engine.Events.Render.Add(pFontSystem, REG_PRIORITY_LOW - 1000);
 	}
 	else
 	{

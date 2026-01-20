@@ -105,6 +105,8 @@ class ENGINE_API CStats : public pureRender
 	CStats();
 	~CStats();
 
+	void Initialize();
+
 	IC CGameFont* Font()
 	{
 		return pFont;

@@ -176,9 +176,6 @@ void CRenderDevice::PrepareEventLoop()
 {
 	g_bLoaded = FALSE;
 
-	Msg("Preparing event loop...");
-
-	seqAppStart.Process(rp_AppStart);
 	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
@@ -193,7 +190,7 @@ void CRenderDevice::RenderFrame()
 		if (Begin())
 		{
 			Engine.DebugUI.DrawUI();
-			seqRender.Process(rp_Render);
+			Engine.Events.Render.Process(rp_Render);
 
 			if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 				Statistic->Show();
@@ -272,7 +269,7 @@ void CRenderDevice::EndEventLoop()
 {
 	Msg("Ending event loop...");
 
-	seqAppEnd.Process(rp_AppEnd);
+	Engine.Events.AppEnd.Process(rp_AppEnd);
 }
 
 void ProcessLoading(RP_FUNC* f);
@@ -291,14 +288,14 @@ void CRenderDevice::OnFrame()
 	if (!g_bLoaded)
 		ProcessLoading(rp_Frame);
 	else
-		seqFrame.Process(rp_Frame);
+		Engine.Events.Frame.Process(rp_Frame);
 
 	Statistic->EngineTOTAL.End();
 }
 
 void ProcessLoading(RP_FUNC* f)
 {
-	Device.seqFrame.Process(rp_Frame);
+	Engine.Events.Frame.Process(rp_Frame);
 	g_bLoaded = TRUE;
 }
 
@@ -375,14 +372,14 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 
 		if (Device.b_is_Active)
 		{
-			Device.seqAppActivate.Process(rp_AppActivate);
+			Engine.Events.AppActivate.Process(rp_AppActivate);
 #ifndef DEDICATED_SERVER
 			ShowCursor(FALSE);
 #endif
 		}
 		else
 		{
-			Device.seqAppDeactivate.Process(rp_AppDeactivate);
+			Engine.Events.AppDeactivate.Process(rp_AppDeactivate);
 			ShowCursor(TRUE);
 		}
 	}
@@ -471,6 +468,7 @@ void CRenderDevice::Create()
 	if (b_is_Ready)
 		return; // prevent double call
 	Statistic = xr_new<CStats>();
+	Statistic->Initialize();
 	Log("\nStarting RENDER device...");
 
 #ifdef _EDITOR
@@ -531,13 +529,13 @@ void CRenderDevice::Destroy(void)
 	// real destroy
 	HW.DestroyDevice();
 
-	seqRender.R.clear();
-	seqAppActivate.R.clear();
-	seqAppDeactivate.R.clear();
-	seqAppStart.R.clear();
-	seqAppEnd.R.clear();
-	seqFrame.R.clear();
-	seqDeviceReset.R.clear();
+	Engine.Events.Render.R.clear();
+	Engine.Events.AppActivate.R.clear();
+	Engine.Events.AppDeactivate.R.clear();
+	Engine.Events.AppStart.R.clear();
+	Engine.Events.AppEnd.R.clear();
+	Engine.Events.Frame.R.clear();
+	Engine.Events.DeviceReset.R.clear();
 
 	xr_delete(Statistic);
 }
@@ -577,7 +575,7 @@ void CRenderDevice::Reset(bool precache)
 	ShowCursor(FALSE);
 #endif
 
-	seqDeviceReset.Process(rp_DeviceReset);
+	Engine.Events.DeviceReset.Process(rp_DeviceReset);
 
 	RenderBackend.reset_end();
 

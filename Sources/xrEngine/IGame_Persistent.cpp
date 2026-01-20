@@ -21,12 +21,6 @@ ENGINE_API IGame_Persistent* g_pGamePersistent = NULL;
 
 IGame_Persistent::IGame_Persistent()
 {
-	Device.seqAppStart.Add(this);
-	Device.seqAppEnd.Add(this);
-	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1);
-	Device.seqAppActivate.Add(this);
-	Device.seqAppDeactivate.Add(this);
-
 	m_pMainMenu = NULL;
 
 	pEnvironment = xr_new<CEnvironment>();
@@ -34,12 +28,21 @@ IGame_Persistent::IGame_Persistent()
 
 IGame_Persistent::~IGame_Persistent()
 {
-	Device.seqFrame.Remove(this);
-	Device.seqAppStart.Remove(this);
-	Device.seqAppEnd.Remove(this);
-	Device.seqAppActivate.Remove(this);
-	Device.seqAppDeactivate.Remove(this);
+	Engine.Events.Frame.Remove(this);
+	Engine.Events.AppStart.Remove(this);
+	Engine.Events.AppEnd.Remove(this);
+	Engine.Events.AppActivate.Remove(this);
+	Engine.Events.AppDeactivate.Remove(this);
 	xr_delete(pEnvironment);
+}
+
+void IGame_Persistent::Initialize()
+{
+	Engine.Events.AppStart.Add(this);
+	Engine.Events.AppEnd.Add(this);
+	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 1);
+	Engine.Events.AppActivate.Add(this);
+	Engine.Events.AppDeactivate.Add(this);
 }
 
 void IGame_Persistent::OnAppActivate()

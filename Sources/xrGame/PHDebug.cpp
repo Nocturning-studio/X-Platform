@@ -642,6 +642,7 @@ void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, i
 	x_min = x0;
 	x_max = x1;
 	m_stat_graph = xr_new<CStatGraph>();
+	m_stat_graph.Initialize();
 	m_function = fun;
 	R_ASSERT(!m_function.empty() && m_stat_graph);
 	R_ASSERT(x1 > x0);

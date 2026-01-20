@@ -5,7 +5,7 @@
 
 CUIHint::CUIHint()
 {
-	Device.seqRender.Add(this, 0);
+	Engine.Events.Render.Add(this, 0);
 
 	m_ownerWnd = nullptr;
 	m_hint = nullptr;
@@ -13,7 +13,7 @@ CUIHint::CUIHint()
 
 CUIHint::~CUIHint()
 {
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 }
 
 extern CUIButtonHint* g_btnHint;

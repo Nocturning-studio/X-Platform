@@ -93,15 +93,6 @@ class ENGINE_API CRenderDevice
 	}
 
   public:
-	// Registrators
-	CRegistrator<pureRender> seqRender;
-	CRegistrator<pureAppActivate> seqAppActivate;
-	CRegistrator<pureAppDeactivate> seqAppDeactivate;
-	CRegistrator<pureAppStart> seqAppStart;
-	CRegistrator<pureAppEnd> seqAppEnd;
-	CRegistrator<pureFrame> seqFrame;
-	CRegistrator<pureDeviceReset> seqDeviceReset;
-
 	// Dependent classes
 	CResourceManager* Resources;
 	CStats* Statistic;

@@ -13,13 +13,13 @@ CUICursor::CUICursor()
 	bVisible = false;
 	vPos.set(0.f, 0.f);
 	InitInternal();
-	Device.seqRender.Add(this, 2);
+	Engine.Events.Render.Add(this, 2);
 }
 //--------------------------------------------------------------------
 CUICursor::~CUICursor()
 {
 	xr_delete(m_static);
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 }
 
 void CUICursor::InitInternal()

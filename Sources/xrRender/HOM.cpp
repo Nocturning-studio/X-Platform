@@ -48,7 +48,7 @@ CHOM::CHOM()
 	m_pModel = 0;
 	m_pTris = 0;
 #ifdef DEBUG
-	Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
+	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
 #endif
 }
 
@@ -57,7 +57,7 @@ CHOM::~CHOM()
 	//////OPTICK_EVENT("CHOM::~CHOM");
 
 #ifdef DEBUG
-	Device.seqRender.Remove(this);
+	Engine.Events.Render.Remove(this);
 #endif
 }
 

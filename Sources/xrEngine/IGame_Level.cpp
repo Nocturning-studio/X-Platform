@@ -48,8 +48,8 @@ IGame_Level::~IGame_Level()
 	xr_delete(m_pCameras);
 
 	// Unregister
-	Device.seqRender.Remove(this);
-	Device.seqFrame.Remove(this);
+	Engine.Events.Render.Remove(this);
+	Engine.Events.Frame.Remove(this);
 
 	CCameraManager::ResetPP();
 }
@@ -125,10 +125,10 @@ BOOL IGame_Level::Load(u32 dwNum)
 		IR_Capture();
 
 #ifndef DEDICATED_SERVER
-	Device.seqRender.Add(this);
+	Engine.Events.Render.Add(this);
 #endif
 
-	Device.seqFrame.Add(this);
+	Engine.Events.Frame.Add(this);
 
 	return TRUE;
 }
