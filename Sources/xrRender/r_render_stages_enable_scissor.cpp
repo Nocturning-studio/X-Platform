@@ -14,7 +14,7 @@ BOOL CRender::enable_scissor(light* L) // true if intersects near plane
 	// Near plane intersection
 	BOOL near_intersect = FALSE;
 	{
-		Fmatrix& M = Device.mFullTransform;
+		Fmatrix& M = Engine.RenderView.ViewProjection;
 		Fvector4 plane;
 		plane.x = -(M._14 + M._13);
 		plane.y = -(M._24 + M._23);

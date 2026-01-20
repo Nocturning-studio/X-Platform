@@ -64,8 +64,8 @@ CDetailManager::CDetailManager()
 	hw_IB = 0;
 	m_vis_render_id = 0;
 	m_vis_calc_id = 1;
-	m_vCameraPos_calc = Device.vCameraPosition;
-	m_mFullTransform_calc = Device.mFullTransform;
+	m_vCameraPos_calc = Engine.RenderView.Position;
+	m_mFullTransform_calc = Engine.RenderView.ViewProjection;
 }
 
 CDetailManager::~CDetailManager()
@@ -386,8 +386,8 @@ void CDetailManager::PrepareToCalc()
 	}
 
 	// 3. Захват состояния камеры для потока
-	m_vCameraPos_calc = Device.vCameraPosition;
-	m_mFullTransform_calc = Device.mFullTransform;
+	m_vCameraPos_calc = Engine.RenderView.Position;
+	m_mFullTransform_calc = Engine.RenderView.ViewProjection;
 }
 
 void __stdcall CDetailManager::MT_CALC()

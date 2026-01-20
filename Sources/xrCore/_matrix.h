@@ -674,7 +674,7 @@ template <class T> struct _matrix
 		Tvector vRight;
 		vRight.crossproduct(vUp, vView);
 
-		// Start building the Device.mView. The first three rows contains the basis
+		// Start building the Engine.RenderView.View. The first three rows contains the basis
 		// vectors used to rotate the view to point at the lookat point
 		_11 = vRight.x;
 		_12 = vUp.x;
@@ -710,7 +710,7 @@ template <class T> struct _matrix
 		Tvector vRight;
 		vRight.crossproduct(vUp, vView);
 
-		// Start building the Device.mView. The first three rows contains the basis
+		// Start building the Engine.RenderView.View. The first three rows contains the basis
 		// vectors used to rotate the view to point at the lookat point
 		_11 = vRight.x;
 		_12 = vUp.x;

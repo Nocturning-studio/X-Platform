@@ -1,13 +1,8 @@
-////////////////////////////////////////////////////////////////////////////
-//	Module 		: script_render_device_script.cpp
-//	Created 	: 28.06.2004
-//  Modified 	: 28.06.2004
-//	Author		: Dmitriy Iassenev
-//	Description : Script render device script export
-////////////////////////////////////////////////////////////////////////////
-
 #include "pch_script.h"
 #include "script_render_device.h"
+#include "../../xrEngine/Engine.h"	   // Обязательно: доступ к Engine
+#include "../../xrEngine/RenderView.h" // Обязательно: доступ к структуре RenderView
+
 using namespace luabind;
 
 bool is_device_paused(CRenderDevice* d)
@@ -26,32 +21,59 @@ bool is_app_ready()
 	return !!g_appLoaded;
 }
 
-// --- Helper Functions для доступа к TimeManager ---
-
-// Был: self->dwTimeGlobal (u32)
-// Стал: вызов функции
+// --- Helper Functions для TimeManager ---
 u32 time_global(const CRenderDevice* self)
 {
-	// THROW(self); // Можно оставить проверку, если нужна
 	return Engine.TimeManager.GetGlobalTimeMs();
 }
 
-// Был: self->dwTimeDelta (u32)
 u32 get_time_delta(const CRenderDevice* self)
 {
 	return Engine.TimeManager.GetDeltaTimeMs();
 }
 
-// Был: self->fTimeDelta (float)
 float get_f_time_delta(const CRenderDevice* self)
 {
 	return Engine.TimeManager.GetDeltaTime();
 }
 
-// Был: self->dwFrame (u32)
 u32 get_frame(const CRenderDevice* self)
 {
 	return Engine.TimeManager.GetFrameCount();
+}
+
+// --- Helper Functions для RenderView (Камера) ---
+// Принимаем CRenderDevice*, чтобы Luabind понял контекст "self",
+// но данные берем из Engine.RenderView
+
+const Fvector& get_cam_pos(const CRenderDevice* self)
+{
+	return Engine.RenderView.Position;
+}
+
+const Fvector& get_cam_dir(const CRenderDevice* self)
+{
+	return Engine.RenderView.Direction;
+}
+
+const Fvector& get_cam_top(const CRenderDevice* self)
+{
+	return Engine.RenderView.Top;
+}
+
+const Fvector& get_cam_right(const CRenderDevice* self)
+{
+	return Engine.RenderView.Right;
+}
+
+float get_fov(const CRenderDevice* self)
+{
+	return Engine.RenderView.Fov;
+}
+
+float get_aspect(const CRenderDevice* self)
+{
+	return Engine.RenderView.Aspect;
 }
 // ------------------------------------------------
 
@@ -61,21 +83,21 @@ void CScriptRenderDevice::script_register(lua_State* L)
 	module(L)[class_<CRenderDevice>("render_device")
 				  .def_readonly("width", &CRenderDevice::dwWidth)
 				  .def_readonly("height", &CRenderDevice::dwHeight)
+
+				  // TimeManager getters
 				  .property("time_delta", &get_time_delta)
 				  .property("f_time_delta", &get_f_time_delta)
 				  .property("frame", &get_frame)
-
-				  .def_readonly("cam_pos", &CRenderDevice::vCameraPosition)
-				  .def_readonly("cam_dir", &CRenderDevice::vCameraDirection)
-				  .def_readonly("cam_top", &CRenderDevice::vCameraTop)
-				  .def_readonly("cam_right", &CRenderDevice::vCameraRight)
-				  //			.def_readonly("view",					&CRenderDevice::mView)
-				  //			.def_readonly("projection",				&CRenderDevice::mProject)
-				  //			.def_readonly("full_transform",			&CRenderDevice::mFullTransform)
-				  .def_readonly("fov", &CRenderDevice::fFOV)
-				  .def_readonly("aspect_ratio", &CRenderDevice::fASPECT)
-
 				  .def("time_global", &time_global)
+
+				  // RenderView (Camera) getters
+				  // Используем .property(имя, геттер), так как данные лежат в другом месте
+				  .property("cam_pos", &get_cam_pos)
+				  .property("cam_dir", &get_cam_dir)
+				  .property("cam_top", &get_cam_top)
+				  .property("cam_right", &get_cam_right)
+				  .property("fov", &get_fov)
+				  .property("aspect_ratio", &get_aspect)
 
 				  .def_readonly("precache_frame", &CRenderDevice::dwPrecacheFrame)
 

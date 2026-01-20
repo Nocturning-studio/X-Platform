@@ -17,7 +17,7 @@ void CRender::Calculate()
 
 	// Transfer to global space to avoid deep pointer access
 	IRender_Target* T = getTarget();
-	float fov_factor = _sqr(90.f / Device.fFOV);
+	float fov_factor = _sqr(90.f / Engine.RenderView.Fov);
 	g_fSCREEN = float(T->get_width() * T->get_height()) * fov_factor * (EPS_S + ps_r_LOD);
 	r_ssaDISCARD = _sqr(ps_r_ssaDISCARD) / g_fSCREEN;
 	r_ssaDONTSORT = _sqr(ps_r_ssaDONTSORT / 3) / g_fSCREEN;
@@ -29,13 +29,13 @@ void CRender::Calculate()
 	r_dtex_range = ps_r_detalization_distance * g_fSCREEN / (Device.dwWidth * Device.dwHeight);
 
 	// Detect camera-sector
-	if (!vLastCameraPos.similar(Device.vCameraPosition, EPS_S))
+	if (!vLastCameraPos.similar(Engine.RenderView.Position, EPS_S))
 	{
-		CSector* pSector = (CSector*)detectSector(Device.vCameraPosition);
+		CSector* pSector = (CSector*)detectSector(Engine.RenderView.Position);
 		if (0 == pSector)
 			pSector = pLastSector;
 		pLastSector = pSector;
-		vLastCameraPos.set(Device.vCameraPosition);
+		vLastCameraPos.set(Engine.RenderView.Position);
 	}
 
 	// Check if camera is too near to some portal - if so force DualRender
@@ -45,7 +45,7 @@ void CRender::Calculate()
 		Fvector box_radius;
 		box_radius.set(eps, eps, eps);
 		Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
-		Sectors_xrc.box_query(rmPortals, Device.vCameraPosition, box_radius);
+		Sectors_xrc.box_query(rmPortals, Engine.RenderView.Position, box_radius);
 		for (int K = 0; K < Sectors_xrc.r_count(); K++)
 		{
 			CPortal* pPortal = (CPortal*)Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
@@ -57,7 +57,7 @@ void CRender::Calculate()
 
 	// Check if we touch some light even trough portal
 	SceneGraph.lstRenderables.clear();
-	g_SpatialSpace->q_sphere(SceneGraph.lstRenderables, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
+	g_SpatialSpace->q_sphere(SceneGraph.lstRenderables, 0, STYPE_LIGHTSOURCE, Engine.RenderView.Position, EPS_L);
 	for (u32 _it = 0; _it < SceneGraph.lstRenderables.size(); _it++)
 	{
 		ISpatial* spatial = SceneGraph.lstRenderables[_it];

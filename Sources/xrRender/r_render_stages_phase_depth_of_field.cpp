@@ -29,7 +29,7 @@ void CRender::render_depth_of_field()
 	Fvector3 DofParams;
 	g_pGamePersistent->GetCurrentDof(DofParams);
 	float FocusDist = DofParams.x * FOCAL_DEPTH_MUL;
-	float FocalLen = (float)fov_to_length(Device.fFOV);
+	float FocalLen = (float)fov_to_length(Engine.RenderView.Fov);
 
 	if (FocalLen < 10.0f)
 		FocalLen = 35.0f;

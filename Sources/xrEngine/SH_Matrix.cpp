@@ -43,8 +43,8 @@ void CMatrix::Calculate()
 	}
 		return;
 	case modeS_refl: {
-		float Ux = .5f * Device.mView._11, Uy = .5f * Device.mView._21, Uz = .5f * Device.mView._31, Uw = .5f;
-		float Vx = -.5f * Device.mView._12, Vy = -.5f * Device.mView._22, Vz = -.5f * Device.mView._32, Vw = .5f;
+		float Ux = .5f * Engine.RenderView.View._11, Uy = .5f * Engine.RenderView.View._21, Uz = .5f * Engine.RenderView.View._31, Uw = .5f;
+		float Vx = -.5f * Engine.RenderView.View._12, Vy = -.5f * Engine.RenderView.View._22, Vz = -.5f * Engine.RenderView.View._32, Vw = .5f;
 
 		xform._11 = Ux;
 		xform._12 = Vx;
@@ -65,7 +65,7 @@ void CMatrix::Calculate()
 	}
 		return;
 	case modeC_refl: {
-		Fmatrix M = Device.mView;
+		Fmatrix M = Engine.RenderView.View;
 		M._41 = 0.f;
 		M._42 = 0.f;
 		M._43 = 0.f;

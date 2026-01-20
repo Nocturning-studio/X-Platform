@@ -115,7 +115,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 		count = HW.Caps.geometry.dwClipPlanes;
 
 	D3DXMATRIX worldToClipMatrixIT;
-	D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIX*)&Device.mFullTransform);
+	D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIX*)&Engine.RenderView.ViewProjection);
 	D3DXMatrixTranspose(&worldToClipMatrixIT, &worldToClipMatrixIT);
 	for (u32 it = 0; it < count; it++)
 	{

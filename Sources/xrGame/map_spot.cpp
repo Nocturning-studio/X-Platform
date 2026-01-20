@@ -82,7 +82,7 @@ LPCSTR CMapSpotPointer::GetHint()
 		m_pointer_hint = "to: ";
 		m_pointer_hint += inherited::GetHint();
 		Fvector2 cam_pos;
-		cam_pos.set(Device.vCameraPosition.x,Device.vCameraPosition.z);
+		cam_pos.set(Engine.RenderView.Position.x,Engine.RenderView.Position.z);
 		float dist = MapLocation()->Position().distance_to(cam_pos);
 		string32 s;
 		sprintf_s(s," [%.2f]m.", dist);

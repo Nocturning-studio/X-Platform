@@ -357,7 +357,7 @@ void CAI_Crow::shedule_Update(u32 DT)
 		{
 			fGoalChangeTime += fGoalChangeDelta + fGoalChangeDelta * Random.randF(-0.5f, 0.5f);
 			Fvector vP;
-			vP.set(Device.vCameraPosition.x, Device.vCameraPosition.y + fMinHeight, Device.vCameraPosition.z);
+			vP.set(Engine.RenderView.Position.x, Engine.RenderView.Position.y + fMinHeight, Engine.RenderView.Position.z);
 			vGoalDir.x = vP.x + vVarGoal.x * Random.randF(-0.5f, 0.5f);
 			vGoalDir.y = vP.y + vVarGoal.y * Random.randF(-0.5f, 0.5f);
 			vGoalDir.z = vP.z + vVarGoal.z * Random.randF(-0.5f, 0.5f);

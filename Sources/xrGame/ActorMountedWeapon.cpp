@@ -26,7 +26,7 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 		{
 			Fvector center;
 			Center(center);
-			if (wpn->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+			if (wpn->Use(Engine.RenderView.Position, Engine.RenderView.Direction, center))
 			{
 				if (wpn->attach_Actor(this))
 				{

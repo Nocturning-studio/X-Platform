@@ -21,6 +21,7 @@ struct xrDispatchTable;
 #include "WindowManager.h"
 #include "TimeManager.h"
 #include "ThreadManager.h"
+#include "RenderView.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Class creation/destroying interface
 extern "C"
@@ -75,6 +76,7 @@ class ENGINE_API CEngine
 	CTimeManager TimeManager;
 	CThreadManager ThreadManager;
 	CEngineEvents Events;
+	CRenderView RenderView; 
 
   public:
 	// Конструктор/Деструктор

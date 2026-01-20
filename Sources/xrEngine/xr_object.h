@@ -114,7 +114,7 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	}
 	virtual float shedule_Scale()
 	{
-		return Device.vCameraPosition.distance_to(Position()) / 200.f;
+		return Engine.RenderView.Position.distance_to(Position()) / 200.f;
 	}
 	virtual bool shedule_Needed()
 	{

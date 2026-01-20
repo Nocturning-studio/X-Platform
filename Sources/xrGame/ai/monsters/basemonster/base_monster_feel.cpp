@@ -130,7 +130,7 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
 			s->m_endTime = Engine.TimeManager.GetGlobalTime() + 3.0f; // 3sec
 
 			float h1, p1;
-			Device.vCameraDirection.getHP(h1, p1);
+			Engine.RenderView.Direction.getHP(h1, p1);
 
 			Fvector hd = hit_dir;
 			hd.mul(-1);

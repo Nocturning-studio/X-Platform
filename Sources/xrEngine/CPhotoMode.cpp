@@ -61,7 +61,7 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 {
 	g_position.set_position = false;
 	IR_Capture(); // capture input
-	m_Camera.invert(Device.mView);
+	m_Camera.invert(Engine.RenderView.View);
 
 	// parse yaw
 	Fvector& dir = m_Camera.k;
@@ -85,7 +85,7 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	m_vVelocity.set(0, 0, 0);
 	m_vAngularVelocity.set(0, 0, 0);
 
-	m_fGlobalFov = Device.fFOV;
+	m_fGlobalFov = Engine.RenderView.Fov;
 	m_fFov = m_fGlobalFov;
 
 	m_fGlobalTimeFactor = Engine.TimeManager.GetTimeFactor();
@@ -131,7 +131,7 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 
 	//TODO - replace with UI Sounds
 	music.create("photo_mode_dbg_sound", st_Music, sg_Undefined);
-	music.play_at_pos(0, Device.vCameraPosition, sm_NoPitch);
+	music.play_at_pos(0, Engine.RenderView.Position, sm_NoPitch);
 
 	Actor = g_pGameLevel->CurrentViewEntity();
 	m_bActorShowState = true;
@@ -526,7 +526,7 @@ void CPhotoMode::ChangeDepthOfFieldFStop(int direction)
 
 void CPhotoMode::ChangeFieldOfView(int direction)
 {
-	float m_fFov_actual = Device.fFOV;
+	float m_fFov_actual = Engine.RenderView.Fov;
 
 	if (direction > 0)
 		m_fFov = m_fFov_actual + 0.5f;

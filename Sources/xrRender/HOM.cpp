@@ -28,7 +28,7 @@ void __stdcall CHOM::MT_RENDER()
 		if (MT_frame_rendered != Engine.TimeManager.GetFrameCount() && !b_main_menu_is_active)
 		{
 			CFrustum ViewBase;
-			ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+			ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 			Enable();
 			Render(ViewBase);
 		}
@@ -239,7 +239,7 @@ void CHOM::Render_DB(CFrustum& base)
 	CDB::RESULT* it = xrc.r_begin();
 	CDB::RESULT* end = xrc.r_end();
 
-	Fvector COP = Device.vCameraPosition;
+	Fvector COP = Engine.RenderView.Position;
 
 	// Удаление пропускаемых треугольников
 	end = std::remove_if(it, end, pred_fb(m_pTris));
@@ -266,11 +266,11 @@ void CHOM::Render_DB(CFrustum& base)
 	Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f,		   0.0f,
 							 0.0f,		0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0,
 							 0.0f,		1.0f};
-	m_xform.mul(m_viewport, Device.mFullTransform);
-	m_xform_01.mul(m_viewport_01, Device.mFullTransform);
+	m_xform.mul(m_viewport, Engine.RenderView.ViewProjection);
+	m_xform_01.mul(m_viewport_01, Engine.RenderView.ViewProjection);
 
 	CFrustum clip;
-	clip.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_NEAR);
+	clip.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_NEAR);
 	u32 _frame = Engine.TimeManager.GetFrameCount();
 #ifdef DEBUG
 	tris_in_frame = xrc.r_count();
@@ -374,7 +374,7 @@ BOOL CHOM::visible(Fbox3& B)
 
 	if (!bEnabled)
 		return TRUE;
-	if (B.contains(Device.vCameraPosition))
+	if (B.contains(Engine.RenderView.Position))
 		return TRUE;
 	return _visible(B, m_xform_01);
 }

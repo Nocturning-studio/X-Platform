@@ -64,7 +64,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 	// Запущен ли сбор общей статистики (для бенчмарка)
 	stat_started = FALSE;
 
-	m_OriginalViewMatrix.set(Device.mView);
+	m_OriginalViewMatrix.set(Engine.RenderView.View);
 
 	// Сет дефолтных значений параметров, которые будут читаться из секции кадра
 	SetDefaultParameters();
@@ -97,11 +97,11 @@ CDemoPlay::~CDemoPlay()
 	ResetParameters();
 
 	// Восстанавливаем оригинальную матрицу камеры
-	Device.mView.set(m_OriginalViewMatrix);
-	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	Engine.RenderView.View.set(m_OriginalViewMatrix);
+	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
 
 	// Обновляем камеру в менеджере камер
-	// g_pGameLevel->Cameras().Update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+	// g_pGameLevel->Cameras().Update(Engine.RenderView.Position, Engine.RenderView.Direction, Engine.RenderView.Top);
 }
 
 // -----------------------------------------------------------------------------------------

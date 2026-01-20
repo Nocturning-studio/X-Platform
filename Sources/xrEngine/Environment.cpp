@@ -444,7 +444,7 @@ void CEnvironment::lerp(float& current_weight)
 	EM.hemi_color.set(0, 0, 0);
 	EM.use_flags.zero();
 
-	Fvector view = Device.vCameraPosition;
+	Fvector view = Engine.RenderView.Position;
 	float mpower = 0;
 	for (xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
 		mpower += EM.sum(*mit, view);

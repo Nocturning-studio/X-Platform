@@ -108,8 +108,8 @@ void CHUDTarget::CursorOnFrame()
 
 	Fvector p1, dir;
 
-	p1 = Device.vCameraPosition;
-	dir = Device.vCameraDirection;
+	p1 = Engine.RenderView.Position;
+	dir = Engine.RenderView.Direction;
 
 	// Render cursor
 	if (Level().CurrentEntity())
@@ -140,8 +140,8 @@ void CHUDTarget::Render()
 	if (0 == E)
 		return;
 
-	Fvector p1 = Device.vCameraPosition;
-	Fvector dir = Device.vCameraDirection;
+	Fvector p1 = Engine.RenderView.Position;
+	Fvector dir = Engine.RenderView.Direction;
 
 	// Render cursor
 	u32 C = C_DEFAULT;
@@ -149,7 +149,7 @@ void CHUDTarget::Render()
 	FVF::TL PT;
 	Fvector p2;
 	p2.mad(p1, dir, RQ.range);
-	PT.transform(p2, Device.mFullTransform);
+	PT.transform(p2, Engine.RenderView.ViewProjection);
 	float di_size = C_SIZE / powf(PT.p.w, .2f);
 
 	CGameFont* F = HUD().Font().pFontGraffiti19Russian;

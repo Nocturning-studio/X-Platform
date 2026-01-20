@@ -210,7 +210,7 @@ Fvector2 CMapLocation::Direction()
 
 	if (Level().CurrentViewEntity() && Level().CurrentViewEntity()->ID() == m_objectID)
 	{
-		res.set(Device.vCameraDirection.x, Device.vCameraDirection.z);
+		res.set(Engine.RenderView.Direction.x, Engine.RenderView.Direction.z);
 	}
 	else
 	{
@@ -230,7 +230,7 @@ Fvector2 CMapLocation::Direction()
 		if (pObject)
 		{
 			Fvector2 dcp, obj_pos;
-			dcp.set(Device.vCameraPosition.x, Device.vCameraPosition.z);
+			dcp.set(Engine.RenderView.Position.x, Engine.RenderView.Position.z);
 			obj_pos.set(pObject->Position().x, pObject->Position().z);
 			res.sub(obj_pos, dcp);
 			res.normalize_safe();

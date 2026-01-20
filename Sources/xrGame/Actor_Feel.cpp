@@ -142,10 +142,10 @@ void CActor::PickupModeUpdate()
 	feel_touch_update(Position(), m_fPickupInfoRadius);
 
 	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+	frustum.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 	//. slow (ray-query test)
 	for (xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
-		if (CanPickItem(frustum, Device.vCameraPosition, *it))
+		if (CanPickItem(frustum, Engine.RenderView.Position, *it))
 			PickupInfoDraw(*it);
 }
 
@@ -163,7 +163,7 @@ void CActor::PickupModeUpdate_COD()
 	};
 
 	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+	frustum.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 	//---------------------------------------------------------------------------
 	ISpatialResult.clear_not_free();
@@ -214,8 +214,8 @@ void CActor::PickupModeUpdate_COD()
 	if (pNearestItem)
 	{
 		CFrustum frustum;
-		frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
-		if (!CanPickItem(frustum, Device.vCameraPosition, &pNearestItem->object()))
+		frustum.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+		if (!CanPickItem(frustum, Engine.RenderView.Position, &pNearestItem->object()))
 			pNearestItem = NULL;
 	}
 
@@ -247,7 +247,7 @@ void CActor::PickupInfoDraw(CObject* object)
 		return;
 
 	Fmatrix res;
-	res.mul(Device.mFullTransform, object->XFORM());
+	res.mul(Engine.RenderView.ViewProjection, object->XFORM());
 	Fvector4 v_res;
 	Fvector shift;
 

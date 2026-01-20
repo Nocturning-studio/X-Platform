@@ -77,41 +77,13 @@ class ENGINE_API CRenderDevice
 	ref_shader m_SelectionShader;
 
 	BOOL m_bNearer;
-	void SetNearer(BOOL enabled)
-	{
-		if (enabled && !m_bNearer)
-		{
-			m_bNearer = TRUE;
-			mProject._43 -= EPS_L;
-		}
-		else if (!enabled && m_bNearer)
-		{
-			m_bNearer = FALSE;
-			mProject._43 += EPS_L;
-		}
-		RenderBackend.set_xform_project(mProject);
-	}
+	void SetNearer(BOOL enabled);
 
   public:
 	// Dependent classes
 	CResourceManager* Resources;
 	CStats* Statistic;
 	CGammaControl Gamma;
-
-	// Cameras & projection
-	Fvector vCameraPosition;
-	Fvector vCameraPosition_saved;
-	Fvector vCameraDirection;
-	Fvector vCameraTop;
-	Fvector vCameraRight;
-	Fmatrix mView;
-	Fmatrix mProject;
-	Fmatrix mProject_hud;
-	Fmatrix mFullTransform;
-	Fmatrix mInvFullTransform;
-	Fmatrix mFullTransform_saved;
-	float fFOV;
-	float fASPECT;
 
 	CRenderDevice()
 #ifdef PROFILE_CRITICAL_SECTIONS

@@ -180,7 +180,7 @@ void CSoundEnvironment::Update()
 		m_bEnabled = true;
 
 	// 2. Сбор данных окружения
-	Fvector pos = Device.vCameraPosition;
+	Fvector pos = Engine.RenderView.Position;
 
 	// Конвертация координат: X-Ray (Y-up) -> Presence (Y-up).
 	// Обычно оси совпадают, но если SDK ожидает Z-up, тут нужно менять.

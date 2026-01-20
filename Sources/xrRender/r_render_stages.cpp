@@ -12,8 +12,8 @@ void CRender::PrepareToRender()
 
 IC bool pred_sp_sort(ISpatial* _1, ISpatial* _2)
 {
-	float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-	float d2 = _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
+	float d1 = _1->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
+	float d2 = _2->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
 	return d1 < d2;
 }
 
@@ -99,7 +99,7 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 		}
 
 		// Traverse sector/portal structure
-		PortalTraverser.traverse(pLastSector, ViewBase, Device.vCameraPosition, m_ViewProjection,
+		PortalTraverser.traverse(pLastSector, ViewBase, Engine.RenderView.Position, m_ViewProjection,
 								 CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE);
 
 		// Determine visibility for static geometry hierrarhy
@@ -262,7 +262,7 @@ void CRender::render_depth_prepass()
 
 	set_active_phase(PHASE_DEPTH_PREPASS);
 
-	render_main(Device.mFullTransform, false);
+	render_main(Engine.RenderView.ViewProjection, false);
 
 	RenderBackend.set_ColorWriteEnable(FALSE);
 	RenderBackend.set_ZWriteEnable(TRUE);
@@ -305,7 +305,7 @@ void CRender::render_gbuffer_primary()
 
 	// 3. Фаза наполнения графа (Traverse & Cull)
 	set_active_phase(PHASE_NORMAL);
-	render_main(Device.mFullTransform, true); // Самый дорогой вызов - наполняет мапы SceneGraph
+	render_main(Engine.RenderView.ViewProjection, true); // Самый дорогой вызов - наполняет мапы SceneGraph
 
 	// 4. Очистка состояния сбора (чтобы не повлиять на следующие этапы)
 	SceneGraph.SetCullingBoundsCollector(NULL);
@@ -380,8 +380,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 	dwLightMarkerID = 5; 
 
 	std::sort(lights.begin(), lights.end(), [](light* a, light* b) {
-		return Device.vCameraPosition.distance_to_sqr(a->get_position()) <
-			   Device.vCameraPosition.distance_to_sqr(b->get_position());
+		return Engine.RenderView.Position.distance_to_sqr(a->get_position()) <
+			   Engine.RenderView.Position.distance_to_sqr(b->get_position());
 	});
 
 	const size_t max_forward_lights = 100;
@@ -398,7 +398,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		L->xform_calc();
 		Fvector L_pos = L->get_position();
 		float L_range = L->get_range();
-		float distSqToCam = Device.vCameraPosition.distance_to_sqr(L_pos);
+		float distSqToCam = Engine.RenderView.Position.distance_to_sqr(L_pos);
 		if (distSqToCam > (L_range * L_range + 400.0f))
 			continue;
 
@@ -406,8 +406,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		// 1. ОТРИСОВКА МАСКИ СВЕТА
 		// =========================================================================
 		RenderBackend.set_xform_world(L->get_xform());
-		RenderBackend.set_xform_view(Device.mView);
-		RenderBackend.set_xform_project(Device.mProject);
+		RenderBackend.set_xform_view(Engine.RenderView.View);
+		RenderBackend.set_xform_project(Engine.RenderView.Project);
 		enable_scissor(L);
 
 		u32 mask_id = (L->flags.type == IRender_Light::OMNIPART) ? SE_MASK_POINT : SE_MASK_SPOT;
@@ -437,10 +437,10 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderImplementation.apply_lmaterial();
 
 		Fvector L_pos_view;
-		Device.mView.transform_tiny(L_pos_view, L_pos);
+		Engine.RenderView.View.transform_tiny(L_pos_view, L_pos);
 		Fvector L_dir, L_dir_view;
 		L_dir = L->get_direction();
-		Device.mView.transform_dir(L_dir_view, L_dir);
+		Engine.RenderView.View.transform_dir(L_dir_view, L_dir);
 		L_dir_view.normalize();
 		Fvector L_clr = {L->get_color().r, L->get_color().g, L->get_color().b};
 		L_clr.mul(L->get_LOD());
@@ -473,7 +473,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 									 fBias,
 									 1.0f};
 			Fmatrix xf_inv_view;
-			xf_inv_view.invert(Device.mView);
+			xf_inv_view.invert(Engine.RenderView.View);
 			Fmatrix xf_project;
 			xf_project.mul(m_TexelAdjust, L->X.S.project);
 			m_Shadow.mul(L->X.S.view, xf_inv_view);
@@ -599,7 +599,7 @@ void CRender::render_stage_forward()
 
 		// Этот вызов заполнит граф геометрией с шейдерами normal_hq/lq
 		// И ЗАПОЛНИТ наши списки m_visuals_... благодаря правкам в add_leafs
-		render_main(Device.mFullTransform, false);
+		render_main(Engine.RenderView.ViewProjection, false);
 
 		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
 		SceneGraph.Render(SceneGraphRenderType::Transparent);
@@ -632,7 +632,7 @@ void CRender::render_stage_forward()
 	RenderBackend.set_ZWriteEnable(FALSE);
 
 	// Заново наполняем граф из кэша.
-	//render_main(Device.mFullTransform, false);
+	//render_main(Engine.RenderView.ViewProjection, false);
 	SceneGraph.render_reuse();
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
 	SceneGraph.Render(SceneGraphRenderType::Transparent);
@@ -649,7 +649,7 @@ void CRender::render_hom()
 {
 	PROFILE_FUNCTION();
 
-	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View = 0;
 
 	if (!ps_render_flags.test(RFLAG_EXP_MT_CALC))

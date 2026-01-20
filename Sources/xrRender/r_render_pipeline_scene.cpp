@@ -12,8 +12,8 @@ void CRender::RenderScene()
 
 	if (m_bFirstFrameAfterReset)
 	{
-		m_saved_viewproj.set(Device.mFullTransform);
-		m_saved_invview.invert(Device.mView);
+		m_saved_viewproj.set(Engine.RenderView.ViewProjection);
+		m_saved_invview.invert(Engine.RenderView.View);
 	}
 
 	PrepareToRender();
@@ -74,8 +74,8 @@ void CRender::RenderScene()
 
 	output_frame_to_screen();
 
-	m_saved_viewproj.set(Device.mFullTransform);
-	m_saved_invview.invert(Device.mView);
+	m_saved_viewproj.set(Engine.RenderView.ViewProjection);
+	m_saved_invview.invert(Engine.RenderView.View);
 
 	Details->ClearVisible();
 }

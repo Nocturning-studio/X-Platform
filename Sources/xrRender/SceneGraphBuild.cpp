@@ -85,12 +85,12 @@ float r_ssaHZBvsTEX;
 ICF float CalcSSA(float& distSQ, Fvector& C, IRender_Visual* V)
 {
 	float R = V->vis.sphere.R + 0;
-	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	distSQ = Engine.RenderView.Position.distance_to_sqr(C) + EPS;
 	return R / distSQ;
 }
 ICF float CalcSSA(float& distSQ, Fvector& C, float R)
 {
-	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	distSQ = Engine.RenderView.Position.distance_to_sqr(C) + EPS;
 	return R / distSQ;
 }
 
@@ -447,9 +447,9 @@ const float BASE_FOV = 67.f;
 // Helper: ѕриблизительна€ дистанци€ с учетом FOV (дл€ биноклей и прицелов)
 IC float GetDistFromCamera(const Fvector& from_position)
 {
-	float distance = Device.vCameraPosition.distance_to(from_position);
+	float distance = Engine.RenderView.Position.distance_to(from_position);
 	// «ащита от делени€ на ноль, если FOV экстремально мал (на вс€кий случай)
-	float current_fov = (Device.fFOV > EPS_S) ? Device.fFOV : BASE_FOV;
+	float current_fov = (Engine.RenderView.Fov > EPS_S) ? Engine.RenderView.Fov : BASE_FOV;
 	float fov_K = BASE_FOV / current_fov;
 	return distance / fov_K;
 }

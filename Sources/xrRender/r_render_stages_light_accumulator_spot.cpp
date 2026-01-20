@@ -28,8 +28,8 @@ void CRender::accumulate_spot_lights(light* L)
 		// setup xform
 		L->xform_calc();
 		RenderBackend.set_xform_world(L->get_xform());
-		RenderBackend.set_xform_view(Device.mView);
-		RenderBackend.set_xform_project(Device.mProject);
+		RenderBackend.set_xform_view(Engine.RenderView.View);
+		RenderBackend.set_xform_project(Engine.RenderView.Project);
 		bIntersect = enable_scissor(L);
 		enable_dbt_bounds(L);
 
@@ -88,7 +88,7 @@ void CRender::accumulate_spot_lights(light* L)
 
 		// compute xforms
 		Fmatrix xf_world;
-		xf_world.invert(Device.mView);
+		xf_world.invert(Engine.RenderView.View);
 		Fmatrix xf_view = L->X.S.view;
 		Fmatrix xf_project;
 		xf_project.mul(m_TexelAdjust, L->X.S.project);
@@ -126,8 +126,8 @@ void CRender::accumulate_spot_lights(light* L)
 	Fvector L_dir, L_clr, L_pos;
 	L_clr.set(L->get_color().r, L->get_color().g, L->get_color().b);
 	L_clr.mul(L->get_LOD());
-	Device.mView.transform_tiny(L_pos, L->get_position());
-	Device.mView.transform_dir(L_dir, L->get_direction());
+	Engine.RenderView.View.transform_tiny(L_pos, L->get_position());
+	Engine.RenderView.View.transform_dir(L_dir, L->get_direction());
 	L_dir.normalize();
 
 	// Draw volume with projective texgen

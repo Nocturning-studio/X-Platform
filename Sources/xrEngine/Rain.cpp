@@ -120,7 +120,7 @@ void CEffect_Rain::Born(Item& dest, float radius)
 
 	// 7. Финальная позиция
 	// Позиция камеры + Случайное смещение в круге + Смещение против ветра + Высота
-	Fvector& CameraPos = Device.vCameraPosition;
+	Fvector& CameraPos = Engine.RenderView.Position;
 	dest.P.set(CameraPos.x + OffsetX + WindShiftDir.x, CameraPos.y + spawn_h, CameraPos.z + OffsetZ + WindShiftDir.z);
 
 	// 8. Скорость
@@ -201,7 +201,7 @@ void CEffect_Rain::OnFrame()
 	if (snd_Ambient._feedback())
 	{
 		Fvector sndP;
-		sndP.mad(Device.vCameraPosition, Fvector().set(0, 1, 0), source_offset);
+		sndP.mad(Engine.RenderView.Position, Fvector().set(0, 1, 0), source_offset);
 		snd_Ambient.set_position(sndP);
 		snd_Ambient.set_volume(1.1f * factor * hemi_factor);
 	}
@@ -241,14 +241,14 @@ void CEffect_Rain::Render()
 	Fplane src_plane;
 	Fvector norm = {0.f, -1.f, 0.f};
 	Fvector upper;
-	upper.set(Device.vCameraPosition.x, Device.vCameraPosition.y + source_offset, Device.vCameraPosition.z);
+	upper.set(Engine.RenderView.Position.x, Engine.RenderView.Position.y + source_offset, Engine.RenderView.Position.z);
 	src_plane.build(upper, norm);
 
 	// perform update
 	u32 vOffset;
 	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock(desired_items * 4, hGeom_Rain->vb_stride, vOffset);
 	FVF::LIT* start = verts;
-	const Fvector& vEye = Device.vCameraPosition;
+	const Fvector& vEye = Engine.RenderView.Position;
 
 	// Для RayTrace
 	collide::rq_result RQ;

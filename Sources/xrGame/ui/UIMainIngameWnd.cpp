@@ -500,10 +500,10 @@ void CUIMainIngameWnd::Update()
 
 	UIMotionIcon.SetPower(m_pActor->conditions().GetPower() * 100.0f);
 
-	UIZoneMap->UpdateRadar(Device.vCameraPosition);
+	UIZoneMap->UpdateRadar(Engine.RenderView.Position);
 
 	float h, p;
-	Device.vCameraDirection.getHP(h, p);
+	Engine.RenderView.Direction.getHP(h, p);
 	UIZoneMap->SetHeading(-h);
 
 	UpdatePickUpItem();

@@ -157,7 +157,7 @@ static class cl_sun_dir : public R_constant_setup
 		light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
 
 		Fvector L_dir;
-		Device.mView.transform_dir(L_dir, sun->get_direction());
+		Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
 		L_dir.normalize();
 
 		RenderBackend.set_Constant(C, L_dir.x, L_dir.y, L_dir.z, 0);
@@ -739,7 +739,7 @@ void CRender::enable_dbt_bounds(light* L)
 	{
 		Fvector pt;
 		BB.getpoint(i, pt);
-		Device.mFullTransform.transform(pt);
+		Engine.RenderView.ViewProjection.transform(pt);
 		bbp.modify(pt);
 	}
 	u_DBT_enable(bbp.min.z, bbp.max.z);

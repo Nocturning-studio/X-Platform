@@ -265,7 +265,7 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
 	float ca = _cos(angle);
 	const Fvector& T = dir;
 	Fvector R;
-	R.crossproduct(T, Device.vCameraDirection).normalize_safe();
+	R.crossproduct(T, Engine.RenderView.Direction).normalize_safe();
 	Fvector Vr, Vt;
 	Vr.x = T.x * r1 * sa + R.x * r1 * ca;
 	Vr.y = T.y * r1 * sa + R.y * r1 * ca;
@@ -389,11 +389,11 @@ void CParticleEffect::Render(float)
 					{
 						Fvector p;
 						m_XFORM.transform_tiny(p, m.pos);
-						FillSprite(pv, Device.vCameraTop, Device.vCameraRight, p, lt, rb, r_x, r_y, m.color, m.rot.x);
+						FillSprite(pv, Engine.RenderView.Top, Engine.RenderView.Right, p, lt, rb, r_x, r_y, m.color, m.rot.x);
 					}
 					else
 					{
-						FillSprite(pv, Device.vCameraTop, Device.vCameraRight, m.pos, lt, rb, r_x, r_y, m.color,
+						FillSprite(pv, Engine.RenderView.Top, Engine.RenderView.Right, m.pos, lt, rb, r_x, r_y, m.color,
 								   m.rot.x);
 					}
 				}

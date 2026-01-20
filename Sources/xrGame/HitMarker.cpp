@@ -37,7 +37,7 @@ void CHitMarker::Render()
 	//OPTICK_EVENT("CHitMarker::Render");
 
 	float h1, p1;
-	Device.vCameraDirection.getHP(h1, p1);
+	Engine.RenderView.Direction.getHP(h1, p1);
 
 	while (m_HitMarks.size() && !m_HitMarks.front()->IsActive())
 	{

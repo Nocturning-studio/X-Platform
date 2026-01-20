@@ -717,13 +717,13 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR 
 {
 	VERIFY(Device.b_is_Ready);
 	Fvector c;
-	float w = p.x * Device.mFullTransform._14 + p.y * Device.mFullTransform._24 + p.z * Device.mFullTransform._34 +
-			  Device.mFullTransform._44;
+	float w = p.x * Engine.RenderView.ViewProjection._14 + p.y * Engine.RenderView.ViewProjection._24 + p.z * Engine.RenderView.ViewProjection._34 +
+			  Engine.RenderView.ViewProjection._44;
 	if (w < 0)
 		return; // culling
 
 	float s = (float)sz;
-	Device.mFullTransform.transform(c, p);
+	Engine.RenderView.ViewProjection.transform(c, p);
 	c.x = (float)iFloor(_x2real(c.x));
 	c.y = (float)iFloor(_y2real(-c.y));
 
@@ -1305,7 +1305,7 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
 	for (int i = 0; i < 6; i++, pv++)
 	{
 		pv->color = c[i];
-		pv->transform(p[i], Device.mFullTransform);
+		pv->transform(p[i], Engine.RenderView.ViewProjection);
 		pv->p.set((float)iFloor(_x2real(pv->p.x) + dx), (float)iFloor(_y2real(pv->p.y) + dy), 0, 1);
 		p[i].set(pv->p.x, pv->p.y, 0);
 	}
@@ -1332,22 +1332,22 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 	VERIFY(Device.b_is_Ready);
 	VertexStream* Stream = &RenderBackend.Vertex;
 	Fvector c, r, n, d;
-	float w = T.c.x * Device.mFullTransform._14 + T.c.y * Device.mFullTransform._24 +
-			  T.c.z * Device.mFullTransform._34 + Device.mFullTransform._44;
+	float w = T.c.x * Engine.RenderView.ViewProjection._14 + T.c.y * Engine.RenderView.ViewProjection._24 +
+			  T.c.z * Engine.RenderView.ViewProjection._34 + Engine.RenderView.ViewProjection._44;
 	if (w < 0)
 		return; // culling
 
 	float s = w * sz;
-	Device.mFullTransform.transform(c, T.c);
+	Engine.RenderView.ViewProjection.transform(c, T.c);
 	r.mul(T.i, s);
 	r.add(T.c);
-	Device.mFullTransform.transform(r);
+	Engine.RenderView.ViewProjection.transform(r);
 	n.mul(T.j, s);
 	n.add(T.c);
-	Device.mFullTransform.transform(n);
+	Engine.RenderView.ViewProjection.transform(n);
 	d.mul(T.k, s);
 	d.add(T.c);
-	Device.mFullTransform.transform(d);
+	Engine.RenderView.ViewProjection.transform(d);
 	c.x = (float)iFloor(_x2real(c.x));
 	c.y = (float)iFloor(_y2real(-c.y));
 	r.x = (float)iFloor(_x2real(r.x));
@@ -1534,11 +1534,11 @@ void CDrawUtilities::OnRender()
 void CDrawUtilities::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 shadow_color)
 {
 	Fvector p;
-	float w = pos.x * Device.mFullTransform._14 + pos.y * Device.mFullTransform._24 +
-			  pos.z * Device.mFullTransform._34 + Device.mFullTransform._44;
+	float w = pos.x * Engine.RenderView.ViewProjection._14 + pos.y * Engine.RenderView.ViewProjection._24 +
+			  pos.z * Engine.RenderView.ViewProjection._34 + Engine.RenderView.ViewProjection._44;
 	if (w >= 0)
 	{
-		Device.mFullTransform.transform(p, pos);
+		Engine.RenderView.ViewProjection.transform(p, pos);
 		p.x = (float)iFloor(_x2real(p.x));
 		p.y = (float)iFloor(_y2real(-p.y));
 

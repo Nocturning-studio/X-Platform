@@ -44,7 +44,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 	Fvector L_dir, L_clr;
 	float L_spec;
 	L_clr.set(sun->get_color().r, sun->get_color().g, sun->get_color().b);
-	Device.mView.transform_dir(L_dir, sun->get_direction());
+	Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
 	L_dir.normalize();
 
 	// Perform masking (only once - on the first/near phase)
@@ -112,7 +112,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 	// Compute shadow matrix
 	FPU::m64r();
 	Fmatrix xf_invview;
-	xf_invview.invert(Device.mView);
+	xf_invview.invert(Engine.RenderView.View);
 
 	Fmatrix m_shadow;
 	{
@@ -152,8 +152,8 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 	Fmatrix m_Texgen;
 	m_Texgen.identity();
 	RenderBackend.xforms.set_W(m_Texgen);
-	RenderBackend.xforms.set_V(Device.mView);
-	RenderBackend.xforms.set_P(Device.mProject);
+	RenderBackend.xforms.set_V(Engine.RenderView.View);
+	RenderBackend.xforms.set_P(Engine.RenderView.Project);
 	RenderBackend.u_compute_texgen_screen(m_Texgen);
 
 	// Setup geometry using backend

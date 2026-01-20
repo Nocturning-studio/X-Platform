@@ -101,7 +101,7 @@ template <class Pars> void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 	dBodyGetPointVel(b, c->pos[0], c->pos[1], c->pos[2], vel);
 	dReal vel_cret = dFabs(dDOT(vel, c->normal)) * _sqrt(m.mass);
 	Fvector to_camera;
-	to_camera.sub(cast_fv(c->pos), Device.vCameraPosition);
+	to_camera.sub(cast_fv(c->pos), Engine.RenderView.Position);
 	float square_cam_dist = to_camera.square_magnitude();
 	if (data)
 	{

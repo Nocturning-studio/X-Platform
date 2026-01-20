@@ -282,10 +282,10 @@ void CLensFlare::OnFrame(shared_str id)
 	matEffCamPos.identity();
 	// Calculate our position and direction
 
-	matEffCamPos.i.set(Device.vCameraRight);
-	matEffCamPos.j.set(Device.vCameraTop);
-	matEffCamPos.k.set(Device.vCameraDirection);
-	vecPos.set(Device.vCameraPosition);
+	matEffCamPos.i.set(Engine.RenderView.Right);
+	matEffCamPos.j.set(Engine.RenderView.Top);
+	matEffCamPos.k.set(Engine.RenderView.Direction);
+	vecPos.set(Engine.RenderView.Position);
 
 	vecDir.set(0.0f, 0.0f, 1.0f);
 	matEffCamPos.transform_dir(vecDir);
@@ -332,7 +332,7 @@ void CLensFlare::OnFrame(shared_str id)
 		fBlend = fBlend + BLEND_INC_SPEED * Engine.TimeManager.GetDeltaTime();
 #else
 	CObject* o_main = g_pGameLevel->CurrentViewEntity();
-	STranspParam TP(this, Device.vCameraPosition, vSunDir, 1000.f, EPS_L);
+	STranspParam TP(this, Engine.RenderView.Position, vSunDir, 1000.f, EPS_L);
 	collide::ray_defs RD(TP.P, TP.D, TP.f, CDB::OPT_CULL, collide::rqtBoth);
 	if (m_ray_cache.result && m_ray_cache.similar(TP.P, TP.D, TP.f))
 	{
@@ -363,7 +363,7 @@ void CLensFlare::OnFrame(shared_str id)
 	if (m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
 	{
 		Fvector scr_pos;
-		Device.mFullTransform.transform(scr_pos, vecLight);
+		Engine.RenderView.ViewProjection.transform(scr_pos, vecLight);
 		float kx = 1, ky = 1;
 		float sun_blend = 0.5f;
 		float sun_max = 2.5f;

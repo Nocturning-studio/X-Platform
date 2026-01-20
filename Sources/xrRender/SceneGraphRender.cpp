@@ -360,22 +360,22 @@ void CSceneGraph::_RenderHUD()
 	OPTICK_EVENT("RenderHUD");
 	ENGINE_API extern float psHUD_FOV;
 
-	Fmatrix Pold = Device.mProject;
-	Fmatrix FTold = Device.mFullTransform;
-	Device.mProject.build_projection(deg2rad(psHUD_FOV * Device.fFOV), Device.fASPECT, VIEWPORT_NEAR_HUD,
+	Fmatrix Pold = Engine.RenderView.Project;
+	Fmatrix FTold = Engine.RenderView.ViewProjection;
+	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), Engine.RenderView.Aspect, VIEWPORT_NEAR_HUD,
 									 g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-	Device.mFullTransform.mul(Device.mProject, Device.mView);
-	RenderBackend.set_xform_project(Device.mProject);
+	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
+	RenderBackend.set_xform_project(Engine.RenderView.Project);
 
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
 	mapHUD.traverseLR(sorted_L1); // Local helper
 	mapHUD.clear();
 	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
 
-	Device.mProject = Pold;
-	Device.mFullTransform = FTold;
-	RenderBackend.set_xform_project(Device.mProject);
+	Engine.RenderView.Project = Pold;
+	Engine.RenderView.ViewProjection = FTold;
+	RenderBackend.set_xform_project(Engine.RenderView.Project);
 }
 
 void CSceneGraph::_RenderTranslucent()
@@ -432,7 +432,7 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 
 	// Захват переменных для PPL
 	const float f_ssaLOD_B = r_ssaLOD_B;
-	const Fvector vCameraPos = Device.vCameraPosition;
+	const Fvector vCameraPos = Engine.RenderView.Position;
 
 	// *** 2. ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
 	concurrency::parallel_for(size_t(0), lstLODs.size(), [&](size_t i) {

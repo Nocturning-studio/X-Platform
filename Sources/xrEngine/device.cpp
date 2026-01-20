@@ -149,7 +149,7 @@ void CRenderDevice::PreCache(u32 amount)
 	{
 		precache_light = ::Render->light_create();
 		precache_light->set_shadow(false);
-		precache_light->set_position(vCameraPosition);
+		precache_light->set_position(Engine.RenderView.Position);
 		precache_light->set_color(255, 255, 255);
 		precache_light->set_range(5.0f);
 		precache_light->set_active(true);
@@ -158,14 +158,20 @@ void CRenderDevice::PreCache(u32 amount)
 
 void CRenderDevice::PreCache()
 {
+	// Расчет угла вращения
 	float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
 	float angle = PI_MUL_2 * factor;
-	vCameraDirection.set(_sin(angle), 0, _cos(angle));
-	vCameraDirection.normalize();
-	vCameraTop.set(0, 1, 0);
-	vCameraRight.crossproduct(vCameraTop, vCameraDirection);
 
-	mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
+	// Расчет векторов
+	Fvector dir, top, right;
+	dir.set(_sin(angle), 0, _cos(angle));
+	dir.normalize();
+	top.set(0, 1, 0);
+	// right.crossproduct(top, dir); // Если нужно
+
+	// Установка в RenderView (вместо mView.build_camera_dir)
+	// Позицию берем текущую, какая есть в RenderView
+	Engine.RenderView.SetupView(Engine.RenderView.Position, dir, top);
 }
 
 int g_frametime = 166;
@@ -206,6 +212,7 @@ void CRenderDevice::DoFrame()
 {
 	PROFILE_FUNCTION();
 
+	// 1. Проверка готовности
 	if (!b_is_Ready)
 	{
 		Sleep(100);
@@ -214,11 +221,10 @@ void CRenderDevice::DoFrame()
 
 	u32 FrameStartTime = Engine.TimeManager.GetGlobalTimeMs();
 
-	if (psDeviceFlags.test(rsStatistic))
-		g_bEnableStatGather = TRUE;
-	else
-		g_bEnableStatGather = FALSE;
+	// 2. Статистика
+	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
+	// 3. Обработка загрузки (Loading Screen)
 	if (g_loading_events.size())
 	{
 		if (g_loading_events.front()())
@@ -229,38 +235,52 @@ void CRenderDevice::DoFrame()
 	}
 	else
 	{
+		// Тут обновляется логика игры, которая устанавливает
+		// позицию камеры в Engine.RenderView.SetupView(...)
 		OnFrame();
 	}
 
-	// Precache
+	// 4. Precache (вращение камеры при загрузке)
+	// Внутри PreCache() ты должен был заменить запись в старые переменные
+	// на вызов Engine.RenderView.SetupView(...)
 	if (dwPrecacheFrame)
 		PreCache();
 
-	// Matrices
-	mFullTransform.mul(mProject, mView);
-	RenderBackend.set_xform_view(mView);
-	RenderBackend.set_xform_project(mProject);
-	D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+	// 5. РАСЧЕТ МАТРИЦ (Refactored)
+	// Ранее: mFullTransform.mul(...); Backend.set(...); Inverse(...);
+	// Теперь: Класс сам считает VP, InvVP и отправляет их в RenderBackend
+	Engine.RenderView.UpdateViewProjection();
 
+	// 6. Запуск потоков
+	// Вторичные потоки могут использовать матрицы, рассчитанные шагом выше
 	Engine.ThreadManager.SignalFrameStart();
 
 #ifndef DEDICATED_SERVER
 	RenderFrame();
 #endif
 
-	vCameraPosition_saved = vCameraPosition;
-	mFullTransform_saved = mFullTransform;
+	// 7. СОХРАНЕНИЕ СОСТОЯНИЯ (Refactored)
+	// Ранее: vCameraPosition_saved = ...;
+	// Теперь: Сохраняем для интерполяции в следующем кадре
+	Engine.RenderView.SaveState();
 
+	// 8. Ожидание потоков
 	Engine.ThreadManager.WaitForFrameEnd();
 
+	// 9. Лимитер кадров (для сервера или если включен лимит)
 	u32 FrameEndTime = Engine.TimeManager.GetGlobalTimeMs();
 	u32 FrameTime = (FrameEndTime - FrameStartTime);
-	u32 DSUpdateDelta = 1000 / g_frametime;
+
+	// Защита от деления на ноль, если g_frametime это FPS
+	u32 targetFPS = g_frametime > 0 ? g_frametime : 100;
+	u32 DSUpdateDelta = 1000 / targetFPS;
+
 	if (FrameTime < DSUpdateDelta)
 	{
 		Sleep(DSUpdateDelta - FrameTime);
 	}
 
+	// 10. Сон при неактивном окне
 	if (!b_is_Active)
 		Sleep(1);
 }
@@ -388,14 +408,6 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 void CRenderDevice::_SetupStates()
 {
 	// General Render States
-	mView.identity();
-	mProject.identity();
-	mFullTransform.identity();
-	vCameraPosition.set(0, 0, 0);
-	vCameraDirection.set(0, 0, 1);
-	vCameraTop.set(0, 1, 0);
-	vCameraRight.set(1, 0, 0);
-
 	HW.Caps.Update();
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
 	{
@@ -482,8 +494,6 @@ void CRenderDevice::Create()
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
-	fFOV = 90.f;
-	fASPECT = 1.f;
 
 	string_path fname;
 	FS.update_path(fname, "$game_data$", "shaders.xr");
@@ -684,4 +694,19 @@ void CRenderDevice::overdrawEnd()
 		CHK_DX(HW.pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
 	}
 	RenderBackend.SetRenderState(D3DRS_STENCILENABLE, FALSE);
+}
+
+void CRenderDevice::SetNearer(BOOL enabled)
+{
+	if (enabled && !m_bNearer)
+	{
+		m_bNearer = TRUE;
+		Engine.RenderView.Project._43 -= EPS_L;
+	}
+	else if (!enabled && m_bNearer)
+	{
+		m_bNearer = FALSE;
+		Engine.RenderView.Project._43 += EPS_L;
+	}
+	RenderBackend.set_xform_project(Engine.RenderView.Project);
 }

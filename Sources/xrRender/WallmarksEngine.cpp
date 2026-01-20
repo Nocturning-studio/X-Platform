@@ -321,7 +321,7 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, 
 	////OPTICK_EVENT("CWallmarksEngine::AddStaticWallmark");
 
 	// optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
-	if (contact_point.distance_to_sqr(Device.vCameraPosition) > _sqr(100.f))
+	if (contact_point.distance_to_sqr(Engine.RenderView.Position) > _sqr(100.f))
 		return;
 
 	// Physics may add wallmarks in parallel with rendering
@@ -340,7 +340,7 @@ void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, 
 		return;
 
 	// optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
-	if (xf->c.distance_to_sqr(Device.vCameraPosition) > _sqr(50.f))
+	if (xf->c.distance_to_sqr(Engine.RenderView.Position) > _sqr(50.f))
 		return;
 
 	VERIFY(obj && xf && (size > EPS_L));
@@ -405,16 +405,16 @@ void CWallmarksEngine::Render()
 
 	//	if (marks.empty())			return;
 	// Projection and xform
-	float _43 = Device.mProject._43;
-	Device.mProject._43 -= ps_r_WallmarkSHIFT;
+	float _43 = Engine.RenderView.Project._43;
+	Engine.RenderView.Project._43 -= ps_r_WallmarkSHIFT;
 	RenderBackend.set_xform_world(Fidentity);
-	RenderBackend.set_xform_project(Device.mProject);
+	RenderBackend.set_xform_project(Engine.RenderView.Project);
 
-	Fmatrix mSavedView = Device.mView;
+	Fmatrix mSavedView = Engine.RenderView.View;
 	Fvector mViewPos;
-	mViewPos.mad(Device.vCameraPosition, Device.vCameraDirection, ps_r_WallmarkSHIFT_V);
-	Device.mView.build_camera_dir(mViewPos, Device.vCameraDirection, Device.vCameraTop);
-	RenderBackend.set_xform_view(Device.mView);
+	mViewPos.mad(Engine.RenderView.Position, Engine.RenderView.Direction, ps_r_WallmarkSHIFT_V);
+	Engine.RenderView.View.build_camera_dir(mViewPos, Engine.RenderView.Direction, Engine.RenderView.Top);
+	RenderBackend.set_xform_view(Engine.RenderView.View);
 
 	Device.Statistic->RenderDUMP_WM.Begin();
 	Device.Statistic->RenderDUMP_WMS_Count = 0;
@@ -438,7 +438,7 @@ void CWallmarksEngine::Render()
 			if (RenderImplementation.ViewBase.testSphere_dirty(W->bounds.P, W->bounds.R))
 			{
 				Device.Statistic->RenderDUMP_WMS_Count++;
-				float dst = Device.vCameraPosition.distance_to_sqr(W->bounds.P);
+				float dst = Engine.RenderView.Position.distance_to_sqr(W->bounds.P);
 				float ssa = W->bounds.R * W->bounds.R / dst;
 				if (ssa >= ssaCLIP)
 				{
@@ -490,7 +490,7 @@ void CWallmarksEngine::Render()
 			}
 #endif
 
-			float dst = Device.vCameraPosition.distance_to_sqr(W->m_Bounds.P);
+			float dst = Engine.RenderView.Position.distance_to_sqr(W->m_Bounds.P);
 			float ssa = W->m_Bounds.R * W->m_Bounds.R / dst;
 			if (ssa >= ssaCLIP)
 			{
@@ -529,8 +529,8 @@ void CWallmarksEngine::Render()
 	Device.Statistic->RenderDUMP_WM.End();
 
 	// Projection
-	Device.mView = mSavedView;
-	Device.mProject._43 = _43;
-	RenderBackend.set_xform_view(Device.mView);
-	RenderBackend.set_xform_project(Device.mProject);
+	Engine.RenderView.View = mSavedView;
+	Engine.RenderView.Project._43 = _43;
+	RenderBackend.set_xform_view(Engine.RenderView.View);
+	RenderBackend.set_xform_project(Engine.RenderView.Project);
 }

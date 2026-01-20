@@ -24,7 +24,7 @@ bool g_bWatermarkEnabled = false;
 /////////////////////////////////////////////////////////////////
 void SetDefaultParameters()
 {
-	g_fGlobalFov = Device.fFOV;
+	g_fGlobalFov = Engine.RenderView.Fov;
 	g_fFov = g_fGlobalFov;
 
 	g_pGamePersistent->GetCurrentDof(g_vGlobalDepthOfFieldParameters);

@@ -663,7 +663,7 @@ class CCC_DR_TakePoint : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		Fvector CamPos = Device.vCameraPosition;
+		Fvector CamPos = Engine.RenderView.Position;
 
 		if (g_DR_LM_Min.x > CamPos.x)
 			g_DR_LM_Min.x = CamPos.x;

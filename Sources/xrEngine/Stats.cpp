@@ -94,7 +94,7 @@ void _draw_cam_pos(CGameFont* pFont)
 	float sz = pFont->GetHeight();
 	pFont->SetHeightI(0.02f);
 	pFont->SetColor(0xffffffff);
-	pFont->Out(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]", VPUSH(Device.vCameraPosition));
+	pFont->Out(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]", VPUSH(Engine.RenderView.Position));
 	pFont->SetHeight(sz);
 	pFont->OnRender();
 }

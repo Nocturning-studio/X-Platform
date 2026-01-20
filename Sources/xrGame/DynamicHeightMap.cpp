@@ -29,7 +29,7 @@ CHM_Static::CHM_Static()
 
 void CHM_Static::Update()
 {
-	Fvector& view = Device.vCameraPosition;
+	Fvector& view = Engine.RenderView.Position;
 	int v_x = iFloor(view.x / dhm_size);
 	int v_z = iFloor(view.z / dhm_size);
 

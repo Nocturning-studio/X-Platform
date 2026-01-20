@@ -247,8 +247,8 @@ static class cl_pos_decompress_params : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		float VertTan = -1.0f * tanf(deg2rad(Device.fFOV / 2.0f));
-		float HorzTan = -VertTan / Device.fASPECT;
+		float VertTan = -1.0f * tanf(deg2rad(Engine.RenderView.Fov / 2.0f));
+		float HorzTan = -VertTan / Engine.RenderView.Aspect;
 		RenderBackend.set_Constant(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
 	}
 } binder_pos_decompress_params;
@@ -259,7 +259,7 @@ static class cl_pos_decompress_params_hud : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float VertTan = -1.0f * tanf(deg2rad(psHUD_FOV / 2.0f));
-		float HorzTan = -VertTan / Device.fASPECT;
+		float HorzTan = -VertTan / Engine.RenderView.Aspect;
 
 		RenderBackend.set_Constant(C, HorzTan, VertTan, (2.0f * HorzTan) / Device.dwWidth, (2.0f * VertTan) / Device.dwHeight);
 	}
@@ -269,7 +269,7 @@ static class cl_fov : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant(C, Device.fFOV, 0, 0, 0);
+		RenderBackend.set_Constant(C, Engine.RenderView.Fov, 0, 0, 0);
 	}
 } binder_fov;
 
@@ -310,7 +310,7 @@ class cl_eye_P : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fvector& V = Device.vCameraPosition;
+		Fvector& V = Engine.RenderView.Position;
 		RenderBackend.set_Constant(C, V.x, V.y, V.z, 1);
 	}
 };
@@ -321,7 +321,7 @@ class cl_eye_D : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fvector& V = Device.vCameraDirection;
+		Fvector& V = Engine.RenderView.Direction;
 		RenderBackend.set_Constant(C, V.x, V.y, V.z, 0);
 	}
 };
@@ -332,7 +332,7 @@ class cl_eye_N : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fvector& V = Device.vCameraTop;
+		Fvector& V = Engine.RenderView.Top;
 		RenderBackend.set_Constant(C, V.x, V.y, V.z, 0);
 	}
 };
@@ -391,7 +391,7 @@ class cl_sun0_dir_e : public R_constant_setup
 		{
 			Fvector D;
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
-			Device.mView.transform_dir(D, desc->sun_dir);
+			Engine.RenderView.View.transform_dir(D, desc->sun_dir);
 			D.normalize();
 			result.set(D.x, D.y, D.z, 0);
 		}
@@ -462,7 +462,7 @@ static class cl_invP final : public R_constant_setup
 	void setup(R_constant* C) override
 	{
 		Fmatrix m_invProject;
-		m_invProject.invert(Device.mProject);
+		m_invProject.invert(Engine.RenderView.Project);
 		RenderBackend.set_Constant(C, m_invProject);
 	}
 } binder_invP;

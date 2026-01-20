@@ -88,7 +88,7 @@ void CLevelGraph::draw_nodes()
 
 	//////////////////////////////////////////////////////////////////////////
 	Fvector min_position, max_position;
-	max_position = min_position = Device.vCameraPosition;
+	max_position = min_position = Engine.RenderView.Position;
 	min_position.sub(30.f);
 	max_position.add(30.f);
 
@@ -117,7 +117,7 @@ void CLevelGraph::draw_nodes()
 
 		u32 Nid = vertex_id(I);
 
-		if (Device.vCameraPosition.distance_to(PC) > 30)
+		if (Engine.RenderView.Position.distance_to(PC) > 30)
 			continue;
 
 		float sr = header().cell_size();
@@ -184,7 +184,7 @@ void CLevelGraph::draw_nodes()
 				Fvector4 S;
 				T.set(PC);
 				T.y += 0.3f;
-				Device.mFullTransform.transform(S, T);
+				Engine.RenderView.ViewProjection.transform(S, T);
 				if (S.z < 0 || S.z < 0)
 					continue;
 				if (S.x < -1.f || S.x > 1.f || S.y < -1.f || S.x > 1.f)
@@ -259,7 +259,7 @@ void CLevelGraph::draw_covers()
 	float half_size = ai().level_graph().header().cell_size() * .5f;
 	xr_vector<CCoverPoint*> nearest;
 	nearest.reserve(1000);
-	ai().cover_manager().covers().nearest(Device.vCameraPosition, 5.f, nearest);
+	ai().cover_manager().covers().nearest(Engine.RenderView.Position, 5.f, nearest);
 	xr_vector<CCoverPoint*>::const_iterator I = nearest.begin();
 	xr_vector<CCoverPoint*>::const_iterator E = nearest.end();
 	for (; I != E; ++I)

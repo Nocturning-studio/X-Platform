@@ -1706,6 +1706,7 @@
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="CPhotoMode.h" />
+    <ClInclude Include="RenderView.h" />
     <ClInclude Include="CustomHUD.h" />
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="debug_ui.h" />
@@ -1848,6 +1849,7 @@
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="CPhotoMode.cpp" />
+    <ClCompile Include="RenderView.cpp" />
     <ClCompile Include="CustomHUD.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
     <ClCompile Include="debug_ui.cpp" />

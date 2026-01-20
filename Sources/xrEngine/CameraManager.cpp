@@ -438,17 +438,17 @@ void CCameraManager::UpdatePPEffectors()
 void CCameraManager::ApplyDevice(float _viewport_near)
 {
 	// Device params
-	Device.mView.build_camera_dir(m_cam_info.p, m_cam_info.d, m_cam_info.n);
+	Engine.RenderView.View.build_camera_dir(m_cam_info.p, m_cam_info.d, m_cam_info.n);
 
-	Device.vCameraPosition.set(m_cam_info.p);
-	Device.vCameraDirection.set(m_cam_info.d);
-	Device.vCameraTop.set(m_cam_info.n);
-	Device.vCameraRight.set(m_cam_info.r);
+	Engine.RenderView.Position.set(m_cam_info.p);
+	Engine.RenderView.Direction.set(m_cam_info.d);
+	Engine.RenderView.Top.set(m_cam_info.n);
+	Engine.RenderView.Right.set(m_cam_info.r);
 
 	// projection
-	Device.fFOV = m_cam_info.fFov;
-	Device.fASPECT = m_cam_info.fAspect;
-	Device.mProject.build_projection(deg2rad(m_cam_info.fFov), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
+	Engine.RenderView.Fov = m_cam_info.fFov;
+	Engine.RenderView.Aspect = m_cam_info.fAspect;
+	Engine.RenderView.Project.build_projection(deg2rad(m_cam_info.fFov), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
 
 	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive())
 	{
@@ -504,7 +504,7 @@ void CCameraManager::Dump()
 	Fmatrix mInvCamera;
 	Fvector _R, _U, _T, _P;
 
-	mInvCamera.invert(Device.mView);
+	mInvCamera.invert(Engine.RenderView.View);
 	_R.set(mInvCamera._11, mInvCamera._12, mInvCamera._13);
 	_U.set(mInvCamera._21, mInvCamera._22, mInvCamera._23);
 	_T.set(mInvCamera._31, mInvCamera._32, mInvCamera._33);

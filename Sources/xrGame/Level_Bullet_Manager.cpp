@@ -383,7 +383,7 @@ void CBulletManager::Render()
 
 		float width = m_fTracerWidth;
 		float dist2segSqr =
-			SqrDistancePointToSegment(Device.vCameraPosition, bullet->pos, Fvector().mul(bullet->dir, length));
+			SqrDistancePointToSegment(Engine.RenderView.Position, bullet->pos, Fvector().mul(bullet->dir, length));
 		//---------------------------------------------
 		float MaxDistSqr = 1.0f;
 		float MinDistSqr = 0.09f;
@@ -394,19 +394,19 @@ void CBulletManager::Render()
 
 			width *= _sqrt(dist2segSqr / MaxDistSqr); //*MaxDistWidth/0.08f;
 		}
-		if (Device.vCameraPosition.distance_to_sqr(bullet->pos) < (length * length))
+		if (Engine.RenderView.Position.distance_to_sqr(bullet->pos) < (length * length))
 		{
-			length = Device.vCameraPosition.distance_to(bullet->pos) - 0.3f;
+			length = Engine.RenderView.Position.distance_to(bullet->pos) - 0.3f;
 		}
 		/*
 		//---------------------------------------------
 		Fvector vT, v0, v1;
-		vT.mad(Device.vCameraPosition, Device.vCameraDirection, _sqrt(dist2segSqr));
-		v0.mad(vT, Device.vCameraTop, width*.5f);
-		v1.mad(vT, Device.vCameraTop, -width*.5f);
+		vT.mad(Engine.RenderView.Position, Engine.RenderView.Direction, _sqrt(dist2segSqr));
+		v0.mad(vT, Engine.RenderView.Top, width*.5f);
+		v1.mad(vT, Engine.RenderView.Top, -width*.5f);
 		Fvector v0r, v1r;
-		Device.mFullTransform.transform(v0r, v0);
-		Device.mFullTransform.transform(v1r, v1);
+		Engine.RenderView.ViewProjection.transform(v0r, v0);
+		Engine.RenderView.ViewProjection.transform(v1r, v1);
 		float ViewWidth = v1r.distance_to(v0r);
 */
 		//		float dist = _sqrt(dist2segSqr);

@@ -223,6 +223,9 @@
     <Filter Include="Engine\Thread manager">
       <UniqueIdentifier>{104b3242-87ef-4020-b2f8-46f9b18684f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Camera view">
+      <UniqueIdentifier>{63460ad0-eae8-45c6-b91e-973f5bf1ca88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -656,6 +659,9 @@
     </ClInclude>
     <ClInclude Include="ThreadManager.h">
       <Filter>Engine\Thread manager</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderView.h">
+      <Filter>Render\Camera view</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1111,6 +1117,9 @@
     </ClCompile>
     <ClCompile Include="ThreadManager.cpp">
       <Filter>Engine\Thread manager</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderView.cpp">
+      <Filter>Render\Camera view</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

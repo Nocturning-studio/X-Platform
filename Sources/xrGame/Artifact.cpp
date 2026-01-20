@@ -251,7 +251,7 @@ void CArtefact::shedule_Update(u32 dt)
 		Fvector center;
 		Center(center);
 		BOOL rendering = (Engine.TimeManager.GetFrameCount() == o_render_frame);
-		float cam_distance = Device.vCameraPosition.distance_to(center) - Radius();
+		float cam_distance = Engine.RenderView.Position.distance_to(center) - Radius();
 		if (rendering || (cam_distance < FASTMODE_DISTANCE))
 			o_switch_2_fast();
 		else

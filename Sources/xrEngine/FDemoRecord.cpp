@@ -40,7 +40,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 
 	g_position.set_position = false;
 	IR_Capture(); // capture input
-	m_Camera.invert(Device.mView);
+	m_Camera.invert(Engine.RenderView.View);
 
 	// parse yaw
 	Fvector& dir = m_Camera.k;
@@ -200,16 +200,16 @@ void CDemoRecord::MakeLevelMapProcess()
 		if (g_bDR_LM_4Steps)
 			GetLM_BBox(bb, g_iDR_LM_Step);
 		// build camera matrix
-		bb.getcenter(Device.vCameraPosition);
+		bb.getcenter(Engine.RenderView.Position);
 
-		Device.vCameraDirection.set(0.f, -1.f, 0.f);
-		Device.vCameraTop.set(0.f, 0.f, 1.f);
-		Device.vCameraRight.set(1.f, 0.f, 0.f);
-		Device.mView.build_camera_dir(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+		Engine.RenderView.Direction.set(0.f, -1.f, 0.f);
+		Engine.RenderView.Top.set(0.f, 0.f, 1.f);
+		Engine.RenderView.Right.set(1.f, 0.f, 0.f);
+		Engine.RenderView.View.build_camera_dir(Engine.RenderView.Position, Engine.RenderView.Direction, Engine.RenderView.Top);
 
-		bb.xform(Device.mView);
+		bb.xform(Engine.RenderView.View);
 		// build project matrix
-		Device.mProject.build_projection_ortho(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.min.z, bb.max.z);
+		Engine.RenderView.Project.build_projection_ortho(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.min.z, bb.max.z);
 	}
 	break;
 	case DEVICE_RESET_PRECACHE_FRAME_COUNT + 2: {
@@ -750,7 +750,7 @@ void CDemoRecord::ChangeDepthOfFieldFStop(int direction)
 
 void CDemoRecord::ChangeFieldOfView(int direction)
 {
-	float g_fFov_actual = Device.fFOV;
+	float g_fFov_actual = Engine.RenderView.Fov;
 
 	float X = g_fFov_actual * 0.05f;
 

@@ -17,7 +17,7 @@ void CRender::RenderDebug()
 {
 	PROFILE_FUNCTION();
 
-	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
 	HOM.Enable();
 	HOM.Render(ViewBase);

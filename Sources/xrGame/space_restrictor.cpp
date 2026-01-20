@@ -267,13 +267,13 @@ void CSpaceRestrictor::OnRender()
 		break;
 		}
 	}
-	if (Device.vCameraPosition.distance_to(XFORM().c) < 100.0f)
+	if (Engine.RenderView.Position.distance_to(XFORM().c) < 100.0f)
 	{
 
 		// DRAW name
 
 		Fmatrix res;
-		res.mul(Device.mFullTransform, XFORM());
+		res.mul(Engine.RenderView.ViewProjection, XFORM());
 
 		Fvector4 v_res;
 

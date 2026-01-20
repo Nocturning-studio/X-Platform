@@ -310,7 +310,7 @@ void CObject::UpdateCL()
 		MakeMeCrow();
 	else if (AlwaysTheCrow())
 		MakeMeCrow();
-	else if (Device.vCameraPosition.distance_to_sqr(Position()) < CROW_RADIUS * CROW_RADIUS)
+	else if (Engine.RenderView.Position.distance_to_sqr(Position()) < CROW_RADIUS * CROW_RADIUS)
 		MakeMeCrow();
 }
 
@@ -326,7 +326,7 @@ void CObject::shedule_Update(u32 T)
 	MakeMeCrow();
 	/*
 	if (AlwaysTheCrow())																	MakeMeCrow	();
-	else if (Device.vCameraPosition.distance_to_sqr(Position()) < CROW_RADIUS*CROW_RADIUS)	MakeMeCrow	();
+	else if (Engine.RenderView.Position.distance_to_sqr(Position()) < CROW_RADIUS*CROW_RADIUS)	MakeMeCrow	();
 	*/
 }
 
