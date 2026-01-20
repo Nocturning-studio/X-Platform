@@ -72,7 +72,7 @@ CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
 CALifeUpdateManager::~CALifeUpdateManager()
 {
 	shedule_unregister();
-	Engine.ThreadManager.RemoveParallelTask(fastdelegate::FastDelegate0<>(this, &CALifeUpdateManager::update));
+	Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update));
 }
 
 float CALifeUpdateManager::shedule_Scale()
@@ -121,7 +121,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
 	if (!m_first_time)
 	{
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CALifeUpdateManager::update));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update));
 		return;
 	}
 

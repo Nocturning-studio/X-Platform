@@ -302,10 +302,10 @@ void CCustomMonster::shedule_Update(u32 DT)
 	if (g_Alive())
 	{
 #ifndef DEBUG
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
 #else  // DEBUG
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+				Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
 			else
 				Exec_Visibility();
 #endif // DEBUG
@@ -420,7 +420,7 @@ void CCustomMonster::UpdateCL()
 	}
 	*/
 
-	Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
+	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::update_sound_player));
 
 	START_PROFILE("CustomMonster/client_update/network extrapolation")
 	if (NET.empty())
@@ -754,8 +754,8 @@ void CCustomMonster::OnEvent(NET_Packet& P, u16 type)
 void CCustomMonster::net_Destroy()
 {
 	// 1. СНАЧАЛА убираем задачи из параллельных потоков, чтобы они не обратились к битой памяти
-	Engine.ThreadManager.RemoveParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
-	Engine.ThreadManager.RemoveParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+	Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::update_sound_player));
+	Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
 
 	// 2. Теперь безопасно вызываем родительские деструкторы
 	inherited::net_Destroy(); // Здесь, скорее всего, удаляется m_entity_condition

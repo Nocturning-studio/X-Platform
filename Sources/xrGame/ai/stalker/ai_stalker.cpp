@@ -515,7 +515,7 @@ void CAI_Stalker::net_Destroy()
 	m_pPhysics_support->in_NetDestroy();
 
 	// 1. Создаем делегат
-	auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
+	CThreadManager::ParallelTask taskDelegate = CThreadManager::ParallelTask(this, &CAI_Stalker::update_object_handler);
 
 	// 2. Удаляем через менеджер
 	Engine.ThreadManager.RemoveParallelTask(taskDelegate);
@@ -899,7 +899,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			}
 		}
 
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
 
 		START_PROFILE("stalker/schedule_update/memory")
 

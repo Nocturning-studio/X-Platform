@@ -388,12 +388,11 @@ void CRender::OnFrame()
 		Details->PrepareToCalc();
 
 		// 2. «апуск задачи в параллель.
-		// Details->MT_CALC() теперь работает с "теневым" буфером и не мешает рендеру.
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
 	}
 
 	// MT-HOM (@front)
-	Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(&HOM, &CHOM::MT_RENDER));
+	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(&HOM, &CHOM::MT_RENDER));
 }
 
 // Implementation

@@ -557,12 +557,12 @@ void CLevel::OnFrame()
 	if (!g_dedicated_server)
 	{
 		g_SoundEnvironment->Update();
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(m_level_sound_manager, &CLevelSoundManager::Update));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(m_level_sound_manager, &CLevelSoundManager::Update));
 	}
 	// deffer LUA-GC-STEP
 	if (!g_dedicated_server)
 	{
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CLevel::script_gc));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CLevel::script_gc));
 	}
 	//-----------------------------------------------------
 	if (pStatGraphR)

@@ -34,7 +34,7 @@ class CDetailPathBuilder
 		m_object->m_wait_for_distributed_computation = true;
 		m_level_path = &level_path;
 		m_path_vertex_index = path_vertex_index;
-		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CDetailPathBuilder::process));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process));
 	}
 
 	void __stdcall process()
@@ -57,6 +57,6 @@ class CDetailPathBuilder
 		if (m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation = false;
 
-		Engine.ThreadManager.RemoveParallelTask(fastdelegate::FastDelegate0<>(this, &CDetailPathBuilder::process));
+		Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process));
 	}
 };
