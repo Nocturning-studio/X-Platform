@@ -107,7 +107,6 @@ public:
 	BOOL Begin();
 	void Clear();
 	void End();
-	void OnFrame();
 
 	void overdrawBegin();
 	void overdrawEnd();
@@ -118,14 +117,12 @@ public:
 	// Creation & Destroying
 	void Create(void);
 	void PrepareEventLoop();
-	void DoFrame();
 	void RenderFrame();
 	void EndEventLoop();
 	void Destroy(void);
 	void Reset(bool precache = true);
 
 	void Initialize(void);
-	void ShutDown(void);
 };
 
 extern ENGINE_API CRenderDevice Device;

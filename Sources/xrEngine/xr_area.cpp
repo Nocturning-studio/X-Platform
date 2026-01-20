@@ -10,11 +10,9 @@
 
 using namespace collide;
 
-extern BOOL g_bLoaded;
-
 void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
 {
-	if (!g_bLoaded)
+	if (!Engine.IsLoaded())
 		return;
 	if (!S)
 		return;

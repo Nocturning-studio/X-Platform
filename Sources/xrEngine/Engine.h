@@ -57,6 +57,8 @@ class ENGINE_API CEngine
 	HMODULE hDiscordAPI;
 	HMODULE hOptick;
 
+	bool m_bLoaded;
+
   public:
 	Factory_Create* pCreate;
 	Factory_Destroy* pDestroy;
@@ -78,18 +80,36 @@ class ENGINE_API CEngine
 	CEngineEvents Events;
 	CRenderView RenderView; 
 
-  public:
+	public:
 	// Конструктор/Деструктор
 	CEngine();
 	~CEngine();
 
+	void Run(); // Запуск Loop (Init -> Loop -> Destroy)
+
+	bool IsLoaded()
+	{
+		return m_bLoaded;
+	}
+
+	void SetLoaded()
+	{
+		m_bLoaded = TRUE;
+	}
+
+	void SetUnloaded()
+	{
+		m_bLoaded = FALSE;
+	}
+
+	private:
 	// Основные жизненные циклы (Методы, которые остались)
 	bool Initialize(); // Вся инициализация (Console, Sound, Device, Input, DLLs) теперь здесь
 	void ProcessEventLoop();
 	void ProcessFrame();
-	void Destroy();	   // Очистка ресурсов
-
-	void Run(); // Запуск Loop (Init -> Loop -> Destroy)
+	bool CheckLoadingEvents(); // Обработка событий загрузки (true если событие обработано)
+	void UpdateGameLogic(); // Логика мира (бывший OnFrame)
+	void Destroy(); // Очистка ресурсов
 };
 ////////////////////////////////////////////////////////////////////////////////
 extern xrDispatchTable PSGP;

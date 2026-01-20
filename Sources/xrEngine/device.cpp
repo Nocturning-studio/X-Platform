@@ -31,7 +31,6 @@
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;
 
-BOOL g_bLoaded = FALSE;
 ref_light precache_light = 0;
 /////////////////////////////////////
 BOOL CRenderDevice::Begin()
@@ -178,10 +177,15 @@ int g_frametime = 166;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
+void ProcessLoading(RP_FUNC* f)
+{
+	Engine.Events.Frame.Process(rp_Frame);
+	Engine.SetLoaded();
+}
+
 void CRenderDevice::PrepareEventLoop()
 {
-	g_bLoaded = FALSE;
-
+	Engine.SetUnloaded();
 	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
@@ -189,100 +193,30 @@ void CRenderDevice::RenderFrame()
 {
 	PROFILE_FUNCTION();
 
+	if (!b_is_Active)
+		return;
+
 	Statistic->RenderTOTAL_Real.FrameStart();
 	Statistic->RenderTOTAL_Real.Begin();
-	if (b_is_Active)
+
+	// Begin() настраивает DX9 контекст, очищает Z-буфер
+	if (Begin())
 	{
-		if (Begin())
-		{
-			Engine.DebugUI.DrawUI();
-			Engine.Events.Render.Process(rp_Render);
+		Engine.DebugUI.DrawUI();
 
-			if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-				Statistic->Show();
+		// Вызываем подписчиков на рендер (Level, HUD, etc)
+		Engine.Events.Render.Process(rp_Render);
 
-			End();
-		}
+		// Статистика
+		if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+			Statistic->Show();
+
+		// End() делает Present()
+		End();
 	}
+
 	Statistic->RenderTOTAL_Real.End();
 	Statistic->RenderTOTAL_Real.FrameEnd();
-}
-
-void CRenderDevice::DoFrame()
-{
-	PROFILE_FUNCTION();
-
-	// 1. Проверка готовности
-	if (!b_is_Ready)
-	{
-		Sleep(100);
-		return;
-	}
-
-	u32 FrameStartTime = Engine.TimeManager.GetGlobalTimeMs();
-
-	// 2. Статистика
-	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
-
-	// 3. Обработка загрузки (Loading Screen)
-	if (g_loading_events.size())
-	{
-		if (g_loading_events.front()())
-			g_loading_events.pop_front();
-
-		Engine.LoadingScreen.ForceRender();
-		return;
-	}
-	else
-	{
-		// Тут обновляется логика игры, которая устанавливает
-		// позицию камеры в Engine.RenderView.SetupView(...)
-		OnFrame();
-	}
-
-	// 4. Precache (вращение камеры при загрузке)
-	// Внутри PreCache() ты должен был заменить запись в старые переменные
-	// на вызов Engine.RenderView.SetupView(...)
-	if (dwPrecacheFrame)
-		PreCache();
-
-	// 5. РАСЧЕТ МАТРИЦ (Refactored)
-	// Ранее: mFullTransform.mul(...); Backend.set(...); Inverse(...);
-	// Теперь: Класс сам считает VP, InvVP и отправляет их в RenderBackend
-	Engine.RenderView.UpdateViewProjection();
-
-	// 6. Запуск потоков
-	// Вторичные потоки могут использовать матрицы, рассчитанные шагом выше
-	Engine.ThreadManager.SignalFrameStart();
-
-#ifndef DEDICATED_SERVER
-	RenderFrame();
-#endif
-
-	// 7. СОХРАНЕНИЕ СОСТОЯНИЯ (Refactored)
-	// Ранее: vCameraPosition_saved = ...;
-	// Теперь: Сохраняем для интерполяции в следующем кадре
-	Engine.RenderView.SaveState();
-
-	// 8. Ожидание потоков
-	Engine.ThreadManager.WaitForFrameEnd();
-
-	// 9. Лимитер кадров (для сервера или если включен лимит)
-	u32 FrameEndTime = Engine.TimeManager.GetGlobalTimeMs();
-	u32 FrameTime = (FrameEndTime - FrameStartTime);
-
-	// Защита от деления на ноль, если g_frametime это FPS
-	u32 targetFPS = g_frametime > 0 ? g_frametime : 100;
-	u32 DSUpdateDelta = 1000 / targetFPS;
-
-	if (FrameTime < DSUpdateDelta)
-	{
-		Sleep(DSUpdateDelta - FrameTime);
-	}
-
-	// 10. Сон при неактивном окне
-	if (!b_is_Active)
-		Sleep(1);
 }
 
 void CRenderDevice::EndEventLoop()
@@ -290,33 +224,6 @@ void CRenderDevice::EndEventLoop()
 	Msg("Ending event loop...");
 
 	Engine.Events.AppEnd.Process(rp_AppEnd);
-}
-
-void ProcessLoading(RP_FUNC* f);
-void CRenderDevice::OnFrame()
-{
-	PROFILE_FUNCTION();
-
-	// Вся логика расчета времени перенесена в Engine.TimeManager.Update(),
-	// который вызывается в Engine.cpp перед DoFrame().
-
-	// Frame move logic
-	Statistic->EngineTOTAL.Begin();
-
-	// Используем Engine.TimeManager для проверки загрузки, если нужно,
-	// или просто выполняем логику кадров.
-	if (!g_bLoaded)
-		ProcessLoading(rp_Frame);
-	else
-		Engine.Events.Frame.Process(rp_Frame);
-
-	Statistic->EngineTOTAL.End();
-}
-
-void ProcessLoading(RP_FUNC* f)
-{
-	Engine.Events.Frame.Process(rp_Frame);
-	g_bLoaded = TRUE;
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;

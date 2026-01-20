@@ -80,6 +80,14 @@ class ENGINE_API CTimeManager
 		m_fTimeGlobal = val;
 	}
 
+	// Вызывается в самом начале кадра
+	void OnFrameStart();
+
+	// Вызывается в конце кадра, возвращает время, которое нужно поспать (в мс)
+	u32 CalculateFrameLimitDelay(u32 targetFPS);
+
+	void DoFrameLimit();
+
   private:
 	// Таймеры
 	u32 m_Timer_MM_Delta;
@@ -100,4 +108,8 @@ class ENGINE_API CTimeManager
 
 	// Внутренние настройки
 	float m_psTimeFactor;
+
+	// Ограничение количества кадров
+	u32 m_FrameStartTime;
+	u32 m_FrameEndTime;
 };

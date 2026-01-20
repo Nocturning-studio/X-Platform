@@ -121,3 +121,39 @@ void CTimeManager::Update()
 		m_dwTimeDelta = m_dwTimeGlobal - _old_global;
 	}
 }
+
+void CTimeManager::OnFrameStart()
+{
+	// Запоминаем время начала кадра для лимитера
+	m_FrameStartTime = GetGlobalTimeMs();
+}
+
+u32 CTimeManager::CalculateFrameLimitDelay(u32 targetFPS)
+{
+	if (targetFPS == 0)
+		return 0; // Без лимита
+
+	m_FrameEndTime = GetGlobalTimeMs();
+	u32 frameDuration = m_FrameEndTime - m_FrameStartTime;
+	u32 targetDuration = 1000 / targetFPS;
+
+	if (frameDuration < targetDuration)
+	{
+		return targetDuration - frameDuration;
+	}
+	return 0;
+}
+
+extern int g_frametime;
+void CTimeManager::DoFrameLimit()
+{
+	PROFILE_FUNCTION();
+
+	u32 targetFPS = g_frametime > 0 ? g_frametime : 0;
+	u32 sleepTime = Engine.TimeManager.CalculateFrameLimitDelay(targetFPS);
+
+	if (sleepTime > 0)
+	{
+		Sleep(sleepTime);
+	}
+}

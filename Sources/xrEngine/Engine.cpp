@@ -66,6 +66,7 @@ CEngine::CEngine()
 	pDestroy = 0;
 	tune_pause = dummy;
 	tune_resume = dummy;
+	m_bLoaded = FALSE;
 }
 
 CEngine::~CEngine()
@@ -307,14 +308,105 @@ bool CEngine::Initialize()
 	return true;
 }
 
+void CEngine::UpdateGameLogic()
+{
+	PROFILE_FUNCTION();
+
+	// Профилирование логики процессора
+	Device.Statistic->EngineTOTAL.Begin();
+
+	// Логика "первого кадра" или загрузки
+	// В оригинале ProcessLoading просто вызывал seqFrame один раз и ставил флаг
+	if (!IsLoaded())
+	{
+		Events.Frame.Process(rp_Frame);
+		SetLoaded();
+	}
+	else
+	{
+		// Основной апдейт игровых систем (Actor, Level, Weather и т.д.)
+		Events.Frame.Process(rp_Frame);
+	}
+
+	Device.Statistic->EngineTOTAL.End();
+}
+
+bool CEngine::CheckLoadingEvents()
+{
+	if (g_loading_events.empty())
+		return false;
+
+	// Выполняем одно событие загрузки (например, загрузка текстуры)
+	if (g_loading_events.front()())
+		g_loading_events.pop_front();
+
+	// Рисуем экран загрузки
+	LoadingScreen.ForceRender();
+
+	return true; // Кадр обработан, дальше идти не надо
+}
+
 void CEngine::ProcessFrame()
 {
 	OPTICK_THREAD("X-Ray Primary Thread");
 	OPTICK_FRAME("X-Ray Primary Thread");
 	PROFILE_FUNCTION();
 
-	TimeManager.Update();
-	Device.DoFrame();
+	// 1. Проверка готовности устройства
+	if (!Device.b_is_Ready)
+	{
+		Sleep(100);
+		return;
+	}
+
+	// 2. Начало отсчета времени кадра
+	TimeManager.Update();		// Расчет DeltaTime
+	TimeManager.OnFrameStart(); // Засекаем время для лимитера
+
+	// 3. Сбор статистики (включаем если нужно)
+	// psDeviceFlags обычно глобальна или доступна через Device
+	if (psDeviceFlags.test(rsStatistic))
+		g_bEnableStatGather = TRUE;
+	else
+		g_bEnableStatGather = FALSE;
+
+	// 4. Блокирующие события загрузки (прерывают кадр)
+	if (CheckLoadingEvents())
+		return;
+
+	// 5. Обновление игровой логики (Input, AI, Game)
+	UpdateGameLogic();
+
+	// 6. Precache (Прогрев рендера вращением камеры)
+	// Сама реализация вращения пока остается в Device, но вызываем мы её отсюда
+	if (Device.dwPrecacheFrame)
+		Device.PreCache();
+
+	// 7. Расчет камеры и матриц (View * Projection)
+	// Делаем это ПОСЛЕ логики (где камера могла сдвинуться) и ПЕРЕД рендером
+	RenderView.UpdateViewProjection();
+
+	// 8. Запуск тяжелых задач в потоках (Скелет, Физика, Распаковка)
+	// Они работают параллельно с рендером (или рендер ждет их, зависит от реализации RenderFrame)
+	ThreadManager.SignalFrameStart();
+
+	// 9. Рендер сцены
+#ifndef DEDICATED_SERVER
+	Device.RenderFrame();
+#endif
+
+	// 10. Сохранение состояния камеры (для интерполяции в след. кадре)
+	RenderView.SaveState();
+
+	// 11. Синхронизация: ждем завершения всех потоков перед следующим кадром
+	ThreadManager.WaitForFrameEnd();
+
+	// 12. Лимитер FPS (усыпляем поток, если слишком быстро)
+	TimeManager.DoFrameLimit();
+
+	// 13. Экономия энергии при свернутом окне
+	if (!Device.b_is_Active)
+		Sleep(1);
 }
 
 void CEngine::ProcessEventLoop()
