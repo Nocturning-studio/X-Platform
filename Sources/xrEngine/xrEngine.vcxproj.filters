@@ -220,6 +220,9 @@
     <Filter Include="Engine\Time manager">
       <UniqueIdentifier>{fb97fa90-365a-47d3-88d7-bcaf5f4f7a5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Thread manager">
+      <UniqueIdentifier>{104b3242-87ef-4020-b2f8-46f9b18684f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -650,6 +653,9 @@
     </ClInclude>
     <ClInclude Include="TimeManager.h">
       <Filter>Engine\Time manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager.h">
+      <Filter>Engine\Thread manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1102,6 +1108,9 @@
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>Engine\Time manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadManager.cpp">
+      <Filter>Engine\Thread manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

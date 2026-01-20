@@ -436,14 +436,7 @@ void CBulletManager::Render()
 void CBulletManager::CommitRenderSet() // @ the end of frame
 {
 	m_BulletsRendered = m_Bullets;
-	if (g_mt_config.test(mtBullets))
-	{
-		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CBulletManager::UpdateWorkload));
-	}
-	else
-	{
-		UpdateWorkload();
-	}
+	Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CBulletManager::UpdateWorkload));
 }
 void CBulletManager::CommitEvents() // @ the start of frame
 {

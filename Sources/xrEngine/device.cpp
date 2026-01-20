@@ -134,32 +134,6 @@ void CRenderDevice::End(void)
 #endif
 }
 
-void CRenderDevice::SecondaryThreadProc(void* context)
-{
-	OPTICK_THREAD("X-Ray Secondary Thread");
-	OPTICK_FRAME("X-Ray Secondary Thread");
-	PROFILE_FUNCTION();
-
-	auto& device = *static_cast<CRenderDevice*>(context);
-	while (true)
-	{
-		device.syncProcessFrame.Wait();
-		if (device.mt_bMustExit)
-		{
-			device.mt_bMustExit = FALSE;
-			device.syncThreadExit.Set();
-			return;
-		}
-
-		for (u32 pit = 0; pit < device.seqParallel.size(); pit++)
-			device.seqParallel[pit]();
-
-		device.seqParallel.clear_not_free();
-		device.seqFrameMT.Process(rp_Frame);
-		device.syncFrameDone.Set();
-	}
-}
-
 #include "igame_level.h"
 #include <ThreadUtil.h>
 void CRenderDevice::PreCache(u32 amount)
@@ -194,7 +168,7 @@ void CRenderDevice::PreCache()
 	mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
 }
 
-int g_svDedicateServerUpdateReate = 100;
+int g_frametime = 166;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
@@ -204,16 +178,6 @@ void CRenderDevice::PrepareEventLoop()
 
 	Msg("Preparing event loop...");
 
-	LPCSTR MainThreadName = "X-RAY Primary thread";
-	Msg("Setting main thread name: %s", MainThreadName);
-	OPTICK_THREAD(MainThreadName);
-
-	Threading::SpawnThread(SecondaryThreadProc, "X-RAY Secondary thread", 0, this);
-
-	mt_bMustExit = FALSE;
-
-	// [Moved from StartEventLoop start]
-	Log("\nStarting event loop...");
 	seqAppStart.Process(rp_AppStart);
 	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
@@ -251,9 +215,7 @@ void CRenderDevice::DoFrame()
 		return;
 	}
 
-#ifdef DEDICATED_SERVER
-	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
-#endif
+	u32 FrameStartTime = Engine.TimeManager.GetGlobalTimeMs();
 
 	if (psDeviceFlags.test(rsStatistic))
 		g_bEnableStatGather = TRUE;
@@ -283,7 +245,7 @@ void CRenderDevice::DoFrame()
 	RenderBackend.set_xform_project(mProject);
 	D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
 
-	syncProcessFrame.Set(); // allow secondary thread to do its job
+	Engine.ThreadManager.SignalFrameStart();
 
 #ifndef DEDICATED_SERVER
 	RenderFrame();
@@ -292,17 +254,15 @@ void CRenderDevice::DoFrame()
 	vCameraPosition_saved = vCameraPosition;
 	mFullTransform_saved = mFullTransform;
 
-	syncFrameDone.Wait();
+	Engine.ThreadManager.WaitForFrameEnd();
 
-#ifdef DEDICATED_SERVER
-	u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
+	u32 FrameEndTime = Engine.TimeManager.GetGlobalTimeMs();
 	u32 FrameTime = (FrameEndTime - FrameStartTime);
-	u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
+	u32 DSUpdateDelta = 1000 / g_frametime;
 	if (FrameTime < DSUpdateDelta)
 	{
 		Sleep(DSUpdateDelta - FrameTime);
 	}
-#endif
 
 	if (!b_is_Active)
 		Sleep(1);
@@ -313,13 +273,6 @@ void CRenderDevice::EndEventLoop()
 	Msg("Ending event loop...");
 
 	seqAppEnd.Process(rp_AppEnd);
-
-	// Stop Balance-Thread
-	mt_bMustExit = TRUE;
-	syncProcessFrame.Set();
-	syncThreadExit.Wait();
-	while (mt_bMustExit)
-		Sleep(0);
 }
 
 void ProcessLoading(RP_FUNC* f);
@@ -584,9 +537,7 @@ void CRenderDevice::Destroy(void)
 	seqAppStart.R.clear();
 	seqAppEnd.R.clear();
 	seqFrame.R.clear();
-	seqFrameMT.R.clear();
 	seqDeviceReset.R.clear();
-	seqParallel.clear();
 
 	xr_delete(Statistic);
 }

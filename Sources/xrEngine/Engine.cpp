@@ -274,6 +274,8 @@ bool CEngine::Initialize()
 
 	// 14. Final Systems Create
 
+	ThreadManager.Initialize();
+
 	Device.Create();
 
 	LALib.OnCreate();
@@ -286,7 +288,7 @@ bool CEngine::Initialize()
 	Msg("Scanning levels...");
 	LevelManager.Scan();
 
-	Device.seqFrameMT.Add(&SoundProcessor);
+	Engine.ThreadManager.seqFrameMT.Add(&SoundProcessor);
 
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 
@@ -303,10 +305,18 @@ bool CEngine::Initialize()
 	return true;
 }
 
-void CEngine::ProcessEventLoop()
+void CEngine::ProcessFrame()
 {
+	OPTICK_THREAD("X-Ray Primary Thread");
+	OPTICK_FRAME("X-Ray Primary Thread");
 	PROFILE_FUNCTION();
 
+	TimeManager.Update();
+	Device.DoFrame();
+}
+
+void CEngine::ProcessEventLoop()
+{
 	// Подготовка потоков (из предыдущего шага)
 	Device.PrepareEventLoop();
 
@@ -317,9 +327,8 @@ void CEngine::ProcessEventLoop()
 		if (!WindowManager.ProcessMessages())
 			break; // Если вернул false -> WM_QUIT -> выходим
 
-		// 2. Игровой кадр (Render Device)
-		TimeManager.Update();
-		Device.DoFrame();
+		// 2. Игровой кадр
+		ProcessFrame();
 	}
 
 	Device.EndEventLoop();
@@ -351,8 +360,6 @@ void CEngine::Destroy()
 
 	FontManager.Destroy();
 
-	Device.seqFrameMT.Remove(&SoundProcessor);
-
 	GameStateManager.Destroy();
 
 	DebugUI.Destroy();
@@ -362,6 +369,8 @@ void CEngine::Destroy()
 	// 6. Device & Scheduler
 	TimeManager.Destroy();
 	Device.Destroy();
+	ThreadManager.seqFrameMT.Remove(&SoundProcessor);
+	ThreadManager.Destroy();
 	Sheduler.Destroy();
 
 #ifdef DEBUG_MEMORY_MANAGER

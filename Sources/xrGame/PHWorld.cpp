@@ -88,10 +88,7 @@ void CPHWorld::Create()
 {
 	dWorldID phWorld = 0;
 
-	if (psDeviceFlags.test(mtPhysics))
-		Device.seqFrameMT.Add(this, REG_PRIORITY_HIGH);
-	else
-		Device.seqFrame.Add(this, REG_PRIORITY_LOW);
+	Engine.ThreadManager.seqFrameMT.Add(this, REG_PRIORITY_HIGH);
 
 	m_commander = xr_new<CPHCommander>();
 	// dVector3 extensions={2048,256,2048};
@@ -154,7 +151,7 @@ void CPHWorld::Destroy()
 	dCloseODE();
 	dCylinderClassUser = -1;
 	dRayMotionsClassUser = -1;
-	Device.seqFrameMT.Remove(this);
+	Engine.ThreadManager.seqFrameMT.Remove(this);
 	Device.seqFrame.Remove(this);
 	b_exist = false;
 }

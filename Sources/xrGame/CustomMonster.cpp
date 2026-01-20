@@ -301,19 +301,14 @@ void CCustomMonster::shedule_Update(u32 DT)
 	// *** general stuff
 	if (g_Alive())
 	{
-		if (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 #else  // DEBUG
-		{
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+				Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 			else
 				Exec_Visibility();
-		}
 #endif // DEBUG
-		else
-			Exec_Visibility();
 		memory().update(dt);
 	}
 	inherited::shedule_Update(DT);
@@ -425,14 +420,7 @@ void CCustomMonster::UpdateCL()
 	}
 	*/
 
-	if (g_mt_config.test(mtSoundPlayer))
-		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
-	else
-	{
-		START_PROFILE("CustomMonster/client_update/sound_player")
-		update_sound_player();
-		STOP_PROFILE
-	}
+	Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
 
 	START_PROFILE("CustomMonster/client_update/network extrapolation")
 	if (NET.empty())
@@ -766,8 +754,8 @@ void CCustomMonster::OnEvent(NET_Packet& P, u16 type)
 void CCustomMonster::net_Destroy()
 {
 	// 1. СНАЧАЛА убираем задачи из параллельных потоков, чтобы они не обратились к битой памяти
-	Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
-	Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+	Engine.ThreadManager.RemoveParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
+	Engine.ThreadManager.RemoveParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 
 	// 2. Теперь безопасно вызываем родительские деструкторы
 	inherited::net_Destroy(); // Здесь, скорее всего, удаляется m_entity_condition

@@ -20,6 +20,7 @@ struct xrDispatchTable;
 #include "pure.h"
 #include "WindowManager.h"
 #include "TimeManager.h"
+#include "ThreadManager.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Class creation/destroying interface
 extern "C"
@@ -61,6 +62,7 @@ class ENGINE_API CEngine
 	CDebugUI DebugUI;
 	CWindowManager WindowManager;
 	CTimeManager TimeManager;
+	CThreadManager ThreadManager;
 
   public:
 	// Конструктор/Деструктор
@@ -70,6 +72,7 @@ class ENGINE_API CEngine
 	// Основные жизненные циклы (Методы, которые остались)
 	bool Initialize(); // Вся инициализация (Console, Sound, Device, Input, DLLs) теперь здесь
 	void ProcessEventLoop();
+	void ProcessFrame();
 	void Destroy();	   // Очистка ресурсов
 
 	void Run(); // Запуск Loop (Init -> Loop -> Destroy)

@@ -24,6 +24,7 @@
 #include "xrRender_console.h"
 #include "render.h"
 #include "r_color_converting.h"
+#include "../xrEngine/Engine.h"
 
 IC void jitter(CBlender_Compile& C)
 {

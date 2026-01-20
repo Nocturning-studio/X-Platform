@@ -10,8 +10,6 @@ void CRender::RenderMenu()
 {
 	PROFILE_FUNCTION();
 
-	u32 FrameStartTime = Engine.TimeManager.GetTimerGlobal()->GetElapsed_ms();
-
 	// Globals
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
@@ -33,12 +31,5 @@ void CRender::RenderMenu()
 	// Resolve gamma and actual display
 	RenderBackend.set_Shader(RenderTarget->s_menu_gamma);
 	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, HW.pBaseRT, HW.pBaseZB);
-
-	// Fucking frame limiter
-	u32 FrameEndTime = Engine.TimeManager.GetTimerGlobal()->GetElapsed_ms();
-	u32 FrameTime = (FrameEndTime - FrameStartTime);
-	u32 UpdateDelta = 13.0f;
-	if (FrameTime < UpdateDelta)
-		Sleep(UpdateDelta - FrameTime);
 }
 ////////////////////////////////////////////////////////////////////////////////

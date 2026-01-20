@@ -19,10 +19,6 @@ class ENGINE_API CGammaControl;
 #include <mutex>
 #include "../xrCore/Event.hpp"
 
-// Thread Id's
-extern DWORD gMainThreadId;
-extern DWORD gSecondaryThreadId;
-
 #define VIEWPORT_NEAR 0.2f
 #define VIEWPORT_NEAR_HUD 0.01f
 
@@ -104,9 +100,7 @@ class ENGINE_API CRenderDevice
 	CRegistrator<pureAppStart> seqAppStart;
 	CRegistrator<pureAppEnd> seqAppEnd;
 	CRegistrator<pureFrame> seqFrame;
-	CRegistrator<pureFrame> seqFrameMT;
 	CRegistrator<pureDeviceReset> seqDeviceReset;
-	xr_vector<fastdelegate::FastDelegate0<>> seqParallel;
 
 	// Dependent classes
 	CResourceManager* Resources;
@@ -142,10 +136,6 @@ class ENGINE_API CRenderDevice
 	void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
 	BOOL Paused();
 
-private:
-	static void SecondaryThreadProc(void* context);
-	static void RenderThreadProc(void* context);
-
 public:
 
 	// Scene control
@@ -173,27 +163,6 @@ public:
 
 	void Initialize(void);
 	void ShutDown(void);
-
-  public:
-	// Multi-threading
-	std::recursive_mutex mt_csEnter;
-	std::recursive_mutex mt_csLeave;
-
-private:
-	Event syncProcessFrame, syncFrameDone, syncThreadExit;		 // Secondary thread events
-	Event renderProcessFrame, renderFrameDone, renderThreadExit; // Render thread events
-
-public:
-
-	volatile BOOL mt_bMustExit;
-
-	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate0<>& delegate)
-	{
-		xr_vector<fastdelegate::FastDelegate0<>>::iterator I =
-			std::find(seqParallel.begin(), seqParallel.end(), delegate);
-		if (I != seqParallel.end())
-			seqParallel.erase(I);
-	}
 };
 
 extern ENGINE_API CRenderDevice Device;

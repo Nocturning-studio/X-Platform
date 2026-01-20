@@ -714,7 +714,7 @@ void CConsole::Show()
 
 	m_editor->IR_Capture();
 	Device.seqRender.Add(this, 1);
-	Device.seqFrameMT.Add(this);
+	Engine.ThreadManager.seqFrameMT.Add(this);
 
 	SECUROM_MARKER_HIGH_SECURITY_OFF(11)
 }
@@ -741,7 +741,7 @@ void CConsole::Hide()
 	reset_selected_tip();
 	update_tips();
 
-	Device.seqFrameMT.Remove(this);
+	Engine.ThreadManager.seqFrameMT.Remove(this);
 	Device.seqRender.Remove(this);
 	m_editor->IR_Release();
 }

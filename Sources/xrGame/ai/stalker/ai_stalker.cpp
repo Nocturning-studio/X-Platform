@@ -514,13 +514,16 @@ void CAI_Stalker::net_Destroy()
 	CInventoryOwner::net_Destroy();
 	m_pPhysics_support->in_NetDestroy();
 
-	Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler));
+	// 1. Создаем делегат
+	auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
+
+	// 2. Удаляем через менеджер
+	Engine.ThreadManager.RemoveParallelTask(taskDelegate);
 
 #ifdef DEBUG
-	fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
-	xr_vector<fastdelegate::FastDelegate0<>>::const_iterator I;
-	I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
-	VERIFY(I == Device.seqParallel.end());
+	// 3. Проверяем через менеджер, что задачи больше нет
+	// Мы спрашиваем: "Есть ли задача?" и ожидаем FALSE.
+	VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
 #endif // DEBUG
 
 	xr_delete(m_ce_close);
@@ -705,15 +708,20 @@ void CAI_Stalker::UpdateCL()
 
 	if (g_Alive())
 	{
-		if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
+		if (CObjectHandler::planner().initialized())
 		{
-			fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
+			// 1. Создаем делегат (один раз, чтобы не дублировать код)
+			auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
+
 #ifdef DEBUG
-			xr_vector<fastdelegate::FastDelegate0<>>::const_iterator I;
-			I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
-			VERIFY(I == Device.seqParallel.end());
-#endif
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler));
+			// 2. Только проверка на дубликаты.
+			// Если задача уже есть — это баг логики (двойной вызов Update), поэтому мы просто ассертим.
+			// Удалять её тут не нужно, список и так пуст или готовится к исполнению.
+			VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
+#endif // DEBUG
+
+			// 3. Просто добавляем задачу
+			Engine.ThreadManager.AddParallelTask(taskDelegate);
 		}
 		else
 		{
@@ -891,14 +899,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			}
 		}
 
-		if (g_mt_config.test(mtAiVision))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
-		else
-		{
-			START_PROFILE("stalker/schedule_update/vision")
-			Exec_Visibility();
-			STOP_PROFILE
-		}
+		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 
 		START_PROFILE("stalker/schedule_update/memory")
 

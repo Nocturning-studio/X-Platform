@@ -1807,6 +1807,7 @@
     <ClInclude Include="std_classes.h" />
     <ClInclude Include="TextureDescrManager.h" />
     <ClInclude Include="Text_Console.h" />
+    <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="thunderbolt.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="tntQAVI.h" />
@@ -2121,6 +2122,7 @@
     <ClCompile Include="TextureDescrManager.cpp" />
     <ClCompile Include="Text_Console.cpp" />
     <ClCompile Include="Text_Console_WndProc.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="thunderbolt.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="tntQAVI.cpp" />

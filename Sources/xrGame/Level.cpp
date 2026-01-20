@@ -557,20 +557,12 @@ void CLevel::OnFrame()
 	if (!g_dedicated_server)
 	{
 		g_SoundEnvironment->Update();
-
-		if (g_mt_config.test(mtLevelSounds))
-			Device.seqParallel.push_back(
-				fastdelegate::FastDelegate0<>(m_level_sound_manager, &CLevelSoundManager::Update));
-		else
-			m_level_sound_manager->Update();
+		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(m_level_sound_manager, &CLevelSoundManager::Update));
 	}
 	// deffer LUA-GC-STEP
 	if (!g_dedicated_server)
 	{
-		if (g_mt_config.test(mtLUA_GC))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CLevel::script_gc));
-		else
-			script_gc();
+		Engine.ThreadManager.AddParallelTask(fastdelegate::FastDelegate0<>(this, &CLevel::script_gc));
 	}
 	//-----------------------------------------------------
 	if (pStatGraphR)
