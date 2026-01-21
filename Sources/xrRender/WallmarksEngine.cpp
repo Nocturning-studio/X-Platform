@@ -439,8 +439,8 @@ void CWallmarksEngine::Render()
 			{
 				Engine.Statistic->RenderDUMP_WMS_Count++;
 				float dst = Engine.RenderView.Position.distance_to_sqr(W->bounds.P);
-				float ssa = W->bounds.R * W->bounds.R / dst;
-				if (ssa >= ssaCLIP)
+				float ScreenSpaceArea = W->bounds.R * W->bounds.R / dst;
+				if (ScreenSpaceArea >= ssaCLIP)
 				{
 					u32 w_count = u32(w_verts - w_start);
 					if ((w_count + W->verts.size()) >= (MAX_TRIS * 3))
@@ -491,8 +491,8 @@ void CWallmarksEngine::Render()
 #endif
 
 			float dst = Engine.RenderView.Position.distance_to_sqr(W->m_Bounds.P);
-			float ssa = W->m_Bounds.R * W->m_Bounds.R / dst;
-			if (ssa >= ssaCLIP)
+			float ScreenSpaceArea = W->m_Bounds.R * W->m_Bounds.R / dst;
+			if (ScreenSpaceArea >= ssaCLIP)
 			{
 				Engine.Statistic->RenderDUMP_WMD_Count++;
 				u32 w_count = u32(w_verts - w_start);

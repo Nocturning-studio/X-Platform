@@ -171,17 +171,17 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 			dir2portal.sub(PORTAL->S.P, PortalTraverser.i_vBase);
 			float R = PORTAL->S.R;
 			float distSQ = dir2portal.square_magnitude();
-			float ssa = R * R / distSQ;
+			float ScreenSpaceArea = R * R / distSQ;
 			dir2portal.div(_sqrt(distSQ));
-			ssa *= _abs(PORTAL->P.n.dotproduct(dir2portal));
-			if (ssa < r_ssaDISCARD)
+			ScreenSpaceArea *= _abs(PORTAL->P.n.dotproduct(dir2portal));
+			if (ScreenSpaceArea < r_ssaDISCARD)
 				continue;
 
 			if (PortalTraverser.i_options & CPortalTraverser::VQ_FADE)
 			{
-				if (ssa < r_ssaLOD_A)
-					PortalTraverser.fade_portal(PORTAL, ssa);
-				if (ssa < r_ssaLOD_B)
+				if (ScreenSpaceArea < r_ssaLOD_A)
+					PortalTraverser.fade_portal(PORTAL, ScreenSpaceArea);
+				if (ScreenSpaceArea < r_ssaLOD_B)
 					continue;
 			}
 		}

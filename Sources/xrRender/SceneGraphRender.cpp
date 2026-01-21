@@ -19,9 +19,9 @@ using namespace SceneGraphTypes;
 namespace
 {
 // --- LOD Calculation ---
-ICF float calcLOD(float ssa /*fDistSq*/, float R)
+ICF float calcLOD(float ScreenSpaceArea /*fDistSq*/, float R)
 {
-	return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
+	return _sqrt(clampr((ScreenSpaceArea - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 }
 
 // --- LOD Sorting Helper ---
@@ -35,11 +35,11 @@ static void mapNormal_Render(SceneGraphTypes::mapNormalItems& N)
 {
 	// Сортировка по ScreenSpaceArea (screen space area)
 	std::sort(N.begin(), N.end(),
-			  [](const SceneGraphTypes::StaticRenderNode& N1, const SceneGraphTypes::StaticRenderNode& N2) { return (N1.ssa > N2.ssa); });
+			  [](const SceneGraphTypes::StaticRenderNode& N1, const SceneGraphTypes::StaticRenderNode& N2) { return (N1.ScreenSpaceArea > N2.ScreenSpaceArea); });
 
 	for (auto& Ni : N)
 	{
-		Ni.pVisual->Render(calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R));
+		Ni.pVisual->Render(calcLOD(Ni.ScreenSpaceArea, Ni.pVisual->vis.sphere.R));
 	}
 }
 
@@ -47,14 +47,14 @@ static void mapNormal_Render(SceneGraphTypes::mapNormalItems& N)
 static void mapMatrix_Render(SceneGraphTypes::mapMatrixItems& N)
 {
 	std::sort(N.begin(), N.end(),
-			  [](const SceneGraphTypes::DynamicRenderNode& N1, const SceneGraphTypes::DynamicRenderNode& N2) { return (N1.ssa > N2.ssa); });
+			  [](const SceneGraphTypes::DynamicRenderNode& N1, const SceneGraphTypes::DynamicRenderNode& N2) { return (N1.ScreenSpaceArea > N2.ScreenSpaceArea); });
 
 	for (auto& Ni : N)
 	{
 		RenderBackend.set_xform_world(Ni.Matrix);
 		RenderImplementation.apply_object(Ni.pObject);
 		RenderImplementation.apply_lmaterial();
-		Ni.pVisual->Render(calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R));
+		Ni.pVisual->Render(calcLOD(Ni.ScreenSpaceArea, Ni.pVisual->vis.sphere.R));
 	}
 	N.clear();
 }
@@ -112,7 +112,7 @@ template <typename TNode> bool cmp_textures_lexN(TNode* N1, TNode* N2)
 
 template <typename TNode> bool cmp_textures_ssa(TNode* N1, TNode* N2)
 {
-	return (N1->val.ssa > N2->val.ssa);
+	return (N1->val.ScreenSpaceArea > N2->val.ScreenSpaceArea);
 }
 
 // --- Texture Sorting Logic ---
@@ -133,7 +133,7 @@ void sort_tlist(VecTypes& lst, VecTypes& temp, MapTextures& textures, BOOL bSSA)
 			auto _end = textures.end();
 			for (; _it != _end; _it++)
 			{
-				if (_it->val.ssa > r_ssaHZBvsTEX)
+				if (_it->val.ScreenSpaceArea > r_ssaHZBvsTEX)
 					lst.push_back(_it);
 				else
 					temp.push_back(_it);
@@ -215,7 +215,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 			RenderBackend.set_Vertex_Shader(Nvs->key);
 
 			mapNormalPS& ps = Nvs->val;
-			ps.ssa = 0;
+			ps.ScreenSpaceArea = 0;
 			ps.getANY_P(nrmPS);
 			for (u32 ps_id = 0; ps_id < nrmPS.size(); ps_id++)
 			{
@@ -223,7 +223,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 				RenderBackend.set_Pixel_Shader(Nps->key);
 
 				mapNormalCS& cs = Nps->val;
-				cs.ssa = 0;
+				cs.ScreenSpaceArea = 0;
 				cs.getANY_P(nrmCS);
 				for (u32 cs_id = 0; cs_id < nrmCS.size(); cs_id++)
 				{
@@ -231,7 +231,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 					RenderBackend.set_Constants(Ncs->key);
 
 					mapNormalStates& states = Ncs->val;
-					states.ssa = 0;
+					states.ScreenSpaceArea = 0;
 					states.getANY_P(nrmStates);
 					for (u32 state_id = 0; state_id < nrmStates.size(); state_id++)
 					{
@@ -239,7 +239,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 						RenderBackend.set_States(Nstate->key);
 
 						mapNormalTextures& tex = Nstate->val;
-						tex.ssa = 0;
+						tex.ScreenSpaceArea = 0;
 
 						sort_tlist(nrmTextures, nrmTexturesTemp, tex, TRUE);
 
@@ -250,7 +250,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 							RenderImplementation.apply_lmaterial();
 
 							mapNormalItems& items = Ntex->val;
-							items.ssa = 0;
+							items.ScreenSpaceArea = 0;
 							mapNormal_Render(items); // Local helper
 							if (_clear)
 								items.clear();
@@ -289,7 +289,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 			RenderBackend.set_Vertex_Shader(Nvs->key);
 
 			mapMatrixPS& ps = Nvs->val;
-			ps.ssa = 0;
+			ps.ScreenSpaceArea = 0;
 			ps.getANY_P(matPS);
 
 			for (u32 ps_id = 0; ps_id < matPS.size(); ps_id++)
@@ -298,7 +298,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 				RenderBackend.set_Pixel_Shader(Nps->key);
 
 				mapMatrixCS& cs = Nps->val;
-				cs.ssa = 0;
+				cs.ScreenSpaceArea = 0;
 				cs.getANY_P(matCS);
 
 				for (u32 cs_id = 0; cs_id < matCS.size(); cs_id++)
@@ -307,7 +307,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 					RenderBackend.set_Constants(Ncs->key);
 
 					mapMatrixStates& states = Ncs->val;
-					states.ssa = 0;
+					states.ScreenSpaceArea = 0;
 					states.getANY_P(matStates);
 
 					for (u32 state_id = 0; state_id < matStates.size(); state_id++)
@@ -316,7 +316,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 						RenderBackend.set_States(Nstate->key);
 
 						mapMatrixTextures& tex = Nstate->val;
-						tex.ssa = 0;
+						tex.ScreenSpaceArea = 0;
 
 						sort_tlist(matTextures, matTexturesTemp, tex, TRUE);
 
@@ -327,7 +327,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 							RenderImplementation.apply_lmaterial();
 
 							mapMatrixItems& items = Ntex->val;
-							items.ssa = 0;
+							items.ScreenSpaceArea = 0;
 							mapMatrix_Render(items);
 						}
 						matTextures.clear();
@@ -441,7 +441,7 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 		SceneGraphTypes::LodRenderNode& P = lstLODs[i];
 
 		// calculate alpha
-		float ssaDiff = P.ssa - f_ssaLOD_B;
+		float ssaDiff = P.ScreenSpaceArea - f_ssaLOD_B;
 		float scale = ssaDiff / ssaRange;
 		int iA = iFloor((1.0f - scale) * 255.f);
 		u32 uA = u32(clampr(iA, 0, 255));

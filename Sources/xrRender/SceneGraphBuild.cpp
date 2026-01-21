@@ -121,7 +121,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		if (allowed)
 		{
 			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
-			N->val.ssa = ScreenSpaceArea;
+			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			// m_current_owner и m_current_xform - члены CSceneGraph
 			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
@@ -151,7 +151,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		if (sh->flags.bStrictB2F)
 		{
 			mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
-			N->val.ssa = ScreenSpaceArea;
+			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
 			N->val.Matrix = *m_current_xform;
@@ -161,7 +161,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		else
 		{
 			mapHUD_Node* N = m_queue_hud.insertInAnyWay(distSQ);
-			N->val.ssa = ScreenSpaceArea;
+			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
 			N->val.Matrix = *m_current_xform;
@@ -178,7 +178,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 	if (sh->flags.bStrictB2F)
 	{
 		mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
-		N->val.ssa = ScreenSpaceArea;
+		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = *m_current_xform;
@@ -190,7 +190,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 	if (sh->flags.bEmissive)
 	{
 		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
-		N->val.ssa = ScreenSpaceArea;
+		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = *m_current_xform;
@@ -201,7 +201,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
 	{
 		mapSorted_Node* N = m_queue_wallmarks.insertInAnyWay(distSQ);
-		N->val.ssa = ScreenSpaceArea;
+		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = *m_current_xform;
@@ -226,21 +226,21 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 	items.push_back(item);
 
 	// Need to sort for HZB efficient use
-	if (ScreenSpaceArea > Ntex->val.ssa)
+	if (ScreenSpaceArea > Ntex->val.ScreenSpaceArea)
 	{
-		Ntex->val.ssa = ScreenSpaceArea;
-		if (ScreenSpaceArea > Nstate->val.ssa)
+		Ntex->val.ScreenSpaceArea = ScreenSpaceArea;
+		if (ScreenSpaceArea > Nstate->val.ScreenSpaceArea)
 		{
-			Nstate->val.ssa = ScreenSpaceArea;
-			if (ScreenSpaceArea > Ncs->val.ssa)
+			Nstate->val.ScreenSpaceArea = ScreenSpaceArea;
+			if (ScreenSpaceArea > Ncs->val.ScreenSpaceArea)
 			{
-				Ncs->val.ssa = ScreenSpaceArea;
-				if (ScreenSpaceArea > Nps->val.ssa)
+				Ncs->val.ScreenSpaceArea = ScreenSpaceArea;
+				if (ScreenSpaceArea > Nps->val.ScreenSpaceArea)
 				{
-					Nps->val.ssa = ScreenSpaceArea;
-					if (ScreenSpaceArea > Nvs->val.ssa)
+					Nps->val.ScreenSpaceArea = ScreenSpaceArea;
+					if (ScreenSpaceArea > Nvs->val.ScreenSpaceArea)
 					{
-						Nvs->val.ssa = ScreenSpaceArea;
+						Nvs->val.ScreenSpaceArea = ScreenSpaceArea;
 					}
 				}
 			}
@@ -282,7 +282,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual)
 		if (allowed)
 		{
 			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
-			N->val.ssa = ScreenSpaceArea;
+			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pObject = NULL;
 			N->val.pVisual = pVisual;
 			N->val.Matrix = Fidentity;
@@ -317,7 +317,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual)
 	if (sh->flags.bEmissive)
 	{
 		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
-		N->val.ssa = ScreenSpaceArea;
+		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = NULL;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = Fidentity;
@@ -329,7 +329,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual)
 	{
 
 		mapSorted_Node* N = m_queue_wallmarks.insertInAnyWay(distSQ);
-		N->val.ssa = ScreenSpaceArea;
+		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = NULL;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = Fidentity;
@@ -359,21 +359,21 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual)
 	items.push_back(item);
 
 	// Need to sort for HZB efficient use
-	if (ScreenSpaceArea > Ntex->val.ssa)
+	if (ScreenSpaceArea > Ntex->val.ScreenSpaceArea)
 	{
-		Ntex->val.ssa = ScreenSpaceArea;
-		if (ScreenSpaceArea > Nstate->val.ssa)
+		Ntex->val.ScreenSpaceArea = ScreenSpaceArea;
+		if (ScreenSpaceArea > Nstate->val.ScreenSpaceArea)
 		{
-			Nstate->val.ssa = ScreenSpaceArea;
-			if (ScreenSpaceArea > Ncs->val.ssa)
+			Nstate->val.ScreenSpaceArea = ScreenSpaceArea;
+			if (ScreenSpaceArea > Ncs->val.ScreenSpaceArea)
 			{
-				Ncs->val.ssa = ScreenSpaceArea;
-				if (ScreenSpaceArea > Nps->val.ssa)
+				Ncs->val.ScreenSpaceArea = ScreenSpaceArea;
+				if (ScreenSpaceArea > Nps->val.ScreenSpaceArea)
 				{
-					Nps->val.ssa = ScreenSpaceArea;
-					if (ScreenSpaceArea > Nvs->val.ssa)
+					Nps->val.ScreenSpaceArea = ScreenSpaceArea;
+					if (ScreenSpaceArea > Nvs->val.ScreenSpaceArea)
 					{
-						Nvs->val.ssa = ScreenSpaceArea;
+						Nvs->val.ScreenSpaceArea = ScreenSpaceArea;
 					}
 				}
 			}
@@ -599,8 +599,8 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 			Fvector Tpos;
 			float D;
 			m_current_xform->transform_tiny(Tpos, pV->vis.sphere.P);
-			float ssa = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f);
-			if (ssa < r_ssaLOD_A)
+			float ScreenSpaceArea = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f);
+			if (ScreenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
 		if (_use_lod)
@@ -737,17 +737,17 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual)
 	case MT_LOD: {
 		FLOD* pV = (FLOD*)pVisual;
 		float D;
-		float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
-		ssa *= pV->lod_factor;
-		if (ssa < r_ssaLOD_A)
+		float ScreenSpaceArea = CalcSSA(D, pV->vis.sphere.P, pV);
+		ScreenSpaceArea *= pV->lod_factor;
+		if (ScreenSpaceArea < r_ssaLOD_A)
 		{
-			if (ssa < r_ssaDISCARD)
+			if (ScreenSpaceArea < r_ssaDISCARD)
 				return;
 			mapLOD_Node* N = mapLOD.insertInAnyWay(D);
-			N->val.ssa = ssa;
+			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pVisual = pVisual;
 		}
-		if (ssa > r_ssaLOD_B)
+		if (ScreenSpaceArea > r_ssaLOD_B)
 		{
 			I = pV->children.begin();
 			E = pV->children.end();
@@ -846,8 +846,8 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 			Fvector fTpos;
 			float D;
 			m_current_xform->transform_tiny(fTpos, pV->vis.sphere.P);
-			float ssa = CalcSSA(D, fTpos, pV->vis.sphere.R / 2.f);
-			if (ssa < r_ssaLOD_A)
+			float ScreenSpaceArea = CalcSSA(D, fTpos, pV->vis.sphere.R / 2.f);
+			if (ScreenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
 		if (_use_lod)
@@ -1006,18 +1006,18 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 	case MT_LOD: {
 		FLOD* pV = (FLOD*)pVisual;
 		float D;
-		float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
-		ssa *= pV->lod_factor;
-		if (ssa < r_ssaLOD_A)
+		float ScreenSpaceArea = CalcSSA(D, pV->vis.sphere.P, pV);
+		ScreenSpaceArea *= pV->lod_factor;
+		if (ScreenSpaceArea < r_ssaLOD_A)
 		{
-			if (ssa < r_ssaDISCARD)
+			if (ScreenSpaceArea < r_ssaDISCARD)
 				return;
 			// Вставка в локальный mapLOD
 			mapLOD_Node* N = mapLOD.insertInAnyWay(D);
-			N->val.ssa = ssa;
+			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pVisual = pVisual;
 		}
-		if (ssa > r_ssaLOD_B)
+		if (ScreenSpaceArea > r_ssaLOD_B)
 		{
 			I = pV->children.begin();
 			E = pV->children.end();

@@ -133,7 +133,7 @@ class CPortalTraverser
 	void initialize();
 	void destroy();
 	void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
-	void fade_portal(CPortal* _p, float ssa);
+	void fade_portal(CPortal* _p, float ScreenSpaceArea);
 	void fade_render();
 #ifdef DEBUG
 	void dbg_draw();

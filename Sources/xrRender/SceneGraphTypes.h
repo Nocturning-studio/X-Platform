@@ -13,13 +13,13 @@ namespace SceneGraphTypes
 
 struct StaticRenderNode
 {
-	float ssa;
+	float ScreenSpaceArea;
 	IRender_Visual* pVisual;
 };
 
 struct DynamicRenderNode
 {
-	float ssa;
+	float ScreenSpaceArea;
 	IRenderable* pObject;
 	IRender_Visual* pVisual;
 	Fmatrix Matrix; // copy
@@ -32,7 +32,7 @@ struct _MatrixItemS : public DynamicRenderNode
 
 struct LodRenderNode
 {
-	float ssa;
+	float ScreenSpaceArea;
 	IRender_Visual* pVisual;
 };
 
@@ -57,27 +57,27 @@ using mapNormalDirect = xr_vector<StaticRenderNode, render_allocator::helper<Sta
 
 struct mapNormalItems : public mapNormalDirect
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapNormalTextures : public FixedMAP<STextureList*, mapNormalItems, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapNormalStates : public FixedMAP<IDirect3DStateBlock9*, mapNormalTextures, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapNormalCS : public FixedMAP<R_constant_table*, mapNormalStates, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapNormalPS : public FixedMAP<ps_type, mapNormalCS, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapNormalVS : public FixedMAP<vs_type, mapNormalPS, render_allocator>
@@ -91,27 +91,27 @@ using mapMatrixDirect = xr_vector<DynamicRenderNode, render_allocator::helper<Dy
 
 struct mapMatrixItems : public mapMatrixDirect
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapMatrixTextures : public FixedMAP<STextureList*, mapMatrixItems, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapMatrixStates : public FixedMAP<IDirect3DStateBlock9*, mapMatrixTextures, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapMatrixCS : public FixedMAP<R_constant_table*, mapMatrixStates, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapMatrixPS : public FixedMAP<ps_type, mapMatrixCS, render_allocator>
 {
-	float ssa;
+	float ScreenSpaceArea;
 };
 
 struct mapMatrixVS : public FixedMAP<vs_type, mapMatrixPS, render_allocator>

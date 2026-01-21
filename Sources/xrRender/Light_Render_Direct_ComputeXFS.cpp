@@ -42,7 +42,7 @@ void CLight_Compute_XFORM_and_VIS::compute_xf_spot(light* L)
 	float dist = Engine.RenderView.Position.distance_to(L->spatial.sphere.P) - L->spatial.sphere.R;
 	if (dist < 0)
 		dist = 0;
-	float ssa = clampr(L->get_range() * L->get_range() / (1.f + dist * dist), 0.f, 1.f);
+	float ScreenSpaceArea = clampr(L->get_range() * L->get_range() / (1.f + dist * dist), 0.f, 1.f);
 
 	// compute intensity
 	float intensity0 = (L->get_color().r + L->get_color().g + L->get_color().b) / 3.f;
@@ -59,7 +59,7 @@ void CLight_Compute_XFORM_and_VIS::compute_xf_spot(light* L)
 	float widefactor = L->get_cone() / deg2rad(90.f); //
 
 	// factors
-	float factor0 = powf(ssa, 1.f / 2.f);		 // ssa is quadratic
+	float factor0 = powf(ScreenSpaceArea, 1.f / 2.f);		 // ScreenSpaceArea is quadratic
 	float factor1 = powf(intensity, 1.f / 16.f); // less perceptually important?
 	float factor2 = powf(duel_dot, 1.f / 4.f);	 // difficult to fast-change this -> visible
 	float factor3 = powf(sizefactor, 1.f / 4.f); // this shouldn't make much difference

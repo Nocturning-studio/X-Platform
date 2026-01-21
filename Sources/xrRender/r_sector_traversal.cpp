@@ -60,11 +60,11 @@ void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBa
 	}
 }
 
-void CPortalTraverser::fade_portal(CPortal* _p, float ssa)
+void CPortalTraverser::fade_portal(CPortal* _p, float ScreenSpaceArea)
 {
 	////OPTICK_EVENT("CPortalTraverser::fade_portal");
 
-	f_portals.push_back(mk_pair(_p, ssa));
+	f_portals.push_back(mk_pair(_p, ScreenSpaceArea));
 }
 
 void CPortalTraverser::initialize()
