@@ -634,7 +634,7 @@ void CRender::add_Occluder(Fbox2& bb_screenspace)
 
 void CRender::set_Object(IRenderable* O)
 {
-	SceneGraph.m_current_owner = O;
+	SceneGraph.set_Object(O);
 }
 
 void CRender::set_render_mode(int mode)

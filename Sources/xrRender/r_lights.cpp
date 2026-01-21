@@ -11,7 +11,7 @@ void CRender::render_lights(light_Package& LP)
 {
 	OPTICK_EVENT("render_lights");
 
-    // Фильтрация нулевых указателей и невалидных источников
+	// Фильтрация нулевых указателей и невалидных источников
 	auto is_valid_light = [](light* L) {
 		if (L == nullptr)
 			return false;
@@ -149,11 +149,13 @@ void CRender::render_lights(light_Package& LP)
 		for (light* L : current_batch)
 		{
 			L->get_smapvis().begin();
+			// render_subspace уже работает с внутренним m_packet
 			SceneGraph.render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
 
-			bool bNormal = SceneGraph.m_queue_static[0].size() || SceneGraph.m_queue_dynamic[0].size();
-			bool bSpecial =
-				SceneGraph.m_queue_static[1].size() || SceneGraph.m_queue_dynamic[1].size() || SceneGraph.m_queue_transparent.size();
+			// Проверяем очереди через m_packet
+			bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
+			bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
+							SceneGraph.m_packet.queue_transparent.size();
 
 			if (bNormal || bSpecial)
 			{
@@ -166,6 +168,7 @@ void CRender::render_lights(light_Package& LP)
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 					Details->Render(DetailsRenderMode::DepthOnly, &L->X.S.combine);
 
+				// SceneGraph.Render использует m_packet
 				SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
 				L->X.S.transluent = FALSE;
 
@@ -250,15 +253,6 @@ void CRender::render_lights(light_Package& LP)
 				{
 					accumulate_spot_lights(L);
 				}
-
-				// Volumetric lights (если включены)
-				// if (ps_r_lighting_flags.test(RFLAG_VOLUMETRIC_LIGHTS))
-				// {
-				//     for (light* L : current_batch)
-				//     {
-				//         RenderTarget->accum_volumetric(L);
-				//     }
-				// }
 
 				current_batch.clear();
 			}

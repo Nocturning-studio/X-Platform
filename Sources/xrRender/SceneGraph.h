@@ -1,112 +1,68 @@
 #pragma once
 
-// Включаем необходимые хидеры
 #include "..\xrEngine\render.h"
 #include "..\xrEngine\ispatial.h"
 #include "SceneGraphTypes.h"
 #include "r_sector.h"
 
-// Forward declaration
 class CRender;
-class IRender_Visual; // На всякий случай
+class IRender_Visual;
 
 // Enum для типов рендеринга графа
 enum class SceneGraphRenderType
 {
-	Opaque,		 // Обычная геометрия (бывший render_graph)
-	Transparent, // Alpha (бывший render_sorted)
+	Opaque,		 // Обычная геометрия
+	Transparent, // Alpha
 	HUD,		 // Оружие и руки
 	LOD,		 // LODы деревьев
 	Emissive,	 // Светящиеся объекты
-	Wallmarks,	 // Следы от пуль и т.д.
+	Wallmarks,	 // Следы
 	Distortion	 // Искажения
 };
 
 struct SceneGraphFetchConfig
 {
-	bool fetch_priority_0 : 1; // Priority 0 (Base Opaque)
-	bool fetch_priority_1 : 1; // Priority 1 (Secondary/AlphaTest)
-	bool fetch_wallmarks : 1;  // Wallmarks
+	bool fetch_priority_0 : 1;
+	bool fetch_priority_1 : 1;
+	bool fetch_wallmarks : 1;
 
-	// Конструктор по умолчанию (все включено, как в старом коде по дефолту)
 	SceneGraphFetchConfig() : fetch_priority_0(true), fetch_priority_1(true), fetch_wallmarks(false)
 	{
 	}
-
 	SceneGraphFetchConfig(bool p0, bool p1, bool wm) : fetch_priority_0(p0), fetch_priority_1(p1), fetch_wallmarks(wm)
 	{
 	}
 };
 
-//////////////////////////////////////////////////////////////////////////
-// feedback	for receiving visuals										//
-//////////////////////////////////////////////////////////////////////////
 class R_feedback
 {
   public:
 	virtual void rfeedback_static(IRender_Visual* V) = 0;
 };
 
-//////////////////////////////////////////////////////////////////////////
-// Структура для хранения и сортировки рендер-элементов (Scene Graph)
-//////////////////////////////////////////////////////////////////////////
-class CSceneGraph
+// =========================================================================
+//  Render Packet (Thread-Safe Data Buffer)
+//  Хранит только очереди отрисовки. Может быть локальным для потока.
+// =========================================================================
+struct SceneGraphPacket
 {
-  public:
-	// == PUBLIC DATA MEMBERS (TODO: Encapsulate later) ==
-	IRenderable* m_current_owner;
-	Fmatrix* m_current_transform;
-	BOOL m_is_hud_pass;
-	BOOL m_is_invisible_mode;
-	BOOL m_record_multipass;									 // record nearest for multi-pass
-	R_feedback* m_feedback_interface;							 // feedback for geometry being rendered
-	u32 val_feedback_breakp;							 // breakpoint
-	xr_vector<Fbox3, render_alloc<Fbox3>>* m_culling_bounds_recorder; // coarse structure recorder
-	u32 render_phase;
-	u32 m_traversal_marker;
-	SceneGraphFetchConfig m_fetch_config;
-
-  public:
 	// Dynamic scene graph containers
-	SceneGraphTypes::mapNormal_T m_queue_static[2]; // 2==(priority/2)
-	SceneGraphTypes::mapMatrix_T m_queue_dynamic[2];
-	SceneGraphTypes::mapSorted_T m_queue_transparent;
-	SceneGraphTypes::mapHUD_T m_queue_hud;
+	SceneGraphTypes::mapNormal_T queue_static[2]; // [0] = priority 0, [1] = priority 1
+	SceneGraphTypes::mapMatrix_T queue_dynamic[2];
+	SceneGraphTypes::mapSorted_T queue_transparent;
+	SceneGraphTypes::mapHUD_T queue_hud;
 	SceneGraphTypes::mapLOD_T mapLOD;
-	SceneGraphTypes::mapSorted_T m_queue_distortion;
-	SceneGraphTypes::mapSorted_T m_queue_wallmarks; // sorted
+	SceneGraphTypes::mapSorted_T queue_distortion;
+	SceneGraphTypes::mapSorted_T queue_wallmarks;
 	SceneGraphTypes::mapSorted_T mapEmissive;
 
-	// Runtime structures (Lists for sorting)
-	xr_vector<SceneGraphTypes::mapNormalVS::TNode*, render_alloc<SceneGraphTypes::mapNormalVS::TNode*>> nrmVS;
-	xr_vector<SceneGraphTypes::mapNormalPS::TNode*, render_alloc<SceneGraphTypes::mapNormalPS::TNode*>> nrmPS;
-	xr_vector<SceneGraphTypes::mapNormalCS::TNode*, render_alloc<SceneGraphTypes::mapNormalCS::TNode*>> nrmCS;
-	xr_vector<SceneGraphTypes::mapNormalStates::TNode*, render_alloc<SceneGraphTypes::mapNormalStates::TNode*>> nrmStates;
-	xr_vector<SceneGraphTypes::mapNormalTextures::TNode*, render_alloc<SceneGraphTypes::mapNormalTextures::TNode*>> nrmTextures;
-	xr_vector<SceneGraphTypes::mapNormalTextures::TNode*, render_alloc<SceneGraphTypes::mapNormalTextures::TNode*>> nrmTexturesTemp;
-
-	xr_vector<SceneGraphTypes::mapMatrixVS::TNode*, render_alloc<SceneGraphTypes::mapMatrixVS::TNode*>> matVS;
-	xr_vector<SceneGraphTypes::mapMatrixPS::TNode*, render_alloc<SceneGraphTypes::mapMatrixPS::TNode*>> matPS;
-	xr_vector<SceneGraphTypes::mapMatrixCS::TNode*, render_alloc<SceneGraphTypes::mapMatrixCS::TNode*>> matCS;
-	xr_vector<SceneGraphTypes::mapMatrixStates::TNode*, render_alloc<SceneGraphTypes::mapMatrixStates::TNode*>> matStates;
-	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>> matTextures;
-	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>> matTexturesTemp;
-
+	// Списки для LOD (данные наполнения)
 	xr_vector<SceneGraphTypes::LodRenderNode, render_alloc<SceneGraphTypes::LodRenderNode>> lstLODs;
 	xr_vector<int, render_alloc<int>> lstLODgroups;
 
-	// Lists populated during traversal
-	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/> lstRenderables;
-	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/> lstSpatial;
-	xr_vector<IRender_Visual*, render_alloc<IRender_Visual*>> lstVisuals;
-	xr_vector<IRender_Visual*, render_alloc<IRender_Visual*>> lstRecorded;
-
-	u32 counter_S;
-	u32 counter_D;
-	BOOL b_loaded;
-
-	// Списки видимых объектов за текущий кадр (для Re-use)
-	xr_vector<IRender_Visual*> m_visuals_static_visible;
+	// Result lists
+	xr_vector<ISpatial*> lstRenderables;
+	xr_vector<IRender_Visual*, render_alloc<IRender_Visual*>> m_visuals_static_visible;
 
 	struct DReuseItem
 	{
@@ -115,36 +71,172 @@ class CSceneGraph
 	};
 	xr_vector<DReuseItem> m_visuals_dynamic_visible;
 
+	// Synchronization for parallel access (если используем один буфер на всех)
+	xrCriticalSection cs;
+
+	void Clear()
+	{
+		queue_static[0].clear();
+		queue_static[1].clear();
+		queue_dynamic[0].clear();
+		queue_dynamic[1].clear();
+		queue_transparent.clear();
+		queue_hud.clear();
+		mapLOD.clear();
+		queue_distortion.clear();
+		queue_wallmarks.clear();
+		mapEmissive.clear();
+
+		lstLODs.clear();
+		lstLODgroups.clear();
+		lstRenderables.clear();
+		m_visuals_static_visible.clear();
+		m_visuals_dynamic_visible.clear();
+	}
+
+	void Destroy()
+	{
+		queue_static[0].destroy();
+		queue_static[1].destroy();
+		queue_dynamic[0].destroy();
+		queue_dynamic[1].destroy();
+		queue_transparent.destroy();
+		queue_hud.destroy();
+		mapLOD.destroy();
+		queue_distortion.destroy();
+		queue_wallmarks.destroy();
+		mapEmissive.destroy();
+	}
+};
+
+// =========================================================================
+//  Scratch Pad (Working Buffers)
+//  Используется только при рендеринге (сортировке/флаттенинге)
+//  Чтобы не переаллоцировать вектора каждый кадр.
+// =========================================================================
+struct SceneGraphScratchPad
+{
+	// Static Geometry Sorting Buffers
+	xr_vector<SceneGraphTypes::mapNormalVS::TNode*, render_alloc<SceneGraphTypes::mapNormalVS::TNode*>> nrmVS;
+	xr_vector<SceneGraphTypes::mapNormalPS::TNode*, render_alloc<SceneGraphTypes::mapNormalPS::TNode*>> nrmPS;
+	xr_vector<SceneGraphTypes::mapNormalCS::TNode*, render_alloc<SceneGraphTypes::mapNormalCS::TNode*>> nrmCS;
+	xr_vector<SceneGraphTypes::mapNormalStates::TNode*, render_alloc<SceneGraphTypes::mapNormalStates::TNode*>>
+		nrmStates;
+	xr_vector<SceneGraphTypes::mapNormalTextures::TNode*, render_alloc<SceneGraphTypes::mapNormalTextures::TNode*>>
+		nrmTextures;
+	xr_vector<SceneGraphTypes::mapNormalTextures::TNode*, render_alloc<SceneGraphTypes::mapNormalTextures::TNode*>>
+		nrmTexturesTemp;
+
+	// Dynamic Geometry Sorting Buffers
+	xr_vector<SceneGraphTypes::mapMatrixVS::TNode*, render_alloc<SceneGraphTypes::mapMatrixVS::TNode*>> matVS;
+	xr_vector<SceneGraphTypes::mapMatrixPS::TNode*, render_alloc<SceneGraphTypes::mapMatrixPS::TNode*>> matPS;
+	xr_vector<SceneGraphTypes::mapMatrixCS::TNode*, render_alloc<SceneGraphTypes::mapMatrixCS::TNode*>> matCS;
+	xr_vector<SceneGraphTypes::mapMatrixStates::TNode*, render_alloc<SceneGraphTypes::mapMatrixStates::TNode*>>
+		matStates;
+	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>>
+		matTextures;
+	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>>
+		matTexturesTemp;
+
+	void Clear()
+	{
+		nrmVS.clear();
+		nrmPS.clear();
+		nrmCS.clear();
+		nrmStates.clear();
+		nrmTextures.clear();
+		nrmTexturesTemp.clear();
+		matVS.clear();
+		matPS.clear();
+		matCS.clear();
+		matStates.clear();
+		matTextures.clear();
+		matTexturesTemp.clear();
+	}
+};
+
+// =========================================================================
+//  Traversal Context
+//  Состояние, которое меняется в процессе обхода.
+//  В будущем это должно передаваться аргументом, а не лежать в классе.
+// =========================================================================
+struct SceneTraversalContext
+{
+	IRenderable* current_owner;
+	Fmatrix* current_transform;
+	BOOL is_hud_pass;
+	BOOL is_invisible_mode;
+
+	SceneTraversalContext() : current_owner(NULL), current_transform(NULL), is_hud_pass(FALSE), is_invisible_mode(FALSE)
+	{
+	}
+};
+
+// =========================================================================
+//  CSceneGraph Class
+// =========================================================================
+class CSceneGraph
+{
   public:
-	// Методы управления состоянием (ранее были виртуальными из IRender_interface)
+	// === Data Members ===
+
+	// 1. Thread-Safe Data Container
+	SceneGraphPacket m_packet;
+
+	// 2. Worker Buffers (for Rendering/Sorting phase)
+	SceneGraphScratchPad m_scratch;
+
+	// 3. Current Traversal State (Warning: Not thread safe if multiple threads share CSceneGraph instance without
+	// mutex)
+	SceneTraversalContext m_ctx;
+
+	// 4. Global Config / Counters
+	SceneGraphFetchConfig m_fetch_config;
+	xr_vector<Fbox3, render_alloc<Fbox3>>* m_culling_bounds_recorder;
+
+	R_feedback* m_feedback_interface;
+	u32 val_feedback_breakp;
+	u32 m_traversal_marker;
+
+	u32 counter_S;
+	u32 counter_D;
+	BOOL b_loaded;
+
+  public:
+	CSceneGraph();
+	void destroy();
+
+	// === State Management ===
+	void SetFetchConfig(const SceneGraphFetchConfig& config);
+
 	void set_Transform(Fmatrix* M)
 	{
-		VERIFY(M);
-		m_current_transform = M;
+		m_ctx.current_transform = M;
+	}
+	void set_Object(IRenderable* O)
+	{
+		m_ctx.current_owner = O;
 	}
 	void set_HUD(BOOL V)
 	{
-		m_is_hud_pass = V;
+		m_ctx.is_hud_pass = V;
 	}
-	BOOL get_HUD()
+	BOOL get_HUD() const
 	{
-		return m_is_hud_pass;
+		return m_ctx.is_hud_pass;
 	}
 	void set_Invisible(BOOL V)
 	{
-		m_is_invisible_mode = V;
+		m_ctx.is_invisible_mode = V;
 	}
+
 	void set_Feedback(R_feedback* V, u32 id)
 	{
 		val_feedback_breakp = id;
 		m_feedback_interface = V;
 	}
-	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest)
-	{
-		m_culling_bounds_recorder = dest;
-		if (dest)
-			dest->clear();
-	}
+	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest);
+
 	void get_Counters(u32& s, u32& d)
 	{
 		s = counter_S;
@@ -155,48 +247,38 @@ class CSceneGraph
 		counter_S = counter_D = 0;
 	}
 
-  public:
-	CSceneGraph(); // Конструктор
+	// === Insertion API ===
+	// Использует текущий m_ctx и пишет в m_packet
+	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes);
+	void add_Static(IRender_Visual* pVisual, u32 planes);
 
-	void destroy(); // Деструктор/Очистка ресурсов
+	// Прямые методы (для reuse или принудительного добавления)
+	void ProcessDynamicVisual(IRender_Visual* pVisual);
+	void ProcessStaticVisual(IRender_Visual* pVisual);
 
-	void SetFetchConfig(const SceneGraphFetchConfig& config);
-
-	// Низкоуровневая вставка в граф (используется внутри add_leafs)
+	// Low-level insertion
 	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center);
 	void EnqueueStatic(IRender_Visual* pVisual);
 
-	// Методы обхода пространства (Subspace traversal)
-	// Первая версия принимает Frustum явно
+	// === Traversal Logic ===
 	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 						 BOOL _precise_portals = FALSE);
-	// Вторая версия создает Frustum из матрицы
 	void render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 						 BOOL _precise_portals = FALSE);
-
-	// Вспомогательная функция для переиспользования списков отрисовки
 	void render_reuse();
 
-	// Проверка на значимость для рендера (LOD, distance cull)
+	// Helper
 	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize);
 
-	// Методы добавления геометрии (Building Phase)
-	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes); // normal processing (с проверкой фрустума)
-	void add_Static(IRender_Visual* pVisual, u32 planes);
-	void ProcessDynamicVisual(IRender_Visual* pVisual); // если нода полностью видима
-	void ProcessStaticVisual(IRender_Visual* pVisual);	 // если нода полностью видима
-
-	// =========================================================================
-	//  Unified Render Method
-	// =========================================================================
-	// Единая точка входа для отрисовки разных типов геометрии
+	// === Rendering API ===
+	// Читает из m_packet, использует m_scratch
 	void Render(SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
 
   private:
-	// Внутренние реализации методов рендеринга
+	// Render implementations
 	void _RenderOpaque(u32 priority, bool clear);
 	void _RenderHUD();
-	void _RenderTranslucent(); // ex sorted
+	void _RenderTranslucent();
 	void _RenderLODs(bool setup_zb, bool clear);
 	void _RenderEmissive();
 	void _RenderWmarks();

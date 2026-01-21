@@ -30,8 +30,9 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// 1. Spatial Query: Запрашиваем объекты во фрустуме
 	// -------------------------------------------------------------------------
 	// Используем ViewBase (основной фрустум камеры)
-	g_SpatialSpace->q_frustum(SceneGraph.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE | STYPE_LIGHTSOURCE,
-							  ViewBase);
+	// Используем m_packet.lstRenderables
+	g_SpatialSpace->q_frustum(SceneGraph.m_packet.lstRenderables, ISpatial_DB::O_ORDERED,
+							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
 	// 2. Sorting: Сортировка Front-to-Back
 	// -------------------------------------------------------------------------
@@ -46,7 +47,9 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	};
 
 	// Параллельная сортировка (так как объектов может быть тысячи)
-	concurrency::parallel_sort(SceneGraph.lstRenderables.begin(), SceneGraph.lstRenderables.end(), sort_predicate);
+	// Сортируем m_packet.lstRenderables
+	concurrency::parallel_sort(SceneGraph.m_packet.lstRenderables.begin(), SceneGraph.m_packet.lstRenderables.end(),
+							   sort_predicate);
 
 	// 3. Light Tracking: Обновление освещения для динамики
 	// -------------------------------------------------------------------------
@@ -55,7 +58,8 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	if (active_phase() == PHASE_NORMAL)
 	{
 		uLastLTRACK++;
-		size_t renderable_count = SceneGraph.lstRenderables.size();
+		// Используем m_packet.lstRenderables.size()
+		size_t renderable_count = SceneGraph.m_packet.lstRenderables.size();
 		size_t light_track_id = 0xffffffff;
 
 		if (renderable_count)
@@ -69,10 +73,10 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		}
 
 		// Обновляем освещение для одного случайного объекта в кадре (Round-Robin update)
-		// Это позволяет распределить нагрузку трассировки лучей освещения на много кадров
 		if (renderable_count)
 		{
-			if (IRenderable* renderable = SceneGraph.lstRenderables[light_track_id]->dcast_Renderable())
+			// Доступ через m_packet
+			if (IRenderable* renderable = SceneGraph.m_packet.lstRenderables[light_track_id]->dcast_Renderable())
 			{
 				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
 					ros->update(renderable);
@@ -96,13 +100,14 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		for (auto& frustum : sector->r_frustums)
 		{
 			set_Frustum(&frustum);
-			add_Geometry(root_visual); // Вызывает SceneGraph.add_Static
+			add_Geometry(root_visual); // Вызывает SceneGraph.add_Static (который уже обновлен)
 		}
 	}
 
 	// 6. Dynamic Geometry & Lights: Обработка результатов пространственного запроса
 	// -------------------------------------------------------------------------
-	for (ISpatial* spatial : SceneGraph.lstRenderables)
+	// Итерируемся по m_packet.lstRenderables
+	for (ISpatial* spatial : SceneGraph.m_packet.lstRenderables)
 	{
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
@@ -165,7 +170,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 				// Rendering
 				// Передаем объект в граф сцены (там он отсортируется)
-				set_Object(renderable); // Устанавливает SceneGraph.m_current_owner
+				set_Object(renderable); // Устанавливает SceneGraph.m_ctx.current_owner
 				renderable->renderable_Render();
 				set_Object(nullptr);
 			}
@@ -181,6 +186,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 		g_pGameLevel->pHUD->Render_Last();
 }
+
 void CRender::render_depth_prepass()
 {
 	PROFILE_FUNCTION();
@@ -324,7 +330,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 	if (lights.empty())
 		return;
 
-	dwLightMarkerID = 5; 
+	dwLightMarkerID = 5;
 
 	std::sort(lights.begin(), lights.end(), [](light* a, light* b) {
 		return Engine.RenderView.Position.distance_to_sqr(a->get_position()) <
@@ -462,7 +468,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderImplementation.set_Transform(0);
 		SceneGraph.m_traversal_marker++;
 
-		for (IRender_Visual* V : SceneGraph.m_visuals_static_visible)
+		// Используем m_packet.m_visuals_static_visible
+		for (IRender_Visual* V : SceneGraph.m_packet.m_visuals_static_visible)
 		{
 			ShaderElement* E = rimp_select_sh_static(V, 0.0f);
 			if (!E || E->passes.empty())
@@ -473,7 +480,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 				SceneGraph.ProcessStaticVisual(V);
 		}
 
-		for (auto& item : SceneGraph.m_visuals_dynamic_visible)
+		// Используем m_packet.m_visuals_dynamic_visible
+		for (auto& item : SceneGraph.m_packet.m_visuals_dynamic_visible)
 		{
 			ShaderElement* E = rimp_select_sh_dynamic(item.visual, 0.0f);
 			if (!E || E->passes.empty())
@@ -514,11 +522,13 @@ void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
 
-	VERIFY(0 == m_queue_distortion.size());
+	// Используем m_packet.queue_distortion
+	VERIFY(0 == SceneGraph.m_packet.queue_distortion.size());
 
 	// Очищаем списки с прошлого кадра
-	SceneGraph.m_visuals_static_visible.clear();
-	SceneGraph.m_visuals_dynamic_visible.clear();
+	// Используем m_packet для списков Reuse
+	SceneGraph.m_packet.m_visuals_static_visible.clear();
+	SceneGraph.m_packet.m_visuals_dynamic_visible.clear();
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
@@ -545,7 +555,7 @@ void CRender::render_stage_forward()
 		set_active_phase(PHASE_NORMAL);
 
 		// Этот вызов заполнит граф геометрией с шейдерами normal_hq/lq
-		// И ЗАПОЛНИТ наши списки m_visuals_... благодаря правкам в add_leafs
+		// И ЗАПОЛНИТ наши списки m_packet.m_visuals_... благодаря правкам в add_leafs
 		render_main(Engine.RenderView.ViewProjection, false);
 
 		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
@@ -559,9 +569,9 @@ void CRender::render_stage_forward()
 	// PASS 2: Dynamic Lighting Passes (Lights)
 	// ============================================
 
-	//render_forward_lights(Lights.package.v_point, PHASE_POINT_LIGHTING);
-	//render_forward_lights(Lights.package.v_shadowed, PHASE_POINT_LIGHTING);
-	//render_forward_lights(Lights.package.v_spot, PHASE_SPOT_LIGHTING);
+	// render_forward_lights(Lights.package.v_point, PHASE_POINT_LIGHTING);
+	// render_forward_lights(Lights.package.v_shadowed, PHASE_POINT_LIGHTING);
+	// render_forward_lights(Lights.package.v_spot, PHASE_SPOT_LIGHTING);
 
 	// ============================================
 	// PASS 3: Sun Light
@@ -579,7 +589,7 @@ void CRender::render_stage_forward()
 	RenderBackend.set_ZWriteEnable(FALSE);
 
 	// Заново наполняем граф из кэша.
-	//render_main(Engine.RenderView.ViewProjection, false);
+	// render_main(Engine.RenderView.ViewProjection, false);
 	SceneGraph.render_reuse();
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
 	SceneGraph.Render(SceneGraphRenderType::Transparent);

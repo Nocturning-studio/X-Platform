@@ -32,6 +32,7 @@ void CRender::level_Load(IReader* fs)
 	////OPTICK_EVENT("CRender::level_Load");
 
 	R_ASSERT(0 != g_pGameLevel);
+	// b_loaded теперь приватный член, но доступен CRender как friend
 	R_ASSERT(!SceneGraph.b_loaded);
 
 	// Группа задач для Визуалов
@@ -198,9 +199,10 @@ void CRender::level_Load(IReader* fs)
 
 	Engine.LoadingScreen->Hide();
 
-	SceneGraph.lstLODs.clear();
-	SceneGraph.lstLODgroups.clear();
-	SceneGraph.mapLOD.clear();
+	// Очищаем списки через m_packet
+	SceneGraph.m_packet.lstLODs.clear();
+	SceneGraph.m_packet.lstLODgroups.clear();
+	SceneGraph.m_packet.mapLOD.clear();
 
 	SceneGraph.b_loaded = TRUE;
 }

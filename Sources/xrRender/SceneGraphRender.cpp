@@ -207,8 +207,10 @@ void CSceneGraph::Render(SceneGraphRenderType type, u32 priority, bool clear, bo
 	}
 }
 
-// Основной метод рендеринга непрозрачной геометрии
-// Иерархия: Vertex Shader -> Pixel Shader -> Constants -> Render States -> Textures -> Objects
+// ===============================================================================================
+//  CSceneGraph Rendering Implementation (Updated)
+// ===============================================================================================
+
 void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 {
 	OPTICK_EVENT("RenderOpaque");
@@ -220,53 +222,53 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 	{
 		RenderBackend.set_transform_world(Fidentity);
 
-		// Получаем список Vertex Shaders
-		mapNormalVS& map_vs = m_queue_static[_priority];
-		map_vs.getANY_P(nrmVS);
+		// Используем m_packet.queue_static
+		mapNormalVS& map_vs = m_packet.queue_static[_priority];
+		// Используем m_scratch.nrmVS
+		map_vs.getANY_P(m_scratch.nrmVS);
 
-		for (auto* node_vs : nrmVS)
+		for (auto* node_vs : m_scratch.nrmVS)
 		{
 			RenderBackend.set_Vertex_Shader(node_vs->key);
 
-			// Получаем список Pixel Shaders для текущего VS
 			mapNormalPS& map_ps = node_vs->val;
 			map_ps.ScreenSpaceArea = 0;
-			map_ps.getANY_P(nrmPS);
+			// Используем m_scratch.nrmPS
+			map_ps.getANY_P(m_scratch.nrmPS);
 
-			for (auto* node_ps : nrmPS)
+			for (auto* node_ps : m_scratch.nrmPS)
 			{
 				RenderBackend.set_Pixel_Shader(node_ps->key);
 
-				// Constants
 				mapNormalCS& map_cs = node_ps->val;
 				map_cs.ScreenSpaceArea = 0;
-				map_cs.getANY_P(nrmCS);
+				// Используем m_scratch.nrmCS
+				map_cs.getANY_P(m_scratch.nrmCS);
 
-				for (auto* node_cs : nrmCS)
+				for (auto* node_cs : m_scratch.nrmCS)
 				{
 					RenderBackend.set_Constants(node_cs->key);
 
-					// Render States
 					mapNormalStates& map_states = node_cs->val;
 					map_states.ScreenSpaceArea = 0;
-					map_states.getANY_P(nrmStates);
+					// Используем m_scratch.nrmStates
+					map_states.getANY_P(m_scratch.nrmStates);
 
-					for (auto* node_state : nrmStates)
+					for (auto* node_state : m_scratch.nrmStates)
 					{
 						RenderBackend.set_States(node_state->key);
 
-						// Textures (Sorting logic applied here)
 						mapNormalTextures& map_tex = node_state->val;
 						map_tex.ScreenSpaceArea = 0;
 
-						SortTextureList(nrmTextures, nrmTexturesTemp, map_tex, TRUE);
+						// Используем m_scratch.nrmTextures и m_scratch.nrmTexturesTemp
+						SortTextureList(m_scratch.nrmTextures, m_scratch.nrmTexturesTemp, map_tex, TRUE);
 
-						for (auto* node_tex : nrmTextures)
+						for (auto* node_tex : m_scratch.nrmTextures)
 						{
 							RenderBackend.set_Textures(node_tex->key);
 							RenderImplementation.apply_lmaterial();
 
-							// Final Batch Render
 							mapNormalItems& items = node_tex->val;
 							items.ScreenSpaceArea = 0;
 
@@ -276,24 +278,24 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 								items.clear();
 						}
 
-						nrmTextures.clear();
-						nrmTexturesTemp.clear();
+						m_scratch.nrmTextures.clear();
+						m_scratch.nrmTexturesTemp.clear();
 						if (_clear)
 							map_tex.clear();
 					}
-					nrmStates.clear();
+					m_scratch.nrmStates.clear();
 					if (_clear)
 						map_states.clear();
 				}
-				nrmCS.clear();
+				m_scratch.nrmCS.clear();
 				if (_clear)
 					map_cs.clear();
 			}
-			nrmPS.clear();
+			m_scratch.nrmPS.clear();
 			if (_clear)
 				map_ps.clear();
 		}
-		nrmVS.clear();
+		m_scratch.nrmVS.clear();
 		if (_clear)
 			map_vs.clear();
 	}
@@ -302,72 +304,77 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 	// PHASE 2: DYNAMIC GEOMETRY (NPCs, Physics)
 	// -------------------------------------------------------------------------
 	{
-		mapMatrixVS& map_vs = m_queue_dynamic[_priority];
-		map_vs.getANY_P(matVS);
+		// Используем m_packet.queue_dynamic
+		mapMatrixVS& map_vs = m_packet.queue_dynamic[_priority];
+		// Используем m_scratch.matVS
+		map_vs.getANY_P(m_scratch.matVS);
 
-		for (auto* node_vs : matVS)
+		for (auto* node_vs : m_scratch.matVS)
 		{
 			RenderBackend.set_Vertex_Shader(node_vs->key);
 
 			mapMatrixPS& map_ps = node_vs->val;
 			map_ps.ScreenSpaceArea = 0;
-			map_ps.getANY_P(matPS);
+			// Используем m_scratch.matPS
+			map_ps.getANY_P(m_scratch.matPS);
 
-			for (auto* node_ps : matPS)
+			for (auto* node_ps : m_scratch.matPS)
 			{
 				RenderBackend.set_Pixel_Shader(node_ps->key);
 
 				mapMatrixCS& map_cs = node_ps->val;
 				map_cs.ScreenSpaceArea = 0;
-				map_cs.getANY_P(matCS);
+				// Используем m_scratch.matCS
+				map_cs.getANY_P(m_scratch.matCS);
 
-				for (auto* node_cs : matCS)
+				for (auto* node_cs : m_scratch.matCS)
 				{
 					RenderBackend.set_Constants(node_cs->key);
 
 					mapMatrixStates& map_states = node_cs->val;
 					map_states.ScreenSpaceArea = 0;
-					map_states.getANY_P(matStates);
+					// Используем m_scratch.matStates
+					map_states.getANY_P(m_scratch.matStates);
 
-					for (auto* node_state : matStates)
+					for (auto* node_state : m_scratch.matStates)
 					{
 						RenderBackend.set_States(node_state->key);
 
 						mapMatrixTextures& map_tex = node_state->val;
 						map_tex.ScreenSpaceArea = 0;
 
-						SortTextureList(matTextures, matTexturesTemp, map_tex, TRUE);
+						// Используем m_scratch.matTextures и m_scratch.matTexturesTemp
+						SortTextureList(m_scratch.matTextures, m_scratch.matTexturesTemp, map_tex, TRUE);
 
-						for (auto* node_tex : matTextures)
+						for (auto* node_tex : m_scratch.matTextures)
 						{
 							RenderBackend.set_Textures(node_tex->key);
 							RenderImplementation.apply_lmaterial();
 
-							// Final Batch Render
 							mapMatrixItems& items = node_tex->val;
 							items.ScreenSpaceArea = 0;
 
 							RenderDynamicBatch(items);
 						}
 
-						matTextures.clear();
-						matTexturesTemp.clear();
+						m_scratch.matTextures.clear();
+						m_scratch.matTexturesTemp.clear();
 						if (_clear)
 							map_tex.clear();
 					}
-					matStates.clear();
+					m_scratch.matStates.clear();
 					if (_clear)
 						map_states.clear();
 				}
-				matCS.clear();
+				m_scratch.matCS.clear();
 				if (_clear)
 					map_cs.clear();
 			}
-			matPS.clear();
+			m_scratch.matPS.clear();
 			if (_clear)
 				map_ps.clear();
 		}
-		matVS.clear();
+		m_scratch.matVS.clear();
 		if (_clear)
 			map_vs.clear();
 	}
@@ -394,8 +401,9 @@ void CSceneGraph::_RenderHUD()
 
 	// Render
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
-	m_queue_hud.traverseLR(RenderSortedNode);
-	m_queue_hud.clear();
+	// Используем m_packet.queue_hud
+	m_packet.queue_hud.traverseLR(RenderSortedNode);
+	m_packet.queue_hud.clear();
 	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
 
 	// Restore Projection
@@ -407,29 +415,33 @@ void CSceneGraph::_RenderHUD()
 void CSceneGraph::_RenderTranslucent()
 {
 	OPTICK_EVENT("RenderTranslucent");
-	m_queue_transparent.traverseRL(RenderSortedNode);
-	m_queue_transparent.clear();
+	// Используем m_packet.queue_transparent
+	m_packet.queue_transparent.traverseRL(RenderSortedNode);
+	m_packet.queue_transparent.clear();
 }
 
 void CSceneGraph::_RenderEmissive()
 {
 	OPTICK_EVENT("RenderEmissive");
-	mapEmissive.traverseLR(RenderSortedNode);
-	mapEmissive.clear();
+	// Используем m_packet.mapEmissive
+	m_packet.mapEmissive.traverseLR(RenderSortedNode);
+	m_packet.mapEmissive.clear();
 }
 
 void CSceneGraph::_RenderWmarks()
 {
 	OPTICK_EVENT("RenderWmarks");
-	m_queue_wallmarks.traverseLR(RenderSortedNode);
-	m_queue_wallmarks.clear();
+	// Используем m_packet.queue_wallmarks
+	m_packet.queue_wallmarks.traverseLR(RenderSortedNode);
+	m_packet.queue_wallmarks.clear();
 }
 
 void CSceneGraph::_RenderDistortion()
 {
 	OPTICK_EVENT("RenderDistortion");
-	m_queue_distortion.traverseRL(RenderSortedNode);
-	m_queue_distortion.clear();
+	// Используем m_packet.queue_distortion
+	m_packet.queue_distortion.traverseRL(RenderSortedNode);
+	m_packet.queue_distortion.clear();
 }
 
 void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
@@ -438,21 +450,25 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 
 	// Сбор LOD-ов в плоский список
 	if (_setup_zb)
-		mapLOD.getLR(lstLODs); // front-to-back (для Z-buffer)
+		// Используем m_packet.mapLOD и m_packet.lstLODs
+		m_packet.mapLOD.getLR(m_packet.lstLODs); // front-to-back (для Z-buffer)
 	else
-		mapLOD.getRL(lstLODs); // back-to-front (для цвета)
+		m_packet.mapLOD.getRL(m_packet.lstLODs); // back-to-front (для цвета)
 
-	if (lstLODs.empty())
+	// Используем m_packet.lstLODs
+	if (m_packet.lstLODs.empty())
 		return;
 
 	// *** 1. Подготовка буфера и констант ***
 	u32 shader_id = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
-	FLOD* first_visual = (FLOD*)lstLODs[0].pVisual;
+	// Используем m_packet.lstLODs
+	FLOD* first_visual = (FLOD*)m_packet.lstLODs[0].pVisual;
 
 	u32 vb_offset;
 	// Блокируем память один раз для всех LODов (по 4 вершины на LOD)
+	// Используем m_packet.lstLODs.size()
 	FLOD::_hw* VertexBuffer =
-		(FLOD::_hw*)RenderBackend.Vertex.Lock(lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
+		(FLOD::_hw*)RenderBackend.Vertex.Lock(m_packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
 
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
 	if (ssa_range < EPS_S)
@@ -464,9 +480,10 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 
 	// *** 2. ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
 	// Вычисляем поворот билбордов и смешивание текстур в параллель
-	concurrency::parallel_for(size_t(0), lstLODs.size(), [&](size_t i) {
+	// Используем m_packet.lstLODs
+	concurrency::parallel_for(size_t(0), m_packet.lstLODs.size(), [&](size_t i) {
 		FLOD::_hw* V = VertexBuffer + (i * 4);
-		SceneGraphTypes::LodRenderNode& Node = lstLODs[i];
+		SceneGraphTypes::LodRenderNode& Node = m_packet.lstLODs[i];
 		FLOD* lod_visual = (FLOD*)Node.pVisual;
 
 		// 1. Вычисление Alpha (Fade In/Out)
@@ -525,43 +542,49 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 		}
 	});
 
-	RenderBackend.Vertex.Unlock(lstLODs.size() * 4, first_visual->geom->vb_stride);
+	// Используем m_packet.lstLODs.size()
+	RenderBackend.Vertex.Unlock(m_packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
 	// *** 3. ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка по шейдерам ***
 	// Чтобы минимизировать смену стейтов при отрисовке батча
-	if (!lstLODs.empty())
+	// Используем m_packet.lstLODs
+	if (!m_packet.lstLODs.empty())
 	{
-		ref_selement current_shader = lstLODs[0].pVisual->shader->E[shader_id];
+		ref_selement current_shader = m_packet.lstLODs[0].pVisual->shader->E[shader_id];
 		int current_count = 0;
 
-		for (u32 i = 0; i < lstLODs.size(); i++)
+		for (u32 i = 0; i < m_packet.lstLODs.size(); i++)
 		{
-			SceneGraphTypes::LodRenderNode& Node = lstLODs[i];
+			SceneGraphTypes::LodRenderNode& Node = m_packet.lstLODs[i];
 			if (Node.pVisual->shader->E[shader_id] == current_shader)
 			{
 				current_count++;
 			}
 			else
 			{
-				lstLODgroups.push_back(current_count);
+				// Используем m_packet.lstLODgroups
+				m_packet.lstLODgroups.push_back(current_count);
 				current_shader = Node.pVisual->shader->E[shader_id];
 				current_count = 1;
 			}
 		}
-		lstLODgroups.push_back(current_count);
+		// Используем m_packet.lstLODgroups
+		m_packet.lstLODgroups.push_back(current_count);
 	}
 
 	// *** 4. RENDER ***
 	int current_lod_index = 0;
 	RenderBackend.set_transform_world(Fidentity);
 
-	for (u32 g = 0; g < lstLODgroups.size(); g++)
+	// Используем m_packet.lstLODgroups
+	for (u32 g = 0; g < m_packet.lstLODgroups.size(); g++)
 	{
-		int primitive_count = lstLODgroups[g];
+		int primitive_count = m_packet.lstLODgroups[g];
 
 		if (primitive_count > 0)
 		{
-			RenderBackend.set_Element(lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
+			// Используем m_packet.lstLODs
+			RenderBackend.set_Element(m_packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
 			RenderBackend.set_Geometry(first_visual->geom);
 
 			// Отрисовка батча (2 треугольника на 1 LOD)
@@ -575,11 +598,13 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 	}
 
 	// *** 5. Cleanup ***
-	lstLODs.clear();
-	lstLODgroups.clear();
+	// Очищаем списки из m_packet
+	m_packet.lstLODs.clear();
+	m_packet.lstLODgroups.clear();
 
 	if (_clear)
-		mapLOD.clear();
+		// Очищаем mapLOD из m_packet
+		m_packet.mapLOD.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -597,6 +622,10 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, F
 	temp_frustum.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
 	render_subspace(_sector, &temp_frustum, mCombined, _cop, _dynamic, _precise_portals);
 }
+
+// ===============================================================================================
+//  CSceneGraph Implementation (Updated Methods)
+// ===============================================================================================
 
 // Main procedure
 void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_frustum, Fmatrix& mCombined,
@@ -648,16 +677,18 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	// 2. Collect DYNAMIC Geometry (Spatial DB)
 	if (render_dynamic)
 	{
-		RenderImplementation.set_Object(0);
+		RenderImplementation.set_Object(0); // Это обнуляет m_ctx.current_owner через вызов set_Object
 
 		// Traverse object database
-		g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE,
+		// Используем m_packet.lstRenderables вместо локального вектора
+		g_SpatialSpace->q_frustum(m_packet.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE,
 								  RenderImplementation.ViewBase);
 
 		// Determine visibility for dynamic part of scene
-		for (u32 o_it = 0; o_it < lstRenderables.size(); o_it++)
+		// Итерируемся по m_packet.lstRenderables
+		for (u32 o_it = 0; o_it < m_packet.lstRenderables.size(); o_it++)
 		{
-			ISpatial* spatial = lstRenderables[o_it];
+			ISpatial* spatial = m_packet.lstRenderables[o_it];
 			CSector* sector = (CSector*)spatial->spatial.sector;
 
 			if (0 == sector)
@@ -677,6 +708,8 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 				if (0 == renderable)
 					continue;
 
+				// Это вызовет CSceneGraph::add_Dynamic (или ProcessDynamicVisual),
+				// который уже обновлен для использования m_packet и m_ctx
 				renderable->renderable_Render();
 			}
 		}
@@ -697,7 +730,8 @@ void CSceneGraph::render_reuse()
 	PROFILE_FUNCTION();
 
 	// Статика (Reuse List)
-	for (IRender_Visual* V : m_visuals_static_visible)
+	// Используем список из m_packet
+	for (IRender_Visual* V : m_packet.m_visuals_static_visible)
 	{
 		// Используем ProcessStaticVisual, чтобы корректно обработать LOD-ы
 		// если они были сохранены в список
@@ -705,9 +739,11 @@ void CSceneGraph::render_reuse()
 	}
 
 	// Динамика (Reuse List)
-	for (auto& it : m_visuals_dynamic_visible)
+	// Используем список из m_packet
+	for (auto& it : m_packet.m_visuals_dynamic_visible)
 	{
-		RenderImplementation.set_Transform(&it.matrix);
+		// Вызываем локальный метод set_Transform, чтобы обновить m_ctx.current_transform
+		set_Transform(&it.matrix);
 		ProcessDynamicVisual(it.visual);
 	}
 }

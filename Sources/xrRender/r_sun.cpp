@@ -847,7 +847,9 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// Begin SMAP-render
-	bool bSpecialFull = SceneGraph.m_queue_static[1].size() || SceneGraph.m_queue_dynamic[1].size() || SceneGraph.m_queue_transparent.size();
+	// Проверяем очереди через m_packet
+	bool bSpecialFull = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
+						SceneGraph.m_packet.queue_transparent.size();
 	VERIFY(!bSpecialFull);
 	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
@@ -861,6 +863,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
 
 	// Fill the database
+	// render_subspace использует внутренний m_packet для наполнения
 	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_transform, cull_COP, TRUE);
 
 	// Finalize & Cleanup
@@ -868,8 +871,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
-	bool bNormal = SceneGraph.m_queue_static[0].size() || SceneGraph.m_queue_dynamic[0].size();
-	bool bSpecial = SceneGraph.m_queue_static[1].size() || SceneGraph.m_queue_dynamic[1].size() || SceneGraph.m_queue_transparent.size();
+	// Проверяем очереди через m_packet
+	bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
+	bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
+					SceneGraph.m_packet.queue_transparent.size();
 
 	if (bNormal || bSpecial)
 	{
@@ -879,9 +884,11 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		RenderBackend.set_transform_view(Fidentity);
 		RenderBackend.set_transform_project(sun->X.D.combine);
 
-		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && ((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
+		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) &&
+			((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
 			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &cull_frustum);
 
+		// Render использует m_packet для отрисовки
 		SceneGraph.Render(SceneGraphRenderType::Opaque);
 
 		if (m_SunOccluder)
@@ -893,7 +900,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	// Accumulate
 	set_light_accumulator();
 
-	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].bias);
+	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].transform,
+				   m_sun_cascades[cascade_ind].bias);
 
 	// Restore Transforms
 	RenderBackend.set_transform_world(Fidentity);
