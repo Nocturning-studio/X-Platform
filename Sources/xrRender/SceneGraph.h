@@ -223,41 +223,39 @@ class CSceneGraph
 	}
 
 	// === Insertion API (Updated Signatures) ===
-	// Теперь все методы принимают const SceneTraversalContext& ctx
+	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
+	void add_Static(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
-	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx);
-	void add_Static(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx);
-
-	void ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx);
-	void ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx);
+	void ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
+	void ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
 	// Low-level insertion
-	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center, const SceneTraversalContext& ctx);
-	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx);
+	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
+	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
+
 
 	// === Traversal Logic ===
 	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
-						 BOOL _precise_portals = FALSE);
+						 BOOL _precise_portals, SceneGraphPacket& dest);
 	void render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
-						 BOOL _precise_portals = FALSE);
+						 BOOL _precise_portals, SceneGraphPacket& dest);
 
-	// render_reuse теперь требует контекст, чтобы восстановить матрицы для ProcessDynamicVisual
-	void render_reuse(const SceneTraversalContext& ctx);
+	void render_reuse(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet);
 
 	// Helper
 	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize,
 							const SceneTraversalContext& ctx);
 
 	// === Rendering API ===
-	void Render(SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
+	void Render(SceneGraphPacket& packet, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
 
   private:
-	// Render implementations (без изменений сигнатур, они читают из пакета)
-	void _RenderOpaque(u32 priority, bool clear);
-	void _RenderHUD();
-	void _RenderTranslucent();
-	void _RenderLODs(bool setup_zb, bool clear);
-	void _RenderEmissive();
-	void _RenderWmarks();
-	void _RenderDistortion();
+	// Render implementations
+	void _RenderOpaque(SceneGraphPacket& packet, u32 priority, bool clear);
+	void _RenderHUD(SceneGraphPacket& packet);
+	void _RenderTranslucent(SceneGraphPacket& packet);
+	void _RenderLODs(SceneGraphPacket& packet, bool setup_zb, bool clear);
+	void _RenderEmissive(SceneGraphPacket& packet);
+	void _RenderWmarks(SceneGraphPacket& packet);
+	void _RenderDistortion(SceneGraphPacket& packet);
 };

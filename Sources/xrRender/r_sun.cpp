@@ -863,8 +863,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
 
 	// Fill the database
-	// render_subspace использует внутренний m_packet для наполнения
-	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_transform, cull_COP, TRUE);
+	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_transform, cull_COP, TRUE, FALSE, SceneGraph.m_packet);
 
 	// Finalize & Cleanup
 	sun->X.D.combine = cull_transform;
@@ -889,7 +888,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &cull_frustum);
 
 		// Render использует m_packet для отрисовки
-		SceneGraph.Render(SceneGraphRenderType::Opaque);
+		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque);
 
 		if (m_SunOccluder)
 			m_SunOccluder->Render();

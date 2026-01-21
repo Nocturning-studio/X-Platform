@@ -73,6 +73,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		}
 
 		// Обновляем освещение для одного случайного объекта в кадре (Round-Robin update)
+		// Это позволяет распределить нагрузку трассировки лучей освещения на много кадров
 		if (renderable_count)
 		{
 			// Доступ через m_packet
@@ -100,7 +101,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		for (auto& frustum : sector->r_frustums)
 		{
 			set_Frustum(&frustum);
-			add_Geometry(root_visual); // Вызывает SceneGraph.add_Static (который уже обновлен)
+			add_Geometry(root_visual); // Вызывает SceneGraph.add_Static
 		}
 	}
 
@@ -170,8 +171,8 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 				// Rendering
 				// Передаем объект в граф сцены (там он отсортируется)
-				set_Object(renderable); // Устанавливает SceneGraph.m_ctx.current_owner
-				renderable->renderable_Render();
+				set_Object(renderable); // Устанавливает m_TraversalContext.current_owner
+				renderable->renderable_Render(); // Вызывает add_Visual, который теперь использует пакет
 				set_Object(nullptr);
 			}
 
@@ -215,9 +216,9 @@ void CRender::render_depth_prepass()
 	if (Details)
 		Details->Render(DetailsRenderMode::DepthOnly);
 
-	SceneGraph.Render(SceneGraphRenderType::HUD);
-	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
-	SceneGraph.Render(SceneGraphRenderType::LOD, 0, true, true);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::HUD);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::LOD, 0, true, true);
 
 	RenderBackend.disable_anisotropy_filtering();
 
@@ -281,7 +282,7 @@ void CRender::render_gbuffer_primary()
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	// Отрисовка собранного Opaque (Priority 0)
-	SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
 
 	if (Details)
 		Details->Render(DetailsRenderMode::Default);
@@ -311,10 +312,10 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	SceneGraph.Render(SceneGraphRenderType::LOD, 0, true, true);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::LOD, 0, true, true);
 
 	set_active_phase(PHASE_HUD);
-	SceneGraph.Render(SceneGraphRenderType::HUD);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
@@ -477,7 +478,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 			float R_sum = V->vis.sphere.R + L_range;
 			if (V->vis.sphere.P.distance_to_sqr(L_pos) < (R_sum * R_sum))
-				SceneGraph.ProcessStaticVisual(V, m_TraversalContext);
+				SceneGraph.ProcessStaticVisual(V, m_TraversalContext, SceneGraph.m_packet);
 		}
 
 		// Используем m_packet.m_visuals_dynamic_visible
@@ -493,7 +494,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 			if (sphere_center_world.distance_to_sqr(L_pos) < (R_sum * R_sum))
 			{
 				RenderImplementation.set_Transform(&item.matrix);
-				SceneGraph.ProcessDynamicVisual(item.visual, m_TraversalContext);
+				SceneGraph.ProcessDynamicVisual(item.visual, m_TraversalContext, SceneGraph.m_packet);
 			}
 		}
 
@@ -508,8 +509,8 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 		RenderBackend.set_CullMode(CULL_BACKFACE);
 
-		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
-		SceneGraph.Render(SceneGraphRenderType::Transparent);
+		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
+		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
 
 		// CLEANUP
 		dwLightMarkerID += 2;
@@ -558,8 +559,8 @@ void CRender::render_stage_forward()
 		// И ЗАПОЛНИТ наши списки m_packet.m_visuals_... благодаря правкам в add_leafs
 		render_main(Engine.RenderView.ViewProjection, false);
 
-		SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
-		SceneGraph.Render(SceneGraphRenderType::Transparent);
+		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
+		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
@@ -590,9 +591,9 @@ void CRender::render_stage_forward()
 
 	// Заново наполняем граф из кэша.
 	// render_main(Engine.RenderView.ViewProjection, false);
-	SceneGraph.render_reuse(m_TraversalContext);
-	SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
-	SceneGraph.Render(SceneGraphRenderType::Transparent);
+	SceneGraph.render_reuse(m_TraversalContext, SceneGraph.m_packet);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
+	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
 
 	// ============================================
 	// PASS 4: Debug

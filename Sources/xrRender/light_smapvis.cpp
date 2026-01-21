@@ -67,9 +67,10 @@ void smapvis::end()
 			RenderImplementation.SceneGraph.m_traversal_marker += 1;
 
 			// Передаем текущий контекст рендера
-			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V, RenderImplementation.m_TraversalContext);
+			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V, RenderImplementation.m_TraversalContext,
+														  RenderImplementation.SceneGraph.m_packet);
 
-			RenderImplementation.SceneGraph.Render(SceneGraphRenderType::Opaque);
+			RenderImplementation.SceneGraph.Render(RenderImplementation.SceneGraph.m_packet, SceneGraphRenderType::Opaque);
 			RenderImplementation.occq_end(testQ_id);
 			testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame
 		}

@@ -149,8 +149,11 @@ void CRender::render_lights(light_Package& LP)
 		for (light* L : current_batch)
 		{
 			L->get_smapvis().begin();
-			// render_subspace уже работает с внутренним m_packet
-			SceneGraph.render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
+
+			// render_subspace принимает dest. ƒл€ теней используем глобальный пакет (пока однопоточно)
+			// ≈сли будет параллельный рендер теней, здесь нужно будет создавать Thread-Local пакет
+			SceneGraph.render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE, FALSE,
+									   SceneGraph.m_packet);
 
 			// ѕровер€ем очереди через m_packet
 			bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
@@ -168,16 +171,17 @@ void CRender::render_lights(light_Package& LP)
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 					Details->Render(DetailsRenderMode::DepthOnly, &L->X.S.combine);
 
-				// SceneGraph.Render использует m_packet
-				SceneGraph.Render(SceneGraphRenderType::Opaque, 0);
+				// ѕередаем пакет в Render
+				SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
 				L->X.S.transluent = FALSE;
 
 				if (bSpecial)
 				{
 					L->X.S.transluent = TRUE;
 					render_shadow_map_spot_transluent(L);
-					SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
-					SceneGraph.Render(SceneGraphRenderType::Transparent);
+					// ѕередаем пакет в Render
+					SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
+					SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
 				}
 			}
 			else
