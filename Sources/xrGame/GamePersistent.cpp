@@ -20,6 +20,8 @@
 #include "UIGameCustom.h"
 #include "../xrEngine/CameraManager.h"
 #include "actor.h"
+#include "../xrEngine/LevelLoadingScreen.h"
+#include "../xrEngine/xrSheduler.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"
@@ -570,7 +572,7 @@ void CGamePersistent::OnFrame()
 	__super::OnFrame();
 
 	if (!Device.Paused())
-		Engine.Sheduler.Update();
+		Engine.Sheduler->Update();
 
 	// update weathers ambient
 	if (!Device.Paused())
@@ -724,7 +726,7 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512 buff;
 	sprintf_s(buff, "%s", CStringTable().translate(str).c_str());
-	Engine.LoadingScreen.SetTitle(buff);
+	Engine.LoadingScreen->SetTitle(buff);
 }
 
 bool CGamePersistent::CanBePaused()

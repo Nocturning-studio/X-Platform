@@ -3,6 +3,8 @@
 #pragma once
 
 #include "MbHelpers.h"
+#include "pure.h"
+#include "Shader.h"
 
 class ENGINE_API CGameFont
 #ifndef M_BORLAND

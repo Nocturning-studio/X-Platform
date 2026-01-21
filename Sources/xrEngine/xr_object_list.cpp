@@ -105,7 +105,7 @@ void CObjectList::SingleUpdate(CObject* O)
 	{
 		if (O->H_Parent())
 			SingleUpdate(O->H_Parent());
-		Device.Statistic->UpdateClient_updated++;
+		Engine.Statistic->UpdateClient_updated++;
 		O->dwFrame_UpdateCL = Engine.TimeManager.GetFrameCount();
 		O->IAmNotACrowAnyMore();
 		O->UpdateCL();
@@ -153,8 +153,8 @@ void CObjectList::Update(bool bForce)
 		if (Engine.TimeManager.GetDeltaTime() > EPS_S || bForce)
 		{
 			// Select Crow-Mode
-			Device.Statistic->UpdateClient_updated = 0;
-			Device.Statistic->UpdateClient_crows = crows->size();
+			Engine.Statistic->UpdateClient_updated = 0;
+			Engine.Statistic->UpdateClient_crows = crows->size();
 			xr_vector<CObject*>* workload = 0;
 			if (!psDeviceFlags.test(rsDisableObjectsAsCrows))
 			{
@@ -172,9 +172,9 @@ void CObjectList::Update(bool bForce)
 				clear_crow_vec(crows_1);
 			}
 
-			Device.Statistic->UpdateClient.Begin();
-			Device.Statistic->UpdateClient_active = objects_active.size();
-			Device.Statistic->UpdateClient_total = objects_active.size() + objects_sleeping.size();
+			Engine.Statistic->UpdateClient.Begin();
+			Engine.Statistic->UpdateClient_active = objects_active.size();
+			Engine.Statistic->UpdateClient_total = objects_active.size() + objects_sleeping.size();
 
 			u32 objects_count = workload->size();
 			if (objects_count > objects_dup_memsz)
@@ -188,7 +188,7 @@ void CObjectList::Update(bool bForce)
 			for (u32 O = 0; O < objects_count; O++)
 				SingleUpdate(objects_dup[O]);
 
-			Device.Statistic->UpdateClient.End();
+			Engine.Statistic->UpdateClient.End();
 		}
 	}
 

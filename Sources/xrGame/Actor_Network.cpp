@@ -1,4 +1,5 @@
 #include "pch_script.h"
+#include "../xrEngine/xrSheduler.h"
 #include "actor.h"
 #include "Actor_Flags.h"
 #include "inventory.h"
@@ -615,7 +616,7 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
 
 	setEnabled(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
 
-	Engine.Sheduler.Register(this, TRUE);
+	Engine.Sheduler->Register(this, TRUE);
 
 	if (!IsGameTypeSingle())
 	{
@@ -770,7 +771,7 @@ void CActor::net_Destroy()
 	if (g_actor == this)
 		g_actor = NULL;
 
-	Engine.Sheduler.Unregister(this);
+	Engine.Sheduler->Unregister(this);
 }
 
 void CActor::net_Relcase(CObject* O)

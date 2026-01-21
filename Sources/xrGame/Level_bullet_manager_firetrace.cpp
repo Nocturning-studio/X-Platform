@@ -159,7 +159,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 //	result.range;	// range from start to element
 //	result.element;	// if (O) "num tri" else "num bone"
 //	params;			// user defined abstract data
-//	Device.Statistic.TEST0.End();
+//	Engine.Statistic.TEST0.End();
 // return TRUE-ïðîäîëæèòü òðàññèðîâêó / FALSE-çàêîí÷èòü òðàññèðîâêó
 BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID params)
 {

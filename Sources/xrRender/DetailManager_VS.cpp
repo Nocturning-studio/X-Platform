@@ -223,7 +223,7 @@ void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix, const 
 	ctx.c_hemi.set(desc->hemi_color.x, desc->hemi_color.y, desc->hemi_color.z);
 
 	// 2. Настройка глобального состояния рендера
-	Device.Statistic->RenderDUMP_DT_Render.Begin();
+	Engine.Statistic->RenderDUMP_DT_Render.Begin();
 	{
 		RenderBackend.set_CullMode(CULL_DISABLE);
 		RenderBackend.set_xform_world(Fidentity);
@@ -234,7 +234,7 @@ void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix, const 
 
 		RenderBackend.set_CullMode(CULL_BACKFACE);
 	}
-	Device.Statistic->RenderDUMP_DT_Render.End();
+	Engine.Statistic->RenderDUMP_DT_Render.End();
 }
 
 void CDetailManager::ExecuteRenderPasses(const SDetailRenderContext& ctx)
@@ -277,7 +277,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 									EDetailShaderType shaderType)
 {
 	// Сбрасываем счетчик статистики
-	Device.Statistic->RenderDUMP_DT_Count = 0;
+	Engine.Statistic->RenderDUMP_DT_Count = 0;
 
 	vis_list& list = m_visibles[m_vis_render_id][visListType];
 	u32 vOffset = 0;
@@ -440,6 +440,6 @@ void CDetailManager::FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);
 
 	// Обновляем статистику
-	Device.Statistic->RenderDUMP_DT_Count += instanceCount;
+	Engine.Statistic->RenderDUMP_DT_Count += instanceCount;
 	RenderBackend.stat.r.s_details.add(instanceCount * Object.number_vertices);
 }

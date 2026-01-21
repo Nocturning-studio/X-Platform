@@ -199,7 +199,7 @@ void CSceneGraph::Render(SceneGraphRenderType type, u32 priority, bool clear, bo
 void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 {
 	OPTICK_EVENT("RenderOpaque");
-	Device.Statistic->RenderDUMP.Begin();
+	Engine.Statistic->RenderDUMP.Begin();
 
 	// **************************************************** NORMAL
 	{
@@ -352,7 +352,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 			vs.clear();
 	}
 
-	Device.Statistic->RenderDUMP.End();
+	Engine.Statistic->RenderDUMP.End();
 }
 
 void CSceneGraph::_RenderHUD()

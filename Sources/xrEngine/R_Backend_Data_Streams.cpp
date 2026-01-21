@@ -14,7 +14,7 @@ void VertexStream::Create()
 {
 	//OPTICK_EVENT("VertexStream::Create");
 
-	Device.Resources->Evict();
+	Engine.ResourceManager->Evict();
 
 	mSize = rsDVB_Size * 1024;
 	R_CHK(HW.pDevice->CreateVertexBuffer(mSize, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &pVB, NULL));
@@ -104,7 +104,7 @@ void IndexStream::Create()
 {
 	//OPTICK_EVENT("IndexStream::Create");
 
-	Device.Resources->Evict();
+	Engine.ResourceManager->Evict();
 
 	mSize = rsDIB_Size * 1024;
 	R_CHK(HW.pDevice->CreateIndexBuffer(mSize, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &pIB, NULL));

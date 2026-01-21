@@ -34,7 +34,8 @@ class CLevelPathBuilder
 		m_dest_vertex_id = dest_vertex_id;
 
 		m_object->m_wait_for_distributed_computation = true;
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CLevelPathBuilder::process));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CLevelPathBuilder::process),
+											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 
 	void __stdcall process()

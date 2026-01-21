@@ -33,13 +33,13 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	// exact computation
 	// Calculate bones
 #ifdef DEBUG
-	Device.Statistic->Animation.Begin();
+	Engine.Statistic->Animation.Begin();
 #endif
 
 	Bone_Calculate(bones->at(iRoot), &Fidentity);
 #ifdef DEBUG
 	check_kinematics(this, dbg_name.c_str());
-	Device.Statistic->Animation.End();
+	Engine.Statistic->Animation.End();
 #endif
 
 	// Calculate BOXes/Spheres if needed

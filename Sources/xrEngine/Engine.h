@@ -9,12 +9,9 @@ class ENGINE_API CGameFont;
 struct xrDispatchTable;
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "GameStateManager.h"
 #include "EventAPI.h"
-#include "xrSheduler.h"
 #include "xrCPU_Pipe.h"
 #include "LevelManager.h"
-#include "LevelLoadingScreen.h"
 #include "FontManager.h"
 #include "debug_ui.h"
 #include "pure.h"
@@ -22,6 +19,13 @@ struct xrDispatchTable;
 #include "TimeManager.h"
 #include "ThreadManager.h"
 #include "RenderView.h"
+#include "ResourceManager.h"
+////////////////////////////////////////////////////////////////////////////////
+class ENGINE_API CSheduler;
+class ENGINE_API CLevelLoadingScreen;
+class ENGINE_API CGameStateManager;
+class ENGINE_API CStats;
+class ENGINE_API CResourceManager;
 ////////////////////////////////////////////////////////////////////////////////
 // Class creation/destroying interface
 extern "C"
@@ -50,6 +54,9 @@ struct ENGINE_API CEngineEvents
 
 class ENGINE_API CEngine
 {
+  public:
+	typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
+
   private:
 	HMODULE hGame;
 	HMODULE hRender;
@@ -59,6 +66,8 @@ class ENGINE_API CEngine
 
 	bool m_bLoaded;
 
+	xr_list<LOADING_EVENT> m_loading_events;
+
   public:
 	Factory_Create* pCreate;
 	Factory_Destroy* pDestroy;
@@ -67,18 +76,24 @@ class ENGINE_API CEngine
 	VTPause* tune_pause;
 	VTResume* tune_resume;
 
+	// Используются очень часто - встраиваем 
+	// инклуды с их реализациями в Engine.h
 	CEventAPI Event;
-	CSheduler Sheduler;
 	CLevelManager LevelManager;
-	CLevelLoadingScreen LoadingScreen;
 	CFontManager FontManager;
-	CGameStateManager GameStateManager;
 	CDebugUI DebugUI;
 	CWindowManager WindowManager;
 	CTimeManager TimeManager;
 	CThreadManager ThreadManager;
 	CEngineEvents Events;
 	CRenderView RenderView; 
+
+	// Используются редко, их инклудим отдельно
+	CGameStateManager* GameStateManager;
+	CLevelLoadingScreen* LoadingScreen;
+	CSheduler* Sheduler;
+	CStats* Statistic;
+	CResourceManager* ResourceManager;
 
 	public:
 	// Конструктор/Деструктор
@@ -100,6 +115,26 @@ class ENGINE_API CEngine
 	void SetUnloaded()
 	{
 		m_bLoaded = FALSE;
+	}
+
+	xr_list<LOADING_EVENT> GetLoadingEvents()
+	{
+		return m_loading_events;
+	}
+
+	void AddLoadingEvent(LOADING_EVENT Event)
+	{
+		m_loading_events.push_back(Event);
+	}
+
+	void AddLoadingEventFront(LOADING_EVENT Event)
+	{
+		m_loading_events.push_front(Event);
+	}
+
+	void PopLoadingEvent()
+	{
+		m_loading_events.pop_front();
 	}
 
 	private:

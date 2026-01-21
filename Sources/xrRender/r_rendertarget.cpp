@@ -188,7 +188,7 @@ CRenderTarget::CRenderTarget()
 	dwWidth = Device.dwWidth;
 	dwHeight = Device.dwHeight;
 
-	Device.Resources->Evict();
+	Engine.ResourceManager->Evict();
 
 	// POINT
 	accum_point_geom_create();

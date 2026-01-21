@@ -922,9 +922,9 @@ void CActor::UpdateCL()
 	m_bZoomAimingMode = false;
 	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
-	Device.Statistic->TEST1.Begin();
+	Engine.Statistic->TEST1.Begin();
 	cam_Update(float(Engine.TimeManager.GetDeltaTimeMs()) / 1000.0f, currentFOV());
-	Device.Statistic->TEST1.End();
+	Engine.Statistic->TEST1.End();
 
 	if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
 	{

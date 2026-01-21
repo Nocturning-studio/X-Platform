@@ -10,6 +10,7 @@
 #include "gamepersistent.h"
 #include "xrServer.h"
 #include "..\xrEngine/Engine.h"
+#include "../xrEngine/LevelLoadingScreen.h"
 
 game_sv_Single::game_sv_Single()
 {
@@ -324,7 +325,7 @@ void game_sv_Single::on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src)
 
 void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
 {
-	Engine.LoadingScreen.Show();
+	Engine.LoadingScreen->Show();
 	shared_str& options = *alife().server_command_line();
 
 	delete_data(m_alife_simulator);
@@ -336,5 +337,5 @@ void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
 	m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
 	g_pGamePersistent->LoadTitle("st_client_synchronising");
 	Device.PreCache(30);
-	Engine.LoadingScreen.Hide();
+	Engine.LoadingScreen->Hide();
 }

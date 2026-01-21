@@ -449,9 +449,9 @@ void CLevel::OnFrame()
 		psDeviceFlags.set(rsDisableObjectsAsCrows, false);
 
 	// commit events from bullet manager from prev-frame
-	Device.Statistic->TEST0.Begin();
+	Engine.Statistic->TEST0.Begin();
 	BulletManager().CommitEvents();
-	Device.Statistic->TEST0.End();
+	Engine.Statistic->TEST0.End();
 
 	// Client receive
 	if (net_isDisconnected())
@@ -464,11 +464,11 @@ void CLevel::OnFrame()
 	}
 	else
 	{
-		Device.Statistic->netClient1.Begin();
+		Engine.Statistic->netClient1.Begin();
 
 		ClientReceive();
 
-		Device.Statistic->netClient1.End();
+		Engine.Statistic->netClient1.End();
 	}
 
 	ProcessGameEvents();
@@ -540,29 +540,32 @@ void CLevel::OnFrame()
 	//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
 	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
 
-	// Device.Statistic->cripting.Begin	();
+	// Engine.Statistic->cripting.Begin	();
 	if (!g_dedicated_server)
 		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
-	// Device.Statistic->Scripting.End	();
+	// Engine.Statistic->Scripting.End	();
 	m_ph_commander->update();
 	m_ph_commander_scripts->update();
 	//	autosave_manager().update			();
 
 	// просчитать полет пуль
-	Device.Statistic->TEST0.Begin();
+	Engine.Statistic->TEST0.Begin();
 	BulletManager().CommitRenderSet();
-	Device.Statistic->TEST0.End();
+	Engine.Statistic->TEST0.End();
 
 	// update static sounds
 	if (!g_dedicated_server)
 	{
 		g_SoundEnvironment->Update();
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(m_level_sound_manager, &CLevelSoundManager::Update));
+		Engine.ThreadManager.AddParallelTask(
+			CThreadManager::ParallelTask(m_level_sound_manager, &CLevelSoundManager::Update),
+			CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 	// deffer LUA-GC-STEP
 	if (!g_dedicated_server)
 	{
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CLevel::script_gc));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CLevel::script_gc),
+											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 	//-----------------------------------------------------
 	if (pStatGraphR)

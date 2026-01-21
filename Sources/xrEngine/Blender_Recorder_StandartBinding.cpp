@@ -594,9 +594,9 @@ void CBlender_Compile::SetMapping()
 		set_Constant("dt_params", detail_scaler);
 
 	// other common
-	for (u32 it = 0; it < Device.Resources->v_constant_setup.size(); it++)
+	for (u32 it = 0; it < Engine.ResourceManager->v_constant_setup.size(); it++)
 	{
-		std::pair<shared_str, R_constant_setup*> cs = Device.Resources->v_constant_setup[it];
+		std::pair<shared_str, R_constant_setup*> cs = Engine.ResourceManager->v_constant_setup[it];
 		set_Constant(*cs.first, cs.second);
 	}
 }

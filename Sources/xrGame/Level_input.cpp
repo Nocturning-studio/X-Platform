@@ -23,6 +23,7 @@
 #include "clsid_game.h"
 #include "../xrEngine/xr_input.h"
 #include "saved_game_wrapper.h"
+#include "../xrEngine/xrSheduler.h"
 
 #ifdef DEBUG
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -312,11 +313,11 @@ void CLevel::IR_OnKeyboardPress(int key)
 				}
 				if (tpObject)
 				{
-					Engine.Sheduler.Unregister(tpObject);
-					Engine.Sheduler.Register(tpObject, TRUE);
+					Engine.Sheduler->Unregister(tpObject);
+					Engine.Sheduler->Register(tpObject, TRUE);
 				};
-				Engine.Sheduler.Unregister(*I);
-				Engine.Sheduler.Register(*I, TRUE);
+				Engine.Sheduler->Unregister(*I);
+				Engine.Sheduler->Register(*I, TRUE);
 
 				CActor* pActor = smart_cast<CActor*>(*I);
 				if (pActor)

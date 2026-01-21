@@ -714,7 +714,7 @@ void CConsole::Show()
 
 	m_editor->IR_Capture();
 	Engine.Events.Render.Add(this, 1);
-	Engine.ThreadManager.seqFrameMT.Add(this);
+	Engine.ThreadManager.LegacyFrameMT.Add(this);
 
 	SECUROM_MARKER_HIGH_SECURITY_OFF(11)
 }
@@ -741,7 +741,7 @@ void CConsole::Hide()
 	reset_selected_tip();
 	update_tips();
 
-	Engine.ThreadManager.seqFrameMT.Remove(this);
+	Engine.ThreadManager.LegacyFrameMT.Remove(this);
 	Engine.Events.Render.Remove(this);
 	m_editor->IR_Release();
 }

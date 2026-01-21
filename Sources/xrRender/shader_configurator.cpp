@@ -314,7 +314,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 	safe_string::copy(AlbedoTexture, sizeof(AlbedoTexture), *C.L_textures[0]);
 
 	// Add extension to texture and check for null
-	Device.Resources->fix_texture_name(AlbedoTexture);
+	Engine.ResourceManager->fix_texture_name(AlbedoTexture);
 
 	bool DisablePBR = ps_r_shading_mode == 0;
 	bool UseAlbedoOnly = bUseDepthOnly;
@@ -1105,7 +1105,7 @@ void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeo
 	safe_string::copy(AlbedoTexture, sizeof(AlbedoTexture), *C.L_textures[0]);
 
 	// Add extension to texture  and chek for null
-	Device.Resources->fix_texture_name(AlbedoTexture);
+	Engine.ResourceManager->fix_texture_name(AlbedoTexture);
 
 	// Get  for base texture for material
 	safe_string::copy(AlbedoTexture, sizeof(AlbedoTexture), *C.L_textures[0]);

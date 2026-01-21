@@ -20,7 +20,7 @@
 
 R_constant_table::~R_constant_table()
 {
-	Device.Resources->_DeleteConstantTable(this);
+	Engine.ResourceManager->_DeleteConstantTable(this);
 }
 
 void R_constant_table::fatal(LPCSTR S)

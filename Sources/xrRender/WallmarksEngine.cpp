@@ -395,7 +395,7 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 		RenderBackend.Render(D3DPT_TRIANGLELIST, w_offset, w_count / 3);
 		if (bSuppressCull)
 			RenderBackend.set_CullMode(CULL_BACKFACE);
-		Device.Statistic->RenderDUMP_WMT_Count += w_count / 3;
+		Engine.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
 }
 
@@ -416,10 +416,10 @@ void CWallmarksEngine::Render()
 	Engine.RenderView.View.build_camera_dir(mViewPos, Engine.RenderView.Direction, Engine.RenderView.Top);
 	RenderBackend.set_xform_view(Engine.RenderView.View);
 
-	Device.Statistic->RenderDUMP_WM.Begin();
-	Device.Statistic->RenderDUMP_WMS_Count = 0;
-	Device.Statistic->RenderDUMP_WMD_Count = 0;
-	Device.Statistic->RenderDUMP_WMT_Count = 0;
+	Engine.Statistic->RenderDUMP_WM.Begin();
+	Engine.Statistic->RenderDUMP_WMS_Count = 0;
+	Engine.Statistic->RenderDUMP_WMD_Count = 0;
+	Engine.Statistic->RenderDUMP_WMT_Count = 0;
 
 	float ssaCLIP = r_ssaDISCARD / 4;
 
@@ -437,7 +437,7 @@ void CWallmarksEngine::Render()
 			static_wallmark* W = *w_it;
 			if (RenderImplementation.ViewBase.testSphere_dirty(W->bounds.P, W->bounds.R))
 			{
-				Device.Statistic->RenderDUMP_WMS_Count++;
+				Engine.Statistic->RenderDUMP_WMS_Count++;
 				float dst = Engine.RenderView.Position.distance_to_sqr(W->bounds.P);
 				float ssa = W->bounds.R * W->bounds.R / dst;
 				if (ssa >= ssaCLIP)
@@ -494,7 +494,7 @@ void CWallmarksEngine::Render()
 			float ssa = W->m_Bounds.R * W->m_Bounds.R / dst;
 			if (ssa >= ssaCLIP)
 			{
-				Device.Statistic->RenderDUMP_WMD_Count++;
+				Engine.Statistic->RenderDUMP_WMD_Count++;
 				u32 w_count = u32(w_verts - w_start);
 				if ((w_count + W->VCount()) >= (MAX_TRIS * 3))
 				{
@@ -526,7 +526,7 @@ void CWallmarksEngine::Render()
 
 	// Level-wmarks
 	RenderImplementation.SceneGraph.Render(SceneGraphRenderType::Wallmarks);
-	Device.Statistic->RenderDUMP_WM.End();
+	Engine.Statistic->RenderDUMP_WM.End();
 
 	// Projection
 	Engine.RenderView.View = mSavedView;

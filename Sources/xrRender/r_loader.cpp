@@ -8,6 +8,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrCore/stream_reader.h"
 #include "../xrEngine/xr_ioconsole.h"
+#include "../xrEngine/LevelLoadingScreen.h"
 
 #include <ppl.h>
 #include <future>
@@ -46,8 +47,8 @@ void CRender::level_Load(IReader* fs)
 		});
 	};
 
-	Engine.LoadingScreen.Show();
-	Device.Resources->DeferredLoad(TRUE);
+	Engine.LoadingScreen->Show();
+	Engine.ResourceManager->DeferredLoad(TRUE);
 
 	// 1. RAM BUFFERING
 	fs->seek(0);
@@ -106,7 +107,7 @@ void CRender::level_Load(IReader* fs)
 				*delim = 0;
 				strcpy(n_tlist, delim + 1);
 
-				Shaders[i] = Device.Resources->Create(n_sh, n_tlist);
+				Shaders[i] = Engine.ResourceManager->Create(n_sh, n_tlist);
 			}
 			chunk->close();
 		}
@@ -123,7 +124,7 @@ void CRender::level_Load(IReader* fs)
 		LoadSWIs(geom);
 		FS.r_close(geom);
 
-		Engine.LoadingScreen.ForceRender();
+		Engine.LoadingScreen->ForceRender();
 
 		g_pGamePersistent->LoadTitle("st_loading_fast_geometry");
 
@@ -168,7 +169,7 @@ void CRender::level_Load(IReader* fs)
 	// === ACTIVE WAIT ===
 	while (active_tasks > 0)
 	{
-		Engine.LoadingScreen.ForceRender();
+		Engine.LoadingScreen->ForceRender();
 		Sleep(1);
 	}
 	tg_visuals.wait();
@@ -180,7 +181,7 @@ void CRender::level_Load(IReader* fs)
 		LoadSectors(&local_fs_sectors);
 	}
 
-	Engine.LoadingScreen.ForceRender();
+	Engine.LoadingScreen->ForceRender();
 
 	// --- ќѕ“»ћ»«ј÷»я: Ћампы на сервере часто не нужны, если AI не зав€зан на уровень освещенности движком рендера ---
 	g_pGamePersistent->LoadTitle("st_loading_lights");
@@ -195,7 +196,7 @@ void CRender::level_Load(IReader* fs)
 
 	xr_free(level_data_ptr);
 
-	Engine.LoadingScreen.Hide();
+	Engine.LoadingScreen->Hide();
 
 	SceneGraph.lstLODs.clear();
 	SceneGraph.lstLODgroups.clear();
@@ -296,7 +297,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 	////OPTICK_EVENT("CRender::LoadBuffers");
 
 	R_ASSERT2(base_fs, "Could not load geometry. File not found.");
-	Device.Resources->Evict();
+	Engine.ResourceManager->Evict();
 	u32 dwUsage = D3DUSAGE_WRITEONLY;
 
 	xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;

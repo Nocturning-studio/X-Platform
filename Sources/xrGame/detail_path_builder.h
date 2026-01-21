@@ -34,7 +34,8 @@ class CDetailPathBuilder
 		m_object->m_wait_for_distributed_computation = true;
 		m_level_path = &level_path;
 		m_path_vertex_index = path_vertex_index;
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process),
+											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 
 	void __stdcall process()

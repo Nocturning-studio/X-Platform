@@ -301,12 +301,12 @@ void CHOM::Render(CFrustum& base)
 	if (!bEnabled)
 		return;
 
-	Device.Statistic->RenderCALC_HOM.Begin();
+	Engine.Statistic->RenderCALC_HOM.Begin();
 	Raster.clear();
 	Render_DB(base);
 	Raster.propagade();
 	MT_frame_rendered = Engine.TimeManager.GetFrameCount();
-	Device.Statistic->RenderCALC_HOM.End();
+	Engine.Statistic->RenderCALC_HOM.End();
 }
 
 ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
@@ -406,7 +406,7 @@ BOOL CHOM::visible(vis_data& vis)
 	// u32	frame_prev		= frame_current-1;
 
 #ifdef DEBUG
-	Device.Statistic->RenderCALC_HOM.Begin();
+	Engine.Statistic->RenderCALC_HOM.Begin();
 #endif
 	BOOL result = _visible(vis.box, m_xform_01);
 	u32 delay = 1;
@@ -422,7 +422,7 @@ BOOL CHOM::visible(vis_data& vis)
 	vis.hom_frame = frame_current + delay;
 	vis.hom_tested = frame_current;
 #ifdef DEBUG
-	Device.Statistic->RenderCALC_HOM.End();
+	Engine.Statistic->RenderCALC_HOM.End();
 #endif
 
 	return result;
@@ -523,7 +523,7 @@ void CHOM::stats()
 
 	if (m_pModel)
 	{
-		CGameFont& F = *Device.Statistic->Font();
+		CGameFont& F = *Engine.Statistic->Font();
 		F.OutNext(" **** HOM-occ ****");
 		F.OutNext("  visible:  %2d", tris_in_frame_visible);
 		F.OutNext("  frustum:  %2d", tris_in_frame);

@@ -9,7 +9,7 @@ void CRender::render_ambient_occlusion()
 {
 	////OPTICK_EVENT("CRender::render_ambient_occlusion");
 
-	Device.Statistic->RenderCALC_AO.Begin();
+	Engine.Statistic->RenderCALC_AO.Begin();
 
 	RenderBackend.set_ColorWriteEnable();
 	RenderBackend.set_CullMode(CULL_DISABLE);
@@ -49,6 +49,6 @@ void CRender::render_ambient_occlusion()
 	RenderBackend.set_Constant("image_resolution", w, h, 1 / w, 1 / h);
 	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_ao);
 
-	Device.Statistic->RenderCALC_AO.End();
+	Engine.Statistic->RenderCALC_AO.End();
 }
 ///////////////////////////////////////////////////////////////////////////////////

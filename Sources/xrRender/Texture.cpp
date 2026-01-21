@@ -75,7 +75,7 @@ IDirect3DBaseTexture9* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	// make file name
 	string_path fname;
 	strcpy(fname, fRName);
-	Device.Resources->fix_texture_name(fname);
+	Engine.ResourceManager->fix_texture_name(fname);
 	IReader* S = NULL;
 
 	// Try to find texture in multiple locations

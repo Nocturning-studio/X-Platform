@@ -29,9 +29,9 @@ IGame_Level::IGame_Level()
 IGame_Level::~IGame_Level()
 {
 	if (strstr(Core.Params, "-nes_texture_storing"))
-		Device.Resources->StoreNecessaryTextures();
+		Engine.ResourceManager->StoreNecessaryTextures();
 
-	Device.Resources->DeferredUnloadLevelTextures(pLevel->fname());
+	Engine.ResourceManager->DeferredUnloadLevelTextures(pLevel->fname());
 
 	xr_delete(pLevel);
 

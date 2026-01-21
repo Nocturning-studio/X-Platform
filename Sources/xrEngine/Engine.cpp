@@ -6,6 +6,8 @@
 // Engine class realization
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+#include "GameStateManager.h"
+#include "xrSheduler.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
 #include "xr_input.h"
@@ -21,6 +23,7 @@
 #include "../xrDiscordAPI/DiscordAPI.h"
 #include "build_identificator.h"
 #include "LogoWindow.h"
+#include "LevelLoadingScreen.h"
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
@@ -45,9 +48,9 @@ struct _SoundProcessor : public pureFrame
 {
 	virtual void OnFrame()
 	{
-		Device.Statistic->Sound.Begin();
+		Engine.Statistic->Sound.Begin();
 		::Sound->update(Engine.RenderView.Position, Engine.RenderView.Direction, Engine.RenderView.Top);
-		Device.Statistic->Sound.End();
+		Engine.Statistic->Sound.End();
 	}
 } SoundProcessor;
 //////////////////////////////////////////////////////////////////////////
@@ -121,7 +124,8 @@ bool CEngine::Initialize()
 	xrBind_PSGP(&PSGP, true);
 
 	Msg("Initializing Engine Sheduler...");
-	Sheduler.Initialize();
+	Sheduler = xr_new<CSheduler>();
+	Sheduler->Initialize();
 
 #ifdef DEBUG
 	msCreate("game");
@@ -131,10 +135,9 @@ bool CEngine::Initialize()
 
 	TimeManager.Initialize();
 
-	// 8. Device Base Init (без создания окна/контекста, только структуры)
-	Device.Initialize();
+	Statistic = xr_new<CStats>();
+	Statistic->Initialize();
 
-	// 9. Input System
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");
 		if (g_dedicated_server)
@@ -144,7 +147,6 @@ bool CEngine::Initialize()
 		pInput->Initialize();
 	}
 
-	// 10. Console
 	{
 		Msg("Initializing Console...");
 #ifdef DEDICATED_SERVER
@@ -168,7 +170,6 @@ bool CEngine::Initialize()
 		}
 	}
 
-	// 11. Load Libraries (DLLs)
 	{
 		Msg("Initializing Engine API...");
 
@@ -236,7 +237,6 @@ bool CEngine::Initialize()
 		R_ASSERT2(DiscordAPI_name, "! Can't load discord api");
 	}
 
-	// 12. Exec Scripts & Sound Init
 	{
 		Console->Execute("unbindall");
 		Console->ExecuteScript(Console->ConfigFile);
@@ -247,7 +247,6 @@ bool CEngine::Initialize()
 
 	DebugUI.Initialize();
 
-	// 13. Handle Command Line
 	{
 		// ...command line for auto start
 		{
@@ -274,15 +273,17 @@ bool CEngine::Initialize()
 #endif
 	}
 
-	// 14. Final Systems Create
-
 	ThreadManager.Initialize();
 
+	ResourceManager = xr_new<CResourceManager>();
+
+	Device.Initialize();
 	Device.Create();
 
 	LALib.OnCreate();
 
-	GameStateManager.Initialize();
+	GameStateManager = xr_new<CGameStateManager>();
+	GameStateManager->Initialize();
 
 	Msg("Initializing Font Manager...");
 	FontManager.Initialize();
@@ -290,13 +291,15 @@ bool CEngine::Initialize()
 	Msg("Scanning levels...");
 	LevelManager.Scan();
 
-	Engine.ThreadManager.seqFrameMT.Add(&SoundProcessor);
+	Engine.ThreadManager.LegacyFrameMT.Add(&SoundProcessor);
 
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 	g_pGamePersistent->Initialize();
 
 	g_SpatialSpace = xr_new<ISpatial_DB>();
 	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+
+	 LoadingScreen = xr_new<CLevelLoadingScreen>();
 
 	// 15. Show Window
 	Memory.mem_usage();
@@ -313,7 +316,7 @@ void CEngine::UpdateGameLogic()
 	PROFILE_FUNCTION();
 
 	// Профилирование логики процессора
-	Device.Statistic->EngineTOTAL.Begin();
+	Statistic->EngineTOTAL.Begin();
 
 	// Логика "первого кадра" или загрузки
 	// В оригинале ProcessLoading просто вызывал seqFrame один раз и ставил флаг
@@ -328,20 +331,20 @@ void CEngine::UpdateGameLogic()
 		Events.Frame.Process(rp_Frame);
 	}
 
-	Device.Statistic->EngineTOTAL.End();
+	Statistic->EngineTOTAL.End();
 }
 
 bool CEngine::CheckLoadingEvents()
 {
-	if (g_loading_events.empty())
+	if (m_loading_events.empty())
 		return false;
 
 	// Выполняем одно событие загрузки (например, загрузка текстуры)
-	if (g_loading_events.front()())
-		g_loading_events.pop_front();
+	if (m_loading_events.front()())
+		m_loading_events.pop_front();
 
 	// Рисуем экран загрузки
-	LoadingScreen.ForceRender();
+	LoadingScreen->ForceRender();
 
 	return true; // Кадр обработан, дальше идти не надо
 }
@@ -431,46 +434,54 @@ void CEngine::ProcessEventLoop()
 
 void CEngine::Destroy()
 {
-	// 1. Очистка игровых сущностей и пространств
 	xr_delete(g_SpatialSpacePhysic);
 	xr_delete(g_SpatialSpace);
 	DEL_INSTANCE(g_pGamePersistent);
 
-	// 2. События
+	LoadingScreen->Destroy();
+
+	FontManager.Destroy();
+
 	Event.Dump();
 
-	// 3. Звук и Ввод
 	CSound_manager_interface::_destroy();
 	xr_delete(pInput);
 
-	// 4. Настройки
 	xr_delete(pSettings);
 	xr_delete(pGameIni);
 
 	LALib.OnDestroy();
 
-	// 5. Консоль
 	Console->Destroy();
 	xr_delete(Console);
 
 	FontManager.Destroy();
 
-	GameStateManager.Destroy();
+	GameStateManager->Destroy();
 
 	DebugUI.Destroy();
 
 	WindowManager.Destroy();
 
-	// 6. Device & Scheduler
 	TimeManager.Destroy();
+
+	Events.Render.R.clear();
+	Events.AppActivate.R.clear();
+	Events.AppDeactivate.R.clear();
+	Events.AppStart.R.clear();
+	Events.AppEnd.R.clear();
+	Events.Frame.R.clear();
+	Events.DeviceReset.R.clear();
 
 	Device.Destroy();
 
-	ThreadManager.seqFrameMT.Remove(&SoundProcessor);
+	xr_delete(ResourceManager);
+
+	ThreadManager.LegacyFrameMT.Remove(&SoundProcessor);
 
 	ThreadManager.Destroy();
 
-	Sheduler.Destroy();
+	Sheduler->Destroy();
 
 #ifdef DEBUG_MEMORY_MANAGER
 	extern void dbg_dump_leaks_prepare();
@@ -478,7 +489,6 @@ void CEngine::Destroy()
 		dbg_dump_leaks_prepare();
 #endif // DEBUG_MEMORY_MANAGER
 
-	// 7. Выгрузка библиотек
 	if (hGame)
 	{
 		FreeLibrary(hGame);
@@ -502,11 +512,9 @@ void CEngine::Destroy()
 	pCreate = 0;
 	pDestroy = 0;
 
-	// Очистка системных ресурсов, которые были загружены библиотеками
 	Event._destroy();
 	XRC.r_clear_compact();
 
-	// 8. Ядро
 	Core.Destroy();
 }
 

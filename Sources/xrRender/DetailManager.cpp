@@ -181,7 +181,7 @@ void CDetailManager::UpdateVisibility()
 	vis_list* working_vis = m_visibles[m_vis_calc_id];
 	u32 current_frame = Engine.TimeManager.GetFrameCount();
 
-	Device.Statistic->RenderDUMP_DT_VIS.Begin();
+	Engine.Statistic->RenderDUMP_DT_VIS.Begin();
 
 	for (int _mz = 0; _mz < dm_cache1_line; _mz++)
 	{
@@ -350,7 +350,7 @@ void CDetailManager::UpdateVisibility()
 			}
 		}
 	}
-	Device.Statistic->RenderDUMP_DT_VIS.End();
+	Engine.Statistic->RenderDUMP_DT_VIS.End();
 }
 
 void CDetailManager::PrepareToCalc()
@@ -411,9 +411,9 @@ void __stdcall CDetailManager::MT_CALC()
 	int s_x = iFloor(EYE.x / dm_slot_size + .5f);
 	int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
-	Device.Statistic->RenderDUMP_DT_Cache.Begin();
+	Engine.Statistic->RenderDUMP_DT_Cache.Begin();
 	cache_Update(s_x, s_z, EYE, dm_max_decompress);
-	Device.Statistic->RenderDUMP_DT_Cache.End();
+	Engine.Statistic->RenderDUMP_DT_Cache.End();
 
 	UpdateVisibility();
 

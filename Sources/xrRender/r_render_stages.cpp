@@ -190,7 +190,7 @@ void CRender::query_wait()
 {
 	PROFILE_FUNCTION();
 
-	Device.Statistic->RenderDUMP_Wait_S.Begin();
+	Engine.Statistic->RenderDUMP_Wait_S.Begin();
 
 	CTimer Timer;
 	Timer.Start();
@@ -210,7 +210,7 @@ void CRender::query_wait()
 		}
 	}
 
-	Device.Statistic->RenderDUMP_Wait_S.End();
+	Engine.Statistic->RenderDUMP_Wait_S.End();
 
 	q_sync_count = (q_sync_count + 1) % HW.Caps.iGPUNum;
 	CHK_DX(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
@@ -316,7 +316,7 @@ void CRender::render_gbuffer_primary()
 	SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
 
 	// 5. Фаза отрисовки (Render Backend)
-	Device.Statistic->RenderCALC_GBuffer.Begin();
+	Engine.Statistic->RenderCALC_GBuffer.Begin();
 	RenderBackend.enable_anisotropy_filtering();
 
 	set_gbuffer();
@@ -337,7 +337,7 @@ void CRender::render_gbuffer_primary()
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
-	Device.Statistic->RenderCALC_GBuffer.End();
+	Engine.Statistic->RenderCALC_GBuffer.End();
 }
 
 void CRender::render_gbuffer_secondary()
@@ -725,20 +725,20 @@ void CRender::render_sun()
 {
 	PROFILE_FUNCTION();
 
-	Device.Statistic->RenderCALC_SUN.Begin();
+	Engine.Statistic->RenderCALC_SUN.Begin();
 
 	RenderImplementation.stats.l_visible++;
 	render_sun_cascades();
 	dwLightMarkerID += 2;
 
-	Device.Statistic->RenderCALC_SUN.End();
+	Engine.Statistic->RenderCALC_SUN.End();
 }
 
 void CRender::render_lights()
 {
 	PROFILE_FUNCTION();
 
-	Device.Statistic->RenderCALC_LIGHTS.Begin();
+	Engine.Statistic->RenderCALC_LIGHTS.Begin();
 
 	//******* Occlusion testing of volume-limited light-sources
 	render_stage_occlusion_culling();
@@ -755,7 +755,7 @@ void CRender::render_lights()
 	// Lighting, dependant on OCCQ
 	render_lights(LP_pending);
 
-	Device.Statistic->RenderCALC_LIGHTS.End();
+	Engine.Statistic->RenderCALC_LIGHTS.End();
 }
 
 void CRender::combine_scene()
@@ -788,7 +788,7 @@ void CRender::render_postprocess()
 {
 	PROFILE_FUNCTION();
 
-	Device.Statistic->RenderCALC_POSTPROCESS.Begin();
+	Engine.Statistic->RenderCALC_POSTPROCESS.Begin();
 
 	// Generic1 -> Generic0 -> Generic1
 	if (ps_r_postprocess_flags.test(RFLAG_AUTOEXPOSURE))
@@ -840,6 +840,6 @@ void CRender::render_postprocess()
 	if (g_pGamePersistent)
 		g_pGamePersistent->OnRenderPPUI_PP();
 
-	Device.Statistic->RenderCALC_POSTPROCESS.End();
+	Engine.Statistic->RenderCALC_POSTPROCESS.End();
 }
 ////////////////////////////////////////////////////////////////////////////////

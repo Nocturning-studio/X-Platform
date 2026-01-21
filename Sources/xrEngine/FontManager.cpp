@@ -39,7 +39,6 @@ CFontManager::CFontManager()
 CFontManager::~CFontManager()
 {
 	Destroy();
-	Engine.Events.DeviceReset.Remove(this);
 }
 
 void CFontManager::Initialize()
@@ -155,6 +154,8 @@ void CFontManager::Destroy()
 	{
 		xr_delete(**it);
 	}
+
+	Engine.Events.DeviceReset.Remove(this);
 }
 
 void CFontManager::OnFrame()

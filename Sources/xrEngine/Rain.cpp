@@ -266,7 +266,7 @@ void CEffect_Rain::Render()
 		float dt = Engine.TimeManager.GetDeltaTime();
 		one.P.mad(one.D, one.fSpeed * dt);
 
-		Device.Statistic->TEST1.Begin();
+		Engine.Statistic->TEST1.Begin();
 		Fvector wdir;
 		wdir.set(one.P.x - vEye.x, 0, one.P.z - vEye.z);
 		float wlen = wdir.square_magnitude();
@@ -309,7 +309,7 @@ void CEffect_Rain::Render()
 				}
 			}
 		}
-		Device.Statistic->TEST1.End();
+		Engine.Statistic->TEST1.End();
 
 		// Проверяем, есть ли над каплей крыша.
 		// Пускаем луч от позиции капли вверх.

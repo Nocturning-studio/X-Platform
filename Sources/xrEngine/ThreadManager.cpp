@@ -2,9 +2,10 @@
 #include "ThreadManager.h"
 #include "optick_include.h"
 #include <ThreadUtil.h>
-#include <algorithm> // для std::sort
+#include <algorithm>
 
-CThreadManager::CThreadManager() : m_bMustExit(FALSE), m_bInitialized(false), m_taskCursor(0), m_finishedThreadsCount(0)
+CThreadManager::CThreadManager()
+	: m_shouldExit(FALSE), m_isInitialized(false), m_cursorGeneral(0), m_cursorAI(0), m_completedThreadsCount(0)
 {
 }
 
@@ -15,209 +16,270 @@ CThreadManager::~CThreadManager()
 
 void CThreadManager::Initialize()
 {
-	if (m_bInitialized)
+	if (m_isInitialized)
 		return;
 
 	Msg("Initializing Thread Manager...");
 
-	m_bMustExit = FALSE;
-	syncFrameDone.Reset();
+	m_shouldExit = FALSE;
+	m_eventFrameComplete.Reset();
 
-	// 1. Определяем количество потоков
-	// Оставляем 1 ядро для Главного потока и Windows, остальные берем под воркеры.
-	// Минимум 1 дополнительный поток (для совместимости с одноядерными CPU, если такие еще живы).
-	u32 hwConcurency = std::thread::hardware_concurrency();
-	u32 workerCount = (hwConcurency > 1) ? (hwConcurency - 1) : 1;
+	// 1. Расчет количества воркеров
+	// Оставляем 1 ядро для Main Thread, остальные занимаем воркерами.
+	u32 hardwareConcurrency = std::thread::hardware_concurrency();
+	u32 workerCount = (hardwareConcurrency > 1) ? (hardwareConcurrency - 1) : 1;
 
-	// Ограничим разумным числом, чтобы не плодить контексты (например, 7 воркеров для 8-ядерника)
-	// Для X-Ray обычно 3-4 потока уже достаточно для насыщения.
-	Msg("* Thread Pool: Hardware Threads: %d, Spawning Workers: %d", hwConcurency, workerCount);
+	// Логируем конфигурацию
+	Msg("* Thread Pool: Hardware Threads: %d", hardwareConcurrency);
+	Msg("* Thread Pool: Spawning %d Worker Threads", workerCount);
+	Msg("* Thread Pool: AI Dedicated Thread: %s", (workerCount > 1) ? "Yes (Worker #1)" : "No (Shared on #0)");
 
-	// 2. Создаем воркеры
-	m_workers.reserve(workerCount);
+	// 2. Создание потоков
+	m_workerThreads.reserve(workerCount);
 	for (u32 i = 0; i < workerCount; ++i)
 	{
 		WorkerContext* ctx = xr_new<WorkerContext>();
-		ctx->Parent = this;
+		ctx->Manager = this;
 		ctx->ThreadID = i;
-		// Событие WakeEvent создается автоматически в конструкторе Event
-
-		m_workers.push_back(ctx);
+		m_workerThreads.push_back(ctx);
 
 		string64 threadName;
+		if (i == 0)
+			sprintf_s(threadName, "X-RAY Worker #0 (Audio/Gen)");
+		else if (i == 1)
+			sprintf_s(threadName, "X-RAY Worker #1 (AI/Gen)");
+		else
+			sprintf_s(threadName, "X-RAY Worker #%d (Gen)", i);
 
-		sprintf_s(threadName, "X-RAY Worker #%d", i);
-
-		Threading::SpawnThread(ThreadProc, threadName, 0, ctx);
+		Threading::SpawnThread(WorkerThreadProc, threadName, 0, ctx);
 	}
 
-	// Именуем главный поток для Optick
-	OPTICK_THREAD("X-RAY Primary thread");
-
-	m_bInitialized = true;
+	OPTICK_THREAD("X-RAY Primary Thread");
+	m_isInitialized = true;
 }
 
 void CThreadManager::Destroy()
 {
-	if (!m_bInitialized)
+	if (!m_isInitialized)
 		return;
 
 	Msg("Destroying Thread Manager...");
 
-	m_bMustExit = TRUE;
+	m_shouldExit = TRUE;
 
-	// Будим все потоки, чтобы они увидели флаг выхода
-	for (auto ctx : m_workers)
-	{
+	// Будим все потоки, чтобы они вышли из цикла
+	for (auto ctx : m_workerThreads)
 		ctx->WakeEvent.Set();
-	}
 
-	// Ждем завершения (тут упрощенно, в идеале нужно ждать хендлы потоков,
-	// но SpawnThread в X-Ray обычно detach-ит или закрывает хендлы.
-	// Добавим небольшую паузу или механизм подтверждения выхода, если SpawnThread этого не делает).
-	Sleep(100);
+	Sleep(100); // Даем время на корректное завершение
 
-	// Очистка памяти контекстов
-	for (auto ctx : m_workers)
+	// Очистка памяти
+	for (auto ctx : m_workerThreads)
 		xr_delete(ctx);
-	m_workers.clear();
+	m_workerThreads.clear();
 
-	m_seqParallel.clear();
-	seqFrameMT.R.clear();
+	m_tasksGeneral.clear();
+	m_tasksAI.clear();
+	LegacyFrameMT.R.clear();
 
-	m_bInitialized = false;
+	m_isInitialized = false;
 }
 
-void CThreadManager::ThreadProc(void* context)
+void CThreadManager::WorkerThreadProc(void* context)
 {
 	WorkerContext* ctx = static_cast<WorkerContext*>(context);
-	CThreadManager* pMgr = ctx->Parent;
+	CThreadManager* self = ctx->Manager;
+	const u32 threadID = ctx->ThreadID;
+	const u32 totalWorkers = self->m_workerThreads.size();
 
-	OPTICK_THREAD("X-Ray Worker");
+	OPTICK_THREAD("Worker Thread");
 
 	while (true)
 	{
-		// 1. Ждем сигнала на старт кадра
+		// 1. Ожидание сигнала начала кадра
 		ctx->WakeEvent.Wait();
 
-		if (pMgr->m_bMustExit)
+		if (self->m_shouldExit)
 			return;
 
-		// 2. Выполнение параллельных задач (Task Stealing)
-		// Все потоки набрасываются на m_seqParallel
-		while (true)
+		// -------------------------------------------------------------
+		// ЛОГИКА РАСПРЕДЕЛЕНИЯ ЗАДАЧ
+		// -------------------------------------------------------------
+
+		// A. Обработка AI задач (TaskType::AI)
+		// Условие:
+		// 1. Если потоков много (>1), AI берет только Поток #1.
+		// 2. Если поток всего один (single core), он вынужден брать всё.
+		bool isAIThread = (threadID == 1) || (totalWorkers == 1);
+
+		if (isAIThread)
 		{
-			// Атомарно берем индекс следующей задачи
-			u32 taskIdx = pMgr->m_taskCursor.fetch_add(1);
-
-			// Если задач больше нет - выходим из цикла
-			if (taskIdx >= pMgr->m_seqParallel.size())
-				break;
-
-			// Выполняем задачу
+			OPTICK_EVENT("Process_AI_Queue");
+			while (true)
 			{
-				// Копия делегата, чтобы не держать локов (хотя вектор read-only в этот момент)
-				// В данном дизайне вектор не меняется во время выполнения, локи не нужны.
-				const auto& item = pMgr->m_seqParallel[taskIdx];
+				// Атомарно получаем индекс задачи
+				u32 taskIndex = self->m_cursorAI.fetch_add(1);
+
+				// Если вышли за пределы вектора - задач больше нет
+				if (taskIndex >= self->m_tasksAI.size())
+					break;
+
+				// Выполнение
+				const auto& item = self->m_tasksAI[taskIndex];
 				if (item.Delegate)
 					item.Delegate();
 			}
 		}
 
-		// 3. Выполнение Legacy задач (seqFrameMT)
-		// Это делает ТОЛЬКО поток #0, чтобы сохранить совместимость со старым кодом (Sound),
-		// который может быть не thread-safe при запуске с нескольких потоков.
-		if (ctx->ThreadID == 0)
-			pMgr->seqFrameMT.Process(rp_Frame);
+		// B. Обработка Общих задач (TaskType::General)
+		// Все потоки могут помогать с общими задачами.
+		// Поток #1 помогает только после того, как закончит с AI.
+		{
+			OPTICK_EVENT("Process_General_Queue");
+			while (true)
+			{
+				u32 taskIndex = self->m_cursorGeneral.fetch_add(1);
 
-		// 4. Сигнализируем, что этот поток закончил работу
-		// Увеличиваем счетчик завершивших работу потоков
-		u32 finished = pMgr->m_finishedThreadsCount.fetch_add(1) + 1;
+				if (taskIndex >= self->m_tasksGeneral.size())
+					break;
 
-		// Если это был ПОСЛЕДНИЙ поток, будим главный поток
-		if (finished == pMgr->m_workers.size())
-			pMgr->syncFrameDone.Set();
+				const auto& item = self->m_tasksGeneral[taskIndex];
+				if (item.Delegate)
+					item.Delegate();
+			}
+		}
+
+		// C. Обработка Legacy задач (Sound и прочее старье)
+		// Строго только на Потоке #0 для совместимости
+		if (threadID == 0)
+		{
+			OPTICK_EVENT("Legacy_FrameMT");
+			self->LegacyFrameMT.Process(rp_Frame);
+		}
+
+		// -------------------------------------------------------------
+		// СИНХРОНИЗАЦИЯ
+		// -------------------------------------------------------------
+
+		// Увеличиваем счетчик завершивших работу
+		u32 finishedCount = self->m_completedThreadsCount.fetch_add(1) + 1;
+
+		// Если это был последний поток, будим Main Thread
+		if (finishedCount == totalWorkers)
+		{
+			self->m_eventFrameComplete.Set();
+		}
 	}
 }
 
-void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority priority)
+void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority priority, TaskType type)
 {
-	std::lock_guard<std::recursive_mutex> lock(m_csEnter);
-
 	TaskItem item;
 	item.Delegate = delegate;
 	item.Priority = priority;
-	m_seqParallel.push_back(item);
+
+	if (type == TaskType::AI)
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
+		m_tasksAI.push_back(item);
+	}
+	else
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
+		m_tasksGeneral.push_back(item);
+	}
 }
 
 void CThreadManager::RemoveParallelTask(const ParallelTask& delegate)
 {
-	std::lock_guard<std::recursive_mutex> lock(m_csEnter);
+	// Удаляем из General
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
+		auto it = std::remove_if(m_tasksGeneral.begin(), m_tasksGeneral.end(),
+								 [&](const TaskItem& item) { return item.Delegate == delegate; });
 
-	// Удаляем все вхождения этого делегата
-	auto it = std::remove_if(m_seqParallel.begin(), m_seqParallel.end(),
-							 [&](const TaskItem& item) { return item.Delegate == delegate; });
+		if (it != m_tasksGeneral.end())
+			m_tasksGeneral.erase(it, m_tasksGeneral.end());
+	}
 
-	if (it != m_seqParallel.end())
-		m_seqParallel.erase(it, m_seqParallel.end());
+	// Удаляем из AI
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
+		auto it = std::remove_if(m_tasksAI.begin(), m_tasksAI.end(),
+								 [&](const TaskItem& item) { return item.Delegate == delegate; });
+
+		if (it != m_tasksAI.end())
+			m_tasksAI.erase(it, m_tasksAI.end());
+	}
 }
 
 bool CThreadManager::HasParallelTask(const ParallelTask& delegate)
 {
-	std::lock_guard<std::recursive_mutex> lock(m_csEnter);
-	for (const auto& item : m_seqParallel)
+	// Проверка General
 	{
-		if (item.Delegate == delegate)
-			return true;
+		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
+		for (const auto& item : m_tasksGeneral)
+			if (item.Delegate == delegate)
+				return true;
+	}
+	// Проверка AI
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
+		for (const auto& item : m_tasksAI)
+			if (item.Delegate == delegate)
+				return true;
 	}
 	return false;
 }
 
 void CThreadManager::SignalFrameStart()
 {
-	// 1. Подготовка перед запуском
-	m_taskCursor.store(0);
-	m_finishedThreadsCount.store(0);
-	syncFrameDone.Reset();
+	// Сброс атомарных счетчиков
+	m_cursorGeneral.store(0);
+	m_cursorAI.store(0);
+	m_completedThreadsCount.store(0);
+	m_eventFrameComplete.Reset();
 
-	// 2. Сортировка задач по приоритету
-	if (!m_seqParallel.empty())
+	// Сортировка General задач
+	if (!m_tasksGeneral.empty())
 	{
-		// Сортируем (наибольший приоритет в начале)
-		std::sort(m_seqParallel.begin(), m_seqParallel.end(),
+		std::sort(m_tasksGeneral.begin(), m_tasksGeneral.end(),
 				  [](const TaskItem& a, const TaskItem& b) { return a.Priority > b.Priority; });
 	}
 
-	// 3. Будим ВСЕ потоки
-	for (auto ctx : m_workers)
+	// Сортировка AI задач
+	if (!m_tasksAI.empty())
 	{
-		ctx->WakeEvent.Set();
+		std::sort(m_tasksAI.begin(), m_tasksAI.end(),
+				  [](const TaskItem& a, const TaskItem& b) { return a.Priority > b.Priority; });
 	}
+
+	// Пробуждение всех воркеров
+	for (auto ctx : m_workerThreads)
+		ctx->WakeEvent.Set();
 }
 
 void CThreadManager::WaitForFrameEnd()
 {
-	// Ждем, пока счетчик завершивших потоков не станет равен общему числу.
-	// Механизм Event здесь эффективен, чтобы Main Thread спал, а не крутился в SpinWait.
-	syncFrameDone.Wait();
+	// Ждем, пока последний поток не подаст сигнал
+	m_eventFrameComplete.Wait();
 
-	// Очищаем задачи после выполнения (чтобы не выполнять их в след. кадре)
-	// Емкость вектора сохраняется, аллокаций не будет.
-	// Делаем это здесь, когда гарантированно никто не читает вектор.
-	m_seqParallel.clear();
+	// Очищаем списки задач для следующего кадра
+	m_tasksGeneral.clear();
+	m_tasksAI.clear();
 }
 
 void CThreadManager::EnterCritical()
 {
-	m_csEnter.lock();
+	m_mutexGeneral.lock();
 }
 
 void CThreadManager::LeaveCritical()
 {
-	m_csEnter.unlock();
+	m_mutexGeneral.unlock();
 }
 
 bool CThreadManager::TryEnterCritical()
 {
-	return m_csEnter.try_lock();
+	return m_mutexGeneral.try_lock();
 }

@@ -34,6 +34,8 @@ class ENGINE_API CLevelLoadingScreen
 	CLevelLoadingScreen();
 	~CLevelLoadingScreen();
 
+	void Destroy();
+
 	// ”правление жизненным циклом экрана
 	void Show();
 	void Hide();

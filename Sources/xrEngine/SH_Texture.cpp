@@ -16,7 +16,7 @@
 
 void resptrcode_texture::create(LPCSTR _name)
 {
-	_set(Device.Resources->_CreateTexture(_name));
+	_set(Engine.ResourceManager->_CreateTexture(_name));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ CTexture::~CTexture()
 	Unload();
 
 	// release external reference
-	Device.Resources->_DeleteTexture(this);
+	Engine.ResourceManager->_DeleteTexture(this);
 }
 
 void CTexture::surface_set(IDirect3DBaseTexture9* surf)
@@ -152,8 +152,8 @@ void CTexture::apply_normal(u32 dwStage)
 
 void CTexture::Preload()
 {
-	m_bumpmap = Device.Resources->m_textures_description.GetBumpName(cName);
-	m_material = Device.Resources->m_textures_description.GetMaterial(cName);
+	m_bumpmap = Engine.ResourceManager->m_textures_description.GetBumpName(cName);
+	m_material = Engine.ResourceManager->m_textures_description.GetMaterial(cName);
 }
 
 void CTexture::Load()

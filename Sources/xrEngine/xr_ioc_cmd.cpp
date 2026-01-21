@@ -211,7 +211,7 @@ class CCC_TexturesStat : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		Device.Resources->_DumpMemoryUsage();
+		Engine.ResourceManager->_DumpMemoryUsage();
 	}
 };
 //-----------------------------------------------------------------------
@@ -331,7 +331,7 @@ class CCC_DumpResources : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		Device.Resources->Dump(args != NULL);
+		Engine.ResourceManager->Dump(args != NULL);
 	}
 };
 

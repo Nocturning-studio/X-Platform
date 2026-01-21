@@ -183,7 +183,8 @@ void CParticlesObject::shedule_Update(u32 _dt)
 		if (0)
 		{ //.psDeviceFlags.test(mtParticles))	{    //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
 			mt_dt = dt;
-			Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CParticlesObject::PerformAllTheWork_mt));
+			Engine.ThreadManager.AddParallelTask(
+				CThreadManager::ParallelTask(this, &CParticlesObject::PerformAllTheWork_mt));
 		}
 		else
 		{

@@ -444,9 +444,9 @@ void CSheduler::Switch				()
 */
 void CSheduler::Update()
 {
-	R_ASSERT(Device.Statistic);
+	R_ASSERT(Engine.Statistic);
 	// Initialize
-	Device.Statistic->Sheduler.Begin();
+	Engine.Statistic->Sheduler.Begin();
 	cycles_start = CPU::QPC();
 	cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
 	internal_Registration();
@@ -491,10 +491,10 @@ void CSheduler::Update()
 #endif // DEBUG_SCHEDULER
 	clamp(psShedulerTarget, 3.f, 66.f);
 	psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;
-	Device.Statistic->fShedulerLoad = psShedulerCurrent;
+	Engine.Statistic->fShedulerLoad = psShedulerCurrent;
 
 	// Finalize
 	g_bSheduleInProgress = FALSE;
 	internal_Registration();
-	Device.Statistic->Sheduler.End();
+	Engine.Statistic->Sheduler.End();
 }

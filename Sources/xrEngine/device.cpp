@@ -28,6 +28,8 @@
 
 #include "resource.h"
 
+#include "LevelLoadingScreen.h"
+
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;
 
@@ -68,11 +70,11 @@ void Present()
 {
 	PROFILE_FUNCTION();
 
-	Device.Statistic->RenderPresentation.Begin();
+	Engine.Statistic->RenderPresentation.Begin();
 
 	HRESULT _hr = HW.pDevice->PresentEx(NULL, NULL, NULL, NULL, NULL);
 
-	Device.Statistic->RenderPresentation.End();
+	Engine.Statistic->RenderPresentation.End();
 }
 
 void CRenderDevice::End(void)
@@ -89,7 +91,7 @@ void CRenderDevice::End(void)
 	{
 		::Sound->set_master_volume(psSoundVFactor);
 		dwPrecacheFrame--;
-		Engine.LoadingScreen.ForceRender();
+		Engine.LoadingScreen->ForceRender();
 		if (0 == dwPrecacheFrame)
 		{
 			Gamma.Update();
@@ -99,7 +101,7 @@ void CRenderDevice::End(void)
 			if (precache_light)
 				precache_light.destroy();
 			::Sound->set_master_volume(psSoundVFactor);
-			Resources->DestroyNecessaryTextures();
+			Engine.ResourceManager->DestroyNecessaryTextures();
 			Memory.mem_compact();
 			Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
 		}
@@ -126,8 +128,8 @@ void CRenderDevice::End(void)
 
 	if (needsPresent)
 	{
-		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
+		Engine.Statistic->RenderTOTAL_Real.End();
+		Engine.Statistic->RenderTOTAL_Real.FrameEnd();
 		Present();
 	}
 #endif
@@ -175,8 +177,6 @@ void CRenderDevice::PreCache()
 
 int g_frametime = 166;
 
-ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
-
 void ProcessLoading(RP_FUNC* f)
 {
 	Engine.Events.Frame.Process(rp_Frame);
@@ -196,8 +196,8 @@ void CRenderDevice::RenderFrame()
 	if (!b_is_Active)
 		return;
 
-	Statistic->RenderTOTAL_Real.FrameStart();
-	Statistic->RenderTOTAL_Real.Begin();
+	Engine.Statistic->RenderTOTAL_Real.FrameStart();
+	Engine.Statistic->RenderTOTAL_Real.Begin();
 
 	// Begin() настраивает DX9 контекст, очищает Z-буфер
 	if (Begin())
@@ -208,15 +208,15 @@ void CRenderDevice::RenderFrame()
 		Engine.Events.Render.Process(rp_Render);
 
 		// Статистика
-		if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-			Statistic->Show();
+		if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Engine.Statistic->errors.size())
+			Engine.Statistic->Show();
 
 		// End() делает Present()
 		End();
 	}
 
-	Statistic->RenderTOTAL_Real.End();
-	Statistic->RenderTOTAL_Real.FrameEnd();
+	Engine.Statistic->RenderTOTAL_Real.End();
+	Engine.Statistic->RenderTOTAL_Real.FrameEnd();
 }
 
 void CRenderDevice::EndEventLoop()
@@ -368,9 +368,9 @@ void CRenderDevice::_Create(LPCSTR shName)
 	// Signal everyone - device created
 	RenderBackend.OnDeviceCreate();
 	Gamma.Update();
-	Resources->OnDeviceCreate(shName);
+	Engine.ResourceManager->OnDeviceCreate(shName);
 	::Render->create();
-	Statistic->OnDeviceCreate();
+	Engine.Statistic->OnDeviceCreate();
 
 #ifndef DEDICATED_SERVER
 	m_WireShader.create("hud\\crosshair");
@@ -378,16 +378,14 @@ void CRenderDevice::_Create(LPCSTR shName)
 
 	DU.OnDeviceCreate();
 #endif
-
-	dwFrame = 0;
 }
 
 void CRenderDevice::Create()
 {
 	if (b_is_Ready)
 		return; // prevent double call
-	Statistic = xr_new<CStats>();
-	Statistic->Initialize();
+	Engine.Statistic = xr_new<CStats>();
+	Engine.Statistic->Initialize();
 	Log("\nStarting RENDER device...");
 
 #ifdef _EDITOR
@@ -406,7 +404,6 @@ void CRenderDevice::Create()
 	FS.update_path(fname, "$game_data$", "shaders.xr");
 
 	//////////////////////////////////////////////////////////////////////////
-	Resources = xr_new<CResourceManager>();
 	_Create(fname);
 
 	PreCache(30);
@@ -420,10 +417,10 @@ void CRenderDevice::_Destroy(BOOL bKeepTextures)
 
 	// before destroy
 	b_is_Ready = FALSE;
-	Statistic->OnDeviceDestroy();
+	Engine.Statistic->OnDeviceDestroy();
 	::Render->destroy();
 	RenderBackend.DeleteResources();
-	Resources->OnDeviceDestroy(bKeepTextures);
+	Engine.ResourceManager->OnDeviceDestroy(bKeepTextures);
 	RenderBackend.OnDeviceDestroy();
 
 	Memory.mem_compact();
@@ -441,20 +438,8 @@ void CRenderDevice::Destroy(void)
 
 	_Destroy(FALSE);
 
-	xr_delete(Resources);
-
 	// real destroy
 	HW.DestroyDevice();
-
-	Engine.Events.Render.R.clear();
-	Engine.Events.AppActivate.R.clear();
-	Engine.Events.AppDeactivate.R.clear();
-	Engine.Events.AppStart.R.clear();
-	Engine.Events.AppEnd.R.clear();
-	Engine.Events.Frame.R.clear();
-	Engine.Events.DeviceReset.R.clear();
-
-	xr_delete(Statistic);
 }
 
 #include "IGame_Level.h"
@@ -472,7 +457,7 @@ void CRenderDevice::Reset(bool precache)
 
 	RenderBackend.reset_begin();
 
-	Resources->reset_begin();
+	Engine.ResourceManager->reset_begin();
 	Memory.mem_compact();
 	HW.Reset(Engine.WindowManager.GetHandle());
 	dwWidth = HW.DevPP.BackBufferWidth;
@@ -480,7 +465,7 @@ void CRenderDevice::Reset(bool precache)
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
-	Resources->reset_end();
+	Engine.ResourceManager->reset_end();
 
 	if (g_pGamePersistent)
 	{

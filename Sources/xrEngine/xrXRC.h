@@ -20,11 +20,11 @@ class ENGINE_API xrXRC
 	IC void ray_query(const CDB::MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f)
 	{
 #ifdef DEBUG
-		Device.Statistic->clRAY.Begin();
+		Engine.Statistic->clRAY.Begin();
 #endif
 		CL.ray_query(m_def, r_start, r_dir, r_range);
 #ifdef DEBUG
-		Device.Statistic->clRAY.End();
+		Engine.Statistic->clRAY.End();
 #endif
 	}
 
@@ -35,11 +35,11 @@ class ENGINE_API xrXRC
 	IC void box_query(const CDB::MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
 	{
 #ifdef DEBUG
-		Device.Statistic->clBOX.Begin();
+		Engine.Statistic->clBOX.Begin();
 #endif
 		CL.box_query(m_def, b_center, b_dim);
 #ifdef DEBUG
-		Device.Statistic->clBOX.End();
+		Engine.Statistic->clBOX.End();
 #endif
 	}
 
@@ -50,11 +50,11 @@ class ENGINE_API xrXRC
 	IC void frustum_query(const CDB::MODEL* m_def, const CFrustum& F)
 	{
 #ifdef DEBUG
-		Device.Statistic->clFRUSTUM.Begin();
+		Engine.Statistic->clFRUSTUM.Begin();
 #endif
 		CL.frustum_query(m_def, F);
 #ifdef DEBUG
-		Device.Statistic->clFRUSTUM.End();
+		Engine.Statistic->clFRUSTUM.End();
 #endif
 	}
 

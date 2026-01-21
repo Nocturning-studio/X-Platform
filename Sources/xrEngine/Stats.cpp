@@ -89,6 +89,11 @@ void CStats::Initialize()
 	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
 }
 
+void CStats::Destroy()
+{
+	OnDeviceDestroy(); // На всякий случай
+}
+
 void _draw_cam_pos(CGameFont* pFont)
 {
 	float sz = pFont->GetHeight();
@@ -498,7 +503,7 @@ void CStats::Show()
 void _LogCallback(LPCSTR string)
 {
 	if (string && '!' == string[0] && ' ' == string[1])
-		Device.Statistic->errors.push_back(shared_str(string));
+		Engine.Statistic->errors.push_back(shared_str(string));
 }
 
 void CStats::OnDeviceCreate()

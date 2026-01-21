@@ -710,7 +710,7 @@ void CAI_Stalker::UpdateCL()
 	{
 #pragma todo(Deathman to ALL : Починить многопоточный update_object_handler)
 		// Проверяем глобальный конфиг многопоточности и готовность планировщика
-		if(0)// (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
+		if(CObjectHandler::planner().initialized())
 		{
 			// Создаем делегат
 			auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
@@ -720,7 +720,7 @@ void CAI_Stalker::UpdateCL()
 			VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
 #endif
 			// Добавляем задачу в пул потоков с ВЫСОКИМ приоритетом
-			Engine.ThreadManager.AddParallelTask(taskDelegate, CThreadManager::TaskPriority::High);
+			Engine.ThreadManager.AddParallelTask(taskDelegate, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 		}
 		else
 		{
@@ -900,7 +900,8 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			}
 		}
 
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility),
+											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 
 		START_PROFILE("stalker/schedule_update/memory")
 
@@ -927,7 +928,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		// here is monster AI call
 		VERIFY(_valid(Position()));
 		m_fTimeUpdateDelta = dt;
-		Device.Statistic->AI_Think.Begin();
+		Engine.Statistic->AI_Think.Begin();
 		if (GetScriptControl())
 			ProcessScripts();
 		else
@@ -936,7 +937,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 #endif
 			Think();
 		m_dwLastUpdateTime = Engine.TimeManager.GetGlobalTimeMs();
-		Device.Statistic->AI_Think.End();
+		Engine.Statistic->AI_Think.End();
 		VERIFY(_valid(Position()));
 
 		// Look and action streams

@@ -92,11 +92,6 @@ class ENGINE_API CStats : public pureRender
 	shared_str eval_line_2;
 	shared_str eval_line_3;
 
-	void Show(void);
-	virtual void OnRender();
-	void OnDeviceCreate(void);
-	void OnDeviceDestroy(void);
-
   public:
 	xr_vector<shared_str> errors;
 	CRegistrator<pureStats> seqStats;
@@ -105,12 +100,22 @@ class ENGINE_API CStats : public pureRender
 	CStats();
 	~CStats();
 
-	void Initialize();
+	// Методы жизненного цикла (вызываются из Engine)
+	void Initialize(); // Сброс данных
+	void Destroy();
 
 	IC CGameFont* Font()
 	{
 		return pFont;
 	}
+
+	// Методы графического цикла (вызываются из Device)
+	void OnDeviceCreate();
+	void OnDeviceDestroy();
+
+	// Отрисовка на экран
+	void Show();
+	virtual void OnRender(); // Если наследуемся от pureRender
 };
 
 enum

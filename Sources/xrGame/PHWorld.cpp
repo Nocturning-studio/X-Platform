@@ -88,7 +88,7 @@ void CPHWorld::Create()
 {
 	dWorldID phWorld = 0;
 
-	Engine.ThreadManager.seqFrameMT.Add(this, REG_PRIORITY_HIGH);
+	Engine.ThreadManager.LegacyFrameMT.Add(this, REG_PRIORITY_HIGH);
 
 	m_commander = xr_new<CPHCommander>();
 	// dVector3 extensions={2048,256,2048};
@@ -151,7 +151,7 @@ void CPHWorld::Destroy()
 	dCloseODE();
 	dCylinderClassUser = -1;
 	dRayMotionsClassUser = -1;
-	Engine.ThreadManager.seqFrameMT.Remove(this);
+	Engine.ThreadManager.LegacyFrameMT.Remove(this);
 	Engine.Events.Frame.Remove(this);
 	b_exist = false;
 }
@@ -169,17 +169,17 @@ void CPHWorld::OnFrame()
 	// Msg									("------------- physics: %d / %d",u32(Engine.TimeManager.GetFrameCount()),u32(m_steps_num));
 	// просчитать полет пуль
 	/*
-	Device.Statistic->TEST0.Begin		();
+	Engine.Statistic->TEST0.Begin		();
 	Level().BulletManager().Update		();
-	Device.Statistic->TEST0.End			();
+	Engine.Statistic->TEST0.End			();
 	*/
 #ifdef DEBUG
 	DBG_DrawFrameStart();
 	DBG_DrawStatBeforeFrameStep();
 #endif
-	Device.Statistic->Physics.Begin();
+	Engine.Statistic->Physics.Begin();
 	FrameStep(Engine.TimeManager.GetDeltaTime());
-	Device.Statistic->Physics.End();
+	Engine.Statistic->Physics.End();
 #ifdef DEBUG
 	DBG_DrawStatAfterFrameStep();
 
@@ -214,7 +214,7 @@ void CPHWorld::Step()
 	--disable_count;
 
 	++m_steps_num;
-	Device.Statistic->ph_collision.Begin();
+	Engine.Statistic->ph_collision.Begin();
 
 	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
@@ -223,7 +223,7 @@ void CPHWorld::Step()
 
 		++i_object;
 	}
-	Device.Statistic->ph_collision.End();
+	Engine.Statistic->ph_collision.End();
 
 #ifdef DEBUG
 	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
@@ -248,7 +248,7 @@ void CPHWorld::Step()
 		obj->PhTune(fixed_step);
 	}
 
-	Device.Statistic->ph_core.Begin();
+	Engine.Statistic->ph_core.Begin();
 #ifdef DEBUG
 	dbg_bodies_num = 0;
 	dbg_joints_num = 0;
@@ -276,7 +276,7 @@ void CPHWorld::Step()
 		obj->IslandStep(fixed_step);
 	}
 
-	Device.Statistic->ph_core.End();
+	Engine.Statistic->ph_core.End();
 
 	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{

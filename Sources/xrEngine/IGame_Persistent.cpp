@@ -133,7 +133,7 @@ void IGame_Persistent::OnGameStart()
 
 	#pragma todo("NSDeathman to all: Так не должно быть - вернуть при фиксе бага с использованием старых lmap на новом уровне, и уборке кастыля с перезагрузкой текстур")
 	//Log("Loading textures...");
-	//Device.Resources->DeferredUpload();
+	//Engine.ResourceManager->DeferredUpload();
 
 	p_time = 1000.f * Engine.TimeManager.GetTimerGlobal()->GetElapsed_sec() - p_time;
 	u32 p_mem = Memory.mem_usage() - mem_0;
@@ -164,9 +164,9 @@ void IGame_Persistent::OnFrame()
 
 #ifndef _EDITOR
 
-	Device.Statistic->Particles_starting = ps_needtoplay.size();
-	Device.Statistic->Particles_active = ps_active.size();
-	Device.Statistic->Particles_destroy = ps_destroy.size();
+	Engine.Statistic->Particles_starting = ps_needtoplay.size();
+	Engine.Statistic->Particles_active = ps_active.size();
+	Engine.Statistic->Particles_destroy = ps_destroy.size();
 
 	// Play req particle systems
 	while (ps_needtoplay.size())

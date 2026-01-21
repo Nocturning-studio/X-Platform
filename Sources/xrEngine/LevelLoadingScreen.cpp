@@ -45,6 +45,10 @@ CLevelLoadingScreen::CLevelLoadingScreen()
 
 CLevelLoadingScreen::~CLevelLoadingScreen()
 {
+}
+
+void CLevelLoadingScreen::Destroy()
+{
 	if (pFontSystem)
 	{
 		Engine.Events.Render.Remove(pFontSystem);

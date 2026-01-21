@@ -121,7 +121,8 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
 	if (!m_first_time)
 	{
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update),
+											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 		return;
 	}
 

@@ -161,7 +161,7 @@ u32 R_occlusion::occq_get(u32& ID)
 	HRESULT hr;
 	CTimer T;
 	T.Start();
-	Device.Statistic->RenderDUMP_Wait.Begin();
+	Engine.Statistic->RenderDUMP_Wait.Begin();
 	while ((hr = used[ID].Q->GetData(&fragments, sizeof(fragments), D3DGETDATA_FLUSH)) == S_FALSE)
 	{
 		if (!SwitchToThread())
@@ -172,7 +172,7 @@ u32 R_occlusion::occq_get(u32& ID)
 			break;
 		}
 	}
-	Device.Statistic->RenderDUMP_Wait.End();
+	Engine.Statistic->RenderDUMP_Wait.End();
 	if (hr == D3DERR_DEVICELOST)
 		fragments = 0xffffffff;
 

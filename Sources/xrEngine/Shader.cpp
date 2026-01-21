@@ -11,51 +11,51 @@
 //
 STextureList::~STextureList()
 {
-	Device.Resources->_DeleteTextureList(this);
+	Engine.ResourceManager->_DeleteTextureList(this);
 }
 SMatrixList::~SMatrixList()
 {
-	Device.Resources->_DeleteMatrixList(this);
+	Engine.ResourceManager->_DeleteMatrixList(this);
 }
 SConstantList::~SConstantList()
 {
-	Device.Resources->_DeleteConstantList(this);
+	Engine.ResourceManager->_DeleteConstantList(this);
 }
 SPass::~SPass()
 {
-	Device.Resources->_DeletePass(this);
+	Engine.ResourceManager->_DeletePass(this);
 }
 ShaderElement::~ShaderElement()
 {
-	Device.Resources->_DeleteElement(this);
+	Engine.ResourceManager->_DeleteElement(this);
 }
 SGeometry::~SGeometry()
 {
-	Device.Resources->DeleteGeom(this);
+	Engine.ResourceManager->DeleteGeom(this);
 }
 Shader::~Shader()
 {
-	Device.Resources->Delete(this);
+	Engine.ResourceManager->Delete(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void resptrcode_shader::create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-	_set(Device.Resources->Create(s_shader, s_textures, s_constants, s_matrices));
+	_set(Engine.ResourceManager->Create(s_shader, s_textures, s_constants, s_matrices));
 }
 void resptrcode_shader::create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-	_set(Device.Resources->Create(B, s_shader, s_textures, s_constants, s_matrices));
+	_set(Engine.ResourceManager->Create(B, s_shader, s_textures, s_constants, s_matrices));
 }
 
 //////////////////////////////////////////////////////////////////////////
 void resptrcode_geom::create(u32 FVF, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
 {
-	_set(Device.Resources->CreateGeom(FVF, vb, ib));
+	_set(Engine.ResourceManager->CreateGeom(FVF, vb, ib));
 }
 void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
 {
-	_set(Device.Resources->CreateGeom(decl, vb, ib));
+	_set(Engine.ResourceManager->CreateGeom(decl, vb, ib));
 }
 
 //////////////////////////////////////////////////////////////////////

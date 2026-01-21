@@ -9,6 +9,7 @@
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
 #include "../xrEngine/xr_ioconsole.h"
+#include "../xrEngine/LevelLoadingScreen.h"
 
 extern pureFrame* g_pNetProcessor;
 
@@ -19,7 +20,7 @@ BOOL CLevel::net_Start_client(LPCSTR options)
 #include "string_table.h"
 bool CLevel::net_start_client1()
 {
-	Engine.LoadingScreen.Show();
+	Engine.LoadingScreen->Show();
 	// name_of_server
 	string64 name_of_server = "";
 	//	strcpy						(name_of_server,*m_caClientOptions);
@@ -68,7 +69,7 @@ bool CLevel::net_start_client3()
 		if (level_id < 0)
 		{
 			Disconnect();
-			Engine.LoadingScreen.Hide();
+			Engine.LoadingScreen->Hide();
 			connected_to_server = FALSE;
 			m_name = level_name;
 			m_connect_server_err = xrServer::ErrNoLevel;
@@ -96,9 +97,9 @@ bool CLevel::net_start_client4()
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled
-		Engine.ThreadManager.seqFrameMT.Add(g_pNetProcessor);
+		Engine.ThreadManager.LegacyFrameMT.Add(g_pNetProcessor);
 		Engine.Events.Frame.Remove(g_pNetProcessor);
-		Engine.ThreadManager.seqFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH + 2);
+		Engine.ThreadManager.LegacyFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH + 2);
 
 		if (!psNET_direct_connect)
 		{
@@ -134,8 +135,8 @@ bool CLevel::net_start_client5()
 		if (!g_dedicated_server)
 		{
 			g_pGamePersistent->LoadTitle("st_loading_textures");
-			Device.Resources->DeferredLoad(FALSE);
-			Device.Resources->DeferredUpload();
+			Engine.ResourceManager->DeferredLoad(FALSE);
+			Engine.ResourceManager->DeferredUpload();
 			pHUD->Load();
 			LL_CheckTextures();
 		}
@@ -160,6 +161,6 @@ bool CLevel::net_start_client6()
 		net_start_result_total = FALSE;
 	}
 
-	Engine.LoadingScreen.Hide();
+	Engine.LoadingScreen->Hide();
 	return true;
 }

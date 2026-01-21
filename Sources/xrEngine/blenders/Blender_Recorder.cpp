@@ -63,8 +63,8 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
 				Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
 			base = *lst[id];
 		}
-		//.		if (!Device.Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-		if (!Device.Resources->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
+		//.		if (!Engine.ResourceManager->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
+		if (!Engine.ResourceManager->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
 			bDetail = FALSE;
 	}
 	else
@@ -76,10 +76,10 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
 	bDetail_Diffuse = FALSE;
 	bDetail_Bump = FALSE;
 	if (bDetail)
-		Device.Resources->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
+		Engine.ResourceManager->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
 	bSteepParallax = FALSE;
-	Device.Resources->m_textures_description.GetParallax(base, bSteepParallax);
+	Engine.ResourceManager->m_textures_description.GetParallax(base, bSteepParallax);
 
 	// Compile
 	BT->Compile(*this);
@@ -129,7 +129,7 @@ void CBlender_Compile::PassEnd()
 	RS.SetTSS(Stage(), D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 	// Create pass
-	ref_state state = Device.Resources->_CreateState(RS.GetContainer());
+	ref_state state = Engine.ResourceManager->_CreateState(RS.GetContainer());
 
 	// [НОВАЯ ЛОГИКА] Объединяем макросы
 	// 1. Подготавливаем макросы для Pixel Shader (Common + PS)
@@ -143,8 +143,8 @@ void CBlender_Compile::PassEnd()
 	final_macros_vs.add(macros_vs);
 
 	// Компилируем шейдеры с соответствующими макросами
-	ref_ps ps = Device.Resources->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
-	ref_vs vs = Device.Resources->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
+	ref_ps ps = Engine.ResourceManager->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
+	ref_vs vs = Engine.ResourceManager->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
 
 	// Очищаем списки после создания прохода
 	macros_common.clear();
@@ -154,12 +154,12 @@ void CBlender_Compile::PassEnd()
 	ctable.merge(&ps->constants);
 	ctable.merge(&vs->constants);
 	SetMapping();
-	ref_ctable ct = Device.Resources->_CreateConstantTable(ctable);
-	ref_texture_list T = Device.Resources->_CreateTextureList(passTextures);
-	ref_matrix_list M = Device.Resources->_CreateMatrixList(passMatrices);
-	ref_constant_list C = Device.Resources->_CreateConstantList(passConstants);
+	ref_ctable ct = Engine.ResourceManager->_CreateConstantTable(ctable);
+	ref_texture_list T = Engine.ResourceManager->_CreateTextureList(passTextures);
+	ref_matrix_list M = Engine.ResourceManager->_CreateMatrixList(passMatrices);
+	ref_constant_list C = Engine.ResourceManager->_CreateConstantList(passConstants);
 
-	ref_pass _pass_ = Device.Resources->_CreatePass(state, ps, vs, ct, T, M, C);
+	ref_pass _pass_ = Engine.ResourceManager->_CreatePass(state, ps, vs, ct, T, M, C);
 	SH->passes.push_back(_pass_);
 }
 
@@ -296,7 +296,7 @@ void CBlender_Compile::Stage_Texture(LPCSTR name, u32, u32 fmin, u32 fmip, u32 f
 			Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
 		N = *lst[id];
 	}
-	passTextures.push_back(mk_pair(Stage(), ref_texture(Device.Resources->_CreateTexture(N))));
+	passTextures.push_back(mk_pair(Stage(), ref_texture(Engine.ResourceManager->_CreateTexture(N))));
 	//	i_Address				(Stage(),address);
 	i_Filter(Stage(), fmin, fmip, fmag);
 }
@@ -305,7 +305,7 @@ void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
 {
 	sh_list& lst = L_matrices;
 	int id = ParseName(name);
-	CMatrix* M = Device.Resources->_CreateMatrix((id >= 0) ? *lst[id] : name);
+	CMatrix* M = Engine.ResourceManager->_CreateMatrix((id >= 0) ? *lst[id] : name);
 	passMatrices.push_back(M);
 
 	// Setup transform pipeline
@@ -341,7 +341,7 @@ void CBlender_Compile::Stage_Constant(LPCSTR name)
 {
 	sh_list& lst = L_constants;
 	int id = ParseName(name);
-	passConstants.push_back(Device.Resources->_CreateConstant((id >= 0) ? *lst[id] : name));
+	passConstants.push_back(Engine.ResourceManager->_CreateConstant((id >= 0) ? *lst[id] : name));
 }
 
 void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCSTR _ps_entry, bool bFog, BOOL bZtest,
@@ -386,8 +386,8 @@ void CBlender_Compile::commit_Pass()
 	final_macros_vs.add(macros_vs);
 
 	// Создание шейдеров
-	ref_ps ps = Device.Resources->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
-	ref_vs vs = Device.Resources->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
+	ref_ps ps = Engine.ResourceManager->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
+	ref_vs vs = Engine.ResourceManager->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
 
 	// Очистка
 	macros_common.clear();
@@ -431,7 +431,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 	string256 name;
 	strcpy_s(name, _name);
 	//. andy	if (strext(name)) *strext(name)=0;
-	Device.Resources->fix_texture_name(name);
+	Engine.ResourceManager->fix_texture_name(name);
 
 	// Find index
 	ref_constant C = ctable.get(name);
@@ -448,7 +448,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 void CBlender_Compile::i_Texture(u32 s, LPCSTR name)
 {
 	if (name)
-		passTextures.push_back(mk_pair(s, ref_texture(Device.Resources->_CreateTexture(name))));
+		passTextures.push_back(mk_pair(s, ref_texture(Engine.ResourceManager->_CreateTexture(name))));
 }
 
 void CBlender_Compile::i_Projective(u32 s, bool b)
@@ -555,14 +555,14 @@ void CBlender_Compile::set_Sampler_gaussian(LPCSTR name, LPCSTR texture, bool b_
 
 void CBlender_Compile::end_Pass()
 {
-	dest.constants = Device.Resources->_CreateConstantTable(ctable);
-	dest.state = Device.Resources->_CreateState(RS.GetContainer());
-	dest.T = Device.Resources->_CreateTextureList(passTextures);
+	dest.constants = Engine.ResourceManager->_CreateConstantTable(ctable);
+	dest.state = Engine.ResourceManager->_CreateState(RS.GetContainer());
+	dest.T = Engine.ResourceManager->_CreateTextureList(passTextures);
 	dest.C = 0;
 
 	ref_matrix_list temp(0);
 	SH->passes.push_back(
-		Device.Resources->_CreatePass(dest.state, dest.ps, dest.vs, dest.constants, dest.T, temp, dest.C));
+		Engine.ResourceManager->_CreatePass(dest.state, dest.ps, dest.vs, dest.constants, dest.T, temp, dest.C));
 
 	ctable.clear();
 	passTextures.clear();

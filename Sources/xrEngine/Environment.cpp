@@ -76,11 +76,11 @@ CEnvironment::CEnvironment() : CurrentEnv(0), m_ambients_config(0)
 	PerlinNoise1D->SetOctaves(2);
 	PerlinNoise1D->SetAmplitude(0.66666f);
 
-	tsky0 = Device.Resources->_CreateTexture("$user$sky0");
-	tsky1 = Device.Resources->_CreateTexture("$user$sky1");
+	tsky0 = Engine.ResourceManager->_CreateTexture("$user$sky0");
+	tsky1 = Engine.ResourceManager->_CreateTexture("$user$sky1");
 
-	tlut0 = Device.Resources->_CreateTexture("$user$lut_s0");
-	tlut1 = Device.Resources->_CreateTexture("$user$lut_s1");
+	tlut0 = Engine.ResourceManager->_CreateTexture("$user$lut_s0");
+	tlut1 = Engine.ResourceManager->_CreateTexture("$user$lut_s1");
 
 	string_path file_name;
 	m_winds_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\winds.ltx"), TRUE, TRUE, FALSE);
@@ -814,7 +814,7 @@ void CEnvironment::load()
 	if (!CurrentEnv)
 		create_mixer();
 
-	autoexposure = Device.Resources->_CreateTexture("$user$autoexposure");
+	autoexposure = Engine.ResourceManager->_CreateTexture("$user$autoexposure");
 
 	if (!eff_Rain)
 		eff_Rain = xr_new<CEffect_Rain>();

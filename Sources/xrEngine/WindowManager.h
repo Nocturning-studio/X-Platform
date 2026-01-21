@@ -27,6 +27,24 @@ class ENGINE_API CWindowManager
 		m_width = w;
 		m_height = h;
 	}
+	void SetResolution(Ivector2 Resolution)
+	{
+		m_width = Resolution.x;
+		m_height = Resolution.y;
+	}
+	void SetResolution(u32 ResolutionX, u32 ResolutionY)
+	{
+		m_width = ResolutionX;
+		m_height = ResolutionY;
+	}
+	u32 GetWidth()
+	{
+		return m_width;
+	}
+	u32 GetHeight()
+	{
+		return m_height;
+	}
 
   private:
 	HWND m_hWnd;

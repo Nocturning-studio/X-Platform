@@ -6,7 +6,6 @@
 // ZNear - always 0.0f
 // ZFar  - always 1.0f
 
-class ENGINE_API CResourceManager;
 class ENGINE_API CGammaControl;
 
 #include "pure.h"
@@ -38,9 +37,6 @@ class ENGINE_API CRenderDevice
 	void _SetupStates();
 
   public:
-	LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
-
-	u32 dwFrame;
 	u32 dwPrecacheFrame;
 	u32 dwPrecacheTotal;
 
@@ -81,8 +77,6 @@ class ENGINE_API CRenderDevice
 
   public:
 	// Dependent classes
-	CResourceManager* Resources;
-	CStats* Statistic;
 	CGammaControl Gamma;
 
 	CRenderDevice()
@@ -126,9 +120,6 @@ public:
 };
 
 extern ENGINE_API CRenderDevice Device;
-
-typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
-extern ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
 #include "R_Backend_Runtime.h"
 

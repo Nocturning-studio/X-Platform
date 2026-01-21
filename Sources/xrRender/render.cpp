@@ -285,15 +285,15 @@ void CRender::create()
 	o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
 
 	// constants
-	::Device.Resources->RegisterConstantSetup("parallax_heigt", &binder_parallax);
-	::Device.Resources->RegisterConstantSetup("sun_far", &binder_sun_far);
-	::Device.Resources->RegisterConstantSetup("sun_dir", &binder_sun_dir);
-	::Device.Resources->RegisterConstantSetup("sun_normal_bias", &binder_sun_normal_bias);
-	::Device.Resources->RegisterConstantSetup("sun_directional_bias", &binder_sun_directional_bias);
-	::Device.Resources->RegisterConstantSetup("sun_color", &binder_sun_color);
-	::Device.Resources->RegisterConstantSetup("debug_reserved", &binder_debug_reserved);
-	::Device.Resources->RegisterConstantSetup("ao_brightness", &binder_ao_brightness);
-	::Device.Resources->RegisterConstantSetup("is_hud_render_phase", &binder_is_hud_render_phase);
+	Engine.ResourceManager->RegisterConstantSetup("parallax_heigt", &binder_parallax);
+	Engine.ResourceManager->RegisterConstantSetup("sun_far", &binder_sun_far);
+	Engine.ResourceManager->RegisterConstantSetup("sun_dir", &binder_sun_dir);
+	Engine.ResourceManager->RegisterConstantSetup("sun_normal_bias", &binder_sun_normal_bias);
+	Engine.ResourceManager->RegisterConstantSetup("sun_directional_bias", &binder_sun_directional_bias);
+	Engine.ResourceManager->RegisterConstantSetup("sun_color", &binder_sun_color);
+	Engine.ResourceManager->RegisterConstantSetup("debug_reserved", &binder_debug_reserved);
+	Engine.ResourceManager->RegisterConstantSetup("ao_brightness", &binder_ao_brightness);
+	Engine.ResourceManager->RegisterConstantSetup("is_hud_render_phase", &binder_is_hud_render_phase);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";

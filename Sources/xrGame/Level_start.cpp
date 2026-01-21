@@ -10,12 +10,13 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/xr_ioconsole.h"
 #include "MainMenu.h"
+#include "../xrEngine/LevelLoadingScreen.h"
 
 BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 {
 	net_start_result_total = TRUE;
 
-	Engine.LoadingScreen.Show();
+	Engine.LoadingScreen->Show();
 
 	// make Client Name if options doesn't have it
 	LPCSTR NameStart = strstr(op_client, "/name=");
@@ -80,12 +81,12 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 		}
 	}
 	//---------------------------------------------------------------------------
-	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start1));
-	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start2));
-	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start3));
-	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start4));
-	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start5));
-	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start6));
+	Engine.AddLoadingEvent(CEngine::LOADING_EVENT(this, &CLevel::net_start1));
+	Engine.AddLoadingEvent(CEngine::LOADING_EVENT(this, &CLevel::net_start2));
+	Engine.AddLoadingEvent(CEngine::LOADING_EVENT(this, &CLevel::net_start3));
+	Engine.AddLoadingEvent(CEngine::LOADING_EVENT(this, &CLevel::net_start4));
+	Engine.AddLoadingEvent(CEngine::LOADING_EVENT(this, &CLevel::net_start5));
+	Engine.AddLoadingEvent(CEngine::LOADING_EVENT(this, &CLevel::net_start6));
 
 	return net_start_result_total;
 }
@@ -127,7 +128,7 @@ bool CLevel::net_start1()
 
 			if (id < 0)
 			{
-				Engine.LoadingScreen.Hide();
+				Engine.LoadingScreen->Hide();
 				Log("Can't find level: ", l_name);
 				net_start_result_total = FALSE;
 				return true;
@@ -205,14 +206,14 @@ bool CLevel::net_start4()
 	if (!net_start_result_total)
 		return true;
 
-	g_loading_events.pop_front();
+	Engine.PopLoadingEvent();
 
-	g_loading_events.push_front(LOADING_EVENT(this, &CLevel::net_start_client6));
-	g_loading_events.push_front(LOADING_EVENT(this, &CLevel::net_start_client5));
-	g_loading_events.push_front(LOADING_EVENT(this, &CLevel::net_start_client4));
-	g_loading_events.push_front(LOADING_EVENT(this, &CLevel::net_start_client3));
-	g_loading_events.push_front(LOADING_EVENT(this, &CLevel::net_start_client2));
-	g_loading_events.push_front(LOADING_EVENT(this, &CLevel::net_start_client1));
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(this, &CLevel::net_start_client6));
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(this, &CLevel::net_start_client5));
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(this, &CLevel::net_start_client4));
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(this, &CLevel::net_start_client3));
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(this, &CLevel::net_start_client2));
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(this, &CLevel::net_start_client1));
 
 	return false;
 }
@@ -270,14 +271,14 @@ bool CLevel::net_start6()
 {
 	g_start_total_res = net_start_result_total;
 	g_connect_server_err = m_connect_server_err;
-	g_loading_events.pop_front();
-	g_loading_events.push_front(LOADING_EVENT(&LF, &LevelLoadFinalizer::net_start_finalizer));
+	Engine.PopLoadingEvent();
+	Engine.AddLoadingEventFront(CEngine::LOADING_EVENT(&LF, &LevelLoadFinalizer::net_start_finalizer));
 
 	// init bullet manager
 	BulletManager().Clear();
 	BulletManager().Load();
 
-	Engine.LoadingScreen.Hide();
+	Engine.LoadingScreen->Hide();
 
 	if (net_start_result_total)
 	{

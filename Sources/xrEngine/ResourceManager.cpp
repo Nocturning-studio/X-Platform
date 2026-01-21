@@ -89,7 +89,7 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 			N.push_back(0);
 			xr_strlwr(N.begin());
 
-			Device.Resources->fix_texture_name(N.begin());
+			Engine.ResourceManager->fix_texture_name(N.begin());
 			dest.push_back(N.begin());
 			N.clear();
 		}
@@ -105,7 +105,7 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 		N.push_back(0);
 		xr_strlwr(N.begin());
 
-		Device.Resources->fix_texture_name(N.begin());
+		Engine.ResourceManager->fix_texture_name(N.begin());
 		dest.push_back(N.begin());
 	}
 }

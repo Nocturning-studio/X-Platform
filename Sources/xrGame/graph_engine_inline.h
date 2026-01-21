@@ -39,7 +39,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 							 xr_vector<_index_type>* node_path, const _Parameters& parameters)
 {
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.Begin();
+	Engine.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/search")
 	//OPTICK_EVENT("CGraphEngine::search");
@@ -54,7 +54,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 	bool successfull = m_algorithm->find(path_manager);
 
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.End();
+	Engine.Statistic->AI_Path.End();
 #endif
 	return (successfull);
 #ifndef AI_COMPILER
@@ -68,7 +68,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 							 xr_vector<_index_type>* node_path, _Parameters& parameters)
 {
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.Begin();
+	Engine.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/search")
 	//OPTICK_EVENT("CGraphEngine::search");
@@ -83,7 +83,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 	bool successfull = m_algorithm->find(path_manager);
 
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.End();
+	Engine.Statistic->AI_Path.End();
 #endif
 	return (successfull);
 #ifndef AI_COMPILER
@@ -98,7 +98,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 							 _PathManager& path_manager)
 {
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.Begin();
+	Engine.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/search")
 	//OPTICK_EVENT("CGraphEngine::search");
@@ -108,7 +108,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
 	bool successfull = m_algorithm->find(path_manager);
 
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.End();
+	Engine.Statistic->AI_Path.End();
 #endif
 	return (successfull);
 #ifndef AI_COMPILER
@@ -125,7 +125,7 @@ IC bool CGraphEngine::search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8
 							 xr_vector<_solver_edge_type>* node_path, const _Parameters& parameters)
 {
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.Begin();
+	Engine.Statistic->AI_Path.Begin();
 	START_PROFILE("graph_engine")
 	START_PROFILE("graph_engine/proble_solver")
 	//OPTICK_EVENT("CGraphEngine::search graph_engine/proble_solver");
@@ -142,7 +142,7 @@ IC bool CGraphEngine::search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8
 	bool successfull = m_solver_algorithm->find(path_manager);
 
 #ifndef AI_COMPILER
-	Device.Statistic->AI_Path.End();
+	Engine.Statistic->AI_Path.End();
 #endif
 	return (successfull);
 #ifndef AI_COMPILER

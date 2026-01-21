@@ -302,10 +302,12 @@ void CCustomMonster::shedule_Update(u32 DT)
 	if (g_Alive())
 	{
 #ifndef DEBUG
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility),
+											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 #else  // DEBUG
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
+			Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility),
+												 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 			else
 				Exec_Visibility();
 #endif // DEBUG
@@ -327,8 +329,8 @@ void CCustomMonster::shedule_Update(u32 DT)
 	{
 		// here is monster AI call
 		m_fTimeUpdateDelta = dt;
-		Device.Statistic->AI_Think.Begin();
-		Device.Statistic->TEST1.Begin();
+		Engine.Statistic->AI_Think.Begin();
+		Engine.Statistic->TEST1.Begin();
 		if (GetScriptControl())
 			ProcessScripts();
 		else
@@ -337,8 +339,8 @@ void CCustomMonster::shedule_Update(u32 DT)
 				Think();
 		}
 		m_dwLastUpdateTime = Engine.TimeManager.GetGlobalTimeMs();
-		Device.Statistic->TEST1.End();
-		Device.Statistic->AI_Think.End();
+		Engine.Statistic->TEST1.End();
+		Engine.Statistic->AI_Think.End();
 
 		// Look and action streams
 		float temp = conditions().health();
@@ -420,7 +422,8 @@ void CCustomMonster::UpdateCL()
 	}
 	*/
 
-	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::update_sound_player));
+	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::update_sound_player),
+										 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 
 	START_PROFILE("CustomMonster/client_update/network extrapolation")
 	if (NET.empty())
@@ -577,25 +580,25 @@ void CCustomMonster::eye_pp_s1()
 #endif
 	}
 	// Standart visibility
-	Device.Statistic->AI_Vis_Query.Begin();
+	Engine.Statistic->AI_Vis_Query.Begin();
 	Fmatrix mProject, mFull, mView;
 	mView.build_camera_dir(eye_matrix.c, eye_matrix.k, eye_matrix.j);
 	VERIFY(_valid(eye_matrix));
 	mProject.build_projection(deg2rad(new_fov), 1, 0.1f, new_range);
 	mFull.mul(mProject, mView);
 	feel_vision_query(mFull, eye_matrix.c);
-	Device.Statistic->AI_Vis_Query.End();
+	Engine.Statistic->AI_Vis_Query.End();
 }
 
 void CCustomMonster::eye_pp_s2()
 {
 	// Tracing
-	Device.Statistic->AI_Vis_RayTests.Begin();
+	Engine.Statistic->AI_Vis_RayTests.Begin();
 	u32 dwTime = Level().timeServer();
 	u32 dwDT = dwTime - eye_pp_timestamp;
 	eye_pp_timestamp = dwTime;
 	feel_vision_update(this, eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold());
-	Device.Statistic->AI_Vis_RayTests.End();
+	Engine.Statistic->AI_Vis_RayTests.End();
 }
 
 void CCustomMonster::Exec_Visibility()
@@ -611,7 +614,7 @@ void CCustomMonster::Exec_Visibility()
 	if (!g_Alive())
 		return;
 
-	Device.Statistic->AI_Vis.Begin();
+	Engine.Statistic->AI_Vis.Begin();
 	switch (eye_pp_stage % 2)
 	{
 	case 0:
@@ -623,7 +626,7 @@ void CCustomMonster::Exec_Visibility()
 		break;
 	}
 	++eye_pp_stage;
-	Device.Statistic->AI_Vis.End();
+	Engine.Statistic->AI_Vis.End();
 }
 
 void CCustomMonster::UpdateCamera()

@@ -14,6 +14,7 @@
 #include "Text_Console.h"
 #include <process.h>
 #include "../xrDiscordAPI/DiscordAPI.h"
+#include "LevelLoadingScreen.h"
 
 void CGameStateManager::Initialize()
 {
@@ -67,7 +68,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 
 			// --- ÄÅËÅÃÈÐÓÅÌ ÇÀÃÐÓÇÊÓ ---
-			Engine.LoadingScreen.Show();
+			Engine.LoadingScreen->Show();
 			// ----------------------------
 
 			Msg("\nStart level loading...");
@@ -75,7 +76,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGameLevel->net_Start(op_server, op_client);
 
 			// --- ÄÅËÅÃÈÐÓÅÌ ÇÀÂÅÐØÅÍÈÅ ---
-			Engine.LoadingScreen.Hide();
+			Engine.LoadingScreen->Hide();
 			// -----------------------------
 		}
 		xr_free(op_server);
