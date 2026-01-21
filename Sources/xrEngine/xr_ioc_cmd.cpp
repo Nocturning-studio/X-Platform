@@ -892,5 +892,5 @@ void CCC_Register()
 	//CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 
 	extern int g_frametime;
-	CMD4(CCC_Integer, "rs_frametime", &g_frametime, 1, 1000);
+	CMD4(CCC_Integer, "rs_frametime", &g_frametime, 1, 10000);
 };
