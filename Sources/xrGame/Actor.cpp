@@ -477,7 +477,7 @@ void CActor::Hit(SHit* pHDS)
 				// вычислить позицию и направленность партикла
 				Fmatrix pos;
 
-				CParticlesPlayer::MakeXFORM(this, HDS.bone(), HDS.dir, HDS.p_in_bone_space, pos);
+				CParticlesPlayer::MakeTransform(this, HDS.bone(), HDS.dir, HDS.p_in_bone_space, pos);
 
 				// установить particles
 				CParticlesObject* ps = NULL;
@@ -575,10 +575,10 @@ void CActor::Hit(SHit* pHDS)
 		if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
 		{
 			// convert impulse into local coordinate system
-			Fmatrix mInvXForm;
-			mInvXForm.invert(XFORM());
+			Fmatrix mInvTransform;
+			mInvTransform.invert(Transform());
 			Fvector vLocalDir;
-			mInvXForm.transform_dir(vLocalDir, HDS.dir);
+			mInvTransform.transform_dir(vLocalDir, HDS.dir);
 			vLocalDir.invert();
 
 			Fvector a = {0, 0, 1};
@@ -692,7 +692,7 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
 		// check damage bone
 		Fvector D;
-		XFORM().transform_dir(D, vLocalDir);
+		Transform().transform_dir(D, vLocalDir);
 
 		float yaw, pitch;
 		D.getHP(yaw, pitch);
@@ -908,11 +908,11 @@ void CActor::UpdateCL()
 
 	m_snd_noise -= 0.3f * Engine.TimeManager.GetDeltaTime();
 
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 	inherited::UpdateCL();
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 	m_pPhysics_support->in_UpdateCL();
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 
 	if (g_Alive())
 		PickupModeUpdate();
@@ -1406,7 +1406,7 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, ref_shader IndSha
 	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
-	M.mul(XFORM(), BI.mTransform);
+	M.mul(Transform(), BI.mTransform);
 
 	Fvector pos = M.c;
 	pos.add(dpos);
@@ -1437,7 +1437,7 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, ref_shader IndSha
 	dwCount = u32(pv - pv_start);
 	RenderBackend.Vertex.Unlock(dwCount, hFriendlyIndicator->vb_stride);
 
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_Shader(IndShader);
 	RenderBackend.set_Geometry(hFriendlyIndicator);
 	RenderBackend.Render(D3DPT_TRIANGLESTRIP, dwOffset, 0, dwCount, 0, 2);
@@ -1454,7 +1454,7 @@ void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
-	M.mul(XFORM(), BI.mTransform);
+	M.mul(Transform(), BI.mTransform);
 	//------------------------------------------------
 	Fvector v0, v1;
 	v0.set(M.c);
@@ -1515,7 +1515,7 @@ void CActor::ForceTransform(const Fmatrix& m)
 {
 	if (!g_Alive())
 		return;
-	XFORM().set(m);
+	Transform().set(m);
 	if (character_physics_support()->movement()->CharacterExist())
 		character_physics_support()->movement()->EnableCharacter();
 	character_physics_support()->set_movement_position(m.c);

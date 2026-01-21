@@ -684,7 +684,7 @@ bool CRelationMapLocation::IsVisible()
 	}
 	if (m_b_was_visible_last_frame == false && res == true)
 	{
-		m_minimap_spot->ResetXformAnimation();
+		m_minimap_spot->ResetTransformAnimation();
 	}
 
 	m_b_was_visible_last_frame = res;

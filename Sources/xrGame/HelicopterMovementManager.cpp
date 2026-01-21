@@ -98,10 +98,10 @@ void SHeliMovementState::reinit()
 	round_center.set(0.0f, 0.0f, 0.0f);
 	round_radius = 0.0f;
 	round_reverse = false;
-	desiredPoint = parent->XFORM().c;
+	desiredPoint = parent->Transform().c;
 	currP = desiredPoint;
 	float bbb;
-	parent->XFORM().getHPB(currPathH, currPathP, bbb);
+	parent->Transform().getHPB(currPathH, currPathP, bbb);
 
 	speedInDestPoint = 0.0f;
 }
@@ -488,10 +488,10 @@ void CHelicopter::OnRender()
 			Level().debug_renderer().draw_aabb  ((*it),0.1f,0.1f,0.1f,D3DCOLOR_XRGB(0,255,0));
 		}
 	*/
-	/*	Level().debug_renderer().draw_line(Fidentity,m_heli->m_right_rocket_bone_xform.c,
+	/*	Level().debug_renderer().draw_line(Fidentity,m_heli->m_right_rocket_bone_transform.c,
 	   m_heli->m_data.m_destEnemyPos,D3DCOLOR_XRGB(0,255,0));
 
-		Level().debug_renderer().draw_line(Fidentity,m_heli->XFORM().c,m_heli->m_data.m_destEnemyPos,D3DCOLOR_XRGB(255,0,0));
+		Level().debug_renderer().draw_line(Fidentity,m_heli->Transform().c,m_heli->m_data.m_destEnemyPos,D3DCOLOR_XRGB(255,0,0));
 		return;
 	*/
 }

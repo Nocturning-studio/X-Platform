@@ -28,7 +28,7 @@ CLevelChanger::~CLevelChanger()
 
 void CLevelChanger::Center(Fvector& C) const
 {
-	XFORM().transform_tiny(C, CFORM()->getSphere().P);
+	Transform().transform_tiny(C, CFORM()->getSphere().P);
 }
 
 float CLevelChanger::Radius() const
@@ -90,7 +90,7 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract* DC)
 	{
 		l_pShape->ComputeBounds();
 		Fvector P;
-		XFORM().transform_tiny(P, CFORM()->getSphere().P);
+		Transform().transform_tiny(P, CFORM()->getSphere().P);
 		setEnabled(TRUE);
 	}
 	g_lchangers.push_back(this);
@@ -103,7 +103,7 @@ void CLevelChanger::shedule_Update(u32 dt)
 
 	const Fsphere& s = CFORM()->getSphere();
 	Fvector P;
-	XFORM().transform_tiny(P, s.P);
+	Transform().transform_tiny(P, s.P);
 	feel_touch_update(P, s.R);
 
 	update_actor_invitation();

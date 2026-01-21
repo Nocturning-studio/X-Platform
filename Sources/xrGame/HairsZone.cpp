@@ -68,7 +68,7 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
 		return;
 
 	Fvector P;
-	XFORM().transform_tiny(P, CFORM()->getSphere().P);
+	Transform().transform_tiny(P, CFORM()->getSphere().P);
 
 #ifdef DEBUG
 	if (bDebug)

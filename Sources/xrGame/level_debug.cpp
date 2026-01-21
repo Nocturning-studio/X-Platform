@@ -127,7 +127,7 @@ void CLevelDebug::draw_object_info()
 		}
 
 		Fmatrix res;
-		res.mul(Engine.RenderView.ViewProjection, it->first->XFORM());
+		res.mul(Engine.RenderView.ViewProjection, it->first->Transform());
 
 		Fvector4 v_res;
 

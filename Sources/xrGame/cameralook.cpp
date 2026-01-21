@@ -34,8 +34,8 @@ void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 
 	if (m_Flags.is(flRelativeLink))
 	{
-		parent->XFORM().transform_dir(vDirection);
-		parent->XFORM().transform_dir(vNormal);
+		parent->Transform().transform_dir(vDirection);
+		parent->Transform().transform_dir(vNormal);
 	}
 	Fvector vDir;
 	collide::rq_result R;
@@ -165,11 +165,11 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
 	vDirection.set(mR.k);
 	vNormal.set(mR.j);
 
-	Fmatrix a_xform;
-	a_xform.setXYZ(0, -yaw, 0);
-	a_xform.translate_over(point);
+	Fmatrix a_transform;
+	a_transform.setXYZ(0, -yaw, 0);
+	a_transform.translate_over(point);
 	Fvector _off = m_cam_offset;
-	a_xform.transform_tiny(_off);
+	a_transform.transform_tiny(_off);
 	vPosition.set(_off);
 }
 

@@ -63,9 +63,9 @@ class CGrenade : public CMissile, public CExplosive
 	bool m_thrown;
 
   protected:
-	virtual void UpdateXForm()
+	virtual void UpdateTransform()
 	{
-		CMissile::UpdateXForm();
+		CMissile::UpdateTransform();
 	};
 
   public:

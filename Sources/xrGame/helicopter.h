@@ -186,8 +186,8 @@ class CHelicopter : public CEntity,
 
 	u16 m_left_rocket_bone, m_right_rocket_bone, m_fire_bone, m_rotate_x_bone, m_rotate_y_bone;
 
-	Fmatrix m_fire_bone_xform;
-	Fmatrix m_i_bind_x_xform, m_i_bind_y_xform;
+	Fmatrix m_fire_bone_transform;
+	Fmatrix m_i_bind_x_transform, m_i_bind_y_transform;
 	Fvector2 m_lim_x_rot, m_lim_y_rot;
 	Fvector2 m_tgt_rot;
 	Fvector2 m_cur_rot;
@@ -201,16 +201,16 @@ class CHelicopter : public CEntity,
 	CCartridge m_CurrentAmmo;
 	float delta_t;
 	float flag_by_fire;
-	Fmatrix m_left_rocket_bone_xform, m_right_rocket_bone_xform;
+	Fmatrix m_left_rocket_bone_transform, m_right_rocket_bone_transform;
 
 	static void BoneMGunCallbackX(CBoneInstance* B);
 	static void BoneMGunCallbackY(CBoneInstance* B);
 	void startRocket(u16 idx);
 
 	// CShootingObject
-	virtual const Fmatrix& ParticlesXFORM() const
+	virtual const Fmatrix& ParticlesTransform() const
 	{
-		return m_fire_bone_xform;
+		return m_fire_bone_transform;
 	};
 
 	virtual const Fvector& CurrentFirePoint()
@@ -255,7 +255,7 @@ class CHelicopter : public CEntity,
 	Fcolor m_light_color;
 	shared_str m_smoke_particle;
 	CParticlesObject* m_pParticle;
-	Fmatrix m_particleXFORM;
+	Fmatrix m_particleTransform;
 
 	void StartFlame();
 	void UpdateHeliParticles();
@@ -355,7 +355,7 @@ class CHelicopter : public CEntity,
 		;
 	}
 
-	virtual const Fmatrix& get_ParticlesXFORM();
+	virtual const Fmatrix& get_ParticlesTransform();
 	virtual const Fvector& get_CurrentFirePoint();
 
 	virtual CGameObject* cast_game_object()

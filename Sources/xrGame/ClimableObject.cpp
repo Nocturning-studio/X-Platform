@@ -95,19 +95,19 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
 	Fvector shift;
 	shift.set(0.f, 0.f, 0.f);
 	SORT(
-		b._11, m_axis.set(XFORM().i); m_axis.mul(m_box.m_halfsize.x), m_side.set(XFORM().i);
-		m_side.mul(m_box.m_halfsize.x), m_norm.set(XFORM().i); if (m_box.m_halfsize.x < f_min_width) {
+		b._11, m_axis.set(Transform().i); m_axis.mul(m_box.m_halfsize.x), m_side.set(Transform().i);
+		m_side.mul(m_box.m_halfsize.x), m_norm.set(Transform().i); if (m_box.m_halfsize.x < f_min_width) {
 			m_box.m_halfsize.x = f_min_width;
 			shift.set(1.f, 0.f, 0.f);
 		};
-		m_norm.mul(m_box.m_halfsize.x), b._22, m_axis.set(XFORM().j);
-		m_axis.mul(m_box.m_halfsize.y), m_side.set(XFORM().j); m_side.mul(m_box.m_halfsize.y), m_norm.set(XFORM().j);
+		m_norm.mul(m_box.m_halfsize.x), b._22, m_axis.set(Transform().j);
+		m_axis.mul(m_box.m_halfsize.y), m_side.set(Transform().j); m_side.mul(m_box.m_halfsize.y), m_norm.set(Transform().j);
 		if (m_box.m_halfsize.y < f_min_width) {
 			m_box.m_halfsize.y = f_min_width;
 			shift.set(0.f, 1.f, 0.f);
 		};
-		m_norm.mul(m_box.m_halfsize.y), b._33, m_axis.set(XFORM().k);
-		m_axis.mul(m_box.m_halfsize.z), m_side.set(XFORM().k); m_side.mul(m_box.m_halfsize.z), m_norm.set(XFORM().k);
+		m_norm.mul(m_box.m_halfsize.y), b._33, m_axis.set(Transform().k);
+		m_axis.mul(m_box.m_halfsize.z), m_side.set(Transform().k); m_side.mul(m_box.m_halfsize.z), m_norm.set(Transform().k);
 		if (m_box.m_halfsize.z < f_min_width) {
 			m_box.m_halfsize.z = f_min_width;
 			shift.set(0.f, 0.f, 1.f);
@@ -115,9 +115,9 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
 		m_norm.mul(m_box.m_halfsize.z));
 	shift.mul(f_min_width);
 
-	XFORM().transform_dir(shift);
+	Transform().transform_dir(shift);
 	CObject::Position().sub(shift);
-	m_box.xform_set(Fidentity);
+	m_box.transform_set(Fidentity);
 	m_pStaticShell = xr_new<CPHLeaderGeomShell>(this);
 	P_BuildStaticGeomShell(smart_cast<CPHStaticGeomShell*>(m_pStaticShell), smart_cast<CGameObject*>(this), 0, m_box);
 	m_pStaticShell->SetMaterial("materials\\fake_ladders");
@@ -149,7 +149,7 @@ void CClimableObject::UpdateCL() // Called each frame, so no need for d
 
 void CClimableObject::Center(Fvector& C) const
 {
-	C.set(XFORM().c);
+	C.set(Transform().c);
 }
 float CClimableObject::Radius() const
 {
@@ -209,13 +209,13 @@ void CClimableObject::POnAxis(CPHCharacter* actor, Fvector& P) const
 }
 void CClimableObject::LowerPoint(Fvector& P) const
 {
-	P.sub(XFORM().c, m_axis);
+	P.sub(Transform().c, m_axis);
 	P.add(m_norm);
 }
 
 void CClimableObject::UpperPoint(Fvector& P) const
 {
-	P.add(XFORM().c, m_axis);
+	P.add(Transform().c, m_axis);
 	P.add(m_norm);
 }
 
@@ -382,24 +382,24 @@ void CClimableObject ::OnRender()
 		return;
 
 	Fmatrix form;
-	m_box.xform_get(form);
-	// form.mulA(XFORM());
-	Level().debug_renderer().draw_obb(XFORM(), m_box.m_halfsize, D3DCOLOR_XRGB(0, 0, 255));
+	m_box.transform_get(form);
+	// form.mulA(Transform());
+	Level().debug_renderer().draw_obb(Transform(), m_box.m_halfsize, D3DCOLOR_XRGB(0, 0, 255));
 	Fvector p1, p2, d;
 	d.set(m_axis);
-	p1.add(XFORM().c, d);
-	p2.sub(XFORM().c, d);
+	p1.add(Transform().c, d);
+	p2.sub(Transform().c, d);
 	Level().debug_renderer().draw_line(Fidentity, p1, p2, D3DCOLOR_XRGB(255, 0, 0));
 
 	d.set(m_side);
-	p1.add(XFORM().c, d);
-	p2.sub(XFORM().c, d);
+	p1.add(Transform().c, d);
+	p2.sub(Transform().c, d);
 	Level().debug_renderer().draw_line(Fidentity, p1, p2, D3DCOLOR_XRGB(255, 0, 0));
 
 	d.set(m_norm);
 	d.mul(10.f);
-	p1.add(XFORM().c, d);
-	p2.set(XFORM().c);
+	p1.add(Transform().c, d);
+	p2.set(Transform().c);
 	Level().debug_renderer().draw_line(Fidentity, p1, p2, D3DCOLOR_XRGB(0, 255, 0));
 }
 #endif

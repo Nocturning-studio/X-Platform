@@ -105,7 +105,7 @@ void CObject::setVisible(BOOL _visible)
 void CObject::Center(Fvector& C) const
 {
 	VERIFY2(renderable.visual, *cName());
-	renderable.xform.transform_tiny(C, renderable.visual->vis.sphere.P);
+	renderable.transform.transform_tiny(C, renderable.visual->vis.sphere.P);
 }
 float CObject::Radius() const
 {
@@ -175,7 +175,7 @@ BOOL CObject::net_Spawn(CSE_Abstract* data)
 
 	PositionStack.clear();
 
-	VERIFY(_valid(renderable.xform));
+	VERIFY(_valid(renderable.transform));
 
 	if (0 == Visual() && pSettings->line_exist(cNameSect(), "visual"))
 		cNameVisual_set(pSettings->r_string(cNameSect(), "visual"));
@@ -290,7 +290,7 @@ void CObject::UpdateCL()
 
 	// consistency check
 #ifdef DEBUG
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 
 	if (Engine.TimeManager.GetFrameCount() == dbg_update_cl)
 		Debug.fatal(DEBUG_INFO, "'UpdateCL' called twice per frame for %s", *cName());

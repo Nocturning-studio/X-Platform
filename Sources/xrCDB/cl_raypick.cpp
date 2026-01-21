@@ -147,7 +147,7 @@ void XRCollide::raypick_fast(const box* B, const Fvector& rC, const Fvector& rD)
 		return;
 	//		if (!B) return;
 
-	// 1. XForm ray from parent to local space
+	// 1. Transform ray from parent to local space
 	Fvector C, D, P;
 	B->pR.MTxV(D, rD);
 	P.sub(rC, B->pT);
@@ -199,7 +199,7 @@ void XRCollide::raypick_fast(const box* B, const Fvector& rC, const Fvector& rD)
 }
 void XRCollide::raypick_fast_nearest(const box* B, const Fvector& rC, const Fvector& rD)
 {
-	// 1. XForm ray from parent to local space
+	// 1. Transform ray from parent to local space
 	Fvector C, D, P;
 	B->pR.MTxV(D, rD);
 	P.sub(rC, B->pT);
@@ -261,10 +261,10 @@ void XRCollide::RayPick(const Fmatrix* parent, const Model* o1, const Fvector& C
 	R_BEGIN;
 	if (parent)
 	{
-		Fmatrix rXForm;
-		rXForm.invert(*parent);			   // create W2L xform
-		rXForm.transform_dir(rmodel_D, D); // convert ray W2L
-		rXForm.transform_tiny(rmodel_C, C);
+		Fmatrix rTransform;
+		rTransform.invert(*parent);			   // create W2L transform
+		rTransform.transform_dir(rmodel_D, D); // convert ray W2L
+		rTransform.transform_tiny(rmodel_C, C);
 	}
 	else
 	{

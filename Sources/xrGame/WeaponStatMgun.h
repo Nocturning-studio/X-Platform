@@ -53,7 +53,7 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
 	Fvector m_bind_x, m_bind_y;
 	Fvector m_fire_dir, m_fire_pos;
 
-	Fmatrix m_i_bind_x_xform, m_i_bind_y_xform, m_fire_bone_xform;
+	Fmatrix m_i_bind_x_transform, m_i_bind_y_transform, m_fire_bone_transform;
 	Fvector2 m_lim_x_rot, m_lim_y_rot; // in bone space
 	CCartridge* m_Ammo;
 	float m_barrel_speed;
@@ -67,7 +67,7 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
   protected:
 	void UpdateBarrelDir();
 	virtual const Fvector& get_CurrentFirePoint();
-	virtual const Fmatrix& get_ParticlesXFORM();
+	virtual const Fmatrix& get_ParticlesTransform();
 
 	virtual void FireStart();
 	virtual void FireEnd();

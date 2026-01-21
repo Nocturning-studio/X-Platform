@@ -87,7 +87,7 @@ BOOL CHudItem::net_Spawn(CSE_Abstract* DC)
 
 void CHudItem::renderable_Render()
 {
-	UpdateXForm();
+	UpdateTransform();
 	BOOL _hud_render = ::Render->get_HUD() && GetHUDmode();
 	if (_hud_render && !m_pHUD->IsHidden() && !item().IsHidden())
 	{
@@ -219,26 +219,26 @@ void CHudItem::UpdateHudInertion(Fmatrix& hud_trans)
 {
 	// if (m_pHUD) // && m_bInertionAllow && m_bInertionEnable)
 	//{
-	Fmatrix xform;
+	Fmatrix transform;
 	Fvector& origin = hud_trans.c;
-	xform = hud_trans;
+	transform = hud_trans;
 
 	static Fvector m_last_dir = {0, 0, 0};
 
 	// calc difference
 	Fvector diff_dir;
-	diff_dir.sub(xform.k, m_last_dir);
+	diff_dir.sub(transform.k, m_last_dir);
 
 	// clamp by PI_DIV_2
 	Fvector last;
 	last.normalize_safe(m_last_dir);
-	float dot = last.dotproduct(xform.k);
+	float dot = last.dotproduct(transform.k);
 	if (dot < EPS)
 	{
 		Fvector v0;
-		v0.crossproduct(m_last_dir, xform.k);
-		m_last_dir.crossproduct(xform.k, v0);
-		diff_dir.sub(xform.k, m_last_dir);
+		v0.crossproduct(m_last_dir, transform.k);
+		m_last_dir.crossproduct(transform.k, v0);
+		diff_dir.sub(transform.k, m_last_dir);
 	}
 
 	// tend to forward
@@ -246,19 +246,19 @@ void CHudItem::UpdateHudInertion(Fmatrix& hud_trans)
 	origin.mad(diff_dir, ORIGIN_OFFSET);
 
 	// pitch compensation
-	float pitch = angle_normalize_signed(xform.k.getP());
+	float pitch = angle_normalize_signed(transform.k.getP());
 
 	if (Actor()->IsZoomAimingMode())
 	{
-		origin.mad(xform.k, -pitch * ZOOM_PITCH_OFFSET_D);
-		origin.mad(xform.i, -pitch * ZOOM_PITCH_OFFSET_R);
-		origin.mad(xform.j, -pitch * ZOOM_PITCH_OFFSET_N);
+		origin.mad(transform.k, -pitch * ZOOM_PITCH_OFFSET_D);
+		origin.mad(transform.i, -pitch * ZOOM_PITCH_OFFSET_R);
+		origin.mad(transform.j, -pitch * ZOOM_PITCH_OFFSET_N);
 	}
 	else
 	{
-		origin.mad(xform.k, -pitch * PITCH_OFFSET_D);
-		origin.mad(xform.i, -pitch * PITCH_OFFSET_R);
-		origin.mad(xform.j, -pitch * PITCH_OFFSET_N);
+		origin.mad(transform.k, -pitch * PITCH_OFFSET_D);
+		origin.mad(transform.i, -pitch * PITCH_OFFSET_R);
+		origin.mad(transform.j, -pitch * PITCH_OFFSET_N);
 	}
 	//}
 }
@@ -299,7 +299,7 @@ void CHudItem::OnH_B_Independent(bool just_before_destroy)
 
 	StopHUDSounds();
 
-	UpdateXForm();
+	UpdateTransform();
 }
 
 void CHudItem::OnH_A_Independent()

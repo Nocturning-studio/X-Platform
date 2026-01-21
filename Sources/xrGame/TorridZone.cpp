@@ -32,7 +32,7 @@ void CTorridZone::UpdateWorkload(u32 dt)
 {
 	inherited::UpdateWorkload(dt);
 	m_animator->Update(float(dt) / 1000.f);
-	XFORM().set(m_animator->XFORM());
+	Transform().set(m_animator->Transform());
 	OnMove();
 }
 
@@ -41,13 +41,13 @@ void CTorridZone::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 
 	if (m_idle_sound._feedback())
-		m_idle_sound.set_position(XFORM().c);
+		m_idle_sound.set_position(Transform().c);
 	if (m_blowout_sound._feedback())
-		m_blowout_sound.set_position(XFORM().c);
+		m_blowout_sound.set_position(Transform().c);
 	if (m_hit_sound._feedback())
-		m_hit_sound.set_position(XFORM().c);
+		m_hit_sound.set_position(Transform().c);
 	if (m_entrance_sound._feedback())
-		m_entrance_sound.set_position(XFORM().c);
+		m_entrance_sound.set_position(Transform().c);
 }
 
 void CTorridZone::GoEnabledState()

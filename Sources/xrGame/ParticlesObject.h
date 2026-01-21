@@ -37,14 +37,14 @@ class CParticlesObject : public CPS_Instance
 	void __stdcall PerformAllTheWork_mt();
 
 	Fvector& Position();
-	void SetXFORM(const Fmatrix& m);
-	IC Fmatrix& XFORM()
+	void SetTransform(const Fmatrix& m);
+	IC Fmatrix& Transform()
 	{
-		return renderable.xform;
+		return renderable.transform;
 	}
 	void UpdateParent(const Fmatrix& m, const Fvector& vel);
 
-	void play_at_pos(const Fvector& pos, BOOL xform = FALSE);
+	void play_at_pos(const Fvector& pos, BOOL transform = FALSE);
 	virtual void Play();
 	void Stop(BOOL bDefferedStop = TRUE);
 	virtual BOOL Locked()

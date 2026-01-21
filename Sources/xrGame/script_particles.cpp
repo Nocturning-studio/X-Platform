@@ -42,11 +42,11 @@ void CScriptParticlesCustom::shedule_Update(u32 _dt)
 	if (m_animator)
 	{
 		float dt = float(_dt) / 1000.f;
-		Fvector prev_pos = m_animator->XFORM().c;
+		Fvector prev_pos = m_animator->Transform().c;
 		m_animator->Update(dt);
 		Fvector vel;
-		vel.sub(m_animator->XFORM().c, prev_pos).div(dt);
-		UpdateParent(m_animator->XFORM(), vel);
+		vel.sub(m_animator->Transform().c, prev_pos).div(dt);
+		UpdateParent(m_animator->Transform(), vel);
 	}
 }
 void CScriptParticlesCustom::LoadPath(LPCSTR caPathName)

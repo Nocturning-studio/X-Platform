@@ -44,7 +44,7 @@ class CBlender_accum_spot : public IBlender
 			C.set_Define("SHADOW_FILTER_QUALITY", (int)ps_r_shadow_filtering, CBlender_Compile::ShaderScope::Pixel);
 			C.set_Define("USE_SHADOW_MAPPING", "1", CBlender_Compile::ShaderScope::Pixel);
 			C.set_Define("USE_LIGHT_MAPPING", "1", CBlender_Compile::ShaderScope::Pixel);
-			C.set_Define("USE_LIGHT_MAP_XFORM", "1", CBlender_Compile::ShaderScope::Pixel);
+			C.set_Define("USE_LIGHT_MAP_TRANSFORM", "1", CBlender_Compile::ShaderScope::Pixel);
 			C.begin_Pass(PassDescription);
 			C.set_Sampler("s_lmap", C.L_textures[0], false, D3DTADDRESS_CLAMP);
 			C.set_Sampler("s_smap", r_RT_smap_depth);

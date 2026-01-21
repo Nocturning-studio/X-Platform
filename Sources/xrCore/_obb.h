@@ -62,7 +62,7 @@ template <class T> struct _obb
 		m_halfsize.set(0, 0, 0);
 		return *this;
 	}
-	IC void xform_get(Tmatrix& D) const
+	IC void transform_get(Tmatrix& D) const
 	{
 		D.i.set(m_rotate.i);
 		D._14_ = 0;
@@ -73,7 +73,7 @@ template <class T> struct _obb
 		D.c.set(m_translate);
 		D._44_ = 1;
 	}
-	IC SelfRef xform_set(const Tmatrix& S)
+	IC SelfRef transform_set(const Tmatrix& S)
 	{
 		m_rotate.i.set(S.i);
 		m_rotate.j.set(S.j);
@@ -81,10 +81,10 @@ template <class T> struct _obb
 		m_translate.set(S.c);
 		return *this;
 	}
-	IC void xform_full(Tmatrix& D) const
+	IC void transform_full(Tmatrix& D) const
 	{
 		Tmatrix R, S;
-		xform_get(R);
+		transform_get(R);
 		S.scale(m_halfsize);
 		D.mul_43(R, S);
 	}
@@ -94,9 +94,9 @@ template <class T> struct _obb
 	{
 		Tmatrix srcR, destR;
 
-		src.xform_get(srcR);
+		src.transform_get(srcR);
 		destR.mul_43(M, srcR);
-		xform_set(destR);
+		transform_set(destR);
 		m_halfsize.set(src.m_halfsize);
 		return *this;
 	}

@@ -66,7 +66,7 @@ struct clQueryCollision
 		T.translate(c);
 		R.mul_43(M, T);
 
-		box.xform_set(R);
+		box.transform_set(R);
 		boxes.push_back(box);
 	}
 	IC void AddBox(const Fobb& B)
@@ -132,7 +132,7 @@ class ENGINE_API CCF_Skeleton : public ICollisionForm
 		union {
 			struct
 			{
-				Fmatrix b_IM; // world 2 bone xform
+				Fmatrix b_IM; // world 2 bone transform
 				Fvector b_hsize;
 			};
 			struct

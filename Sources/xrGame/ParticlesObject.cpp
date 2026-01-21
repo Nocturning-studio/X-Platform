@@ -89,7 +89,7 @@ void CParticlesObject::UpdateSpatial()
 	{
 		Fvector P;
 		float R;
-		renderable.xform.transform_tiny(P, renderable.visual->vis.sphere.P);
+		renderable.transform.transform_tiny(P, renderable.visual->vis.sphere.P);
 		R = renderable.visual->vis.sphere.R;
 		if (0 == spatial.type)
 		{
@@ -139,7 +139,7 @@ void CParticlesObject::Play()
 	m_bStopping = false;
 }
 
-void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
+void CParticlesObject::play_at_pos(const Fvector& pos, BOOL transform)
 {
 	if (g_dedicated_server)
 		return;
@@ -148,7 +148,7 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 	VERIFY(V);
 	Fmatrix m;
 	m.translate(pos);
-	V->UpdateParent(m, zero_vel, xform);
+	V->UpdateParent(m, zero_vel, transform);
 	V->Play();
 	dwLastTime = Engine.TimeManager.GetGlobalTimeMs() - 33ul;
 	mt_dt = 0;
@@ -230,7 +230,7 @@ void CParticlesObject::PerformAllTheWork_mt()
 	mt_dt = 0;
 }
 
-void CParticlesObject::SetXFORM(const Fmatrix& m)
+void CParticlesObject::SetTransform(const Fmatrix& m)
 {
 	if (g_dedicated_server)
 		return;
@@ -238,7 +238,7 @@ void CParticlesObject::SetXFORM(const Fmatrix& m)
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
 	VERIFY(V);
 	V->UpdateParent(m, zero_vel, TRUE);
-	renderable.xform.set(m);
+	renderable.transform.set(m);
 	UpdateSpatial();
 }
 
@@ -282,7 +282,7 @@ void CParticlesObject::renderable_Render()
 		V->OnFrame(dt);
 		dwLastTime = Engine.TimeManager.GetGlobalTimeMs();
 	}
-	::Render->set_Transform(&renderable.xform);
+	::Render->set_Transform(&renderable.transform);
 	::Render->add_Visual(renderable.visual);
 }
 bool CParticlesObject::IsAutoRemove()

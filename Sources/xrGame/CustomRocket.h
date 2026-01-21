@@ -91,7 +91,7 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 	virtual void StartFlying();
 	virtual void StopFlying();
 
-	virtual void SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel);
+	virtual void SetLaunchParams(const Fmatrix& transform, const Fvector& vel, const Fvector& angular_vel);
 
 	virtual void OnEvent(NET_Packet& P, u16 type);
 	bool m_bLaunched;
@@ -102,7 +102,7 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 
 	SRoketContact m_contact;
 	// параметры которые задаются RocketLauncher-ом перед пуском
-	Fmatrix m_LaunchXForm;
+	Fmatrix m_LaunchTransform;
 	Fvector m_vLaunchVelocity;
 	Fvector m_vLaunchAngularVelocity;
 

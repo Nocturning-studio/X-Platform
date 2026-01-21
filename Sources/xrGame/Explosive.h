@@ -206,6 +206,6 @@ add_to_type_list(CExplosive)
 	Fvector l_c, l_d;
 	l_b1.get_CD(l_c, l_d);
 	out_pos.random_point(l_d);
-	obj->XFORM().transform_tiny(out_pos);
+	obj->Transform().transform_tiny(out_pos);
 	out_pos.add(l_c);
 }

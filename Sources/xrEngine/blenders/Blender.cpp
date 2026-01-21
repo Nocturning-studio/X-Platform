@@ -38,7 +38,7 @@ IBlender::IBlender()
 	oPriority.max = 3;
 	oPriority.value = 1;
 	strcpy_s(oT_Name, "$base0");
-	strcpy_s(oT_xform, "$null");
+	strcpy_s(oT_transform, "$null");
 }
 
 IBlender::~IBlender()
@@ -53,7 +53,7 @@ void IBlender::Save(IWriter& fs)
 	xrPWRITE_PROP(fs, "Strict sorting", xrPID_BOOL, oStrictSorting);
 	xrPWRITE_MARKER(fs, "Base Texture");
 	xrPWRITE_PROP(fs, "Name", xrPID_TEXTURE, oT_Name);
-	xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT_xform);
+	xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT_transform);
 }
 
 void IBlender::Load(IReader& fs, u16)
@@ -69,7 +69,7 @@ void IBlender::Load(IReader& fs, u16)
 	xrPREAD_PROP(fs, xrPID_BOOL, oStrictSorting);
 	xrPREAD_MARKER(fs);
 	xrPREAD_PROP(fs, xrPID_TEXTURE, oT_Name);
-	xrPREAD_PROP(fs, xrPID_MATRIX, oT_xform);
+	xrPREAD_PROP(fs, xrPID_MATRIX, oT_transform);
 }
 
 void IBlender::Compile(CBlender_Compile& C)

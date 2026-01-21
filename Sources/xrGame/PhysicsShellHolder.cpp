@@ -47,7 +47,7 @@ BOOL CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
 										 // create_physic_shell			();
 	if (PPhysicsShell() && PPhysicsShell()->isFullActive())
 	{
-		PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+		PPhysicsShell()->GetGlobalTransformDynamic(&Transform());
 		switch (EEnableState(st_enable_state))
 		{
 		case stEnable:
@@ -99,18 +99,18 @@ void CPhysicsShellHolder::correct_spawn_pos()
 
 	Fvector size;
 	Fvector c;
-	get_box(PPhysicsShell(), XFORM(), size, c);
+	get_box(PPhysicsShell(), Transform(), size, c);
 
 	CPHActivationShape activation_shape;
 	activation_shape.Create(c, size, this);
-	activation_shape.set_rotation(XFORM());
+	activation_shape.set_rotation(Transform());
 	PPhysicsShell()->DisableCollision();
 	activation_shape.Activate(size, 1, 1.f, M_PI / 8.f);
 	////	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
 	//	if (!valid_pos(activation_shape.Position(),phBoundaries)) {
 	//		CPHActivationShape				activation_shape;
 	//		activation_shape.Create			(c,size,this);
-	//		activation_shape.set_rotation	(XFORM());
+	//		activation_shape.set_rotation	(Transform());
 	//		activation_shape.Activate		(size,1,1.f,M_PI/8.f);
 	////		VERIFY							(valid_pos(activation_shape.Position(),phBoundaries));
 	//	}
@@ -134,7 +134,7 @@ void CPhysicsShellHolder::correct_spawn_pos()
 	trans.identity();
 	trans.c.sub(ap, c);
 	PPhysicsShell()->TransformPosition(trans);
-	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+	PPhysicsShell()->GetGlobalTransformDynamic(&Transform());
 	activation_shape.Destroy();
 }
 
@@ -143,14 +143,14 @@ void CPhysicsShellHolder::activate_physic_shell()
 	VERIFY(!m_pPhysicsShell);
 	create_physic_shell();
 	Fvector l_fw, l_up;
-	l_fw.set(XFORM().k);
-	l_up.set(XFORM().j);
+	l_fw.set(Transform().k);
+	l_up.set(Transform().j);
 	l_fw.mul(2.f);
 	l_up.mul(2.f);
 
 	Fmatrix l_p1, l_p2;
-	l_p1.set(XFORM());
-	l_p2.set(XFORM());
+	l_p1.set(Transform());
+	l_p2.set(Transform());
 	l_fw.mul(2.f);
 	l_p2.c.add(l_fw);
 
@@ -167,21 +167,21 @@ void CPhysicsShellHolder::activate_physic_shell()
 		if (!smart_cast<CCustomRocket*>(this) && !smart_cast<CGrenade*>(this))
 			PPhysicsShell()->SetIgnoreDynamic();
 	}
-	//	XFORM().set					(l_p1);
+	//	Transform().set					(l_p1);
 	correct_spawn_pos();
 
 	m_pPhysicsShell->set_LinearVel(l_fw);
-	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+	m_pPhysicsShell->GetGlobalTransformDynamic(&Transform());
 }
 
 void CPhysicsShellHolder::setup_physic_shell()
 {
 	VERIFY(!m_pPhysicsShell);
 	create_physic_shell();
-	m_pPhysicsShell->Activate(XFORM(), 0, XFORM());
+	m_pPhysicsShell->Activate(Transform(), 0, Transform());
 	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate();
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
-	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+	m_pPhysicsShell->GetGlobalTransformDynamic(&Transform());
 }
 
 void CPhysicsShellHolder::deactivate_physics_shell()

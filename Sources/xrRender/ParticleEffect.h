@@ -24,7 +24,7 @@ class ECORE_API CParticleEffect : public IParticleCustom
 	Fvector m_InitialPosition;
 
   public:
-	Fmatrix m_XFORM;
+	Fmatrix m_Transform;
 
   protected:
 	DestroyCallback m_DestroyCallback;
@@ -35,7 +35,7 @@ class ECORE_API CParticleEffect : public IParticleCustom
 	{
 		flRT_Playing = (1 << 0),
 		flRT_DefferedStop = (1 << 1),
-		flRT_XFORM = (1 << 2),
+		flRT_Transform = (1 << 2),
 	};
 	Flags8 m_RT_Flags;
 
@@ -58,7 +58,7 @@ class ECORE_API CParticleEffect : public IParticleCustom
 	virtual void OnDeviceCreate();
 	virtual void OnDeviceDestroy();
 
-	virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+	virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform);
 
 	BOOL Compile(CPEDef* def);
 

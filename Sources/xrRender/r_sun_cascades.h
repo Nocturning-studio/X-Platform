@@ -16,7 +16,7 @@ struct cascade
 {
 	cascade () : reset_chain( false )	{}
 
-	Fmatrix			xform;
+	Fmatrix			transform;
 	xr_vector<ray>	rays;
 	float			size;
 	float			bias;

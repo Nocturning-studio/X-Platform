@@ -82,7 +82,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 		back_pos.mad(leader->Position(), dir, CENTER_CIRCLE_DIST);
 		std::sort(back.begin(), back.end(), CPredicateSideSort(back_pos));
 
-		dir = leader->XFORM().i;
+		dir = leader->Transform().i;
 		right_pos.mad(leader->Position(), dir, CENTER_CIRCLE_DIST);
 		std::sort(right.begin(), right.end(), CPredicateSideSort(right_pos));
 

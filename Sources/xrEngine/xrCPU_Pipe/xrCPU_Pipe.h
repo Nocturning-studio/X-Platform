@@ -35,15 +35,15 @@ typedef void __stdcall xrSkin2W(vertRender* D, vertBoned2W* S, u32 vCount, CBone
 // Matrix multiplication
 typedef void __stdcall xrM44_Mul(MATRIX* D, MATRIX* M1, MATRIX* M2);
 
-// Transfer of geometry into DynamicVertexBuffer & DynamicIndexBuffer with optional xform and index offset
+// Transfer of geometry into DynamicVertexBuffer & DynamicIndexBuffer with optional transform and index offset
 // NOTE: vCount and iCount usually small numbers (for example 20/40)
 // vDest: AGP,		 non aligned
 // vSrc:  SysMem,	 32b aligned
 // iDest: SysMem/AGP,non aligned
 // iSrc:  SysMem,    32b aligned
-// xform: SysMem,    non aligned, may be NULL
+// transform: SysMem,    non aligned, may be NULL
 typedef void __stdcall xrTransfer(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride, LPWORD iDest, LPWORD iSrc,
-								  u32 iCount, u32 iOffset, MATRIX* xform);
+								  u32 iCount, u32 iOffset, MATRIX* transform);
 
 // Memory routines
 typedef void __stdcall xrMemFill_32b(LPVOID ptr, u32 count, u32 value);

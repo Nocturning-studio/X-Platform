@@ -240,10 +240,10 @@ void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const Fvect
 		return;
 
 	Fmatrix particles_pos;
-	particles_pos.set(get_ParticlesXFORM());
+	particles_pos.set(get_ParticlesTransform());
 	particles_pos.c.set(pos);
 
-	pParticles->SetXFORM(particles_pos);
+	pParticles->SetTransform(particles_pos);
 
 	if (!pParticles->IsAutoRemove() && !pParticles->IsLooped() && !pParticles->PSI_alive())
 	{
@@ -297,7 +297,7 @@ void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent
 	CParticlesObject* pShellParticles = CParticlesObject::Create(*m_sShellParticles, TRUE);
 
 	Fmatrix particles_pos;
-	particles_pos.set(get_ParticlesXFORM());
+	particles_pos.set(get_ParticlesTransform());
 	particles_pos.c.set(play_pos);
 
 	pShellParticles->UpdateParent(particles_pos, parent_vel);
@@ -348,10 +348,10 @@ void CShootingObject::UpdateFlameParticles()
 		return;
 
 	Fmatrix pos;
-	pos.set(get_ParticlesXFORM());
+	pos.set(get_ParticlesTransform());
 	pos.c.set(get_CurrentFirePoint());
 
-	m_pFlameParticles->SetXFORM(pos);
+	m_pFlameParticles->SetTransform(pos);
 
 	if (!m_pFlameParticles->IsLooped() && !m_pFlameParticles->IsPlaying() && !m_pFlameParticles->PSI_alive())
 	{

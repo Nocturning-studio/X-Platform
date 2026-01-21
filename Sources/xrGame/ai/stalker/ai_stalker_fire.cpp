@@ -430,7 +430,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 				// Преобразуем направление попадания в локальные координаты модели
 				Fvector local_hit_dir;
-				XFORM().transform_dir(local_hit_dir, pHDS->direction());
+				Transform().transform_dir(local_hit_dir, pHDS->direction());
 				local_hit_dir.normalize();
 
 				// Определяем направление попадания

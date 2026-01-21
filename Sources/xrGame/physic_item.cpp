@@ -114,21 +114,21 @@ void CPhysicItem::net_Destroy()
 void CPhysicItem::UpdateCL()
 {
 	//	if (!xr_strcmp("bolt",cName()))
-	//		Log					("--- B - CBolt",renderable.xform);
+	//		Log					("--- B - CBolt",renderable.transform);
 	if (!H_Parent() && m_pPhysicsShell && m_pPhysicsShell->isActive())
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 	//	if (!xr_strcmp("bolt",cName()))
-	//		Log						("--- C - CBolt",renderable.xform);
+	//		Log						("--- C - CBolt",renderable.transform);
 	inherited::UpdateCL();
 	//	if (!xr_strcmp("bolt",cName()))
-	//		Log						("--- D - CBolt",renderable.xform);
+	//		Log						("--- D - CBolt",renderable.transform);
 }
 
 void CPhysicItem::activate_physic_shell()
 {
 	CObject* object = smart_cast<CObject*>(H_Parent());
 	R_ASSERT(object);
-	XFORM().set(object->XFORM());
+	Transform().set(object->Transform());
 	inherited::activate_physic_shell();
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
 	if (K)

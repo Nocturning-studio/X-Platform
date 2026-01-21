@@ -159,9 +159,9 @@ void CRender::render_lights(light_Package& LP)
 			{
 				stats.s_merged++;
 				render_shadow_map_spot(L);
-				RenderBackend.set_xform_world(Fidentity);
-				RenderBackend.set_xform_view(L->X.S.view);
-				RenderBackend.set_xform_project(L->X.S.project);
+				RenderBackend.set_transform_world(Fidentity);
+				RenderBackend.set_transform_view(L->X.S.view);
+				RenderBackend.set_transform_project(L->X.S.project);
 
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 					Details->Render(DetailsRenderMode::DepthOnly, &L->X.S.combine);

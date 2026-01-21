@@ -247,11 +247,11 @@ class CPHCharacter : public CPHObject,
 	virtual float FootRadius() = 0;
 	virtual void get_State(SPHNetState& state);
 	virtual void set_State(const SPHNetState& state);
-	virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform)
+	virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform)
 	{
 		;
 	}
-	virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform)
+	virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform)
 	{
 		;
 	}

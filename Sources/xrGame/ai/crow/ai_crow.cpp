@@ -192,7 +192,7 @@ void CAI_Crow::switch2_DeathDead()
 void CAI_Crow::switch2_DeathFall()
 {
 	Fvector V;
-	V.mul(XFORM().k, fSpeed);
+	V.mul(Transform().k, fSpeed);
 	//	m_PhysicMovementControl->SetVelocity(V);
 	smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death.GetRandom(), TRUE, cb_OnHitEndPlaying, this);
 }
@@ -201,7 +201,7 @@ void CAI_Crow::state_Flying(float fdt)
 {
 	// Update position and orientation of the planes
 	float fAT = fASpeed * fdt;
-	Fvector& vDirection = XFORM().k;
+	Fvector& vDirection = Transform().k;
 
 	// Tweak orientation based on last position and goal
 	Fvector vOffset;
@@ -245,7 +245,7 @@ void CAI_Crow::state_Flying(float fdt)
 
 	// Update position
 	vOldPosition.set(Position());
-	XFORM().setHPB(vHPB.x, vHPB.y, vHPB.z);
+	Transform().setHPB(vHPB.x, vHPB.y, vHPB.z);
 	Position().mad(vOldPosition, vDirection, fSpeed * fdt);
 }
 
@@ -300,7 +300,7 @@ void CAI_Crow::UpdateCL()
 	if (m_pPhysicsShell)
 	{
 		m_pPhysicsShell->Update();
-		XFORM().set(m_pPhysicsShell->mXFORM);
+		Transform().set(m_pPhysicsShell->mTransform);
 	}
 }
 void CAI_Crow::renderable_Render()
@@ -398,7 +398,7 @@ void CAI_Crow::net_Export(NET_Packet& P) // export to server
 	P.w_u8(flags);
 
 	float yaw, pitch, bank;
-	XFORM().getHPB(yaw, pitch, bank);
+	Transform().getHPB(yaw, pitch, bank);
 	P.w_float /*w_angle8*/ (yaw);
 	P.w_float /*w_angle8*/ (yaw);
 	P.w_float /*w_angle8*/ (pitch);
@@ -439,7 +439,7 @@ void CAI_Crow::net_Import(NET_Packet& P)
 	id_Squad = P.r_u8();
 	id_Group = P.r_u8();
 
-	XFORM().setHPB(yaw, pitch, bank);
+	Transform().setHPB(yaw, pitch, bank);
 }
 //---------------------------------------------------------------------
 void CAI_Crow::HitSignal(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* who, s16 /**element/**/)

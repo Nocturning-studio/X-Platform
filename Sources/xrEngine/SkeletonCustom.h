@@ -138,7 +138,7 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 {
 #pragma warning(pop)
 	CKinematics* m_Parent;	 // 4
-	const Fmatrix* m_XForm;	 // 4
+	const Fmatrix* m_Transform;	 // 4
 	ref_shader m_Shader;	 // 4
 	Fvector3 m_ContactPoint; // 12		model space
 	float m_fTimeStart;		 // 4
@@ -160,7 +160,7 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 	Fsphere m_Bounds; // 16		world space
   public:
 	CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts)
-		: m_Parent(p), m_XForm(m), m_Shader(s), m_fTimeStart(ts), m_ContactPoint(cp)
+		: m_Parent(p), m_Transform(m), m_Shader(s), m_fTimeStart(ts), m_ContactPoint(cp)
 	{
 #ifdef DEBUG
 		used_in_render = u32(-1);
@@ -190,9 +190,9 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 	{
 		return m_fTimeStart;
 	}
-	IC const Fmatrix* XFORM()
+	IC const Fmatrix* Transform()
 	{
-		return m_XForm;
+		return m_Transform;
 	}
 	IC const Fvector3& ContactPoint()
 	{
@@ -298,7 +298,7 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 	void ClearWallmarks();
 
   public:
-	bool PickBone(const Fmatrix& parent_xform, Fvector& normal, float& dist, const Fvector& start, const Fvector& dir,
+	bool PickBone(const Fmatrix& parent_transform, Fvector& normal, float& dist, const Fvector& start, const Fvector& dir,
 				  u16 bone_id);
 	virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
 
@@ -389,7 +389,7 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 
 	// debug
 #ifdef DEBUG
-	void DebugRender(Fmatrix& XFORM);
+	void DebugRender(Fmatrix& Transform);
 #endif
 
 	// General "Visual" stuff

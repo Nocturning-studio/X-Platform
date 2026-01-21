@@ -612,7 +612,7 @@
     <ClInclude Include="R_Backend_tree.h">
       <Filter>Render\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="R_Backend_xform.h">
+    <ClInclude Include="R_Backend_transform.h">
       <Filter>Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="Environment_wind.h">
@@ -1070,7 +1070,7 @@
     <ClCompile Include="R_Backend_tree.cpp">
       <Filter>Render\Backend</Filter>
     </ClCompile>
-    <ClCompile Include="R_Backend_xform.cpp">
+    <ClCompile Include="R_Backend_transform.cpp">
       <Filter>Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="Environment_wind.cpp">

@@ -893,13 +893,13 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			Item.scale = base_scale * ps_r_Detail_scale; // Масштаб
 			// ============================
 
-			Fmatrix mScale, mXform;
+			Fmatrix mScale, mTransform;
 			Fbox ItemBB;
 			Item.mRotY.rotateY(r_yaw.randF(0, PI_MUL_2));
 			Item.mRotY.translate_over(Item_P);
 			mScale.scale(Item.scale, Item.scale, Item.scale);
-			mXform.mul_43(Item.mRotY, mScale);
-			ItemBB.xform(Dobj->bv_bb, mXform);
+			mTransform.mul_43(Item.mRotY, mScale);
+			ItemBB.transform(Dobj->bv_bb, mTransform);
 			Bounds.merge(ItemBB);
 
 			Item.c_hemi = DS.r_qclr(DS.c_hemi, 15);

@@ -3,10 +3,10 @@
 #define GeomBytes 24 // pos+norm
 
 void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride, LPWORD iDest, LPWORD iSrc, u32 iCount,
-							  u32 iOffset, Fmatrix* xform)
+							  u32 iOffset, Fmatrix* transform)
 {
 	// Transfer vertices
-	if (xform)
+	if (transform)
 	{
 		LPBYTE sit = LPBYTE(vSrc);
 		LPBYTE send = sit + vCount * vStride;
@@ -22,8 +22,8 @@ void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride
 				Fvector* dP = (Fvector*)dit;
 				Fvector* sN = (Fvector*)(sit + 3 * 4);
 				Fvector* dN = (Fvector*)(dit + 3 * 4);
-				xform->transform_tiny(*dP, *sP);
-				xform->transform_dir(*dN, *sN);
+				transform->transform_tiny(*dP, *sP);
+				transform->transform_dir(*dN, *sN);
 				CopyMemory(dit + GeomBytes, sit + GeomBytes, 8);
 			}
 			break;
@@ -34,8 +34,8 @@ void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride
 				Fvector* dP = (Fvector*)dit;
 				Fvector* sN = (Fvector*)(sit + 3 * 4);
 				Fvector* dN = (Fvector*)(dit + 3 * 4);
-				xform->transform_tiny(*dP, *sP);
-				xform->transform_dir(*dN, *sN);
+				transform->transform_tiny(*dP, *sP);
+				transform->transform_dir(*dN, *sN);
 				CopyMemory(dit + GeomBytes, sit + GeomBytes, 16);
 			}
 			break;
@@ -46,8 +46,8 @@ void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride
 				Fvector* dP = (Fvector*)dit;
 				Fvector* sN = (Fvector*)(sit + 3 * 4);
 				Fvector* dN = (Fvector*)(dit + 3 * 4);
-				xform->transform_tiny(*dP, *sP);
-				xform->transform_dir(*dN, *sN);
+				transform->transform_tiny(*dP, *sP);
+				transform->transform_dir(*dN, *sN);
 				CopyMemory(dit + GeomBytes, sit + GeomBytes, remain);
 			}
 			break;

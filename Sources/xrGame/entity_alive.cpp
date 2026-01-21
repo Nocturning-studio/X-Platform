@@ -383,7 +383,7 @@ void CEntityAlive::BloodyWallmarks(float P, const Fvector& dir, s16 element, con
 		Fmatrix& m_bone = (V->LL_GetBoneInstance(u16(element))).mTransform;
 		m_bone.transform_tiny(start_pos);
 	}
-	XFORM().transform_tiny(start_pos);
+	Transform().transform_tiny(start_pos);
 
 	float small_entity = 1.f;
 	if (Radius() < SMALL_ENTITY_RADIUS)

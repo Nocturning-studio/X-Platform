@@ -185,14 +185,14 @@ void CWeaponAmmo::renderable_Render()
 
 void CWeaponAmmo::UpdateCL()
 {
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 	inherited::UpdateCL();
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 
 	if (!IsGameTypeSingle())
 		make_Interpolation();
 
-	VERIFY2(_valid(renderable.xform), *cName());
+	VERIFY2(_valid(renderable.transform), *cName());
 }
 
 void CWeaponAmmo::net_Export(NET_Packet& P)

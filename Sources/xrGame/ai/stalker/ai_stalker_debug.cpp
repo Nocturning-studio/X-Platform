@@ -1030,7 +1030,7 @@ void CAI_Stalker::dbg_draw_vision()
 	shift.set(0.f, 2.5f, 0.f);
 
 	Fmatrix res;
-	res.mul(Engine.RenderView.ViewProjection, XFORM());
+	res.mul(Engine.RenderView.ViewProjection, Transform());
 
 	Fvector4 v_res;
 

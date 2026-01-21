@@ -51,7 +51,7 @@ CUIStatic::CUIStatic()
 	m_bHeading = false;
 	m_fHeading = 0.0f;
 	m_lanim_clr.set_defaults();
-	m_lanim_xform.set_defaults();
+	m_lanim_transform.set_defaults();
 
 	m_pLines = NULL;
 	m_bEnableTextHighlighting = false;
@@ -65,16 +65,16 @@ CUIStatic::~CUIStatic()
 	xr_delete(m_pLines);
 }
 
-void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
+void CUIStatic::SetTransformLightAnim(LPCSTR lanim, bool bCyclic)
 {
 	if (lanim && lanim[0] != 0)
-		m_lanim_xform.m_lanim = LALib.FindItem(lanim);
+		m_lanim_transform.m_lanim = LALib.FindItem(lanim);
 	else
-		m_lanim_xform.m_lanim = NULL;
+		m_lanim_transform.m_lanim = NULL;
 
-	m_lanim_xform.m_lanimFlags.zero();
+	m_lanim_transform.m_lanimFlags.zero();
 
-	m_lanim_xform.m_lanimFlags.set(LA_CYCLIC, bCyclic);
+	m_lanim_transform.m_lanimFlags.set(LA_CYCLIC, bCyclic);
 }
 
 void CUIStatic::SetClrLightAnim(LPCSTR lanim, bool bCyclic, bool bOnlyAlpha, bool bTextColor, bool bTextureColor)
@@ -290,17 +290,17 @@ void CUIStatic::Update()
 		}
 	}
 
-	if (m_lanim_xform.m_lanim)
+	if (m_lanim_transform.m_lanim)
 	{
-		if (m_lanim_xform.m_lanim_start_time < 0.0f)
-			ResetXformAnimation();
+		if (m_lanim_transform.m_lanim_start_time < 0.0f)
+			ResetTransformAnimation();
 		float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 
-		if (m_lanim_xform.m_lanimFlags.test(LA_CYCLIC) ||
-			t - m_lanim_xform.m_lanim_start_time < m_lanim_xform.m_lanim->Length_sec())
+		if (m_lanim_transform.m_lanimFlags.test(LA_CYCLIC) ||
+			t - m_lanim_transform.m_lanim_start_time < m_lanim_transform.m_lanim->Length_sec())
 		{
 			int frame;
-			u32 clr = m_lanim_xform.m_lanim->CalculateRGB(t - m_lanim_xform.m_lanim_start_time, frame);
+			u32 clr = m_lanim_transform.m_lanim->CalculateRGB(t - m_lanim_transform.m_lanim_start_time, frame);
 
 			EnableHeading_int(true);
 			float heading = (PI_MUL_2 / 255.0f) * color_get_A(clr);
@@ -314,7 +314,7 @@ void CUIStatic::Update()
 		}
 		else
 		{
-			EnableHeading_int(!!m_lanim_xform.m_lanimFlags.test(1 << 4));
+			EnableHeading_int(!!m_lanim_transform.m_lanimFlags.test(1 << 4));
 			SetWndSize(Fvector2().set(m_xxxRect.width(), m_xxxRect.height()));
 		}
 	}
@@ -422,9 +422,9 @@ void CUIStatic::Update()
 }
 
 
-void CUIStatic::ResetXformAnimation()
+void CUIStatic::ResetTransformAnimation()
 {
-	m_lanim_xform.m_lanim_start_time = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
+	m_lanim_transform.m_lanim_start_time = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 }
 
 void CUIStatic::ResetClrAnimation()

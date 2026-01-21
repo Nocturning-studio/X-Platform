@@ -110,7 +110,7 @@ class CArtefact : public CHudItemObject, public CPHUpdateObject
 	virtual void Hide();
 	virtual void Show();
 	void MoveTo(Fvector const& position);
-	virtual void UpdateXForm();
+	virtual void UpdateTransform();
 	virtual bool Action(s32 cmd, u32 flags);
 	virtual void onMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
 	virtual void OnStateSwitch(u32 S);

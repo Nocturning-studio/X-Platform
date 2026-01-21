@@ -15,7 +15,7 @@ IC void CDebugRenderer::render()
 	if (m_line_vertices.empty())
 		return;
 
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.dbg_Draw(D3DPT_LINELIST, &*m_line_vertices.begin(), m_line_vertices.size(), &*m_line_indices.begin(),
 					m_line_vertices.size() / 2);
 	m_line_vertices.resize(0);

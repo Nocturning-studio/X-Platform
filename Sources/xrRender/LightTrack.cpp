@@ -75,7 +75,7 @@ void CROS_impl::smart_update(IRenderable* O)
 
 	// Получение текущей позиции
 	Fvector position;
-	O->renderable.xform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
+	O->renderable.transform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
 
 	if (ticks_to_update <= 0)
 	{
@@ -168,7 +168,7 @@ void CROS_impl::update(IRenderable* O)
 
 	// select sample, randomize position inside object
 	Fvector position;
-	O->renderable.xform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
+	O->renderable.transform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
 	float radius = O->renderable.visual->vis.sphere.R;
 	position.y += .3f * radius;
 

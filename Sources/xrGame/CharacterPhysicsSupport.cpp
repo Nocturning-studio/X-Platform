@@ -77,7 +77,7 @@ CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 }
 
 CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity)
-	: m_pPhysicsShell(aentity->PPhysicsShell()), m_EntityAlife(*aentity), mXFORM(aentity->XFORM()),
+	: m_pPhysicsShell(aentity->PPhysicsShell()), m_EntityAlife(*aentity), mTransform(aentity->Transform()),
 	  m_ph_sound_player(aentity), m_interactive_motion(0)
 {
 	m_PhysicMovementControl = xr_new<CPHMovementControl>(aentity);
@@ -328,7 +328,7 @@ void CCharacterPhysicsSupport::in_shedule_Update(u32 DT)
 	if( anim_mov_state.active )
 	{
 		DBG_OpenCashedDraw( );
-		DBG_DrawMatrix( mXFORM, 0.5f );
+		DBG_DrawMatrix( mTransform, 0.5f );
 		DBG_ClosedCashedDraw( 5000 );
 	}
 #endif
@@ -394,12 +394,12 @@ void CCharacterPhysicsSupport::KillHit(CObject* who, ALife::EHitType hit_type, f
 {
 	TestForWounded();
 	Fmatrix prev_pose;
-	prev_pose.set(mXFORM);
+	prev_pose.set(mTransform);
 	ActivateShell(who);
 #ifdef DEBUG
 	if (Type() == etStalker && xr_strcmp(dbg_stalker_death_anim, "none") != 0)
 	{
-		if (cmp(prev_pose, mXFORM))
+		if (cmp(prev_pose, mTransform))
 		{
 			xr_delete(m_interactive_motion);
 			if (b_death_anim_velocity)
@@ -495,7 +495,7 @@ void CCharacterPhysicsSupport::in_UpdateCL()
 		m_pPhysicsShell->SetRagDoll(); // Теперь шела относиться к классу объектов cbClassRagDoll
 
 		if (!is_imotion(m_interactive_motion)) //! m_flags.test(fl_use_death_motion)
-			m_pPhysicsShell->InterpolateGlobalTransform(&mXFORM);
+			m_pPhysicsShell->InterpolateGlobalTransform(&mTransform);
 		else
 			m_interactive_motion->update(m_pPhysicsShell);
 
@@ -551,7 +551,7 @@ void CCharacterPhysicsSupport::CreateSkeleton(CPhysicsShell*& pShell)
 #endif
 	pShell = P_create_Shell();
 	pShell->preBuild_FromKinematics(smart_cast<CKinematics*>(m_EntityAlife.Visual()));
-	pShell->mXFORM.set(mXFORM);
+	pShell->mTransform.set(mTransform);
 	pShell->SetAirResistance(skel_airr_lin_factor, skel_airr_ang_factor);
 	pShell->SmoothElementsInertia(0.3f);
 	pShell->set_PhysicsRefObject(&m_EntityAlife);
@@ -576,7 +576,7 @@ void CCharacterPhysicsSupport::CreateSkeleton()
 		return;
 	m_pPhysicsShell = P_create_Shell();
 	m_pPhysicsShell->build_FromKinematics(smart_cast<CKinematics*>(m_EntityAlife.Visual()));
-	m_pPhysicsShell->mXFORM.set(mXFORM);
+	m_pPhysicsShell->mTransform.set(mTransform);
 	m_pPhysicsShell->SetAirResistance(skel_airr_lin_factor, skel_airr_ang_factor);
 	m_pPhysicsShell->set_PhysicsRefObject(&m_EntityAlife);
 	SAllDDOParams disable_params;
@@ -645,13 +645,13 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	// animation movement controller issues
 	bool anim_mov_ctrl = m_EntityAlife.animation_movement_controlled();
 	CBoneInstance& BR = K->LL_GetBoneInstance(K->LL_GetBoneRoot());
-	Fmatrix start_xform;
-	start_xform.identity();
+	Fmatrix start_transform;
+	start_transform.identity();
 	CBlend* anim_mov_blend = 0;
 	// float	blend_time = 0;
 	if (anim_mov_ctrl)
 	{
-		m_EntityAlife.animation_movement()->ObjStartXform(start_xform);
+		m_EntityAlife.animation_movement()->ObjStartTransform(start_transform);
 		anim_mov_blend = m_EntityAlife.animation_movement()->ControlBlend();
 		/*
 		VERIFY( anim_mov_blend->blend != CBlend::eFREE_SLOT );
@@ -712,7 +712,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	m_physics_skeleton = NULL;
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
-	m_pPhysicsShell->mXFORM.set(mXFORM);
+	m_pPhysicsShell->mTransform.set(mTransform);
 	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());
 	//
 
@@ -752,7 +752,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	//
 
 	// actualize
-	m_pPhysicsShell->GetGlobalTransformDynamic(&mXFORM);
+	m_pPhysicsShell->GetGlobalTransformDynamic(&mTransform);
 	//
 
 	m_pPhysicsShell->add_ObjectContactCallback(OnCharacterContactInDeath);
@@ -763,12 +763,12 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 		anim_mov_blend->timeCurrent + Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed <
 			anim_mov_blend->timeTotal - SAMPLE_SPF - EPS) //.
 	{
-		const Fmatrix sv_xform = mXFORM;
-		mXFORM.set(start_xform);
+		const Fmatrix sv_transform = mTransform;
+		mTransform.set(start_transform);
 		// anim_mov_blend->blendPower = 1;
 		anim_mov_blend->timeCurrent += Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed;
 		m_pPhysicsShell->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit);
-		mXFORM.set(sv_xform);
+		mTransform.set(sv_transform);
 	}
 }
 void CCharacterPhysicsSupport::in_ChangeVisual()
@@ -926,7 +926,7 @@ void CCharacterPhysicsSupport::TestForWounded()
 	CKA->CalculateBones();
 	CBoneInstance CBI = CKA->LL_GetBoneInstance(0);
 	Fmatrix position_matrix;
-	position_matrix.mul(mXFORM, CBI.mTransform);
+	position_matrix.mul(mTransform, CBI.mTransform);
 
 	xrXRC xrc;
 	xrc.ray_options(0);

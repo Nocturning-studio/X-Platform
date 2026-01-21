@@ -23,7 +23,7 @@ void CDetail::Unload()
 	shader.destroy();
 }
 
-void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
+void CDetail::transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
 {
 	////OPTICK_EVENT("CDetail::transfer");
 
@@ -33,7 +33,7 @@ void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, 
 		CDetail::fvfVertexOut* dstIt = vDest;
 		for (; srcIt != srcEnd; srcIt++, dstIt++)
 		{
-			mXform.transform_tiny(dstIt->P, srcIt->P);
+			mTransform.transform_tiny(dstIt->P, srcIt->P);
 			dstIt->C = C;
 			dstIt->u = srcIt->u;
 			dstIt->v = srcIt->v;
@@ -55,7 +55,7 @@ void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, 
 	}
 }
 
-void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
+void CDetail::transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
 {
 	////OPTICK_EVENT("CDetail::transfer");
 
@@ -65,7 +65,7 @@ void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, 
 		CDetail::fvfVertexOut* dstIt = vDest;
 		for (; srcIt != srcEnd; srcIt++, dstIt++)
 		{
-			mXform.transform_tiny(dstIt->P, srcIt->P);
+			mTransform.transform_tiny(dstIt->P, srcIt->P);
 			dstIt->C = C;
 			dstIt->u = srcIt->u + du;
 			dstIt->v = srcIt->v + dv;

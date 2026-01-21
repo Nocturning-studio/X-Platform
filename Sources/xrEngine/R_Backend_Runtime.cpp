@@ -132,7 +132,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 }
 
 #ifndef DEDICATED_SREVER
-void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */)
+void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _transform /*=NULL */, u32 fmask /* =0xff */)
 {
 	if (0 == HW.Caps.geometry.dwClipPlanes)
 		return;
@@ -141,9 +141,9 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask
 		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
 		return;
 	}
-	VERIFY(_xform && fmask);
+	VERIFY(_transform && fmask);
 	CFrustum F;
-	F.CreateFromMatrix(*_xform, fmask);
+	F.CreateFromMatrix(*_transform, fmask);
 	set_ClipPlanes(_enable, F.planes, F.p_count);
 }
 
@@ -217,7 +217,7 @@ void CBackend::set_Textures(STextureList* _T)
 }
 #else
 
-void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */)
+void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _transform /*=NULL */, u32 fmask /* =0xff */)
 {
 }
 void CBackend::set_Textures(STextureList* _T)
@@ -380,7 +380,7 @@ void CBackend::u_compute_texgen_screen(Fmatrix& m_Texgen)
 							 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 
 							 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
-	m_Texgen.mul(m_TexelAdjust, RenderBackend.xforms.m_wvp);
+	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_wvp);
 }
 
 void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)

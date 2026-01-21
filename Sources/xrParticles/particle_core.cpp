@@ -387,7 +387,7 @@ void pDomain::transform(const pDomain& domain, const Fmatrix& m)
 	case PDBox: {
 		Fbox* bb_dest = (Fbox*)&p1;
 		Fbox* bb_from = (Fbox*)&domain.p1;
-		bb_dest->xform(*bb_from, m);
+		bb_dest->transform(*bb_from, m);
 	}
 	break;
 	case PDPlane:

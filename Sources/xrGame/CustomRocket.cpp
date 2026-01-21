@@ -48,7 +48,7 @@ CCustomRocket::CCustomRocket()
 	m_vPrevVel.set(0, 0, 0);
 
 	m_pTrailLight = NULL;
-	m_LaunchXForm.identity();
+	m_LaunchTransform.identity();
 	m_vLaunchVelocity.set(0, 0, 0);
 	m_vLaunchAngularVelocity.set(0, 0, 0);
 	m_bLaunched = false;
@@ -79,7 +79,7 @@ BOOL CCustomRocket::net_Spawn(CSE_Abstract* DC)
 {
 	m_eState = eInactive;
 	BOOL result = inherited::net_Spawn(DC);
-	m_LaunchXForm.set(XFORM());
+	m_LaunchTransform.set(Transform());
 	return result;
 }
 
@@ -93,10 +93,10 @@ void CCustomRocket::net_Destroy()
 	StopFlying();
 }
 
-void CCustomRocket::SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
+void CCustomRocket::SetLaunchParams(const Fmatrix& transform, const Fvector& vel, const Fvector& angular_vel)
 {
-	VERIFY2(_valid(xform), "SetLaunchParams. Invalid xform argument!");
-	m_LaunchXForm = xform;
+	VERIFY2(_valid(transform), "SetLaunchParams. Invalid transform argument!");
+	m_LaunchTransform = transform;
 	m_vLaunchVelocity = vel;
 	//	if(m_pOwner->ID()==Actor()->ID())
 	//	{
@@ -117,17 +117,17 @@ void CCustomRocket::activate_physic_shell()
 	create_physic_shell();
 	if (m_pPhysicsShell->isActive())
 		return;
-	VERIFY2(_valid(m_LaunchXForm), "CCustomRocket::activate_physic_shell. Invalid m_LaunchXForm!");
+	VERIFY2(_valid(m_LaunchTransform), "CCustomRocket::activate_physic_shell. Invalid m_LaunchTransform!");
 
 	//	if(m_pOwner->ID()==Actor()->ID())
 	//	{
 	//		Msg("start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
 	//	}
-	m_pPhysicsShell->Activate(m_LaunchXForm, m_vLaunchVelocity, m_vLaunchAngularVelocity);
+	m_pPhysicsShell->Activate(m_LaunchTransform, m_vLaunchVelocity, m_vLaunchAngularVelocity);
 	m_pPhysicsShell->Update();
 
-	XFORM().set(m_pPhysicsShell->mXFORM);
-	Position().set(m_pPhysicsShell->mXFORM.c);
+	Transform().set(m_pPhysicsShell->mTransform);
+	Position().set(m_pPhysicsShell->mTransform.c);
 	m_pPhysicsShell->set_PhysicsRefObject(this);
 	m_pPhysicsShell->set_ObjectContactCallback(ObjectContactCallback);
 	m_pPhysicsShell->set_ContactCallback(NULL);
@@ -459,7 +459,7 @@ void CCustomRocket::UpdateEnginePh()
 	float k_back = 1.f;
 	Fvector l_pos, l_dir;
 	l_pos.set(0, 0, -2.f);
-	l_dir.set(XFORM().k);
+	l_dir.set(Transform().k);
 
 	l_dir.normalize();
 	m_pPhysicsShell->applyImpulse(l_dir, (1.f + k_back) * force);
@@ -541,7 +541,7 @@ void CCustomRocket::PhTune(float step)
 void CCustomRocket::UpdateParticles()
 {
 	if (m_flyingSound._handle() && m_flyingSound._feedback())
-		m_flyingSound.set_position(XFORM().c);
+		m_flyingSound.set_position(Transform().c);
 
 	if (!m_pEngineParticles && !m_pFlyParticles)
 		return;
@@ -553,17 +553,17 @@ void CCustomRocket::UpdateParticles()
 	vel.mul(0.5f);
 	m_vPrevVel.set(vel);
 
-	Fmatrix particles_xform;
-	particles_xform.identity();
-	particles_xform.k.set(XFORM().k);
-	particles_xform.k.mul(-1.f);
-	Fvector::generate_orthonormal_basis(particles_xform.k, particles_xform.j, particles_xform.i);
-	particles_xform.c.set(XFORM().c);
+	Fmatrix particles_transform;
+	particles_transform.identity();
+	particles_transform.k.set(Transform().k);
+	particles_transform.k.mul(-1.f);
+	Fvector::generate_orthonormal_basis(particles_transform.k, particles_transform.j, particles_transform.i);
+	particles_transform.c.set(Transform().c);
 
 	if (m_pEngineParticles)
-		m_pEngineParticles->UpdateParent(particles_xform, vel);
+		m_pEngineParticles->UpdateParent(particles_transform, vel);
 	if (m_pFlyParticles)
-		m_pFlyParticles->UpdateParent(particles_xform, vel);
+		m_pFlyParticles->UpdateParent(particles_transform, vel);
 }
 
 void CCustomRocket::StartEngineParticles()
@@ -591,7 +591,7 @@ void CCustomRocket::StopEngineParticles()
 void CCustomRocket::StartFlyParticles()
 {
 	if (m_flyingSound._handle())
-		m_flyingSound.play_at_pos(0, XFORM().c, sm_Looped);
+		m_flyingSound.play_at_pos(0, Transform().c, sm_Looped);
 
 	VERIFY(m_pFlyParticles == NULL);
 

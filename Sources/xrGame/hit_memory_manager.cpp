@@ -111,7 +111,7 @@ void CHitMemoryManager::add(float amount, const Fvector& vLocalDir, const CObjec
 										smart_cast<const CGameObject*>(who)->lua_game_object(), element);
 
 	Fvector direction;
-	m_object->XFORM().transform_dir(direction, vLocalDir);
+	m_object->Transform().transform_dir(direction, vLocalDir);
 
 	const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(who);
 	if (!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))

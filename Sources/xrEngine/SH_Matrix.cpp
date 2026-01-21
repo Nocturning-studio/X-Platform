@@ -16,18 +16,18 @@ void CMatrix::Calculate()
 	case modeTCM: {
 		Fmatrix T;
 		float sU = 1, sV = 1, t = Engine.TimeManager.GetGlobalTime();
-		tc_trans(xform, .5f, .5f);
+		tc_trans(transform, .5f, .5f);
 		if (tcm & tcmRotate)
 		{
 			T.rotateZ(rotate.Calculate(t) * t);
-			xform.mulA_43(T);
+			transform.mulA_43(T);
 		}
 		if (tcm & tcmScale)
 		{
 			sU = scaleU.Calculate(t);
 			sV = scaleV.Calculate(t);
 			T.scale(sU, sV, 1);
-			xform.mulA_43(T);
+			transform.mulA_43(T);
 		}
 		if (tcm & tcmScroll)
 		{
@@ -36,32 +36,32 @@ void CMatrix::Calculate()
 			u *= sU;
 			v *= sV;
 			tc_trans(T, u, v);
-			xform.mulA_43(T);
+			transform.mulA_43(T);
 		}
 		tc_trans(T, -0.5f, -0.5f);
-		xform.mulB_43(T);
+		transform.mulB_43(T);
 	}
 		return;
 	case modeS_refl: {
 		float Ux = .5f * Engine.RenderView.View._11, Uy = .5f * Engine.RenderView.View._21, Uz = .5f * Engine.RenderView.View._31, Uw = .5f;
 		float Vx = -.5f * Engine.RenderView.View._12, Vy = -.5f * Engine.RenderView.View._22, Vz = -.5f * Engine.RenderView.View._32, Vw = .5f;
 
-		xform._11 = Ux;
-		xform._12 = Vx;
-		xform._13 = 0;
-		xform._14 = 0;
-		xform._21 = Uy;
-		xform._22 = Vy;
-		xform._23 = 0;
-		xform._24 = 0;
-		xform._31 = Uz;
-		xform._32 = Vz;
-		xform._33 = 0;
-		xform._34 = 0;
-		xform._41 = Uw;
-		xform._42 = Vw;
-		xform._43 = 0;
-		xform._44 = 0;
+		transform._11 = Ux;
+		transform._12 = Vx;
+		transform._13 = 0;
+		transform._14 = 0;
+		transform._21 = Uy;
+		transform._22 = Vy;
+		transform._23 = 0;
+		transform._24 = 0;
+		transform._31 = Uz;
+		transform._32 = Vz;
+		transform._33 = 0;
+		transform._34 = 0;
+		transform._41 = Uw;
+		transform._42 = Vw;
+		transform._43 = 0;
+		transform._44 = 0;
 	}
 		return;
 	case modeC_refl: {
@@ -69,7 +69,7 @@ void CMatrix::Calculate()
 		M._41 = 0.f;
 		M._42 = 0.f;
 		M._43 = 0.f;
-		xform.invert(M);
+		transform.invert(M);
 	}
 		return;
 	default:

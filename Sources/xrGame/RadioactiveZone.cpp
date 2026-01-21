@@ -41,7 +41,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 	if (GO)
 	{
 		Fvector pos;
-		XFORM().transform_tiny(pos, CFORM()->getSphere().P);
+		Transform().transform_tiny(pos, CFORM()->getSphere().P);
 
 #ifdef DEBUG
 		char pow[255];
@@ -115,7 +115,7 @@ void CRadioactiveZone::UpdateWorkload(u32 dt)
 	{
 		OBJECT_INFO_VEC_IT it;
 		Fvector pos;
-		XFORM().transform_tiny(pos, CFORM()->getSphere().P);
+		Transform().transform_tiny(pos, CFORM()->getSphere().P);
 		for (it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		{
 			if (!(*it).object->getDestroy() && (*it).object->CLS_ID == CLSID_OBJECT_ACTOR)

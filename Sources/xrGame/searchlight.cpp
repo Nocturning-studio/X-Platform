@@ -161,7 +161,7 @@ void CProjector::UpdateCL()
 		CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
 		Fmatrix M;
 
-		M.mul(XFORM(), BI.mTransform);
+		M.mul(Transform(), BI.mTransform);
 
 		light_render->set_rotation(M.k, M.i);
 		light_render->set_position(M.c);

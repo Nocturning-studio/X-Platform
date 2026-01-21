@@ -322,7 +322,7 @@ template <class T> IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 	return *this;
 }
 
-template <class T> IC _matrix<T>& _matrix<T>::mk_xform(const _quaternion<T>& Q, const Tvector& V)
+template <class T> IC _matrix<T>& _matrix<T>::mk_transform(const _quaternion<T>& Q, const Tvector& V)
 {
 	T xx = Q.x * Q.x;
 	T yy = Q.y * Q.y;

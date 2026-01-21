@@ -51,7 +51,7 @@ static void mapMatrix_Render(SceneGraphTypes::mapMatrixItems& N)
 
 	for (auto& Ni : N)
 	{
-		RenderBackend.set_xform_world(Ni.Matrix);
+		RenderBackend.set_transform_world(Ni.Matrix);
 		RenderImplementation.apply_object(Ni.pObject);
 		RenderImplementation.apply_lmaterial();
 		Ni.pVisual->Render(calcLOD(Ni.ScreenSpaceArea, Ni.pVisual->vis.sphere.R));
@@ -66,7 +66,7 @@ static void __fastcall sorted_L1(SceneGraphTypes::mapSorted_Node* N)
 	IRender_Visual* V = N->val.pVisual;
 	VERIFY(V && V->shader._get());
 	RenderBackend.set_Element(N->val.se);
-	RenderBackend.set_xform_world(N->val.Matrix);
+	RenderBackend.set_transform_world(N->val.Matrix);
 	RenderImplementation.apply_object(N->val.pObject);
 	RenderImplementation.apply_lmaterial();
 	V->Render(calcLOD(N->key, V->vis.sphere.R));
@@ -204,7 +204,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 	// **************************************************** NORMAL
 	{
 		// OPTICK_EVENT("NORMAL");
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 
 		mapNormalVS& vs = m_queue_static[_priority];
 		vs.getANY_P(nrmVS);
@@ -366,7 +366,7 @@ void CSceneGraph::_RenderHUD()
 									 g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
 	m_queue_hud.traverseLR(sorted_L1); // Local helper
@@ -375,7 +375,7 @@ void CSceneGraph::_RenderHUD()
 
 	Engine.RenderView.Project = Pold;
 	Engine.RenderView.ViewProjection = FTold;
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }
 
 void CSceneGraph::_RenderTranslucent()
@@ -527,7 +527,7 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 	////OPTICK_EVENT("CSceneGraph::render_lods - render");
 
 	int current = 0;
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 
 	for (u32 g = 0; g < lstLODgroups.size(); g++)
 	{

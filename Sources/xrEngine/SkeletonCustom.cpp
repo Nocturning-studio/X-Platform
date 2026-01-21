@@ -109,7 +109,7 @@ LPCSTR CKinematics::LL_BoneName_dbg(u16 ID)
 }
 
 #ifdef DEBUG
-void CKinematics::DebugRender(Fmatrix& XFORM)
+void CKinematics::DebugRender(Fmatrix& Transform)
 {
 	CalculateBones();
 
@@ -130,10 +130,10 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 		Fvector P1, P2;
 		M1.transform_tiny(P1, Z);
 		M2.transform_tiny(P2, Z);
-		RenderBackend.dbg_DrawLINE(XFORM, P1, P2, D3DCOLOR_XRGB(0, 255, 0));
+		RenderBackend.dbg_DrawLINE(Transform, P1, P2, D3DCOLOR_XRGB(0, 255, 0));
 
 		Fmatrix M;
-		M.mul_43(XFORM, M2);
+		M.mul_43(Transform, M2);
 		RenderBackend.dbg_DrawOBB(M, H1, D3DCOLOR_XRGB(255, 255, 255));
 		RenderBackend.dbg_DrawOBB(M, H2, D3DCOLOR_XRGB(255, 255, 255));
 	}
@@ -143,11 +143,11 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 		Fobb& obb = (*bones)[b]->obb;
 		Fmatrix& Mbone = bone_instances[b].mTransform;
 		Fmatrix Mbox;
-		obb.xform_get(Mbox);
+		obb.transform_get(Mbox);
 		Fmatrix X;
 		X.mul(Mbone, Mbox);
 		Fmatrix W;
-		W.mul(XFORM, X);
+		W.mul(Transform, X);
 		RenderBackend.dbg_DrawOBB(W, obb.m_halfsize, D3DCOLOR_XRGB(0, 0, 255));
 	}
 }
@@ -649,31 +649,31 @@ void CKinematics::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 
 DEFINE_VECTOR(Fobb, OBBVec, OBBVecIt);
 
-bool CKinematics::PickBone(const Fmatrix& parent_xform, Fvector& normal, float& dist, const Fvector& start,
+bool CKinematics::PickBone(const Fmatrix& parent_transform, Fvector& normal, float& dist, const Fvector& start,
 						   const Fvector& dir, u16 bone_id)
 {
 	Fvector S, D; // normal		= {0,0,0}
 	// transform ray from world to model
 	Fmatrix P;
-	P.invert(parent_xform);
+	P.invert(parent_transform);
 	P.transform_tiny(S, start);
 	P.transform_dir(D, dir);
 	for (u32 i = 0; i < children.size(); i++)
 		if (LL_GetChild(i)->PickBone(normal, dist, S, D, bone_id))
 		{
-			parent_xform.transform_dir(normal);
+			parent_transform.transform_dir(normal);
 			return true;
 		}
 	return false;
 }
 
-void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start, const Fvector3& dir,
+void CKinematics::AddWallmark(const Fmatrix* parent_transform, const Fvector3& start, const Fvector3& dir,
 							  ref_shader _shader, float size)
 {
 	Fvector S, D, normal = {0, 0, 0};
 	// transform ray from world to model
 	Fmatrix P;
-	P.invert(*parent_xform);
+	P.invert(*parent_transform);
 	P.transform_tiny(S, start);
 	P.transform_dir(D, dir);
 	// find pick point
@@ -735,9 +735,9 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	}
 
 	// ok. allocate wallmark
-	intrusive_ptr<CSkeletonWallmark> wm = xr_new<CSkeletonWallmark>(this, parent_xform, _shader, cp, Engine.TimeManager.GetGlobalTime());
+	intrusive_ptr<CSkeletonWallmark> wm = xr_new<CSkeletonWallmark>(this, parent_transform, _shader, cp, Engine.TimeManager.GetGlobalTime());
 	wm->m_LocalBounds.set(cp, size * 2.f);
-	wm->XFORM()->transform_tiny(wm->m_Bounds.P, cp);
+	wm->Transform()->transform_tiny(wm->m_Bounds.P, cp);
 	wm->m_Bounds.R = wm->m_Bounds.R;
 
 	Fvector tmp;
@@ -821,20 +821,20 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
 			if (F.bone_id[k][0] == F.bone_id[k][1])
 			{
 				// 1-link
-				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-				xform0.transform_tiny(P, F.vert[k]);
+				Fmatrix& transform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				transform0.transform_tiny(P, F.vert[k]);
 			}
 			else
 			{
 				// 2-link
 				Fvector P0, P1;
-				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-				Fmatrix& xform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
-				xform0.transform_tiny(P0, F.vert[k]);
-				xform1.transform_tiny(P1, F.vert[k]);
+				Fmatrix& transform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				Fmatrix& transform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+				transform0.transform_tiny(P0, F.vert[k]);
+				transform1.transform_tiny(P1, F.vert[k]);
 				P.lerp(P0, P1, F.weight[k]);
 			}
-			wm->XFORM()->transform_tiny(V->p, P);
+			wm->Transform()->transform_tiny(V->p, P);
 			V->t.set(F.uv[k]);
 			int aC = iFloor(w * 255.f);
 			clamp(aC, 0, 255);
@@ -842,7 +842,7 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
 			V++;
 		}
 	}
-	wm->XFORM()->transform_tiny(wm->m_Bounds.P, wm->m_LocalBounds.P);
+	wm->Transform()->transform_tiny(wm->m_Bounds.P, wm->m_LocalBounds.P);
 }
 
 void CKinematics::ClearWallmarks()

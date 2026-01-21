@@ -94,7 +94,7 @@ void CWeapon::Hit(SHit* pHDS)
 	inherited::Hit(pHDS);
 }
 
-void CWeapon::UpdateXForm()
+void CWeapon::UpdateTransform()
 {
 	if (Engine.TimeManager.GetFrameCount() != dwXF_Frame)
 	{
@@ -109,7 +109,7 @@ void CWeapon::UpdateXForm()
 		if (!E)
 		{
 			if (!IsGameTypeSingle())
-				UpdatePosition(H_Parent()->XFORM());
+				UpdatePosition(H_Parent()->Transform());
 			return;
 		}
 
@@ -140,7 +140,7 @@ void CWeapon::UpdateXForm()
 
 		if (fis_zero(D.magnitude()))
 		{
-			mRes.set(E->XFORM());
+			mRes.set(E->Transform());
 			mRes.c.set(mR.c);
 		}
 		else
@@ -152,7 +152,7 @@ void CWeapon::UpdateXForm()
 			N.normalize();
 
 			mRes.set(R, N, D, mR.c);
-			mRes.mulA_43(E->XFORM());
+			mRes.mulA_43(E->Transform());
 		}
 
 		UpdatePosition(mRes);
@@ -165,7 +165,7 @@ void CWeapon::UpdateFireDependencies_internal()
 	{
 		dwFP_Frame = Engine.TimeManager.GetFrameCount();
 
-		UpdateXForm();
+		UpdateTransform();
 
 		if (GetHUDmode() && (0 != H_Parent()))
 		{
@@ -193,16 +193,16 @@ void CWeapon::UpdateFireDependencies_internal()
 			m_firedeps.vLastFD.set(0.f, 0.f, 1.f);
 			parent.transform_dir(m_firedeps.vLastFD);
 
-			m_firedeps.m_FireParticlesXForm.identity();
-			m_firedeps.m_FireParticlesXForm.k.set(m_firedeps.vLastFD);
-			Fvector::generate_orthonormal_basis_normalized(m_firedeps.m_FireParticlesXForm.k,
-														   m_firedeps.m_FireParticlesXForm.j,
-														   m_firedeps.m_FireParticlesXForm.i);
+			m_firedeps.m_FireParticlesTransform.identity();
+			m_firedeps.m_FireParticlesTransform.k.set(m_firedeps.vLastFD);
+			Fvector::generate_orthonormal_basis_normalized(m_firedeps.m_FireParticlesTransform.k,
+														   m_firedeps.m_FireParticlesTransform.j,
+														   m_firedeps.m_FireParticlesTransform.i);
 		}
 		else
 		{
 			// 3rd person or no parent
-			Fmatrix& parent = XFORM();
+			Fmatrix& parent = Transform();
 			Fvector& fp = vLoadedFirePoint;
 			Fvector& fp2 = vLoadedFirePoint2;
 			Fvector& sp = vLoadedShellPoint;
@@ -214,7 +214,7 @@ void CWeapon::UpdateFireDependencies_internal()
 			m_firedeps.vLastFD.set(0.f, 0.f, 1.f);
 			parent.transform_dir(m_firedeps.vLastFD);
 
-			m_firedeps.m_FireParticlesXForm.set(parent);
+			m_firedeps.m_FireParticlesTransform.set(parent);
 		}
 	}
 }
@@ -222,7 +222,7 @@ void CWeapon::UpdateFireDependencies_internal()
 void CWeapon::ForceUpdateFireParticles()
 {
 	if (!GetHUDmode())
-	{ // update particlesXFORM real bullet direction
+	{ // update particlesTransform real bullet direction
 
 		if (!H_Parent())
 			return;
@@ -244,9 +244,9 @@ void CWeapon::ForceUpdateFireParticles()
 		_pxf.k = d;
 		_pxf.i.crossproduct(Fvector().set(0.0f, 1.0f, 0.0f), _pxf.k);
 		_pxf.j.crossproduct(_pxf.k, _pxf.i);
-		_pxf.c = XFORM().c;
+		_pxf.c = Transform().c;
 
-		m_firedeps.m_FireParticlesXForm.set(_pxf);
+		m_firedeps.m_FireParticlesTransform.set(_pxf);
 	}
 }
 
@@ -729,7 +729,7 @@ void CWeapon::OnH_B_Independent(bool just_before_destroy)
 	m_strapped_mode = false;
 	SetHUDmode(FALSE);
 	m_bZoomMode = false;
-	UpdateXForm();
+	UpdateTransform();
 }
 
 void CWeapon::OnH_A_Independent()
@@ -794,7 +794,7 @@ void CWeapon::UpdateCL()
 
 void CWeapon::renderable_Render()
 {
-	UpdateXForm();
+	UpdateTransform();
 
 	// нарисовать подсветку
 
@@ -832,8 +832,8 @@ void CWeapon::SetDefaults()
 void CWeapon::UpdatePosition(const Fmatrix& trans)
 {
 	Position().set(trans.c);
-	XFORM().mul(trans, m_strapped_mode ? m_StrapOffset : m_Offset);
-	VERIFY(!fis_zero(DET(renderable.xform)));
+	Transform().mul(trans, m_strapped_mode ? m_StrapOffset : m_Offset);
+	VERIFY(!fis_zero(DET(renderable.transform)));
 }
 
 bool CWeapon::Action(s32 cmd, u32 flags)

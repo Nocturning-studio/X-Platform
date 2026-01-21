@@ -365,7 +365,7 @@ void CResourceManager::_DeleteMatrix(const CMatrix* M)
 		m_matrices.erase(I);
 		return;
 	}
-	Msg("! ERROR: Failed to find xform-def '%s'", *M->cName);
+	Msg("! ERROR: Failed to find transform-def '%s'", *M->cName);
 }
 void CResourceManager::ED_UpdateMatrix(LPCSTR Name, CMatrix* data)
 {
@@ -471,7 +471,7 @@ void CResourceManager::_DeleteMatrixList(const SMatrixList* L)
 		return;
 	if (reclaim(lst_matrices, L))
 		return;
-	Msg("! ERROR: Failed to find compiled list of xform-defs");
+	Msg("! ERROR: Failed to find compiled list of transform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
 SConstantList* CResourceManager::_CreateConstantList(SConstantList& L)

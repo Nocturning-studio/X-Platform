@@ -67,7 +67,7 @@ void CPHJoint::CreateBall()
 		second_matrix.transform_tiny(pos, anchor);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_tiny(pos, anchor);
+		pShell->mTransform.transform_tiny(pos, anchor);
 		break;
 	default:
 		NODEFAULT;
@@ -102,7 +102,7 @@ void CPHJoint::CreateHinge()
 		second_matrix.transform_tiny(pos, anchor);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_tiny(pos, anchor);
+		pShell->mTransform.transform_tiny(pos, anchor);
 		break;
 	default:
 		NODEFAULT;
@@ -161,7 +161,7 @@ void CPHJoint::CreateHinge2()
 		second_matrix.transform_tiny(pos, anchor);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_tiny(pos, anchor);
+		pShell->mTransform.transform_tiny(pos, anchor);
 		break;
 	default:
 		NODEFAULT;
@@ -246,7 +246,7 @@ void CPHJoint::CreateSlider()
 		second_matrix.transform_tiny(pos, anchor);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_tiny(pos, anchor);
+		pShell->mTransform.transform_tiny(pos, anchor);
 		break;
 	default:
 		NODEFAULT;
@@ -358,7 +358,7 @@ void CPHJoint::CreateFullControl()
 		second_matrix.transform_tiny(pos, anchor);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_tiny(pos, anchor);
+		pShell->mTransform.transform_tiny(pos, anchor);
 		break;
 	default:
 		NODEFAULT;
@@ -508,10 +508,10 @@ void CPHJoint::SetLimits(const float low, const float high, const int axis_num)
 	switch (axes[ax].vs)
 	{
 	case vs_first:
-		pFirst_element->mXFORM.transform_dir(axis, axes[ax].direction);
+		pFirst_element->mTransform.transform_dir(axis, axes[ax].direction);
 		break;
 	case vs_second:
-		pSecond_element->mXFORM.transform_dir(axis, axes[ax].direction);
+		pSecond_element->mTransform.transform_dir(axis, axes[ax].direction);
 		break;
 	case vs_global:
 	default:
@@ -521,10 +521,10 @@ void CPHJoint::SetLimits(const float low, const float high, const int axis_num)
 	axes[ax].low = low;
 	axes[ax].high = high;
 	Fmatrix m1, m2;
-	m1.set(pFirst_element->mXFORM);
+	m1.set(pFirst_element->mTransform);
 	m1.invert();
-	m2.mul(m1, pSecond_element->mXFORM);
-	// m2.mul(pSecond_element->mXFORM,m1);
+	m2.mul(m1, pSecond_element->mTransform);
+	// m2.mul(pSecond_element->mTransform,m1);
 
 	float zer;
 	// axis_angleB(m2,axis,zer);
@@ -1232,7 +1232,7 @@ void CPHJoint::CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const F
 		second_matrix.transform_dir(axis, axes[ax_num].direction);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_dir(axis, axes[ax_num].direction);
+		pShell->mTransform.transform_dir(axis, axes[ax_num].direction);
 		break;
 	default:
 		NODEFAULT;
@@ -1274,7 +1274,7 @@ void CPHJoint::CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const F
 		second_matrix.transform_dir(axis, axes[ax_num].direction);
 		break;
 	case vs_global:
-		pShell->mXFORM.transform_dir(axis, axes[ax_num].direction);
+		pShell->mTransform.transform_dir(axis, axes[ax_num].direction);
 		break;
 	default:
 		NODEFAULT;

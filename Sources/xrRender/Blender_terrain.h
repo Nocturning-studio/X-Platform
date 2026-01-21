@@ -9,7 +9,7 @@ class CBlender_terrain : public IBlender
 {
   public:
 	string64 oT2_Name;	// name of secondary texture
-	string64 oT2_xform; // xform for secondary texture
+	string64 oT2_transform; // transform for secondary texture
 	string64 oR_Name;
 	string64 oG_Name;
 	string64 oB_Name;
@@ -42,7 +42,7 @@ class CBlender_terrain : public IBlender
 		IBlender::Save(fs);
 		xrPWRITE_MARKER(fs, "Detail map");
 		xrPWRITE_PROP(fs, "Name", xrPID_TEXTURE, oT2_Name);
-		xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT2_xform);
+		xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT2_transform);
 		xrPWRITE_PROP(fs, "R2-R", xrPID_TEXTURE, oR_Name);
 		xrPWRITE_PROP(fs, "R2-G", xrPID_TEXTURE, oG_Name);
 		xrPWRITE_PROP(fs, "R2-B", xrPID_TEXTURE, oB_Name);
@@ -56,13 +56,13 @@ class CBlender_terrain : public IBlender
 		{
 			xrPREAD_MARKER(fs);
 			xrPREAD_PROP(fs, xrPID_TEXTURE, oT2_Name);
-			xrPREAD_PROP(fs, xrPID_MATRIX, oT2_xform);
+			xrPREAD_PROP(fs, xrPID_MATRIX, oT2_transform);
 		}
 		else
 		{
 			xrPREAD_MARKER(fs);
 			xrPREAD_PROP(fs, xrPID_TEXTURE, oT2_Name);
-			xrPREAD_PROP(fs, xrPID_MATRIX, oT2_xform);
+			xrPREAD_PROP(fs, xrPID_MATRIX, oT2_transform);
 			xrPREAD_PROP(fs, xrPID_TEXTURE, oR_Name);
 			xrPREAD_PROP(fs, xrPID_TEXTURE, oG_Name);
 			xrPREAD_PROP(fs, xrPID_TEXTURE, oB_Name);
@@ -155,7 +155,7 @@ class CBlender_terrain : public IBlender
 	{
 		description.CLS = B_TERRAIN;
 		strcpy(oT2_Name, "$null");
-		strcpy(oT2_xform, "$null");
+		strcpy(oT2_transform, "$null");
 		description.version = 3;
 		strcpy(oR_Name, "detail\\detail_grnd_grass");	//"$null");
 		strcpy(oG_Name, "detail\\detail_grnd_asphalt"); //"$null");

@@ -51,11 +51,11 @@ void CHangingLamp::Center(Fvector& C) const
 {
 	if (renderable.visual)
 	{
-		renderable.xform.transform_tiny(C, renderable.visual->vis.sphere.P);
+		renderable.transform.transform_tiny(C, renderable.visual->vis.sphere.P);
 	}
 	else
 	{
-		C.set(XFORM().c);
+		C.set(Transform().c);
 	}
 }
 
@@ -211,7 +211,7 @@ void CHangingLamp::UpdateCL()
 	inherited::UpdateCL();
 
 	if (m_pPhysicsShell)
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 
 	if (Alive() && light_render->get_active())
 	{
@@ -223,12 +223,12 @@ void CHangingLamp::UpdateCL()
 		if (light_bone != BI_NONE)
 		{
 			Fmatrix& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(light_bone);
-			xf.mul(XFORM(), M);
+			xf.mul(Transform(), M);
 			VERIFY(!fis_zero(DET(xf)));
 		}
 		else
 		{
-			xf.set(XFORM());
+			xf.set(Transform());
 		}
 		light_render->set_rotation(xf.k, xf.i);
 		light_render->set_position(xf.c);
@@ -243,12 +243,12 @@ void CHangingLamp::UpdateCL()
 				if (ambient_bone != BI_NONE)
 				{
 					Fmatrix& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(ambient_bone);
-					xf.mul(XFORM(), M);
+					xf.mul(Transform(), M);
 					VERIFY(!fis_zero(DET(xf)));
 				}
 				else
 				{
-					xf.set(XFORM());
+					xf.set(Transform());
 				}
 			}
 			light_ambient->set_rotation(xf.k, xf.i);
@@ -358,7 +358,7 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
 
 	m_pPhysicsShell->build_FromKinematics(pKinematics, &bone_map);
 	m_pPhysicsShell->set_PhysicsRefObject(this);
-	m_pPhysicsShell->mXFORM.set(XFORM());
+	m_pPhysicsShell->mTransform.set(Transform());
 	m_pPhysicsShell->Activate(true); //,
 	// m_pPhysicsShell->SmoothElementsInertia(0.3f);
 	m_pPhysicsShell->SetAirResistance(); // 0.0014f,1.5f
@@ -373,7 +373,7 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
 			fixed_element->Fix();
 	}
 
-	m_pPhysicsShell->mXFORM.set(XFORM());
+	m_pPhysicsShell->mTransform.set(Transform());
 	m_pPhysicsShell->SetAirResistance(0.001f, 0.02f);
 	SAllDDOParams disable_params;
 	disable_params.Load(smart_cast<CKinematics*>(Visual())->LL_UserData());

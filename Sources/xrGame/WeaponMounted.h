@@ -24,7 +24,7 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 	u16 camera_bone;
 
 	Fvector fire_pos, fire_dir;
-	Fmatrix fire_bone_xform;
+	Fmatrix fire_bone_transform;
 	Fvector2 m_dAngle;
 	static void BoneCallbackX(CBoneInstance* B);
 	static void BoneCallbackY(CBoneInstance* B);
@@ -38,7 +38,7 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 	{
 		return fire_pos;
 	}
-	virtual const Fmatrix& get_ParticlesXFORM();
+	virtual const Fmatrix& get_ParticlesTransform();
 
 	//////////////////////////////////////////////////
 	// непосредственно обработка стрельбы

@@ -76,7 +76,7 @@ class CMissile : public CHudItemObject
 
   protected:
 	virtual void UpdateFireDependencies_internal();
-	virtual void UpdateXForm();
+	virtual void UpdateTransform();
 	void UpdatePosition(const Fmatrix& trans);
 	void spawn_fake_missile();
 

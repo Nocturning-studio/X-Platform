@@ -1,8 +1,8 @@
-#ifndef r_backend_xformH
-#define r_backend_xformH
+#ifndef r_backend_transformH
+#define r_backend_transformH
 #pragma once
 
-class ENGINE_API R_xforms
+class ENGINE_API R_transforms
 {
   public:
 	Fmatrix m_w;	// Basic	- world
@@ -25,7 +25,7 @@ class ENGINE_API R_xforms
 	bool m_bInvWValid;
 
   public:
-	R_xforms();
+	R_transforms();
 	void unmap();
 	void set_W(const Fmatrix& m);
 	void set_V(const Fmatrix& m);

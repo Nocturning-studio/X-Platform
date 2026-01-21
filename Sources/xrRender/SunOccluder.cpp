@@ -159,7 +159,7 @@ void CSunOccluder::Render()
 		return;
 
 	RenderBackend.set_Geometry(m_Geom);
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_Shader(m_Shader);
 
 	u32 primCount = m_IndexCount / 3;

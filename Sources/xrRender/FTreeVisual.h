@@ -16,7 +16,7 @@ class FTreeVisual : public IRender_Visual, public IRender_Mesh
   protected:
 	_5color c_scale;
 	_5color c_bias;
-	Fmatrix xform;
+	Fmatrix transform;
 
   public:
 	virtual void Render(float LOD); // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored

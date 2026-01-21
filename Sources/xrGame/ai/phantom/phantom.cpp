@@ -90,10 +90,10 @@ BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
 	SetfHealth(0.001f);
 
 	// orientate to enemy
-	XFORM().k.sub(m_enemy->Position(), Position()).normalize();
-	XFORM().j.set(0, 1, 0);
-	XFORM().i.crossproduct(XFORM().j, XFORM().k);
-	XFORM().k.getHP(vHP.x, vHP.y);
+	Transform().k.sub(m_enemy->Position(), Position()).normalize();
+	Transform().j.set(0, 1, 0);
+	Transform().i.crossproduct(Transform().j, Transform().k);
+	Transform().k.getHP(vHP.x, vHP.y);
 
 	// set animation
 	CKinematicsAnimated* K = smart_cast<CKinematicsAnimated*>(Visual());
@@ -148,7 +148,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 	if (new_state != m_CurState)
 	{
 		CKinematicsAnimated* K = smart_cast<CKinematicsAnimated*>(Visual());
-		Fmatrix xform = XFORM_center();
+		Fmatrix transform = Transform_center();
 		UpdateEvent = 0;
 		// after event
 		switch (m_CurState)
@@ -159,7 +159,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 			break;
 		case stContact: {
 			SStateData& sdata = m_state_data[m_CurState];
-			PlayParticles(sdata.particles.c_str(), FALSE, xform);
+			PlayParticles(sdata.particles.c_str(), FALSE, transform);
 			Fvector vE, vP;
 			m_enemy->Center(vE);
 			Center(vP);
@@ -172,7 +172,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		break;
 		case stShoot: {
 			SStateData& sdata = m_state_data[m_CurState];
-			PlayParticles(sdata.particles.c_str(), FALSE, xform);
+			PlayParticles(sdata.particles.c_str(), FALSE, transform);
 		}
 		break;
 		case stIdle:
@@ -183,31 +183,31 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		{
 		case stBirth: {
 			SStateData& sdata = m_state_data[new_state];
-			PlayParticles(sdata.particles.c_str(), TRUE, xform);
-			sdata.sound.play_at_pos(0, xform.c);
+			PlayParticles(sdata.particles.c_str(), TRUE, transform);
+			sdata.sound.play_at_pos(0, transform.c);
 			K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
 		}
 		break;
 		case stFly: {
 			UpdateEvent.bind(this, &CPhantom::OnFlyState);
 			SStateData& sdata = m_state_data[new_state];
-			m_fly_particles = PlayParticles(sdata.particles.c_str(), FALSE, xform);
-			sdata.sound.play_at_pos(0, xform.c, sm_Looped);
+			m_fly_particles = PlayParticles(sdata.particles.c_str(), FALSE, transform);
+			sdata.sound.play_at_pos(0, transform.c, sm_Looped);
 			K->PlayCycle(sdata.motion);
 		}
 		break;
 		case stContact: {
 			UpdateEvent.bind(this, &CPhantom::OnDeadState);
 			SStateData& sdata = m_state_data[new_state];
-			sdata.sound.play_at_pos(0, xform.c);
+			sdata.sound.play_at_pos(0, transform.c);
 			K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
 		}
 		break;
 		case stShoot: {
 			UpdateEvent.bind(this, &CPhantom::OnDeadState);
 			SStateData& sdata = m_state_data[new_state];
-			PlayParticles(sdata.particles.c_str(), TRUE, xform);
-			sdata.sound.play_at_pos(0, xform.c);
+			PlayParticles(sdata.particles.c_str(), TRUE, transform);
+			sdata.sound.play_at_pos(0, transform.c);
 			K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
 		}
 		break;
@@ -254,17 +254,17 @@ void CPhantom::OnDeadState()
 void CPhantom::UpdateFlyMedia()
 {
 	UpdatePosition(m_enemy->Position());
-	Fmatrix xform = XFORM_center();
+	Fmatrix transform = Transform_center();
 	// update particles
 	if (m_fly_particles)
 	{
 		Fvector vel;
 		vel.sub(m_enemy->Position(), Position()).normalize_safe().mul(fSpeed);
-		m_fly_particles->UpdateParent(xform, vel);
+		m_fly_particles->UpdateParent(transform, vel);
 	}
 	// update sound
 	if (m_state_data[stFly].sound._feedback())
-		m_state_data[stFly].sound.set_position(xform.c);
+		m_state_data[stFly].sound.set_position(transform.c);
 }
 //---------------------------------------------------------------------
 
@@ -302,18 +302,18 @@ void CPhantom::Hit(SHit* pHDS)
 	}
 }
 //---------------------------------------------------------------------
-Fmatrix CPhantom::XFORM_center()
+Fmatrix CPhantom::Transform_center()
 {
 	Fvector center;
 	Center(center);
-	Fmatrix xform = XFORM();
-	return xform.translate_over(center);
+	Fmatrix transform = Transform();
+	return transform.translate_over(center);
 }
 
-CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemove, const Fmatrix& xform)
+CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemove, const Fmatrix& transform)
 {
 	CParticlesObject* ps = CParticlesObject::Create(name.c_str(), bAutoRemove);
-	ps->UpdateParent(xform, zero_vel);
+	ps->UpdateParent(transform, zero_vel);
 	ps->Play();
 	return bAutoRemove ? 0 : ps;
 }
@@ -332,7 +332,7 @@ void CPhantom::UpdatePosition(const Fvector& tgt_pos)
 	cur_dir.setHP(vHP.x, vHP.y);
 
 	Fvector prev_pos = Position();
-	XFORM().rotateY(-vHP.x);
+	Transform().rotateY(-vHP.x);
 	Position().mad(prev_pos, cur_dir, fSpeed * Engine.TimeManager.GetDeltaTime());
 }
 
@@ -380,7 +380,7 @@ void CPhantom::net_Export(NET_Packet& P) // export to server
 	P.w_u8(flags);
 
 	float yaw, pitch, bank;
-	XFORM().getHPB(yaw, pitch, bank);
+	Transform().getHPB(yaw, pitch, bank);
 	P.w_float /*w_angle8*/ (yaw);
 	P.w_float /*w_angle8*/ (yaw);
 	P.w_float /*w_angle8*/ (pitch);
@@ -421,5 +421,5 @@ void CPhantom::net_Import(NET_Packet& P)
 	id_Squad = P.r_u8();
 	id_Group = P.r_u8();
 
-	XFORM().setHPB(yaw, pitch, bank);
+	Transform().setHPB(yaw, pitch, bank);
 }

@@ -18,7 +18,7 @@
 template <typename T> IC SRotation CObjectParams<T>::orientation(const T* object) const
 {
 	Fvector t;
-	object->XFORM().getHPB(t.x, t.y, t.z);
+	object->Transform().getHPB(t.x, t.y, t.z);
 	return (SRotation(t.x, t.y, 0.f));
 }
 

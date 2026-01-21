@@ -76,7 +76,7 @@ void CGraviArtefact::UpdateCLChild()
 	}
 	else if (H_Parent())
 	{
-		XFORM().set(H_Parent()->XFORM());
+		Transform().set(H_Parent()->Transform());
 
 		if (GameID() == GAME_ARTEFACTHUNT && m_CarringBoneID != u16(-1))
 		{
@@ -88,8 +88,8 @@ void CGraviArtefact::UpdateCLChild()
 				Fvector x;
 				x.set(-0.1f, 0.f, -0.3f);
 				Ruck_MTX.translate_add(x);
-				Ruck_MTX.mulA_43(XFORM());
-				XFORM().set(Ruck_MTX);
+				Ruck_MTX.mulA_43(Transform());
+				Transform().set(Ruck_MTX);
 			};
 		};
 	};

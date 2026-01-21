@@ -157,7 +157,7 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 					// Occlusion
 					vis_data& v_orig = renderable->renderable.visual->vis;
 					vis_data v_copy = v_orig;
-					v_copy.box.xform(renderable->renderable.xform);
+					v_copy.box.transform(renderable->renderable.transform);
 					BOOL bVisible = HOM.visible(v_copy);
 					v_orig.m_traversal_marker = v_copy.m_traversal_marker;
 					v_orig.accept_frame = v_copy.accept_frame;
@@ -395,7 +395,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		if (!L->vis.visible || !L->flags.bActive)
 			continue;
 
-		L->xform_calc();
+		L->transform_calc();
 		Fvector L_pos = L->get_position();
 		float L_range = L->get_range();
 		float distSqToCam = Engine.RenderView.Position.distance_to_sqr(L_pos);
@@ -405,9 +405,9 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		// =========================================================================
 		// 1. ÎÒÐÈÑÎÂÊÀ ÌÀÑÊÈ ÑÂÅÒÀ
 		// =========================================================================
-		RenderBackend.set_xform_world(L->get_xform());
-		RenderBackend.set_xform_view(Engine.RenderView.View);
-		RenderBackend.set_xform_project(Engine.RenderView.Project);
+		RenderBackend.set_transform_world(L->get_transform());
+		RenderBackend.set_transform_view(Engine.RenderView.View);
+		RenderBackend.set_transform_project(Engine.RenderView.Project);
 		enable_scissor(L);
 
 		u32 mask_id = (L->flags.type == IRender_Light::OMNIPART) ? SE_MASK_POINT : SE_MASK_SPOT;

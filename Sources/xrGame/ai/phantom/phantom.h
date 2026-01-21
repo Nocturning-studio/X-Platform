@@ -60,9 +60,9 @@ class CPhantom : public CEntity
 
 	float fContactHit;
 
-	Fmatrix XFORM_center();
+	Fmatrix Transform_center();
 
-	CParticlesObject* PlayParticles(const shared_str& name, BOOL bAutoRemove, const Fmatrix& xform);
+	CParticlesObject* PlayParticles(const shared_str& name, BOOL bAutoRemove, const Fmatrix& transform);
 	//	void				PlayMotion					(MotionID);
 
 	void UpdatePosition(const Fvector& tgt_pos);

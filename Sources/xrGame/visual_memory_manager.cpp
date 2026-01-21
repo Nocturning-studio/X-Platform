@@ -210,7 +210,7 @@ float CVisualMemoryManager::object_visible_distance(const CGameObject* game_obje
 
 		Fvector temp;
 		eye_matrix.transform_tiny(temp, eye_position);
-		m_object->XFORM().transform_tiny(eye_position, temp);
+		m_object->Transform().transform_tiny(eye_position, temp);
 
 		if (m_stalker)
 		{

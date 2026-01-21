@@ -204,7 +204,7 @@ bool CSnork::trace_geometry(const Fvector& d, float& range)
 
 	// trace left ray
 	Fvector temp_p;
-	temp_p.mad(Pc, XFORM().i, Radius() / 2);
+	temp_p.mad(Pc, Transform().i, Radius() / 2);
 	dir.sub(temp_p, center);
 	dir.normalize_safe();
 
@@ -215,7 +215,7 @@ bool CSnork::trace_geometry(const Fvector& d, float& range)
 	Pl.mad(center, dir, range);
 
 	// trace right ray
-	Fvector inv = XFORM().i;
+	Fvector inv = Transform().i;
 	inv.invert();
 	temp_p.mad(Pc, inv, Radius() / 2);
 	dir.sub(temp_p, center);

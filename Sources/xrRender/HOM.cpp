@@ -206,7 +206,7 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 		return;
 	}
 
-	// XForm and Rasterize
+	// Transform and Rasterize
 #ifdef DEBUG
 	InterlockedIncrement(&tris_in_frame_visible);
 #endif
@@ -214,9 +214,9 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 	int limit = int(P->size()) - 1;
 	for (int vert_it = 1; vert_it < limit; vert_it++)
 	{
-		m_xform.transform(T.raster[0], (*P)[0]);
-		m_xform.transform(T.raster[1], (*P)[vert_it + 0]);
-		m_xform.transform(T.raster[2], (*P)[vert_it + 1]);
+		m_transform.transform(T.raster[0], (*P)[0]);
+		m_transform.transform(T.raster[1], (*P)[vert_it + 0]);
+		m_transform.transform(T.raster[2], (*P)[vert_it + 1]);
 		pixels += Raster.rasterize(&T);
 	}
 	if (0 == pixels)
@@ -266,8 +266,8 @@ void CHOM::Render_DB(CFrustum& base)
 	Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f,		   0.0f,
 							 0.0f,		0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0,
 							 0.0f,		1.0f};
-	m_xform.mul(m_viewport, Engine.RenderView.ViewProjection);
-	m_xform_01.mul(m_viewport_01, Engine.RenderView.ViewProjection);
+	m_transform.mul(m_viewport, Engine.RenderView.ViewProjection);
+	m_transform_01.mul(m_viewport_01, Engine.RenderView.ViewProjection);
 
 	CFrustum clip;
 	clip.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_NEAR);
@@ -309,7 +309,7 @@ void CHOM::Render(CFrustum& base)
 	Engine.Statistic->RenderCALC_HOM.End();
 }
 
-ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+ICF BOOL transform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
 	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
 	if (z < EPS)
@@ -321,7 +321,7 @@ ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _
 	return FALSE;
 }
 
-ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+ICF BOOL transform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
 	float t;
 	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
@@ -344,26 +344,26 @@ ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _
 	return FALSE;
 }
 
-IC BOOL _visible(Fbox& B, Fmatrix& m_xform_01)
+IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01)
 {
-	// Find min/max points of xformed-box
+	// Find min/max points of transformed-box
 	Fvector2 min, max;
 	float z;
-	if (xform_b0(min, max, z, m_xform_01, B.min.x, B.min.y, B.min.z))
+	if (transform_b0(min, max, z, m_transform_01, B.min.x, B.min.y, B.min.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.min.x, B.min.y, B.max.z))
+	if (transform_b1(min, max, z, m_transform_01, B.min.x, B.min.y, B.max.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.max.x, B.min.y, B.max.z))
+	if (transform_b1(min, max, z, m_transform_01, B.max.x, B.min.y, B.max.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.max.x, B.min.y, B.min.z))
+	if (transform_b1(min, max, z, m_transform_01, B.max.x, B.min.y, B.min.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.min.x, B.max.y, B.min.z))
+	if (transform_b1(min, max, z, m_transform_01, B.min.x, B.max.y, B.min.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.min.x, B.max.y, B.max.z))
+	if (transform_b1(min, max, z, m_transform_01, B.min.x, B.max.y, B.max.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.max.x, B.max.y, B.max.z))
+	if (transform_b1(min, max, z, m_transform_01, B.max.x, B.max.y, B.max.z))
 		return TRUE;
-	if (xform_b1(min, max, z, m_xform_01, B.max.x, B.max.y, B.min.z))
+	if (transform_b1(min, max, z, m_transform_01, B.max.x, B.max.y, B.min.z))
 		return TRUE;
 	return Raster.test(min.x, min.y, max.x, max.y, z);
 }
@@ -376,7 +376,7 @@ BOOL CHOM::visible(Fbox3& B)
 		return TRUE;
 	if (B.contains(Engine.RenderView.Position))
 		return TRUE;
-	return _visible(B, m_xform_01);
+	return _visible(B, m_transform_01);
 }
 
 BOOL CHOM::visible(Fbox2& B, float depth)
@@ -408,7 +408,7 @@ BOOL CHOM::visible(vis_data& vis)
 #ifdef DEBUG
 	Engine.Statistic->RenderCALC_HOM.Begin();
 #endif
-	BOOL result = _visible(vis.box, m_xform_01);
+	BOOL result = _visible(vis.box, m_transform_01);
 	u32 delay = 1;
 	if (result)
 	{
@@ -435,14 +435,14 @@ BOOL CHOM::visible(sPoly& P)
 	if (!bEnabled)
 		return TRUE;
 
-	// Find min/max points of xformed-box
+	// Find min/max points of transformed-box
 	Fvector2 min, max;
 	float z;
 
-	if (xform_b0(min, max, z, m_xform_01, P.front().x, P.front().y, P.front().z))
+	if (transform_b0(min, max, z, m_transform_01, P.front().x, P.front().y, P.front().z))
 		return TRUE;
 	for (u32 it = 1; it < P.size(); it++)
-		if (xform_b1(min, max, z, m_xform_01, P[it].x, P[it].y, P[it].z))
+		if (transform_b1(min, max, z, m_transform_01, P[it].x, P[it].y, P[it].z))
 			return TRUE;
 	return Raster.test(min.x, min.y, max.x, max.y, z);
 }
@@ -489,7 +489,7 @@ void CHOM::OnRender()
 				line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
 				line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
 			}
-			RenderBackend.set_xform_world(Fidentity);
+			RenderBackend.set_transform_world(Fidentity);
 			// draw solid
 			Device.SetNearer(TRUE);
 			RenderBackend.set_Shader(Device.m_SelectionShader);

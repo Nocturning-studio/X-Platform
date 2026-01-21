@@ -73,7 +73,7 @@ void CBreakableObject::UpdateCL()
 	inherited::UpdateCL();
 	//	Fmatrix	d;
 	if (m_pPhysicsShell && m_pPhysicsShell->isFullActive())
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 }
 void CBreakableObject::enable_notificate()
 {
@@ -132,7 +132,7 @@ void CBreakableObject::DestroyUnbroken()
 //{
 // CPhysicsShell* shell=P_create_splited_Shell();
 // shell->preBuild_FromKinematics(smart_cast<CKinematics*>(Visual()));
-// shell->mXFORM.set(XFORM());
+// shell->mTransform.set(Transform());
 // shell->set_PhysicsRefObject(this);
 ////m_Shell->Build();
 // shell->setDensity(1000.f);
@@ -147,7 +147,7 @@ void CBreakableObject::DestroyUnbroken()
 // for(;e!=i;i++)
 //{
 //	m_Shells.push_back(P_create_splited_Shell());
-//	m_Shells.back()->mXFORM.set(XFORM());
+//	m_Shells.back()->mTransform.set(Transform());
 //	m_Shells.back()->add_Element	(*i);
 //	m_Shells.back()->Build();
 // }
@@ -158,7 +158,7 @@ void CBreakableObject::CreateBroken()
 	processing_activate();
 	m_Shell = P_create_splited_Shell();
 	m_Shell->preBuild_FromKinematics(smart_cast<CKinematics*>(Visual()));
-	m_Shell->mXFORM.set(XFORM());
+	m_Shell->mTransform.set(Transform());
 	// m_Shell->SetAirResistance(0.002f*skel_airr_lin_factor,
 	//	0.3f*skel_airr_ang_factor);
 	m_Shell->set_PhysicsRefObject(this);
@@ -182,7 +182,7 @@ void CBreakableObject::ActivateBroken()
 	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
-	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+	m_pPhysicsShell->GetGlobalTransformDynamic(&Transform());
 }
 
 void CBreakableObject::net_Destroy()

@@ -181,7 +181,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
 		Fvector OP;
 		Fmatrix mE;
 		const Fbox& B = I->O->CFORM()->getBBox();
-		const Fmatrix& M = I->O->XFORM();
+		const Fmatrix& M = I->O->Transform();
 
 		// Build OBB + Ellipse and X-form point
 		Fvector c, r;

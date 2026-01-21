@@ -86,7 +86,7 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector& dir, const
 	//
 	Fvector hit_point;
 	CA->LL_GetTransform(bi).transform_tiny(hit_point, bone_pos);
-	ea.XFORM().transform_tiny(hit_point);
+	ea.Transform().transform_tiny(hit_point);
 	m.transform_tiny(hit_point);
 	Fvector torqu;
 	torqu.crossproduct(dr, hit_point);
@@ -152,5 +152,5 @@ bool character_hit_animation_controller::IsEffected(u16 bi, CKinematics& ca) con
 void character_hit_animation_controller::GetBaseMatrix(Fmatrix& m, CEntityAlive& ea) const
 {
 	CKinematics* CA = smart_cast<CKinematics*>(ea.Visual());
-	m.mul_43(ea.XFORM(), CA->LL_GetTransform(base_bone));
+	m.mul_43(ea.Transform(), CA->LL_GetTransform(base_bone));
 }

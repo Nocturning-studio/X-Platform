@@ -98,6 +98,6 @@ void CPhysicsSkeletonObject::PHObjectPositionUpdate()
 {
 	if (m_pPhysicsShell)
 	{
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 	}
 }

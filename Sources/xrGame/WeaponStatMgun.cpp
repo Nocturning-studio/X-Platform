@@ -103,8 +103,8 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 
 	xr_vector<Fmatrix> matrices;
 	K->LL_GetBindTransform(matrices);
-	m_i_bind_x_xform.invert(matrices[m_rotate_x_bone]);
-	m_i_bind_y_xform.invert(matrices[m_rotate_y_bone]);
+	m_i_bind_x_transform.invert(matrices[m_rotate_x_bone]);
+	m_i_bind_y_transform.invert(matrices[m_rotate_y_bone]);
 	m_bind_x_rot = matrices[m_rotate_x_bone].k.getP();
 	m_bind_y_rot = matrices[m_rotate_y_bone].k.getH();
 	m_bind_x.set(matrices[m_rotate_x_bone].c);
@@ -113,7 +113,7 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 	m_cur_x_rot = m_bind_x_rot;
 	m_cur_y_rot = m_bind_y_rot;
 	m_destEnemyDir.setHP(m_bind_y_rot, m_bind_x_rot);
-	XFORM().transform_dir(m_destEnemyDir);
+	Transform().transform_dir(m_destEnemyDir);
 
 	inheritedShooting::Light_Create();
 
@@ -175,21 +175,21 @@ void CWeaponStatMgun::Hit(SHit* pHDS)
 void CWeaponStatMgun::UpdateBarrelDir()
 {
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	m_fire_bone_xform = K->LL_GetTransform(m_fire_bone);
+	m_fire_bone_transform = K->LL_GetTransform(m_fire_bone);
 
-	m_fire_bone_xform.mulA_43(XFORM());
+	m_fire_bone_transform.mulA_43(Transform());
 	m_fire_pos.set(0, 0, 0);
-	m_fire_bone_xform.transform_tiny(m_fire_pos);
+	m_fire_bone_transform.transform_tiny(m_fire_pos);
 	m_fire_dir.set(0, 0, 1);
-	m_fire_bone_xform.transform_dir(m_fire_dir);
+	m_fire_bone_transform.transform_dir(m_fire_dir);
 
 	m_allow_fire = true;
 	Fmatrix XFi;
-	XFi.invert(XFORM());
+	XFi.invert(Transform());
 	Fvector dep;
 	XFi.transform_dir(dep, m_destEnemyDir);
 	{ // x angle
-		m_i_bind_x_xform.transform_dir(dep);
+		m_i_bind_x_transform.transform_dir(dep);
 		dep.normalize();
 		m_tgt_x_rot = angle_normalize_signed(m_bind_x_rot - dep.getP());
 		float sv_x = m_tgt_x_rot;
@@ -199,7 +199,7 @@ void CWeaponStatMgun::UpdateBarrelDir()
 			m_allow_fire = FALSE;
 	}
 	{ // y angle
-		m_i_bind_y_xform.transform_dir(dep);
+		m_i_bind_y_transform.transform_dir(dep);
 		dep.normalize();
 		m_tgt_y_rot = angle_normalize_signed(m_bind_y_rot - dep.getH());
 		float sv_y = m_tgt_y_rot;
@@ -221,10 +221,10 @@ void CWeaponStatMgun::cam_Update(float dt, float fov)
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
 	const Fmatrix& C = K->LL_GetTransform(m_camera_bone);
-	XFORM().transform_tiny(P, C.c);
+	Transform().transform_tiny(P, C.c);
 
 	Fvector d = C.k;
-	XFORM().transform_dir(d);
+	Transform().transform_dir(d);
 	Fvector2 des_cam_dir;
 
 	d.getHP(des_cam_dir.x, des_cam_dir.y);

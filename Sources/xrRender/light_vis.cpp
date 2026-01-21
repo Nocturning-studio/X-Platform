@@ -47,8 +47,8 @@ void light::vis_prepare()
 
 	// testing
 	vis.pending = true;
-	xform_calc();
-	RenderBackend.set_xform_world(m_xform);
+	transform_calc();
+	RenderBackend.set_transform_world(m_transform);
 	vis.query_order = RenderImplementation.occq_begin(vis.query_id);
 	RenderImplementation.draw_volume(this);
 	RenderImplementation.occq_end(vis.query_id);

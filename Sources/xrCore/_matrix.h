@@ -117,7 +117,7 @@ template <class T> struct _matrix
 		return *this;
 	}
 	IC SelfRef rotation(const _quaternion<T>& Q);
-	ICF SelfRef mk_xform(const _quaternion<T>& Q, const Tvector& V);
+	ICF SelfRef mk_transform(const _quaternion<T>& Q, const Tvector& V);
 
 	// Multiply RES = A[4x4]*B[4x4] (WITH projection)
 	ICF SelfRef mul(const Self& A, const Self& B)

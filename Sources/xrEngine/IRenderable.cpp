@@ -4,7 +4,7 @@
 
 IRenderable::IRenderable()
 {
-	renderable.xform.identity();
+	renderable.transform.identity();
 	renderable.visual = NULL;
 	renderable.pROS = NULL;
 	renderable.pROS_Allowed = TRUE;

@@ -14,7 +14,7 @@ using namespace SceneGraphTypes;
 CSceneGraph::CSceneGraph()
 {
 	m_current_owner = NULL;
-	m_current_xform = NULL;
+	m_current_transform = NULL;
 	m_is_hud_pass = FALSE;
 	m_is_invisible_mode = FALSE;
 	m_record_multipass = FALSE;
@@ -122,10 +122,10 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		{
 			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
 			N->val.ScreenSpaceArea = ScreenSpaceArea;
-			// m_current_owner и m_current_xform - члены CSceneGraph
+			// m_current_owner и m_current_transform - члены CSceneGraph
 			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *m_current_xform;
+			N->val.Matrix = *m_current_transform;
 			N->val.se = sh_d; // 4=L_special
 		}
 	}
@@ -142,7 +142,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 
 	// Create common node
 	// Invisible elements exist only in R1
-	DynamicRenderNode item = {ScreenSpaceArea, m_current_owner, pVisual, *m_current_xform};
+	DynamicRenderNode item = {ScreenSpaceArea, m_current_owner, pVisual, *m_current_transform};
 
 	// HUD rendering
 	// m_is_hud_pass - член CSceneGraph
@@ -154,7 +154,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *m_current_xform;
+			N->val.Matrix = *m_current_transform;
 			N->val.se = sh;
 			return;
 		}
@@ -164,7 +164,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 			N->val.ScreenSpaceArea = ScreenSpaceArea;
 			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *m_current_xform;
+			N->val.Matrix = *m_current_transform;
 			N->val.se = sh;
 			return;
 		}
@@ -181,7 +181,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *m_current_xform;
+		N->val.Matrix = *m_current_transform;
 		N->val.se = sh;
 		return;
 	}
@@ -193,7 +193,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *m_current_xform;
+		N->val.Matrix = *m_current_transform;
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
 
@@ -204,7 +204,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 		N->val.ScreenSpaceArea = ScreenSpaceArea;
 		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *m_current_xform;
+		N->val.Matrix = *m_current_transform;
 		N->val.se = sh;
 		return;
 	}
@@ -251,8 +251,8 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 	if (m_culling_bounds_recorder)
 	{
 		Fbox3 temp;
-		Fmatrix& xf = *m_current_xform;
-		temp.xform(pVisual->vis.box, xf);
+		Fmatrix& xf = *m_current_transform;
+		temp.transform(pVisual->vis.box, xf);
 		m_culling_bounds_recorder->push_back(temp);
 	}
 }
@@ -497,7 +497,7 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	{
 		// Для динамики используем текущую матрицу трансформации графа
 		Fvector pos;
-		m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
+		m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 		adjusted_distance = GetDistFromCamera(pos);
 	}
 
@@ -556,7 +556,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 		return;
 
 	// ShouldRenderVisual скорее всего осталась static/helper функцией в .cpp или стала private методом CSceneGraph.
-	// Обращаемся к m_current_xform напрямую (это член CSceneGraph)
+	// Обращаемся к m_current_transform напрямую (это член CSceneGraph)
 	// active_phase() - метод CRender, нужен глобальный доступ
 	if (!ShouldRenderVisual(pVisual, false, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
 		return;
@@ -598,7 +598,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 		{
 			Fvector Tpos;
 			float D;
-			m_current_xform->transform_tiny(Tpos, pV->vis.sphere.P);
+			m_current_transform->transform_tiny(Tpos, pV->vis.sphere.P);
 			float ScreenSpaceArea = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f);
 			if (ScreenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
@@ -611,7 +611,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 		{
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 			Fvector pos;
-			m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
+			m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distane = GetDistFromCamera(pos);
 			float switch_distance = 100.0f;
 
@@ -645,14 +645,14 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 	default: {
 		// General type of visual
 		Fvector Tpos;
-		m_current_xform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+		m_current_transform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
 		if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
 		{
 			// DReuseItem определен внутри CSceneGraph (или R_dsgraph_structure)
 			DReuseItem item;
 			item.visual = pVisual;
-			item.matrix = *m_current_xform;
+			item.matrix = *m_current_transform;
 			m_visuals_dynamic_visible.push_back(item);
 		}
 
@@ -709,7 +709,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual)
 
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
-		m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
+		m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 		float adjusted_distane = GetDistFromCamera(pos);
 		float switch_distance = 100.0f;
 		switch (ps_geometry_quality_mode)
@@ -774,8 +774,8 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	Fvector Tpos; // transformed position
 	EFC_Visible VIS;
 
-	// m_current_xform теперь член CSceneGraph, обращаемся напрямую
-	m_current_xform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+	// m_current_transform теперь член CSceneGraph, обращаемся напрямую
+	m_current_transform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
 	// View и HOM остались в RenderImplementation (CRender)
 	VIS = RenderImplementation.View->testSphere(Tpos, pVisual->vis.sphere.R, planes);
@@ -845,7 +845,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 		{
 			Fvector fTpos;
 			float D;
-			m_current_xform->transform_tiny(fTpos, pV->vis.sphere.P);
+			m_current_transform->transform_tiny(fTpos, pV->vis.sphere.P);
 			float ScreenSpaceArea = CalcSSA(D, fTpos, pV->vis.sphere.R / 2.f);
 			if (ScreenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
@@ -858,7 +858,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 		{
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 			Fvector pos;
-			m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
+			m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distance = GetDistFromCamera(pos);
 			float switch_distance = 100.0f;
 			switch (ps_geometry_quality_mode)
@@ -909,7 +909,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 	if (!RenderImplementation.HOM.visible(vis))
 		return;
 
-	// m_current_xform - член CSceneGraph
+	// m_current_transform - член CSceneGraph
 	if (!ShouldRenderVisual(pVisual, true, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
 		return;
 
@@ -968,7 +968,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 	case MT_SKELETON_RIGID: {
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
-		m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
+		m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 		float adjusted_distance = GetDistFromCamera(pos);
 		float switch_distance = 100.0f;
 		switch (ps_geometry_quality_mode)

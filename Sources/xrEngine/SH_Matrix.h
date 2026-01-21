@@ -27,7 +27,7 @@ class ENGINE_API CMatrix : public xr_resource_named
 	};
 
   public:
-	Fmatrix xform;
+	Fmatrix transform;
 
 	u32 dwFrame;
 	u32 dwMode;

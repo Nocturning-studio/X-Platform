@@ -207,7 +207,7 @@ void CDemoRecord::MakeLevelMapProcess()
 		Engine.RenderView.Right.set(1.f, 0.f, 0.f);
 		Engine.RenderView.View.build_camera_dir(Engine.RenderView.Position, Engine.RenderView.Direction, Engine.RenderView.Top);
 
-		bb.xform(Engine.RenderView.View);
+		bb.transform(Engine.RenderView.View);
 		// build project matrix
 		Engine.RenderView.Project.build_projection_ortho(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.min.z, bb.max.z);
 	}

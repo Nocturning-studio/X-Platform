@@ -226,7 +226,7 @@ void CHelicopter::UpdateWeapons()
 		if (m_allow_fire)
 		{
 
-			float d = XFORM().c.distance_to_xz(m_enemy.destEnemyPos);
+			float d = Transform().c.distance_to_xz(m_enemy.destEnemyPos);
 
 			if (between(d, m_min_mgun_dist, m_max_mgun_dist))
 				MGunFireStart();
@@ -264,34 +264,34 @@ void CHelicopter::UpdateWeapons()
 void CHelicopter::UpdateMGunDir()
 {
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	m_fire_bone_xform = K->LL_GetTransform(m_fire_bone);
+	m_fire_bone_transform = K->LL_GetTransform(m_fire_bone);
 
-	m_fire_bone_xform.mulA_43(XFORM());
+	m_fire_bone_transform.mulA_43(Transform());
 	m_fire_pos.set(0, 0, 0);
-	m_fire_bone_xform.transform_tiny(m_fire_pos);
+	m_fire_bone_transform.transform_tiny(m_fire_pos);
 	m_fire_dir.set(0, 0, 1);
-	m_fire_bone_xform.transform_dir(m_fire_dir);
+	m_fire_bone_transform.transform_dir(m_fire_dir);
 
 	m_fire_dir.sub(m_enemy.destEnemyPos, m_fire_pos).normalize_safe();
 
-	m_left_rocket_bone_xform = K->LL_GetTransform(m_left_rocket_bone);
-	m_left_rocket_bone_xform.mulA_43(XFORM());
-	m_left_rocket_bone_xform.c.y += 1.0f;
+	m_left_rocket_bone_transform = K->LL_GetTransform(m_left_rocket_bone);
+	m_left_rocket_bone_transform.mulA_43(Transform());
+	m_left_rocket_bone_transform.c.y += 1.0f;
 	//.fake
-	m_right_rocket_bone_xform = K->LL_GetTransform(m_right_rocket_bone);
-	m_right_rocket_bone_xform.mulA_43(XFORM());
-	m_right_rocket_bone_xform.c.y += 1.0f;
+	m_right_rocket_bone_transform = K->LL_GetTransform(m_right_rocket_bone);
+	m_right_rocket_bone_transform.mulA_43(Transform());
+	m_right_rocket_bone_transform.c.y += 1.0f;
 	//.fake
 
 	m_allow_fire = TRUE;
 	Fmatrix XFi;
-	XFi.invert(XFORM());
+	XFi.invert(Transform());
 	Fvector dep;
 	XFi.transform_tiny(dep, m_enemy.destEnemyPos);
 	{ // x angle
 		Fvector A_;
 		A_.sub(dep, m_bind_x);
-		m_i_bind_x_xform.transform_dir(A_);
+		m_i_bind_x_transform.transform_dir(A_);
 		A_.normalize();
 		m_tgt_rot.x = angle_normalize_signed(m_bind_rot.x - A_.getP());
 		float sv_x = m_tgt_rot.x;
@@ -302,7 +302,7 @@ void CHelicopter::UpdateMGunDir()
 	{ // y angle
 		Fvector A_;
 		A_.sub(dep, m_bind_y);
-		m_i_bind_y_xform.transform_dir(A_);
+		m_i_bind_y_transform.transform_dir(A_);
 		A_.normalize();
 		m_tgt_rot.y = angle_normalize_signed(m_bind_rot.y - A_.getH());
 		float sv_y = m_tgt_rot.y;
@@ -324,21 +324,21 @@ void CHelicopter::startRocket(u16 idx)
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(this->ID());
 
-		Fmatrix rocketXFORM;
-		(idx == 1) ? rocketXFORM = m_left_rocket_bone_xform : rocketXFORM = m_right_rocket_bone_xform;
+		Fmatrix rocketTransform;
+		(idx == 1) ? rocketTransform = m_left_rocket_bone_transform : rocketTransform = m_right_rocket_bone_transform;
 
 		Fvector vel;
 		Fvector dir;
-		dir.sub(m_enemy.destEnemyPos, rocketXFORM.c).normalize_safe();
+		dir.sub(m_enemy.destEnemyPos, rocketTransform.c).normalize_safe();
 		vel.mul(dir, CRocketLauncher::m_fLaunchSpeed);
 
-		Fmatrix xform;
-		xform.identity();
-		xform.k.set(dir);
-		Fvector::generate_orthonormal_basis(xform.k, xform.j, xform.i);
-		xform.c = rocketXFORM.c;
-		VERIFY2(_valid(xform), "CHelicopter::startRocket. Invalid xform");
-		LaunchRocket(xform, vel, zero_vel);
+		Fmatrix transform;
+		transform.identity();
+		transform.k.set(dir);
+		Fvector::generate_orthonormal_basis(transform.k, transform.j, transform.i);
+		transform.c = rocketTransform.c;
+		VERIFY2(_valid(transform), "CHelicopter::startRocket. Invalid transform");
+		LaunchRocket(transform, vel, zero_vel);
 
 		NET_Packet P;
 		u_EventGen(P, GE_LAUNCH_ROCKET, ID());
@@ -348,14 +348,14 @@ void CHelicopter::startRocket(u16 idx)
 		dropCurrentRocket();
 
 		m_last_launched_rocket = idx;
-		HUD_SOUND::PlaySound(m_sndShotRocket, xform.c, this, false);
+		HUD_SOUND::PlaySound(m_sndShotRocket, transform.c, this, false);
 	}
 }
 
-const Fmatrix& CHelicopter::get_ParticlesXFORM()
+const Fmatrix& CHelicopter::get_ParticlesTransform()
 
 {
-	return m_fire_bone_xform;
+	return m_fire_bone_transform;
 }
 
 const Fvector& CHelicopter::get_CurrentFirePoint()

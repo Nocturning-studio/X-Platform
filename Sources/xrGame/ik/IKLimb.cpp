@@ -653,7 +653,7 @@ const float pick_dist = 1.f;
 void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const Fmatrix& foot, bool foot_step)
 {
 	cld.collided = false;
-	const Fmatrix& obj = O->XFORM();
+	const Fmatrix& obj = O->Transform();
 	Fmatrix gl_bone;
 	gl_bone.mul_43(obj, foot);
 	Fvector pos;
@@ -689,7 +689,7 @@ void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const Fmatrix& foot, 
 				if (K)
 				{
 					float dist = l_pick_dist;
-					if (K->PickBone(R.O->XFORM(), cld.m_plane.n, dist, pos, pick_v, (u16)R.element))
+					if (K->PickBone(R.O->Transform(), cld.m_plane.n, dist, pos, pick_v, (u16)R.element))
 					{
 						cld.collided = true;
 						Fvector point;

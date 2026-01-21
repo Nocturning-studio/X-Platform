@@ -247,7 +247,7 @@ void CBlender_Compile::StageSET_Address(u32 adr)
 	RS.SetSAMP(Stage(), D3DSAMP_ADDRESSV, adr);
 }
 
-void CBlender_Compile::StageSET_XForm(u32 tf, u32 tc)
+void CBlender_Compile::StageSET_Transform(u32 tf, u32 tc)
 {
 #ifdef _EDITOR
 	RS.SetTSS(Stage(), D3DTSS_TEXTURETRANSFORMFLAGS, tf);
@@ -315,26 +315,26 @@ void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
 		switch (M->dwMode)
 		{
 		case CMatrix::modeProgrammable:
-			StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEPOSITION | ID);
+			StageSET_Transform(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEPOSITION | ID);
 			break;
 		case CMatrix::modeTCM:
-			StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_PASSTHRU | iChannel);
+			StageSET_Transform(D3DTTFF_COUNT2, D3DTSS_TCI_PASSTHRU | iChannel);
 			break;
 		case CMatrix::modeC_refl:
-			StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | ID);
+			StageSET_Transform(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | ID);
 			break;
 		case CMatrix::modeS_refl:
-			StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_CAMERASPACENORMAL | ID);
+			StageSET_Transform(D3DTTFF_COUNT2, D3DTSS_TCI_CAMERASPACENORMAL | ID);
 			break;
 		default:
-			StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
+			StageSET_Transform(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
 			break;
 		}
 	}
 	else
 	{
-		// No XForm at all
-		StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
+		// No Transform at all
+		StageSET_Transform(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
 	}
 }
 void CBlender_Compile::Stage_Constant(LPCSTR name)

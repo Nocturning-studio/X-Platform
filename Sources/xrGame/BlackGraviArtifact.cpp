@@ -52,7 +52,7 @@ BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 	// pos.rotateY(1.57);
 	// pos.mulA(pos);
 	pos.scale(0.7f, 0.7f, 0.7f);
-	pos.translate_over(XFORM().c);
+	pos.translate_over(Transform().c);
 
 	Fvector vel;
 	vel.set(0, 0, 0);
@@ -101,7 +101,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 			CParticlesObject* pStaticPG;
 			pStaticPG = CParticlesObject::Create(*m_sParticleName, TRUE);
 			Fmatrix pos;
-			pos.set(XFORM());
+			pos.set(Transform());
 			Fvector vel;
 			// vel.sub(Position(),ps_Element(0).vPosition);
 			// vel.div((Level().timeServer()-ps_Element(0).dwTime)/1000.f);
@@ -113,7 +113,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 		}
 	}
 	else if (H_Parent())
-		XFORM().set(H_Parent()->XFORM());
+		Transform().set(H_Parent()->Transform());
 }
 
 // void CBlackGraviArtefact::Hit(float P, Fvector &dir,

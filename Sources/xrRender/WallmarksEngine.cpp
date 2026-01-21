@@ -404,17 +404,17 @@ void CWallmarksEngine::Render()
 	////OPTICK_EVENT("CWallmarksEngine::Render");
 
 	//	if (marks.empty())			return;
-	// Projection and xform
+	// Projection and transform
 	float _43 = Engine.RenderView.Project._43;
 	Engine.RenderView.Project._43 -= ps_r_WallmarkSHIFT;
-	RenderBackend.set_xform_world(Fidentity);
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 
 	Fmatrix mSavedView = Engine.RenderView.View;
 	Fvector mViewPos;
 	mViewPos.mad(Engine.RenderView.Position, Engine.RenderView.Direction, ps_r_WallmarkSHIFT_V);
 	Engine.RenderView.View.build_camera_dir(mViewPos, Engine.RenderView.Direction, Engine.RenderView.Top);
-	RenderBackend.set_xform_view(Engine.RenderView.View);
+	RenderBackend.set_transform_view(Engine.RenderView.View);
 
 	Engine.Statistic->RenderDUMP_WM.Begin();
 	Engine.Statistic->RenderDUMP_WMS_Count = 0;
@@ -531,6 +531,6 @@ void CWallmarksEngine::Render()
 	// Projection
 	Engine.RenderView.View = mSavedView;
 	Engine.RenderView.Project._43 = _43;
-	RenderBackend.set_xform_view(Engine.RenderView.View);
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	RenderBackend.set_transform_view(Engine.RenderView.View);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }

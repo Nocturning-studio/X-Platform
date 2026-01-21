@@ -77,15 +77,15 @@ void SBinocVisibleObj::Update()
 
 	Fbox b = m_object->Visual()->vis.box;
 
-	Fmatrix xform;
-	xform.mul(Engine.RenderView.ViewProjection, m_object->XFORM());
+	Fmatrix transform;
+	transform.mul(Engine.RenderView.ViewProjection, m_object->Transform());
 	Fvector2 mn = {flt_max, flt_max}, mx = {flt_min, flt_min};
 
 	for (u32 k = 0; k < 8; ++k)
 	{
 		Fvector p;
 		b.getpoint(k, p);
-		xform.transform(p);
+		transform.transform(p);
 		mn.x = _min(mn.x, p.x);
 		mn.y = _min(mn.y, p.y);
 		mx.x = _max(mx.x, p.x);

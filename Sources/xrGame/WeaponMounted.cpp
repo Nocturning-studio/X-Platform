@@ -141,12 +141,12 @@ void CWeaponMounted::UpdateCL()
 		CKinematics* K = smart_cast<CKinematics*>(Visual());
 		K->CalculateBones();
 		// update fire pos & fire_dir
-		fire_bone_xform = K->LL_GetTransform(fire_bone);
-		fire_bone_xform.mulA_43(XFORM());
+		fire_bone_transform = K->LL_GetTransform(fire_bone);
+		fire_bone_transform.mulA_43(Transform());
 		fire_pos.set(0, 0, 0);
-		fire_bone_xform.transform_tiny(fire_pos);
+		fire_bone_transform.transform_tiny(fire_pos);
 		fire_dir.set(0, 0, 1);
-		fire_bone_xform.transform_dir(fire_dir);
+		fire_bone_transform.transform_dir(fire_dir);
 
 		UpdateFire();
 
@@ -232,7 +232,7 @@ void CWeaponMounted::cam_Update(float dt, float fov)
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
 	const Fmatrix& C = K->LL_GetTransform(camera_bone);
-	XFORM().transform_tiny(P, C.c);
+	Transform().transform_tiny(P, C.c);
 
 	if (OwnerActor())
 	{
@@ -264,7 +264,7 @@ bool CWeaponMounted::attach_Actor(CGameObject* actor)
 	// set actor to mounted position
 	const Fmatrix& A = K->LL_GetTransform(actor_bone);
 	Fvector ap;
-	XFORM().transform_tiny(ap, A.c);
+	Transform().transform_tiny(ap, A.c);
 	Fmatrix AP;
 	AP.translate(ap);
 	if (OwnerActor())
@@ -291,7 +291,7 @@ void CWeaponMounted::detach_Actor()
 
 Fvector CWeaponMounted::ExitPosition()
 {
-	return XFORM().c;
+	return Transform().c;
 }
 
 CCameraBase* CWeaponMounted::Camera()
@@ -363,9 +363,9 @@ void CWeaponMounted::UpdateFire()
 	}
 }
 
-const Fmatrix& CWeaponMounted::get_ParticlesXFORM()
+const Fmatrix& CWeaponMounted::get_ParticlesTransform()
 {
-	return fire_bone_xform;
+	return fire_bone_transform;
 }
 
 void CWeaponMounted::AddShotEffector()

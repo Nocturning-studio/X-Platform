@@ -196,7 +196,7 @@ void CInventoryItem::Deactivate()
 
 void CInventoryItem::OnH_B_Independent(bool just_before_destroy)
 {
-	UpdateXForm();
+	UpdateTransform();
 	m_eItemPlace = eItemPlaceUndefined;
 }
 
@@ -608,14 +608,14 @@ void CInventoryItem::PH_I_CrPr() // actions & operations between two phisic pred
 	////////////////////////////////////
 	pSyncObj->get_State(p->RecalculatedState);
 	///////////////////////////////////////////////
-	Fmatrix xformX;
-	pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, xformX);
+	Fmatrix transformX;
+	pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, transformX);
 
-	VERIFY2(_valid(xformX), *object().cName());
-	pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, xformX);
+	VERIFY2(_valid(transformX), *object().cName());
+	pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, transformX);
 
-	p->IRecRot.set(xformX);
-	p->IRecPos.set(xformX.c);
+	p->IRecRot.set(transformX);
+	p->IRecPos.set(transformX.c);
 	VERIFY2(_valid(p->IRecPos), *object().cName());
 };
 
@@ -673,14 +673,14 @@ void CInventoryItem::PH_A_CrPr()
 	if (!m_flags.test(FInInterpolate))
 		return;
 	////////////////////////////////////
-	Fmatrix xformX;
-	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, xformX);
+	Fmatrix transformX;
+	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformX);
 
-	VERIFY2(_valid(xformX), *object().cName());
-	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, xformX);
+	VERIFY2(_valid(transformX), *object().cName());
+	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformX);
 
-	p->IEndRot.set(xformX);
-	p->IEndPos.set(xformX.c);
+	p->IEndRot.set(transformX);
+	p->IEndPos.set(transformX.c);
 	VERIFY2(_valid(p->IEndPos), *object().cName());
 	/////////////////////////////////////////////////////////////////////////
 	CalculateInterpolationParams();
@@ -693,14 +693,14 @@ void CInventoryItem::CalculateInterpolationParams()
 {
 	net_updateData* p = NetSync();
 	p->IStartPos.set(object().Position());
-	p->IStartRot.set(object().XFORM());
+	p->IStartRot.set(object().Transform());
 
 	Fvector P0, P1, P2, P3;
 
 	CPHSynchronize* pSyncObj = NULL;
 	pSyncObj = object().PHGetSyncItem(0);
 
-	Fmatrix xformX0, xformX1;
+	Fmatrix transformX0, transformX1;
 
 	if (m_flags.test(FInInterpolation))
 	{
@@ -726,25 +726,25 @@ void CInventoryItem::CalculateInterpolationParams()
 		if (p->LastState.linear_vel.x == 0 && p->LastState.linear_vel.y == 0 && p->LastState.linear_vel.z == 0)
 		{
 			pSyncObj->cv2obj_Xfrom(p->RecalculatedState.previous_quaternion, p->RecalculatedState.previous_position,
-								   xformX0);
-			pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, xformX1);
+								   transformX0);
+			pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, transformX1);
 		}
 		else
 		{
-			pSyncObj->cv2obj_Xfrom(p->LastState.previous_quaternion, p->LastState.previous_position, xformX0);
-			pSyncObj->cv2obj_Xfrom(p->LastState.quaternion, p->LastState.position, xformX1);
+			pSyncObj->cv2obj_Xfrom(p->LastState.previous_quaternion, p->LastState.previous_position, transformX0);
+			pSyncObj->cv2obj_Xfrom(p->LastState.quaternion, p->LastState.position, transformX1);
 		};
 
-		P1.sub(xformX1.c, xformX0.c);
+		P1.sub(transformX1.c, transformX0.c);
 		P1.add(p->IStartPos);
 	}
 
 	P2.sub(p->PredictedState.position, p->PredictedState.linear_vel);
-	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, P2, xformX0);
-	P2.set(xformX0.c);
+	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, P2, transformX0);
+	P2.set(transformX0.c);
 
-	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, xformX1);
-	P3.set(xformX1.c);
+	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformX1);
+	P3.set(transformX1.c);
 	/////////////////////////////////////////////////////////////////////////////
 	Fvector TotalPath;
 	TotalPath.sub(P3, P0);
@@ -830,11 +830,11 @@ void CInventoryItem::make_Interpolation()
 			CPHSynchronize* pSyncObj = NULL;
 			pSyncObj = object().PHGetSyncItem(0);
 			pSyncObj->set_State(p->PredictedState);
-			Fmatrix xformI;
-			pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, xformI);
-			VERIFY2(_valid(object().renderable.xform), *object().cName());
-			object().XFORM().set(xformI);
-			VERIFY2(_valid(object().renderable.xform), *object().cName());
+			Fmatrix transformI;
+			pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformI);
+			VERIFY2(_valid(object().renderable.transform), *object().cName());
+			object().Transform().set(transformI);
+			VERIFY2(_valid(object().renderable.transform), *object().cName());
 		}
 		else
 		{
@@ -858,10 +858,10 @@ void CInventoryItem::make_Interpolation()
 			VERIFY(factor >= 0.f && factor <= 1.f);
 			IRot.slerp(p->IStartRot, p->IEndRot, factor);
 			VERIFY2(_valid(IRot), *object().cName());
-			object().XFORM().rotation(IRot);
-			VERIFY2(_valid(object().renderable.xform), *object().cName());
+			object().Transform().rotation(IRot);
+			VERIFY2(_valid(object().renderable.transform), *object().cName());
 			object().Position().set(IPos);
-			VERIFY2(_valid(object().renderable.xform), *object().cName());
+			VERIFY2(_valid(object().renderable.transform), *object().cName());
 		};
 	}
 	else
@@ -927,12 +927,12 @@ void CInventoryItem::activate_physic_shell()
 		return;
 	};
 
-	UpdateXForm();
+	UpdateTransform();
 
 	object().CPhysicsShellHolder::activate_physic_shell();
 }
 
-void CInventoryItem::UpdateXForm()
+void CInventoryItem::UpdateTransform()
 {
 	if (0 == object().H_Parent())
 		return;
@@ -973,7 +973,7 @@ void CInventoryItem::UpdateXForm()
 
 	if (fis_zero(D.magnitude()))
 	{
-		mRes.set(E->XFORM());
+		mRes.set(E->Transform());
 		mRes.c.set(mR.c);
 	}
 	else
@@ -985,7 +985,7 @@ void CInventoryItem::UpdateXForm()
 		N.normalize();
 
 		mRes.set(R, N, D, mR.c);
-		mRes.mulA_43(E->XFORM());
+		mRes.mulA_43(E->Transform());
 	}
 
 	//	UpdatePosition	(mRes);
@@ -1003,7 +1003,7 @@ void CInventoryItem::OnRender()
 
 		Fvector bc, bd;
 		object().Visual()->vis.box.get_CD(bc, bd);
-		Fmatrix M = object().XFORM();
+		Fmatrix M = object().Transform();
 		M.c.add(bc);
 		Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
 		/*
@@ -1045,16 +1045,16 @@ void CInventoryItem::OnRender()
 				if (OnClient() && !H_Parent() && m_bInInterpolation)
 				{
 
-					Fmatrix xformI;
+					Fmatrix transformI;
 
-					xformI.rotation(IRecRot);
-					xformI.c.set(IRecPos);
+					transformI.rotation(IRecRot);
+					transformI.c.set(IRecPos);
 					Level().debug_renderer().draw_aabb			(IRecPos, size, size, size, color_rgba(255, 0, 255,
 		255));
 
-					xformI.rotation(IEndRot);
-					xformI.c.set(IEndPos);
-					Level().debug_renderer().draw_obb			(xformI,bd,color_rgba(0, 255, 0, 255));
+					transformI.rotation(IEndRot);
+					transformI.c.set(IEndPos);
+					Level().debug_renderer().draw_obb			(transformI,bd,color_rgba(0, 255, 0, 255));
 
 					///////////////////////////////////////////////////////////////////////////
 					Fvector point0 = IStartPos, point1;

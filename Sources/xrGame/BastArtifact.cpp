@@ -132,7 +132,7 @@ void CBastArtefact::shedule_Update(u32 dt)
 void CBastArtefact::UpdateCLChild()
 {
 	// Log						("--- A - CBastArtefact",*cName());
-	// Log						("--- A - CBastArtefact",renderable.xform);
+	// Log						("--- A - CBastArtefact",renderable.transform);
 
 	// современем энергия по немногу тоже уменьшается
 	if (m_fEnergy > 0)
@@ -189,7 +189,7 @@ void CBastArtefact::UpdateCLChild()
 			CParticlesObject* pStaticPG;
 			pStaticPG = CParticlesObject::Create(*m_sParticleName, TRUE);
 			Fmatrix pos;
-			pos.set(XFORM());
+			pos.set(Transform());
 			Fvector vel;
 			// vel.sub(Position(),ps_Element(0).vPosition);
 			// vel.div((Level().timeServer()-ps_Element(0).dwTime)/1000.f);
@@ -199,7 +199,7 @@ void CBastArtefact::UpdateCLChild()
 		}
 	}
 	else if (H_Parent())
-		XFORM().set(H_Parent()->XFORM());
+		Transform().set(H_Parent()->Transform());
 }
 
 // void CBastArtefact::Hit(float P, Fvector &dir,

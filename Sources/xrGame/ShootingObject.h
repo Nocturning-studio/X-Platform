@@ -121,7 +121,7 @@ class CShootingObject
   protected:
 	// функции родительского объекта
 	virtual const Fvector& get_CurrentFirePoint() = 0;
-	virtual const Fmatrix& get_ParticlesXFORM() = 0;
+	virtual const Fmatrix& get_ParticlesTransform() = 0;
 	virtual void ForceUpdateFireParticles(){};
 
 	////////////////////////////////////////////////

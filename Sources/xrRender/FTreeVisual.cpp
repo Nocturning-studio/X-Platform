@@ -8,8 +8,8 @@
 
 #include "ftreevisual.h"
 
-shared_str m_xform;
-shared_str m_xform_v;
+shared_str m_transform;
+shared_str m_transform_v;
 shared_str c_consts;
 shared_str c_wave;
 shared_str c_wind;
@@ -65,7 +65,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	// load tree-def
 	R_ASSERT(data->find_chunk(OGF_TREEDEF2));
 	{
-		data->r(&xform, sizeof(xform));
+		data->r(&transform, sizeof(transform));
 		data->r(&c_scale, sizeof(c_scale));
 		c_scale.rgb.mul(.5f);
 		c_scale.hemi *= .5f;
@@ -81,8 +81,8 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	rm_geom.create(vFormat, p_rm_Vertices, p_rm_Indices);
 
 	// Get constants
-	m_xform = "m_xform";
-	m_xform_v = "m_xform_v";
+	m_transform = "m_transform";
+	m_transform_v = "m_transform_v";
 	c_consts = "consts";
 	c_wave = "wave";
 	c_wind = "wind";
@@ -129,11 +129,11 @@ void FTreeVisual::Render(float LOD)
 	if (tvs.dwFrame != Engine.TimeManager.GetFrameCount())
 		tvs.calculate();
 	// setup constants
-	Fmatrix xform_v;
-	xform_v.mul_43(RenderBackend.get_xform_view(), xform);
-	RenderBackend.set_Constant(m_xform_v, xform_v); // matrix
+	Fmatrix transform_v;
+	transform_v.mul_43(RenderBackend.get_transform_view(), transform);
+	RenderBackend.set_Constant(m_transform_v, transform_v); // matrix
 	float s = ps_r_Tree_SBC;
-	RenderBackend.set_Constant(m_xform, xform);						// matrix
+	RenderBackend.set_Constant(m_transform, transform);						// matrix
 	RenderBackend.set_Constant(c_consts, tvs.scale, tvs.scale, 0, 0); // consts/scale
 	RenderBackend.set_Constant(c_wave, tvs.wave);						// wave
 	RenderBackend.set_Constant(c_wind, tvs.wind);						// wind
@@ -167,7 +167,7 @@ void FTreeVisual::Copy(IRender_Visual* pSrc)
 	PCOPY(iCount);
 	PCOPY(dwPrimitives);
 
-	PCOPY(xform);
+	PCOPY(transform);
 	PCOPY(c_scale);
 	PCOPY(c_bias);
 }

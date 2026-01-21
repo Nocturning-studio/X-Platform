@@ -301,7 +301,7 @@ bool CCar::isObjectVisible(CScriptGameObject* O_)
 
 		if (HasWeapon())
 		{
-			from_point.y = XFORM().c.y + m_car_weapon->_height();
+			from_point.y = Transform().c.y + m_car_weapon->_height();
 		}
 
 		dir_to_object.sub(to_point, from_point).normalize_safe();

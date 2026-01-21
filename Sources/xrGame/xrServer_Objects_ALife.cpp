@@ -1199,30 +1199,30 @@ void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner
 	if ((1 == priority) && (false == strictB2F))
 	{
 		u32 clr = bSelected ? 0x00FFFFFF : 0x00FFFF00;
-		Fmatrix main_xform, ambient_xform;
-		owner->get_bone_xform(*light_main_bone, main_xform);
-		main_xform.mulA_43(parent);
+		Fmatrix main_transform, ambient_transform;
+		owner->get_bone_transform(*light_main_bone, main_transform);
+		main_transform.mulA_43(parent);
 		if (flags.is(flPointAmbient))
 		{
-			owner->get_bone_xform(*light_ambient_bone, ambient_xform);
-			ambient_xform.mulA_43(parent);
+			owner->get_bone_transform(*light_ambient_bone, ambient_transform);
+			ambient_transform.mulA_43(parent);
 		}
 		if (bSelected)
 		{
 			if (flags.is(flTypeSpot))
 			{
-				du->DrawSpotLight(main_xform.c, main_xform.k, range, spot_cone_angle, clr);
+				du->DrawSpotLight(main_transform.c, main_transform.k, range, spot_cone_angle, clr);
 			}
 			else
 			{
-				du->DrawLineSphere(main_xform.c, range, clr, true);
+				du->DrawLineSphere(main_transform.c, range, clr, true);
 			}
 			if (flags.is(flPointAmbient))
-				du->DrawLineSphere(ambient_xform.c, m_ambient_radius, clr, true);
+				du->DrawLineSphere(ambient_transform.c, m_ambient_radius, clr, true);
 		}
-		du->DrawPointLight(main_xform.c, VIS_RADIUS, clr);
+		du->DrawPointLight(main_transform.c, VIS_RADIUS, clr);
 		if (flags.is(flPointAmbient))
-			du->DrawPointLight(ambient_xform.c, VIS_RADIUS, clr);
+			du->DrawPointLight(ambient_transform.c, VIS_RADIUS, clr);
 	}
 }
 

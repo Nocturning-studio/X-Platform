@@ -26,8 +26,8 @@ class light : public IRender_Light, public ISpatial
 	ref_shader s_spot;
 	ref_shader s_point;
 
-	u32 m_xform_frame;
-	Fmatrix m_xform;
+	u32 m_transform_frame;
+	Fmatrix m_transform;
 
   public:
 	struct _vis
@@ -40,7 +40,7 @@ class light : public IRender_Light, public ISpatial
 		u16 smap_ID;
 	} vis;
 
-	union _xform {
+	union _transform {
 		struct _D
 		{
 			Fmatrix combine;
@@ -84,8 +84,8 @@ class light : public IRender_Light, public ISpatial
 	u32 get_frame_render(){return frame_render;}
 	ref_shader get_shader_spot(){return s_spot;}
 	ref_shader get_shader_point(){return s_point;}
-	u32 get_xform_frame(){return m_xform_frame;}
-	Fmatrix get_xform(){return m_xform;}
+	u32 get_transform_frame(){return m_transform_frame;}
+	Fmatrix get_transform(){return m_transform;}
 	smapvis get_smapvis(){return svis;}
 	virtual vis_data& get_homdata();
 
@@ -128,7 +128,7 @@ class light : public IRender_Light, public ISpatial
 		return this;
 	}
 
-	void xform_calc();
+	void transform_calc();
 	void vis_prepare();
 	void vis_update();
 	void _export(light_Package& dest);

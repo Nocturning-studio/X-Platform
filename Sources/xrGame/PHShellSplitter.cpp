@@ -28,7 +28,7 @@ shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
 
 	CPhysicsShell* new_shell = P_create_Shell();
 	CPHShell* new_shell_desc = smart_cast<CPHShell*>(new_shell);
-	new_shell_desc->mXFORM.set(m_pShell->mXFORM);
+	new_shell_desc->mTransform.set(m_pShell->mTransform);
 	new_shell_desc->m_object_in_root.set(m_pShell->m_object_in_root);
 	SPLITTER_I splitter = m_splitters.begin() + aspl;
 	u16 start_element = splitter->m_element;
@@ -298,9 +298,9 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& sp
 	// CPHElement* element=m_pShell->elements[splitter.m_element];
 	CPhysicsShell* new_shell_last = P_create_Shell();
 	CPHShell* new_shell_last_desc = smart_cast<CPHShell*>(new_shell_last);
-	new_shell_last->mXFORM.set(m_pShell->mXFORM);
+	new_shell_last->mTransform.set(m_pShell->mTransform);
 	const u16 start_joint = split_elem.second.m_start_jt_num;
-	R_ASSERT(_valid(new_shell_last->mXFORM));
+	R_ASSERT(_valid(new_shell_last->mTransform));
 	const u16 end_joint = split_elem.second.m_end_jt_num;
 	// it is not right for multiple joints attached to the unsplited part becource all these need to be reattached
 	if (start_joint != end_joint)
@@ -366,7 +366,7 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& sp
 	new_shell_last_desc->AfterSetActive();
 	new_shell_last->set_Kinematics(NULL);
 	VERIFY2(split_elem.second.m_bone_id < 64, "strange root");
-	VERIFY(_valid(new_shell_last->mXFORM));
+	VERIFY(_valid(new_shell_last->mTransform));
 	VERIFY(dBodyStateValide(source_element->get_bodyConst()));
 	VERIFY(dBodyStateValide(split_elem.first->get_body()));
 	new_shell_last->set_ObjectContactCallback(NULL);

@@ -25,7 +25,7 @@ CSpaceRestrictor::~CSpaceRestrictor()
 
 void CSpaceRestrictor::Center(Fvector& C) const
 {
-	XFORM().transform_tiny(C, CFORM()->getSphere().P);
+	Transform().transform_tiny(C, CFORM()->getSphere().P);
 }
 
 float CSpaceRestrictor::Radius() const
@@ -138,7 +138,7 @@ void CSpaceRestrictor::prepare() const
 		case 0: { // sphere
 			Fsphere temp;
 			const Fsphere& sphere = (*I).data.sphere;
-			XFORM().transform_tiny(temp.P, sphere.P);
+			Transform().transform_tiny(temp.P, sphere.P);
 			temp.R = sphere.R;
 			m_spheres.push_back(temp);
 			break;
@@ -146,7 +146,7 @@ void CSpaceRestrictor::prepare() const
 		case 1: { // box
 			Fmatrix sphere;
 			const Fmatrix& box = (*I).data.box;
-			sphere.mul_43(XFORM(), box);
+			sphere.mul_43(Transform(), box);
 
 			// Build points
 			Fvector A, B[8];
@@ -253,27 +253,27 @@ void CSpaceRestrictor::OnRender()
 			l_ball.scale(l_sphere.R, l_sphere.R, l_sphere.R);
 			// l_ball.scale(1.f, 1.f, 1.f);
 			Fvector l_p;
-			XFORM().transform(l_p, l_sphere.P);
+			Transform().transform(l_p, l_sphere.P);
 			l_ball.translate_add(l_p);
-			// l_ball.mul(XFORM(), l_ball);
-			// l_ball.mul(l_ball, XFORM());
+			// l_ball.mul(Transform(), l_ball);
+			// l_ball.mul(l_ball, Transform());
 			Level().debug_renderer().draw_ellipse(l_ball, Color);
 		}
 		break;
 		case 1: {
-			l_box.mul(XFORM(), l_pShape->data.box);
+			l_box.mul(Transform(), l_pShape->data.box);
 			Level().debug_renderer().draw_obb(l_box, l_half, Color);
 		}
 		break;
 		}
 	}
-	if (Engine.RenderView.Position.distance_to(XFORM().c) < 100.0f)
+	if (Engine.RenderView.Position.distance_to(Transform().c) < 100.0f)
 	{
 
 		// DRAW name
 
 		Fmatrix res;
-		res.mul(Engine.RenderView.ViewProjection, XFORM());
+		res.mul(Engine.RenderView.ViewProjection, Transform());
 
 		Fvector4 v_res;
 

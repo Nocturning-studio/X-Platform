@@ -47,8 +47,8 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 
 	xr_vector<Fmatrix> matrices;
 	K->LL_GetBindTransform(matrices);
-	m_i_bind_x_xform.invert(matrices[m_rotate_x_bone]);
-	m_i_bind_y_xform.invert(matrices[m_rotate_y_bone]);
+	m_i_bind_x_transform.invert(matrices[m_rotate_x_bone]);
+	m_i_bind_y_transform.invert(matrices[m_rotate_y_bone]);
 	m_bind_x_rot = matrices[m_rotate_x_bone].k.getP();
 	m_bind_y_rot = matrices[m_rotate_y_bone].k.getH();
 	m_bind_x.set(matrices[m_rotate_x_bone].c);
@@ -57,7 +57,7 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 	m_cur_x_rot = m_bind_x_rot;
 	m_cur_y_rot = m_bind_y_rot;
 	m_destEnemyDir.setHP(m_bind_y_rot, m_bind_x_rot);
-	m_object->XFORM().transform_dir(m_destEnemyDir);
+	m_object->Transform().transform_dir(m_destEnemyDir);
 
 	inheritedShooting::Light_Create();
 	Load(pUserData->r_string("mounted_weapon_definition", "wpn_section"));
@@ -153,29 +153,29 @@ void CCarWeapon::ResetBoneCallbacks()
 void CCarWeapon::UpdateBarrelDir()
 {
 	CKinematics* K = smart_cast<CKinematics*>(m_object->Visual());
-	m_fire_bone_xform = K->LL_GetTransform(m_fire_bone);
+	m_fire_bone_transform = K->LL_GetTransform(m_fire_bone);
 
-	m_fire_bone_xform.mulA_43(m_object->XFORM());
+	m_fire_bone_transform.mulA_43(m_object->Transform());
 	m_fire_pos.set(0, 0, 0);
-	m_fire_bone_xform.transform_tiny(m_fire_pos);
+	m_fire_bone_transform.transform_tiny(m_fire_pos);
 	m_fire_dir.set(0, 0, 1);
-	m_fire_bone_xform.transform_dir(m_fire_dir);
+	m_fire_bone_transform.transform_dir(m_fire_dir);
 	m_fire_norm.set(0, 1, 0);
-	m_fire_bone_xform.transform_dir(m_fire_norm);
+	m_fire_bone_transform.transform_dir(m_fire_norm);
 
 	m_allow_fire = true;
 	Fmatrix XFi;
-	XFi.invert(m_object->XFORM());
+	XFi.invert(m_object->Transform());
 	Fvector dep;
 	XFi.transform_dir(dep, m_destEnemyDir);
 	{ // x angle
-		m_i_bind_x_xform.transform_dir(dep);
+		m_i_bind_x_transform.transform_dir(dep);
 		dep.normalize();
 		m_tgt_x_rot = angle_normalize_signed(m_bind_x_rot - dep.getP());
 		clamp(m_tgt_x_rot, -m_lim_x_rot.y, -m_lim_x_rot.x);
 	}
 	{ // y angle
-		m_i_bind_y_xform.transform_dir(dep);
+		m_i_bind_y_transform.transform_dir(dep);
 		dep.normalize();
 		m_tgt_y_rot = angle_normalize_signed(m_bind_y_rot - dep.getH());
 		clamp(m_tgt_y_rot, -m_lim_y_rot.y, -m_lim_y_rot.x);
@@ -213,9 +213,9 @@ const Fvector& CCarWeapon::get_CurrentFirePoint()
 	return m_fire_pos;
 }
 
-const Fmatrix& CCarWeapon::get_ParticlesXFORM()
+const Fmatrix& CCarWeapon::get_ParticlesTransform()
 {
-	return m_fire_bone_xform;
+	return m_fire_bone_transform;
 }
 
 void CCarWeapon::FireStart()

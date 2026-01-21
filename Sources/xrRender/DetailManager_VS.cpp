@@ -226,7 +226,7 @@ void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix, const 
 	Engine.Statistic->RenderDUMP_DT_Render.Begin();
 	{
 		RenderBackend.set_CullMode(CULL_DISABLE);
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_Geometry(hw_Geom);
 
 		// 3. Запуск проходов

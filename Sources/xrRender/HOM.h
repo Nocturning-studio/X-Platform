@@ -17,8 +17,8 @@ class CHOM
 	CDB::MODEL* m_pModel;
 	occTri* m_pTris;
 	BOOL bEnabled;
-	Fmatrix m_xform;
-	Fmatrix m_xform_01;
+	Fmatrix m_transform;
+	Fmatrix m_transform_01;
 #ifdef DEBUG
 	u32 tris_in_frame_visible;
 	u32 tris_in_frame;

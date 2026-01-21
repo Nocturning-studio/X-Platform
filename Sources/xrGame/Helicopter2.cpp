@@ -17,7 +17,7 @@ bool CHelicopter::isObjectVisible(CObject* O)
 	Fvector dir_to_object;
 	Fvector to_point;
 	O->Center(to_point);
-	Fvector from_point = XFORM().c;
+	Fvector from_point = Transform().c;
 	dir_to_object.sub(to_point, from_point).normalize_safe();
 	float ray_length = from_point.distance_to(to_point);
 
@@ -52,7 +52,7 @@ void CHelicopter::StartFlame()
 
 	Fvector zero_vector;
 	zero_vector.set(0.f, 0.f, 0.f);
-	m_pParticle->UpdateParent(m_particleXFORM, zero_vector);
+	m_pParticle->UpdateParent(m_particleTransform, zero_vector);
 	m_pParticle->Play();
 	m_flame_started = true;
 }
@@ -60,8 +60,8 @@ void CHelicopter::StartFlame()
 void CHelicopter::UpdateHeliParticles()
 {
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	m_particleXFORM = K->LL_GetTransform(m_smoke_bone);
-	m_particleXFORM.mulA_43(XFORM());
+	m_particleTransform = K->LL_GetTransform(m_smoke_bone);
+	m_particleTransform.mulA_43(Transform());
 
 	if (m_pParticle)
 	{
@@ -72,14 +72,14 @@ void CHelicopter::UpdateHeliParticles()
 		vel.sub(Position(), last_pos);
 		vel.mul(5.0f);
 
-		m_pParticle->UpdateParent(m_particleXFORM, vel);
+		m_pParticle->UpdateParent(m_particleTransform, vel);
 	}
 	// lighting
 	if (m_light_render->get_active())
 	{
 		Fmatrix xf;
 		Fmatrix& M = K->LL_GetTransform(u16(m_light_bone));
-		xf.mul(XFORM(), M);
+		xf.mul(Transform(), M);
 		VERIFY(!fis_zero(DET(xf)));
 
 		m_light_render->set_rotation(xf.k, xf.i);
@@ -192,7 +192,7 @@ float CHelicopter::GetRealAltitude()
 
 	down_dir.set(0.0f, -1.0f, 0.0f);
 
-	Level().ObjectSpace.RayPick(XFORM().c, down_dir, 1000.0f, collide::rqtStatic, cR, NULL);
+	Level().ObjectSpace.RayPick(Transform().c, down_dir, 1000.0f, collide::rqtStatic, cR, NULL);
 
 	return cR.range;
 }
@@ -274,7 +274,7 @@ void CHelicopter::DieHelicopter()
 	m_engineSound.stop();
 
 	m_brokenSound.create(pSettings->r_string(*cNameSect(), "broken_snd"), st_Effect, sg_SourceType);
-	m_brokenSound.play_at_pos(0, XFORM().c, sm_Looped);
+	m_brokenSound.play_at_pos(0, Transform().c, sm_Looped);
 
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
 	if (true /*!PPhysicsShell()*/)
@@ -298,7 +298,7 @@ void CHelicopter::DieHelicopter()
 	Fvector lin_vel;
 
 	Fvector prev_pos = PositionStack.front().vPosition;
-	lin_vel.sub(XFORM().c, prev_pos);
+	lin_vel.sub(Transform().c, prev_pos);
 
 	if (Engine.TimeManager.GetGlobalTimeMs() != PositionStack.front().dwTime)
 		lin_vel.div((Engine.TimeManager.GetGlobalTimeMs() - PositionStack.front().dwTime) / 1000.0f);
@@ -406,7 +406,7 @@ void SHeliBodyState::reinit()
 	type = eBodyByPath;
 	b_looking_at_point = false;
 	looking_point.set(0.0f, 0.0f, 0.0f);
-	parent->XFORM().getHPB(currBodyHPB.x, currBodyHPB.y, currBodyHPB.z);
+	parent->Transform().getHPB(currBodyHPB.x, currBodyHPB.y, currBodyHPB.z);
 }
 
 void SHeliBodyState::LookAtPoint(Fvector point, bool do_it)

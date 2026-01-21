@@ -14,7 +14,7 @@ CPortalTraverser::CPortalTraverser()
 xr_vector<IRender_Sector*> dbg_sectors;
 #endif
 
-void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options)
+void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mTransform, u32 options)
 {
 	////OPTICK_EVENT("CPortalTraverser::traverse");
 
@@ -32,8 +32,8 @@ void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBa
 	i_marker++;
 	i_options = options;
 	i_vBase = vBase;
-	i_mXFORM = mXFORM;
-	i_mXFORM_01.mul(m_viewport_01, mXFORM);
+	i_mTransform = mTransform;
+	i_mTransform_01.mul(m_viewport_01, mTransform);
 	i_start = (CSector*)start;
 	r_sectors.clear();
 	_scissor scissor;
@@ -140,7 +140,7 @@ void CPortalTraverser::fade_render()
 	RenderBackend.Vertex.Unlock(_pcount * 3, f_geom.stride());
 
 	// render
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_Shader(f_shader);
 	RenderBackend.set_Geometry(f_geom);
 	RenderBackend.set_CullMode(CULL_DISABLE);
@@ -157,9 +157,9 @@ void CPortalTraverser::dbg_draw()
 	////OPTICK_EVENT("CPortalTraverser::dbg_draw");
 
 	RenderBackend.OnFrameEnd();
-	RenderBackend.set_xform_world(Fidentity);
-	RenderBackend.set_xform_view(Fidentity);
-	RenderBackend.set_xform_project(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.set_transform_view(Fidentity);
+	RenderBackend.set_transform_project(Fidentity);
 	for (u32 s = 0; s < dbg_sectors.size(); s++)
 	{
 		CSector* S = (CSector*)dbg_sectors[s];

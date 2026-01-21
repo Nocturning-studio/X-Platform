@@ -203,8 +203,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 
 	xr_vector<Fmatrix> matrices;
 	K->LL_GetBindTransform(matrices);
-	m_i_bind_x_xform.invert(matrices[m_rotate_x_bone]);
-	m_i_bind_y_xform.invert(matrices[m_rotate_y_bone]);
+	m_i_bind_x_transform.invert(matrices[m_rotate_x_bone]);
+	m_i_bind_y_transform.invert(matrices[m_rotate_y_bone]);
 	m_bind_rot.x = matrices[m_rotate_x_bone].k.getP();
 	m_bind_rot.y = matrices[m_rotate_y_bone].k.getH();
 	m_bind_x.set(matrices[m_rotate_x_bone].c);
@@ -218,7 +218,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 	}
 
 	m_engineSound.create(*heli->engine_sound, st_Effect, sg_SourceType);
-	m_engineSound.play_at_pos(0, XFORM().c, sm_Looped);
+	m_engineSound.play_at_pos(0, Transform().c, sm_Looped);
 
 	CShootingObject::Light_Create();
 
@@ -374,9 +374,9 @@ void CHelicopter::MoveStep()
 	float needBodyB = -ang_diff * sign * m_body.model_bank_k * m_movement.curLinearSpeed;
 	angle_lerp(m_body.currBodyHPB.z, needBodyB, m_body.model_angSpeedBank, STEP);
 
-	XFORM().setHPB(m_body.currBodyHPB.x, m_body.currBodyHPB.y, m_body.currBodyHPB.z);
+	Transform().setHPB(m_body.currBodyHPB.x, m_body.currBodyHPB.y, m_body.currBodyHPB.z);
 
-	XFORM().translate_over(m_movement.currP);
+	Transform().translate_over(m_movement.currP);
 }
 
 void CHelicopter::UpdateCL()
@@ -386,7 +386,7 @@ void CHelicopter::UpdateCL()
 	if (PPhysicsShell() && (state() == CHelicopter::eDead))
 	{
 
-		PPhysicsShell()->InterpolateGlobalTransform(&XFORM());
+		PPhysicsShell()->InterpolateGlobalTransform(&Transform());
 
 		CKinematics* K = smart_cast<CKinematics*>(Visual());
 		K->CalculateBones();
@@ -394,12 +394,12 @@ void CHelicopter::UpdateCL()
 		UpdateHeliParticles();
 
 		if (m_brokenSound._feedback())
-			m_brokenSound.set_position(XFORM().c);
+			m_brokenSound.set_position(Transform().c);
 
 		return;
 	}
 	else
-		PPhysicsShell()->SetTransform(XFORM());
+		PPhysicsShell()->SetTransform(Transform());
 
 	m_movement.Update();
 
@@ -424,7 +424,7 @@ void CHelicopter::UpdateCL()
 #endif
 
 	if (m_engineSound._feedback())
-		m_engineSound.set_position(XFORM().c);
+		m_engineSound.set_position(Transform().c);
 
 	m_enemy.Update();
 	// weapon
@@ -475,7 +475,7 @@ void CHelicopter::save(NET_Packet& output_packet)
 	m_movement.save(output_packet);
 	m_body.save(output_packet);
 	m_enemy.save(output_packet);
-	output_packet.w_vec3(XFORM().c);
+	output_packet.w_vec3(Transform().c);
 	output_packet.w_float(m_barrel_dir_tolerance);
 	save_data(m_use_rocket_on_attack, output_packet);
 	save_data(m_use_mgun_on_attack, output_packet);
@@ -492,7 +492,7 @@ void CHelicopter::load(IReader& input_packet)
 	m_movement.load(input_packet);
 	m_body.load(input_packet);
 	m_enemy.load(input_packet);
-	input_packet.r_fvector3(XFORM().c);
+	input_packet.r_fvector3(Transform().c);
 	m_barrel_dir_tolerance = input_packet.r_float();
 	UseFireTrail(m_enemy.bUseFireTrail); // force reloar disp params
 

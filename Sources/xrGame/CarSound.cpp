@@ -60,7 +60,7 @@ void CCar::SCarSound::SetSoundPosition(ref_sound& snd)
 	if (snd._feedback())
 	{
 		Fvector pos;
-		pcar->XFORM().transform_tiny(pos, relative_pos);
+		pcar->Transform().transform_tiny(pos, relative_pos);
 		snd.set_position(pos);
 	}
 }

@@ -46,7 +46,7 @@ void P_BuildStaticGeomShell(CPHStaticGeomShell* pUnbrokenObject, CGameObject* ob
 							ObjectContactCallbackFun* object_contact_callback, Fobb& b)
 {
 	pUnbrokenObject->add_Box(b);
-	pUnbrokenObject->Activate(obj->XFORM());
+	pUnbrokenObject->Activate(obj->Transform());
 
 	pUnbrokenObject->set_PhysicsRefObject(smart_cast<CPhysicsShellHolder*>(obj));
 	// m_pUnbrokenObject->SetPhObjectInGeomData(m_pUnbrokenObject);
@@ -69,7 +69,7 @@ CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj, ObjectContactCallba
 	smart_cast<CKinematics*>(V)->CalculateBones(); //. bForce - was TRUE
 	V->vis.box.getradius(b.m_halfsize);
 
-	b.xform_set(Fidentity);
+	b.transform_set(Fidentity);
 	CPHStaticGeomShell* pUnbrokenObject = P_BuildStaticGeomShell(obj, object_contact_callback, b);
 
 	CKinematics* K = smart_cast<CKinematics*>(V);

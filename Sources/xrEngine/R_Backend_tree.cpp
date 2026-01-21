@@ -10,8 +10,8 @@ R_tree::R_tree()
 
 void R_tree::unmap()
 {
-	c_m_xform_v = 0;
-	c_m_xform = 0;
+	c_m_transform_v = 0;
+	c_m_transform = 0;
 	c_consts = 0;
 	c_wave = 0;
 	c_wind = 0;
@@ -20,16 +20,16 @@ void R_tree::unmap()
 	c_c_sun = 0;
 }
 
-void R_tree::set_m_xform_v(Fmatrix& mat)
+void R_tree::set_m_transform_v(Fmatrix& mat)
 {
-	if (c_m_xform_v)
-		RenderBackend.set_Constant(c_m_xform_v, mat);
+	if (c_m_transform_v)
+		RenderBackend.set_Constant(c_m_transform_v, mat);
 }
 
-void R_tree::set_m_xform(Fmatrix& mat)
+void R_tree::set_m_transform(Fmatrix& mat)
 {
-	if (c_m_xform)
-		RenderBackend.set_Constant(c_m_xform, mat);
+	if (c_m_transform)
+		RenderBackend.set_Constant(c_m_transform, mat);
 }
 
 void R_tree::set_consts(float x, float y, float z, float w)

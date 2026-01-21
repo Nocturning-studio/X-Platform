@@ -3,16 +3,16 @@
 #include "../xrEngine/SkeletonAnimated.h"
 #include "game_object_space.h"
 
-animation_movement_controller::animation_movement_controller(Fmatrix* _pObjXForm, CKinematics* _pKinematicsC, CBlend* b)
-	: m_startObjXForm(*_pObjXForm), m_pObjXForm(*_pObjXForm), m_pKinematicsC(_pKinematicsC), m_control_blend(b)
+animation_movement_controller::animation_movement_controller(Fmatrix* _pObjTransform, CKinematics* _pKinematicsC, CBlend* b)
+	: m_startObjTransform(*_pObjTransform), m_pObjTransform(*_pObjTransform), m_pKinematicsC(_pKinematicsC), m_control_blend(b)
 {
 	VERIFY(_pKinematicsC);
-	VERIFY(_pObjXForm);
+	VERIFY(_pObjTransform);
 	VERIFY(b);
 	CBoneInstance& B = m_pKinematicsC->LL_GetBoneInstance(m_pKinematicsC->LL_GetBoneRoot());
 	VERIFY(!B.Callback && !B.Callback_Param);
 	B.set_callback(bctCustom, RootBoneCallback, this);
-	m_startRootXform.set(B.mTransform);
+	m_startRootTransform.set(B.mTransform);
 }
 
 animation_movement_controller::~animation_movement_controller()
@@ -51,10 +51,10 @@ void animation_movement_controller::RootBoneCallback(CBoneInstance* B)
 	if (O->m_control_blend->playing)
 	{
 		Fmatrix m;
-		m.mul_43(B->mTransform, Fmatrix().invert(O->m_startRootXform));
-		O->m_pObjXForm.mul_43(O->m_startObjXForm, m);
+		m.mul_43(B->mTransform, Fmatrix().invert(O->m_startRootTransform));
+		O->m_pObjTransform.mul_43(O->m_startObjTransform, m);
 	}
-	B->mTransform.set(O->m_startRootXform);
+	B->mTransform.set(O->m_startRootTransform);
 }
 
 bool animation_movement_controller::isActive() const

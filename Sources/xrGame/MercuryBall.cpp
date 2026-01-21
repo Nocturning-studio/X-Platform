@@ -48,5 +48,5 @@ void CMercuryBall::UpdateCLChild()
 		}
 	}
 	else if (H_Parent())
-		XFORM().set(H_Parent()->XFORM());
+		Transform().set(H_Parent()->Transform());
 }

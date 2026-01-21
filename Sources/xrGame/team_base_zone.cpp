@@ -39,7 +39,7 @@ void CTeamBaseZone::reinit()
 
 void CTeamBaseZone::Center(Fvector& C) const
 {
-	XFORM().transform_tiny(C, CFORM()->getSphere().P);
+	Transform().transform_tiny(C, CFORM()->getSphere().P);
 }
 
 float CTeamBaseZone::Radius() const
@@ -81,7 +81,7 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 	{
 		l_pShape->ComputeBounds();
 		Fvector P;
-		XFORM().transform_tiny(P, CFORM()->getSphere().P);
+		Transform().transform_tiny(P, CFORM()->getSphere().P);
 		setEnabled(TRUE);
 	}
 
@@ -109,7 +109,7 @@ void CTeamBaseZone::shedule_Update(u32 dt)
 
 	const Fsphere& s = CFORM()->getSphere();
 	Fvector P;
-	XFORM().transform_tiny(P, s.P);
+	Transform().transform_tiny(P, s.P);
 	feel_touch_update(P, s.R);
 }
 
@@ -173,13 +173,13 @@ void CTeamBaseZone::OnRender()
 			Fsphere& l_sphere = l_pShape->data.sphere;
 			l_ball.scale(l_sphere.R, l_sphere.R, l_sphere.R);
 			Fvector l_p;
-			XFORM().transform(l_p, l_sphere.P);
+			Transform().transform(l_p, l_sphere.P);
 			l_ball.translate_add(l_p);
 			Level().debug_renderer().draw_ellipse(l_ball, D3DCOLOR_XRGB(0, 255, 255));
 		}
 		break;
 		case 1: {
-			l_box.mul(XFORM(), l_pShape->data.box);
+			l_box.mul(Transform(), l_pShape->data.box);
 			Level().debug_renderer().draw_obb(l_box, l_half, D3DCOLOR_XRGB(0, 255, 255));
 		}
 		break;

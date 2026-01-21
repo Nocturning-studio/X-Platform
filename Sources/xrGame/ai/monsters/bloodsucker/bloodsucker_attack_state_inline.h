@@ -208,7 +208,7 @@ void CBloodsuckerStateAttackAbstract::setup_substates()
 
 		SStateDataMoveToPointEx data;
 
-		Fvector target_dir = Random.randI(2) ? object->XFORM().i : Fvector().set(object->XFORM().i).invert();
+		Fvector target_dir = Random.randI(2) ? object->Transform().i : Fvector().set(object->Transform().i).invert();
 		m_dir_point = Fvector().mad(object->Position(), target_dir, 2.5f);
 
 		data.vertex = 0;

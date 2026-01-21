@@ -64,9 +64,9 @@ void CPolterSpecialAbility::on_show()
 void CPolterSpecialAbility::update_frame()
 {
 	if (m_particles_object)
-		m_particles_object->SetXFORM(m_object->XFORM());
+		m_particles_object->SetTransform(m_object->Transform());
 	if (m_particles_object_electro)
-		m_particles_object_electro->SetXFORM(m_object->XFORM());
+		m_particles_object_electro->SetTransform(m_object->Transform());
 }
 
 void CPolterSpecialAbility::on_die()
@@ -93,7 +93,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 			Fvector start_pos = pHDS->bone_space_position();
 			Fmatrix& m_bone = V->LL_GetBoneInstance(pHDS->bone()).mTransform;
 			m_bone.transform_tiny(start_pos);
-			m_object->XFORM().transform_tiny(start_pos);
+			m_object->Transform().transform_tiny(start_pos);
 
 			m_object->PlayParticles(m_particles_damage, start_pos, Fvector().set(0.f, 1.f, 0.f));
 		}

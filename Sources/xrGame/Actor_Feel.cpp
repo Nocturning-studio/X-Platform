@@ -247,7 +247,7 @@ void CActor::PickupInfoDraw(CObject* object)
 		return;
 
 	Fmatrix res;
-	res.mul(Engine.RenderView.ViewProjection, object->XFORM());
+	res.mul(Engine.RenderView.ViewProjection, object->Transform());
 	Fvector4 v_res;
 	Fvector shift;
 

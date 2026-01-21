@@ -501,7 +501,7 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 	}
 	RenderBackend.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
 
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_Geometry(hGeom);
 	for (u32 i = 0; i < _2render.size(); i++)
 	{

@@ -28,7 +28,7 @@ class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUIText
   private:
 	typedef CUIWindow inherited;
 	lanim_cont m_lanim_clr;
-	lanim_cont m_lanim_xform;
+	lanim_cont m_lanim_transform;
 	void EnableHeading_int(bool b)
 	{
 		m_bHeading = b;
@@ -126,10 +126,10 @@ class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUIText
 		m_bEnableTextHighlighting = value;
 	}
 	void SetClrLightAnim(LPCSTR lanim, bool bCyclic, bool bOnlyAlpha, bool bTextColor, bool bTextureColor);
-	void SetXformLightAnim(LPCSTR lanim, bool bCyclic);
+	void SetTransformLightAnim(LPCSTR lanim, bool bCyclic);
 	void ResetClrAnimation();
 	void UpdateHintShow();
-	void ResetXformAnimation();
+	void ResetTransformAnimation();
 	bool IsClrAnimStoped();
 	void SetClrAnimDelay(float delay);
 	virtual void Init(LPCSTR tex_name, float x, float y, float width, float height);
@@ -254,7 +254,7 @@ class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUIText
 	void EnableHeading(bool b)
 	{
 		m_bHeading = b;
-		m_lanim_xform.m_lanimFlags.set((1 << 4), b);
+		m_lanim_transform.m_lanimFlags.set((1 << 4), b);
 	}
 
 	// will be need by CUI3tButton

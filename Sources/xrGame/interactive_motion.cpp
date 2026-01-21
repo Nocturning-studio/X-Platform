@@ -87,7 +87,7 @@ void interactive_motion::switch_to_free(CPhysicsShell* s)
 	/// set all matrises valide
 	CPhysicsShellHolder* obj = s->get_ElementByStoreOrder(0)->PhysicsRefObject();
 	VERIFY(obj);
-	s->InterpolateGlobalTransform(&obj->XFORM());
+	s->InterpolateGlobalTransform(&obj->Transform());
 	CKinematics* K = s->PKinematics();
 	VERIFY(K);
 	K->CalculateBones_Invalidate();
@@ -152,7 +152,7 @@ void imotion_velocity::move_update(CPhysicsShell* s)
 	if (!s->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit))
 		flags.set(fl_switch_dm_toragdoll, TRUE);
 	Fmatrix sv;
-	sv.set(s->mXFORM);
-	s->InterpolateGlobalTransform(&s->mXFORM);
-	s->mXFORM.set(sv);
+	sv.set(s->mTransform);
+	s->InterpolateGlobalTransform(&s->mTransform);
+	s->mTransform.set(sv);
 }

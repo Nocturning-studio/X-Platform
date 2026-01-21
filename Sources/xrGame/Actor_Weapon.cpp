@@ -69,7 +69,7 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 	if (pMissile)
 	{
 		Fvector offset;
-		XFORM().transform_dir(offset, m_vMissileOffset);
+		Transform().transform_dir(offset, m_vMissileOffset);
 		fire_pos.add(offset);
 	}
 }

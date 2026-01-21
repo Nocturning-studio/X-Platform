@@ -326,17 +326,17 @@ void CTorch::UpdateCL()
 		if (actor)
 			smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate();
 
-		if (H_Parent()->XFORM().c.distance_to_sqr(Engine.RenderView.Position) < _sqr(OPTIMIZATION_DISTANCE) ||
+		if (H_Parent()->Transform().c.distance_to_sqr(Engine.RenderView.Position) < _sqr(OPTIMIZATION_DISTANCE) ||
 			GameID() != GAME_SINGLE)
 		{
 			// near camera
 			smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones();
-			M.mul_43(XFORM(), BI.mTransform);
+			M.mul_43(Transform(), BI.mTransform);
 		}
 		else
 		{
 			// approximately the same
-			M = H_Parent()->XFORM();
+			M = H_Parent()->Transform();
 			H_Parent()->Center(M.c);
 			M.c.y += H_Parent()->Radius() * 2.f / 3.f;
 		}
@@ -406,7 +406,7 @@ void CTorch::UpdateCL()
 	{
 		if (getVisible() && m_pPhysicsShell)
 		{
-			M.mul(XFORM(), BI.mTransform);
+			M.mul(Transform(), BI.mTransform);
 
 			//. what should we do in case when
 			// light_render is not active at this moment,

@@ -247,7 +247,7 @@ void CPoltergeist::Die(CObject* who)
 			if (PPhysicsShell())
 			{
 				Fmatrix M;
-				M.set(XFORM());
+				M.set(Transform());
 				M.translate_over(m_current_position);
 				PPhysicsShell()->SetTransform(M);
 			}

@@ -532,7 +532,7 @@ void CCustomZone::shedule_Update(u32 dt)
 	{
 		const Fsphere& s = CFORM()->getSphere();
 		Fvector P;
-		XFORM().transform_tiny(P, s.P);
+		Transform().transform_tiny(P, s.P);
 
 		// update
 		feel_touch_update(P, s.R);
@@ -695,7 +695,7 @@ float CCustomZone::effective_radius()
 float CCustomZone::distance_to_center(CObject* O)
 {
 	Fvector P;
-	XFORM().transform_tiny(P, CFORM()->getSphere().P);
+	Transform().transform_tiny(P, CFORM()->getSphere().P);
 	return P.distance_to(O->Position());
 }
 float CCustomZone::Power(float dist)
@@ -712,9 +712,9 @@ void CCustomZone::PlayIdleParticles()
 		if (!m_pIdleParticles)
 		{
 			m_pIdleParticles = CParticlesObject::Create(*m_sIdleParticles, FALSE);
-			m_pIdleParticles->UpdateParent(XFORM(), zero_vel);
+			m_pIdleParticles->UpdateParent(Transform(), zero_vel);
 		}
-		m_pIdleParticles->UpdateParent(XFORM(), zero_vel);
+		m_pIdleParticles->UpdateParent(Transform(), zero_vel);
 		m_pIdleParticles->Play();
 	}
 
@@ -775,7 +775,7 @@ void CCustomZone::PlayBlowoutParticles()
 
 	CParticlesObject* pParticles;
 	pParticles = CParticlesObject::Create(*m_sBlowoutParticles, TRUE);
-	pParticles->UpdateParent(XFORM(), zero_vel);
+	pParticles->UpdateParent(Transform(), zero_vel);
 	pParticles->Play();
 }
 
@@ -847,7 +847,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 		if (play_bone != BI_NONE)
 		{
 			CParticlesObject* pParticles = CParticlesObject::Create(*particle_str, TRUE);
-			Fmatrix xform;
+			Fmatrix transform;
 
 			Fvector dir;
 			if (fis_zero(vel.magnitude()))
@@ -858,8 +858,8 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 				dir.normalize();
 			}
 
-			PP->MakeXFORM(pObject, play_bone, dir, Fvector().set(0, 0, 0), xform);
-			pParticles->UpdateParent(xform, vel);
+			PP->MakeTransform(pObject, play_bone, dir, Fvector().set(0, 0, 0), transform);
+			pParticles->UpdateParent(transform, vel);
 			{
 				pParticles->Play();
 				//. <-->
@@ -880,7 +880,7 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
 	pParticles = CParticlesObject::Create(*m_sEntranceParticlesSmall, TRUE);
 
 	Fmatrix M;
-	M = XFORM();
+	M = Transform();
 	M.c.set(pos);
 
 	pParticles->UpdateParent(M, zero_vel);
@@ -955,7 +955,7 @@ void CCustomZone::Hit(SHit* pHDS)
 	Fmatrix M;
 	M.identity();
 	M.translate_over(pHDS->p_in_bone_space);
-	M.mulA_43(XFORM());
+	M.mulA_43(Transform());
 	PlayBulletParticles(M.c);
 }
 
@@ -1069,7 +1069,7 @@ void CCustomZone::OnMove()
 		}
 
 		if (m_pIdleParticles)
-			m_pIdleParticles->UpdateParent(XFORM(), vel);
+			m_pIdleParticles->UpdateParent(Transform(), vel);
 
 		if (m_pLight && m_pLight->get_active())
 			m_pLight->set_position(Position());
@@ -1257,14 +1257,14 @@ void CCustomZone::BornArtefact()
 
 void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
 {
-	pArtefact->XFORM().c.set(Position());
-	pArtefact->XFORM().c.y += m_fArtefactSpawnHeight;
+	pArtefact->Transform().c.set(Position());
+	pArtefact->Transform().c.y += m_fArtefactSpawnHeight;
 
 	if (*m_sArtefactSpawnParticles)
 	{
 		CParticlesObject* pParticles;
 		pParticles = CParticlesObject::Create(*m_sArtefactSpawnParticles, TRUE);
-		pParticles->UpdateParent(pArtefact->XFORM(), zero_vel);
+		pParticles->UpdateParent(pArtefact->Transform(), zero_vel);
 		pParticles->Play();
 	}
 
@@ -1406,7 +1406,7 @@ void CCustomZone::PlayAccumParticles()
 	{
 		CParticlesObject* pParticles;
 		pParticles = CParticlesObject::Create(*m_sAccumParticles, TRUE);
-		pParticles->UpdateParent(XFORM(), zero_vel);
+		pParticles->UpdateParent(Transform(), zero_vel);
 		pParticles->Play();
 	}
 
@@ -1420,7 +1420,7 @@ void CCustomZone::PlayAwakingParticles()
 	{
 		CParticlesObject* pParticles;
 		pParticles = CParticlesObject::Create(*m_sAwakingParticles, TRUE);
-		pParticles->UpdateParent(XFORM(), zero_vel);
+		pParticles->UpdateParent(Transform(), zero_vel);
 		pParticles->Play();
 	}
 

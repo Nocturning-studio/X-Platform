@@ -116,7 +116,7 @@ class CHudItem
 	// просчет дополнительных вычислений (переопределяется в потомках)
 	virtual void UpdateHudAdditonal(Fmatrix&);
 
-	virtual void UpdateXForm() = 0;
+	virtual void UpdateTransform() = 0;
 	void animGet(MotionSVec& lst, LPCSTR prefix);
 
 	CWeaponHUD* GetHUD()
@@ -136,7 +136,7 @@ class CHudItem
 	// время нахождения в текущем состоянии
 	u32 m_dwStateTime;
 
-	// кадры момента пересчета XFORM и FirePos
+	// кадры момента пересчета Transform и FirePos
 	u32 dwFP_Frame;
 	u32 dwXF_Frame;
 

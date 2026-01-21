@@ -427,10 +427,10 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
 	angle_lerp(r_model_yaw_delta, calc_yaw, PI_MUL_4, dt);
 
 	// build matrix
-	Fmatrix mXFORM;
-	mXFORM.rotateY(-(r_model_yaw + r_model_yaw_delta));
-	mXFORM.c.set(Position());
-	XFORM().set(mXFORM);
+	Fmatrix mTransform;
+	mTransform.rotateY(-(r_model_yaw + r_model_yaw_delta));
+	mTransform.c.set(Position());
+	Transform().set(mTransform);
 
 	//-------------------------------------------------
 
@@ -469,11 +469,11 @@ bool CActor::g_LadderOrient()
 	// M.j.invert();
 
 	// Fquaternion q1,q2,q3;
-	// q1.set(XFORM());
+	// q1.set(Transform());
 	// q2.set(M);
 	// q3.slerp(q1,q2,dt);
 	// Fvector angles1,angles2,angles3;
-	// XFORM().getHPB(angles1.x,angles1.y,angles1.z);
+	// Transform().getHPB(angles1.x,angles1.y,angles1.z);
 	// M.getHPB(angles2.x,angles2.y,angles2.z);
 	////angle_lerp(angles3.x,angles1.x,angles2.x,dt);
 	////angle_lerp(angles3.y,angles1.y,angles2.y,dt);
@@ -483,12 +483,12 @@ bool CActor::g_LadderOrient()
 	////angle_lerp(angles3.y,angles1.y,angles2.y,dt);
 	////angle_lerp(angles3.z,angles1.z,angles2.z,dt);
 	// angle_lerp(angles3.x,angles1.x,angles2.x,dt);
-	// XFORM().setHPB(angles3.x,angles3.y,angles3.z);
+	// Transform().setHPB(angles3.x,angles3.y,angles3.z);
 	Fvector position;
 	position.set(Position());
-	// XFORM().rotation(q3);
+	// Transform().rotation(q3);
 	VERIFY2(_valid(M), "Invalide matrix in g_LadderOrient");
-	XFORM().set(M);
+	Transform().set(M);
 	VERIFY2(_valid(position), "Invalide position in g_LadderOrient");
 	Position().set(position);
 	return true;

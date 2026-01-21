@@ -32,7 +32,7 @@ IC float CSpaceRestrictionShape::radius(const CCF_Shape::shape_def& data) const
 		return (data.data.sphere.R);
 	case 1:
 		return (
-			Fbox().set(Fvector().set(-.5f, -.5f, -.5f), Fvector().set(.5f, .5f, .5f)).xform(data.data.box).getradius());
+			Fbox().set(Fvector().set(-.5f, -.5f, -.5f), Fvector().set(.5f, .5f, .5f)).transform(data.data.box).getradius());
 	default:
 		NODEFAULT;
 	}

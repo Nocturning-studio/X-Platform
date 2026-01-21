@@ -5,8 +5,8 @@
 class ECORE_API R_tree
 {
   public:
-	R_constant* c_m_xform_v;
-	R_constant* c_m_xform;
+	R_constant* c_m_transform_v;
+	R_constant* c_m_transform;
 	R_constant* c_consts;
 	R_constant* c_wave;
 	R_constant* c_wind;
@@ -18,13 +18,13 @@ class ECORE_API R_tree
 	R_tree();
 	void unmap();
 
-	void set_c_m_xform_v(R_constant* C)
+	void set_c_m_transform_v(R_constant* C)
 	{
-		c_m_xform_v = C;
+		c_m_transform_v = C;
 	}
-	void set_c_m_xform(R_constant* C)
+	void set_c_m_transform(R_constant* C)
 	{
-		c_m_xform = C;
+		c_m_transform = C;
 	}
 	void set_c_consts(R_constant* C)
 	{
@@ -51,8 +51,8 @@ class ECORE_API R_tree
 		c_c_sun = C;
 	}
 
-	void set_m_xform_v(Fmatrix& mat);
-	void set_m_xform(Fmatrix& mat);
+	void set_m_transform_v(Fmatrix& mat);
+	void set_m_transform(Fmatrix& mat);
 	void set_consts(float x, float y, float z, float w);
 	void set_wave(Fvector4& vec);
 	void set_wind(Fvector4& vec);

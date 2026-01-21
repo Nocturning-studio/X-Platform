@@ -273,7 +273,7 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 		}
 		if (cam_active != eacFreeFly ||
 			(pMPGame->Is_Spectator_Camera_Allowed(eacFreeFly) || (PS && PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))))
-			XFORM().c.add(vmove);
+			Transform().c.add(vmove);
 	}
 }
 
@@ -355,7 +355,7 @@ void CSpectator::cam_Update(CActor* A)
 {
 	if (A)
 	{
-		const Fmatrix& M = A->XFORM();
+		const Fmatrix& M = A->Transform();
 		CCameraBase* pACam = A->cam_Active();
 		CCameraBase* cam = cameras[cam_active];
 		switch (cam_active)
@@ -394,7 +394,7 @@ void CSpectator::cam_Update(CActor* A)
 		cameras[eacFreeFly]->Set(P, D, N);
 		cameras[eacFreeFly]->Set(cam->yaw, cam->pitch, 0);
 		P.y -= 1.6f;
-		XFORM().translate_over(P);
+		Transform().translate_over(P);
 		//-----------------------------------
 		g_pGameLevel->Cameras().UpdateFromCamera(cam);
 	}
@@ -403,7 +403,7 @@ void CSpectator::cam_Update(CActor* A)
 		CCameraBase* cam = cameras[eacFreeFly];
 		Fvector point, dangle;
 		point.set(0.f, 1.6f, 0.f);
-		XFORM().transform_tiny(point);
+		Transform().transform_tiny(point);
 
 		// apply shift
 		dangle.set(0, 0, 0);

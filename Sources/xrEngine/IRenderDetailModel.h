@@ -33,8 +33,8 @@ class ENGINE_API IRender_DetailModel
 	u32 number_indices;
 
   public:
-	virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
-	virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
+	virtual void transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
+	virtual void transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
 	virtual ~IRender_DetailModel(){};
 };
 

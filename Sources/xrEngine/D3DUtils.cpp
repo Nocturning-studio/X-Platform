@@ -385,7 +385,7 @@ void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, fl
 
 void CDrawUtilities::DrawPointLight(const Fvector& p, float radius, u32 c)
 {
-	RenderBackend.set_xform_world(Fidentity);
+	RenderBackend.set_transform_world(Fidentity);
 	DrawCross(p, radius, radius, radius, radius, radius, radius, c, true);
 }
 
@@ -859,11 +859,11 @@ void CDrawUtilities::DrawBox(const Fvector& offs, const Fvector& Size, BOOL bSol
 void CDrawUtilities::DrawOBB(const Fmatrix& parent, const Fobb& box, u32 clr_s, u32 clr_w)
 {
 	Fmatrix R, S, X;
-	box.xform_get(R);
+	box.transform_get(R);
 	S.scale(box.m_halfsize.x * 2.f, box.m_halfsize.y * 2.f, box.m_halfsize.z * 2.f);
 	X.mul_43(R, S);
 	R.mul_43(parent, X);
-	RenderBackend.set_xform_world(R);
+	RenderBackend.set_transform_world(R);
 	DrawIdentBox(true, true, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -875,7 +875,7 @@ void CDrawUtilities::DrawAABB(const Fmatrix& parent, const Fvector& center, cons
 	S.scale(size.x * 2.f, size.y * 2.f, size.z * 2.f);
 	S.translate_over(center);
 	R.mul_43(parent, S);
-	RenderBackend.set_xform_world(R);
+	RenderBackend.set_transform_world(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
 }
 
@@ -886,7 +886,7 @@ void CDrawUtilities::DrawAABB(const Fvector& p0, const Fvector& p1, u32 clr_s, u
 	C.set((p1.x + p0.x) * 0.5f, (p1.y + p0.y) * 0.5f, (p1.z + p0.z) * 0.5f);
 	R.scale(_abs(p1.x - p0.x), _abs(p1.y - p0.y), _abs(p1.z - p0.z));
 	R.translate_over(C);
-	RenderBackend.set_xform_world(R);
+	RenderBackend.set_transform_world(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
 }
 
@@ -897,7 +897,7 @@ void CDrawUtilities::DrawSphere(const Fmatrix& parent, const Fvector& center, fl
 	B.scale(radius, radius, radius);
 	B.translate_over(center);
 	B.mulA_43(parent);
-	RenderBackend.set_xform_world(B);
+	RenderBackend.set_transform_world(B);
 	DrawIdentSphere(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1005,11 +1005,11 @@ void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, 
 	mR.c = center;
 	mR._44 = 1;
 
-	// final xform
+	// final transform
 	Fmatrix xf;
 	xf.mul(mR, mScale);
 	xf.mulA_43(parent);
-	RenderBackend.set_xform_world(xf);
+	RenderBackend.set_transform_world(xf);
 	DrawIdentCylinder(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1042,11 +1042,11 @@ void CDrawUtilities::DrawCone(const Fmatrix& parent, const Fvector& apex, const 
 	mR.c = apex;
 	mR._44 = 1;
 
-	// final xform
+	// final transform
 	Fmatrix xf;
 	xf.mul(mR, mScale);
 	xf.mulA_43(parent);
-	RenderBackend.set_xform_world(xf);
+	RenderBackend.set_transform_world(xf);
 	DrawIdentCone(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1401,7 +1401,7 @@ void CDrawUtilities::DrawGrid()
 	// Render it as triangle list
 	Fmatrix ddd;
 	ddd.identity();
-	RenderBackend.set_xform_world(ddd);
+	RenderBackend.set_transform_world(ddd);
 	DU_DRAW_SH(Device.m_WireShader);
 	DU_DRAW_DP(D3DPT_LINELIST, vs_L, vBase, m_GridPoints.size() / 2);
 }

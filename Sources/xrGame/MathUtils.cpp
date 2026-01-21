@@ -9,11 +9,11 @@ enum EBoxSideNearestPointCode
 	on_edge			,
 	on_vertex
 };
-EBoxSideNearestPointCode GetNearestPointOnOBBSide(const Fmatrix &xform,const Fvector	&center,const Fvector &sides,u16
+EBoxSideNearestPointCode GetNearestPointOnOBBSide(const Fmatrix &transform,const Fvector	&center,const Fvector &sides,u16
 side,const Fvector &p,Fvector &point)
 {
 	//to plane dist
-	const Fvector	&norm=xform[side];
+	const Fvector	&norm=transform[side];
 	u16 side1=(side+1)%3,side2=(side+2)%3;
 	float h=sides[side],h1=sides[side1],h2=sides[side2];
 	//Fvector vdiffc;vdiffc.sub(center,p);
@@ -41,7 +41,7 @@ side,const Fvector &p,Fvector &point)
 			else if(inside1)
 			{
 				float dd=h2-_abs(d[side2]);
-				Fvector s;s.set(xform[side2]);s.
+				Fvector s;s.set(transform[side2]);s.
 			}
 		}
 	}

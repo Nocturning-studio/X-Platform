@@ -96,7 +96,7 @@ class CParticlesPlayer
 	void StopParticles(const shared_str& particles_name, u16 bone_id, bool bDestroy);
 	void AutoStopParticles(const shared_str& ps_name, u16 bone_id, u32 life_time);
 
-	static void MakeXFORM(CObject* pObject, u16 bone_id, const Fvector& dir, const Fvector& offset, Fmatrix& result);
+	static void MakeTransform(CObject* pObject, u16 bone_id, const Fvector& dir, const Fvector& offset, Fmatrix& result);
 	static void GetBonePos(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result);
 	u16 GetNearestBone(CKinematics* K, u16 bone_id);
 	IC u16 GetRandomBone()

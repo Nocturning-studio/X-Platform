@@ -361,10 +361,10 @@ void CScriptGameObject::SetActorPosition(Fvector pos)
 	CActor* actor = smart_cast<CActor*>(&object());
 	if (actor)
 	{
-		Fmatrix F = actor->XFORM();
+		Fmatrix F = actor->Transform();
 		F.c = pos;
 		actor->ForceTransform(F);
-		//		actor->XFORM().c = pos;
+		//		actor->Transform().c = pos;
 	}
 	else
 		ai().script_engine().script_log(
@@ -378,7 +378,7 @@ void CScriptGameObject::SetActorDirection(float dir)
 	if (actor)
 	{
 		actor->cam_Active()->Set(dir, 0, 0);
-		//		actor->XFORM().setXYZ(0,dir,0);
+		//		actor->Transform().setXYZ(0,dir,0);
 	}
 	else
 		ai().script_engine().script_log(

@@ -32,7 +32,7 @@ class ENGINE_API CEffect_Rain
 	struct Particle
 	{
 		Particle *next, *prev;
-		Fmatrix mXForm;
+		Fmatrix mTransform;
 		Fsphere bounds;
 		float time;
 	};

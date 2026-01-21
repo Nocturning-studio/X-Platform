@@ -52,9 +52,9 @@ enum OGF_Chuncks
 
 enum OGF_SkeletonVertType
 {
-	OGF_VERTEXFORMAT_FVF_1L = 1 * 0x12071980,
-	OGF_VERTEXFORMAT_FVF_2L = 2 * 0x12071980,
-	OGF_VERTEXFORMAT_FVF_NL = 3 * 0x12071980,
+	OGF_VERTETXFORMAT_FVF_1L = 1 * 0x12071980,
+	OGF_VERTETXFORMAT_FVF_2L = 2 * 0x12071980,
+	OGF_VERTETXFORMAT_FVF_NL = 3 * 0x12071980,
 };
 
 const u16 xrOGF_SMParamsVersion = 4;
@@ -150,7 +150,7 @@ struct ENGINE_API FSlideWindowItem
 // BYTE			Indices[...]
 
 // OGF_TREEDEF
-// xform : matrix4x4
+// transform : matrix4x4
 // scale : vec4
 // bias  : vec4
 

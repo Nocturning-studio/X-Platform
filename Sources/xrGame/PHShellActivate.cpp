@@ -41,7 +41,7 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 		return;
 	activate(disable);
 	//	ELEMENT_I i;
-	mXFORM.set(m0);
+	mTransform.set(m0);
 	// for(i=elements.begin();elements.end() != i;++i){
 
 	//	(*i)->Activate(m0,dt01, m2, disable);
@@ -50,7 +50,7 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
 		for (; i != e; ++i)
-			(*i)->Activate(mXFORM, disable);
+			(*i)->Activate(mTransform, disable);
 	}
 
 	{
@@ -62,7 +62,7 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 	Fmatrix m;
 	GetGlobalTransformDynamic(&m);
 	m.invert();
-	m.mulA_43(mXFORM);
+	m.mulA_43(mTransform);
 	TransformPosition(m);
 	if (PKinematics())
 	{
@@ -76,7 +76,7 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 	spatial_register();
 	///////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////
-	// mXFORM.set(m0);
+	// mTransform.set(m0);
 	// Activate(disable);
 	Fvector lin_vel;
 	lin_vel.sub(m2.c, m0.c);
@@ -91,7 +91,7 @@ void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const 
 	activate(disable);
 
 	ELEMENT_I i;
-	mXFORM.set(transform);
+	mTransform.set(transform);
 	for (i = elements.begin(); elements.end() != i; ++i)
 	{
 		(*i)->Activate(transform, lin_vel, ang_vel);
@@ -114,7 +114,7 @@ void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const 
 	m_flags.set(flActive, TRUE);
 	/////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////
-	// mXFORM.set(transform);
+	// mTransform.set(transform);
 	// Activate(disable);
 	// set_LinearVel(lin_vel);
 	// set_AngularVel(ang_vel);
@@ -129,7 +129,7 @@ void CPHShell::Activate(bool disable)
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
 		for (; i != e; ++i)
-			(*i)->Activate(mXFORM, disable);
+			(*i)->Activate(mTransform, disable);
 	}
 
 	{
@@ -183,7 +183,7 @@ void CPHShell::RunSimulation(bool place_current_forms /*true*/)
 		ELEMENT_I i = elements.begin(), e = elements.end();
 		if (place_current_forms)
 			for (; i != e; ++i)
-				(*i)->RunSimulation(mXFORM);
+				(*i)->RunSimulation(mTransform);
 	}
 	{
 		JOINT_I i = joints.begin(), e = joints.end();

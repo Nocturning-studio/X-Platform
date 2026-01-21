@@ -131,7 +131,7 @@ void CEnvironment::RenderSky()
 	RenderBackend.Vertex.Unlock(12, sh_2geom.stride());
 
 	// Render
-	RenderBackend.set_xform_world(mSky);
+	RenderBackend.set_transform_world(mSky);
 	RenderBackend.set_Geometry(sh_2geom);
 	RenderBackend.set_Shader(sh_2sky);
 	RenderBackend.set_Textures(&CurrentEnv->sky_r_textures);
@@ -157,11 +157,11 @@ void CEnvironment::RenderClouds()
 
 	::Render->set_render_mode(::Render->MODE_FAR);
 
-	Fmatrix mXFORM, mScale;
+	Fmatrix mTransform, mScale;
 	mScale.scale(10, 0.4f, 10);
-	mXFORM.rotateY(CurrentEnv->sky_rotation);
-	mXFORM.mulB_43(mScale);
-	mXFORM.translate_over(Engine.RenderView.Position);
+	mTransform.rotateY(CurrentEnv->sky_rotation);
+	mTransform.mulB_43(mScale);
+	mTransform.translate_over(Engine.RenderView.Position);
 
 	Fvector wd0, wd1;
 	Fvector4 wind_dir;
@@ -185,7 +185,7 @@ void CEnvironment::RenderClouds()
 	RenderBackend.Vertex.Unlock(CloudsVerts.size(), clouds_geom.stride());
 
 	// Render
-	RenderBackend.set_xform_world(mXFORM);
+	RenderBackend.set_transform_world(mTransform);
 	RenderBackend.set_Geometry(clouds_geom);
 	RenderBackend.set_Shader(clouds_sh);
 	RenderBackend.set_Textures(&CurrentEnv->clouds_r_textures);

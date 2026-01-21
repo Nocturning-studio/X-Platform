@@ -12,9 +12,9 @@ const Fvector& CWeaponStatMgun::get_CurrentFirePoint()
 	return m_fire_pos;
 }
 
-const Fmatrix& CWeaponStatMgun::get_ParticlesXFORM()
+const Fmatrix& CWeaponStatMgun::get_ParticlesTransform()
 {
-	return m_fire_bone_xform;
+	return m_fire_bone_transform;
 }
 
 void CWeaponStatMgun::FireStart()

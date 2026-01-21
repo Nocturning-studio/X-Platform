@@ -9,7 +9,7 @@ class CBlender_Model_EbB : public IBlender
 {
   public:
 	string64 oT2_Name;	// name of secondary texture
-	string64 oT2_xform; // xform for secondary texture
+	string64 oT2_transform; // transform for secondary texture
 	xrP_BOOL oBlend;
 
   public:
@@ -27,7 +27,7 @@ class CBlender_Model_EbB : public IBlender
 		description.CLS = B_MODEL_EbB;
 		description.version = 0x1;
 		strcpy(oT2_Name, "$null");
-		strcpy(oT2_xform, "$null");
+		strcpy(oT2_transform, "$null");
 		oBlend.value = FALSE;
 	}
 
@@ -39,7 +39,7 @@ class CBlender_Model_EbB : public IBlender
 		IBlender::Save(fs);
 		xrPWRITE_MARKER(fs, "Environment map");
 		xrPWRITE_PROP(fs, "Name", xrPID_TEXTURE, oT2_Name);
-		xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT2_xform);
+		xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT2_transform);
 		xrPWRITE_PROP(fs, "Alpha-Blend", xrPID_BOOL, oBlend);
 	}
 
@@ -48,7 +48,7 @@ class CBlender_Model_EbB : public IBlender
 		IBlender::Load(fs, version);
 		xrPREAD_MARKER(fs);
 		xrPREAD_PROP(fs, xrPID_TEXTURE, oT2_Name);
-		xrPREAD_PROP(fs, xrPID_MATRIX, oT2_xform);
+		xrPREAD_PROP(fs, xrPID_MATRIX, oT2_transform);
 		if (version >= 0x1)
 		{
 			xrPREAD_PROP(fs, xrPID_BOOL, oBlend);

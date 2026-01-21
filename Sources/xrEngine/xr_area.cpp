@@ -196,7 +196,7 @@ void CObjectSpace::dbgRender()
 	{
 		Fobb& obb = q_debug.boxes[i];
 		Fmatrix X, S, R;
-		obb.xform_get(X);
+		obb.transform_get(X);
 		RenderBackend.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
 		S.scale(obb.m_halfsize);
 		R.mul(X, S);

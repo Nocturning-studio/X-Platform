@@ -55,7 +55,7 @@ class CSceneGraph
   public:
 	// == PUBLIC DATA MEMBERS (TODO: Encapsulate later) ==
 	IRenderable* m_current_owner;
-	Fmatrix* m_current_xform;
+	Fmatrix* m_current_transform;
 	BOOL m_is_hud_pass;
 	BOOL m_is_invisible_mode;
 	BOOL m_record_multipass;									 // record nearest for multi-pass
@@ -120,7 +120,7 @@ class CSceneGraph
 	void set_Transform(Fmatrix* M)
 	{
 		VERIFY(M);
-		m_current_xform = M;
+		m_current_transform = M;
 	}
 	void set_HUD(BOOL V)
 	{

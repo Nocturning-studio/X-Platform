@@ -254,7 +254,7 @@ void CStats::Show()
 		F.OutNext("RT/PS/VS:    %d/%d/%d", RenderBackend.stat.target_rt, RenderBackend.stat.ps, RenderBackend.stat.vs);
 		F.OutNext("DCL/VB/IB:   %d/%d/%d", RenderBackend.stat.decl, RenderBackend.stat.vb, RenderBackend.stat.ib);
 #endif
-		F.OutNext("xforms:      %d", RenderBackend.stat.xforms);
+		F.OutNext("transforms:      %d", RenderBackend.stat.transforms);
 		F.OutSkip();
 
 #define PPP(a) (100.f * float(a) / float(EngineTOTAL.result))
@@ -551,7 +551,7 @@ void CStats::OnRender()
 			const CSound_stats_ext::SItem& item = *_I;
 			if (item._3D)
 			{
-				RenderBackend.set_xform_world(Fidentity);
+				RenderBackend.set_transform_world(Fidentity);
 				RenderBackend.set_Shader(Device.m_SelectionShader);
 				RenderBackend.set_Constant("tfactor", 1, 1, 1, 1);
 				DU.DrawCross(item.params.position, 0.5f, 0xFF0000FF, true);

@@ -115,7 +115,7 @@ void SCarLight::Update()
 	CCar* pcar = m_holder->PCar();
 	CBoneInstance& BI = smart_cast<CKinematics*>(pcar->Visual())->LL_GetBoneInstance(bone_id);
 	Fmatrix M;
-	M.mul(pcar->XFORM(), BI.mTransform);
+	M.mul(pcar->Transform(), BI.mTransform);
 	light_render->set_rotation(M.k, M.i);
 	glow_render->set_direction(M.k);
 	glow_render->set_position(M.c);

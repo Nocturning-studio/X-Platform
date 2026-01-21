@@ -1419,7 +1419,7 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 			m_collision_damage_info.HitPos(),
 			object->Position()); // vector from object center to contact position currently in global frame
 		Fmatrix object_form;
-		object_form.set(object->XFORM());
+		object_form.set(object->Transform());
 		object_form.transpose();
 		object_form.transform_dir(
 			pos_in_object); // project pos_in_object on object axes now it is position of contact in object frame

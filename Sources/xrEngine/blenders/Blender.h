@@ -40,14 +40,14 @@ class ENGINE_API IBlender : public CPropertyBase
 	xrP_Integer oPriority;
 	xrP_BOOL oStrictSorting;
 	string64 oT_Name;
-	string64 oT_xform;
+	string64 oT_transform;
 
   protected:
 	u32 BC(BOOL v)
 	{
 		return v ? 0xff : 0;
 	}
-	BOOL c_XForm();
+	BOOL c_Transform();
 
   public:
 	static IBlender* Create(CLASS_ID cls);

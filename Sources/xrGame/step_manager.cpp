@@ -214,7 +214,7 @@ Fvector CStepManager::get_foot_position(ELegType leg_type)
 	const Fmatrix& bone_transform = pK->LL_GetBoneInstance(m_foot_bones[leg_type]).mTransform;
 
 	Fmatrix global_transform;
-	global_transform.mul_43(m_object->XFORM(), bone_transform);
+	global_transform.mul_43(m_object->Transform(), bone_transform);
 
 	return global_transform.c;
 }

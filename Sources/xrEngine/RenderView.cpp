@@ -45,8 +45,8 @@ void CRenderView::UpdateViewProjection()
 	D3DXMatrixInverse((D3DXMATRIX*)&InvViewProjection, 0, (D3DXMATRIX*)&ViewProjection);
 
 	// Сразу отправляем в бекенд (так как это данные рендера)
-	RenderBackend.set_xform_view(View);
-	RenderBackend.set_xform_project(Project);
+	RenderBackend.set_transform_view(View);
+	RenderBackend.set_transform_project(Project);
 }
 
 void CRenderView::SaveState()

@@ -115,7 +115,7 @@ class CRender : public IRender_interface, public pureFrame
 	CEffectorsManager* EffectorsManager;
 
 	CLight_DB Lights;
-	CLight_Compute_XFORM_and_VIS LR;
+	CLight_Compute_Transform_and_VIS LR;
 	xr_vector<light*> Lights_LastFrame;
 	SMAP_Allocator LP_smap_pool;
 	light_Package LP_normal;
@@ -310,7 +310,7 @@ class CRender : public IRender_interface, public pureFrame
 	void u_DBT_disable();
 	float hclip(float v, float dim);
 	void draw_volume(light* L);
-	void accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias); //, float fSize);
+	void accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transform_prev, float fBias); //, float fSize);
 	void accumulate_volumetric_sun(u32 sub_phase, Fmatrix m_shadow, Fvector L_dir);
 	void accumulate_point_lights(light* L);
 	void accumulate_spot_lights(light* L);

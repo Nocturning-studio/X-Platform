@@ -59,7 +59,7 @@ class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 	} anim_mov_state;
 
 	CEntityAlive& m_EntityAlife;
-	Fmatrix& mXFORM;
+	Fmatrix& mTransform;
 	CPhysicsShell*& m_pPhysicsShell;
 	CPhysicsShell* m_physics_skeleton;
 	CPHMovementControl* m_PhysicMovementControl;

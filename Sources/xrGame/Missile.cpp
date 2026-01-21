@@ -338,10 +338,10 @@ void CMissile::OnAnimationEnd(u32 state)
 
 void CMissile::UpdatePosition(const Fmatrix& trans)
 {
-	XFORM().mul(trans, offset());
+	Transform().mul(trans, offset());
 }
 
-void CMissile::UpdateXForm()
+void CMissile::UpdateTransform()
 {
 	if (Engine.TimeManager.GetFrameCount() != dwXF_Frame)
 	{
@@ -387,7 +387,7 @@ void CMissile::UpdateXForm()
 		N.crossproduct(D, R);
 		N.normalize_safe();
 		mRes.set(R, N, D, mR.c);
-		mRes.mulA_43(E->XFORM());
+		mRes.mulA_43(E->Transform());
 		UpdatePosition(mRes);
 	}
 }
@@ -430,8 +430,8 @@ void CMissile::setup_throw_params()
 	}
 	else
 	{
-		FirePos = XFORM().c;
-		FireDir = XFORM().k;
+		FirePos = Transform().c;
+		FireDir = Transform().k;
 	}
 	trans.k.set(FireDir);
 	Fvector::generate_orthonormal_basis(trans.k, trans.j, trans.i);
@@ -561,7 +561,7 @@ void CMissile::UpdateFireDependencies_internal()
 	{
 		dwFP_Frame = Engine.TimeManager.GetFrameCount();
 
-		UpdateXForm();
+		UpdateTransform();
 
 		if (GetHUDmode() && !IsHidden())
 		{
@@ -577,7 +577,7 @@ void CMissile::UpdateFireDependencies_internal()
 		else
 		{
 			// 3rd person
-			Fmatrix& parent = H_Parent()->XFORM();
+			Fmatrix& parent = H_Parent()->Transform();
 
 			m_throw_direction.set(m_vThrowDir);
 			parent.transform_dir(m_throw_direction);
@@ -617,7 +617,7 @@ void CMissile::activate_physic_shell()
 	else
 		a_vel.set(0.f, 0.f, 0.f);
 
-	XFORM().set(m_throw_matrix);
+	Transform().set(m_throw_matrix);
 
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(H_Root());
 	if (entity_alive && entity_alive->character_physics_support())
@@ -665,7 +665,7 @@ void CMissile::setup_physic_shell()
 {
 	VERIFY(!m_pPhysicsShell);
 	create_physic_shell();
-	m_pPhysicsShell->Activate(XFORM(), 0, XFORM()); //,true
+	m_pPhysicsShell->Activate(Transform(), 0, Transform()); //,true
 	CKinematics* kinematics = smart_cast<CKinematics*>(Visual());
 	VERIFY(kinematics);
 	kinematics->CalculateBones_Invalidate();

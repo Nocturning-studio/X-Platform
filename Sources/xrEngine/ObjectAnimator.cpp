@@ -47,7 +47,7 @@ void CObjectAnimator::SetActiveMotion(COMotion* mot)
 	m_Current = mot;
 	if (m_Current)
 		m_MParam.Set(m_Current);
-	m_XFORM.identity();
+	m_Transform.identity();
 }
 
 void CObjectAnimator::LoadMotions(LPCSTR fname)
@@ -102,8 +102,8 @@ void CObjectAnimator::Update(float dt)
 		Fvector R, P;
 		m_Current->_Evaluate(m_MParam.Frame(), P, R);
 		m_MParam.Update(dt, m_Speed, bLoop);
-		m_XFORM.setXYZi(R.x, R.y, R.z);
-		m_XFORM.translate_over(P);
+		m_Transform.setXYZi(R.x, R.y, R.z);
+		m_Transform.translate_over(P);
 	}
 }
 
@@ -182,7 +182,7 @@ void CObjectAnimator::DrawPath()
 		}
 
 		Device.SetShader(Device.m_WireShader);
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 		if (!path_points.empty())
 			DU.DrawPrimitiveL(D3DPT_LINESTRIP, path_points.size() - 1, path_points.begin(), path_points.size(), clr,
 							  true, false);

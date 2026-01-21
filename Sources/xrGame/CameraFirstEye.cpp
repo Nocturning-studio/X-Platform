@@ -45,8 +45,8 @@ void CCameraFirstEye::Update(Fvector& point, Fvector& noise_dangle)
 
 	if (m_Flags.is(flRelativeLink))
 	{
-		parent->XFORM().transform_dir(vDirection);
-		parent->XFORM().transform_dir(vNormal);
+		parent->Transform().transform_dir(vDirection);
+		parent->Transform().transform_dir(vNormal);
 	}
 
 	vPosition.set(point);

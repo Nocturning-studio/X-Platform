@@ -28,7 +28,7 @@ void CCar::cam_Update(float dt, float fov)
 	Da.set(0, 0, 0);
 	// bool							owner = !!Owner();
 
-	XFORM().transform_tiny(P, m_camera_position);
+	Transform().transform_tiny(P, m_camera_position);
 
 	switch (active_camera->tag)
 	{
@@ -69,7 +69,7 @@ void CCar::OnCameraChange(int type)
 		if (ectFree == type)
 		{
 			Fvector xyz;
-			XFORM().getXYZi(xyz);
+			Transform().getXYZi(xyz);
 			active_camera->yaw = xyz.y;
 		}
 	}

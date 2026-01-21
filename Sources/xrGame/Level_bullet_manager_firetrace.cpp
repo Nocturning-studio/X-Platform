@@ -56,7 +56,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 				{
 					// ïîïàëè â àêòåðà èëè ñòàëêåðà
 					Fsphere S = cform->getSphere();
-					entity->XFORM().transform_tiny(S.P);
+					entity->Transform().transform_tiny(S.P);
 					float dist = rd.range;
 					// ïðîâåðèì ïîïàëè ëè ìû â îïèñûâàþùóþ ñôåðó
 					if (Fsphere::rpNone != S.intersect_full(bullet->pos, bullet->dir, dist))
@@ -238,7 +238,7 @@ void CBulletManager::FireShotmark(SBullet* bullet, const Fvector& vDir, const Fv
 			Fvector p;
 			p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
 			if (!g_dedicated_server)
-				::Render->add_SkeletonWallmark(&R.O->renderable.xform, PKinematics(R.O->Visual()), *pWallmarkShader, p,
+				::Render->add_SkeletonWallmark(&R.O->renderable.transform, PKinematics(R.O->Visual()), *pWallmarkShader, p,
 											   bullet->dir, bullet->wallmark_size);
 		}
 	}
@@ -346,7 +346,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	//âû÷èñëèòü êîîðäèíàòû ïîïàäàíèÿ
 	Fvector p_in_object_space, position_in_bone_space;
 	Fmatrix m_inv;
-	m_inv.invert(E.R.O->XFORM());
+	m_inv.invert(E.R.O->Transform());
 	m_inv.transform_tiny(p_in_object_space, E.point);
 
 	// bone-space

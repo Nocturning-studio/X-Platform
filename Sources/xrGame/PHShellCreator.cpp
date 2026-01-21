@@ -25,6 +25,6 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
 
 	owner->PPhysicsShell()->set_PhysicsRefObject(owner);
 	// m_pPhysicsShell->SmoothElementsInertia(0.3f);
-	owner->PPhysicsShell()->mXFORM.set(owner->XFORM());
+	owner->PPhysicsShell()->mTransform.set(owner->Transform());
 	owner->PPhysicsShell()->SetAirResistance(0.001f, 0.02f);
 }

@@ -385,14 +385,14 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	// текущее положение и напрвление для партиклов
 	struct _firedeps
 	{
-		Fmatrix m_FireParticlesXForm; // направление для партиклов огня и дыма
+		Fmatrix m_FireParticlesTransform; // направление для партиклов огня и дыма
 		Fvector vLastFP, vLastFP2;	  // огня
 		Fvector vLastFD;			  // direction
 		Fvector vLastSP;			  // гильз
 
 		_firedeps()
 		{
-			m_FireParticlesXForm.identity();
+			m_FireParticlesTransform.identity();
 			vLastFP.set(0, 0, 0);
 			vLastFP2.set(0, 0, 0);
 			vLastFD.set(0, 0, 0);
@@ -403,7 +403,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
   protected:
 	virtual void UpdateFireDependencies_internal();
 	virtual void UpdatePosition(const Fmatrix& transform); //.
-	virtual void UpdateXForm();
+	virtual void UpdateTransform();
 	virtual void UpdateHudAdditonal(Fmatrix&);
 	IC void UpdateFireDependencies()
 	{
@@ -444,10 +444,10 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	{
 		return get_LastFP2();
 	}
-	virtual const Fmatrix& get_ParticlesXFORM()
+	virtual const Fmatrix& get_ParticlesTransform()
 	{
 		UpdateFireDependencies();
-		return m_firedeps.m_FireParticlesXForm;
+		return m_firedeps.m_FireParticlesTransform;
 	}
 	virtual void ForceUpdateFireParticles();
 

@@ -289,7 +289,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 	{
 		SRotation rotation;
 		float h, p, b;
-		XFORM().getHPB(h, p, b);
+		Transform().getHPB(h, p, b);
 		rotation.yaw = h;
 		rotation.pitch = p;
 		return (rotation);

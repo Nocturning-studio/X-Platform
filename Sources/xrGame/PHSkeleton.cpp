@@ -101,7 +101,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 		SpawnInitPhysics(D);
 		RestoreNetState(po);
 		if (obj->PPhysicsShell() && obj->PPhysicsShell()->isFullActive())
-			obj->PPhysicsShell()->GetGlobalTransformDynamic(&obj->XFORM());
+			obj->PPhysicsShell()->GetGlobalTransformDynamic(&obj->Transform());
 
 		CPHDestroyableNotificate::spawn_notificate(D);
 
@@ -313,7 +313,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	VERIFY2(!O->m_pPhysicsShell, "this has shell already!!!");
 	CPhysicsShell* newPhysicsShell = m_unsplited_shels.front().first;
 	O->m_pPhysicsShell = newPhysicsShell;
-	VERIFY(_valid(newPhysicsShell->mXFORM));
+	VERIFY(_valid(newPhysicsShell->mTransform));
 	CKinematics* newKinematics = smart_cast<CKinematics*>(O->Visual());
 	CKinematics* pKinematics = smart_cast<CKinematics*>(obj->Visual());
 
@@ -338,9 +338,9 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	newKinematics->CalculateBones();
 
 	newPhysicsShell->set_Kinematics(newKinematics);
-	VERIFY(_valid(newPhysicsShell->mXFORM));
+	VERIFY(_valid(newPhysicsShell->mTransform));
 	newPhysicsShell->ResetCallbacks(split_bone, mask1);
-	VERIFY(_valid(newPhysicsShell->mXFORM));
+	VERIFY(_valid(newPhysicsShell->mTransform));
 
 	newPhysicsShell->ObjectInRoot().identity();
 
@@ -429,7 +429,7 @@ void CPHSkeleton::InitServerObject(CSE_Abstract* D)
 		l_tpALifeDynamicObject->m_tGraphID = ai().game_graph().current_level_vertex();
 	else
 		l_tpALifeDynamicObject->m_tGraphID = 0xffff;
-	obj->XFORM().getHPB(D->o_Angle);
+	obj->Transform().getHPB(D->o_Angle);
 	D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 	D->RespawnTime = 0;
 }

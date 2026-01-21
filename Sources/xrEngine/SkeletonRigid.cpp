@@ -59,7 +59,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 			Fobb& obb = (*bones)[b]->obb;
 			Fmatrix& Mbone = bone_instances[b].mTransform;
 			Fmatrix Mbox;
-			obb.xform_get(Mbox);
+			obb.transform_get(Mbox);
 			Fmatrix X;
 			X.mul_43(Mbone, Mbox);
 			Fvector& S = obb.m_halfsize;
@@ -99,7 +99,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 		}
 #ifdef DEBUG
 		// Validate
-		VERIFY3(_valid(vis.box.min) && _valid(vis.box.max), "Invalid bones-xform in model", dbg_name.c_str());
+		VERIFY3(_valid(vis.box.min) && _valid(vis.box.max), "Invalid bones-transform in model", dbg_name.c_str());
 		if (vis.sphere.R > 1000.f)
 		{
 			for (u16 ii = 0; ii < LL_BoneCount(); ++ii)
@@ -112,7 +112,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 			}
 			Log("end-------");
 		}
-		VERIFY3(vis.sphere.R < 1000.f, "Invalid bones-xform in model", dbg_name.c_str());
+		VERIFY3(vis.sphere.R < 1000.f, "Invalid bones-transform in model", dbg_name.c_str());
 #endif
 	}
 

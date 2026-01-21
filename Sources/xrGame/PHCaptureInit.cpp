@@ -206,7 +206,7 @@ void CPHCapture::Init(CInifile* ini)
 	Fvector capture_bone_position;
 	capture_bone_position.set(m_capture_bone->mTransform.c);
 	b_character_feedback = true;
-	(m_character->PhysicsRefObject())->XFORM().transform_tiny(capture_bone_position);
+	(m_character->PhysicsRefObject())->Transform().transform_tiny(capture_bone_position);
 
 	m_taget_element->GetGlobalPositionDynamic(&dir);
 	dir.sub(capture_bone_position, dir);

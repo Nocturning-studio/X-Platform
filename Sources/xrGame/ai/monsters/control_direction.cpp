@@ -94,7 +94,7 @@ void CControlDirection::update_frame()
 	Fvector P = m_object->Position();
 	// set angles
 	if (!m_object->animation_movement_controlled())
-		m_object->XFORM().setHPB(-m_man->path_builder().m_body.current.yaw, -m_man->path_builder().m_body.current.pitch,
+		m_object->Transform().setHPB(-m_man->path_builder().m_body.current.yaw, -m_man->path_builder().m_body.current.pitch,
 								 0);
 	// restore object position
 	m_object->Position() = P;

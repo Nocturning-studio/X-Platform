@@ -95,7 +95,7 @@ void CPHDestroyable::InitServerObject(CSE_Abstract* D)
 		l_tpALifeDynamicObject->m_tGraphID = ai().game_graph().current_level_vertex();
 	else
 		l_tpALifeDynamicObject->m_tGraphID = 0xffff;
-	obj->XFORM().getXYZ(D->o_Angle);
+	obj->Transform().getXYZ(D->o_Angle);
 	D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 	D->RespawnTime = 0;
 }
@@ -290,7 +290,7 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate* dn)
 			Fvector pos;
 			Fmatrix m;
 			m.set(own_K->LL_GetTransform(m_fatal_hit.bone()));
-			m.mulA_43(PPhysicsShellHolder()->XFORM());
+			m.mulA_43(PPhysicsShellHolder()->Transform());
 			m.transform_tiny(pos, m_fatal_hit.bone_space_position());
 			e->applyImpulseVsGF(pos, m_fatal_hit.direction(), m_fatal_hit.phys_impulse() * imp_transition_factor);
 			random_hit += random_hit_imp * m_fatal_hit.phys_impulse();

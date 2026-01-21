@@ -274,12 +274,12 @@ Fvector light::spatial_sector_point()
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Xforms
-void light::xform_calc()
+// Transforms
+void light::transform_calc()
 {
-	if (Engine.TimeManager.GetFrameCount() == m_xform_frame)
+	if (Engine.TimeManager.GetFrameCount() == m_transform_frame)
 		return;
-	m_xform_frame = Engine.TimeManager.GetFrameCount();
+	m_transform_frame = Engine.TimeManager.GetFrameCount();
 
 	// build final rotation / translation
 	Fvector L_dir, L_up, L_right;
@@ -335,7 +335,7 @@ void light::xform_calc()
 		float L_R = range;
 		Fmatrix mScale;
 		mScale.scale(L_R, L_R, L_R);
-		m_xform.mul_43(mR, mScale);
+		m_transform.mul_43(mR, mScale);
 	}
 	break;
 	case IRender_Light::SPOT: {
@@ -343,18 +343,18 @@ void light::xform_calc()
 		float s = 2.f * range * tanf(cone / 2.f);
 		Fmatrix mScale;
 		mScale.scale(s, s, range); // make range and radius
-		m_xform.mul_43(mR, mScale);
+		m_transform.mul_43(mR, mScale);
 	}
 	break;
 	case IRender_Light::OMNIPART: {
 		float L_R = 2 * range; // volume is half-radius
 		Fmatrix mScale;
 		mScale.scale(L_R, L_R, L_R);
-		m_xform.mul_43(mR, mScale);
+		m_transform.mul_43(mR, mScale);
 	}
 	break;
 	default:
-		m_xform.identity();
+		m_transform.identity();
 		break;
 	}
 }

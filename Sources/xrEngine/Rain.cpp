@@ -378,7 +378,7 @@ void CEffect_Rain::Render()
 	if (vCount)
 	{
 		RenderBackend.set_CullMode(CULL_DISABLE);
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_Shader(SH_Rain);
 		RenderBackend.set_Geometry(hGeom_Rain);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
@@ -395,7 +395,7 @@ void CEffect_Rain::Render()
 		IndexStream& _IS = RenderBackend.Index;
 		RenderBackend.set_Shader(DM_Drop->shader);
 
-		Fmatrix mXform, mScale;
+		Fmatrix mTransform, mScale;
 		int pcount = 0;
 		u32 v_offset, i_offset;
 		u32 vCount_Lock = particles_cache * DM_Drop->number_vertices;
@@ -421,10 +421,10 @@ void CEffect_Rain::Render()
 				// Build matrix
 				float scale = P->time / particles_time;
 				mScale.scale(scale, scale, scale);
-				mXform.mul_43(P->mXForm, mScale);
+				mTransform.mul_43(P->mTransform, mScale);
 
-				// XForm verts
-				DM_Drop->transfer(mXform, v_ptr, u_rain_color, i_ptr, pcount * DM_Drop->number_vertices);
+				// Transform verts
+				DM_Drop->transfer(mTransform, v_ptr, u_rain_color, i_ptr, pcount * DM_Drop->number_vertices);
 				v_ptr += DM_Drop->number_vertices;
 				i_ptr += DM_Drop->number_indices;
 				pcount++;
@@ -473,9 +473,9 @@ void CEffect_Rain::Hit(Fvector& pos)
 		return;
 
 	P->time = particles_time;
-	P->mXForm.rotateY(::Random.randF(PI_MUL_2));
-	P->mXForm.translate_over(pos);
-	P->mXForm.transform_tiny(P->bounds.P, DM_Drop->bv_sphere.P);
+	P->mTransform.rotateY(::Random.randF(PI_MUL_2));
+	P->mTransform.translate_over(pos);
+	P->mTransform.transform_tiny(P->bounds.P, DM_Drop->bv_sphere.P);
 	P->bounds.R = DM_Drop->bv_sphere.R;
 }
 

@@ -16,11 +16,11 @@ void CRender::accumulate_point_lights(light* L)
 	L_clr.set(L->get_color().r, L->get_color().g, L->get_color().b);
 	Engine.RenderView.View.transform_tiny(L_pos, L->get_position());
 
-	// Xforms
-	L->xform_calc();
-	RenderBackend.set_xform_world(L->get_xform());
-	RenderBackend.set_xform_view(Engine.RenderView.View);
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	// Transforms
+	L->transform_calc();
+	RenderBackend.set_transform_world(L->get_transform());
+	RenderBackend.set_transform_view(Engine.RenderView.View);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 	enable_scissor(L);
 	enable_dbt_bounds(L);
 

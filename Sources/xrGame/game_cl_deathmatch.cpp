@@ -938,7 +938,7 @@ void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, Fvector& pos)
 	Fmatrix M;
 	M.translate(pos);
 
-	//	CParticlesPlayer::MakeXFORM(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
+	//	CParticlesPlayer::MakeTransform(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
 
 	// установить particles
 	CParticlesObject* ps = NULL;

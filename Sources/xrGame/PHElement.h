@@ -247,8 +247,8 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	virtual void setQuaternion(const Fquaternion& quaternion);							  //
 	virtual void SetGlobalPositionDynamic(const Fvector& position);						  //
 	virtual void GetGlobalPositionDynamic(Fvector* v);									  //
-	virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform);  //
-	virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform); //
+	virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform);  //
+	virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform); //
 	virtual void InterpolateGlobalTransform(Fmatrix* m); // called UpdateCL vis influent
 	virtual void InterpolateGlobalPosition(Fvector* v);	 // aux
 	virtual void GetGlobalTransformDynamic(Fmatrix* m);	 // aux

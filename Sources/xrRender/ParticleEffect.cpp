@@ -42,7 +42,7 @@ CParticleEffect::CParticleEffect()
 	m_InitialPosition.set(0, 0, 0);
 	m_DestroyCallback = 0;
 	m_CollisionCallback = 0;
-	m_XFORM.identity();
+	m_Transform.identity();
 }
 CParticleEffect::~CParticleEffect()
 {
@@ -76,11 +76,11 @@ void CParticleEffect::RefreshShader()
 	OnDeviceCreate();
 }
 
-void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
+void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform)
 {
-	m_RT_Flags.set(flRT_XFORM, bXFORM);
-	if (bXFORM)
-		m_XFORM.set(m);
+	m_RT_Flags.set(flRT_Transform, bTransform);
+	if (bTransform)
+		m_Transform.set(m);
 	else
 	{
 		m_InitialPosition = m.c;
@@ -327,11 +327,11 @@ void CParticleEffect::Render(float)
 					{
 						Fmatrix M;
 						M.setXYZ(m_Def->m_APDefaultRotation);
-						if (m_RT_Flags.is(flRT_XFORM))
+						if (m_RT_Flags.is(flRT_Transform))
 						{
 							Fvector p;
-							m_XFORM.transform_tiny(p, m.pos);
-							M.mulA_43(m_XFORM);
+							m_Transform.transform_tiny(p, m.pos);
+							M.mulA_43(m_Transform);
 							FillSprite(pv, M.k, M.i, p, lt, rb, r_x, r_y, m.color, m.rot.x);
 						}
 						else
@@ -351,11 +351,11 @@ void CParticleEffect::Render(float)
 						M.i.normalize();
 						M.j.crossproduct(M.k, M.i);
 						M.j.normalize();
-						if (m_RT_Flags.is(flRT_XFORM))
+						if (m_RT_Flags.is(flRT_Transform))
 						{
 							Fvector p;
-							m_XFORM.transform_tiny(p, m.pos);
-							M.mulA_43(m_XFORM);
+							m_Transform.transform_tiny(p, m.pos);
+							M.mulA_43(m_Transform);
 							FillSprite(pv, M.j, M.i, p, lt, rb, r_x, r_y, m.color, m.rot.x);
 						}
 						else
@@ -370,11 +370,11 @@ void CParticleEffect::Render(float)
 							dir.div(m.vel, speed);
 						else
 							dir.setHP(-m_Def->m_APDefaultRotation.y, -m_Def->m_APDefaultRotation.x);
-						if (m_RT_Flags.is(flRT_XFORM))
+						if (m_RT_Flags.is(flRT_Transform))
 						{
 							Fvector p, d;
-							m_XFORM.transform_tiny(p, m.pos);
-							m_XFORM.transform_dir(d, dir);
+							m_Transform.transform_tiny(p, m.pos);
+							m_Transform.transform_dir(d, dir);
 							FillSprite(pv, p, d, lt, rb, r_x, r_y, m.color, m.rot.x);
 						}
 						else
@@ -385,10 +385,10 @@ void CParticleEffect::Render(float)
 				}
 				else
 				{
-					if (m_RT_Flags.is(flRT_XFORM))
+					if (m_RT_Flags.is(flRT_Transform))
 					{
 						Fvector p;
-						m_XFORM.transform_tiny(p, m.pos);
+						m_Transform.transform_tiny(p, m.pos);
 						FillSprite(pv, Engine.RenderView.Top, Engine.RenderView.Right, p, lt, rb, r_x, r_y, m.color, m.rot.x);
 					}
 					else
@@ -402,7 +402,7 @@ void CParticleEffect::Render(float)
 			RenderBackend.Vertex.Unlock(dwCount, geom->vb_stride);
 			if (dwCount)
 			{
-				RenderBackend.set_xform_world(Fidentity);
+				RenderBackend.set_transform_world(Fidentity);
 				RenderBackend.set_Geometry(geom);
 
 				//              u32 cm					= RenderBackend.get_CullMode();

@@ -71,7 +71,7 @@ class ENGINE_API CEffect_Thunderbolt
 	SThunderboltDesc* current;
 
   private:
-	Fmatrix current_xform;
+	Fmatrix current_transform;
 	Fvector3 current_direction;
 
 	ref_geom hGeom_model;

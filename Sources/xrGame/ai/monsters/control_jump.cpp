@@ -343,7 +343,7 @@ Fvector CControlJump::get_target(CObject* obj)
 	CBoneInstance& bone = smart_cast<CKinematics*>(obj->Visual())->LL_GetBoneInstance(bone_id);
 
 	Fmatrix global_transform;
-	global_transform.mul(obj->XFORM(), bone.mTransform);
+	global_transform.mul(obj->Transform(), bone.mTransform);
 
 	if (m_object->m_monster_type == CBaseMonster::eMonsterTypeOutdoor)
 		return (predict_position(obj, global_transform.c));

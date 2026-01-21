@@ -128,7 +128,7 @@ void CIKLimbsController::Calculate()
 
 	update_blend(m_legs_blend);
 	CKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
-	const Fmatrix& obj = m_object->XFORM();
+	const Fmatrix& obj = m_object->Transform();
 	VERIFY(skeleton_animated);
 
 	{

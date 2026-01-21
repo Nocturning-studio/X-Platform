@@ -1240,9 +1240,9 @@ void CPHMovementControl::UpdateObjectBox(CPHCharacter* ach)
 	plane_cam.set(Engine.RenderView.Direction.x, Engine.RenderView.Direction.z);
 	plane_cam.normalize_safe();
 	Fvector2 plane_i;
-	plane_i.set(pObject->XFORM().i.x, pObject->XFORM().i.z);
+	plane_i.set(pObject->Transform().i.x, pObject->Transform().i.z);
 	Fvector2 plane_k;
-	plane_k.set(pObject->XFORM().k.x, pObject->XFORM().k.z);
+	plane_k.set(pObject->Transform().k.x, pObject->Transform().k.z);
 	float R = _abs(poses_dir.dotproduct(plane_i) * cbox.x) + _abs(poses_dir.dotproduct(plane_k) * cbox.z);
 	R *= poses_dir.dotproduct(plane_cam); //(poses_dir.x*plane_cam.x+poses_dir.y*plane_cam.z);
 	Calculate(Fvector().set(0, 0, 0), Fvector().set(1, 0, 0), 0, 0, 0, 0);

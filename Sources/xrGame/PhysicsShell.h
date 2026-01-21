@@ -39,7 +39,7 @@ typedef const BONE_P_MAP ::iterator BONE_P_PAIR_CIT;
 class CPhysicsBase
 {
   public:
-	Fmatrix mXFORM; // In parent space
+	Fmatrix mTransform; // In parent space
   public:
 	virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false) = 0;
 	virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel,

@@ -33,7 +33,7 @@ static u16 facetable[16][3] =
 	{2, 4, 1},
 };
 
-void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias)
+void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transform_prev, float fBias)
 {
 	OPTICK_EVENT("accumulate_sun");
 
@@ -151,9 +151,9 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 	// Setup texgen
 	Fmatrix m_Texgen;
 	m_Texgen.identity();
-	RenderBackend.xforms.set_W(m_Texgen);
-	RenderBackend.xforms.set_V(Engine.RenderView.View);
-	RenderBackend.xforms.set_P(Engine.RenderView.Project);
+	RenderBackend.transforms.set_W(m_Texgen);
+	RenderBackend.transforms.set_V(Engine.RenderView.View);
+	RenderBackend.transforms.set_P(Engine.RenderView.Project);
 	RenderBackend.u_compute_texgen_screen(m_Texgen);
 
 	// Setup geometry using backend
@@ -170,9 +170,9 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev,
 
 		Fmatrix inv_XDcombine;
 		if (sub_phase == SE_SUN_FAR)
-			inv_XDcombine.invert(xform_prev);
+			inv_XDcombine.invert(transform_prev);
 		else
-			inv_XDcombine.invert(xform);
+			inv_XDcombine.invert(transform);
 
 		for (u32 i = 0; i < ver_count; ++i)
 		{

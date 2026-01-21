@@ -152,7 +152,7 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 	if (!inherited::ProcessCam(info))
 		return FALSE;
 
-	const Fmatrix& m = m_objectAnimator->XFORM();
+	const Fmatrix& m = m_objectAnimator->Transform();
 	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
 	if (!m_bAbsolutePositioning)
@@ -184,7 +184,7 @@ BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 	if (!inherited::inherited::ProcessCam(info))
 		return FALSE;
 
-	const Fmatrix& m = m_objectAnimator->XFORM();
+	const Fmatrix& m = m_objectAnimator->Transform();
 	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
 	Fmatrix Mdef;

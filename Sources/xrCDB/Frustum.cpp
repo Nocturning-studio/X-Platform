@@ -231,7 +231,7 @@ void CFrustum::CreateFromPlanes(Fplane* p, int count)
 	p_count = count;
 }
 
-void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM)
+void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullTransform)
 {
 	Fplane P;
 	P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
@@ -257,7 +257,7 @@ void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatr
 	_add(P);
 
 	// Far clipping plane
-	Fmatrix& M = mFullXFORM;
+	Fmatrix& M = mFullTransform;
 	P.n.x = -(M._14 - M._13);
 	P.n.y = -(M._24 - M._23);
 	P.n.z = -(M._34 - M._33);

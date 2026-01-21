@@ -240,8 +240,8 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	//		Msg ("CGameObject::net_Spawn -- object %s[%x] setID [%d]", *(E->s_name), this, E->ID);
 	//	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
 
-	// XForm
-	XFORM().setXYZ(E->o_Angle);
+	// Transform
+	Transform().setXYZ(E->o_Angle);
 	Position().set(E->o_Position);
 #ifdef DEBUG
 	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
@@ -250,8 +250,8 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 			Position().y, Position().z);
 	}
 #endif
-	VERIFY(_valid(renderable.xform));
-	VERIFY(!fis_zero(DET(renderable.xform)));
+	VERIFY(_valid(renderable.transform));
+	VERIFY(!fis_zero(DET(renderable.transform)));
 	CSE_ALifeObject* O = smart_cast<CSE_ALifeObject*>(E);
 	if (O && xr_strlen(O->m_ini_string))
 	{
@@ -661,7 +661,7 @@ void CGameObject::dbg_DrawSkeleton()
 void CGameObject::renderable_Render()
 {
 	inherited::renderable_Render();
-	::Render->set_Transform(&XFORM());
+	::Render->set_Transform(&Transform());
 	::Render->add_Visual(Visual());
 }
 
@@ -721,7 +721,7 @@ void CGameObject::OnRender()
 	{
 		Fvector bc, bd;
 		Visual()->vis.box.get_CD(bc, bd);
-		Fmatrix M = XFORM();
+		Fmatrix M = Transform();
 		M.c.add(bc);
 		Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
 	}
@@ -956,7 +956,7 @@ void CGameObject::create_anim_mov_ctrl(CBlend* b)
 	VERIFY(Visual());
 	CKinematics* K = Visual()->dcast_PKinematics();
 	VERIFY(K);
-	m_anim_mov_ctrl = xr_new<animation_movement_controller>(&XFORM(), K, b);
+	m_anim_mov_ctrl = xr_new<animation_movement_controller>(&Transform(), K, b);
 }
 void CGameObject::destroy_anim_mov_ctrl()
 {

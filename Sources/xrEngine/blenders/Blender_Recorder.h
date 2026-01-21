@@ -133,7 +133,7 @@ class ENGINE_API CBlender_Compile
 	}
 	void StageTemplate_LMAP0();
 	void StageSET_Address(u32 adr);
-	void StageSET_XForm(u32 tf, u32 tc);
+	void StageSET_Transform(u32 tf, u32 tc);
 	void StageSET_Color(u32 a1, u32 op, u32 a2);
 	void StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3);
 	void StageSET_Alpha(u32 a1, u32 op, u32 a2);

@@ -93,14 +93,14 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 	}
 }
 
-void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
+void CRocketLauncher::LaunchRocket(const Fmatrix& transform, const Fvector& vel, const Fvector& angular_vel)
 {
 	/*	VERIFY(m_pRocket != NULL);
-		m_pRocket->SetLaunchParams(xform, vel, angular_vel);
+		m_pRocket->SetLaunchParams(transform, vel, angular_vel);
 		m_pRocket->H_SetParent(NULL);
 	*/
-	VERIFY2(_valid(xform), "CRocketLauncher::LaunchRocket. Invalid xform argument!");
-	getCurrentRocket()->SetLaunchParams(xform, vel, angular_vel);
+	VERIFY2(_valid(transform), "CRocketLauncher::LaunchRocket. Invalid transform argument!");
+	getCurrentRocket()->SetLaunchParams(transform, vel, angular_vel);
 	//	Msg("---------Launched rocket [%d] frame [%d]",getCurrentRocket()->ID(), Engine.TimeManager.GetFrameCount());
 	//	getCurrentRocket()->H_SetParent(NULL);
 	m_launched_rockets.push_back(getCurrentRocket());

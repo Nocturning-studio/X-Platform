@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "r_backend_xform.h"
+#include "r_backend_transform.h"
 
-void R_xforms::set_W(const Fmatrix& m)
+void R_transforms::set_W(const Fmatrix& m)
 {
 	m_w.set(m);
 	m_wv.mul_43(m_v, m_w);
@@ -17,9 +17,9 @@ void R_xforms::set_W(const Fmatrix& m)
 	m_bInvWValid = false;
 	if (c_invw)
 		apply_invw();
-	RenderBackend.set_xform(D3DTS_WORLD, m);
+	RenderBackend.set_transform(D3DTS_WORLD, m);
 }
-void R_xforms::set_V(const Fmatrix& m)
+void R_transforms::set_V(const Fmatrix& m)
 {
 	m_v.set(m);
 	m_wv.mul_43(m_v, m_w);
@@ -33,9 +33,9 @@ void R_xforms::set_V(const Fmatrix& m)
 		RenderBackend.set_Constant(c_wv, m_wv);
 	if (c_wvp)
 		RenderBackend.set_Constant(c_wvp, m_wvp);
-	RenderBackend.set_xform(D3DTS_VIEW, m);
+	RenderBackend.set_transform(D3DTS_VIEW, m);
 }
-void R_xforms::set_P(const Fmatrix& m)
+void R_transforms::set_P(const Fmatrix& m)
 {
 	m_p.set(m);
 	m_vp.mul(m_p, m_v);
@@ -47,10 +47,10 @@ void R_xforms::set_P(const Fmatrix& m)
 	if (c_wvp)
 		RenderBackend.set_Constant(c_wvp, m_wvp);
 	// always setup projection - D3D relies on it to work correctly :(
-	RenderBackend.set_xform(D3DTS_PROJECTION, m);
+	RenderBackend.set_transform(D3DTS_PROJECTION, m);
 }
 
-void R_xforms::apply_invw()
+void R_transforms::apply_invw()
 {
 	VERIFY(c_invw);
 
@@ -63,7 +63,7 @@ void R_xforms::apply_invw()
 	RenderBackend.set_Constant(c_invw, m_invw);
 }
 
-void R_xforms::unmap()
+void R_transforms::unmap()
 {
 	c_w = NULL;
 	c_v = NULL;
@@ -72,7 +72,7 @@ void R_xforms::unmap()
 	c_vp = NULL;
 	c_wvp = NULL;
 }
-R_xforms::R_xforms()
+R_transforms::R_transforms()
 {
 	unmap();
 	m_w.identity();

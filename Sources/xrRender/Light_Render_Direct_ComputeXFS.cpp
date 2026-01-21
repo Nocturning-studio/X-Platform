@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "light_render_direct.h"
 
-void CLight_Compute_XFORM_and_VIS::compute_xf_spot(light* L)
+void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 {
-	// Build EYE-space xform
+	// Build EYE-space transform
 	Fvector L_dir, L_up, L_right, L_pos;
 	L_dir.set(L->get_direction());
 	L_dir.normalize();

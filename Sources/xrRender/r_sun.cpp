@@ -651,11 +651,11 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	xr_vector<Fplane> cull_planes;
 	Fvector3 cull_COP;
 	CSector* cull_sector;
-	Fmatrix cull_xform;
+	Fmatrix cull_transform;
 	{
 		FPU::m64r();
 		// Lets begin from base frustum
-		Fmatrix fullxform_inv = ex_full_inverse;
+		Fmatrix fulltransform_inv = ex_full_inverse;
 #ifdef _DEBUG
 		typedef DumbConvexVolume<true> t_volume;
 #else
@@ -688,7 +688,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		for (u32 p = 0; p < cull_planes.size(); p++)
 			cull_frustum._add(cull_planes[p]);
 
-		// Create approximate ortho-xform
+		// Create approximate ortho-transform
 		// view: auto find 'up' and 'right' vectors
 		Fmatrix mdir_View, mdir_Project;
 		Fvector L_dir, L_up, L_right, L_pos;
@@ -716,8 +716,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 				Fvector3 near_p, edge_vec;
 				for (int p = 0; p < 4; p++)
 				{
-					near_p = wform(fullxform_inv, corners[facetable[4][p]]);
-					edge_vec = wform(fullxform_inv, corners[facetable[5][p]]);
+					near_p = wform(fulltransform_inv, corners[facetable[4][p]]);
+					edge_vec = wform(fulltransform_inv, corners[facetable[5][p]]);
 					edge_vec.sub(near_p);
 					edge_vec.normalize();
 
@@ -742,21 +742,21 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project, -map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f,
 								   map_size * 0.5f, 0.1, dist + map_size);
 
-		// build viewport xform
+		// build viewport transform
 		float view_dim = float(RenderImplementation.o.smapsize);
 		Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
 							  0.0f,			  0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f,	 0.0f, 1.0f};
 		Fmatrix m_viewport_inv;
 		D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
 
-		cull_xform.mul(mdir_Project, mdir_View);
-		Fmatrix cull_xform_inv;
-		cull_xform_inv.invert(cull_xform);
+		cull_transform.mul(mdir_Project, mdir_View);
+		Fmatrix cull_transform_inv;
+		cull_transform_inv.invert(cull_transform);
 
 		//		light_cuboid.light_cuboid_points.reserve		(9);
 		for (int p = 0; p < 8; p++)
 		{
-			Fvector3 xf = wform(cull_xform_inv, corners[p]);
+			Fvector3 xf = wform(cull_transform_inv, corners[p]);
 			light_cuboid.light_cuboid_points[p] = xf;
 		}
 
@@ -792,9 +792,9 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		// rebuild the view transform with the shift.
 		mdir_View.identity();
 		mdir_View.build_camera_dir(cam_shifted, L_dir, L_up);
-		cull_xform.identity();
-		cull_xform.mul(mdir_Project, mdir_View);
-		cull_xform_inv.invert(cull_xform);
+		cull_transform.identity();
+		cull_transform.mul(mdir_Project, mdir_View);
+		cull_transform_inv.invert(cull_transform);
 
 		// Create frustum for query
 		cull_frustum._clear();
@@ -807,10 +807,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 					 floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
 					 floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
 		cam_proj.mul(align_aim_step_coef);
-		Fvector cam_pixel = wform(cull_xform, cam_proj);
+		Fvector cam_pixel = wform(cull_transform, cam_proj);
 		cam_pixel = wform(m_viewport, cam_pixel);
 		Fvector shift_proj = lightXZshift;
-		cull_xform.transform_dir(shift_proj);
+		cull_transform.transform_dir(shift_proj);
 		m_viewport.transform_dir(shift_proj);
 
 		const float align_granularity = 4.f;
@@ -827,22 +827,22 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		cam_pixel.sub(shift_proj);
 
 		m_viewport_inv.transform_dir(cam_pixel);
-		cull_xform_inv.transform_dir(cam_pixel);
+		cull_transform_inv.transform_dir(cam_pixel);
 		Fvector diff = cam_pixel;
 		static float sign_test = -1.f;
 		diff.mul(sign_test);
 		Fmatrix adjust;
 		adjust.translate(diff);
-		cull_xform.mulB_44(adjust);
+		cull_transform.mulB_44(adjust);
 
-		m_sun_cascades[cascade_ind].xform = cull_xform;
+		m_sun_cascades[cascade_ind].transform = cull_transform;
 
 		sun->X.D.minX = 0;
 		sun->X.D.maxX = RenderImplementation.o.smapsize;
 		sun->X.D.minY = 0;
 		sun->X.D.maxY = RenderImplementation.o.smapsize;
 
-		// full-xform
+		// full-transform
 		FPU::m24r();
 	}
 
@@ -861,10 +861,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
 
 	// Fill the database
-	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
+	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_transform, cull_COP, TRUE);
 
 	// Finalize & Cleanup
-	sun->X.D.combine = cull_xform;
+	sun->X.D.combine = cull_transform;
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
@@ -875,12 +875,12 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	{
 		render_shadow_map_sun(sun, cascade_ind);
 
-		RenderBackend.set_xform_world(Fidentity);
-		RenderBackend.set_xform_view(Fidentity);
-		RenderBackend.set_xform_project(sun->X.D.combine);
+		RenderBackend.set_transform_world(Fidentity);
+		RenderBackend.set_transform_view(Fidentity);
+		RenderBackend.set_transform_project(sun->X.D.combine);
 
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) && ((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
-			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].xform, &cull_frustum);
+			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &cull_frustum);
 
 		SceneGraph.Render(SceneGraphRenderType::Opaque);
 
@@ -893,10 +893,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	// Accumulate
 	set_light_accumulator();
 
-	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
+	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].bias);
 
-	// Restore XForms
-	RenderBackend.set_xform_world(Fidentity);
-	RenderBackend.set_xform_view(Engine.RenderView.View);
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	// Restore Transforms
+	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.set_transform_view(Engine.RenderView.View);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }

@@ -333,7 +333,7 @@ void CArtefact::MoveTo(Fvector const& position)
 {
 	if (!PPhysicsShell())
 		return;
-	Fmatrix M = XFORM();
+	Fmatrix M = Transform();
 	M.translate(position);
 	ForceTransform(M);
 	// m_bInInterpolation = false;
@@ -341,7 +341,7 @@ void CArtefact::MoveTo(Fvector const& position)
 
 #include "inventoryOwner.h"
 #include "Entity_alive.h"
-void CArtefact::UpdateXForm()
+void CArtefact::UpdateTransform()
 {
 	if (Engine.TimeManager.GetFrameCount() != dwXF_Frame)
 	{
@@ -384,9 +384,9 @@ void CArtefact::UpdateXForm()
 		N.crossproduct(D, R);
 		N.normalize_safe();
 		mRes.set(R, N, D, mR.c);
-		mRes.mulA_43(E->XFORM());
+		mRes.mulA_43(E->Transform());
 		//		UpdatePosition		(mRes);
-		XFORM().mul(mRes, offset());
+		Transform().mul(mRes, offset());
 	}
 }
 #include "xr_level_controller.h"

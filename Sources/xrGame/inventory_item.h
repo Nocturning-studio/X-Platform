@@ -294,7 +294,7 @@ class CInventoryItem : public CAttachableItem,
 	};
 
   protected:
-	virtual void UpdateXForm();
+	virtual void UpdateTransform();
 
   protected:
 	net_updateData* m_net_updateData;

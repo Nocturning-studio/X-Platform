@@ -12,7 +12,7 @@
 
 #include "R_Backend_Data_Streams.h"
 #include "r_constants_cache.h"
-#include "r_backend_xform.h"
+#include "r_backend_transform.h"
 #include "r_backend_tree.h"
 #include "fvf.h"
 
@@ -56,7 +56,7 @@ class ENGINE_API CBackend
 	IndexStream Index;
 	IDirect3DIndexBuffer9* QuadIB;
 	IDirect3DIndexBuffer9* old_QuadIB;
-	R_xforms xforms;
+	R_transforms transforms;
 	R_tree tree;
 
 	ref_geom g_viewport;
@@ -137,10 +137,10 @@ class ENGINE_API CBackend
 		u32 ib;
 		u32 states;	   // Number of times the shader-state changes
 		u32 textures;  // Number of times the shader-tex changes
-		u32 matrices;  // Number of times the shader-xform changes
+		u32 matrices;  // Number of times the shader-transform changes
 		u32 constants; // Number of times the shader-consts changes
 #endif
-		u32 xforms;
+		u32 transforms;
 		u32 target_rt;
 		u32 target_zb;
 
@@ -168,13 +168,13 @@ class ENGINE_API CBackend
 	}
 
 	// API
-	IC void set_xform(u32 ID, const Fmatrix& M);
-	IC void set_xform_world(const Fmatrix& M);
-	IC void set_xform_view(const Fmatrix& M);
-	IC void set_xform_project(const Fmatrix& M);
-	IC const Fmatrix& get_xform_world();
-	IC const Fmatrix& get_xform_view();
-	IC const Fmatrix& get_xform_project();
+	IC void set_transform(u32 ID, const Fmatrix& M);
+	IC void set_transform_world(const Fmatrix& M);
+	IC void set_transform_view(const Fmatrix& M);
+	IC void set_transform_project(const Fmatrix& M);
+	IC const Fmatrix& get_transform_world();
+	IC const Fmatrix& get_transform_view();
+	IC const Fmatrix& get_transform_project();
 
 	IC void setRenderTarget(IDirect3DSurface9* RT, u32 ID = 0);
 	IC void setDepthBuffer(IDirect3DSurface9* ZB);
@@ -252,7 +252,7 @@ class ENGINE_API CBackend
 		return cull_mode;
 	}
 	void set_ClipPlanes(u32 _enable, Fplane* _planes = NULL, u32 count = 0);
-	void set_ClipPlanes(u32 _enable, Fmatrix* _xform = NULL, u32 fmask = 0xff);
+	void set_ClipPlanes(u32 _enable, Fmatrix* _transform = NULL, u32 fmask = 0xff);
 	IC void set_Scissor(Irect* rect = NULL);
 
 	void enable_anisotropy_filtering();

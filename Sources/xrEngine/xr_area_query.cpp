@@ -11,7 +11,7 @@ void CObjectSpace::BoxQuery	(collide::rq_results& r_dest, const Fbox& B, const F
 {
 	Fvector		bc,bd;
 	Fbox		xf;
-	xf.xform	(B,M);
+	xf.transform	(B,M);
 	xf.get_CD	(bc,bd);
 
 	q_result.Clear	();

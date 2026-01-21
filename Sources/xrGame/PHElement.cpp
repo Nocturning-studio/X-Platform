@@ -58,7 +58,7 @@ CPHElement::CPHElement() // aux
 	// b_enabled_onstep=false;
 	// m_flags.set(flEnabledOnStep,FALSE);
 	m_flags.assign(0);
-	mXFORM.identity();
+	mTransform.identity();
 	m_mass.setZero();
 	m_mass_center.set(0, 0, 0);
 	m_volume = 0.f;
@@ -310,7 +310,7 @@ CPHElement::~CPHElement()
 void CPHElement::Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable)
 {
 	VERIFY(!isActive());
-	mXFORM.set(transform);
+	mTransform.set(transform);
 	Start();
 	SetTransform(transform);
 
@@ -350,14 +350,14 @@ void CPHElement::Activate(bool disable)
 	Fvector lvel, avel;
 	lvel.set(0.f, 0.f, 0.f);
 	avel.set(0.f, 0.f, 0.f);
-	Activate(mXFORM, lvel, avel, disable);
+	Activate(mTransform, lvel, avel, disable);
 }
 
 void CPHElement::Activate(const Fmatrix& start_from, bool disable)
 {
 	VERIFY(_valid(start_from));
 	Fmatrix globe;
-	globe.mul_43(start_from, mXFORM);
+	globe.mul_43(start_from, mTransform);
 
 	Fvector lvel, avel;
 	lvel.set(0.f, 0.f, 0.f);
@@ -374,8 +374,8 @@ void CPHElement::Update()
 	if (!dBodyIsEnabled(m_body) && !m_flags.test(flUpdate) /*!bUpdate*/)
 		return;
 
-	InterpolateGlobalTransform(&mXFORM);
-	VERIFY2(_valid(mXFORM), "invalid position in update");
+	InterpolateGlobalTransform(&mTransform);
+	VERIFY2(_valid(mTransform), "invalid position in update");
 }
 
 void CPHElement::PhTune(dReal step)
@@ -722,7 +722,7 @@ void CPHElement::build(bool disable)
 	//	if(place_current_forms)
 	{
 
-		SetTransform(mXFORM);
+		SetTransform(mTransform);
 	}
 
 	m_body_interpolation.SetBody(m_body);
@@ -738,7 +738,7 @@ void CPHElement::RunSimulation(const Fmatrix& start_from)
 	//	if(place_current_forms)
 	{
 		Fmatrix globe;
-		globe.mul(start_from, mXFORM);
+		globe.mul(start_from, mTransform);
 		SetTransform(globe);
 	}
 	// dVectorSet(m_safe_position,dBodyGetPosition(m_body));
@@ -750,7 +750,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 {
 	Fmatrix parent;
 	VERIFY2(isActive(), "the element is not active");
-	VERIFY(_valid(m_shell->mXFORM));
+	VERIFY(_valid(m_shell->mTransform));
 	// VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback resive 0 matrix");
 	VERIFY_RMATRIX(B->mTransform);
 	VERIFY(valid_pos(B->mTransform.c, phBoundaries));
@@ -761,11 +761,11 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 		VERIFY(!ph_world->Processing());
 		VERIFY(_valid(B->mTransform));
 		VERIFY(!m_shell->dSpace()->lock_count);
-		mXFORM.set(B->mTransform);
+		mTransform.set(B->mTransform);
 		// m_start_time=Engine.TimeManager.GetGlobalTime();
 		Fmatrix global_transform;
 		// if(m_parent_element)
-		global_transform.mul_43(m_shell->mXFORM, mXFORM);
+		global_transform.mul_43(m_shell->mTransform, mTransform);
 		SetTransform(global_transform);
 
 		FillInterpolation();
@@ -773,7 +773,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 		m_flags.set(flActivating, FALSE);
 		if (!m_parent_element)
 		{
-			m_shell->m_object_in_root.set(mXFORM);
+			m_shell->m_object_in_root.set(mTransform);
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
@@ -790,9 +790,9 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 	// if( !m_shell->is_active() && !m_flags.test(flUpdate)/*!bUpdate*/ ) return;
 
 	{
-		// InterpolateGlobalTransform(&mXFORM);
-		parent.invert(m_shell->mXFORM);
-		B->mTransform.mul_43(parent, mXFORM);
+		// InterpolateGlobalTransform(&mTransform);
+		parent.invert(m_shell->mTransform);
+		B->mTransform.mul_43(parent, mTransform);
 	}
 	// VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 	VERIFY_RMATRIX(B->mTransform);
@@ -801,12 +801,12 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 	// else
 	//{
 
-	//	InterpolateGlobalTransform(&m_shell->mXFORM);
-	//	mXFORM.identity();
-	//	B->mTransform.set(mXFORM);
+	//	InterpolateGlobalTransform(&m_shell->mTransform);
+	//	mTransform.identity();
+	//	B->mTransform.set(mTransform);
 	// parent.set(B->mTransform);
 	// parent.invert();
-	// m_shell->mXFORM.mulB(parent);
+	// m_shell->mTransform.mulB(parent);
 
 	//}
 }
@@ -814,7 +814,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 void CPHElement::BoneGlPos(Fmatrix& m, CBoneInstance* B)
 {
 	VERIFY(m_shell);
-	m.mul_43(m_shell->mXFORM, B->mTransform);
+	m.mul_43(m_shell->mTransform, B->mTransform);
 }
 
 void CPHElement::GetAnimBonePos(Fmatrix& bp)
@@ -858,7 +858,7 @@ bool CPHElement::AnimToVel(float dt, float l_limit, float a_limit)
 	Fmatrix bpl;
 	GetAnimBonePos(bpl);
 	Fmatrix bp;
-	bp.mul_43(ph->XFORM(), bpl);
+	bp.mul_43(ph->Transform(), bpl);
 	// BoneGlPos(bp,BI);
 
 	Fmatrix cp;
@@ -904,7 +904,7 @@ void CPHElement::ToBonePos(CBoneInstance* B)
 	VERIFY(_valid(B->mTransform));
 	VERIFY(!m_shell->dSpace()->lock_count);
 
-	mXFORM.set(B->mTransform);
+	mTransform.set(B->mTransform);
 
 	Fmatrix global_transform;
 	BoneGlPos(global_transform, B);
@@ -922,7 +922,7 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 {
 	Fmatrix parent;
 	VERIFY(isActive());
-	VERIFY(_valid(m_shell->mXFORM));
+	VERIFY(_valid(m_shell->mTransform));
 	// VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback receive 0 matrix");
 	VERIFY_RMATRIX(B->mTransform);
 	VERIFY_BOUNDARIES2(B->mTransform.c, phBoundaries, PhysicsRefObject(), "BonesCallBack incoming bone position");
@@ -932,7 +932,7 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 		m_flags.set(flActivating, FALSE);
 		if (!m_parent_element)
 		{
-			m_shell->m_object_in_root.set(mXFORM);
+			m_shell->m_object_in_root.set(mTransform);
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
@@ -948,8 +948,8 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 
 	{
 
-		parent.invert(m_shell->mXFORM);
-		B->mTransform.mul_43(parent, mXFORM);
+		parent.invert(m_shell->mTransform);
+		B->mTransform.mul_43(parent, mTransform);
 	}
 	// VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 	VERIFY_RMATRIX(B->mTransform);
@@ -958,12 +958,12 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 	// else
 	//{
 
-	//	InterpolateGlobalTransform(&m_shell->mXFORM);
-	//	mXFORM.identity();
-	//	B->mTransform.set(mXFORM);
+	//	InterpolateGlobalTransform(&m_shell->mTransform);
+	//	mTransform.identity();
+	//	B->mTransform.set(mTransform);
 	// parent.set(B->mTransform);
 	// parent.invert();
-	// m_shell->mXFORM.mulB(parent);
+	// m_shell->mTransform.mulB(parent);
 
 	//}
 }
@@ -1163,7 +1163,7 @@ void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const 
 		dMassAdjust(&m, mass);
 
 		Fmatrix box_transform;
-		shape.box.xform_get(box_transform);
+		shape.box.transform_get(box_transform);
 		PHDynamicData::FMX33toDMX(shape.box.m_rotate, DMatx);
 		dMassRotate(&m, DMatx);
 		dMassTranslate(&m, shape.box.m_translate.x - mass_center.x, shape.box.m_translate.y - mass_center.y,
@@ -1434,15 +1434,15 @@ void CPHElement::PresetActive()
 		return;
 
 	CBoneInstance& B = m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID);
-	mXFORM.set(B.mTransform);
+	mTransform.set(B.mTransform);
 	// m_start_time=Engine.TimeManager.GetGlobalTime();
 	Fmatrix global_transform;
-	global_transform.mul_43(m_shell->mXFORM, mXFORM);
+	global_transform.mul_43(m_shell->mTransform, mTransform);
 	SetTransform(global_transform);
 
 	if (!m_parent_element)
 	{
-		m_shell->m_object_in_root.set(mXFORM);
+		m_shell->m_object_in_root.set(mTransform);
 		m_shell->m_object_in_root.invert();
 	}
 	// dVectorSet(m_safe_position,dBodyGetPosition(m_body));
@@ -1482,21 +1482,21 @@ u16 CPHElement::numberOfGeoms()
 	return CPHGeometryOwner::numberOfGeoms();
 }
 
-void CPHElement::cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform)
+void CPHElement::cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform)
 {
 	VERIFY2(_valid(q) && _valid(pos), "cv2bone_Xfrom receive wrong data");
-	xform.rotation(q);
-	xform.c.set(pos);
-	// xform.mulB(m_inverse_local_transform);
-	MulB43InverceLocalForm(xform);
-	VERIFY2(_valid(xform), "cv2bone_Xfrom returns wrong data");
+	transform.rotation(q);
+	transform.c.set(pos);
+	// transform.mulB(m_inverse_local_transform);
+	MulB43InverceLocalForm(transform);
+	VERIFY2(_valid(transform), "cv2bone_Xfrom returns wrong data");
 }
-void CPHElement::cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform)
+void CPHElement::cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform)
 {
 
-	cv2bone_Xfrom(q, pos, xform);
-	xform.mulB_43(m_shell->m_object_in_root);
-	VERIFY2(_valid(xform), "cv2obj_Xfrom returns wrong data");
+	cv2bone_Xfrom(q, pos, transform);
+	transform.mulB_43(m_shell->m_object_in_root);
+	VERIFY2(_valid(transform), "cv2obj_Xfrom returns wrong data");
 }
 
 void CPHElement::set_ApplyByGravity(bool flag)

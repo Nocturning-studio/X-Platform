@@ -140,16 +140,16 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	}
 	CObject* H_SetParent(CObject* O, bool just_before_destroy = false);
 
-	// Geometry xform
+	// Geometry transform
 	virtual void Center(Fvector& C) const;
-	IC const Fmatrix& XFORM() const
+	IC const Fmatrix& Transform() const
 	{
-		VERIFY(_valid(renderable.xform));
-		return renderable.xform;
+		VERIFY(_valid(renderable.transform));
+		return renderable.transform;
 	}
-	ICF Fmatrix& XFORM()
+	ICF Fmatrix& Transform()
 	{
-		return renderable.xform;
+		return renderable.transform;
 	}
 	virtual void spatial_register();
 	virtual void spatial_unregister();
@@ -158,19 +158,19 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 
 	ICF Fvector& Direction()
 	{
-		return renderable.xform.k;
+		return renderable.transform.k;
 	}
 	ICF const Fvector& Direction() const
 	{
-		return renderable.xform.k;
+		return renderable.transform.k;
 	}
 	ICF Fvector& Position()
 	{
-		return renderable.xform.c;
+		return renderable.transform.c;
 	}
 	ICF const Fvector& Position() const
 	{
-		return renderable.xform.c;
+		return renderable.transform.c;
 	}
 	virtual float Radius() const;
 	virtual const Fbox& BoundingBox() const;

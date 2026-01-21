@@ -1784,7 +1784,7 @@
     <ClInclude Include="R_Backend.h" />
     <ClInclude Include="R_Backend_Runtime.h" />
     <ClInclude Include="R_Backend_tree.h" />
-    <ClInclude Include="R_Backend_xform.h" />
+    <ClInclude Include="R_Backend_transform.h" />
     <ClInclude Include="r_constants.h" />
     <ClInclude Include="r_constants_cache.h" />
     <ClInclude Include="R_Backend_Data_Streams.h" />
@@ -2030,7 +2030,7 @@
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_Runtime.cpp" />
     <ClCompile Include="R_Backend_tree.cpp" />
-    <ClCompile Include="R_Backend_xform.cpp">
+    <ClCompile Include="R_Backend_transform.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>

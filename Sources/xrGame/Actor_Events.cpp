@@ -286,7 +286,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
 void CActor::MoveActor(Fvector NewPos, Fvector NewDir)
 {
-	Fmatrix M = XFORM();
+	Fmatrix M = Transform();
 	M.translate(NewPos);
 	r_model_yaw = NewDir.y;
 	r_torso.yaw = NewDir.y;

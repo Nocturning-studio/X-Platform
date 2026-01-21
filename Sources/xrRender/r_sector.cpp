@@ -45,7 +45,7 @@ void CPortal::OnRender()
 		C.div((float)poly.size());
 		V[0].set(C, 0x800000FF);
 
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 		// draw solid
 		RenderBackend.set_Shader(Device.m_SelectionShader);
 		RenderBackend.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
@@ -206,7 +206,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 			for (u32 vit = 0; vit < p.size(); vit++)
 			{
 				Fvector4 t;
-				Fmatrix& M = PortalTraverser.i_mXFORM_01;
+				Fmatrix& M = PortalTraverser.i_mTransform_01;
 				Fvector& v = p[vit];
 
 				t.x = v.x * M._11 + v.y * M._21 + v.z * M._31 + M._41;
@@ -281,7 +281,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 
 		// Create _new_ frustum and recurse
 		CFrustum Clip;
-		Clip.CreateFromPortal(P, PORTAL->P.n, PortalTraverser.i_vBase, PortalTraverser.i_mXFORM);
+		Clip.CreateFromPortal(P, PORTAL->P.n, PortalTraverser.i_vBase, PortalTraverser.i_mTransform);
 		PORTAL->m_traversal_marker = PortalTraverser.i_marker;
 		PORTAL->bDualRender = FALSE;
 		pSector->traverse(Clip, scissor);

@@ -471,7 +471,7 @@ void CCustomMonster::UpdateCL()
 			else
 			{
 				if (!bfScriptAnimation())
-					SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
+					SelectAnimation(Transform().k, movement().detail().direction(), movement().speed());
 			}
 
 			// Signal, that last time we used interpolation
@@ -491,15 +491,15 @@ void CCustomMonster::UpdateCL()
 	if (g_Alive())
 	{
 		if (!animation_movement_controlled() && m_update_rotation_on_frame)
-			XFORM().rotateY(NET_Last.o_model);
+			Transform().rotateY(NET_Last.o_model);
 
-		XFORM().translate_over(NET_Last.p_pos);
+		Transform().translate_over(NET_Last.p_pos);
 
 		if (!animation_movement_controlled() && m_update_rotation_on_frame)
 		{
 			Fmatrix M;
 			M.setHPB(0.0f, -NET_Last.o_torso.pitch, 0.0f);
-			XFORM().mulB_43(M);
+			Transform().mulB_43(M);
 		}
 	}
 
@@ -521,7 +521,7 @@ void CCustomMonster::UpdatePositionAnimation()
 
 	START_PROFILE("CustomMonster/client_update/animation")
 	if (!bfScriptAnimation())
-		SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
+		SelectAnimation(Transform().k, movement().detail().direction(), movement().speed());
 	STOP_PROFILE
 }
 
@@ -542,7 +542,7 @@ void CCustomMonster::eye_pp_s0()
 	V->CalculateBones();
 	Fmatrix& mEye = V->LL_GetTransform(u16(eye_bone));
 	Fmatrix X;
-	X.mul_43(XFORM(), mEye);
+	X.mul_43(Transform(), mEye);
 	VERIFY(_valid(mEye));
 
 	const MonsterSpace::SBoneRotation& rotation = head_orientation();
@@ -1164,7 +1164,7 @@ void CCustomMonster::OnRender()
 		character_physics_support()->movement()->dbg_Draw();
 
 	if (bDebug)
-		smart_cast<CKinematics*>(Visual())->DebugRender(XFORM());
+		smart_cast<CKinematics*>(Visual())->DebugRender(Transform());
 }
 #endif // DEBUG
 
@@ -1183,7 +1183,7 @@ void CCustomMonster::destroy_anim_mov_ctrl()
 	movement().enable_movement(m_movement_enabled_before_animation_controller);
 
 	float roll;
-	XFORM().getHPB(movement().m_body.current.yaw, movement().m_body.current.pitch, roll);
+	Transform().getHPB(movement().m_body.current.yaw, movement().m_body.current.pitch, roll);
 
 	movement().m_body.current.yaw *= -1.f;
 	movement().m_body.current.pitch *= -1.f;

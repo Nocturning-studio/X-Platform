@@ -727,7 +727,7 @@ void CRender::enable_dbt_bounds(light* L)
 	if (vis != fcvFully)
 		return;
 
-	// xform BB
+	// transform BB
 	Fbox BB;
 	Fvector rr;
 	rr.set(L->spatial.sphere.R, L->spatial.sphere.R, L->spatial.sphere.R);

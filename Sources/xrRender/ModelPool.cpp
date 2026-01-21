@@ -491,7 +491,7 @@ void CModelPool::dump()
 IC bool _IsBoxVisible(IRender_Visual* visual, const Fmatrix& transform)
 {
 	Fbox bb;
-	bb.xform(visual->vis.box, transform);
+	bb.transform(visual->vis.box, transform);
 	return ::Render->occ_visible(bb);
 }
 IC bool _IsValidShader(IRender_Visual* visual, u32 priority, bool strictB2F)
@@ -520,7 +520,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, in
 				if (_IsValidShader(pV->m_lod, priority, strictB2F))
 				{
 					RenderBackend.set_Shader(pV->m_lod->shader ? pV->m_lod->shader : Device.m_WireShader);
-					RenderBackend.set_xform_world(mTransform);
+					RenderBackend.set_transform_world(mTransform);
 					pV->m_lod->Render(1.f);
 				}
 			}
@@ -533,7 +533,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, in
 					if (_IsValidShader(*I, priority, strictB2F))
 					{
 						RenderBackend.set_Shader((*I)->shader ? (*I)->shader : Device.m_WireShader);
-						RenderBackend.set_xform_world(mTransform);
+						RenderBackend.set_transform_world(mTransform);
 						(*I)->Render(m_fLOD);
 					}
 				}
@@ -553,7 +553,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, in
 				if (_IsValidShader(*I, priority, strictB2F))
 				{
 					RenderBackend.set_Shader((*I)->shader ? (*I)->shader : Device.m_WireShader);
-					RenderBackend.set_xform_world(mTransform);
+					RenderBackend.set_transform_world(mTransform);
 					(*I)->Render(m_fLOD);
 				}
 			}
@@ -565,7 +565,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, in
 		VERIFY(pG);
 		//		if (_IsBoxVisible(m_pVisual,mTransform))
 		{
-			RenderBackend.set_xform_world(mTransform);
+			RenderBackend.set_transform_world(mTransform);
 			for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
 			{
 				xr_vector<IRender_Visual*> visuals;
@@ -582,7 +582,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, in
 			if (_IsValidShader(m_pVisual, priority, strictB2F))
 			{
 				RenderBackend.set_Shader(m_pVisual->shader ? m_pVisual->shader : Device.m_WireShader);
-				RenderBackend.set_xform_world(mTransform);
+				RenderBackend.set_transform_world(mTransform);
 				m_pVisual->Render(m_fLOD);
 			}
 		}
@@ -594,7 +594,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, in
 			if (_IsValidShader(m_pVisual, priority, strictB2F))
 			{
 				RenderBackend.set_Shader(m_pVisual->shader ? m_pVisual->shader : Device.m_WireShader);
-				RenderBackend.set_xform_world(mTransform);
+				RenderBackend.set_transform_world(mTransform);
 				m_pVisual->Render(m_fLOD);
 			}
 		}

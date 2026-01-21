@@ -600,5 +600,5 @@ void CRenderDevice::SetNearer(BOOL enabled)
 		m_bNearer = FALSE;
 		Engine.RenderView.Project._43 += EPS_L;
 	}
-	RenderBackend.set_xform_project(Engine.RenderView.Project);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }

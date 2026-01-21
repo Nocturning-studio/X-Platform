@@ -91,7 +91,7 @@ void CPHShell::DisableObject()
 	if (ref_object)
 		ref_object->on_physics_disable();
 
-	// InterpolateGlobalTransform(&mXFORM);
+	// InterpolateGlobalTransform(&mTransform);
 	CPHObject::deactivate();
 	if (m_spliter_holder)
 		m_spliter_holder->Deactivate();
@@ -252,8 +252,8 @@ void CPHShell::Update()
 	for (i = elements.begin(); elements.end() != i; ++i)
 		(*i)->Update();
 
-	mXFORM.set((*elements.begin())->mXFORM);
-	VERIFY2(_valid(mXFORM), "invalid position in update");
+	mTransform.set((*elements.begin())->mTransform);
+	VERIFY2(_valid(mTransform), "invalid position in update");
 }
 
 void CPHShell::Freeze()
@@ -413,7 +413,7 @@ void CPHShell::StataticRootBonesCallBack(CBoneInstance* B)
 void CPHShell::SetTransform(const Fmatrix& m0)
 {
 
-	mXFORM.set(m0);
+	mTransform.set(m0);
 	ELEMENT_I i = elements.begin();
 	for (; elements.end() != i; ++i)
 	{
@@ -705,7 +705,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
 		{
 
 			Fmatrix vs_root_position;
-			vs_root_position.set(root_e->mXFORM);
+			vs_root_position.set(root_e->mTransform);
 			vs_root_position.invert();
 			vs_root_position.mulB_43(fm_position);
 
@@ -743,7 +743,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
 		{
 			E = P_create_Element();
 			E->m_SelfID = id;
-			E->mXFORM.set(fm_position);
+			E->mTransform.set(fm_position);
 			E->SetMaterial(bone_data.game_mtl_idx);
 			// Fvector mc;
 			// fm_position.transform_tiny(mc,bone_data.center_of_mass);
@@ -1205,7 +1205,7 @@ void CPHShell::UpdateRoot()
 	if (!(*i)->isFullActive())
 		return;
 
-	(*i)->InterpolateGlobalTransform(&mXFORM);
+	(*i)->InterpolateGlobalTransform(&mTransform);
 }
 
 void CPHShell::InterpolateGlobalTransform(Fmatrix* m)
@@ -1217,10 +1217,10 @@ void CPHShell::InterpolateGlobalTransform(Fmatrix* m)
 	i = elements.begin();
 	e = elements.end();
 	for (; i != e; ++i)
-		(*i)->InterpolateGlobalTransform(&(*i)->mXFORM);
-	m->set((*elements.begin())->mXFORM);
+		(*i)->InterpolateGlobalTransform(&(*i)->mTransform);
+	m->set((*elements.begin())->mTransform);
 	m->mulB_43(m_object_in_root);
-	mXFORM.set(*m);
+	mTransform.set(*m);
 	VERIFY2(_valid(*m), "not valide transform");
 	CPhysicsShellHolder* ref_object = (*elements.begin())->PhysicsRefObject();
 	if (ref_object && m_active_count < 0)
@@ -1236,8 +1236,8 @@ void CPHShell::GetGlobalTransformDynamic(Fmatrix* m)
 	i = elements.begin();
 	e = elements.end();
 	for (; i != e; ++i)
-		(*i)->GetGlobalTransformDynamic(&(*i)->mXFORM);
-	m->set((*elements.begin())->mXFORM);
+		(*i)->GetGlobalTransformDynamic(&(*i)->mTransform);
+	m->set((*elements.begin())->mTransform);
 	m->mulB_43(m_object_in_root);
 	VERIFY2(_valid(*m), "not valide transform");
 }
@@ -1261,7 +1261,7 @@ void CPHShell::ObjectToRootForm(const Fmatrix& form)
 	(*elements.begin())->InverceLocalForm(ILF);
 	M.mul(m_object_in_root, ILF);
 	M.invert();
-	mXFORM.mul(form, M);
+	mTransform.mul(form, M);
 	VERIFY2(_valid(form), "not valide transform");
 }
 CPhysicsElement* CPHShell::NearestToPoint(const Fvector& point)
@@ -1313,7 +1313,7 @@ void CPHShell::PassEndElements(u16 from, u16 to, CPHShell* dest)
 			dSpaceRemove(m_space, spaced_geom);
 			dSpaceAdd(dest->m_space, spaced_geom);
 		}
-		VERIFY(_valid(dest->mXFORM));
+		VERIFY(_valid(dest->mTransform));
 		(*i)->SetShell(dest);
 	}
 	dest->elements.insert(dest->elements.end(), i_from, e);
@@ -1489,11 +1489,11 @@ void CPHShell::PlaceBindToElFormsRecursive(Fmatrix parent, u16 id, u16 element, 
 			R_ASSERT2(element < elements.size(), "Out of elements!!");
 			// if(elements.size()==element)	return;
 			CPHElement* E = (elements[element]);
-			E->mXFORM.mul(parent, bone_data.bind_transform);
+			E->mTransform.mul(parent, bone_data.bind_transform);
 		}
 	}
 	for (vecBonesIt it = bone_data.children.begin(); it != bone_data.children.end(); ++it)
-		PlaceBindToElFormsRecursive(mXFORM, (*it)->GetSelfID(), element, mask);
+		PlaceBindToElFormsRecursive(mTransform, (*it)->GetSelfID(), element, mask);
 }
 
 void CPHShell::BonesBindCalculate(u16 id_from)

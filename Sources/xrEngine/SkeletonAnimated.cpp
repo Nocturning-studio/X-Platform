@@ -1248,7 +1248,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			// MixInterlerp(Result,channels,BCA,ch_count);
 			MixChannels(Result, channels, BC, ch_count);
 			Fmatrix RES;
-			RES.mk_xform(Result.Q, Result.T);
+			RES.mk_transform(Result.Q, Result.T);
 			BONE_INST.mTransform.mul_43(*parent, RES);
 #ifdef DEBUG
 

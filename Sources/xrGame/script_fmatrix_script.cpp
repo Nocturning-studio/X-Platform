@@ -39,7 +39,7 @@ void CScriptFmatrix::script_register(lua_State* L)
 				   (Fmatrix::*)(const Fvector&, const Fvector&, const Fvector&, const Fvector&))(&Fmatrix::set),
 				  return_reference_to(_1))
 			 .def("identity", &Fmatrix::identity, return_reference_to(_1))
-			 .def("mk_xform", &Fmatrix::mk_xform, return_reference_to(_1))
+			 .def("mk_xform", &Fmatrix::mk_transform, return_reference_to(_1))
 			 .def("mul", (Fmatrix & (Fmatrix::*)(const Fmatrix&, const Fmatrix&))(&Fmatrix::mul),
 				  return_reference_to(_1))
 			 .def("mul", (Fmatrix & (Fmatrix::*)(const Fmatrix&, float))(&Fmatrix::mul), return_reference_to(_1))

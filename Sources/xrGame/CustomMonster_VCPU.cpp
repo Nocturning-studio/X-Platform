@@ -44,6 +44,6 @@ void CCustomMonster::Exec_Look(float dt)
 	angle_lerp_bounds(movement().m_body.current.pitch, movement().m_body.target.pitch, pitch_speed, dt);
 
 	Fvector P = Position();
-	XFORM().setHPB(-NET_Last.o_model, -NET_Last.o_torso.pitch, 0);
+	Transform().setHPB(-NET_Last.o_model, -NET_Last.o_torso.pitch, 0);
 	Position() = P;
 }

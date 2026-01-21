@@ -211,9 +211,9 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 								  const Fvector& expl_centre, const float expl_radius)
 {
 
-	const Fmatrix& obj_xform = blasted_obj->XFORM();
+	const Fmatrix& obj_transform = blasted_obj->Transform();
 	Fmatrix inv_obj_form;
-	inv_obj_form.invert(obj_xform);
+	inv_obj_form.invert(obj_transform);
 	Fvector local_exp_center;
 	inv_obj_form.transform_tiny(local_exp_center, expl_centre);
 
@@ -235,9 +235,9 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 	if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
 	{
 		Fmatrix dbg_box_m;
-		dbg_box_m.set(obj_xform);
+		dbg_box_m.set(obj_transform);
 		dbg_box_m.c.set(l_c);
-		obj_xform.transform(dbg_box_m.c);
+		obj_transform.transform(dbg_box_m.c);
 		DBG_DrawOBB(dbg_box_m, l_d, D3DCOLOR_XRGB(255, 255, 0));
 	}
 #endif
@@ -247,7 +247,7 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 		Fvector l_source_p, l_end_p;
 		l_end_p.random_point(l_d);
 		l_end_p.add(l_c);
-		obj_xform.transform_tiny(l_end_p);
+		obj_transform.transform_tiny(l_end_p);
 		GetRaySourcePos(exp_obj, expl_centre, l_source_p);
 		Fvector l_local_source_p;
 		inv_obj_form.transform_tiny(l_local_source_p, l_source_p);
@@ -275,8 +275,8 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 
 #ifdef DEBUG
 		float l_S = effective_volume *
-					(_abs(l_dir.dotproduct(obj_xform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_xform.j)) / l_d.y +
-					 _abs(l_dir.dotproduct(obj_xform.k)) / l_d.z);
+					(_abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
+					 _abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
 		float add_eff = _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 		effect += add_eff;
 		if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
@@ -288,8 +288,8 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 		}
 #else
 		float l_S = effective_volume *
-					(_abs(l_dir.dotproduct(obj_xform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_xform.j)) / l_d.y +
-					 _abs(l_dir.dotproduct(obj_xform.k)) / l_d.z);
+					(_abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
+					 _abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
 		effect += _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 #endif
 	}
@@ -807,7 +807,7 @@ void CExplosive::UpdateExplosionParticles()
 	if (!GO)
 		return;
 
-	Fmatrix ParticleMatrix = m_pExpParticle->XFORM();
+	Fmatrix ParticleMatrix = m_pExpParticle->Transform();
 	Fvector Vel;
 	Vel.sub(GO->Position(), ParticleMatrix.c);
 	ParticleMatrix.c.set(GO->Position());

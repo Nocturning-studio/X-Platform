@@ -69,7 +69,7 @@ void CSightManager::SetFirePointLookAngles(const Fvector& tPosition, float& yaw,
 		m_object->Center(tTemp);
 #if 1
 		//. hack is here, just because our actor model is animated with 20cm shift
-		m_object->XFORM().transform_tiny(tTemp, Fvector().set(.2f, tTemp.y - m_object->Position().y, 0.f));
+		m_object->Transform().transform_tiny(tTemp, Fvector().set(.2f, tTemp.y - m_object->Position().y, 0.f));
 #else
 		const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(object);
 		if (!entity_alive || entity_alive->g_Alive())
@@ -293,13 +293,13 @@ void CSightManager::Exec_Look(float dt)
 #endif
 
 #if 0
-	Fmatrix				mXFORM;
-	mXFORM.setHPB		(-body.current.yaw,0,0);
-	mXFORM.c.set		(m_object->Position());
-	m_object->XFORM().set(mXFORM);
+	Fmatrix				mTransform;
+	mTransform.setHPB		(-body.current.yaw,0,0);
+	mTransform.c.set		(m_object->Position());
+	m_object->Transform().set(mTransform);
 #else
 
-	Fmatrix& m = m_object->XFORM();
+	Fmatrix& m = m_object->Transform();
 	/*
 		if(m_object->animation_movement_controlled	( )	)
 		{

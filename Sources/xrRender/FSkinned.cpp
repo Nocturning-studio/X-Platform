@@ -153,12 +153,12 @@ struct vertHW_2W
 	void get_pos_bones(Fvector& p, CKinematics* Parent)
 	{
 		Fvector P0, P1;
-		Fmatrix& xform0 = Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform;
-		Fmatrix& xform1 = Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
+		Fmatrix& transform0 = Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform;
+		Fmatrix& transform1 = Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
 		get_pos(P0);
-		xform0.transform_tiny(P0);
+		transform0.transform_tiny(P0);
 		get_pos(P1);
-		xform1.transform_tiny(P1);
+		transform1.transform_tiny(P1);
 		p.lerp(P0, P1, get_weight());
 	}
 };
@@ -385,9 +385,9 @@ BOOL CSkeletonX_ext::_PickBoneHW1W(Fvector& normal, float& dist, const Fvector& 
 		for (u32 k = 0; k < 3; k++)
 		{
 			vertHW_1W& vert = vertices[indices[idx + k]];
-			const Fmatrix& xform = Parent->LL_GetBoneInstance(vert.get_bone()).mRenderTransform;
+			const Fmatrix& transform = Parent->LL_GetBoneInstance(vert.get_bone()).mRenderTransform;
 			vert.get_pos(p[k]);
-			xform.transform_tiny(p[k]);
+			transform.transform_tiny(p[k]);
 		}
 		float u, v, range = flt_max;
 		if (CDB::TestRayTri(S, D, p, u, v, range, true) && (range < dist))
@@ -414,12 +414,12 @@ BOOL CSkeletonX_ext::_PickBoneHW2W(Fvector& normal, float& dist, const Fvector& 
 		{
 			Fvector P0, P1;
 			vertHW_2W& vert = vertices[indices[idx + k]];
-			Fmatrix& xform0 = Parent->LL_GetBoneInstance(vert.get_bone(0)).mRenderTransform;
-			Fmatrix& xform1 = Parent->LL_GetBoneInstance(vert.get_bone(1)).mRenderTransform;
+			Fmatrix& transform0 = Parent->LL_GetBoneInstance(vert.get_bone(0)).mRenderTransform;
+			Fmatrix& transform1 = Parent->LL_GetBoneInstance(vert.get_bone(1)).mRenderTransform;
 			vert.get_pos(P0);
-			xform0.transform_tiny(P0);
+			transform0.transform_tiny(P0);
 			vert.get_pos(P1);
-			xform1.transform_tiny(P1);
+			transform1.transform_tiny(P1);
 			p[k].lerp(P0, P1, vert.get_weight());
 		}
 		float u, v, range = flt_max;
@@ -503,9 +503,9 @@ void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& w
 			F.bone_id[k][0] = vert.get_bone();
 			F.bone_id[k][1] = F.bone_id[k][0];
 			F.weight[k] = 0.f;
-			const Fmatrix& xform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			const Fmatrix& transform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
 			vert.get_pos(F.vert[k]);
-			xform.transform_tiny(p[k], F.vert[k]);
+			transform.transform_tiny(p[k], F.vert[k]);
 		}
 		Fvector test_normal;
 		test_normal.mknormal(p[0], p[1], p[2]);
@@ -544,11 +544,11 @@ void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& w
 			F.bone_id[k][0] = vert.get_bone(0);
 			F.bone_id[k][1] = vert.get_bone(1);
 			F.weight[k] = vert.get_weight();
-			Fmatrix& xform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-			Fmatrix& xform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+			Fmatrix& transform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			Fmatrix& transform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
 			vert.get_pos(F.vert[k]);
-			xform0.transform_tiny(P0, F.vert[k]);
-			xform1.transform_tiny(P1, F.vert[k]);
+			transform0.transform_tiny(P0, F.vert[k]);
+			transform1.transform_tiny(P1, F.vert[k]);
 			p[k].lerp(P0, P1, F.weight[k]);
 		}
 		Fvector test_normal;

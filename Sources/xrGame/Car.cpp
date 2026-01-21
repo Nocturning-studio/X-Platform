@@ -278,7 +278,7 @@ void CCar::SaveNetState(NET_Packet& P)
 	CPHSkeleton::SaveNetState(P);
 	P.w_vec3(Position());
 	Fvector Angle;
-	XFORM().getXYZ(Angle);
+	Transform().getXYZ(Angle);
 	P.w_vec3(Angle);
 	{
 		xr_map<u16, SDoor>::iterator i, e;
@@ -370,7 +370,7 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 		PPhysicsShell()->Enable();
 	else
 		PPhysicsShell()->Disable();
-	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+	PPhysicsShell()->GetGlobalTransformDynamic(&Transform());
 }
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
@@ -410,7 +410,7 @@ void CCar::UpdateEx(float fov)
 #endif
 
 	//	Log("UpdateCL",Engine.TimeManager.GetFrameCount());
-	// XFORM().set(m_pPhysicsShell->mXFORM);
+	// Transform().set(m_pPhysicsShell->mTransform);
 	VisualUpdate(fov);
 	if (OwnerActor() && OwnerActor()->IsMyCamera())
 	{
@@ -447,7 +447,7 @@ void CCar::UpdateCL()
 
 void CCar::VisualUpdate(float fov)
 {
-	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+	m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 
 	Fvector lin_vel;
 	m_pPhysicsShell->get_LinearVel(lin_vel);
@@ -462,7 +462,7 @@ void CCar::VisualUpdate(float fov)
 
 		if (m_pPhysicsShell->isEnabled())
 		{
-			Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);
+			Owner()->Transform().mul_43(Transform(), m_sits_transforms[0]);
 		}
 		/*
 				if(OwnerActor() && OwnerActor()->IsMyCamera())
@@ -851,7 +851,7 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
 	m_pPhysicsShell = P_create_Shell();
 	m_pPhysicsShell->build_FromKinematics(smart_cast<CKinematics*>(Visual()), &bone_map);
 	m_pPhysicsShell->set_PhysicsRefObject(this);
-	m_pPhysicsShell->mXFORM.set(XFORM());
+	m_pPhysicsShell->mTransform.set(Transform());
 	m_pPhysicsShell->Activate(true);
 	m_pPhysicsShell->SetAirResistance(0.f, 0.f);
 	m_pPhysicsShell->SetPrefereExactIntegration();
@@ -893,7 +893,7 @@ void CCar::Init()
 	b_starting = false;
 	b_stalling = false;
 	b_transmission_switching = false;
-	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
+	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mTransform);
 	m_current_transmission_num = 0;
 	m_pPhysicsShell->set_DynamicScales(1.f, 1.f);
 	CDamagableItem::Init(GetfHealth(), 3);
@@ -1413,7 +1413,7 @@ void CCar::UpdateBack()
 		Fvector v;
 		m_pPhysicsShell->get_LinearVel(v);
 		// if(DriveWheelsMeanAngleRate()<m_breaks_to_back_rate)
-		if (v.dotproduct(XFORM().k) < EPS)
+		if (v.dotproduct(Transform().k) < EPS)
 		{
 			StopBreaking();
 			DriveBack();

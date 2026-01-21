@@ -174,9 +174,9 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR e
 	Fvector vel;
 	vel.sub(m.pos, m.posB);
 	vel.div(fDT_STEP);
-	if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
+	if (emitter->m_RT_Flags.is(CParticleEffect::flRT_Transform))
 	{
-		M.set(emitter->m_XFORM);
+		M.set(emitter->m_Transform);
 		M.transform_dir(vel);
 	};
 	Fvector p;
@@ -205,9 +205,9 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
 		Fvector vel;
 		vel.sub(m.pos, m.posB);
 		vel.div(fDT_STEP);
-		if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
+		if (emitter->m_RT_Flags.is(CParticleEffect::flRT_Transform))
 		{
-			M.set(emitter->m_XFORM);
+			M.set(emitter->m_Transform);
 			M.transform_dir(vel);
 		};
 		Fvector p;
@@ -259,11 +259,11 @@ BOOL CParticleGroup::SItem::IsPlaying()
 	CParticleEffect* PE = static_cast<CParticleEffect*>(_effect);
 	return PE ? PE->IsPlaying() : FALSE;
 }
-void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
+void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform)
 {
 	CParticleEffect* PE = static_cast<CParticleEffect*>(_effect);
 	if (PE)
-		PE->UpdateParent(m, velocity, bXFORM);
+		PE->UpdateParent(m, velocity, bTransform);
 }
 //------------------------------------------------------------------------------
 void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
@@ -489,11 +489,11 @@ void CParticleGroup::OnFrame(u32 u_dt)
 	}
 }
 
-void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
+void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform)
 {
 	m_InitialPosition = m.c;
 	for (SItemVecIt i_it = items.begin(); i_it != items.end(); i_it++)
-		i_it->UpdateParent(m, velocity, bXFORM);
+		i_it->UpdateParent(m, velocity, bTransform);
 }
 
 BOOL CParticleGroup::Compile(CPGDef* def)

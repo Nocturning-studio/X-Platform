@@ -61,7 +61,7 @@ bool CCF_Skeleton::_ElementCenter(u16 elem_id, Fvector& e_center)
 IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, const Fvector& D, float& R, BOOL bCull)
 {
 	Fbox E = {-b_hsize.x, -b_hsize.y, -b_hsize.z, b_hsize.x, b_hsize.y, b_hsize.z};
-	// XForm world-2-local
+	// Transform world-2-local
 	Fvector SL, DL, PL;
 	IM.transform_tiny(SL, S);
 	IM.transform_dir(DL, D);
@@ -108,7 +108,7 @@ void CCF_Skeleton::BuildState()
 	dwFrame = Engine.TimeManager.GetFrameCount();
 	CKinematics* K = PKinematics(owner->Visual());
 	K->CalculateBones();
-	const Fmatrix& L2W = owner->XFORM();
+	const Fmatrix& L2W = owner->Transform();
 
 	if (vis_mask != K->LL_GetBonesVisible())
 	{
@@ -140,7 +140,7 @@ void CCF_Skeleton::BuildState()
 		{
 		case SBoneShape::stBox: {
 			const Fobb& B = shape.box;
-			B.xform_get(ME);
+			B.transform_get(ME);
 			I->b_hsize.set(B.m_halfsize);
 			// prepare matrix World to Element
 			T.mul_43(Mbone, ME); // model space
@@ -149,7 +149,7 @@ void CCF_Skeleton::BuildState()
 			// check matrix validity
 			if (!b)
 			{
-				Msg("! ERROR: invalid bone xform (Slipch?). Bone disabled.");
+				Msg("! ERROR: invalid bone transform (Slipch?). Bone disabled.");
 				Msg("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]", I->elem_id, VPUSH(TW.c));
 				Msg("visual name %s", owner->cNameVisual());
 				Msg("object name %s", owner->cName());
@@ -198,7 +198,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 		BuildTopLevel();
 
 	Fsphere w_bv_sphere;
-	owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
+	owner->Transform().transform_tiny(w_bv_sphere.P, bv_sphere.P);
 	w_bv_sphere.R = bv_sphere.R;
 
 	//
@@ -266,7 +266,7 @@ CCF_EventBox::CCF_EventBox(CObject* O) : ICollisionForm(O, cftShape)
 	A[6].set(+1, -1, +1);
 	A[7].set(+1, -1, -1);
 
-	const Fmatrix& T = O->XFORM();
+	const Fmatrix& T = O->Transform();
 	for (int i = 0; i < 8; i++)
 	{
 		A[i].mul(.5f);
@@ -293,7 +293,7 @@ BOOL CCF_EventBox::Contact(CObject* O)
 	float R = V->vis.sphere.R;
 
 	Fvector PT;
-	O->XFORM().transform_tiny(PT, P);
+	O->Transform().transform_tiny(PT, P);
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -322,7 +322,7 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	// Convert ray into local model space
 	Fvector dS, dD;
 	Fmatrix temp;
-	temp.invert(owner->XFORM());
+	temp.invert(owner->Transform());
 	temp.transform_tiny(dS, Q.start);
 	temp.transform_dir(dD, Q.dir);
 
@@ -469,13 +469,13 @@ BOOL CCF_Shape::Contact(CObject* O)
 	else if (O->CFORM())
 	{
 		S = O->CFORM()->getSphere();
-		O->XFORM().transform_tiny(S.P);
+		O->Transform().transform_tiny(S.P);
 	}
 	else
 		return FALSE;
 
 	// Get our matrix
-	const Fmatrix& XF = Owner()->XFORM();
+	const Fmatrix& XF = Owner()->Transform();
 
 	// Iterate
 	for (u32 el = 0; el < shapes.size(); el++)

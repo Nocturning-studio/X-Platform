@@ -1062,7 +1062,7 @@ extern float g_cl_lvInterp;
 
 void CActor::CalculateInterpolationParams()
 {
-	//	Fmatrix xformX0, xformX1;
+	//	Fmatrix transformX0, transformX1;
 	CPHSynchronize* pSyncObj = NULL;
 	pSyncObj = PHGetSyncItem(0);
 	///////////////////////////////////////////////
@@ -1253,7 +1253,7 @@ void CActor::make_Interpolation()
 			if (!pSyncObj)
 				return;
 			pSyncObj->set_State(PredictedState); //, PredictedState.enabled);
-			VERIFY2(_valid(renderable.xform), *cName());
+			VERIFY2(_valid(renderable.transform), *cName());
 		}
 		else
 		{
@@ -1265,7 +1265,7 @@ void CActor::make_Interpolation()
 			Fvector NewPos;
 			NewPos.lerp(IStart.Pos, IEnd.Pos, factor);
 
-			VERIFY2(_valid(renderable.xform), *cName());
+			VERIFY2(_valid(renderable.transform), *cName());
 
 			//			r_model_yaw		= angle_lerp	(IStart.o_model,IEnd.o_model,		factor);
 			unaffected_r_torso.yaw = angle_lerp(IStart.o_torso.yaw, IEnd.o_torso.yaw, factor);
@@ -1489,9 +1489,9 @@ void CActor::OnRender_Network()
 				for (u16 i=0; i<BoneCount; i++)
 				{
 					Fobb BoneOBB = V->LL_GetBox(i);
-					Fmatrix BoneMatrix; BoneOBB.xform_get(BoneMatrix);
+					Fmatrix BoneMatrix; BoneOBB.transform_get(BoneMatrix);
 					Fmatrix BoneMatrixRes; BoneMatrixRes.mul(V->LL_GetTransform(i), BoneMatrix);
-					BoneMatrix.mul(XFORM(), BoneMatrixRes);
+					BoneMatrix.mul(Transform(), BoneMatrixRes);
 					Level().debug_renderer().draw_obb(BoneMatrix, BoneOBB.m_halfsize, color_rgba(0, 255, 0, 255));
 				};
 				*/
@@ -1672,10 +1672,10 @@ void CActor::OnRender_Network()
 			{
 				Fobb BoneOBB = V->LL_GetBox(i);
 				Fmatrix BoneMatrix;
-				BoneOBB.xform_get(BoneMatrix);
+				BoneOBB.transform_get(BoneMatrix);
 				Fmatrix BoneMatrixRes;
 				BoneMatrixRes.mul(V->LL_GetTransform(i), BoneMatrix);
-				BoneMatrix.mul(XFORM(), BoneMatrixRes);
+				BoneMatrix.mul(Transform(), BoneMatrixRes);
 				Level().debug_renderer().draw_obb(BoneMatrix, BoneOBB.m_halfsize, color_rgba(0, 255, 0, 255));
 			};
 		};
@@ -2007,7 +2007,7 @@ void CActor::OnPlayHeadShotParticle(NET_Packet P)
 	if (!m_sHeadShotParticle.size())
 		return;
 	Fmatrix pos;
-	CParticlesPlayer::MakeXFORM(this, element, HitDir, HitPos, pos);
+	CParticlesPlayer::MakeTransform(this, element, HitDir, HitPos, pos);
 	// установить particles
 	CParticlesObject* ps = NULL;
 

@@ -25,11 +25,11 @@ void CRender::accumulate_spot_lights(light* L)
 
 	BOOL bIntersect = FALSE; // enable_scissor(L);
 	{
-		// setup xform
-		L->xform_calc();
-		RenderBackend.set_xform_world(L->get_xform());
-		RenderBackend.set_xform_view(Engine.RenderView.View);
-		RenderBackend.set_xform_project(Engine.RenderView.Project);
+		// setup transform
+		L->transform_calc();
+		RenderBackend.set_transform_world(L->get_transform());
+		RenderBackend.set_transform_view(Engine.RenderView.View);
+		RenderBackend.set_transform_project(Engine.RenderView.Project);
 		bIntersect = enable_scissor(L);
 		enable_dbt_bounds(L);
 
@@ -59,7 +59,7 @@ void CRender::accumulate_spot_lights(light* L)
 	Fmatrix m_Texgen;
 	RenderBackend.u_compute_texgen_screen(m_Texgen);
 
-	// Shadow xform (+texture adjustment matrix)
+	// Shadow transform (+texture adjustment matrix)
 	Fmatrix m_Shadow, m_Lmap;
 	{
 		float smapsize = float(RenderImplementation.o.smapsize);
@@ -86,7 +86,7 @@ void CRender::accumulate_spot_lights(light* L)
 								 fBias,
 								 1.0f};
 
-		// compute xforms
+		// compute transforms
 		Fmatrix xf_world;
 		xf_world.invert(Engine.RenderView.View);
 		Fmatrix xf_view = L->X.S.view;
@@ -116,7 +116,7 @@ void CRender::accumulate_spot_lights(light* L)
 								  fBias,
 								  1.0f};
 
-		// compute xforms
+		// compute transforms
 		xf_project.mul(m_TexelAdjust2, L->X.S.project);
 		m_Lmap.mul(xf_view, xf_world);
 		m_Lmap.mulA_44(xf_project);

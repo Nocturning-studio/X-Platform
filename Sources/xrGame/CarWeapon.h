@@ -17,7 +17,7 @@ class CCarWeapon : public CShootingObject
 	virtual void OnShot();
 	void UpdateBarrelDir();
 	virtual const Fvector& get_CurrentFirePoint();
-	virtual const Fmatrix& get_ParticlesXFORM();
+	virtual const Fmatrix& get_ParticlesTransform();
 
 	CPhysicsShellHolder* m_object;
 	bool m_bActive;
@@ -65,7 +65,7 @@ class CCarWeapon : public CShootingObject
 	Fvector m_bind_x, m_bind_y;
 	Fvector m_fire_dir, m_fire_pos, m_fire_norm;
 
-	Fmatrix m_i_bind_x_xform, m_i_bind_y_xform, m_fire_bone_xform;
+	Fmatrix m_i_bind_x_transform, m_i_bind_y_transform, m_fire_bone_transform;
 	Fvector2 m_lim_x_rot, m_lim_y_rot; // in bone space
 	float m_min_gun_speed, m_max_gun_speed;
 	CCartridge* m_Ammo;

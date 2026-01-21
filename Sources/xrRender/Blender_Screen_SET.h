@@ -222,7 +222,7 @@ class CBlender_Screen_SET : public IBlender
 					}
 				}
 				C.Stage_Texture(oT_Name);
-				C.Stage_Matrix(oT_xform, 0);
+				C.Stage_Matrix(oT_transform, 0);
 				C.Stage_Constant("$null");
 				C.StageEnd();
 			}

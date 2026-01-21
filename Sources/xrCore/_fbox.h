@@ -171,7 +171,7 @@ template <class T> class _box3
 		merge(b2);
 		return *this;
 	}
-	ICF SelfRef xform(SelfCRef B, const Tmatrix& m)
+	ICF SelfRef transform(SelfCRef B, const Tmatrix& m)
 	{
 		// The three edges transformed: you can efficiently transform an X-only vector3
 		// by just getting the "X" column of the matrix
@@ -224,11 +224,11 @@ template <class T> class _box3
 			max.z += vz.z;
 		return *this;
 	}
-	ICF SelfRef xform(const Tmatrix& m)
+	ICF SelfRef transform(const Tmatrix& m)
 	{
 		Self b;
 		b.set(*this);
-		return xform(b, m);
+		return transform(b, m);
 	}
 
 	IC void getsize(Tvector& R) const

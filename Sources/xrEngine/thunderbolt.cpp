@@ -209,7 +209,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 
 	S.scale(lightning_size, lightning_size, lightning_size);
 	XF.translate_over(pos);
-	current_xform.mul_43(XF, S);
+	current_transform.mul_43(XF, S);
 
 	float next_v = Random.randF();
 
@@ -290,12 +290,12 @@ void CEffect_Thunderbolt::Render()
 		IRender_DetailModel::fvfVertexOut* v_ptr =
 			(IRender_DetailModel::fvfVertexOut*)RenderBackend.Vertex.Lock(vCount_Lock, hGeom_model->vb_stride, v_offset);
 		u16* i_ptr = RenderBackend.Index.Lock(iCount_Lock, i_offset);
-		// XForm verts
-		current->l_model->transfer(current_xform, v_ptr, 0xffffffff, i_ptr, 0, 0.f, dv);
+		// Transform verts
+		current->l_model->transfer(current_transform, v_ptr, 0xffffffff, i_ptr, 0, 0.f, dv);
 		// Flush if needed
 		RenderBackend.Vertex.Unlock(vCount_Lock, hGeom_model->vb_stride);
 		RenderBackend.Index.Unlock(iCount_Lock);
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_Shader(current->l_model->shader);
 		RenderBackend.set_Geometry(hGeom_model);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, vCount_Lock, i_offset, iCount_Lock / 3);
@@ -311,17 +311,17 @@ void CEffect_Thunderbolt::Render()
 			u32 c = color_rgba(c_val, c_val, c_val, c_val);
 			vecSx.mul(Engine.RenderView.Right, current->m_GradientTop->fRadius.x * lightning_size);
 			vecSy.mul(Engine.RenderView.Top, -current->m_GradientTop->fRadius.y * lightning_size);
-			pv->set(current_xform.c.x + vecSx.x - vecSy.x, current_xform.c.y + vecSx.y - vecSy.y,
-					current_xform.c.z + vecSx.z - vecSy.z, c, 0, 0);
+			pv->set(current_transform.c.x + vecSx.x - vecSy.x, current_transform.c.y + vecSx.y - vecSy.y,
+					current_transform.c.z + vecSx.z - vecSy.z, c, 0, 0);
 			pv++;
-			pv->set(current_xform.c.x + vecSx.x + vecSy.x, current_xform.c.y + vecSx.y + vecSy.y,
-					current_xform.c.z + vecSx.z + vecSy.z, c, 0, 1);
+			pv->set(current_transform.c.x + vecSx.x + vecSy.x, current_transform.c.y + vecSx.y + vecSy.y,
+					current_transform.c.z + vecSx.z + vecSy.z, c, 0, 1);
 			pv++;
-			pv->set(current_xform.c.x - vecSx.x - vecSy.x, current_xform.c.y - vecSx.y - vecSy.y,
-					current_xform.c.z - vecSx.z - vecSy.z, c, 1, 0);
+			pv->set(current_transform.c.x - vecSx.x - vecSy.x, current_transform.c.y - vecSx.y - vecSy.y,
+					current_transform.c.z - vecSx.z - vecSy.z, c, 1, 0);
 			pv++;
-			pv->set(current_xform.c.x - vecSx.x + vecSy.x, current_xform.c.y - vecSx.y + vecSy.y,
-					current_xform.c.z - vecSx.z + vecSy.z, c, 1, 1);
+			pv->set(current_transform.c.x - vecSx.x + vecSy.x, current_transform.c.y - vecSx.y + vecSy.y,
+					current_transform.c.z - vecSx.z + vecSy.z, c, 1, 1);
 			pv++;
 		}
 		// center
@@ -344,7 +344,7 @@ void CEffect_Thunderbolt::Render()
 			pv++;
 		}
 		RenderBackend.Vertex.Unlock(8, hGeom_gradient.stride());
-		RenderBackend.set_xform_world(Fidentity);
+		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_Geometry(hGeom_gradient);
 		RenderBackend.set_Shader(current->m_GradientTop->hShader);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, VS_Offset, 0, 4, 0, 2);

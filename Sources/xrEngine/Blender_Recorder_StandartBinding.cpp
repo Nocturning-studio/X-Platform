@@ -17,14 +17,14 @@
 
 // matrices
 #define BIND_DECLARE(xf)                                                                                               \
-	class cl_xform_##xf : public R_constant_setup                                                                      \
+	class cl_transform_##xf : public R_constant_setup                                                                      \
 	{                                                                                                                  \
 		virtual void setup(R_constant* C)                                                                              \
 		{                                                                                                              \
-			RenderBackend.xforms.set_c_##xf(C);                                                                               \
+			RenderBackend.transforms.set_c_##xf(C);                                                                               \
 		}                                                                                                              \
 	};                                                                                                                 \
-	static cl_xform_##xf binder_##xf
+	static cl_transform_##xf binder_##xf
 BIND_DECLARE(w);
 BIND_DECLARE(invw);
 BIND_DECLARE(v);
@@ -43,8 +43,8 @@ BIND_DECLARE(wvp);
 	};                                                                                                                 \
 	static cl_tree_##c tree_binder_##c
 
-DECLARE_TREE_BIND(m_xform_v);
-DECLARE_TREE_BIND(m_xform);
+DECLARE_TREE_BIND(m_transform_v);
+DECLARE_TREE_BIND(m_transform);
 DECLARE_TREE_BIND(consts);
 DECLARE_TREE_BIND(wave);
 DECLARE_TREE_BIND(wind);
@@ -56,7 +56,7 @@ class cl_invV : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fmatrix mInvV = Fmatrix().invert(RenderBackend.xforms.m_v);
+		Fmatrix mInvV = Fmatrix().invert(RenderBackend.transforms.m_v);
 
 		RenderBackend.set_Constant(C, mInvV);
 	}
@@ -76,7 +76,7 @@ class cl_texgen : public R_constant_setup
 		Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
-		mTexgen.mul(mTexelAdjust, RenderBackend.xforms.m_wvp);
+		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_wvp);
 
 		RenderBackend.set_Constant(C, mTexgen);
 	}
@@ -96,7 +96,7 @@ class cl_VPtexgen : public R_constant_setup
 		Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
-		mTexgen.mul(mTexelAdjust, RenderBackend.xforms.m_vp);
+		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_vp);
 
 		RenderBackend.set_Constant(C, mTexgen);
 	}
@@ -528,8 +528,8 @@ void CBlender_Compile::SetMapping()
 	set_Constant("m_ViewProject", &binder_vp);
 	set_Constant("m_WorldViewProject", &binder_wvp);
 
-	set_Constant("m_xform_v", &tree_binder_m_xform_v);
-	set_Constant("m_xform", &tree_binder_m_xform);
+	set_Constant("m_transform_v", &tree_binder_m_transform_v);
+	set_Constant("m_transform", &tree_binder_m_transform);
 	set_Constant("consts", &tree_binder_consts);
 	set_Constant("wave", &tree_binder_wave);
 	set_Constant("wind", &tree_binder_wind);

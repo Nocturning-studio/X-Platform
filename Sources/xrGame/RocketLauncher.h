@@ -15,7 +15,7 @@ class CRocketLauncher
 	void DetachRocket(u16 rocket_id, bool bLaunch);
 
 	void SpawnRocket(LPCSTR rocket_section, CGameObject* parent_rocket_launcher);
-	void LaunchRocket(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel);
+	void LaunchRocket(const Fmatrix& transform, const Fvector& vel, const Fvector& angular_vel);
 
   protected:
 	DEFINE_VECTOR(CCustomRocket*, ROCKET_VECTOR, ROCKETIT);
