@@ -63,8 +63,8 @@ void smapvis::end()
 		if (testQ_V)
 		{
 			RenderImplementation.occq_begin(testQ_id);
-			RenderImplementation.SceneGraph.marker += 1;
-			RenderImplementation.SceneGraph.insert_static(testQ_V);
+			RenderImplementation.SceneGraph.m_traversal_marker += 1;
+			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V);
 			RenderImplementation.SceneGraph.Render(SceneGraphRenderType::Opaque);
 			RenderImplementation.occq_end(testQ_id);
 			testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame
@@ -128,9 +128,9 @@ void smapvis::resetoccq()
 void smapvis::mark()
 {
 	RenderImplementation.stats.ic_culled += invisible.size();
-	u32 marker = RenderImplementation.SceneGraph.marker + 1; // we are called befor marker increment
+	u32 m_traversal_marker = RenderImplementation.SceneGraph.m_traversal_marker + 1; // we are called befor m_traversal_marker increment
 	for (u32 it = 0; it < invisible.size(); it++)
-		invisible[it]->vis.marker = marker; // this effectively disables processing
+		invisible[it]->vis.m_traversal_marker = m_traversal_marker; // this effectively disables processing
 }
 
 void smapvis::rfeedback_static(IRender_Visual* V)

@@ -33,9 +33,9 @@ static bool pred_dot_std(const std::pair<float, u32>& _1, const std::pair<float,
 // --- Normal Sorting Helper ---
 static void mapNormal_Render(SceneGraphTypes::mapNormalItems& N)
 {
-	// Сортировка по SSA (screen space area)
+	// Сортировка по ScreenSpaceArea (screen space area)
 	std::sort(N.begin(), N.end(),
-			  [](const SceneGraphTypes::_NormalItem& N1, const SceneGraphTypes::_NormalItem& N2) { return (N1.ssa > N2.ssa); });
+			  [](const SceneGraphTypes::StaticRenderNode& N1, const SceneGraphTypes::StaticRenderNode& N2) { return (N1.ssa > N2.ssa); });
 
 	for (auto& Ni : N)
 	{
@@ -47,7 +47,7 @@ static void mapNormal_Render(SceneGraphTypes::mapNormalItems& N)
 static void mapMatrix_Render(SceneGraphTypes::mapMatrixItems& N)
 {
 	std::sort(N.begin(), N.end(),
-			  [](const SceneGraphTypes::_MatrixItem& N1, const SceneGraphTypes::_MatrixItem& N2) { return (N1.ssa > N2.ssa); });
+			  [](const SceneGraphTypes::DynamicRenderNode& N1, const SceneGraphTypes::DynamicRenderNode& N2) { return (N1.ssa > N2.ssa); });
 
 	for (auto& Ni : N)
 	{
@@ -206,7 +206,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 		// OPTICK_EVENT("NORMAL");
 		RenderBackend.set_xform_world(Fidentity);
 
-		mapNormalVS& vs = mapNormal[_priority];
+		mapNormalVS& vs = m_queue_static[_priority];
 		vs.getANY_P(nrmVS);
 
 		for (u32 vs_id = 0; vs_id < nrmVS.size(); vs_id++)
@@ -280,7 +280,7 @@ void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 	// **************************************************** MATRIX
 	{
 		// OPTICK_EVENT("MATRIX");
-		mapMatrixVS& vs = mapMatrix[_priority];
+		mapMatrixVS& vs = m_queue_dynamic[_priority];
 		vs.getANY_P(matVS);
 
 		for (u32 vs_id = 0; vs_id < matVS.size(); vs_id++)
@@ -369,8 +369,8 @@ void CSceneGraph::_RenderHUD()
 	RenderBackend.set_xform_project(Engine.RenderView.Project);
 
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
-	mapHUD.traverseLR(sorted_L1); // Local helper
-	mapHUD.clear();
+	m_queue_hud.traverseLR(sorted_L1); // Local helper
+	m_queue_hud.clear();
 	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
 
 	Engine.RenderView.Project = Pold;
@@ -381,8 +381,8 @@ void CSceneGraph::_RenderHUD()
 void CSceneGraph::_RenderTranslucent()
 {
 	OPTICK_EVENT("RenderTranslucent");
-	mapSorted.traverseRL(sorted_L1);
-	mapSorted.clear();
+	m_queue_transparent.traverseRL(sorted_L1);
+	m_queue_transparent.clear();
 }
 
 void CSceneGraph::_RenderEmissive()
@@ -395,15 +395,15 @@ void CSceneGraph::_RenderEmissive()
 void CSceneGraph::_RenderWmarks()
 {
 	OPTICK_EVENT("RenderWmarks");
-	mapWmark.traverseLR(sorted_L1);
-	mapWmark.clear();
+	m_queue_wallmarks.traverseLR(sorted_L1);
+	m_queue_wallmarks.clear();
 }
 
 void CSceneGraph::_RenderDistortion()
 {
 	OPTICK_EVENT("RenderDistortion");
-	mapDistort.traverseRL(sorted_L1);
-	mapDistort.clear();
+	m_queue_distortion.traverseRL(sorted_L1);
+	m_queue_distortion.clear();
 }
 
 void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
@@ -438,7 +438,7 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 	concurrency::parallel_for(size_t(0), lstLODs.size(), [&](size_t i) {
 		// Получаем указатель на 4 вершины, принадлежащие этому LOD-у
 		FLOD::_hw* V = V_start + (i * 4);
-		SceneGraphTypes::_LodItem& P = lstLODs[i];
+		SceneGraphTypes::LodRenderNode& P = lstLODs[i];
 
 		// calculate alpha
 		float ssaDiff = P.ssa - f_ssaLOD_B;
@@ -508,7 +508,7 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 
 		for (u32 i = 0; i < lstLODs.size(); i++)
 		{
-			SceneGraphTypes::_LodItem& P = lstLODs[i];
+			SceneGraphTypes::LodRenderNode& P = lstLODs[i];
 			if (P.pVisual->shader->E[shid] == cur_S)
 			{
 				cur_count++;
@@ -572,7 +572,7 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, F
 	OPTICK_EVENT("render_subspace - main");
 
 	VERIFY(_sector);
-	marker++; // !!! critical here
+	m_traversal_marker++; // !!! critical here
 
 	// Save and build new frustum, disable HOM
 	CFrustum ViewSave = RenderImplementation.ViewBase;
@@ -662,19 +662,19 @@ void CSceneGraph::render_reuse()
 	{
 		// Вызываем добавление ЛИСТА.
 		// Важно: мы не вызываем полную рекурсию add_Static, а сразу идем к листовой логике.
-		// Но нам нужно, чтобы switch внутри add_leafs_Static отработал,
+		// Но нам нужно, чтобы switch внутри ProcessStaticVisual отработал,
 		// чтобы корректно раскидать LOD-ы, если они попали в список.
 
-		// Оптимальный вариант - вызвать switch обработки типа из add_leafs_Static
-		// Но чтобы не дублировать код, можно просто вызвать add_leafs_Static.
+		// Оптимальный вариант - вызвать switch обработки типа из ProcessStaticVisual
+		// Но чтобы не дублировать код, можно просто вызвать ProcessStaticVisual.
 		// Да, там есть проверка HOM.visible, но она очень быстрая (это просто флаг после render_main).
-		add_leafs_Static(V);
+		ProcessStaticVisual(V);
 	}
 
 	// Динамика
 	for (auto& it : m_visuals_dynamic_visible)
 	{
 		RenderImplementation.set_Transform(&it.matrix); // Восстанавливаем матрицу
-		add_leafs_Dynamic(it.visual);
+		ProcessDynamicVisual(it.visual);
 	}
 }

@@ -495,18 +495,18 @@ template <bool _debug> class DumbConvexVolume
 			_poly& base = polys[it];
 			VERIFY(base.classify(cog) < 0); // debug
 
-			int marker = (base.planeN.dotproduct(direction) <= 0) ? -1 : 1;
+			int m_traversal_marker = (base.planeN.dotproduct(direction) <= 0) ? -1 : 1;
 
 			// register edges
 			xr_vector<int>& plist = polys[it].points;
 			for (int p = 0; p < int(plist.size()); p++)
 			{
-				_edge E(plist[p], plist[(p + 1) % plist.size()], marker);
+				_edge E(plist[p], plist[(p + 1) % plist.size()], m_traversal_marker);
 				bool found = false;
 				for (int e = 0; e < int(edges.size()); e++)
 					if (edges[e].equal(E))
 					{
-						edges[e].counter += marker;
+						edges[e].counter += m_traversal_marker;
 						found = true;
 						break;
 					}
@@ -519,7 +519,7 @@ template <bool _debug> class DumbConvexVolume
 			}
 
 			// remove if unused
-			if (marker < 0)
+			if (m_traversal_marker < 0)
 			{
 				polys.erase(polys.begin() + it);
 				it--;
@@ -847,7 +847,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// Begin SMAP-render
-	bool bSpecialFull = SceneGraph.mapNormal[1].size() || SceneGraph.mapMatrix[1].size() || SceneGraph.mapSorted.size();
+	bool bSpecialFull = SceneGraph.m_queue_static[1].size() || SceneGraph.m_queue_dynamic[1].size() || SceneGraph.m_queue_transparent.size();
 	VERIFY(!bSpecialFull);
 	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
@@ -868,8 +868,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
-	bool bNormal = SceneGraph.mapNormal[0].size() || SceneGraph.mapMatrix[0].size();
-	bool bSpecial = SceneGraph.mapNormal[1].size() || SceneGraph.mapMatrix[1].size() || SceneGraph.mapSorted.size();
+	bool bNormal = SceneGraph.m_queue_static[0].size() || SceneGraph.m_queue_dynamic[0].size();
+	bool bSpecial = SceneGraph.m_queue_static[1].size() || SceneGraph.m_queue_dynamic[1].size() || SceneGraph.m_queue_transparent.size();
 
 	if (bNormal || bSpecial)
 	{

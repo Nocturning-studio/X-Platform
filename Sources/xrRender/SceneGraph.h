@@ -54,27 +54,27 @@ class CSceneGraph
 {
   public:
 	// == PUBLIC DATA MEMBERS (TODO: Encapsulate later) ==
-	IRenderable* val_pObject;
-	Fmatrix* val_pTransform;
-	BOOL val_bHUD;
-	BOOL val_bInvisible;
-	BOOL val_bRecordMP;									 // record nearest for multi-pass
-	R_feedback* val_feedback;							 // feedback for geometry being rendered
+	IRenderable* m_current_owner;
+	Fmatrix* m_current_xform;
+	BOOL m_is_hud_pass;
+	BOOL m_is_invisible_mode;
+	BOOL m_record_multipass;									 // record nearest for multi-pass
+	R_feedback* m_feedback_interface;							 // feedback for geometry being rendered
 	u32 val_feedback_breakp;							 // breakpoint
-	xr_vector<Fbox3, render_alloc<Fbox3>>* val_recorder; // coarse structure recorder
+	xr_vector<Fbox3, render_alloc<Fbox3>>* m_culling_bounds_recorder; // coarse structure recorder
 	u32 render_phase;
-	u32 marker;
+	u32 m_traversal_marker;
 	SceneGraphFetchConfig m_fetch_config;
 
   public:
 	// Dynamic scene graph containers
-	SceneGraphTypes::mapNormal_T mapNormal[2]; // 2==(priority/2)
-	SceneGraphTypes::mapMatrix_T mapMatrix[2];
-	SceneGraphTypes::mapSorted_T mapSorted;
-	SceneGraphTypes::mapHUD_T mapHUD;
+	SceneGraphTypes::mapNormal_T m_queue_static[2]; // 2==(priority/2)
+	SceneGraphTypes::mapMatrix_T m_queue_dynamic[2];
+	SceneGraphTypes::mapSorted_T m_queue_transparent;
+	SceneGraphTypes::mapHUD_T m_queue_hud;
 	SceneGraphTypes::mapLOD_T mapLOD;
-	SceneGraphTypes::mapSorted_T mapDistort;
-	SceneGraphTypes::mapSorted_T mapWmark; // sorted
+	SceneGraphTypes::mapSorted_T m_queue_distortion;
+	SceneGraphTypes::mapSorted_T m_queue_wallmarks; // sorted
 	SceneGraphTypes::mapSorted_T mapEmissive;
 
 	// Runtime structures (Lists for sorting)
@@ -92,7 +92,7 @@ class CSceneGraph
 	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>> matTextures;
 	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>> matTexturesTemp;
 
-	xr_vector<SceneGraphTypes::_LodItem, render_alloc<SceneGraphTypes::_LodItem>> lstLODs;
+	xr_vector<SceneGraphTypes::LodRenderNode, render_alloc<SceneGraphTypes::LodRenderNode>> lstLODs;
 	xr_vector<int, render_alloc<int>> lstLODgroups;
 
 	// Lists populated during traversal
@@ -120,28 +120,28 @@ class CSceneGraph
 	void set_Transform(Fmatrix* M)
 	{
 		VERIFY(M);
-		val_pTransform = M;
+		m_current_xform = M;
 	}
 	void set_HUD(BOOL V)
 	{
-		val_bHUD = V;
+		m_is_hud_pass = V;
 	}
 	BOOL get_HUD()
 	{
-		return val_bHUD;
+		return m_is_hud_pass;
 	}
 	void set_Invisible(BOOL V)
 	{
-		val_bInvisible = V;
+		m_is_invisible_mode = V;
 	}
 	void set_Feedback(R_feedback* V, u32 id)
 	{
 		val_feedback_breakp = id;
-		val_feedback = V;
+		m_feedback_interface = V;
 	}
 	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest)
 	{
-		val_recorder = dest;
+		m_culling_bounds_recorder = dest;
 		if (dest)
 			dest->clear();
 	}
@@ -163,8 +163,8 @@ class CSceneGraph
 	void SetFetchConfig(const SceneGraphFetchConfig& config);
 
 	// Низкоуровневая вставка в граф (используется внутри add_leafs)
-	void insert_dynamic(IRender_Visual* pVisual, Fvector& Center);
-	void insert_static(IRender_Visual* pVisual);
+	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center);
+	void EnqueueStatic(IRender_Visual* pVisual);
 
 	// Методы обхода пространства (Subspace traversal)
 	// Первая версия принимает Frustum явно
@@ -178,13 +178,13 @@ class CSceneGraph
 	void render_reuse();
 
 	// Проверка на значимость для рендера (LOD, distance cull)
-	bool IsValuableToRender(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize);
+	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize);
 
 	// Методы добавления геометрии (Building Phase)
 	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes); // normal processing (с проверкой фрустума)
 	void add_Static(IRender_Visual* pVisual, u32 planes);
-	void add_leafs_Dynamic(IRender_Visual* pVisual); // если нода полностью видима
-	void add_leafs_Static(IRender_Visual* pVisual);	 // если нода полностью видима
+	void ProcessDynamicVisual(IRender_Visual* pVisual); // если нода полностью видима
+	void ProcessStaticVisual(IRender_Visual* pVisual);	 // если нода полностью видима
 
 	// =========================================================================
 	//  Unified Render Method

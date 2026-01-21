@@ -36,9 +36,9 @@ bool CRender::is_dynamic_sun_enabled()
 
 void CRender::check_distort()
 {
-	if (!(SceneGraph.mapDistort.size() == 0))
+	if (!(SceneGraph.m_queue_distortion.size() == 0))
 	{
-		Msg("! mapDistort isn't deleted correctly!");
+		Msg("! m_queue_distortion isn't deleted correctly!");
 	}
 }
 
@@ -46,8 +46,8 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 {
 	PROFILE_FUNCTION();
 
-	// marker теперь в SceneGraph
-	SceneGraph.marker++;
+	// m_traversal_marker теперь в SceneGraph
+	SceneGraph.m_traversal_marker++;
 
 	// Calculate sector(s) and their objects
 	if (pLastSector)
@@ -159,7 +159,7 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
 					vis_data v_copy = v_orig;
 					v_copy.box.xform(renderable->renderable.xform);
 					BOOL bVisible = HOM.visible(v_copy);
-					v_orig.marker = v_copy.marker;
+					v_orig.m_traversal_marker = v_copy.m_traversal_marker;
 					v_orig.accept_frame = v_copy.accept_frame;
 					v_orig.hom_frame = v_copy.hom_frame;
 					v_orig.hom_tested = v_copy.hom_tested;
@@ -513,7 +513,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		// --- RENDER GEOMETRY ---
 		set_active_phase(phase);
 		RenderImplementation.set_Transform(0);
-		SceneGraph.marker++;
+		SceneGraph.m_traversal_marker++;
 
 		for (IRender_Visual* V : SceneGraph.m_visuals_static_visible)
 		{
@@ -523,7 +523,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 			float R_sum = V->vis.sphere.R + L_range;
 			if (V->vis.sphere.P.distance_to_sqr(L_pos) < (R_sum * R_sum))
-				SceneGraph.add_leafs_Static(V);
+				SceneGraph.ProcessStaticVisual(V);
 		}
 
 		for (auto& item : SceneGraph.m_visuals_dynamic_visible)
@@ -538,7 +538,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 			if (sphere_center_world.distance_to_sqr(L_pos) < (R_sum * R_sum))
 			{
 				RenderImplementation.set_Transform(&item.matrix);
-				SceneGraph.add_leafs_Dynamic(item.visual);
+				SceneGraph.ProcessDynamicVisual(item.visual);
 			}
 		}
 
@@ -567,7 +567,7 @@ void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
 
-	VERIFY(0 == mapDistort.size());
+	VERIFY(0 == m_queue_distortion.size());
 
 	// Очищаем списки с прошлого кадра
 	SceneGraph.m_visuals_static_visible.clear();

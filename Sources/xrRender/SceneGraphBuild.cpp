@@ -13,15 +13,15 @@ using namespace SceneGraphTypes;
 
 CSceneGraph::CSceneGraph()
 {
-	val_pObject = NULL;
-	val_pTransform = NULL;
-	val_bHUD = FALSE;
-	val_bInvisible = FALSE;
-	val_bRecordMP = FALSE;
-	val_feedback = 0;
+	m_current_owner = NULL;
+	m_current_xform = NULL;
+	m_is_hud_pass = FALSE;
+	m_is_invisible_mode = FALSE;
+	m_record_multipass = FALSE;
+	m_feedback_interface = 0;
 	val_feedback_breakp = 0;
-	val_recorder = 0;
-	marker = 0;
+	m_culling_bounds_recorder = 0;
+	m_traversal_marker = 0;
 	m_fetch_config = SceneGraphFetchConfig(true, true, false); 
 	b_loaded = FALSE;
 
@@ -56,15 +56,15 @@ void CSceneGraph::destroy()
 	lstRecorded.clear();
 
 	// Очистка fixed maps
-	mapNormal[0].destroy();
-	mapNormal[1].destroy();
-	mapMatrix[0].destroy();
-	mapMatrix[1].destroy();
-	mapSorted.destroy();
-	mapHUD.destroy();
+	m_queue_static[0].destroy();
+	m_queue_static[1].destroy();
+	m_queue_dynamic[0].destroy();
+	m_queue_dynamic[1].destroy();
+	m_queue_transparent.destroy();
+	m_queue_hud.destroy();
 	mapLOD.destroy();
-	mapDistort.destroy();
-	mapWmark.destroy();
+	m_queue_distortion.destroy();
+	m_queue_wallmarks.destroy();
 	mapEmissive.destroy();
 }
 
@@ -94,19 +94,19 @@ ICF float CalcSSA(float& distSQ, Fvector& C, float R)
 	return R / distSQ;
 }
 
-void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
+void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
 {
 	// Для доступа к методам CRender (например, rimp_select_sh_dynamic)
 	CRender& RI = RenderImplementation;
 
-	// 'marker' теперь член CSceneGraph, обращаемся напрямую
-	if (pVisual->vis.marker == marker)
+	// 'm_traversal_marker' теперь член CSceneGraph, обращаемся напрямую
+	if (pVisual->vis.m_traversal_marker == m_traversal_marker)
 		return;
-	pVisual->vis.marker = marker;
+	pVisual->vis.m_traversal_marker = m_traversal_marker;
 
 	float distSQ;
-	float SSA = CalcSSA(distSQ, Center, pVisual);
-	if (SSA <= r_ssaDISCARD)
+	float ScreenSpaceArea = CalcSSA(distSQ, Center, pVisual);
+	if (ScreenSpaceArea <= r_ssaDISCARD)
 		return;
 
 	// Distortive geometry
@@ -120,12 +120,12 @@ void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 		bool allowed = (sh_d->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0 : m_fetch_config.fetch_priority_1;
 		if (allowed)
 		{
-			mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
-			N->val.ssa = SSA;
-			// val_pObject и val_pTransform - члены CSceneGraph
-			N->val.pObject = val_pObject;
+			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
+			N->val.ssa = ScreenSpaceArea;
+			// m_current_owner и m_current_xform - члены CSceneGraph
+			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *val_pTransform;
+			N->val.Matrix = *m_current_xform;
 			N->val.se = sh_d; // 4=L_special
 		}
 	}
@@ -142,46 +142,46 @@ void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 
 	// Create common node
 	// Invisible elements exist only in R1
-	_MatrixItem item = {SSA, val_pObject, pVisual, *val_pTransform};
+	DynamicRenderNode item = {ScreenSpaceArea, m_current_owner, pVisual, *m_current_xform};
 
 	// HUD rendering
-	// val_bHUD - член CSceneGraph
-	if (val_bHUD)
+	// m_is_hud_pass - член CSceneGraph
+	if (m_is_hud_pass)
 	{
 		if (sh->flags.bStrictB2F)
 		{
-			mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
-			N->val.ssa = SSA;
-			N->val.pObject = val_pObject;
+			mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
+			N->val.ssa = ScreenSpaceArea;
+			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *val_pTransform;
+			N->val.Matrix = *m_current_xform;
 			N->val.se = sh;
 			return;
 		}
 		else
 		{
-			mapHUD_Node* N = mapHUD.insertInAnyWay(distSQ);
-			N->val.ssa = SSA;
-			N->val.pObject = val_pObject;
+			mapHUD_Node* N = m_queue_hud.insertInAnyWay(distSQ);
+			N->val.ssa = ScreenSpaceArea;
+			N->val.pObject = m_current_owner;
 			N->val.pVisual = pVisual;
-			N->val.Matrix = *val_pTransform;
+			N->val.Matrix = *m_current_xform;
 			N->val.se = sh;
 			return;
 		}
 	}
 
-	// val_bInvisible - член CSceneGraph
-	if (val_bInvisible)
+	// m_is_invisible_mode - член CSceneGraph
+	if (m_is_invisible_mode)
 		return;
 
 	// strict-sorting selection
 	if (sh->flags.bStrictB2F)
 	{
-		mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
-		N->val.pObject = val_pObject;
+		mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
+		N->val.ssa = ScreenSpaceArea;
+		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *val_pTransform;
+		N->val.Matrix = *m_current_xform;
 		N->val.se = sh;
 		return;
 	}
@@ -190,28 +190,28 @@ void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 	if (sh->flags.bEmissive)
 	{
 		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
-		N->val.pObject = val_pObject;
+		N->val.ssa = ScreenSpaceArea;
+		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *val_pTransform;
+		N->val.Matrix = *m_current_xform;
 		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
 	}
 
 	// pmask_wmark - член CSceneGraph
 	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
 	{
-		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
-		N->val.pObject = val_pObject;
+		mapSorted_Node* N = m_queue_wallmarks.insertInAnyWay(distSQ);
+		N->val.ssa = ScreenSpaceArea;
+		N->val.pObject = m_current_owner;
 		N->val.pVisual = pVisual;
-		N->val.Matrix = *val_pTransform;
+		N->val.Matrix = *m_current_xform;
 		N->val.se = sh;
 		return;
 	}
 
 	// the most common node
 	SPass& pass = *sh->passes.front();
-	mapMatrix_T& map = mapMatrix[sh->flags.iPriority / 2];
+	mapMatrix_T& map = m_queue_dynamic[sh->flags.iPriority / 2];
 #ifdef USE_RESOURCE_DEBUGGER
 	mapMatrixVS::TNode* Nvs = map.insert(pass.vs);
 	mapMatrixPS::TNode* Nps = Nvs->val.insert(pass.ps);
@@ -226,49 +226,49 @@ void CSceneGraph::insert_dynamic(IRender_Visual* pVisual, Fvector& Center)
 	items.push_back(item);
 
 	// Need to sort for HZB efficient use
-	if (SSA > Ntex->val.ssa)
+	if (ScreenSpaceArea > Ntex->val.ssa)
 	{
-		Ntex->val.ssa = SSA;
-		if (SSA > Nstate->val.ssa)
+		Ntex->val.ssa = ScreenSpaceArea;
+		if (ScreenSpaceArea > Nstate->val.ssa)
 		{
-			Nstate->val.ssa = SSA;
-			if (SSA > Ncs->val.ssa)
+			Nstate->val.ssa = ScreenSpaceArea;
+			if (ScreenSpaceArea > Ncs->val.ssa)
 			{
-				Ncs->val.ssa = SSA;
-				if (SSA > Nps->val.ssa)
+				Ncs->val.ssa = ScreenSpaceArea;
+				if (ScreenSpaceArea > Nps->val.ssa)
 				{
-					Nps->val.ssa = SSA;
-					if (SSA > Nvs->val.ssa)
+					Nps->val.ssa = ScreenSpaceArea;
+					if (ScreenSpaceArea > Nvs->val.ssa)
 					{
-						Nvs->val.ssa = SSA;
+						Nvs->val.ssa = ScreenSpaceArea;
 					}
 				}
 			}
 		}
 	}
 
-	// val_recorder - член CSceneGraph
-	if (val_recorder)
+	// m_culling_bounds_recorder - член CSceneGraph
+	if (m_culling_bounds_recorder)
 	{
 		Fbox3 temp;
-		Fmatrix& xf = *val_pTransform;
+		Fmatrix& xf = *m_current_xform;
 		temp.xform(pVisual->vis.box, xf);
-		val_recorder->push_back(temp);
+		m_culling_bounds_recorder->push_back(temp);
 	}
 }
 
-void CSceneGraph::insert_static(IRender_Visual* pVisual)
+void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual)
 {
 	CRender& RI = RenderImplementation;
 
-	// 'marker' - член CSceneGraph
-	if (pVisual->vis.marker == marker)
+	// 'm_traversal_marker' - член CSceneGraph
+	if (pVisual->vis.m_traversal_marker == m_traversal_marker)
 		return;
-	pVisual->vis.marker = marker;
+	pVisual->vis.m_traversal_marker = m_traversal_marker;
 
 	float distSQ;
-	float SSA = CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
-	if (SSA <= r_ssaDISCARD)
+	float ScreenSpaceArea = CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
+	if (ScreenSpaceArea <= r_ssaDISCARD)
 		return;
 
 	// Distortive geometry
@@ -281,8 +281,8 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 		bool allowed = (sh_d->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0 : m_fetch_config.fetch_priority_1;
 		if (allowed)
 		{
-			mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
-			N->val.ssa = SSA;
+			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
+			N->val.ssa = ScreenSpaceArea;
 			N->val.pObject = NULL;
 			N->val.pVisual = pVisual;
 			N->val.Matrix = Fidentity;
@@ -305,7 +305,7 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	// strict-sorting selection
 	if (sh->flags.bStrictB2F)
 	{
-		mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
+		mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
 		N->val.pObject = NULL;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = Fidentity;
@@ -317,7 +317,7 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	if (sh->flags.bEmissive)
 	{
 		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
+		N->val.ssa = ScreenSpaceArea;
 		N->val.pObject = NULL;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = Fidentity;
@@ -328,8 +328,8 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
 	{
 
-		mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
-		N->val.ssa = SSA;
+		mapSorted_Node* N = m_queue_wallmarks.insertInAnyWay(distSQ);
+		N->val.ssa = ScreenSpaceArea;
 		N->val.pObject = NULL;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = Fidentity;
@@ -337,13 +337,13 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 		return;
 	}
 
-	// val_feedback, counter_S, val_feedback_breakp - члены CSceneGraph
-	if (val_feedback && counter_S == val_feedback_breakp)
-		val_feedback->rfeedback_static(pVisual);
+	// m_feedback_interface, counter_S, val_feedback_breakp - члены CSceneGraph
+	if (m_feedback_interface && counter_S == val_feedback_breakp)
+		m_feedback_interface->rfeedback_static(pVisual);
 
 	counter_S++;
 	SPass& pass = *sh->passes.front();
-	mapNormal_T& map = mapNormal[sh->flags.iPriority / 2];
+	mapNormal_T& map = m_queue_static[sh->flags.iPriority / 2];
 #ifdef USE_RESOURCE_DEBUGGER
 	mapNormalVS::TNode* Nvs = map.insert(pass.vs);
 	mapNormalPS::TNode* Nps = Nvs->val.insert(pass.ps);
@@ -355,35 +355,35 @@ void CSceneGraph::insert_static(IRender_Visual* pVisual)
 	mapNormalStates::TNode* Nstate = Ncs->val.insert(pass.state->state);
 	mapNormalTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
 	mapNormalItems& items = Ntex->val;
-	_NormalItem item = {SSA, pVisual};
+	StaticRenderNode item = {ScreenSpaceArea, pVisual};
 	items.push_back(item);
 
 	// Need to sort for HZB efficient use
-	if (SSA > Ntex->val.ssa)
+	if (ScreenSpaceArea > Ntex->val.ssa)
 	{
-		Ntex->val.ssa = SSA;
-		if (SSA > Nstate->val.ssa)
+		Ntex->val.ssa = ScreenSpaceArea;
+		if (ScreenSpaceArea > Nstate->val.ssa)
 		{
-			Nstate->val.ssa = SSA;
-			if (SSA > Ncs->val.ssa)
+			Nstate->val.ssa = ScreenSpaceArea;
+			if (ScreenSpaceArea > Ncs->val.ssa)
 			{
-				Ncs->val.ssa = SSA;
-				if (SSA > Nps->val.ssa)
+				Ncs->val.ssa = ScreenSpaceArea;
+				if (ScreenSpaceArea > Nps->val.ssa)
 				{
-					Nps->val.ssa = SSA;
-					if (SSA > Nvs->val.ssa)
+					Nps->val.ssa = ScreenSpaceArea;
+					if (ScreenSpaceArea > Nvs->val.ssa)
 					{
-						Nvs->val.ssa = SSA;
+						Nvs->val.ssa = ScreenSpaceArea;
 					}
 				}
 			}
 		}
 	}
 
-	// val_recorder - член CSceneGraph
-	if (val_recorder)
+	// m_culling_bounds_recorder - член CSceneGraph
+	if (m_culling_bounds_recorder)
 	{
-		val_recorder->push_back(pVisual->vis.box);
+		m_culling_bounds_recorder->push_back(pVisual->vis.box);
 	}
 }
 
@@ -480,7 +480,7 @@ IC int GetQualityIndex()
 // ===============================================================================================
 
 // Теперь это метод класса CSceneGraph
-bool CSceneGraph::IsValuableToRender(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize)
+bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize)
 {
 	if (ignore_optimize)
 		return true;
@@ -497,7 +497,7 @@ bool CSceneGraph::IsValuableToRender(IRender_Visual* pVisual, bool isStatic, boo
 	{
 		// Для динамики используем текущую матрицу трансформации графа
 		Fvector pos;
-		val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+		m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
 		adjusted_distance = GetDistFromCamera(pos);
 	}
 
@@ -550,15 +550,15 @@ bool CSceneGraph::IsValuableToRender(IRender_Visual* pVisual, bool isStatic, boo
 	return true;
 }
 
-void CSceneGraph::add_leafs_Dynamic(IRender_Visual* pVisual)
+void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 {
 	if (0 == pVisual)
 		return;
 
-	// IsValuableToRender скорее всего осталась static/helper функцией в .cpp или стала private методом CSceneGraph.
-	// Обращаемся к val_pTransform напрямую (это член CSceneGraph)
+	// ShouldRenderVisual скорее всего осталась static/helper функцией в .cpp или стала private методом CSceneGraph.
+	// Обращаемся к m_current_xform напрямую (это член CSceneGraph)
 	// active_phase() - метод CRender, нужен глобальный доступ
-	if (!IsValuableToRender(pVisual, false, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
+	if (!ShouldRenderVisual(pVisual, false, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
 		return;
 
 	// Visual is 100% visible - simply add it
@@ -572,13 +572,13 @@ void CSceneGraph::add_leafs_Dynamic(IRender_Visual* pVisual)
 		{
 			PS::CParticleGroup::SItem& PE_It = *i_it;
 			if (PE_It._effect)
-				add_leafs_Dynamic(PE_It._effect); // Рекурсивный вызов внутри CSceneGraph
+				ProcessDynamicVisual(PE_It._effect); // Рекурсивный вызов внутри CSceneGraph
 			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
 				 pit != PE_It._children_related.end(); pit++)
-				add_leafs_Dynamic(*pit);
+				ProcessDynamicVisual(*pit);
 			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
 				 pit != PE_It._children_free.end(); pit++)
-				add_leafs_Dynamic(*pit);
+				ProcessDynamicVisual(*pit);
 		}
 	}
 		return;
@@ -587,7 +587,7 @@ void CSceneGraph::add_leafs_Dynamic(IRender_Visual* pVisual)
 		I = pV->children.begin();
 		E = pV->children.end();
 		for (; I != E; I++)
-			add_leafs_Dynamic(*I);
+			ProcessDynamicVisual(*I);
 	}
 		return;
 	case MT_SKELETON_ANIM:
@@ -598,20 +598,20 @@ void CSceneGraph::add_leafs_Dynamic(IRender_Visual* pVisual)
 		{
 			Fvector Tpos;
 			float D;
-			val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);
+			m_current_xform->transform_tiny(Tpos, pV->vis.sphere.P);
 			float ssa = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f);
 			if (ssa < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
 		if (_use_lod)
 		{
-			add_leafs_Dynamic(pV->m_lod);
+			ProcessDynamicVisual(pV->m_lod);
 		}
 		else
 		{
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 			Fvector pos;
-			val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+			m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distane = GetDistFromCamera(pos);
 			float switch_distance = 100.0f;
 
@@ -638,37 +638,37 @@ void CSceneGraph::add_leafs_Dynamic(IRender_Visual* pVisual)
 			I = pV->children.begin();
 			E = pV->children.end();
 			for (; I != E; I++)
-				add_leafs_Dynamic(*I);
+				ProcessDynamicVisual(*I);
 		}
 	}
 		return;
 	default: {
 		// General type of visual
 		Fvector Tpos;
-		val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+		m_current_xform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
 		if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
 		{
 			// DReuseItem определен внутри CSceneGraph (или R_dsgraph_structure)
 			DReuseItem item;
 			item.visual = pVisual;
-			item.matrix = *val_pTransform;
+			item.matrix = *m_current_xform;
 			m_visuals_dynamic_visible.push_back(item);
 		}
 
-		insert_dynamic(pVisual, Tpos);
+		EnqueueDynamic(pVisual, Tpos);
 	}
 		return;
 	}
 }
 
-void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
+void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual)
 {
 	// HOM остался в RenderImplementation
 	if (!RenderImplementation.HOM.visible(pVisual->vis))
 		return;
 
-	if (!IsValuableToRender(pVisual, true, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
+	if (!ShouldRenderVisual(pVisual, true, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
 		return;
 
 	if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
@@ -686,13 +686,13 @@ void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
 		{
 			PS::CParticleGroup::SItem& PE_It = *i_it;
 			if (PE_It._effect)
-				add_leafs_Dynamic(PE_It._effect); // Вызов метода CSceneGraph
+				ProcessDynamicVisual(PE_It._effect); // Вызов метода CSceneGraph
 			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
 				 pit != PE_It._children_related.end(); pit++)
-				add_leafs_Dynamic(*pit);
+				ProcessDynamicVisual(*pit);
 			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
 				 pit != PE_It._children_free.end(); pit++)
-				add_leafs_Dynamic(*pit);
+				ProcessDynamicVisual(*pit);
 		}
 	}
 		return;
@@ -701,7 +701,7 @@ void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
 		I = pV->children.begin();
 		E = pV->children.end();
 		for (; I != E; I++)
-			add_leafs_Static(*I); // Вызов метода CSceneGraph
+			ProcessStaticVisual(*I); // Вызов метода CSceneGraph
 	}
 		return;
 	case MT_SKELETON_ANIM:
@@ -709,7 +709,7 @@ void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
 
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
-		val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+		m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
 		float adjusted_distane = GetDistFromCamera(pos);
 		float switch_distance = 100.0f;
 		switch (ps_geometry_quality_mode)
@@ -731,7 +731,7 @@ void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
 		I = pV->children.begin();
 		E = pV->children.end();
 		for (; I != E; I++)
-			add_leafs_Static(*I);
+			ProcessStaticVisual(*I);
 	}
 		return;
 	case MT_LOD: {
@@ -752,17 +752,17 @@ void CSceneGraph::add_leafs_Static(IRender_Visual* pVisual)
 			I = pV->children.begin();
 			E = pV->children.end();
 			for (; I != E; I++)
-				add_leafs_Static(*I);
+				ProcessStaticVisual(*I);
 		}
 	}
 		return;
 	case MT_TREE_PM:
 	case MT_TREE_ST: {
-		insert_static(pVisual);
+		EnqueueStatic(pVisual);
 	}
 		return;
 	default: {
-		insert_static(pVisual);
+		EnqueueStatic(pVisual);
 	}
 		return;
 	}
@@ -774,16 +774,16 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 	Fvector Tpos; // transformed position
 	EFC_Visible VIS;
 
-	// val_pTransform теперь член CSceneGraph, обращаемся напрямую
-	val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+	// m_current_xform теперь член CSceneGraph, обращаемся напрямую
+	m_current_xform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
 	// View и HOM остались в RenderImplementation (CRender)
 	VIS = RenderImplementation.View->testSphere(Tpos, pVisual->vis.sphere.R, planes);
 	if (fcvNone == VIS)
 		return FALSE;
 
-	// IsValuableToRender используем как внешнюю функцию (или метод, если перенесли)
-	if (!IsValuableToRender(pVisual, false, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
+	// ShouldRenderVisual используем как внешнюю функцию (или метод, если перенесли)
+	if (!ShouldRenderVisual(pVisual, false, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
 		return FALSE;
 
 	// If we get here visual is visible or partially visible
@@ -810,13 +810,13 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 			else
 			{
 				if (PE_It._effect)
-					add_leafs_Dynamic(PE_It._effect); // Вызов метода текущего объекта
+					ProcessDynamicVisual(PE_It._effect); // Вызов метода текущего объекта
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
 					 pit != PE_It._children_related.end(); pit++)
-					add_leafs_Dynamic(*pit);
+					ProcessDynamicVisual(*pit);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
 					 pit != PE_It._children_free.end(); pit++)
-					add_leafs_Dynamic(*pit);
+					ProcessDynamicVisual(*pit);
 			}
 		}
 	}
@@ -833,7 +833,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 		else
 		{
 			for (; I != E; I++)
-				add_leafs_Dynamic(*I);
+				ProcessDynamicVisual(*I);
 		}
 	}
 	break;
@@ -845,20 +845,20 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 		{
 			Fvector fTpos;
 			float D;
-			val_pTransform->transform_tiny(fTpos, pV->vis.sphere.P);
+			m_current_xform->transform_tiny(fTpos, pV->vis.sphere.P);
 			float ssa = CalcSSA(D, fTpos, pV->vis.sphere.R / 2.f);
 			if (ssa < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
 		if (_use_lod)
 		{
-			add_leafs_Dynamic(pV->m_lod);
+			ProcessDynamicVisual(pV->m_lod);
 		}
 		else
 		{
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 			Fvector pos;
-			val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+			m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distance = GetDistFromCamera(pos);
 			float switch_distance = 100.0f;
 			switch (ps_geometry_quality_mode)
@@ -883,13 +883,13 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 			I = pV->children.begin();
 			E = pV->children.end();
 			for (; I != E; I++)
-				add_leafs_Dynamic(*I);
+				ProcessDynamicVisual(*I);
 		}
 	}
 	break;
 	default: {
 		// Вызываем метод вставки динамики (который мы ранее перенесли в CSceneGraph)
-		insert_dynamic(pVisual, Tpos);
+		EnqueueDynamic(pVisual, Tpos);
 	}
 	break;
 	}
@@ -909,8 +909,8 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 	if (!RenderImplementation.HOM.visible(vis))
 		return;
 
-	// val_pTransform - член CSceneGraph
-	if (!IsValuableToRender(pVisual, true, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
+	// m_current_xform - член CSceneGraph
+	if (!ShouldRenderVisual(pVisual, true, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
 		return;
 
 	// If we get here visual is visible or partially visible
@@ -937,13 +937,13 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 			else
 			{
 				if (PE_It._effect)
-					add_leafs_Dynamic(PE_It._effect);
+					ProcessDynamicVisual(PE_It._effect);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
 					 pit != PE_It._children_related.end(); pit++)
-					add_leafs_Dynamic(*pit);
+					ProcessDynamicVisual(*pit);
 				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
 					 pit != PE_It._children_free.end(); pit++)
-					add_leafs_Dynamic(*pit);
+					ProcessDynamicVisual(*pit);
 			}
 		}
 	}
@@ -960,7 +960,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 		else
 		{
 			for (; I != E; I++)
-				add_leafs_Static(*I);
+				ProcessStaticVisual(*I);
 		}
 	}
 	break;
@@ -968,7 +968,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 	case MT_SKELETON_RIGID: {
 #pragma todo(NSDeathman to NSDeathman - разобраться)
 		Fvector pos;
-		val_pTransform->transform_tiny(pos, pVisual->vis.sphere.P);
+		m_current_xform->transform_tiny(pos, pVisual->vis.sphere.P);
 		float adjusted_distance = GetDistFromCamera(pos);
 		float switch_distance = 100.0f;
 		switch (ps_geometry_quality_mode)
@@ -999,7 +999,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 		else
 		{
 			for (; I != E; I++)
-				add_leafs_Static(*I);
+				ProcessStaticVisual(*I);
 		}
 	}
 	break;
@@ -1022,19 +1022,19 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 			I = pV->children.begin();
 			E = pV->children.end();
 			for (; I != E; I++)
-				add_leafs_Static(*I);
+				ProcessStaticVisual(*I);
 		}
 	}
 	break;
 	case MT_TREE_ST:
 	case MT_TREE_PM: {
 		// Вызов метода через текущий объект
-		insert_static(pVisual);
+		EnqueueStatic(pVisual);
 	}
 		return;
 	default: {
 		// OPTICK_EVENT("default");
-		insert_static(pVisual);
+		EnqueueStatic(pVisual);
 	}
 	break;
 	}

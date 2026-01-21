@@ -11,13 +11,13 @@ namespace SceneGraphTypes
 //  Elementary Types (Nodes)
 // =========================================================================
 
-struct _NormalItem
+struct StaticRenderNode
 {
 	float ssa;
 	IRender_Visual* pVisual;
 };
 
-struct _MatrixItem
+struct DynamicRenderNode
 {
 	float ssa;
 	IRenderable* pObject;
@@ -25,12 +25,12 @@ struct _MatrixItem
 	Fmatrix Matrix; // copy
 };
 
-struct _MatrixItemS : public _MatrixItem
+struct _MatrixItemS : public DynamicRenderNode
 {
 	ShaderElement* se;
 };
 
-struct _LodItem
+struct LodRenderNode
 {
 	float ssa;
 	IRender_Visual* pVisual;
@@ -53,7 +53,7 @@ using ps_type = IDirect3DPixelShader9*;
 // =========================================================================
 
 // --- Normal Geometry (Static) ---
-using mapNormalDirect = xr_vector<_NormalItem, render_allocator::helper<_NormalItem>::result>;
+using mapNormalDirect = xr_vector<StaticRenderNode, render_allocator::helper<StaticRenderNode>::result>;
 
 struct mapNormalItems : public mapNormalDirect
 {
@@ -87,7 +87,7 @@ struct mapNormalVS : public FixedMAP<vs_type, mapNormalPS, render_allocator>
 using mapNormal_T = mapNormalVS;
 
 // --- Matrix Geometry (Dynamic) ---
-using mapMatrixDirect = xr_vector<_MatrixItem, render_allocator::helper<_MatrixItem>::result>;
+using mapMatrixDirect = xr_vector<DynamicRenderNode, render_allocator::helper<DynamicRenderNode>::result>;
 
 struct mapMatrixItems : public mapMatrixDirect
 {
@@ -130,7 +130,7 @@ using mapSorted_Node = mapSorted_T::TNode;
 using mapHUD_T = FixedMAP<float, _MatrixItemS, render_allocator>;
 using mapHUD_Node = mapHUD_T::TNode;
 
-using mapLOD_T = FixedMAP<float, _LodItem, render_allocator>;
+using mapLOD_T = FixedMAP<float, LodRenderNode, render_allocator>;
 using mapLOD_Node = mapLOD_T::TNode;
 
 }; // namespace SceneGraphTypes

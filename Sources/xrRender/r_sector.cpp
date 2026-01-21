@@ -88,7 +88,7 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
 	poly.assign(V, vcnt);
 	pFace = face;
 	pBack = back;
-	marker = 0xffffffff;
+	m_traversal_marker = 0xffffffff;
 
 	Fvector N, T;
 	N.set(0, 0, 0);
@@ -140,7 +140,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 	sPoly S, D;
 	for (u32 I = 0; I < m_portals.size(); I++)
 	{
-		if (m_portals[I]->marker == PortalTraverser.i_marker)
+		if (m_portals[I]->m_traversal_marker == PortalTraverser.i_marker)
 			continue;
 
 		CPortal* PORTAL = m_portals[I];
@@ -164,7 +164,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 		if (!F.testSphere_dirty(PORTAL->S.P, PORTAL->S.R))
 			continue;
 
-		// SSA	(if required)
+		// ScreenSpaceArea	(if required)
 		if (PortalTraverser.i_options & CPortalTraverser::VQ_SSA)
 		{
 			Fvector dir2portal;
@@ -282,7 +282,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 		// Create _new_ frustum and recurse
 		CFrustum Clip;
 		Clip.CreateFromPortal(P, PORTAL->P.n, PortalTraverser.i_vBase, PortalTraverser.i_mXFORM);
-		PORTAL->marker = PortalTraverser.i_marker;
+		PORTAL->m_traversal_marker = PortalTraverser.i_marker;
 		PORTAL->bDualRender = FALSE;
 		pSector->traverse(Clip, scissor);
 	}

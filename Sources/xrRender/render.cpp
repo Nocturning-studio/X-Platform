@@ -307,7 +307,7 @@ void CRender::create()
 	PSLibrary.OnCreate();
 	HWOCC.occq_create(occq_size);
 
-	SceneGraph.marker = 0;
+	SceneGraph.m_traversal_marker = 0;
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 
@@ -587,7 +587,7 @@ BOOL CRender::occ_visible(Fbox& P)
 
 void CRender::add_Visual(IRender_Visual* V)
 {
-	SceneGraph.add_leafs_Dynamic(V);
+	SceneGraph.ProcessDynamicVisual(V);
 }
 
 void CRender::add_Geometry(IRender_Visual* V)
@@ -629,7 +629,7 @@ void CRender::add_Occluder(Fbox2& bb_screenspace)
 
 void CRender::set_Object(IRenderable* O)
 {
-	SceneGraph.val_pObject = O;
+	SceneGraph.m_current_owner = O;
 }
 
 void CRender::set_render_mode(int mode)

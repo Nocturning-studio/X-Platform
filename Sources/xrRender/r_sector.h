@@ -28,7 +28,7 @@ class CPortal : public IRender_Portal
   public:
 	Fplane P;
 	Fsphere S;
-	u32 marker;
+	u32 m_traversal_marker;
 	BOOL bDualRender;
 
 	void Setup(Fvector* V, int vcnt, CSector* face, CSector* back);
@@ -113,7 +113,7 @@ class CPortalTraverser
 		VQ_HOM = (1 << 0),
 		VQ_SSA = (1 << 1),
 		VQ_SCISSOR = (1 << 2),
-		VQ_FADE = (1 << 3), // requires SSA to work
+		VQ_FADE = (1 << 3), // requires ScreenSpaceArea to work
 	};
 
   public:

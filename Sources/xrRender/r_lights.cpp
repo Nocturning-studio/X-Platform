@@ -151,9 +151,9 @@ void CRender::render_lights(light_Package& LP)
 			L->get_smapvis().begin();
 			SceneGraph.render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE);
 
-			bool bNormal = SceneGraph.mapNormal[0].size() || SceneGraph.mapMatrix[0].size();
+			bool bNormal = SceneGraph.m_queue_static[0].size() || SceneGraph.m_queue_dynamic[0].size();
 			bool bSpecial =
-				SceneGraph.mapNormal[1].size() || SceneGraph.mapMatrix[1].size() || SceneGraph.mapSorted.size();
+				SceneGraph.m_queue_static[1].size() || SceneGraph.m_queue_dynamic[1].size() || SceneGraph.m_queue_transparent.size();
 
 			if (bNormal || bSpecial)
 			{
