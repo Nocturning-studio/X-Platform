@@ -114,9 +114,9 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 	// 1. ѕроверка уникальности (Traversal Marker)
 	// -------------------------------------------------------------------------
 	// ѕредотвращает дублирование объекта, если он виден через несколько порталов.
-	// ¬ многопоточной среде здесь может потребоватьс€ атомик, если разные потоки
-	// обрабатывают один и тот же объект.
-	if (pVisual->vis.m_traversal_marker == m_traversal_marker)
+	// atomic_exchange возвращает старое значение.
+	// ≈сли старое значение уже равно текущему, значит другой поток успел нас опередить.
+	if (pVisual->vis.m_traversal_marker.exchange(m_traversal_marker, std::memory_order_acq_rel) == m_traversal_marker)
 		return;
 	pVisual->vis.m_traversal_marker = m_traversal_marker;
 
@@ -314,7 +314,10 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	// 1. ѕроверка уникальности
-	if (pVisual->vis.m_traversal_marker == m_traversal_marker)
+	// ѕредотвращает дублирование объекта, если он виден через несколько порталов.
+	// atomic_exchange возвращает старое значение.
+	// ≈сли старое значение уже равно текущему, значит другой поток успел нас опередить.
+	if (pVisual->vis.m_traversal_marker.exchange(m_traversal_marker, std::memory_order_acq_rel) == m_traversal_marker)
 		return;
 	pVisual->vis.m_traversal_marker = m_traversal_marker;
 

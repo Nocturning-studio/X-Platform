@@ -161,10 +161,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 				bool is_visible_hom = HOM.visible(vis_copy);
 
 				// Сохраняем результаты проверки HOM обратно в визуализацию (для статистики/дебага)
-				vis_orig.m_traversal_marker = vis_copy.m_traversal_marker;
-				vis_orig.accept_frame = vis_copy.accept_frame;
-				vis_orig.hom_frame = vis_copy.hom_frame;
-				vis_orig.hom_tested = vis_copy.hom_tested;
+				vis_orig = vis_copy;
 
 				if (!is_visible_hom)
 					break; // Если скрыт стеной - выходим из цикла фрустумов

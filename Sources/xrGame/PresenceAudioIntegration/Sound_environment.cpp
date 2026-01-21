@@ -24,7 +24,7 @@
 // Console Variables (Default Values)
 // -------------------------------------------------------------------------------------------------
 float g_fPresenceRayDist = 150.0f;
-int g_iPresenceBounces = 3;
+int g_iPresenceBounces = 5;
 bool g_bPresenceThreads = true;
 float g_fPresenceUpdateRate = 0.033f;
 
@@ -161,6 +161,8 @@ float CSoundEnvironment::CalculateOcclusion(const Presence::float3& listenerPos,
 
 void CSoundEnvironment::Update()
 {
+	PROFILE_FUNCTION();
+
 	// 1. Проверка состояния
 	if (!psSoundFlags.test(ss_EAX) || !m_bLoaded || !m_pAudioSystem || m_bPaused)
 	{
