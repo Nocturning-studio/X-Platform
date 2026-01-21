@@ -164,10 +164,15 @@ struct SceneTraversalContext
 {
 	IRenderable* current_owner;
 	Fmatrix* current_transform;
+	const CFrustum* frustum;
 	BOOL is_hud_pass;
 	BOOL is_invisible_mode;
 
-	SceneTraversalContext() : current_owner(NULL), current_transform(NULL), is_hud_pass(FALSE), is_invisible_mode(FALSE)
+	SceneTraversalContext() : current_owner(NULL), 
+							  current_transform(NULL), 
+							  frustum(NULL), 
+							  is_hud_pass(FALSE), 
+							  is_invisible_mode(FALSE)
 	{
 	}
 };

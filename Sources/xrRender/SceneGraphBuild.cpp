@@ -906,8 +906,8 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 
 	// 2. Frustum Culling (Отсечение по пирамиде видимости)
 	// Проверяем сферу объекта в мировых координатах
-	EFC_Visible visibility_status =
-		RenderImplementation.View->testSphere(world_position, pVisual->vis.sphere.R, planes);
+	VERIFY(ctx.frustum);
+	EFC_Visible visibility_status = ctx.frustum->testSphere(world_position, pVisual->vis.sphere.R, planes);
 
 	// Если объект полностью вне экрана - выходим
 	if (visibility_status == fcvNone)
@@ -1052,8 +1052,9 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 	// 1. Frustum Culling (Sphere + AABB Test)
 	// Для статики позиции вершин уже в мировом пространстве, трансформация не нужна (обычно Identity).
 	vis_data& vis_data = pVisual->vis;
-	EFC_Visible visibility_status =
-		RenderImplementation.View->testSAABB(vis_data.sphere.P, vis_data.sphere.R, vis_data.box.data(), planes);
+
+	VERIFY(ctx.frustum);
+	EFC_Visible visibility_status = ctx.frustum->testSAABB(vis_data.sphere.P, vis_data.sphere.R, vis_data.box.data(), planes);
 
 	if (visibility_status == fcvNone)
 		return;

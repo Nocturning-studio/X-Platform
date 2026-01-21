@@ -277,6 +277,12 @@ class CRender : public IRender_interface, public pureFrame
 		m_TraversalContext.is_invisible_mode = V;
 	}
 
+	virtual void set_Frustum(CFrustum* O)
+	{
+		View = O; // Сохраняем для Legacy кода (если где-то используется напрямую View)
+		m_TraversalContext.frustum = O; // Обновляем контекст для SceneGraph
+	}
+
 	virtual void set_Object(IRenderable* O)
 	{
 		m_TraversalContext.current_owner = O;

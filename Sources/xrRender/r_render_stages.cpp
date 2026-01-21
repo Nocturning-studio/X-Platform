@@ -101,7 +101,10 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		for (auto& frustum : sector->r_frustums)
 		{
 			set_Frustum(&frustum);
-			add_Geometry(root_visual); // Вызывает SceneGraph.add_Static
+
+			m_TraversalContext.frustum = &frustum;
+
+			add_Geometry(root_visual); 
 		}
 	}
 
@@ -165,6 +168,8 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 				if (!is_visible_hom)
 					break; // Если скрыт стеной - выходим из цикла фрустумов
+
+				m_TraversalContext.frustum = &frustum;
 
 				// Rendering
 				// Передаем объект в граф сцены (там он отсортируется)

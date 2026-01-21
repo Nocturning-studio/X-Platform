@@ -624,19 +624,22 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	OPTICK_EVENT("render_subspace - main");
 
 	VERIFY(start_sector);
+	VERIFY(view_frustum);
+
 	m_traversal_marker++; // Увеличиваем маркер, чтобы не обрабатывать один объект дважды за этот проход
 
 	// -------------------------------------------------------------------------
-	// A. Сохранение контекста (Legacy)
+	// Подготовка локального контекста
 	// -------------------------------------------------------------------------
-	// PortalTraverser и многие части движка все еще зависят от глобального ViewBase в CRender.
-	// Сохраняем текущий, устанавливаем новый для этого прохода (например, для тени).
-	CFrustum ViewSave = RenderImplementation.ViewBase;
-	RenderImplementation.ViewBase = *view_frustum;
-	RenderImplementation.View = &RenderImplementation.ViewBase;
+	SceneTraversalContext local_ctx;
+	local_ctx.frustum = view_frustum; // Устанавливаем фрустум для этого прохода
+	local_ctx.is_hud_pass = FALSE;	  // Для теней HUD обычно false
+	local_ctx.is_invisible_mode = FALSE;
+	local_ctx.current_owner = nullptr; // Сброс владельца
+	local_ctx.current_transform = nullptr;
 
 	// -------------------------------------------------------------------------
-	// B. Precise Portals (Dual Render Force)
+	// Precise Portals (Dual Render Force)
 	// -------------------------------------------------------------------------
 	// Если камера слишком близко к порталу, принудительно включаем рендеринг обоих секторов
 	if (precise_portals && RenderImplementation.rmPortals)
@@ -648,84 +651,75 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 
 		for (int K = 0; K < RenderImplementation.Sectors_xrc.r_count(); K++)
 		{
-			u32 portal_id =
-				RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
+			u32 portal_id = RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
 			CPortal* pPortal = (CPortal*)RenderImplementation.Portals[portal_id];
 			pPortal->bDualRender = TRUE;
 		}
 	}
 
 	// -------------------------------------------------------------------------
-	// C. Обход порталов (Portal Traversal)
+	// Обход порталов (Portal Traversal)
 	// -------------------------------------------------------------------------
 	// Заполняет список видимых секторов (r_sectors) и фрустумов
-	PortalTraverser.traverse(start_sector, RenderImplementation.ViewBase, camera_pos, mCombined, 0);
+	PortalTraverser.traverse(start_sector, *view_frustum, camera_pos, mCombined, 0);
 
 	// -------------------------------------------------------------------------
-	// D. Сбор СТАТИКИ (Static Geometry)
+	// Сбор СТАТИКИ (Static Geometry)
 	// -------------------------------------------------------------------------
 	for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
 	{
 		CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
 		IRender_Visual* root_visual = sector->root();
 
-		// Один сектор может быть виден через несколько порталов (несколько фрустумов)
 		for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 		{
-			RenderImplementation.set_Frustum(&(sector->r_frustums[v_it]));
+			// Берем фрустум портала
+			CFrustum& portal_frustum = sector->r_frustums[v_it];
 
-			// Вызываем add_Static напрямую, передавая:
-			// 1. Маску плоскостей из текущего View (фрустум портала)
-			// 2. Текущий контекст рендера (флаги, owner=null для статики)
-			// 3. Целевой пакет (dest), куда сложить результаты
-			add_Static(root_visual, RenderImplementation.View->getMask(), RenderImplementation.m_TraversalContext,
-					   dest);
+			// Обновляем фрустум в контексте на более узкий (портальный)
+			local_ctx.frustum = &portal_frustum;
+
+			// Вызываем add_Static с ЛОКАЛЬНЫМ контекстом
+			add_Static(root_visual, portal_frustum.getMask(), local_ctx, dest);
 		}
 	}
 
+	local_ctx.frustum = view_frustum;
+
 	// -------------------------------------------------------------------------
-	// E. Сбор ДИНАМИКИ (Dynamic Geometry)
+	// Сбор ДИНАМИКИ (Dynamic Geometry)
 	// -------------------------------------------------------------------------
 	if (render_dynamic)
 	{
-		RenderImplementation.set_Object(0); // Сбрасываем owner в контексте
+		// Запрос выполняется используя переданный view_frustum, а не глобальный
+		g_SpatialSpace->q_frustum(dest.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
 
-		// Запрос выполняется в список переданного пакета (dest.lstRenderables)
-		// Это важно для изоляции данных, если метод вызывается параллельно
-		g_SpatialSpace->q_frustum(dest.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE,
-								  RenderImplementation.ViewBase);
-
-		// Итерируемся по результатам запроса
 		for (u32 o_it = 0; o_it < dest.lstRenderables.size(); o_it++)
 		{
 			ISpatial* spatial = dest.lstRenderables[o_it];
 			CSector* sector = (CSector*)spatial->spatial.sector;
 
 			if (0 == sector)
-				continue; // Объект потерял сектор
+				continue;
 			if (PortalTraverser.i_marker != sector->r_marker)
-				continue; // Объект в невидимом секторе
+				continue;
 
-			// Проверяем видимость через фрустумы порталов этого сектора
 			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 			{
-				RenderImplementation.set_Frustum(&(sector->r_frustums[v_it]));
+				CFrustum& portal_frustum = sector->r_frustums[v_it];
 
-				if (!RenderImplementation.View->testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+				// Используем локальный фрустум портала
+				if (!portal_frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 					continue;
 
 				IRenderable* renderable = spatial->dcast_Renderable();
 				if (0 == renderable)
 					continue;
 
-				// [NOTE]: renderable_Render() вызывает CRender::add_Visual.
-				// Сейчас CRender настроен на использование SceneGraph.m_packet.
-				// Если 'dest' отличается от главного пакета (например, локальный пакет потока),
-				// здесь может быть проблема архитектурной связности legacy-интерфейса IRenderable.
-				//
-				// В текущей реализации мы предполагаем, что для теней (где используется render_subspace)
-				// либо работает один поток (и dest == m_packet), либо мы принимаем запись в глобальный пакет.
-				// Для полной изоляции в будущем нужно изменить IRenderable::renderable_Render(CRender&).
+				// Настраиваем контекст
+				local_ctx.frustum = &portal_frustum;
+				local_ctx.current_owner = renderable;
+
 				renderable->renderable_Render();
 			}
 		}
@@ -739,12 +733,6 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 		// Этот метод внутри тоже вызывает add_Visual, который пойдет в пакет, настроенный в CRender
 		g_pGameLevel->pHUD->Render_Actor_Shadow();
 	}
-
-	// -------------------------------------------------------------------------
-	// G. Восстановление контекста
-	// -------------------------------------------------------------------------
-	RenderImplementation.ViewBase = ViewSave;
-	RenderImplementation.View = 0;
 }
 
 // Frame Reuse Optimization
