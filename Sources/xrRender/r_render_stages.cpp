@@ -10,242 +10,177 @@ void CRender::PrepareToRender()
 {
 }
 
-IC bool pred_sp_sort(ISpatial* _1, ISpatial* _2)
-{
-	float d1 = _1->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
-	float d2 = _2->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
-	return d1 < d2;
-}
-
-IC float u_diffuse2s(float x, float y, float z)
-{
-	float v = (x + y + z) / 3.f;
-	return ((v < 1) ? powf(v, 2.f / 3.f) : v);
-}
-
-bool CRender::need_render_sun()
-{
-	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->get_color();
-	return ps_r_lighting_flags.test(RFLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
-}
-
-bool CRender::is_dynamic_sun_enabled()
-{
-	return ps_r_lighting_flags.test(RFLAG_SUN);
-}
-
-void CRender::check_distort()
-{
-	if (!(SceneGraph.m_queue_distortion.size() == 0))
-	{
-		Msg("! m_queue_distortion isn't deleted correctly!");
-	}
-}
-
-void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
+void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 {
 	PROFILE_FUNCTION();
 
-	// m_traversal_marker теперь в SceneGraph
+	// Увеличиваем маркер кадра для предотвращения повторной обработки объектов
 	SceneGraph.m_traversal_marker++;
 
-	// Calculate sector(s) and their objects
-	if (pLastSector)
+	// Если текущий сектор не определен (например, мы под картой или не инициализированы),
+	// рисуем только HUD и выходим.
+	if (!pLastSector)
 	{
-		//!!!
-		//!!! BECAUSE OF PARALLEL HOM RENDERING TRY TO DELAY ACCESS TO HOM AS MUCH AS POSSIBLE
-		//!!!
+		set_Object(nullptr);
+		if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+			g_pGameLevel->pHUD->Render_Last();
+		return;
+	}
+
+	// 1. Spatial Query: Запрашиваем объекты во фрустуме
+	// -------------------------------------------------------------------------
+	// Используем ViewBase (основной фрустум камеры)
+	g_SpatialSpace->q_frustum(SceneGraph.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE | STYPE_LIGHTSOURCE,
+							  ViewBase);
+
+	// 2. Sorting: Сортировка Front-to-Back
+	// -------------------------------------------------------------------------
+	// Локальная копия позиции камеры для лямбды (ускоряет доступ в цикле)
+	const Fvector camera_pos = Engine.RenderView.Position;
+
+	// Лямбда-предикат для сортировки по дистанции
+	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
+		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
+		float dist_b = b->spatial.sphere.P.distance_to_sqr(camera_pos);
+		return dist_a < dist_b;
+	};
+
+	// Параллельная сортировка (так как объектов может быть тысячи)
+	concurrency::parallel_sort(SceneGraph.lstRenderables.begin(), SceneGraph.lstRenderables.end(), sort_predicate);
+
+	// 3. Light Tracking: Обновление освещения для динамики
+	// -------------------------------------------------------------------------
+	set_Object(nullptr);
+
+	if (active_phase() == PHASE_NORMAL)
+	{
+		uLastLTRACK++;
+		size_t renderable_count = SceneGraph.lstRenderables.size();
+		size_t light_track_id = 0xffffffff;
+
+		if (renderable_count)
+			light_track_id = uLastLTRACK % renderable_count;
+
+		// Обновляем освещение для Актера (вид от первого лица/тело)
+		if (CObject* current_entity = g_pGameLevel->CurrentViewEntity())
 		{
-			// Traverse object database
-			// lstRenderables теперь в SceneGraph
-			g_SpatialSpace->q_frustum(SceneGraph.lstRenderables, ISpatial_DB::O_ORDERED,
-									  STYPE_RENDERABLE + STYPE_LIGHTSOURCE, ViewBase);
-
-			// (almost) Exact sorting order (front-to-back)
-			concurrency::parallel_sort(SceneGraph.lstRenderables.begin(), SceneGraph.lstRenderables.end(),
-									   pred_sp_sort);
-
-			// Determine visibility for dynamic part of scene
-			set_Object(0);
-			u32 uID_LTRACK = 0xffffffff;
-			if (active_phase() == PHASE_NORMAL)
-			{
-				uLastLTRACK++;
-				if (SceneGraph.lstRenderables.size())
-					uID_LTRACK = uLastLTRACK % SceneGraph.lstRenderables.size();
-
-				// update light-vis for current entity / actor
-				CObject* O = g_pGameLevel->CurrentViewEntity();
-				if (O)
-				{
-					CROS_impl* R = (CROS_impl*)O->ROS();
-					if (R)
-						R->update(O);
-				}
-
-				// update light-vis for selected entity
-				// track lighting environment
-				if (SceneGraph.lstRenderables.size())
-				{
-					IRenderable* renderable = SceneGraph.lstRenderables[uID_LTRACK]->dcast_Renderable();
-					if (renderable)
-					{
-						CROS_impl* T = (CROS_impl*)renderable->renderable_ROS();
-						if (T)
-							T->update(renderable);
-					}
-				}
-			}
+			if (CROS_impl* ros = (CROS_impl*)current_entity->ROS())
+				ros->update(current_entity);
 		}
 
-		// Traverse sector/portal structure
-		PortalTraverser.traverse(pLastSector, ViewBase, Engine.RenderView.Position, m_ViewProjection,
-								 CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE);
-
-		// Determine visibility for static geometry hierrarhy
-		for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+		// Обновляем освещение для одного случайного объекта в кадре (Round-Robin update)
+		// Это позволяет распределить нагрузку трассировки лучей освещения на много кадров
+		if (renderable_count)
 		{
-			CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
-			IRender_Visual* root = sector->root();
-			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+			if (IRenderable* renderable = SceneGraph.lstRenderables[light_track_id]->dcast_Renderable())
 			{
-				set_Frustum(&(sector->r_frustums[v_it]));
-				add_Geometry(root);
+				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
+					ros->update(renderable);
 			}
 		}
+	}
 
-		// Traverse frustums
-		for (u32 o_it = 0; o_it < SceneGraph.lstRenderables.size(); o_it++)
+	// 4. Portal Traversal: Определение видимых секторов
+	// -------------------------------------------------------------------------
+	PortalTraverser.traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
+							 CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
+
+	// 5. Static Geometry: Добавление статики из видимых секторов
+	// -------------------------------------------------------------------------
+	for (auto* sector_ptr : PortalTraverser.r_sectors)
+	{
+		CSector* sector = (CSector*)sector_ptr;
+		IRender_Visual* root_visual = sector->root();
+
+		// Один сектор может быть виден через несколько порталов (несколько фрустумов)
+		for (auto& frustum : sector->r_frustums)
 		{
-			ISpatial* spatial = SceneGraph.lstRenderables[o_it];
-			spatial->spatial_updatesector();
-			CSector* sector = (CSector*)spatial->spatial.sector;
-			if (0 == sector)
-				continue; // disassociated from S/P structure
+			set_Frustum(&frustum);
+			add_Geometry(root_visual); // Вызывает SceneGraph.add_Static
+		}
+	}
 
-			if (spatial->spatial.type & STYPE_LIGHTSOURCE)
+	// 6. Dynamic Geometry & Lights: Обработка результатов пространственного запроса
+	// -------------------------------------------------------------------------
+	for (ISpatial* spatial : SceneGraph.lstRenderables)
+	{
+		spatial->spatial_updatesector();
+		CSector* sector = (CSector*)spatial->spatial.sector;
+
+		// Если объект потерял сектор — пропускаем
+		if (!sector)
+			continue;
+
+		// --- Обработка источников света ---
+		if (spatial->spatial.type & STYPE_LIGHTSOURCE)
+		{
+			light* pLight = (light*)(spatial->dcast_Light());
+			VERIFY(pLight);
+
+			// Проверка LOD света (слишком мелкие/далекие пропускаем)
+			if (pLight->get_LOD() > EPS_L)
 			{
-				// lightsource
-				light* L = (light*)(spatial->dcast_Light());
-				VERIFY(L);
-				float lod = L->get_LOD();
-				if (lod > EPS_L)
-				{
-					vis_data& vis = L->get_homdata();
-					if (HOM.visible(vis))
-						Lights.add_light(L);
-				}
+				// Проверка HOM для самого источника света
+				if (HOM.visible(pLight->get_homdata()))
+					Lights.add_light(pLight);
+			}
+			continue; // Переходим к следующему объекту
+		}
+
+		// --- Обработка рендереблов (Меши, NPC, Физика) ---
+
+		// Если сектор объекта не был посещен портальным обходчиком — объект невидим
+		if (PortalTraverser.i_marker != sector->r_marker)
+			continue;
+
+		// Проверяем попадание во фрустумы сектора
+		for (auto& frustum : sector->r_frustums)
+		{
+			// Быстрый тест сферы
+			if (!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 				continue;
-			}
 
-			if (PortalTraverser.i_marker != sector->r_marker)
-				continue; // inactive (untouched) sector
-
-			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+			if (spatial->spatial.type & STYPE_RENDERABLE)
 			{
-				CFrustum& view = sector->r_frustums[v_it];
+				IRenderable* renderable = spatial->dcast_Renderable();
+				VERIFY(renderable);
 
-				if (!view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
-					continue;
+				// Occlusion Culling (HOM)
+				// Трансформируем BBox объекта и проверяем по буферу глубины низкого разрешения
+				vis_data& vis_orig = renderable->renderable.visual->vis;
+				vis_data vis_copy = vis_orig;
 
-				if (spatial->spatial.type & STYPE_RENDERABLE)
-				{
-					// renderable
-					IRenderable* renderable = spatial->dcast_Renderable();
-					VERIFY(renderable);
+				vis_copy.box.transform(renderable->renderable.transform);
 
-					// Occlusion
-					vis_data& v_orig = renderable->renderable.visual->vis;
-					vis_data v_copy = v_orig;
-					v_copy.box.transform(renderable->renderable.transform);
-					BOOL bVisible = HOM.visible(v_copy);
-					v_orig.m_traversal_marker = v_copy.m_traversal_marker;
-					v_orig.accept_frame = v_copy.accept_frame;
-					v_orig.hom_frame = v_copy.hom_frame;
-					v_orig.hom_tested = v_copy.hom_tested;
-					if (!bVisible)
-						break; // exit loop on frustums
+				bool is_visible_hom = HOM.visible(vis_copy);
 
-					// Rendering
-					set_Object(renderable);
-					renderable->renderable_Render();
-					set_Object(0);
-				}
-				break; // exit loop on frustums
+				// Сохраняем результаты проверки HOM обратно в визуализацию (для статистики/дебага)
+				vis_orig.m_traversal_marker = vis_copy.m_traversal_marker;
+				vis_orig.accept_frame = vis_copy.accept_frame;
+				vis_orig.hom_frame = vis_copy.hom_frame;
+				vis_orig.hom_tested = vis_copy.hom_tested;
+
+				if (!is_visible_hom)
+					break; // Если скрыт стеной - выходим из цикла фрустумов
+
+				// Rendering
+				// Передаем объект в граф сцены (там он отсортируется)
+				set_Object(renderable); // Устанавливает SceneGraph.m_current_owner
+				renderable->renderable_Render();
+				set_Object(nullptr);
 			}
-		}
 
-		if (g_pGameLevel && !(active_phase() == PHASE_SHADOW_DEPTH))
-			g_pGameLevel->pHUD->Render_Last(); // HUD
-	}
-	else
-	{
-		set_Object(0);
-
-		if (g_pGameLevel && !(active_phase() == PHASE_SHADOW_DEPTH))
-			g_pGameLevel->pHUD->Render_Last(); // HUD
-	}
-}
-void CRender::query_wait()
-{
-	PROFILE_FUNCTION();
-
-	Engine.Statistic->RenderDUMP_Wait_S.Begin();
-
-	CTimer Timer;
-	Timer.Start();
-
-	BOOL result = FALSE;
-	HRESULT hr = S_FALSE;
-
-	while ((hr = q_sync_point[q_sync_count]->GetData(&result, sizeof(result), D3DGETDATA_FLUSH)) == S_FALSE)
-	{
-		if (!SwitchToThread())
-			Sleep(ps_r_thread_wait_sleep);
-
-		if (Timer.GetElapsed_ms() > 500)
-		{
-			result = FALSE;
+			// Если объект попал хотя бы в один фрустум сектора и прошел проверки —
+			// нет смысла проверять остальные фрустумы этого же сектора.
 			break;
 		}
 	}
 
-	Engine.Statistic->RenderDUMP_Wait_S.End();
-
-	q_sync_count = (q_sync_count + 1) % HW.Caps.iGPUNum;
-	CHK_DX(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
+	// 7. HUD Rendering (Last phase)
+	// -------------------------------------------------------------------------
+	if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+		g_pGameLevel->pHUD->Render_Last();
 }
-
-void CRender::update_shadow_map_visibility()
-{
-	PROFILE_FUNCTION();
-
-	if (Lights_LastFrame.empty())
-		return;
-
-	// Безопасная обработка с проверкой валидности
-	for (auto it = Lights_LastFrame.begin(); it != Lights_LastFrame.end();)
-	{
-		light* L = *it;
-		if (L == nullptr)
-		{
-			it = Lights_LastFrame.erase(it);
-			continue;
-		}
-
-		try
-		{
-			L->get_smapvis().flushoccq();
-			++it;
-		}
-		catch (...)
-		{
-			Msg("! Failed to flush-OCCq on light %p", L);
-			it = Lights_LastFrame.erase(it);
-		}
-	}
-}
-
 void CRender::render_depth_prepass()
 {
 	PROFILE_FUNCTION();
@@ -282,6 +217,18 @@ void CRender::render_depth_prepass()
 
 	RenderBackend.set_ColorWriteEnable(TRUE);
 	RenderBackend.set_ZWriteEnable(FALSE);
+}
+
+IC float u_diffuse2s(float x, float y, float z)
+{
+	float v = (x + y + z) / 3.f;
+	return ((v < 1) ? powf(v, 2.f / 3.f) : v);
+}
+
+bool CRender::need_render_sun()
+{
+	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->get_color();
+	return ps_r_lighting_flags.test(RFLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
 }
 
 void CRender::render_gbuffer_primary()
@@ -732,6 +679,66 @@ void CRender::render_sun()
 	dwLightMarkerID += 2;
 
 	Engine.Statistic->RenderCALC_SUN.End();
+}
+
+void CRender::query_wait()
+{
+	PROFILE_FUNCTION();
+
+	Engine.Statistic->RenderDUMP_Wait_S.Begin();
+
+	CTimer Timer;
+	Timer.Start();
+
+	BOOL result = FALSE;
+	HRESULT hr = S_FALSE;
+
+	while ((hr = q_sync_point[q_sync_count]->GetData(&result, sizeof(result), D3DGETDATA_FLUSH)) == S_FALSE)
+	{
+		if (!SwitchToThread())
+			Sleep(ps_r_thread_wait_sleep);
+
+		if (Timer.GetElapsed_ms() > 500)
+		{
+			result = FALSE;
+			break;
+		}
+	}
+
+	Engine.Statistic->RenderDUMP_Wait_S.End();
+
+	q_sync_count = (q_sync_count + 1) % HW.Caps.iGPUNum;
+	CHK_DX(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
+}
+
+void CRender::update_shadow_map_visibility()
+{
+	PROFILE_FUNCTION();
+
+	if (Lights_LastFrame.empty())
+		return;
+
+	// Безопасная обработка с проверкой валидности
+	for (auto it = Lights_LastFrame.begin(); it != Lights_LastFrame.end();)
+	{
+		light* L = *it;
+		if (L == nullptr)
+		{
+			it = Lights_LastFrame.erase(it);
+			continue;
+		}
+
+		try
+		{
+			L->get_smapvis().flushoccq();
+			++it;
+		}
+		catch (...)
+		{
+			Msg("! Failed to flush-OCCq on light %p", L);
+			it = Lights_LastFrame.erase(it);
+		}
+	}
 }
 
 void CRender::render_lights()

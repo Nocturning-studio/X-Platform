@@ -348,7 +348,6 @@ class CRender : public IRender_interface, public pureFrame
 	void render_effectors_pass_resolve_gamma();
 	void output_frame_to_screen();
 	bool need_render_sun();
-	void check_distort();
 	void render_main(Fmatrix& mCombined, bool _fportals);
 	void query_wait();
 	void render_lights(light_Package& LP);

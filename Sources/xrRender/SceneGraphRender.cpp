@@ -5,7 +5,7 @@
 
 #include <ppl.h> // Для concurrency::parallel_for
 
-// Глобальные переменные (пока что)
+// Глобальные переменные настроек (внешние)
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
 extern float r_ssaHZBvsTEX;
 extern float r_ssaLOD_A;
@@ -14,66 +14,75 @@ extern float r_ssaLOD_B;
 using namespace SceneGraphTypes;
 
 // ===============================================================================================
-//  Internal Helpers & Predicates (Anonymous Namespace)
+//  Internal Helpers & Predicates
 // ===============================================================================================
 namespace
 {
-// --- LOD Calculation ---
-ICF float calcLOD(float ScreenSpaceArea /*fDistSq*/, float R)
+// --- LOD Factor Calculation ---
+ICF float CalculateLODFactor(float screen_space_area, float R)
 {
-	return _sqrt(clampr((ScreenSpaceArea - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
+	// Вычисляем коэффициент детализации на основе площади на экране
+	return _sqrt(clampr((screen_space_area - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 }
 
-// --- LOD Sorting Helper ---
-static bool pred_dot_std(const std::pair<float, u32>& _1, const std::pair<float, u32>& _2)
+// --- LOD Sorting Predicate ---
+static bool SortLodsByDotProduct(const std::pair<float, u32>& a, const std::pair<float, u32>& b)
 {
-	return _1.first < _2.first;
+	return a.first < b.first;
 }
 
-// --- Normal Sorting Helper ---
-static void mapNormal_Render(SceneGraphTypes::mapNormalItems& N)
+// --- Render Helper: Static Batches ---
+static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 {
-	// Сортировка по ScreenSpaceArea (screen space area)
-	std::sort(N.begin(), N.end(),
-			  [](const SceneGraphTypes::StaticRenderNode& N1, const SceneGraphTypes::StaticRenderNode& N2) { return (N1.ScreenSpaceArea > N2.ScreenSpaceArea); });
+	// Сортировка Front-to-Back по SSA для Early Z-Cull
+	std::sort(batch.begin(), batch.end(),
+			  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) {
+				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+			  });
 
-	for (auto& Ni : N)
+	for (const auto& node : batch)
 	{
-		Ni.pVisual->Render(calcLOD(Ni.ScreenSpaceArea, Ni.pVisual->vis.sphere.R));
+		node.pVisual->Render(CalculateLODFactor(node.ScreenSpaceArea, node.pVisual->vis.sphere.R));
 	}
 }
 
-// --- Matrix Sorting Helper ---
-static void mapMatrix_Render(SceneGraphTypes::mapMatrixItems& N)
+// --- Render Helper: Dynamic Batches ---
+static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 {
-	std::sort(N.begin(), N.end(),
-			  [](const SceneGraphTypes::DynamicRenderNode& N1, const SceneGraphTypes::DynamicRenderNode& N2) { return (N1.ScreenSpaceArea > N2.ScreenSpaceArea); });
+	// Сортировка Front-to-Back
+	std::sort(batch.begin(), batch.end(),
+			  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) {
+				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+			  });
 
-	for (auto& Ni : N)
+	for (const auto& node : batch)
 	{
-		RenderBackend.set_transform_world(Ni.Matrix);
-		RenderImplementation.apply_object(Ni.pObject);
+		RenderBackend.set_transform_world(node.Matrix);
+		RenderImplementation.apply_object(node.pObject);
 		RenderImplementation.apply_lmaterial();
-		Ni.pVisual->Render(calcLOD(Ni.ScreenSpaceArea, Ni.pVisual->vis.sphere.R));
+
+		node.pVisual->Render(CalculateLODFactor(node.ScreenSpaceArea, node.pVisual->vis.sphere.R));
 	}
-	N.clear();
+	batch.clear();
 }
 
-// --- Sorted Node Render Callback (for traversers) ---
-static void __fastcall sorted_L1(SceneGraphTypes::mapSorted_Node* N)
+// --- Render Callback: Sorted/Transparent Nodes ---
+static void __fastcall RenderSortedNode(SceneGraphTypes::mapSorted_Node* node)
 {
-	VERIFY(N);
-	IRender_Visual* V = N->val.pVisual;
-	VERIFY(V && V->shader._get());
-	RenderBackend.set_Element(N->val.se);
-	RenderBackend.set_transform_world(N->val.Matrix);
-	RenderImplementation.apply_object(N->val.pObject);
+	VERIFY(node);
+	IRender_Visual* pVisual = node->val.pVisual;
+	VERIFY(pVisual && pVisual->shader._get());
+
+	RenderBackend.set_Element(node->val.se);
+	RenderBackend.set_transform_world(node->val.Matrix);
+	RenderImplementation.apply_object(node->val.pObject);
 	RenderImplementation.apply_lmaterial();
-	V->Render(calcLOD(N->key, V->vis.sphere.R));
+
+	pVisual->Render(CalculateLODFactor(node->key, pVisual->vis.sphere.R));
 }
 
-// --- Texture Sorting Predicates ---
-template <typename TNode> bool cmp_textures_lex2(TNode* N1, TNode* N2)
+// --- Texture List Comparators (for State Optimization) ---
+template <typename TNode> bool CompareTexturesLex2(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
@@ -86,7 +95,7 @@ template <typename TNode> bool cmp_textures_lex2(TNode* N1, TNode* N2)
 	return false;
 }
 
-template <typename TNode> bool cmp_textures_lex3(TNode* N1, TNode* N2)
+template <typename TNode> bool CompareTexturesLex3(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
@@ -103,63 +112,65 @@ template <typename TNode> bool cmp_textures_lex3(TNode* N1, TNode* N2)
 	return false;
 }
 
-template <typename TNode> bool cmp_textures_lexN(TNode* N1, TNode* N2)
+template <typename TNode> bool CompareTexturesLexN(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
 	return std::lexicographical_compare(t1->begin(), t1->end(), t2->begin(), t2->end());
 }
 
-template <typename TNode> bool cmp_textures_ssa(TNode* N1, TNode* N2)
+template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
 {
 	return (N1->val.ScreenSpaceArea > N2->val.ScreenSpaceArea);
 }
 
-// --- Texture Sorting Logic ---
+// --- Texture List Sorting Logic ---
 template <typename MapTextures, typename VecTypes>
-void sort_tlist(VecTypes& lst, VecTypes& temp, MapTextures& textures, BOOL bSSA)
+void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_map, BOOL bUseSSA)
 {
-	int amount = textures.begin()->key->size();
-	if (bSSA)
+	int texture_count = textures_map.begin()->key->size();
+
+	if (bUseSSA)
 	{
-		if (amount <= 1)
+		if (texture_count <= 1)
 		{
-			textures.getANY_P(lst);
-			std::sort(lst.begin(), lst.end(), cmp_textures_ssa<typename MapTextures::TNode>);
+			textures_map.getANY_P(list);
+			std::sort(list.begin(), list.end(), CompareTexturesSSA<typename MapTextures::TNode>);
 		}
 		else
 		{
-			auto _it = textures.begin();
-			auto _end = textures.end();
-			for (; _it != _end; _it++)
+			// Разделяем на "близкие" (важные для HZB) и "дальние"
+			for (auto it = textures_map.begin(); it != textures_map.end(); ++it)
 			{
-				if (_it->val.ScreenSpaceArea > r_ssaHZBvsTEX)
-					lst.push_back(_it);
+				if (it->val.ScreenSpaceArea > r_ssaHZBvsTEX)
+					list.push_back(it);
 				else
-					temp.push_back(_it);
+					temp_list.push_back(it);
 			}
 
-			std::sort(lst.begin(), lst.end(), cmp_textures_ssa<typename MapTextures::TNode>);
+			// Близкие сортируем по SSA (для Z-Cull)
+			std::sort(list.begin(), list.end(), CompareTexturesSSA<typename MapTextures::TNode>);
 
-			if (2 == amount)
-				std::sort(temp.begin(), temp.end(), cmp_textures_lex2<typename MapTextures::TNode>);
-			else if (3 == amount)
-				std::sort(temp.begin(), temp.end(), cmp_textures_lex3<typename MapTextures::TNode>);
+			// Дальние сортируем по текстурам (для минимизации переключений)
+			if (2 == texture_count)
+				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLex2<typename MapTextures::TNode>);
+			else if (3 == texture_count)
+				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLex3<typename MapTextures::TNode>);
 			else
-				std::sort(temp.begin(), temp.end(), cmp_textures_lexN<typename MapTextures::TNode>);
+				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLexN<typename MapTextures::TNode>);
 
-			lst.insert(lst.end(), temp.begin(), temp.end());
+			list.insert(list.end(), temp_list.begin(), temp_list.end());
 		}
 	}
 	else
 	{
-		textures.getANY_P(lst);
-		if (2 == amount)
-			std::sort(lst.begin(), lst.end(), cmp_textures_lex2<typename MapTextures::TNode>);
-		else if (3 == amount)
-			std::sort(lst.begin(), lst.end(), cmp_textures_lex3<typename MapTextures::TNode>);
+		textures_map.getANY_P(list);
+		if (2 == texture_count)
+			std::sort(list.begin(), list.end(), CompareTexturesLex2<typename MapTextures::TNode>);
+		else if (3 == texture_count)
+			std::sort(list.begin(), list.end(), CompareTexturesLex3<typename MapTextures::TNode>);
 		else
-			std::sort(lst.begin(), lst.end(), cmp_textures_lexN<typename MapTextures::TNode>);
+			std::sort(list.begin(), list.end(), CompareTexturesLexN<typename MapTextures::TNode>);
 	}
 }
 } // namespace
@@ -196,160 +207,169 @@ void CSceneGraph::Render(SceneGraphRenderType type, u32 priority, bool clear, bo
 	}
 }
 
+// Основной метод рендеринга непрозрачной геометрии
+// Иерархия: Vertex Shader -> Pixel Shader -> Constants -> Render States -> Textures -> Objects
 void CSceneGraph::_RenderOpaque(u32 _priority, bool _clear)
 {
 	OPTICK_EVENT("RenderOpaque");
 	Engine.Statistic->RenderDUMP.Begin();
 
-	// **************************************************** NORMAL
+	// -------------------------------------------------------------------------
+	// PHASE 1: STATIC GEOMETRY (Level)
+	// -------------------------------------------------------------------------
 	{
-		// OPTICK_EVENT("NORMAL");
 		RenderBackend.set_transform_world(Fidentity);
 
-		mapNormalVS& vs = m_queue_static[_priority];
-		vs.getANY_P(nrmVS);
+		// Получаем список Vertex Shaders
+		mapNormalVS& map_vs = m_queue_static[_priority];
+		map_vs.getANY_P(nrmVS);
 
-		for (u32 vs_id = 0; vs_id < nrmVS.size(); vs_id++)
+		for (auto* node_vs : nrmVS)
 		{
-			mapNormalVS::TNode* Nvs = nrmVS[vs_id];
-			RenderBackend.set_Vertex_Shader(Nvs->key);
+			RenderBackend.set_Vertex_Shader(node_vs->key);
 
-			mapNormalPS& ps = Nvs->val;
-			ps.ScreenSpaceArea = 0;
-			ps.getANY_P(nrmPS);
-			for (u32 ps_id = 0; ps_id < nrmPS.size(); ps_id++)
+			// Получаем список Pixel Shaders для текущего VS
+			mapNormalPS& map_ps = node_vs->val;
+			map_ps.ScreenSpaceArea = 0;
+			map_ps.getANY_P(nrmPS);
+
+			for (auto* node_ps : nrmPS)
 			{
-				mapNormalPS::TNode* Nps = nrmPS[ps_id];
-				RenderBackend.set_Pixel_Shader(Nps->key);
+				RenderBackend.set_Pixel_Shader(node_ps->key);
 
-				mapNormalCS& cs = Nps->val;
-				cs.ScreenSpaceArea = 0;
-				cs.getANY_P(nrmCS);
-				for (u32 cs_id = 0; cs_id < nrmCS.size(); cs_id++)
+				// Constants
+				mapNormalCS& map_cs = node_ps->val;
+				map_cs.ScreenSpaceArea = 0;
+				map_cs.getANY_P(nrmCS);
+
+				for (auto* node_cs : nrmCS)
 				{
-					mapNormalCS::TNode* Ncs = nrmCS[cs_id];
-					RenderBackend.set_Constants(Ncs->key);
+					RenderBackend.set_Constants(node_cs->key);
 
-					mapNormalStates& states = Ncs->val;
-					states.ScreenSpaceArea = 0;
-					states.getANY_P(nrmStates);
-					for (u32 state_id = 0; state_id < nrmStates.size(); state_id++)
+					// Render States
+					mapNormalStates& map_states = node_cs->val;
+					map_states.ScreenSpaceArea = 0;
+					map_states.getANY_P(nrmStates);
+
+					for (auto* node_state : nrmStates)
 					{
-						mapNormalStates::TNode* Nstate = nrmStates[state_id];
-						RenderBackend.set_States(Nstate->key);
+						RenderBackend.set_States(node_state->key);
 
-						mapNormalTextures& tex = Nstate->val;
-						tex.ScreenSpaceArea = 0;
+						// Textures (Sorting logic applied here)
+						mapNormalTextures& map_tex = node_state->val;
+						map_tex.ScreenSpaceArea = 0;
 
-						sort_tlist(nrmTextures, nrmTexturesTemp, tex, TRUE);
+						SortTextureList(nrmTextures, nrmTexturesTemp, map_tex, TRUE);
 
-						for (u32 tex_id = 0; tex_id < nrmTextures.size(); tex_id++)
+						for (auto* node_tex : nrmTextures)
 						{
-							mapNormalTextures::TNode* Ntex = nrmTextures[tex_id];
-							RenderBackend.set_Textures(Ntex->key);
+							RenderBackend.set_Textures(node_tex->key);
 							RenderImplementation.apply_lmaterial();
 
-							mapNormalItems& items = Ntex->val;
+							// Final Batch Render
+							mapNormalItems& items = node_tex->val;
 							items.ScreenSpaceArea = 0;
-							mapNormal_Render(items); // Local helper
+
+							RenderStaticBatch(items);
+
 							if (_clear)
 								items.clear();
 						}
+
 						nrmTextures.clear();
 						nrmTexturesTemp.clear();
 						if (_clear)
-							tex.clear();
+							map_tex.clear();
 					}
 					nrmStates.clear();
 					if (_clear)
-						states.clear();
+						map_states.clear();
 				}
 				nrmCS.clear();
 				if (_clear)
-					cs.clear();
+					map_cs.clear();
 			}
 			nrmPS.clear();
 			if (_clear)
-				ps.clear();
+				map_ps.clear();
 		}
 		nrmVS.clear();
 		if (_clear)
-			vs.clear();
+			map_vs.clear();
 	}
 
-	// **************************************************** MATRIX
+	// -------------------------------------------------------------------------
+	// PHASE 2: DYNAMIC GEOMETRY (NPCs, Physics)
+	// -------------------------------------------------------------------------
 	{
-		// OPTICK_EVENT("MATRIX");
-		mapMatrixVS& vs = m_queue_dynamic[_priority];
-		vs.getANY_P(matVS);
+		mapMatrixVS& map_vs = m_queue_dynamic[_priority];
+		map_vs.getANY_P(matVS);
 
-		for (u32 vs_id = 0; vs_id < matVS.size(); vs_id++)
+		for (auto* node_vs : matVS)
 		{
-			mapMatrixVS::TNode* Nvs = matVS[vs_id];
-			RenderBackend.set_Vertex_Shader(Nvs->key);
+			RenderBackend.set_Vertex_Shader(node_vs->key);
 
-			mapMatrixPS& ps = Nvs->val;
-			ps.ScreenSpaceArea = 0;
-			ps.getANY_P(matPS);
+			mapMatrixPS& map_ps = node_vs->val;
+			map_ps.ScreenSpaceArea = 0;
+			map_ps.getANY_P(matPS);
 
-			for (u32 ps_id = 0; ps_id < matPS.size(); ps_id++)
+			for (auto* node_ps : matPS)
 			{
-				mapMatrixPS::TNode* Nps = matPS[ps_id];
-				RenderBackend.set_Pixel_Shader(Nps->key);
+				RenderBackend.set_Pixel_Shader(node_ps->key);
 
-				mapMatrixCS& cs = Nps->val;
-				cs.ScreenSpaceArea = 0;
-				cs.getANY_P(matCS);
+				mapMatrixCS& map_cs = node_ps->val;
+				map_cs.ScreenSpaceArea = 0;
+				map_cs.getANY_P(matCS);
 
-				for (u32 cs_id = 0; cs_id < matCS.size(); cs_id++)
+				for (auto* node_cs : matCS)
 				{
-					mapMatrixCS::TNode* Ncs = matCS[cs_id];
-					RenderBackend.set_Constants(Ncs->key);
+					RenderBackend.set_Constants(node_cs->key);
 
-					mapMatrixStates& states = Ncs->val;
-					states.ScreenSpaceArea = 0;
-					states.getANY_P(matStates);
+					mapMatrixStates& map_states = node_cs->val;
+					map_states.ScreenSpaceArea = 0;
+					map_states.getANY_P(matStates);
 
-					for (u32 state_id = 0; state_id < matStates.size(); state_id++)
+					for (auto* node_state : matStates)
 					{
-						mapMatrixStates::TNode* Nstate = matStates[state_id];
-						RenderBackend.set_States(Nstate->key);
+						RenderBackend.set_States(node_state->key);
 
-						mapMatrixTextures& tex = Nstate->val;
-						tex.ScreenSpaceArea = 0;
+						mapMatrixTextures& map_tex = node_state->val;
+						map_tex.ScreenSpaceArea = 0;
 
-						sort_tlist(matTextures, matTexturesTemp, tex, TRUE);
+						SortTextureList(matTextures, matTexturesTemp, map_tex, TRUE);
 
-						for (u32 tex_id = 0; tex_id < matTextures.size(); tex_id++)
+						for (auto* node_tex : matTextures)
 						{
-							mapMatrixTextures::TNode* Ntex = matTextures[tex_id];
-							RenderBackend.set_Textures(Ntex->key);
+							RenderBackend.set_Textures(node_tex->key);
 							RenderImplementation.apply_lmaterial();
 
-							mapMatrixItems& items = Ntex->val;
+							// Final Batch Render
+							mapMatrixItems& items = node_tex->val;
 							items.ScreenSpaceArea = 0;
-							mapMatrix_Render(items);
+
+							RenderDynamicBatch(items);
 						}
+
 						matTextures.clear();
 						matTexturesTemp.clear();
 						if (_clear)
-							tex.clear();
+							map_tex.clear();
 					}
 					matStates.clear();
 					if (_clear)
-						states.clear();
+						map_states.clear();
 				}
 				matCS.clear();
 				if (_clear)
-					cs.clear();
+					map_cs.clear();
 			}
 			matPS.clear();
 			if (_clear)
-				ps.clear();
+				map_ps.clear();
 		}
 		matVS.clear();
 		if (_clear)
-			vs.clear();
+			map_vs.clear();
 	}
 
 	Engine.Statistic->RenderDUMP.End();
@@ -360,49 +380,55 @@ void CSceneGraph::_RenderHUD()
 	OPTICK_EVENT("RenderHUD");
 	ENGINE_API extern float psHUD_FOV;
 
-	Fmatrix Pold = Engine.RenderView.Project;
-	Fmatrix FTold = Engine.RenderView.ViewProjection;
-	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), Engine.RenderView.Aspect, VIEWPORT_NEAR_HUD,
-									 g_pGamePersistent->Environment().CurrentEnv->far_plane);
+	// Backup Projection
+	Fmatrix ProjectOld = Engine.RenderView.Project;
+	Fmatrix ViewProjectOld = Engine.RenderView.ViewProjection;
+
+	// Create Custom HUD Projection
+	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), Engine.RenderView.Aspect,
+											   VIEWPORT_NEAR_HUD,
+											   g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
 	RenderBackend.set_transform_project(Engine.RenderView.Project);
 
+	// Render
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
-	m_queue_hud.traverseLR(sorted_L1); // Local helper
+	m_queue_hud.traverseLR(RenderSortedNode);
 	m_queue_hud.clear();
 	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
 
-	Engine.RenderView.Project = Pold;
-	Engine.RenderView.ViewProjection = FTold;
+	// Restore Projection
+	Engine.RenderView.Project = ProjectOld;
+	Engine.RenderView.ViewProjection = ViewProjectOld;
 	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }
 
 void CSceneGraph::_RenderTranslucent()
 {
 	OPTICK_EVENT("RenderTranslucent");
-	m_queue_transparent.traverseRL(sorted_L1);
+	m_queue_transparent.traverseRL(RenderSortedNode);
 	m_queue_transparent.clear();
 }
 
 void CSceneGraph::_RenderEmissive()
 {
 	OPTICK_EVENT("RenderEmissive");
-	mapEmissive.traverseLR(sorted_L1);
+	mapEmissive.traverseLR(RenderSortedNode);
 	mapEmissive.clear();
 }
 
 void CSceneGraph::_RenderWmarks()
 {
 	OPTICK_EVENT("RenderWmarks");
-	m_queue_wallmarks.traverseLR(sorted_L1);
+	m_queue_wallmarks.traverseLR(RenderSortedNode);
 	m_queue_wallmarks.clear();
 }
 
 void CSceneGraph::_RenderDistortion()
 {
 	OPTICK_EVENT("RenderDistortion");
-	m_queue_distortion.traverseRL(sorted_L1);
+	m_queue_distortion.traverseRL(RenderSortedNode);
 	m_queue_distortion.clear();
 }
 
@@ -410,138 +436,141 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 {
 	OPTICK_EVENT("RenderLODs");
 
+	// Сбор LOD-ов в плоский список
 	if (_setup_zb)
-		mapLOD.getLR(lstLODs); // front-to-back
+		mapLOD.getLR(lstLODs); // front-to-back (для Z-buffer)
 	else
-		mapLOD.getRL(lstLODs); // back-to-front
+		mapLOD.getRL(lstLODs); // back-to-front (для цвета)
 
 	if (lstLODs.empty())
 		return;
 
 	// *** 1. Подготовка буфера и констант ***
-	u32 shid = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
-	FLOD* firstV = (FLOD*)lstLODs[0].pVisual;
+	u32 shader_id = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
+	FLOD* first_visual = (FLOD*)lstLODs[0].pVisual;
 
-	u32 vOffset;
-	// Блокируем память один раз для всех LODов
-	FLOD::_hw* V_start = (FLOD::_hw*)RenderBackend.Vertex.Lock(lstLODs.size() * 4, firstV->geom->vb_stride, vOffset);
+	u32 vb_offset;
+	// Блокируем память один раз для всех LODов (по 4 вершины на LOD)
+	FLOD::_hw* VertexBuffer =
+		(FLOD::_hw*)RenderBackend.Vertex.Lock(lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
 
-	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
-	if (ssaRange < EPS_S)
-		ssaRange = EPS_S;
+	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
+	if (ssa_range < EPS_S)
+		ssa_range = EPS_S;
 
 	// Захват переменных для PPL
-	const float f_ssaLOD_B = r_ssaLOD_B;
-	const Fvector vCameraPos = Engine.RenderView.Position;
+	const float ssa_limit_b = r_ssaLOD_B;
+	const Fvector camera_pos = Engine.RenderView.Position;
 
 	// *** 2. ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
+	// Вычисляем поворот билбордов и смешивание текстур в параллель
 	concurrency::parallel_for(size_t(0), lstLODs.size(), [&](size_t i) {
-		// Получаем указатель на 4 вершины, принадлежащие этому LOD-у
-		FLOD::_hw* V = V_start + (i * 4);
-		SceneGraphTypes::LodRenderNode& P = lstLODs[i];
+		FLOD::_hw* V = VertexBuffer + (i * 4);
+		SceneGraphTypes::LodRenderNode& Node = lstLODs[i];
+		FLOD* lod_visual = (FLOD*)Node.pVisual;
 
-		// calculate alpha
-		float ssaDiff = P.ScreenSpaceArea - f_ssaLOD_B;
-		float scale = ssaDiff / ssaRange;
-		int iA = iFloor((1.0f - scale) * 255.f);
-		u32 uA = u32(clampr(iA, 0, 255));
+		// 1. Вычисление Alpha (Fade In/Out)
+		float ssa_diff = Node.ScreenSpaceArea - ssa_limit_b;
+		float scale = ssa_diff / ssa_range;
+		int alpha_int = iFloor((1.0f - scale) * 255.f);
+		u32 alpha_final = u32(clampr(alpha_int, 0, 255));
 
-		// calculate direction and shift
-		FLOD* lodV = (FLOD*)P.pVisual;
-		Fvector Ldir, shift;
-		Ldir.sub(lodV->vis.sphere.P, vCameraPos).normalize();
-		shift.mul(Ldir, -.5f * lodV->vis.sphere.R);
+		// 2. Вычисление направления на камеру
+		Fvector dir_to_camera, shift;
+		dir_to_camera.sub(lod_visual->vis.sphere.P, camera_pos).normalize();
+		shift.mul(dir_to_camera, -.5f * lod_visual->vis.sphere.R);
 
-		// gen geometry
-		FLOD::_face* facets = lodV->facets;
+		// 3. Выбор лучших плоскостей (Facet Selection)
+		FLOD::_face* facets = lod_visual->facets;
 
-		// Используем локальный svector, это безопасно для потоков
-		svector<std::pair<float, u32>, 8> selector;
+		// Локальный вектор для сортировки (безопасно для потоков)
+		svector<std::pair<float, u32>, 8> plane_selector;
 		for (u32 s = 0; s < 8; s++)
-			selector.push_back(mk_pair(Ldir.dotproduct(facets[s].N), s));
+			plane_selector.push_back(mk_pair(dir_to_camera.dotproduct(facets[s].N), s));
 
-		// Используем std::sort с локальным предикатом
-		std::sort(selector.begin(), selector.end(), pred_dot_std);
+		std::sort(plane_selector.begin(), plane_selector.end(), SortLodsByDotProduct);
 
-		float dot_best = selector[selector.size() - 1].first;
-		float dot_next = selector[selector.size() - 2].first;
-		float dot_next_2 = selector[selector.size() - 3].first;
-		u32 id_best = selector[selector.size() - 1].second;
-		u32 id_next = selector[selector.size() - 2].second;
+		float dot_best = plane_selector[plane_selector.size() - 1].first;
+		float dot_next = plane_selector[plane_selector.size() - 2].first;
+		float dot_next_2 = plane_selector[plane_selector.size() - 3].first;
 
-		// Now we have two "best" planes, calculate factor, and approx normal
-		float fA = dot_best, fB = dot_next, fC = dot_next_2;
-		float alpha = 0.5f + 0.5f * (1 - (fB - fC) / (fA - fC));
-		int iF = iFloor(alpha * 255.5f);
-		u32 uF = u32(clampr(iF, 0, 255));
+		u32 id_best = plane_selector[plane_selector.size() - 1].second;
+		u32 id_next = plane_selector[plane_selector.size() - 2].second;
 
-		// Fill VB
-		FLOD::_face& FA = facets[id_best];
-		FLOD::_face& FB = facets[id_next];
+		// 4. Интерполяция между двумя плоскостями
+		float dot_a = dot_best, dot_b = dot_next, dot_c = dot_next_2;
+		float alpha_factor = 0.5f + 0.5f * (1 - (dot_b - dot_c) / (dot_a - dot_c));
+		int factor_int = iFloor(alpha_factor * 255.5f);
+		u32 factor_final = u32(clampr(factor_int, 0, 255));
 
-		static const int vid[4] = {3, 0, 2, 1}; // const для безопасности
+		// 5. Заполнение вершинного буфера
+		FLOD::_face& FaceA = facets[id_best];
+		FLOD::_face& FaceB = facets[id_next];
 
-		for (u32 vit = 0; vit < 4; vit++)
+		static const int vertex_indices[4] = {3, 0, 2, 1};
+
+		for (u32 v_idx = 0; v_idx < 4; v_idx++)
 		{
-			int id = vid[vit];
+			int id = vertex_indices[v_idx];
 			// Пишем прямо в память по вычисленному смещению
-			V[vit].p0.add(FB.v[id].v, shift);
-			V[vit].p1.add(FA.v[id].v, shift);
-			V[vit].n0 = FB.N;
-			V[vit].n1 = FA.N;
-			V[vit].sun_af = color_rgba(FB.v[id].c_sun, FA.v[id].c_sun, uA, uF);
-			V[vit].t0 = FB.v[id].t;
-			V[vit].t1 = FA.v[id].t;
-			V[vit].rgbh0 = FB.v[id].c_rgb_hemi;
-			V[vit].rgbh1 = FA.v[id].c_rgb_hemi;
+			V[v_idx].p0.add(FaceB.v[id].v, shift);
+			V[v_idx].p1.add(FaceA.v[id].v, shift);
+			V[v_idx].n0 = FaceB.N;
+			V[v_idx].n1 = FaceA.N;
+			V[v_idx].sun_af = color_rgba(FaceB.v[id].c_sun, FaceA.v[id].c_sun, alpha_final, factor_final);
+			V[v_idx].t0 = FaceB.v[id].t;
+			V[v_idx].t1 = FaceA.v[id].t;
+			V[v_idx].rgbh0 = FaceB.v[id].c_rgb_hemi;
+			V[v_idx].rgbh1 = FaceA.v[id].c_rgb_hemi;
 		}
 	});
 
-	// Разблокируем буфер — данные уже там
-	RenderBackend.Vertex.Unlock(lstLODs.size() * 4, firstV->geom->vb_stride);
+	RenderBackend.Vertex.Unlock(lstLODs.size() * 4, first_visual->geom->vb_stride);
 
-	// *** 3. ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка ***
+	// *** 3. ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка по шейдерам ***
+	// Чтобы минимизировать смену стейтов при отрисовке батча
 	if (!lstLODs.empty())
 	{
-		ref_selement cur_S = lstLODs[0].pVisual->shader->E[shid];
-		int cur_count = 0;
+		ref_selement current_shader = lstLODs[0].pVisual->shader->E[shader_id];
+		int current_count = 0;
 
 		for (u32 i = 0; i < lstLODs.size(); i++)
 		{
-			SceneGraphTypes::LodRenderNode& P = lstLODs[i];
-			if (P.pVisual->shader->E[shid] == cur_S)
+			SceneGraphTypes::LodRenderNode& Node = lstLODs[i];
+			if (Node.pVisual->shader->E[shader_id] == current_shader)
 			{
-				cur_count++;
+				current_count++;
 			}
 			else
 			{
-				lstLODgroups.push_back(cur_count);
-				cur_S = P.pVisual->shader->E[shid];
-				cur_count = 1;
+				lstLODgroups.push_back(current_count);
+				current_shader = Node.pVisual->shader->E[shader_id];
+				current_count = 1;
 			}
 		}
-		lstLODgroups.push_back(cur_count);
+		lstLODgroups.push_back(current_count);
 	}
 
 	// *** 4. RENDER ***
-	////OPTICK_EVENT("CSceneGraph::render_lods - render");
-
-	int current = 0;
+	int current_lod_index = 0;
 	RenderBackend.set_transform_world(Fidentity);
 
 	for (u32 g = 0; g < lstLODgroups.size(); g++)
 	{
-		int p_count = lstLODgroups[g];
+		int primitive_count = lstLODgroups[g];
 
-		if (p_count > 0)
+		if (primitive_count > 0)
 		{
-			RenderBackend.set_Element(lstLODs[current].pVisual->shader->E[shid]);
-			RenderBackend.set_Geometry(firstV->geom);
-			RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4 * p_count, 0, 2 * p_count);
-			RenderBackend.stat.r.s_flora_lods.add(4 * p_count);
+			RenderBackend.set_Element(lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
+			RenderBackend.set_Geometry(first_visual->geom);
 
-			current += p_count;
-			vOffset += 4 * p_count;
+			// Отрисовка батча (2 треугольника на 1 LOD)
+			RenderBackend.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);
+
+			RenderBackend.stat.r.s_flora_lods.add(4 * primitive_count);
+
+			current_lod_index += primitive_count;
+			vb_offset += 4 * primitive_count;
 		}
 	}
 
@@ -554,65 +583,70 @@ void CSceneGraph::_RenderLODs(bool _setup_zb, bool _clear)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// sub-space rendering - shortcut to render with frustum extracted from matrix
+// Subspace Rendering (Traversal)
+// Обход секторов и порталов
+//////////////////////////////////////////////////////////////////////////
+
+// Shortcut: Create frustum from matrix
 void CSceneGraph::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 								  BOOL _precise_portals)
 {
 	OPTICK_EVENT("render_subspace - shortcut");
 
-	CFrustum temp;
-	temp.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
-	render_subspace(_sector, &temp, mCombined, _cop, _dynamic, _precise_portals);
+	CFrustum temp_frustum;
+	temp_frustum.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
+	render_subspace(_sector, &temp_frustum, mCombined, _cop, _dynamic, _precise_portals);
 }
 
-// sub-space rendering - main procedure
-void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop,
-								  BOOL _dynamic, BOOL _precise_portals)
+// Main procedure
+void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_frustum, Fmatrix& mCombined,
+								  Fvector& camera_pos, BOOL render_dynamic, BOOL precise_portals)
 {
 	OPTICK_EVENT("render_subspace - main");
 
-	VERIFY(_sector);
-	m_traversal_marker++; // !!! critical here
+	VERIFY(start_sector);
+	m_traversal_marker++; // Important: New traversal ID
 
-	// Save and build new frustum, disable HOM
+	// Save context
 	CFrustum ViewSave = RenderImplementation.ViewBase;
-	RenderImplementation.ViewBase = *_frustum;
+	RenderImplementation.ViewBase = *view_frustum;
 	RenderImplementation.View = &RenderImplementation.ViewBase;
 
-	if (_precise_portals && RenderImplementation.rmPortals)
+	// Portal Precision Check (Dual Render Force)
+	if (precise_portals && RenderImplementation.rmPortals)
 	{
-		// Check if camera is too near to some portal - if so force DualRender
 		Fvector box_radius;
 		box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
 		RenderImplementation.Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
-		RenderImplementation.Sectors_xrc.box_query(RenderImplementation.rmPortals, _cop, box_radius);
+		RenderImplementation.Sectors_xrc.box_query(RenderImplementation.rmPortals, camera_pos, box_radius);
+
 		for (int K = 0; K < RenderImplementation.Sectors_xrc.r_count(); K++)
 		{
-			CPortal* pPortal =
-				(CPortal*)
-					RenderImplementation.Portals[RenderImplementation.rmPortals
-													 ->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id]
-													 .dummy];
+			u32 portal_id =
+				RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
+			CPortal* pPortal = (CPortal*)RenderImplementation.Portals[portal_id];
 			pPortal->bDualRender = TRUE;
 		}
 	}
 
 	// Traverse sector/portal structure
-	PortalTraverser.traverse(_sector, RenderImplementation.ViewBase, _cop, mCombined, 0);
+	PortalTraverser.traverse(start_sector, RenderImplementation.ViewBase, camera_pos, mCombined, 0);
 
-	// Determine visibility for static geometry hierrarhy
+	// 1. Collect STATIC Geometry (Hierarchical)
 	for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
 	{
 		CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
-		IRender_Visual* root = sector->root();
+		IRender_Visual* root_visual = sector->root();
+
 		for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 		{
 			RenderImplementation.set_Frustum(&(sector->r_frustums[v_it]));
-			RenderImplementation.add_Geometry(root);
+			RenderImplementation.add_Geometry(root_visual);
 		}
 	}
 
-	if (_dynamic)
+	// 2. Collect DYNAMIC Geometry (Spatial DB)
+	if (render_dynamic)
 	{
 		RenderImplementation.set_Object(0);
 
@@ -625,56 +659,55 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, F
 		{
 			ISpatial* spatial = lstRenderables[o_it];
 			CSector* sector = (CSector*)spatial->spatial.sector;
+
 			if (0 == sector)
-				continue; // disassociated from S/P structure
+				continue; // Object is lost (no sector)
 			if (PortalTraverser.i_marker != sector->r_marker)
-				continue; // inactive (untouched) sector
+				continue; // Object is in invisible sector
+
 			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 			{
 				RenderImplementation.set_Frustum(&(sector->r_frustums[v_it]));
+
 				if (!RenderImplementation.View->testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 					continue;
 
-				// renderable
+				// Is it renderable?
 				IRenderable* renderable = spatial->dcast_Renderable();
 				if (0 == renderable)
-					continue; // unknown, but renderable object (r1_glow???)
+					continue;
 
 				renderable->renderable_Render();
 			}
 		}
 	}
 
+	// Actor Shadow (Specific hack for shadow pass)
 	if (g_pGameLevel && (RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH))
-		g_pGameLevel->pHUD->Render_Actor_Shadow(); // ACtor Shadow
+		g_pGameLevel->pHUD->Render_Actor_Shadow();
 
-	// Restore
+	// Restore context
 	RenderImplementation.ViewBase = ViewSave;
 	RenderImplementation.View = 0;
 }
 
+// Frame Reuse Optimization
 void CSceneGraph::render_reuse()
 {
 	PROFILE_FUNCTION();
 
-	// Статика
+	// Статика (Reuse List)
 	for (IRender_Visual* V : m_visuals_static_visible)
 	{
-		// Вызываем добавление ЛИСТА.
-		// Важно: мы не вызываем полную рекурсию add_Static, а сразу идем к листовой логике.
-		// Но нам нужно, чтобы switch внутри ProcessStaticVisual отработал,
-		// чтобы корректно раскидать LOD-ы, если они попали в список.
-
-		// Оптимальный вариант - вызвать switch обработки типа из ProcessStaticVisual
-		// Но чтобы не дублировать код, можно просто вызвать ProcessStaticVisual.
-		// Да, там есть проверка HOM.visible, но она очень быстрая (это просто флаг после render_main).
+		// Используем ProcessStaticVisual, чтобы корректно обработать LOD-ы
+		// если они были сохранены в список
 		ProcessStaticVisual(V);
 	}
 
-	// Динамика
+	// Динамика (Reuse List)
 	for (auto& it : m_visuals_dynamic_visible)
 	{
-		RenderImplementation.set_Transform(&it.matrix); // Восстанавливаем матрицу
+		RenderImplementation.set_Transform(&it.matrix);
 		ProcessDynamicVisual(it.visual);
 	}
 }

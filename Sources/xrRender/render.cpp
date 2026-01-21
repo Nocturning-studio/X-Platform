@@ -396,6 +396,11 @@ void CRender::OnFrame()
 }
 
 // Implementation
+bool CRender::is_dynamic_sun_enabled()
+{
+	return ps_r_lighting_flags.test(RFLAG_SUN);
+}
+
 IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent)
 {
 	return xr_new<CROS_impl>();
