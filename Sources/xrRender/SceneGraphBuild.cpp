@@ -82,305 +82,337 @@ float r_ssaLOD_A, r_ssaLOD_B;
 float r_ssaGLOD_start, r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
 
-ICF float CalcSSA(float& distSQ, Fvector& C, IRender_Visual* V)
+ICF float CalcScreenSpaceArea(float& distSQ, Fvector& C, IRender_Visual* V)
 {
 	float R = V->vis.sphere.R + 0;
 	distSQ = Engine.RenderView.Position.distance_to_sqr(C) + EPS;
 	return R / distSQ;
 }
-ICF float CalcSSA(float& distSQ, Fvector& C, float R)
+ICF float CalcScreenSpaceArea(float& distSQ, Fvector& C, float R)
 {
 	distSQ = Engine.RenderView.Position.distance_to_sqr(C) + EPS;
 	return R / distSQ;
 }
 
-void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center)
+void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center)
 {
-	// Для доступа к методам CRender (например, rimp_select_sh_dynamic)
-	CRender& RI = RenderImplementation;
-
-	// 'm_traversal_marker' теперь член CSceneGraph, обращаемся напрямую
+	// 1. Проверка на повторное добавление в этом кадре
 	if (pVisual->vis.m_traversal_marker == m_traversal_marker)
 		return;
 	pVisual->vis.m_traversal_marker = m_traversal_marker;
 
-	float distSQ;
-	float ScreenSpaceArea = CalcSSA(distSQ, Center, pVisual);
-	if (ScreenSpaceArea <= r_ssaDISCARD)
+	// 2. Вычисление метрики экрана (Screen Space Area) и дистанции
+	float distance_sq;
+	float screen_space_area = CalcScreenSpaceArea(distance_sq, object_center, pVisual);
+
+	// Отсечение слишком мелких объектов
+	if (screen_space_area <= r_ssaDISCARD)
 		return;
 
-	// Distortive geometry
-	VERIFY(pVisual->shader._get());
-	ShaderElement* sh_d = &*pVisual->shader->E[4];
+	// 3. Обработка искажений (Distortion Geometry)
+	// Шейдерный элемент с индексом 4 обычно отвечает за спецэффекты
+	ShaderElement* shader_distortion = pVisual->shader->E[4]._get();
 
-	// pmask - член CSceneGraph
-	if (sh_d && sh_d->flags.bDistort)
+	if (shader_distortion && shader_distortion->flags.bDistort)
 	{
-		// Проверяем приоритет дисторшена (обычно он 1, но проверим честно)
-		bool allowed = (sh_d->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0 : m_fetch_config.fetch_priority_1;
-		if (allowed)
+		// Проверяем, разрешен ли этот приоритет в текущем проходе (Fetch Config)
+		bool is_priority_allowed = (shader_distortion->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0
+																				 : m_fetch_config.fetch_priority_1;
+
+		if (is_priority_allowed)
 		{
-			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
-			N->val.ScreenSpaceArea = ScreenSpaceArea;
-			// m_current_owner и m_current_transform - члены CSceneGraph
-			N->val.pObject = m_current_owner;
-			N->val.pVisual = pVisual;
-			N->val.Matrix = *m_current_transform;
-			N->val.se = sh_d; // 4=L_special
+			auto* node = m_queue_distortion.insertInAnyWay(distance_sq);
+			node->val.ScreenSpaceArea = screen_space_area;
+			node->val.pObject = m_current_owner;
+			node->val.pVisual = pVisual;
+			node->val.Matrix = *m_current_transform;
+			node->val.se = shader_distortion;
 		}
 	}
 
-	// Select shader - метод остался в CRender
-	ShaderElement* sh = RI.rimp_select_sh_dynamic(pVisual, distSQ);
-	if (0 == sh)
+	// 4. Выбор основного шейдера для рендеринга
+	CRender& render_impl = RenderImplementation;
+	ShaderElement* shader_element = render_impl.rimp_select_sh_dynamic(pVisual, distance_sq);
+
+	if (!shader_element)
 		return;
-	u32 priority = sh->flags.iPriority / 2;
+
+	// 5. Фильтрация по приоритету (G-Buffer Optimization)
+	u32 priority = shader_element->flags.iPriority / 2;
 	if (priority == 0 && !m_fetch_config.fetch_priority_0)
 		return;
 	if (priority == 1 && !m_fetch_config.fetch_priority_1)
 		return;
 
-	// Create common node
-	// Invisible elements exist only in R1
-	DynamicRenderNode item = {ScreenSpaceArea, m_current_owner, pVisual, *m_current_transform};
-
-	// HUD rendering
-	// m_is_hud_pass - член CSceneGraph
-	if (m_is_hud_pass)
-	{
-		if (sh->flags.bStrictB2F)
-		{
-			mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
-			N->val.ScreenSpaceArea = ScreenSpaceArea;
-			N->val.pObject = m_current_owner;
-			N->val.pVisual = pVisual;
-			N->val.Matrix = *m_current_transform;
-			N->val.se = sh;
-			return;
-		}
-		else
-		{
-			mapHUD_Node* N = m_queue_hud.insertInAnyWay(distSQ);
-			N->val.ScreenSpaceArea = ScreenSpaceArea;
-			N->val.pObject = m_current_owner;
-			N->val.pVisual = pVisual;
-			N->val.Matrix = *m_current_transform;
-			N->val.se = sh;
-			return;
-		}
-	}
-
-	// m_is_invisible_mode - член CSceneGraph
+	// Подготовка данных для узла
+	// Invisible elements exist only in R1, so we skip check for m_is_invisible_mode logic logic here mostly
 	if (m_is_invisible_mode)
 		return;
 
-	// strict-sorting selection
-	if (sh->flags.bStrictB2F)
-	{
-		mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
-		N->val.ScreenSpaceArea = ScreenSpaceArea;
-		N->val.pObject = m_current_owner;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = *m_current_transform;
-		N->val.se = sh;
-		return;
-	}
+	// 6. Маршрутизация по очередям (HUD / Sorted / Emissive / Wallmarks / Opaque)
 
-	// Emissive geometry
-	if (sh->flags.bEmissive)
+	// --- HUD (Оружие и руки) ---
+	if (m_is_hud_pass)
 	{
-		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
-		N->val.ScreenSpaceArea = ScreenSpaceArea;
-		N->val.pObject = m_current_owner;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = *m_current_transform;
-		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
-	}
-
-	// pmask_wmark - член CSceneGraph
-	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
-	{
-		mapSorted_Node* N = m_queue_wallmarks.insertInAnyWay(distSQ);
-		N->val.ScreenSpaceArea = ScreenSpaceArea;
-		N->val.pObject = m_current_owner;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = *m_current_transform;
-		N->val.se = sh;
-		return;
-	}
-
-	// the most common node
-	SPass& pass = *sh->passes.front();
-	mapMatrix_T& map = m_queue_dynamic[sh->flags.iPriority / 2];
-#ifdef USE_RESOURCE_DEBUGGER
-	mapMatrixVS::TNode* Nvs = map.insert(pass.vs);
-	mapMatrixPS::TNode* Nps = Nvs->val.insert(pass.ps);
-#else
-	mapMatrixVS::TNode* Nvs = map.insert(pass.vs->sh);
-	mapMatrixPS::TNode* Nps = Nvs->val.insert(pass.ps->sh);
-#endif
-	mapMatrixCS::TNode* Ncs = Nps->val.insert(pass.constants._get());
-	mapMatrixStates::TNode* Nstate = Ncs->val.insert(pass.state->state);
-	mapMatrixTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
-	mapMatrixItems& items = Ntex->val;
-	items.push_back(item);
-
-	// Need to sort for HZB efficient use
-	if (ScreenSpaceArea > Ntex->val.ScreenSpaceArea)
-	{
-		Ntex->val.ScreenSpaceArea = ScreenSpaceArea;
-		if (ScreenSpaceArea > Nstate->val.ScreenSpaceArea)
+		// Если шейдер требует строгой сортировки Back-to-Front (например, стекло на шлеме)
+		if (shader_element->flags.bStrictB2F)
 		{
-			Nstate->val.ScreenSpaceArea = ScreenSpaceArea;
-			if (ScreenSpaceArea > Ncs->val.ScreenSpaceArea)
+			auto* node = m_queue_transparent.insertInAnyWay(distance_sq);
+			node->val.ScreenSpaceArea = screen_space_area;
+			node->val.pObject = m_current_owner;
+			node->val.pVisual = pVisual;
+			node->val.Matrix = *m_current_transform;
+			node->val.se = shader_element;
+		}
+		else
+		{
+			auto* node = m_queue_hud.insertInAnyWay(distance_sq);
+			node->val.ScreenSpaceArea = screen_space_area;
+			node->val.pObject = m_current_owner;
+			node->val.pVisual = pVisual;
+			node->val.Matrix = *m_current_transform;
+			node->val.se = shader_element;
+		}
+		return;
+	}
+
+	// --- Strict Sorting (Полупрозрачность) ---
+	if (shader_element->flags.bStrictB2F)
+	{
+		auto* node = m_queue_transparent.insertInAnyWay(distance_sq);
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = m_current_owner;
+		node->val.pVisual = pVisual;
+		node->val.Matrix = *m_current_transform;
+		node->val.se = shader_element;
+		return;
+	}
+
+	// --- Emissive (Светящиеся объекты) ---
+	if (shader_element->flags.bEmissive)
+	{
+		auto* node = mapEmissive.insertInAnyWay(distance_sq);
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = m_current_owner;
+		node->val.pVisual = pVisual;
+		node->val.Matrix = *m_current_transform;
+		node->val.se = pVisual->shader->E[4]._get();
+	}
+
+	// --- Wallmarks (Следы на динамике) ---
+	if (shader_element->flags.bWmark && m_fetch_config.fetch_wallmarks)
+	{
+		auto* node = m_queue_wallmarks.insertInAnyWay(distance_sq);
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = m_current_owner;
+		node->val.pVisual = pVisual;
+		node->val.Matrix = *m_current_transform;
+		node->val.se = shader_element;
+		return;
+	}
+
+	// --- Opaque (Основная непрозрачная геометрия) ---
+	// Самая сложная часть: вставка в иерархическую мапу для минимизации смены состояний
+
+	DynamicRenderNode item = {screen_space_area, m_current_owner, pVisual, *m_current_transform};
+
+	// Получаем первый проход шейдера (обычно самый важный)
+	SPass& pass = *shader_element->passes.front();
+
+	// Выбираем корневую мапу по приоритету
+	auto& target_map = m_queue_dynamic[priority];
+
+	// Иерархическая вставка: VS -> PS -> Constants -> States -> Textures
+#ifdef USE_RESOURCE_DEBUGGER
+	auto* node_vs = target_map.insert(pass.vs);
+	auto* node_ps = node_vs->val.insert(pass.ps);
+#else
+	auto* node_vs = target_map.insert(pass.vs->sh);
+	auto* node_ps = node_vs->val.insert(pass.ps->sh);
+#endif
+	auto* node_cs = node_ps->val.insert(pass.constants._get());
+	auto* node_state = node_cs->val.insert(pass.state->state);
+	auto* node_tex = node_state->val.insert(pass.T._get());
+
+	// Добавляем сам объект в конечный список
+	node_tex->val.push_back(item);
+
+	// Обновляем SSA для всех уровней иерархии
+	// Это нужно для сортировки групп: мы хотим рисовать группы с большими объектами (близкими) раньше,
+	// чтобы работал Early Z-Cull.
+	if (screen_space_area > node_tex->val.ScreenSpaceArea)
+	{
+		node_tex->val.ScreenSpaceArea = screen_space_area;
+		if (screen_space_area > node_state->val.ScreenSpaceArea)
+		{
+			node_state->val.ScreenSpaceArea = screen_space_area;
+			if (screen_space_area > node_cs->val.ScreenSpaceArea)
 			{
-				Ncs->val.ScreenSpaceArea = ScreenSpaceArea;
-				if (ScreenSpaceArea > Nps->val.ScreenSpaceArea)
+				node_cs->val.ScreenSpaceArea = screen_space_area;
+				if (screen_space_area > node_ps->val.ScreenSpaceArea)
 				{
-					Nps->val.ScreenSpaceArea = ScreenSpaceArea;
-					if (ScreenSpaceArea > Nvs->val.ScreenSpaceArea)
+					node_ps->val.ScreenSpaceArea = screen_space_area;
+					if (screen_space_area > node_vs->val.ScreenSpaceArea)
 					{
-						Nvs->val.ScreenSpaceArea = ScreenSpaceArea;
+						node_vs->val.ScreenSpaceArea = screen_space_area;
 					}
 				}
 			}
 		}
 	}
 
-	// m_culling_bounds_recorder - член CSceneGraph
+	// Сбор данных для теней от солнца
 	if (m_culling_bounds_recorder)
 	{
-		Fbox3 temp;
-		Fmatrix& xf = *m_current_transform;
-		temp.transform(pVisual->vis.box, xf);
-		m_culling_bounds_recorder->push_back(temp);
+		Fbox3 temp_box;
+		temp_box.transform(pVisual->vis.box, *m_current_transform);
+		m_culling_bounds_recorder->push_back(temp_box);
 	}
 }
 
 void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual)
 {
-	CRender& RI = RenderImplementation;
-
-	// 'm_traversal_marker' - член CSceneGraph
+	// 1. Проверка на повторное добавление (Traversal Marker)
 	if (pVisual->vis.m_traversal_marker == m_traversal_marker)
 		return;
 	pVisual->vis.m_traversal_marker = m_traversal_marker;
 
-	float distSQ;
-	float ScreenSpaceArea = CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
-	if (ScreenSpaceArea <= r_ssaDISCARD)
+	// 2. Вычисление метрики экрана (Screen Space Area)
+	// Для статики берем позицию сферы напрямую, так как она уже в мировых координатах
+	float distance_sq;
+	float screen_space_area = CalcScreenSpaceArea(distance_sq, pVisual->vis.sphere.P, pVisual);
+
+	if (screen_space_area <= r_ssaDISCARD)
 		return;
 
-	// Distortive geometry
-	VERIFY(pVisual->shader._get());
-	ShaderElement* sh_d = &*pVisual->shader->E[4];
+	// 3. Обработка искажений (Distortion Geometry)
+	ShaderElement* shader_distortion = pVisual->shader->E[4]._get();
 
-	// pmask - член CSceneGraph
-	if (sh_d && sh_d->flags.bDistort)
+	if (shader_distortion && shader_distortion->flags.bDistort)
 	{
-		bool allowed = (sh_d->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0 : m_fetch_config.fetch_priority_1;
-		if (allowed)
+		// Проверяем, разрешен ли этот приоритет в текущем конфиге
+		bool is_priority_allowed = (shader_distortion->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0
+																				 : m_fetch_config.fetch_priority_1;
+
+		if (is_priority_allowed)
 		{
-			mapSorted_Node* N = m_queue_distortion.insertInAnyWay(distSQ);
-			N->val.ScreenSpaceArea = ScreenSpaceArea;
-			N->val.pObject = NULL;
-			N->val.pVisual = pVisual;
-			N->val.Matrix = Fidentity;
-			N->val.se = &*pVisual->shader->E[4]; // 4=L_special
+			auto* node = m_queue_distortion.insertInAnyWay(distance_sq);
+			node->val.ScreenSpaceArea = screen_space_area;
+			node->val.pObject = nullptr; // Статика не имеет родительского объекта
+			node->val.pVisual = pVisual;
+			node->val.Matrix = Fidentity; // Статика всегда в мировых координатах (Identity)
+			node->val.se = shader_distortion;
 		}
 	}
 
-	// Select shader - вызываем метод CRender
-	ShaderElement* sh = RI.rimp_select_sh_static(pVisual, distSQ);
+	// 4. Выбор основного шейдера (Static Shader Selection)
+	CRender& render_impl = RenderImplementation;
+	ShaderElement* shader_element = render_impl.rimp_select_sh_static(pVisual, distance_sq);
 
-	if (0 == sh)
+	if (!shader_element)
 		return;
 
-	u32 priority = sh->flags.iPriority / 2;
+	// 5. Фильтрация по приоритету
+	u32 priority = shader_element->flags.iPriority / 2;
 	if (priority == 0 && !m_fetch_config.fetch_priority_0)
 		return;
 	if (priority == 1 && !m_fetch_config.fetch_priority_1)
 		return;
 
-	// strict-sorting selection
-	if (sh->flags.bStrictB2F)
+	// 6. Маршрутизация по очередям
+
+	// --- Strict Sorting (Полупрозрачность) ---
+	if (shader_element->flags.bStrictB2F)
 	{
-		mapSorted_Node* N = m_queue_transparent.insertInAnyWay(distSQ);
-		N->val.pObject = NULL;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = Fidentity;
-		N->val.se = sh;
+		auto* node = m_queue_transparent.insertInAnyWay(distance_sq);
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = nullptr;
+		node->val.pVisual = pVisual;
+		node->val.Matrix = Fidentity;
+		node->val.se = shader_element;
 		return;
 	}
 
-	// Emissive geometry
-	if (sh->flags.bEmissive)
+	// --- Emissive (Светящиеся объекты) ---
+	if (shader_element->flags.bEmissive)
 	{
-		mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
-		N->val.ScreenSpaceArea = ScreenSpaceArea;
-		N->val.pObject = NULL;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = Fidentity;
-		N->val.se = &*pVisual->shader->E[4]; // 4=L_special
+		auto* node = mapEmissive.insertInAnyWay(distance_sq);
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = nullptr;
+		node->val.pVisual = pVisual;
+		node->val.Matrix = Fidentity;
+		// Для эмиссивов часто используется специальный проход из E[4]
+		node->val.se = pVisual->shader->E[4]._get();
 	}
 
-	// pmask_wmark - член CSceneGraph
-	if (sh->flags.bWmark && m_fetch_config.fetch_wallmarks)
+	// --- Wallmarks (Следы на статике) ---
+	if (shader_element->flags.bWmark && m_fetch_config.fetch_wallmarks)
 	{
-
-		mapSorted_Node* N = m_queue_wallmarks.insertInAnyWay(distSQ);
-		N->val.ScreenSpaceArea = ScreenSpaceArea;
-		N->val.pObject = NULL;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = Fidentity;
-		N->val.se = sh;
+		auto* node = m_queue_wallmarks.insertInAnyWay(distance_sq);
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = nullptr;
+		node->val.pVisual = pVisual;
+		node->val.Matrix = Fidentity;
+		node->val.se = shader_element;
 		return;
 	}
 
-	// m_feedback_interface, counter_S, val_feedback_breakp - члены CSceneGraph
+	// 7. Обратная связь (Feedback)
+	// Используется для стриминга или специфических запросов движка к рендеру
 	if (m_feedback_interface && counter_S == val_feedback_breakp)
-		m_feedback_interface->rfeedback_static(pVisual);
-
-	counter_S++;
-	SPass& pass = *sh->passes.front();
-	mapNormal_T& map = m_queue_static[sh->flags.iPriority / 2];
-#ifdef USE_RESOURCE_DEBUGGER
-	mapNormalVS::TNode* Nvs = map.insert(pass.vs);
-	mapNormalPS::TNode* Nps = Nvs->val.insert(pass.ps);
-#else
-	mapNormalVS::TNode* Nvs = map.insert(pass.vs->sh);
-	mapNormalPS::TNode* Nps = Nvs->val.insert(pass.ps->sh);
-#endif
-	mapNormalCS::TNode* Ncs = Nps->val.insert(pass.constants._get());
-	mapNormalStates::TNode* Nstate = Ncs->val.insert(pass.state->state);
-	mapNormalTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
-	mapNormalItems& items = Ntex->val;
-	StaticRenderNode item = {ScreenSpaceArea, pVisual};
-	items.push_back(item);
-
-	// Need to sort for HZB efficient use
-	if (ScreenSpaceArea > Ntex->val.ScreenSpaceArea)
 	{
-		Ntex->val.ScreenSpaceArea = ScreenSpaceArea;
-		if (ScreenSpaceArea > Nstate->val.ScreenSpaceArea)
+		m_feedback_interface->rfeedback_static(pVisual);
+	}
+
+	// 8. Opaque (Основная статическая геометрия)
+	counter_S++;
+
+	// Получаем первый проход шейдера
+	SPass& pass = *shader_element->passes.front();
+
+	// Выбираем корневую мапу по приоритету
+	auto& target_map = m_queue_static[priority];
+
+	// Иерархическая вставка: VS -> PS -> Constants -> States -> Textures
+#ifdef USE_RESOURCE_DEBUGGER
+	auto* node_vs = target_map.insert(pass.vs);
+	auto* node_ps = node_vs->val.insert(pass.ps);
+#else
+	auto* node_vs = target_map.insert(pass.vs->sh);
+	auto* node_ps = node_vs->val.insert(pass.ps->sh);
+#endif
+	auto* node_cs = node_ps->val.insert(pass.constants._get());
+	auto* node_state = node_cs->val.insert(pass.state->state);
+	auto* node_tex = node_state->val.insert(pass.T._get());
+
+	// Добавляем объект в конечный список
+	// Используем StaticRenderNode (только SSA и Visual, без матрицы)
+	StaticRenderNode item = {screen_space_area, pVisual};
+	node_tex->val.push_back(item);
+
+	// Обновляем SSA для всех уровней иерархии (для сортировки групп)
+	if (screen_space_area > node_tex->val.ScreenSpaceArea)
+	{
+		node_tex->val.ScreenSpaceArea = screen_space_area;
+		if (screen_space_area > node_state->val.ScreenSpaceArea)
 		{
-			Nstate->val.ScreenSpaceArea = ScreenSpaceArea;
-			if (ScreenSpaceArea > Ncs->val.ScreenSpaceArea)
+			node_state->val.ScreenSpaceArea = screen_space_area;
+			if (screen_space_area > node_cs->val.ScreenSpaceArea)
 			{
-				Ncs->val.ScreenSpaceArea = ScreenSpaceArea;
-				if (ScreenSpaceArea > Nps->val.ScreenSpaceArea)
+				node_cs->val.ScreenSpaceArea = screen_space_area;
+				if (screen_space_area > node_ps->val.ScreenSpaceArea)
 				{
-					Nps->val.ScreenSpaceArea = ScreenSpaceArea;
-					if (ScreenSpaceArea > Nvs->val.ScreenSpaceArea)
+					node_ps->val.ScreenSpaceArea = screen_space_area;
+					if (screen_space_area > node_vs->val.ScreenSpaceArea)
 					{
-						Nvs->val.ScreenSpaceArea = ScreenSpaceArea;
+						node_vs->val.ScreenSpaceArea = screen_space_area;
 					}
 				}
 			}
 		}
 	}
 
-	// m_culling_bounds_recorder - член CSceneGraph
+	// 9. Сбор данных для теней от солнца
 	if (m_culling_bounds_recorder)
 	{
 		m_culling_bounds_recorder->push_back(pVisual->vis.box);
@@ -599,7 +631,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual)
 			Fvector Tpos;
 			float D;
 			m_current_transform->transform_tiny(Tpos, pV->vis.sphere.P);
-			float ScreenSpaceArea = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f);
+			float ScreenSpaceArea = CalcScreenSpaceArea(D, Tpos, pV->vis.sphere.R / 2.f);
 			if (ScreenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
@@ -737,7 +769,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual)
 	case MT_LOD: {
 		FLOD* pV = (FLOD*)pVisual;
 		float D;
-		float ScreenSpaceArea = CalcSSA(D, pV->vis.sphere.P, pV);
+		float ScreenSpaceArea = CalcScreenSpaceArea(D, pV->vis.sphere.P, pV);
 		ScreenSpaceArea *= pV->lod_factor;
 		if (ScreenSpaceArea < r_ssaLOD_A)
 		{
@@ -770,207 +802,219 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual)
 
 BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes)
 {
-	// Check frustum visibility and calculate distance to visual's center
-	Fvector Tpos; // transformed position
-	EFC_Visible VIS;
+	// 1. Трансформация позиции в мировые координаты
+	Fvector world_position;
+	m_current_transform->transform_tiny(world_position, pVisual->vis.sphere.P);
 
-	// m_current_transform теперь член CSceneGraph, обращаемся напрямую
-	m_current_transform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+	// 2. Frustum Culling (Проверка попадания в камеру)
+	EFC_Visible visibility_status =
+		RenderImplementation.View->testSphere(world_position, pVisual->vis.sphere.R, planes);
 
-	// View и HOM остались в RenderImplementation (CRender)
-	VIS = RenderImplementation.View->testSphere(Tpos, pVisual->vis.sphere.R, planes);
-	if (fcvNone == VIS)
+	if (visibility_status == fcvNone)
 		return FALSE;
 
-	// ShouldRenderVisual используем как внешнюю функцию (или метод, если перенесли)
-	if (!ShouldRenderVisual(pVisual, false, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
+	// 3. Проверка на значимость (Distance / Size Culling)
+	bool is_shadow_phase = (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH);
+	if (!ShouldRenderVisual(pVisual, false, is_shadow_phase))
 		return FALSE;
 
-	// If we get here visual is visible or partially visible
-	xr_vector<IRender_Visual*>::iterator I, E;
-
+	// 4. Разбор типа объекта
 	switch (pVisual->Type)
 	{
 	case MT_PARTICLE_GROUP: {
-		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
+		PS::CParticleGroup* pGroup = (PS::CParticleGroup*)pVisual;
+
+		// Логика разделяется в зависимости от статуса видимости родителя
+		if (visibility_status == fcvPartial)
 		{
-			PS::CParticleGroup::SItem& PE_It = *i_it;
-			if (fcvPartial == VIS)
+			for (PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (PE_It._effect)
-					add_Dynamic(PE_It._effect, planes); // Рекурсия: вызов метода текущего объекта CSceneGraph
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
-					 pit != PE_It._children_related.end(); pit++)
-					add_Dynamic(*pit, planes);
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end(); pit++)
-					add_Dynamic(*pit, planes);
+				if (item._effect)
+					add_Dynamic(item._effect, planes); // Рекурсия с проверкой фрустума
+
+				for (IRender_Visual* child : item._children_related)
+					add_Dynamic(child, planes);
+
+				for (IRender_Visual* child : item._children_free)
+					add_Dynamic(child, planes);
 			}
-			else
+		}
+		else // fcvFully - объект полностью в кадре, проверки фрустума детям не нужны
+		{
+			for (PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (PE_It._effect)
-					ProcessDynamicVisual(PE_It._effect); // Вызов метода текущего объекта
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
-					 pit != PE_It._children_related.end(); pit++)
-					ProcessDynamicVisual(*pit);
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end(); pit++)
-					ProcessDynamicVisual(*pit);
+				if (item._effect)
+					ProcessDynamicVisual(item._effect); // Быстрое добавление
+
+				for (IRender_Visual* child : item._children_related)
+					ProcessDynamicVisual(child);
+
+				for (IRender_Visual* child : item._children_free)
+					ProcessDynamicVisual(child);
 			}
 		}
 	}
 	break;
+
 	case MT_HIERRARHY: {
-		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
-		I = pV->children.begin();
-		E = pV->children.end();
-		if (fcvPartial == VIS)
+		FHierrarhyVisual* pHierarchy = (FHierrarhyVisual*)pVisual;
+
+		if (visibility_status == fcvPartial)
 		{
-			for (; I != E; I++)
-				add_Dynamic(*I, planes);
+			for (IRender_Visual* child : pHierarchy->children)
+				add_Dynamic(child, planes);
 		}
 		else
 		{
-			for (; I != E; I++)
-				ProcessDynamicVisual(*I);
+			for (IRender_Visual* child : pHierarchy->children)
+				ProcessDynamicVisual(child);
 		}
 	}
 	break;
+
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
-		CKinematics* pV = (CKinematics*)pVisual;
-		BOOL _use_lod = FALSE;
-		if (pV->m_lod)
+		CKinematics* pKinematics = (CKinematics*)pVisual;
+
+		// Проверка LOD для скелета
+		bool use_lod = false;
+		if (pKinematics->m_lod)
 		{
-			Fvector fTpos;
-			float D;
-			m_current_transform->transform_tiny(fTpos, pV->vis.sphere.P);
-			float ScreenSpaceArea = CalcSSA(D, fTpos, pV->vis.sphere.R / 2.f);
-			if (ScreenSpaceArea < r_ssaLOD_A)
-				_use_lod = TRUE;
+			float dist_sq;
+			// Используем уже вычисленную world_position, но для SSA нужен радиус
+			// Примечание: CalcScreenSpaceArea использует позицию камеры из Engine.RenderView
+			float screen_space_area = CalcScreenSpaceArea(dist_sq, world_position, pVisual->vis.sphere.R / 2.f);
+
+			if (screen_space_area < r_ssaLOD_A)
+				use_lod = true;
 		}
-		if (_use_lod)
+
+		if (use_lod)
 		{
-			ProcessDynamicVisual(pV->m_lod);
+			ProcessDynamicVisual(pKinematics->m_lod);
 		}
 		else
 		{
-#pragma todo(NSDeathman to NSDeathman - разобраться)
-			Fvector pos;
-			m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
-			float adjusted_distance = GetDistFromCamera(pos);
+			// Расчет дистанции для переключения качества анимаций/стенсилов
+			float dist_from_camera = GetDistFromCamera(world_position);
 			float switch_distance = 100.0f;
+
 			switch (ps_geometry_quality_mode)
 			{
 			case 3:
 				switch_distance = 100.0f;
-				break;
+				break; // Ultra
 			case 2:
 				switch_distance = 50.0f;
-				break;
+				break; // High
 			case 1:
 				switch_distance = 25.0f;
-				break;
+				break; // Low
 			}
 
-			if (adjusted_distance < switch_distance)
+			// Если близко - обновляем кости и следы
+			if (dist_from_camera < switch_distance)
 			{
-				pV->CalculateBones(TRUE);
-				pV->CalculateWallmarks();
+				pKinematics->CalculateBones(TRUE);
+				pKinematics->CalculateWallmarks();
 			}
 
-			I = pV->children.begin();
-			E = pV->children.end();
-			for (; I != E; I++)
-				ProcessDynamicVisual(*I);
+			// Скелеты всегда добавляем как Process, так как их части (children)
+			// обычно находятся внутри баундинг бокса родителя.
+			for (IRender_Visual* child : pKinematics->children)
+				ProcessDynamicVisual(child);
 		}
 	}
 	break;
+
 	default: {
-		// Вызываем метод вставки динамики (который мы ранее перенесли в CSceneGraph)
-		EnqueueDynamic(pVisual, Tpos);
+		// Листовой объект (Mesh) - отправляем в очередь
+		EnqueueDynamic(pVisual, world_position);
 	}
 	break;
 	}
+
 	return TRUE;
 }
 
 void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 {
-	// Check frustum visibility and calculate distance to visual's center
-	EFC_Visible VIS;
-	vis_data& vis = pVisual->vis;
-	// Используем View из RenderImplementation
-	VIS = RenderImplementation.View->testSAABB(vis.sphere.P, vis.sphere.R, vis.box.data(), planes);
-	if (fcvNone == VIS)
-		return;
-	// Используем HOM из RenderImplementation
-	if (!RenderImplementation.HOM.visible(vis))
+	// 1. Frustum Culling (Sphere + AABB Test)
+	vis_data& vis_data = pVisual->vis;
+	EFC_Visible visibility_status =
+		RenderImplementation.View->testSAABB(vis_data.sphere.P, vis_data.sphere.R, vis_data.box.data(), planes);
+
+	if (visibility_status == fcvNone)
 		return;
 
-	// m_current_transform - член CSceneGraph
-	if (!ShouldRenderVisual(pVisual, true, RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH))
+	// 2. Occlusion Culling (HOM - Hierarchical Occlusion Maps)
+	// Пропускаем невидимые за стенами объекты
+	if (!RenderImplementation.HOM.visible(vis_data))
 		return;
 
-	// If we get here visual is visible or partially visible
-	xr_vector<IRender_Visual*>::iterator I, E;
+	// 3. Проверка на значимость (Distance / Size Culling)
+	bool is_shadow_phase = (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH);
+	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase))
+		return;
 
+	// 4. Разбор типа объекта
 	switch (pVisual->Type)
 	{
 	case MT_PARTICLE_GROUP: {
-		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
+		PS::CParticleGroup* pGroup = (PS::CParticleGroup*)pVisual;
+
+		if (visibility_status == fcvPartial)
 		{
-			PS::CParticleGroup::SItem& PE_It = *i_it;
-			if (fcvPartial == VIS)
+			for (PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (PE_It._effect)
-					add_Dynamic(PE_It._effect, planes);
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
-					 pit != PE_It._children_related.end(); pit++)
-					add_Dynamic(*pit, planes);
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end(); pit++)
-					add_Dynamic(*pit, planes);
+				if (item._effect)
+					add_Dynamic(item._effect, planes);
+				for (auto* c : item._children_related)
+					add_Dynamic(c, planes);
+				for (auto* c : item._children_free)
+					add_Dynamic(c, planes);
 			}
-			else
-			{
-				if (PE_It._effect)
-					ProcessDynamicVisual(PE_It._effect);
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
-					 pit != PE_It._children_related.end(); pit++)
-					ProcessDynamicVisual(*pit);
-				for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-					 pit != PE_It._children_free.end(); pit++)
-					ProcessDynamicVisual(*pit);
-			}
-		}
-	}
-	break;
-	case MT_HIERRARHY: {
-		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
-		I = pV->children.begin();
-		E = pV->children.end();
-		if (fcvPartial == VIS)
-		{
-			for (; I != E; I++)
-				add_Static(*I, planes);
 		}
 		else
 		{
-			for (; I != E; I++)
-				ProcessStaticVisual(*I);
+			for (PS::CParticleGroup::SItem& item : pGroup->items)
+			{
+				if (item._effect)
+					ProcessDynamicVisual(item._effect);
+				for (auto* c : item._children_related)
+					ProcessDynamicVisual(c);
+				for (auto* c : item._children_free)
+					ProcessDynamicVisual(c);
+			}
 		}
 	}
 	break;
+
+	case MT_HIERRARHY: {
+		FHierrarhyVisual* pHierarchy = (FHierrarhyVisual*)pVisual;
+
+		if (visibility_status == fcvPartial)
+		{
+			for (IRender_Visual* child : pHierarchy->children)
+				add_Static(child, planes);
+		}
+		else
+		{
+			for (IRender_Visual* child : pHierarchy->children)
+				ProcessStaticVisual(child);
+		}
+	}
+	break;
+
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
-#pragma todo(NSDeathman to NSDeathman - разобраться)
-		Fvector pos;
-		m_current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
-		float adjusted_distance = GetDistFromCamera(pos);
+		// Скелетная статика (например, трупы, ставшие частью уровня, или сложные механизмы)
+		Fvector object_pos;
+		m_current_transform->transform_tiny(object_pos, pVisual->vis.sphere.P);
+
+		float dist_from_camera = GetDistFromCamera(object_pos);
 		float switch_distance = 100.0f;
+
 		switch (ps_geometry_quality_mode)
 		{
 		case 3:
@@ -984,59 +1028,58 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes)
 			break;
 		}
 
-		CKinematics* pV = (CKinematics*)pVisual;
+		CKinematics* pKinematics = (CKinematics*)pVisual;
 
-		if (adjusted_distance < switch_distance)
-			pV->CalculateBones(TRUE);
+		if (dist_from_camera < switch_distance)
+			pKinematics->CalculateBones(TRUE);
 
-		I = pV->children.begin();
-		E = pV->children.end();
-		if (fcvPartial == VIS)
+		if (visibility_status == fcvPartial)
 		{
-			for (; I != E; I++)
-				add_Static(*I, planes);
+			for (IRender_Visual* child : pKinematics->children)
+				add_Static(child, planes);
 		}
 		else
 		{
-			for (; I != E; I++)
-				ProcessStaticVisual(*I);
+			for (IRender_Visual* child : pKinematics->children)
+				ProcessStaticVisual(child);
 		}
 	}
 	break;
+
 	case MT_LOD: {
-		FLOD* pV = (FLOD*)pVisual;
-		float D;
-		float ScreenSpaceArea = CalcSSA(D, pV->vis.sphere.P, pV);
-		ScreenSpaceArea *= pV->lod_factor;
-		if (ScreenSpaceArea < r_ssaLOD_A)
+		FLOD* pLod = (FLOD*)pVisual;
+		float dist_unused;
+		float screen_space_area = CalcScreenSpaceArea(dist_unused, pLod->vis.sphere.P, pLod);
+
+		screen_space_area *= pLod->lod_factor;
+
+		// Если объект далеко - рисуем его как LOD (билборд)
+		if (screen_space_area < r_ssaLOD_A)
 		{
-			if (ScreenSpaceArea < r_ssaDISCARD)
+			if (screen_space_area < r_ssaDISCARD)
 				return;
-			// Вставка в локальный mapLOD
-			mapLOD_Node* N = mapLOD.insertInAnyWay(D);
-			N->val.ScreenSpaceArea = ScreenSpaceArea;
-			N->val.pVisual = pVisual;
+
+			// Вставляем в очередь LOD-ов
+			mapLOD_Node* node = mapLOD.insertInAnyWay(dist_unused);
+			node->val.ScreenSpaceArea = screen_space_area;
+			node->val.pVisual = pVisual;
 		}
-		if (ScreenSpaceArea > r_ssaLOD_B)
+
+		// Если объект близко - рисуем его детальную геометрию (детей)
+		if (screen_space_area > r_ssaLOD_B)
 		{
-			I = pV->children.begin();
-			E = pV->children.end();
-			for (; I != E; I++)
-				ProcessStaticVisual(*I);
+			for (IRender_Visual* child : pLod->children)
+				ProcessStaticVisual(child);
 		}
 	}
 	break;
+
 	case MT_TREE_ST:
-	case MT_TREE_PM: {
-		// Вызов метода через текущий объект
-		EnqueueStatic(pVisual);
-	}
-		return;
+	case MT_TREE_PM:
 	default: {
-		// OPTICK_EVENT("default");
+		// Обычная статика - отправляем в очередь
 		EnqueueStatic(pVisual);
 	}
 	break;
 	}
 }
-
