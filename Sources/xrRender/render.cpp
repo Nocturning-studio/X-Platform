@@ -592,12 +592,14 @@ BOOL CRender::occ_visible(Fbox& P)
 
 void CRender::add_Visual(IRender_Visual* V)
 {
-	SceneGraph.ProcessDynamicVisual(V);
+	// Передаем локальный контекст рендера в граф сцены
+	SceneGraph.ProcessDynamicVisual(V, m_TraversalContext);
 }
 
 void CRender::add_Geometry(IRender_Visual* V)
 {
-	SceneGraph.add_Static(V, View->getMask());
+	// Передаем локальный контекст рендера в граф сцены
+	SceneGraph.add_Static(V, View->getMask(), m_TraversalContext);
 }
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
@@ -630,11 +632,6 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shad
 void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
 	HOM.occlude(bb_screenspace);
-}
-
-void CRender::set_Object(IRenderable* O)
-{
-	SceneGraph.set_Object(O);
 }
 
 void CRender::set_render_mode(int mode)

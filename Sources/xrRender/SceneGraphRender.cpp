@@ -725,25 +725,31 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 }
 
 // Frame Reuse Optimization
-void CSceneGraph::render_reuse()
+void CSceneGraph::render_reuse(const SceneTraversalContext& initial_ctx)
 {
 	PROFILE_FUNCTION();
 
-	// Статика (Reuse List)
+	// 1. Статика (Reuse List)
 	// Используем список из m_packet
 	for (IRender_Visual* V : m_packet.m_visuals_static_visible)
 	{
-		// Используем ProcessStaticVisual, чтобы корректно обработать LOD-ы
-		// если они были сохранены в список
-		ProcessStaticVisual(V);
+		// Передаем исходный контекст (для статики матрица обычно не важна или Identity,
+		// но важны флаги отрисовки)
+		ProcessStaticVisual(V, initial_ctx);
 	}
 
-	// Динамика (Reuse List)
-	// Используем список из m_packet
+	// 2. Динамика (Reuse List)
+	// Нам нужно менять матрицу трансформации для каждого объекта.
+	// Так как initial_ctx передан по константной ссылке, создаем дешевую локальную копию.
+	SceneTraversalContext local_ctx = initial_ctx;
+
 	for (auto& it : m_packet.m_visuals_dynamic_visible)
 	{
-		// Вызываем локальный метод set_Transform, чтобы обновить m_ctx.current_transform
-		set_Transform(&it.matrix);
-		ProcessDynamicVisual(it.visual);
+		// Подменяем указатель на матрицу в локальном контексте на матрицу из сохраненной структуры.
+		// Раньше это делалось через set_Transform(&it.matrix).
+		local_ctx.current_transform = &it.matrix;
+
+		// Передаем обновленный контекст
+		ProcessDynamicVisual(it.visual, local_ctx);
 	}
 }

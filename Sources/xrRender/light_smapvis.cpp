@@ -38,6 +38,7 @@ void smapvis::begin()
 		break;
 	}
 }
+
 void smapvis::end()
 {
 	// Gather stats
@@ -64,7 +65,10 @@ void smapvis::end()
 		{
 			RenderImplementation.occq_begin(testQ_id);
 			RenderImplementation.SceneGraph.m_traversal_marker += 1;
-			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V);
+
+			// Передаем текущий контекст рендера
+			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V, RenderImplementation.m_TraversalContext);
+
 			RenderImplementation.SceneGraph.Render(SceneGraphRenderType::Opaque);
 			RenderImplementation.occq_end(testQ_id);
 			testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame

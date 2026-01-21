@@ -177,20 +177,14 @@ struct SceneTraversalContext
 // =========================================================================
 class CSceneGraph
 {
-  public:
-	// === Data Members ===
-
+  public: // Сделаем публичным для удобства доступа из CRender пока что
 	// 1. Thread-Safe Data Container
 	SceneGraphPacket m_packet;
 
 	// 2. Worker Buffers (for Rendering/Sorting phase)
 	SceneGraphScratchPad m_scratch;
 
-	// 3. Current Traversal State (Warning: Not thread safe if multiple threads share CSceneGraph instance without
-	// mutex)
-	SceneTraversalContext m_ctx;
-
-	// 4. Global Config / Counters
+	// 3. Global Config / Counters
 	SceneGraphFetchConfig m_fetch_config;
 	xr_vector<Fbox3, render_alloc<Fbox3>>* m_culling_bounds_recorder;
 
@@ -202,33 +196,14 @@ class CSceneGraph
 	u32 counter_D;
 	BOOL b_loaded;
 
+	friend class CRender; // CRender управляет контекстом и вызывает приватные методы
+
   public:
 	CSceneGraph();
 	void destroy();
 
 	// === State Management ===
 	void SetFetchConfig(const SceneGraphFetchConfig& config);
-
-	void set_Transform(Fmatrix* M)
-	{
-		m_ctx.current_transform = M;
-	}
-	void set_Object(IRenderable* O)
-	{
-		m_ctx.current_owner = O;
-	}
-	void set_HUD(BOOL V)
-	{
-		m_ctx.is_hud_pass = V;
-	}
-	BOOL get_HUD() const
-	{
-		return m_ctx.is_hud_pass;
-	}
-	void set_Invisible(BOOL V)
-	{
-		m_ctx.is_invisible_mode = V;
-	}
 
 	void set_Feedback(R_feedback* V, u32 id)
 	{
@@ -247,35 +222,37 @@ class CSceneGraph
 		counter_S = counter_D = 0;
 	}
 
-	// === Insertion API ===
-	// Использует текущий m_ctx и пишет в m_packet
-	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes);
-	void add_Static(IRender_Visual* pVisual, u32 planes);
+	// === Insertion API (Updated Signatures) ===
+	// Теперь все методы принимают const SceneTraversalContext& ctx
 
-	// Прямые методы (для reuse или принудительного добавления)
-	void ProcessDynamicVisual(IRender_Visual* pVisual);
-	void ProcessStaticVisual(IRender_Visual* pVisual);
+	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx);
+	void add_Static(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx);
+
+	void ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx);
+	void ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx);
 
 	// Low-level insertion
-	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center);
-	void EnqueueStatic(IRender_Visual* pVisual);
+	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center, const SceneTraversalContext& ctx);
+	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx);
 
 	// === Traversal Logic ===
 	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 						 BOOL _precise_portals = FALSE);
 	void render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,
 						 BOOL _precise_portals = FALSE);
-	void render_reuse();
+
+	// render_reuse теперь требует контекст, чтобы восстановить матрицы для ProcessDynamicVisual
+	void render_reuse(const SceneTraversalContext& ctx);
 
 	// Helper
-	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize);
+	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize,
+							const SceneTraversalContext& ctx);
 
 	// === Rendering API ===
-	// Читает из m_packet, использует m_scratch
 	void Render(SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
 
   private:
-	// Render implementations
+	// Render implementations (без изменений сигнатур, они читают из пакета)
 	void _RenderOpaque(u32 priority, bool clear);
 	void _RenderHUD();
 	void _RenderTranslucent();

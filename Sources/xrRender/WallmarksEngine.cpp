@@ -358,7 +358,7 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 		return;
 
 	// Используем геттер get_HUD() вместо прямого доступа к m_is_hud_pass
-	if (!::RenderImplementation.SceneGraph.get_HUD())
+	if (!::RenderImplementation.get_HUD())
 	{
 		lock.Enter();
 		// search if similar wallmark exists

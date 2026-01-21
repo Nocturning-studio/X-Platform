@@ -477,7 +477,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 			float R_sum = V->vis.sphere.R + L_range;
 			if (V->vis.sphere.P.distance_to_sqr(L_pos) < (R_sum * R_sum))
-				SceneGraph.ProcessStaticVisual(V);
+				SceneGraph.ProcessStaticVisual(V, m_TraversalContext);
 		}
 
 		// Используем m_packet.m_visuals_dynamic_visible
@@ -493,7 +493,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 			if (sphere_center_world.distance_to_sqr(L_pos) < (R_sum * R_sum))
 			{
 				RenderImplementation.set_Transform(&item.matrix);
-				SceneGraph.ProcessDynamicVisual(item.visual);
+				SceneGraph.ProcessDynamicVisual(item.visual, m_TraversalContext);
 			}
 		}
 
@@ -590,7 +590,7 @@ void CRender::render_stage_forward()
 
 	// Заново наполняем граф из кэша.
 	// render_main(Engine.RenderView.ViewProjection, false);
-	SceneGraph.render_reuse();
+	SceneGraph.render_reuse(m_TraversalContext);
 	SceneGraph.Render(SceneGraphRenderType::Opaque, 1);
 	SceneGraph.Render(SceneGraphRenderType::Transparent);
 
@@ -708,7 +708,7 @@ void CRender::query_wait()
 		if (!SwitchToThread())
 			Sleep(ps_r_thread_wait_sleep);
 
-		if (Timer.GetElapsed_ms() > 500)
+		if (Timer.GetElapsed_ms() > 100)
 		{
 			result = FALSE;
 			break;

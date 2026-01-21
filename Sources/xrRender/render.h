@@ -249,10 +249,38 @@ class CRender : public IRender_interface, public pureFrame
 	virtual IEffectorsManager* getEffectorsManager();
 
 	// Main
-	virtual void set_Object(IRenderable* O);
 	virtual void add_Occluder(Fbox2& bb_screenspace); // mask screen region as oclluded
 	virtual void add_Visual(IRender_Visual* V);		  // add visual leaf	(no culling performed at all)
 	virtual void add_Geometry(IRender_Visual* V);	  // add visual(s)	(all culling performed)
+
+	// Контекст обхода сцены теперь живет здесь
+	SceneTraversalContext m_TraversalContext;
+
+	// Обновленные виртуальные методы интерфейса IRender_interface
+	virtual void set_Transform(Fmatrix* M)
+	{
+		m_TraversalContext.current_transform = M;
+	}
+
+	virtual void set_HUD(BOOL V)
+	{
+		m_TraversalContext.is_hud_pass = V;
+	}
+
+	virtual BOOL get_HUD()
+	{
+		return m_TraversalContext.is_hud_pass;
+	}
+
+	virtual void set_Invisible(BOOL V)
+	{
+		m_TraversalContext.is_invisible_mode = V;
+	}
+
+	virtual void set_Object(IRenderable* O)
+	{
+		m_TraversalContext.current_owner = O;
+	}
 
 	// wallmarks
 	virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
@@ -377,24 +405,6 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void Render();
 	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
 	virtual void OnFrame();
-
-	virtual void set_Transform(Fmatrix* M)
-	{
-		SceneGraph.set_Transform(M);
-	}
-
-	virtual void set_HUD(BOOL V)
-	{
-		SceneGraph.set_HUD(V);
-	}
-	virtual BOOL get_HUD()
-	{
-		return SceneGraph.get_HUD();
-	}
-	virtual void set_Invisible(BOOL V)
-	{
-		SceneGraph.set_Invisible(V);
-	}
 
 	virtual u32 memory_usage()
 	{

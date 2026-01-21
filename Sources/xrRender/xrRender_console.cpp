@@ -645,7 +645,7 @@ void xrRender_initconsole()
 
 	//CMD3(CCC_Mask, "r_mt", &ps_render_flags, RFLAG_EXP_MT_CALC);
 
-	//CMD4(CCC_Integer, "r_wait_sleep", &ps_r_thread_wait_sleep, 0, 1);
+	CMD4(CCC_Integer, "r_wait_sleep", &ps_r_thread_wait_sleep, 0, 10);
 
 	CMD3(CCC_Mask, "r_hardware_occlusion_culling", &ps_render_flags, RFLAG_EXP_HW_OCC);
 
