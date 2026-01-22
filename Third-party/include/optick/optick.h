@@ -993,7 +993,11 @@ struct OptickApp
 									::Optick::OptickApp _optickApp(NAME); \
 									OPTICK_UNUSED(_optickApp);
 
+#define PROFILE_FUNCTION() OPTICK_EVENT(__FUNCTION__)
 
+// Альтернативный вариант (если вдруг захочется больше деталей, включая аргументы)
+// Передает "void ClassName::MethodName(int arg)"
+#define PROFILE_FUNCTION_FULL() OPTICK_EVENT(__FUNCSIG__)
 #else
 #define OPTICK_EVENT(...)
 #define OPTICK_CATEGORY(NAME, CATEGORY)
@@ -1021,10 +1025,6 @@ struct OptickApp
 #define OPTICK_STOP_CAPTURE()
 #define OPTICK_SAVE_CAPTURE(...)
 #define OPTICK_APP(NAME)
+#define PROFILE_FUNCTION(...)
+#define PROFILE_FUNCTION_FULL(...)
 #endif
-
-#define PROFILE_FUNCTION() OPTICK_EVENT(__FUNCTION__)
-
-// Альтернативный вариант (если вдруг захочется больше деталей, включая аргументы)
-// Передает "void ClassName::MethodName(int arg)"
-#define PROFILE_FUNCTION_FULL() OPTICK_EVENT(__FUNCSIG__)
