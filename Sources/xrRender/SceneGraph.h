@@ -177,6 +177,36 @@ struct SceneTraversalContext
 	}
 };
 
+class CurrentRenderContext
+{
+  public:
+	// Эти переменные уникальны для каждого потока
+	static thread_local SceneGraphPacket* packet;
+	static thread_local SceneTraversalContext* context;
+
+	// Helper RAII для безопасной установки контекста в скоупе
+	struct Scope
+	{
+		SceneGraphPacket* prev_packet;
+		SceneTraversalContext* prev_context;
+
+		Scope(SceneGraphPacket& p, SceneTraversalContext& c)
+		{
+			prev_packet = CurrentRenderContext::packet;
+			prev_context = CurrentRenderContext::context;
+
+			CurrentRenderContext::packet = &p;
+			CurrentRenderContext::context = &c;
+		}
+
+		~Scope()
+		{
+			CurrentRenderContext::packet = prev_packet;
+			CurrentRenderContext::context = prev_context;
+		}
+	};
+};
+
 // =========================================================================
 //  CSceneGraph Class
 // =========================================================================

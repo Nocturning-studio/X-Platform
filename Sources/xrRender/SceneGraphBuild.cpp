@@ -11,6 +11,9 @@
 
 using namespace SceneGraphTypes;
 
+thread_local SceneGraphPacket* CurrentRenderContext::packet = nullptr;
+thread_local SceneTraversalContext* CurrentRenderContext::context = nullptr;
+
 CSceneGraph::CSceneGraph()
 {
 	// 1. Инициализация глобальных настроек

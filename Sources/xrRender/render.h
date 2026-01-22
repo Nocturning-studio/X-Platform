@@ -259,33 +259,52 @@ class CRender : public IRender_interface, public pureFrame
 	// Обновленные виртуальные методы интерфейса IRender_interface
 	virtual void set_Transform(Fmatrix* M)
 	{
-		m_TraversalContext.current_transform = M;
+		// Если активен TLS контекст (мы внутри render_subspace или render_main) - пишем туда
+		if (CurrentRenderContext::context)
+			CurrentRenderContext::context->current_transform = M;
+		else
+			m_TraversalContext.current_transform = M;
 	}
 
 	virtual void set_HUD(BOOL V)
 	{
-		m_TraversalContext.is_hud_pass = V;
+		if (CurrentRenderContext::context)
+			CurrentRenderContext::context->is_hud_pass = V;
+		else
+			m_TraversalContext.is_hud_pass = V;
 	}
 
 	virtual BOOL get_HUD()
 	{
+		if (CurrentRenderContext::context)
+			return CurrentRenderContext::context->is_hud_pass;
 		return m_TraversalContext.is_hud_pass;
 	}
 
 	virtual void set_Invisible(BOOL V)
 	{
-		m_TraversalContext.is_invisible_mode = V;
+		if (CurrentRenderContext::context)
+			CurrentRenderContext::context->is_invisible_mode = V;
+		else
+			m_TraversalContext.is_invisible_mode = V;
 	}
 
 	virtual void set_Frustum(CFrustum* O)
 	{
 		View = O; // Сохраняем для Legacy кода (если где-то используется напрямую View)
-		m_TraversalContext.frustum = O; // Обновляем контекст для SceneGraph
+		if (CurrentRenderContext::context)
+			CurrentRenderContext::context->frustum = O;
+		else
+			m_TraversalContext.frustum = O;
+
 	}
 
 	virtual void set_Object(IRenderable* O)
 	{
-		m_TraversalContext.current_owner = O;
+		if (CurrentRenderContext::context)
+			CurrentRenderContext::context->current_owner = O;
+		else
+			m_TraversalContext.current_owner = O;
 	}
 
 	// wallmarks

@@ -27,6 +27,13 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		return;
 	}
 
+	// Обновляем фрустум в члене класса CRender (для совместимости)
+	m_TraversalContext.frustum = &ViewBase;
+
+	// Активируем TLS для основного прохода.
+	// Используем глобальный пакет SceneGraph и глобальный контекст CRender.
+	CurrentRenderContext::Scope tls_scope(SceneGraph.m_packet, m_TraversalContext);
+
 	// 1. Spatial Query: Запрашиваем объекты во фрустуме
 	// -------------------------------------------------------------------------
 	// Используем ViewBase (основной фрустум камеры)

@@ -636,7 +636,10 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	local_ctx.is_hud_pass = FALSE;	  // ƒл€ теней HUD обычно false
 	local_ctx.is_invisible_mode = FALSE;
 	local_ctx.current_owner = nullptr; // —брос владельца
-	local_ctx.current_transform = nullptr;
+	local_ctx.current_transform = &Fidentity; 
+
+	// јктивируем TLS: теперь add_Visual будет писать в 'dest' использу€ 'local_ctx'
+	CurrentRenderContext::Scope tls_scope(dest, local_ctx);
 
 	// -------------------------------------------------------------------------
 	// Precise Portals (Dual Render Force)

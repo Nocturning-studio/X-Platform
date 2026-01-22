@@ -592,14 +592,23 @@ BOOL CRender::occ_visible(Fbox& P)
 
 void CRender::add_Visual(IRender_Visual* V)
 {
-	// Передаем локальный контекст рендера в граф сцены
-	SceneGraph.ProcessDynamicVisual(V, m_TraversalContext, SceneGraph.m_packet);
+	if (CurrentRenderContext::packet && CurrentRenderContext::context)
+		SceneGraph.ProcessDynamicVisual(V, *CurrentRenderContext::context, *CurrentRenderContext::packet);
+	else
+		SceneGraph.ProcessDynamicVisual(V, m_TraversalContext, SceneGraph.m_packet);
 }
 
 void CRender::add_Geometry(IRender_Visual* V)
 {
-	// Передаем локальный контекст рендера в граф сцены
-	SceneGraph.add_Static(V, View->getMask(), m_TraversalContext, SceneGraph.m_packet);
+	if (CurrentRenderContext::packet && CurrentRenderContext::context)
+	{
+		u32 mask = CurrentRenderContext::context->frustum->getMask();
+		SceneGraph.add_Static(V, mask, *CurrentRenderContext::context, *CurrentRenderContext::packet);
+	}
+	else
+	{
+		SceneGraph.add_Static(V, View->getMask(), m_TraversalContext, SceneGraph.m_packet);
+	}
 }
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
