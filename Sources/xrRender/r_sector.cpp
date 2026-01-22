@@ -121,15 +121,13 @@ CSector::~CSector()
 extern float r_ssaDISCARD;
 extern float r_ssaLOD_A, r_ssaLOD_B;
 
-void CSector::traverse(CFrustum& F, _scissor& R_scissor)
+void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& traverser)
 {
-	////OPTICK_EVENT("CPortal::traverse");
-
 	// Register traversal process
-	if (r_marker != PortalTraverser.i_marker)
+	if (r_marker != traverser.i_marker)
 	{
-		r_marker = PortalTraverser.i_marker;
-		PortalTraverser.r_sectors.push_back(this);
+		r_marker = traverser.i_marker;
+		traverser.r_sectors.push_back(this); // ѕишем в локальный список!
 		r_frustums.clear();
 		r_scissors.clear();
 	}
@@ -140,23 +138,23 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 	sPoly S, D;
 	for (u32 I = 0; I < m_portals.size(); I++)
 	{
-		if (m_portals[I]->m_traversal_marker == PortalTraverser.i_marker)
+		if (m_portals[I]->m_traversal_marker == traverser.i_marker)
 			continue;
 
 		CPortal* PORTAL = m_portals[I];
 		CSector* pSector;
 
-		// Select sector (allow intersecting portals to be finely classified)
+		// Select sector
 		if (PORTAL->bDualRender)
 		{
 			pSector = PORTAL->getSector(this);
 		}
 		else
 		{
-			pSector = PORTAL->getSectorBack(PortalTraverser.i_vBase);
+			pSector = PORTAL->getSectorBack(traverser.i_vBase);
 			if (pSector == this)
 				continue;
-			if (pSector == PortalTraverser.i_start)
+			if (pSector == traverser.i_start)
 				continue;
 		}
 
@@ -164,23 +162,24 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 		if (!F.testSphere_dirty(PORTAL->S.P, PORTAL->S.R))
 			continue;
 
-		// ScreenSpaceArea	(if required)
-		if (PortalTraverser.i_options & CPortalTraverser::VQ_SSA)
+		// ScreenSpaceArea
+		if (traverser.i_options & CPortalTraverser::VQ_SSA)
 		{
 			Fvector dir2portal;
-			dir2portal.sub(PORTAL->S.P, PortalTraverser.i_vBase);
+			dir2portal.sub(PORTAL->S.P, traverser.i_vBase);
 			float R = PORTAL->S.R;
 			float distSQ = dir2portal.square_magnitude();
 			float ScreenSpaceArea = R * R / distSQ;
 			dir2portal.div(_sqrt(distSQ));
 			ScreenSpaceArea *= _abs(PORTAL->P.n.dotproduct(dir2portal));
+
 			if (ScreenSpaceArea < r_ssaDISCARD)
 				continue;
 
-			if (PortalTraverser.i_options & CPortalTraverser::VQ_FADE)
+			if (traverser.i_options & CPortalTraverser::VQ_FADE)
 			{
 				if (ScreenSpaceArea < r_ssaLOD_A)
-					PortalTraverser.fade_portal(PORTAL, ScreenSpaceArea);
+					traverser.fade_portal(PORTAL, ScreenSpaceArea); // Ћокальный fade list
 				if (ScreenSpaceArea < r_ssaLOD_B)
 					continue;
 			}
@@ -196,9 +195,9 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 
 		// Scissor and optimized HOM-testing
 		_scissor scissor;
-		if (PortalTraverser.i_options & CPortalTraverser::VQ_SCISSOR && (!PORTAL->bDualRender))
+
+		if (traverser.i_options & CPortalTraverser::VQ_SCISSOR && (!PORTAL->bDualRender))
 		{
-			// Build scissor rectangle in projection-space
 			Fbox2 bb;
 			bb.invalidate();
 			float depth = flt_max;
@@ -206,7 +205,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 			for (u32 vit = 0; vit < p.size(); vit++)
 			{
 				Fvector4 t;
-				Fmatrix& M = PortalTraverser.i_mTransform_01;
+				Fmatrix& M = traverser.i_mTransform_01;
 				Fvector& v = p[vit];
 
 				t.x = v.x * M._11 + v.y * M._21 + v.z * M._31 + M._41;
@@ -215,6 +214,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 				t.w = v.x * M._14 + v.y * M._24 + v.z * M._34 + M._44;
 				t.mul(1.f / t.w);
 
+				// ... (расчет bbox scissor) ...
 				if (t.x < bb.min.x)
 					bb.min.x = t.x;
 				if (t.x > bb.max.x)
@@ -226,19 +226,17 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 				if (t.z < depth)
 					depth = t.z;
 			}
-			// Msg	("bb(%s): (%f,%f)-(%f,%f), d=%f", PORTAL->bDualRender?"true":"false",bb.min.x, bb.min.y, bb.max.x,
-			// bb.max.y,depth);
+
 			if (depth < EPS)
 			{
 				scissor = R_scissor;
-
-				// Cull by HOM (slower algo)
-				if ((PortalTraverser.i_options & CPortalTraverser::VQ_HOM) && (!RenderImplementation.HOM.visible(*P)))
+				// Cull by HOM
+				if ((traverser.i_options & CPortalTraverser::VQ_HOM) && (!RenderImplementation.HOM.visible(*P)))
 					continue;
 			}
 			else
 			{
-				// perform intersection (this is just to be sure, it is probably clipped in 3D already)
+				// ... (intersection logic) ...
 				if (bb.min.x > R_scissor.min.x)
 					scissor.min.x = bb.min.x;
 				else
@@ -257,15 +255,13 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 					scissor.max.y = R_scissor.max.y;
 				scissor.depth = depth;
 
-				// Msg	("scissor: (%f,%f)-(%f,%f)", scissor.min.x, scissor.min.y, scissor.max.x, scissor.max.y);
-				// Check if box is non-empty
 				if (scissor.min.x >= scissor.max.x)
 					continue;
 				if (scissor.min.y >= scissor.max.y)
 					continue;
 
-				// Cull by HOM (faster algo)
-				if ((PortalTraverser.i_options & CPortalTraverser::VQ_HOM) &&
+				// Cull by HOM
+				if ((traverser.i_options & CPortalTraverser::VQ_HOM) &&
 					(!RenderImplementation.HOM.visible(scissor, depth)))
 					continue;
 			}
@@ -273,18 +269,19 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 		else
 		{
 			scissor = R_scissor;
-
-			// Cull by HOM (slower algo)
-			if ((PortalTraverser.i_options & CPortalTraverser::VQ_HOM) && (!RenderImplementation.HOM.visible(*P)))
+			// Cull by HOM
+			if ((traverser.i_options & CPortalTraverser::VQ_HOM) && (!RenderImplementation.HOM.visible(*P)))
 				continue;
 		}
 
 		// Create _new_ frustum and recurse
 		CFrustum Clip;
-		Clip.CreateFromPortal(P, PORTAL->P.n, PortalTraverser.i_vBase, PortalTraverser.i_mTransform);
-		PORTAL->m_traversal_marker = PortalTraverser.i_marker;
+		Clip.CreateFromPortal(P, PORTAL->P.n, traverser.i_vBase, traverser.i_mTransform);
+		PORTAL->m_traversal_marker = traverser.i_marker;
 		PORTAL->bDualRender = FALSE;
-		pSector->traverse(Clip, scissor);
+
+		// –≈ ”–—»я: ѕередаем traverser дальше
+		pSector->traverse(Clip, scissor, traverser);
 	}
 }
 

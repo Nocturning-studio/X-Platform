@@ -8,6 +8,7 @@
 
 class CPortal;
 class CSector;
+class CPortalTraverser;
 
 struct _scissor : public Fbox2
 {
@@ -95,7 +96,7 @@ class CSector : public IRender_Sector
 	{
 		return m_root;
 	}
-	void traverse(CFrustum& F, _scissor& R);
+	void traverse(CFrustum& F, _scissor& R, CPortalTraverser& traverser); 
 	void load(IReader& fs);
 
 	CSector()
@@ -139,7 +140,5 @@ class CPortalTraverser
 	void dbg_draw();
 #endif
 };
-
-extern CPortalTraverser PortalTraverser;
 
 #endif // !defined(AFX_PORTAL_H__1FC2D371_4A19_49EA_BD1E_2D0F8DEBBF15__INCLUDED_)

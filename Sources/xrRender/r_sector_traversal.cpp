@@ -3,8 +3,6 @@
 #include "..\xrEngine\environment.h"
 #include "..\xrEngine\fvf.h"
 
-CPortalTraverser PortalTraverser;
-
 CPortalTraverser::CPortalTraverser()
 {
 	i_marker = 0xffffffff;
@@ -39,7 +37,7 @@ void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBa
 	_scissor scissor;
 	scissor.set(0, 0, 1, 1);
 	scissor.depth = 0;
-	i_start->traverse(F, scissor);
+	i_start->traverse(F, scissor, *this);
 
 	if (options & VQ_SCISSOR)
 	{
@@ -83,25 +81,26 @@ void CPortalTraverser::destroy()
 	f_shader.destroy();
 }
 
-ICF bool psort_pred(const std::pair<CPortal*, float>& _1, const std::pair<CPortal*, float>& _2)
-{
-	float d1 = PortalTraverser.i_vBase.distance_to_sqr(_1.first->S.P);
-	float d2 = PortalTraverser.i_vBase.distance_to_sqr(_2.first->S.P);
-	return d2 > d1; // descending, back to front
-}
-
 extern float r_ssaDISCARD;
 extern float r_ssaLOD_A, r_ssaLOD_B;
 
 void CPortalTraverser::fade_render()
 {
-	////OPTICK_EVENT("CPortalTraverser::fade_render");
-
 	if (f_portals.empty())
 		return;
 
+	// Локальная копия позиции камеры для лямбды
+	Fvector camera_pos = i_vBase;
+
+	// Лямбда-предикат
+	auto pred = [camera_pos](const std::pair<CPortal*, float>& _1, const std::pair<CPortal*, float>& _2) {
+		float d1 = camera_pos.distance_to_sqr(_1.first->S.P);
+		float d2 = camera_pos.distance_to_sqr(_2.first->S.P);
+		return d2 > d1; // descending, back to front
+	};
+
 	// re-sort, back to front
-	concurrency::parallel_sort(f_portals.begin(), f_portals.end(), psort_pred);
+	concurrency::parallel_sort(f_portals.begin(), f_portals.end(), pred);
 
 	// calc poly-count
 	u32 _pcount = 0;

@@ -17,8 +17,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// Увеличиваем маркер кадра для предотвращения повторной обработки объектов
 	SceneGraph.m_traversal_marker++;
 
-	// Если текущий сектор не определен (например, мы под картой или не инициализированы),
-	// рисуем только HUD и выходим.
+	// Если текущий сектор не определен, рисуем только HUD и выходим.
 	if (!pLastSector)
 	{
 		set_Object(nullptr);
@@ -27,37 +26,39 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		return;
 	}
 
-	// Обновляем фрустум в члене класса CRender (для совместимости)
+	// -------------------------------------------------------------------------
+	// 0. Настройка контекста (TLS)
+	// -------------------------------------------------------------------------
+	// Устанавливаем основной фрустум в контекст
 	m_TraversalContext.frustum = &ViewBase;
 
 	// Активируем TLS для основного прохода.
 	// Используем глобальный пакет SceneGraph и глобальный контекст CRender.
+	// Теперь все вызовы add_Visual/add_Geometry будут писать именно сюда.
 	CurrentRenderContext::Scope tls_scope(SceneGraph.m_packet, m_TraversalContext);
 
+	// -------------------------------------------------------------------------
 	// 1. Spatial Query: Запрашиваем объекты во фрустуме
 	// -------------------------------------------------------------------------
-	// Используем ViewBase (основной фрустум камеры)
-	// Используем m_packet.lstRenderables
+	// Используем список из пакета
 	g_SpatialSpace->q_frustum(SceneGraph.m_packet.lstRenderables, ISpatial_DB::O_ORDERED,
 							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
+	// -------------------------------------------------------------------------
 	// 2. Sorting: Сортировка Front-to-Back
 	// -------------------------------------------------------------------------
-	// Локальная копия позиции камеры для лямбды (ускоряет доступ в цикле)
 	const Fvector camera_pos = Engine.RenderView.Position;
 
-	// Лямбда-предикат для сортировки по дистанции
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
 		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
 		float dist_b = b->spatial.sphere.P.distance_to_sqr(camera_pos);
 		return dist_a < dist_b;
 	};
 
-	// Параллельная сортировка (так как объектов может быть тысячи)
-	// Сортируем m_packet.lstRenderables
 	concurrency::parallel_sort(SceneGraph.m_packet.lstRenderables.begin(), SceneGraph.m_packet.lstRenderables.end(),
 							   sort_predicate);
 
+	// -------------------------------------------------------------------------
 	// 3. Light Tracking: Обновление освещения для динамики
 	// -------------------------------------------------------------------------
 	set_Object(nullptr);
@@ -65,25 +66,22 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	if (active_phase() == PHASE_NORMAL)
 	{
 		uLastLTRACK++;
-		// Используем m_packet.lstRenderables.size()
 		size_t renderable_count = SceneGraph.m_packet.lstRenderables.size();
 		size_t light_track_id = 0xffffffff;
 
 		if (renderable_count)
 			light_track_id = uLastLTRACK % renderable_count;
 
-		// Обновляем освещение для Актера (вид от первого лица/тело)
+		// Актер
 		if (CObject* current_entity = g_pGameLevel->CurrentViewEntity())
 		{
 			if (CROS_impl* ros = (CROS_impl*)current_entity->ROS())
 				ros->update(current_entity);
 		}
 
-		// Обновляем освещение для одного случайного объекта в кадре (Round-Robin update)
-		// Это позволяет распределить нагрузку трассировки лучей освещения на много кадров
+		// Round-Robin update
 		if (renderable_count)
 		{
-			// Доступ через m_packet
 			if (IRenderable* renderable = SceneGraph.m_packet.lstRenderables[light_track_id]->dcast_Renderable())
 			{
 				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
@@ -92,38 +90,43 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		}
 	}
 
+	// -------------------------------------------------------------------------
 	// 4. Portal Traversal: Определение видимых секторов
 	// -------------------------------------------------------------------------
-	PortalTraverser.traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
-							 CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
+	// Используем локальный обходчик из пакета
+	SceneGraph.m_packet.portal_traverser.traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
+												  CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA |
+													  CPortalTraverser::VQ_FADE);
 
+	// -------------------------------------------------------------------------
 	// 5. Static Geometry: Добавление статики из видимых секторов
 	// -------------------------------------------------------------------------
-	for (auto* sector_ptr : PortalTraverser.r_sectors)
+	// Итерируемся по секторам, найденным локальным обходчиком
+	for (auto* sector_ptr : SceneGraph.m_packet.portal_traverser.r_sectors)
 	{
 		CSector* sector = (CSector*)sector_ptr;
 		IRender_Visual* root_visual = sector->root();
 
-		// Один сектор может быть виден через несколько порталов (несколько фрустумов)
+		// Один сектор может быть виден через несколько порталов
 		for (auto& frustum : sector->r_frustums)
 		{
+			// Обновляем фрустум в контексте на портальный для точного отсечения
+			// Метод set_Frustum обновляет m_TraversalContext.frustum
 			set_Frustum(&frustum);
 
-			m_TraversalContext.frustum = &frustum;
-
-			add_Geometry(root_visual); 
+			// Вызываем добавление геометрии (оно использует контекст и пакет из TLS)
+			add_Geometry(root_visual);
 		}
 	}
 
-	// 6. Dynamic Geometry & Lights: Обработка результатов пространственного запроса
 	// -------------------------------------------------------------------------
-	// Итерируемся по m_packet.lstRenderables
+	// 6. Dynamic Geometry & Lights
+	// -------------------------------------------------------------------------
 	for (ISpatial* spatial : SceneGraph.m_packet.lstRenderables)
 	{
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
 
-		// Если объект потерял сектор — пропускаем
 		if (!sector)
 			continue;
 
@@ -133,26 +136,24 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 			light* pLight = (light*)(spatial->dcast_Light());
 			VERIFY(pLight);
 
-			// Проверка LOD света (слишком мелкие/далекие пропускаем)
 			if (pLight->get_LOD() > EPS_L)
 			{
-				// Проверка HOM для самого источника света
 				if (HOM.visible(pLight->get_homdata()))
 					Lights.add_light(pLight);
 			}
-			continue; // Переходим к следующему объекту
+			continue;
 		}
 
-		// --- Обработка рендереблов (Меши, NPC, Физика) ---
+		// --- Обработка рендереблов ---
 
-		// Если сектор объекта не был посещен портальным обходчиком — объект невидим
-		if (PortalTraverser.i_marker != sector->r_marker)
+		// Проверяем маркер локального обходчика
+		if (SceneGraph.m_packet.portal_traverser.i_marker != sector->r_marker)
 			continue;
 
-		// Проверяем попадание во фрустумы сектора
+		// Проверяем видимость через фрустумы порталов этого сектора
 		for (auto& frustum : sector->r_frustums)
 		{
-			// Быстрый тест сферы
+			// Быстрый тест сферы с использованием конкретного фрустума
 			if (!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 				continue;
 
@@ -162,37 +163,36 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 				VERIFY(renderable);
 
 				// Occlusion Culling (HOM)
-				// Трансформируем BBox объекта и проверяем по буферу глубины низкого разрешения
 				vis_data& vis_orig = renderable->renderable.visual->vis;
 				vis_data vis_copy = vis_orig;
-
 				vis_copy.box.transform(renderable->renderable.transform);
 
 				bool is_visible_hom = HOM.visible(vis_copy);
-
-				// Сохраняем результаты проверки HOM обратно в визуализацию (для статистики/дебага)
 				vis_orig = vis_copy;
 
 				if (!is_visible_hom)
-					break; // Если скрыт стеной - выходим из цикла фрустумов
-
-				m_TraversalContext.frustum = &frustum;
+					break;
 
 				// Rendering
-				// Передаем объект в граф сцены (там он отсортируется)
-				set_Object(renderable); // Устанавливает m_TraversalContext.current_owner
-				renderable->renderable_Render(); // Вызывает add_Visual, который теперь использует пакет
+
+				// Устанавливаем текущий фрустум в контекст
+				m_TraversalContext.frustum = &frustum;
+
+				set_Object(renderable);			 // Устанавливает current_owner в контекст
+				renderable->renderable_Render(); // Вызывает add_Visual -> TLS -> SceneGraph
 				set_Object(nullptr);
 			}
 
-			// Если объект попал хотя бы в один фрустум сектора и прошел проверки —
-			// нет смысла проверять остальные фрустумы этого же сектора.
+			// Если объект попал хотя бы в один фрустум сектора и прошел проверки,
+			// переходим к следующему объекту
 			break;
 		}
 	}
 
+	// Сбрасываем указатель на фрустум для безопасности
+	m_TraversalContext.frustum = nullptr;
+
 	// 7. HUD Rendering (Last phase)
-	// -------------------------------------------------------------------------
 	if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 		g_pGameLevel->pHUD->Render_Last();
 }
@@ -307,7 +307,7 @@ void CRender::render_gbuffer_secondary()
 {
 	PROFILE_FUNCTION();
 
-	PortalTraverser.fade_render();
+	SceneGraph.m_packet.portal_traverser.fade_render();
 
 	RenderBackend.enable_anisotropy_filtering();
 

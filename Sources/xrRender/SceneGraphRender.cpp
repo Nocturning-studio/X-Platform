@@ -663,15 +663,15 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	// -------------------------------------------------------------------------
 	// Обход порталов (Portal Traversal)
 	// -------------------------------------------------------------------------
-	// Заполняет список видимых секторов (r_sectors) и фрустумов
-	PortalTraverser.traverse(start_sector, *view_frustum, camera_pos, mCombined, 0);
+	// Заполняет список видимых секторов и фрустумов
+	dest.portal_traverser.traverse(start_sector, *view_frustum, camera_pos, mCombined, 0);
 
 	// -------------------------------------------------------------------------
 	// Сбор СТАТИКИ (Static Geometry)
 	// -------------------------------------------------------------------------
-	for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+	for (u32 s_it = 0; s_it < dest.portal_traverser.r_sectors.size(); s_it++)
 	{
-		CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
+		CSector* sector = (CSector*)dest.portal_traverser.r_sectors[s_it];
 		IRender_Visual* root_visual = sector->root();
 
 		for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
@@ -704,7 +704,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 
 			if (0 == sector)
 				continue;
-			if (PortalTraverser.i_marker != sector->r_marker)
+			if (dest.portal_traverser.i_marker != sector->r_marker)
 				continue;
 
 			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)

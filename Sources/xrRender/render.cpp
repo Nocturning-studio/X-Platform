@@ -312,12 +312,12 @@ void CRender::create()
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 
 	xrRender_apply_tf();
-	::PortalTraverser.initialize();
+	SceneGraph.m_packet.portal_traverser.initialize();
 }
 
 void CRender::destroy()
 {
-	::PortalTraverser.destroy();
+	SceneGraph.m_packet.portal_traverser.destroy();
 	_RELEASE(q_sync_point[1]);
 	_RELEASE(q_sync_point[0]);
 	HWOCC.occq_destroy();

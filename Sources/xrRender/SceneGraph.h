@@ -56,6 +56,9 @@ struct SceneGraphPacket
 	SceneGraphTypes::mapSorted_T queue_wallmarks;
 	SceneGraphTypes::mapSorted_T mapEmissive;
 
+	// Добавляем персональный обходчик порталов для этого пакета
+	CPortalTraverser portal_traverser;
+
 	// Списки для LOD (данные наполнения)
 	xr_vector<SceneGraphTypes::LodRenderNode, render_alloc<SceneGraphTypes::LodRenderNode>> lstLODs;
 	xr_vector<int, render_alloc<int>> lstLODgroups;
@@ -96,6 +99,7 @@ struct SceneGraphPacket
 
 	void Destroy()
 	{
+		portal_traverser.destroy();
 		queue_static[0].destroy();
 		queue_static[1].destroy();
 		queue_dynamic[0].destroy();
