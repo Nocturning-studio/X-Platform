@@ -708,7 +708,6 @@ void CAI_Stalker::UpdateCL()
 
 	if (g_Alive())
 	{
-#pragma todo(Deathman to ALL : Починить многопоточный update_object_handler)
 		// Проверяем глобальный конфиг многопоточности и готовность планировщика
 		if(CObjectHandler::planner().initialized())
 		{

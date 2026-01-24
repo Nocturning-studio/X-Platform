@@ -452,7 +452,6 @@ void CEngine::Destroy()
 
 	LALib.OnDestroy();
 
-	Console->Destroy();
 	xr_delete(Console);
 
 	FontManager.Destroy();

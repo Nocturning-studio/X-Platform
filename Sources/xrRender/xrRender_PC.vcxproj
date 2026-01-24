@@ -982,6 +982,8 @@
     <ClInclude Include="ParticleEffectDef.h" />
     <ClInclude Include="ParticleGroup.h" />
     <ClInclude Include="PSLibrary.h" />
+    <ClInclude Include="r_portal.h" />
+    <ClInclude Include="r_portal_traverser.h" />
     <ClInclude Include="r_render_stages.h" />
     <ClInclude Include="r_color_converting.h" />
     <ClInclude Include="SceneGraph.h" />
@@ -1095,6 +1097,7 @@
     <ClCompile Include="ParticleEffectDef.cpp" />
     <ClCompile Include="ParticleGroup.cpp" />
     <ClCompile Include="PSLibrary.cpp" />
+    <ClCompile Include="r_portal.cpp" />
     <ClCompile Include="r_render_stages.cpp" />
     <ClCompile Include="SceneGraphBuild.cpp" />
     <ClCompile Include="SceneGraphRender.cpp" />
@@ -1107,7 +1110,7 @@
     <ClCompile Include="r_render_stages_phase_hi_z.cpp" />
     <ClCompile Include="r_screenshot.cpp" />
     <ClCompile Include="r_sector.cpp" />
-    <ClCompile Include="r_sector_traversal.cpp" />
+    <ClCompile Include="r_portal_traverser.cpp" />
     <ClCompile Include="SunOccluder.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tga.cpp" />

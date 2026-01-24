@@ -250,6 +250,7 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
   protected:
 	SkeletonWMVec wallmarks;
 	u32 wm_frame;
+	xrCriticalSection Wallmarks_Mutex;
 
 	xr_vector<IRender_Visual*> children_invisible;
 

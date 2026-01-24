@@ -180,15 +180,15 @@ void CConsole::Initialize()
 
 CConsole::~CConsole()
 {
-	xr_delete(m_editor);
 	Destroy();
+	xr_delete(m_editor);
 }
 
 void CConsole::Destroy()
 {
+	Execute("cfg_save");
 	m_hShader_back.destroy();
 	m_hGeom_con.destroy();
-	Execute("cfg_save");
 	xr_delete(pFont);
 	xr_delete(pFont2);
 	Commands.clear();

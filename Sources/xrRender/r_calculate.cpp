@@ -39,6 +39,7 @@ void CRender::Calculate()
 	}
 
 	// Check if camera is too near to some portal - if so force DualRender
+	/*
 	if (rmPortals)
 	{
 		float eps = VIEWPORT_NEAR + EPS_L;
@@ -52,6 +53,7 @@ void CRender::Calculate()
 			pPortal->bDualRender = TRUE;
 		}
 	}
+	*/
 
 	Lights.Update();
 

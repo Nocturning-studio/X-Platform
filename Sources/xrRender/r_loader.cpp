@@ -424,8 +424,6 @@ struct b_portal
 
 void CRender::LoadSectors(IReader* fs)
 {
-	////OPTICK_EVENT("CRender::LoadSectors");
-
 	// allocate memory for portals
 	u32 size = fs->find_chunk(fsL_PORTALS);
 	R_ASSERT(0 == size % sizeof(b_portal));
@@ -443,7 +441,7 @@ void CRender::LoadSectors(IReader* fs)
 			break;
 
 		CSector* __S = xr_new<CSector>();
-		__S->load(*P);
+		__S->Load(*P);
 		Sectors.push_back(__S);
 
 		P->close();
@@ -460,8 +458,10 @@ void CRender::LoadSectors(IReader* fs)
 			b_portal P;
 			fs->r(&P, sizeof(P));
 			CPortal* __P = (CPortal*)Portals[i];
+
 			__P->Setup(P.vertices.begin(), P.vertices.size(), (CSector*)getSector(P.sector_front),
 					   (CSector*)getSector(P.sector_back));
+
 			for (u32 j = 2; j < P.vertices.size(); j++)
 				CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
 		}

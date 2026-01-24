@@ -1,144 +1,37 @@
-// Portal.h: interface for the CPortal class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(_PORTAL_H_)
-#define _PORTAL_H_
 #pragma once
 
-class CPortal;
-class CSector;
-class CPortalTraverser;
+#include "r_portal.h"
+#include "..\xrEngine\xrLevel.h" // Для fsP_Portals, fsP_Root
 
-struct _scissor : public Fbox2
-{
-	float depth;
-};
-
-// Connector
-class CPortal : public IRender_Portal
-#ifdef DEBUG
-	,
-				public pureRender
-#endif
-{
-  private:
-	svector<Fvector, 8> poly;
-	CSector *pFace, *pBack;
-
-  public:
-	Fplane P;
-	Fsphere S;
-	u32 m_traversal_marker;
-	BOOL bDualRender;
-
-	void Setup(Fvector* V, int vcnt, CSector* face, CSector* back);
-
-	svector<Fvector, 8>& getPoly()
-	{
-		return poly;
-	}
-	CSector* Back()
-	{
-		return pBack;
-	}
-	CSector* Front()
-	{
-		return pFace;
-	}
-	CSector* getSector(CSector* pFrom)
-	{
-		return pFrom == pFace ? pBack : pFace;
-	}
-	CSector* getSectorFacing(const Fvector& V)
-	{
-		if (P.classify(V) > 0)
-			return pFace;
-		else
-			return pBack;
-	}
-	CSector* getSectorBack(const Fvector& V)
-	{
-		if (P.classify(V) > 0)
-			return pBack;
-		else
-			return pFace;
-	}
-	float distance(const Fvector& V)
-	{
-		return _abs(P.classify(V));
-	}
-
-	CPortal();
-	virtual ~CPortal();
-
-#ifdef DEBUG
-	virtual void OnRender();
-#endif
-};
-
-// Main 'Sector' class
 class CSector : public IRender_Sector
 {
-  protected:
-	IRender_Visual* m_root; // whole geometry of that sector
-	xr_vector<CPortal*> m_portals;
+  private:
+	IRender_Visual* m_root_visual; // Корневая геометрия сектора (Static Geometry)
+	xr_vector<CPortal*> m_portals; // Список порталов, ведущих из этого сектора
 
   public:
-	xr_vector<CFrustum> r_frustums;
-	xr_vector<_scissor> r_scissors;
-	_scissor r_scissor_merged;
-	u32 r_marker;
-
-  public:
-	// Main interface
-	IRender_Visual* root()
-	{
-		return m_root;
-	}
-	void traverse(CFrustum& F, _scissor& R, CPortalTraverser& traverser); 
-	void load(IReader& fs);
-
-	CSector()
-	{
-		m_root = NULL;
-	}
+	CSector();
 	virtual ~CSector();
-};
 
-class CPortalTraverser
-{
-  public:
-	enum
+	// Загрузка данных из .level файла
+	void Load(IReader& fs);
+
+	// === Accessors (Thread-Safe getters) ===
+
+	IC IRender_Visual* GetRootVisual() const
 	{
-		VQ_HOM = (1 << 0),
-		VQ_SSA = (1 << 1),
-		VQ_SCISSOR = (1 << 2),
-		VQ_FADE = (1 << 3), // requires ScreenSpaceArea to work
-	};
+		return m_root_visual;
+	}
 
-  public:
-	u32 i_marker;									 // input
-	u32 i_options;									 // input:	culling options
-	Fvector i_vBase;								 // input:	"view" point
-	Fmatrix i_mTransform;								 // input:	4x4 transform
-	Fmatrix i_mTransform_01;							 //
-	CSector* i_start;								 // input:	starting point
-	xr_vector<IRender_Sector*> r_sectors;			 // result
-	xr_vector<std::pair<CPortal*, float>> f_portals; //
-	ref_shader f_shader;
-	ref_geom f_geom;
+	IC const xr_vector<CPortal*>& GetPortals() const
+	{
+		return m_portals;
+	}
 
-  public:
-	CPortalTraverser();
-	void initialize();
-	void destroy();
-	void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mTransform, u32 options);
-	void fade_portal(CPortal* _p, float ScreenSpaceArea);
-	void fade_render();
-#ifdef DEBUG
-	void dbg_draw();
-#endif
+	// === IRender_Sector Interface Implementation ===
+
+	virtual IRender_Visual* root()
+	{
+		return GetRootVisual();
+	}
 };
-
-#endif // !defined(AFX_PORTAL_H__1FC2D371_4A19_49EA_BD1E_2D0F8DEBBF15__INCLUDED_)

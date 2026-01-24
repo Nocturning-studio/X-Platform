@@ -34,12 +34,6 @@
     <Filter Include="Core\Occlusion culling\HOM Occlusion">
       <UniqueIdentifier>{192e35d4-dc12-4e11-a00b-860e34665128}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Occlusion culling\Sector/Portal">
-      <UniqueIdentifier>{113a2b8e-7672-4fdf-89aa-c2bdb9a003dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Occlusion culling\Stripifier">
-      <UniqueIdentifier>{90ddcd80-88df-482f-9b11-217190755c23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render pipeline">
       <UniqueIdentifier>{a66da469-b2b7-41cc-9813-8abfcd08e1b9}</UniqueIdentifier>
     </Filter>
@@ -160,6 +154,12 @@
     <Filter Include="Core\Effectors">
       <UniqueIdentifier>{7bf0db16-0f91-4a4d-92b7-4a9621cc3321}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Occlusion culling\Portal traverse system">
+      <UniqueIdentifier>{113a2b8e-7672-4fdf-89aa-c2bdb9a003dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Stripifier">
+      <UniqueIdentifier>{90ddcd80-88df-482f-9b11-217190755c23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -184,16 +184,16 @@
       <Filter>Core\Details</Filter>
     </ClInclude>
     <ClInclude Include="NvTriStrip.h">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClInclude>
     <ClInclude Include="NvTriStripObjects.h">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClInclude>
     <ClInclude Include="VertexCache.h">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClInclude>
     <ClInclude Include="xrStripify.h">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
       <Filter>Core\Lights</Filter>
@@ -247,7 +247,7 @@
       <Filter>Core\Models\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="r_sector.h">
-      <Filter>Core\Occlusion culling\Sector/Portal</Filter>
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="HOM.h">
       <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
@@ -390,6 +390,12 @@
     <ClInclude Include="doug_lea_allocator_wrapper.h">
       <Filter>Core\Memory allocation</Filter>
     </ClInclude>
+    <ClInclude Include="r_portal.h">
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+    </ClInclude>
+    <ClInclude Include="r_portal_traverser.h">
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -423,16 +429,16 @@
       <Filter>Core\Details</Filter>
     </ClCompile>
     <ClCompile Include="NvTriStrip.cpp">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClCompile>
     <ClCompile Include="NvTriStripObjects.cpp">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClCompile>
     <ClCompile Include="VertexCache.cpp">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClCompile>
     <ClCompile Include="xrStripify.cpp">
-      <Filter>Core\Occlusion culling\Stripifier</Filter>
+      <Filter>Core\Stripifier</Filter>
     </ClCompile>
     <ClCompile Include="light.cpp">
       <Filter>Core\Lights</Filter>
@@ -489,10 +495,10 @@
       <Filter>Core\Models\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="r_sector.cpp">
-      <Filter>Core\Occlusion culling\Sector/Portal</Filter>
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
-    <ClCompile Include="r_sector_traversal.cpp">
-      <Filter>Core\Occlusion culling\Sector/Portal</Filter>
+    <ClCompile Include="r_portal_traverser.cpp">
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="HOM.cpp">
       <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
@@ -652,6 +658,9 @@
     </ClCompile>
     <ClCompile Include="EffectorsManager.cpp">
       <Filter>Core\Effectors</Filter>
+    </ClCompile>
+    <ClCompile Include="r_portal.cpp">
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

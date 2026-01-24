@@ -711,11 +711,15 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 				break; // Low
 			}
 
-			// ≈сли близко - форсируем обновление костей и следов
-			if (adjusted_distane < switch_distance)
+			BOOL bExact = (adjusted_distane < switch_distance);
+			pV->CalculateBones(bExact);
+
+			// Wallmarks считаем только вблизи и только дл€ основного прохода (оптимизаци€)
+			//    ƒл€ теней воллмарки обычно не нужны (они плоские).
+			if (bExact && !ctx.is_invisible_mode)
 			{
-				pV->CalculateBones(TRUE);
-				pV->CalculateWallmarks();
+				if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
+					pV->CalculateWallmarks();
 			}
 
 			// –екурсивно обрабатываем части скелета (кости/меши)
@@ -1020,7 +1024,9 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 			if (dist_from_camera < switch_distance)
 			{
 				pKinematics->CalculateBones(TRUE);
-				pKinematics->CalculateWallmarks();
+
+				if (RenderImplementation.active_phase() != CRender::PHASE_SHADOW_DEPTH)
+					pKinematics->CalculateWallmarks();
 			}
 
 			// —келеты всегда добавл€ем через Process, так как части (children) обычно внутри AABB родител€

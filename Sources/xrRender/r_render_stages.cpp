@@ -94,27 +94,28 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// 4. Portal Traversal: Определение видимых секторов
 	// -------------------------------------------------------------------------
 	// Используем локальный обходчик из пакета
-	SceneGraph.m_packet.portal_traverser.traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
-												  CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA |
-													  CPortalTraverser::VQ_FADE);
+	SceneGraph.m_packet.portal_traverser.Traverse( pLastSector, 
+													ViewBase, 
+													Engine.RenderView.Position, 
+													view_projection,
+													CPortalTraverser::VQ_HOM | 
+													CPortalTraverser::VQ_SSA |
+													CPortalTraverser::VQ_FADE );
 
 	// -------------------------------------------------------------------------
 	// 5. Static Geometry: Добавление статики из видимых секторов
 	// -------------------------------------------------------------------------
 	// Итерируемся по секторам, найденным локальным обходчиком
-	for (auto* sector_ptr : SceneGraph.m_packet.portal_traverser.r_sectors)
+	const auto& visible_sectors = SceneGraph.m_packet.portal_traverser.GetVisibleSectors();
+
+	for (const auto& sec_vis : visible_sectors)
 	{
-		CSector* sector = (CSector*)sector_ptr;
-		IRender_Visual* root_visual = sector->root();
+		CSector* sector = sec_vis.sector;
+		IRender_Visual* root_visual = sector->GetRootVisual();
 
-		// Один сектор может быть виден через несколько порталов
-		for (auto& frustum : sector->r_frustums)
+		for (const auto& frustum : sec_vis.frustums)
 		{
-			// Обновляем фрустум в контексте на портальный для точного отсечения
-			// Метод set_Frustum обновляет m_TraversalContext.frustum
-			set_Frustum(&frustum);
-
-			// Вызываем добавление геометрии (оно использует контекст и пакет из TLS)
+			set_Frustum((CFrustum*)&frustum);
 			add_Geometry(root_visual);
 		}
 	}
@@ -146,14 +147,24 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 		// --- Обработка рендереблов ---
 
-		// Проверяем маркер локального обходчика
-		if (SceneGraph.m_packet.portal_traverser.i_marker != sector->r_marker)
+		const CPortalTraverser::SectorVisibility* active_vis_data = nullptr;
+
+		for (const auto& sec_vis : visible_sectors)
+		{
+			if (sec_vis.sector == sector)
+			{
+				active_vis_data = &sec_vis;
+				break;
+			}
+		}
+
+		// Если сектор не найден в списке видимых - пропускаем объект
+		if (!active_vis_data)
 			continue;
 
 		// Проверяем видимость через фрустумы порталов этого сектора
-		for (auto& frustum : sector->r_frustums)
+		for (const auto& frustum : active_vis_data->frustums)
 		{
-			// Быстрый тест сферы с использованием конкретного фрустума
 			if (!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 				continue;
 
@@ -307,7 +318,7 @@ void CRender::render_gbuffer_secondary()
 {
 	PROFILE_FUNCTION();
 
-	SceneGraph.m_packet.portal_traverser.fade_render();
+	SceneGraph.m_packet.portal_traverser.RenderFade();
 
 	RenderBackend.enable_anisotropy_filtering();
 

@@ -312,12 +312,14 @@ void CRender::create()
 	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 
 	xrRender_apply_tf();
-	SceneGraph.m_packet.portal_traverser.initialize();
+	SceneGraph.m_packet.portal_traverser.CreateResources();
+
+	init_cacades();
 }
 
 void CRender::destroy()
 {
-	SceneGraph.m_packet.portal_traverser.destroy();
+	SceneGraph.m_packet.portal_traverser.DestroyResources();
 	_RELEASE(q_sync_point[1]);
 	_RELEASE(q_sync_point[0]);
 	HWOCC.occq_destroy();
@@ -680,8 +682,6 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 	if (!hCompiler)
 		make_string("Can't find 'D3DCompiler_43.dll'\nPlease install latest version of DirectX before running this program");
-
-	init_cacades();
 
 	m_actor_health = 1.0f;
 }

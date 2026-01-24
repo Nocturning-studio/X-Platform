@@ -140,6 +140,10 @@ class CRender : public IRender_interface, public pureFrame
 	bool m_need_render_sun;
 	xr_vector<sun::cascade> m_sun_cascades;
 
+	// Массив постоянных рабочих элементов
+	// 3 каскада солнца - 3 элемента
+	ShadowCascadeWorkItem* m_sun_work_items[3]; 
+
 	//Motion blur
 	Fmatrix m_saved_viewproj;
 	Fmatrix m_saved_invview;
@@ -407,6 +411,8 @@ class CRender : public IRender_interface, public pureFrame
 	void ProcessRemainingLightsOptimized(light_Package& LP);
 	void render_sun_cascade(u32 cascade_ind);
 	void init_cacades();
+	void gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
+	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_hom();
 	void render_ambient_occlusion();

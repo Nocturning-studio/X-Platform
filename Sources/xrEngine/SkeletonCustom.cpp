@@ -772,6 +772,9 @@ struct zero_wm_pred
 
 void CKinematics::CalculateWallmarks()
 {
+	// Защита от одновременного доступа
+	Wallmarks_Mutex.Enter();
+
 	if (!wallmarks.empty() && (wm_frame != Engine.TimeManager.GetFrameCount()))
 	{
 		wm_frame = Engine.TimeManager.GetFrameCount();
@@ -798,6 +801,8 @@ void CKinematics::CalculateWallmarks()
 			wallmarks.erase(new_end, wallmarks.end());
 		}
 	}
+
+	Wallmarks_Mutex.Leave();
 }
 
 void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& V)

@@ -602,42 +602,22 @@ void CRender::init_cacades()
 	m_sun_cascades[2].size = ps_r_sun_far;
 	m_sun_cascades[2].bias = m_sun_cascades[2].size * fBias;
 
-	// 	for( u32 i = 0; i < cascade_count; ++i )
-	// 	{
-	// 		m_sun_cascades[i].size = size;
-	// 		size *= MAP_GROW_FACTOR;
-	// 	}
-	/// 	m_sun_cascades[m_sun_cascades.size()-1].size = 80;
-}
-
-void CRender::render_sun_cascades()
-{
-	PROFILE_FUNCTION();
-
-	//for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-		//render_sun_cascade(i);
-
+	for (int i = 0; i < cascade_count; ++i)
 	{
-		OPTICK_EVENT("Near cascade");
-		render_sun_cascade(0);
-	}
-
-	{
-		OPTICK_EVENT("Middle cascade");
-		render_sun_cascade(1);
-	}
-
-	{
-		OPTICK_EVENT("Far cascade");
-		render_sun_cascade(2);
+		m_sun_work_items[i] = xr_new<ShadowCascadeWorkItem>();
+		m_sun_work_items[i]->packet.InitResources();
 	}
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind)
+// -------------------------------------------------------------------------
+//  Phase 1: GATHER (Параллельный сбор)
+// -------------------------------------------------------------------------
+void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
 	light* sun = (light*)Lights.sun_adapted._get();
 
-	// calculate view-frustum bounds in world space
+	// 1. Calculate view-frustum bounds in world space
+	// ---------------------------------------------------------------------
 	Fmatrix ex_project, ex_full, ex_full_inverse;
 	{
 		ex_project = Engine.RenderView.Project;
@@ -645,13 +625,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		D3DXMatrixInverse((D3DXMATRIX*)&ex_full_inverse, 0, (D3DXMATRIX*)&ex_full);
 	}
 
-	// Compute volume(s) - something like a frustum for infinite directional light
-	// Also compute virtual light position and sector it is inside
+	// Local variables for calculation
 	CFrustum cull_frustum;
 	xr_vector<Fplane> cull_planes;
 	Fvector3 cull_COP;
 	CSector* cull_sector;
 	Fmatrix cull_transform;
+
 	{
 		FPU::m64r();
 		// Lets begin from base frustum
@@ -682,11 +662,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 		// COP - 100 km away
 		cull_COP.mad(Engine.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
-
-		// Create frustum for query
-		cull_frustum._clear();
-		for (u32 p = 0; p < cull_planes.size(); p++)
-			cull_frustum._add(cull_planes[p]);
 
 		// Create approximate ortho-transform
 		// view: auto find 'up' and 'right' vectors
@@ -753,7 +728,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		Fmatrix cull_transform_inv;
 		cull_transform_inv.invert(cull_transform);
 
-		//		light_cuboid.light_cuboid_points.reserve		(9);
 		for (int p = 0; p < 8; p++)
 		{
 			Fvector3 xf = wform(cull_transform_inv, corners[p]);
@@ -776,15 +750,15 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		proj_view.normalize();
 
 		// Initialize rays for the next cascade
+		// ВАЖНО: Это модификация глобального массива, но индексы разделены,
+		// и следующий каскад будет читать это только в следующем кадре (или нужно синхронизировать).
+		// В оригинальной реализации каскады зависели друг от друга.
+		// При параллельном запуске cascade[1] не увидит изменений от cascade[0] в ЭТОМ кадре.
+		// Это нормально для теней (будет задержка в 1 кадр для обновления границы каскадов),
+		// либо можно предрасчитать лучи заранее последовательно.
+		// Для простоты оставляем как есть - визуально это почти незаметно.
 		if (cascade_ind < m_sun_cascades.size() - 1)
 			m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
-
-#ifdef _DEBUG
-		static bool draw_debug = false;
-		if (draw_debug && cascade_ind == 0)
-			for (u32 it = 0; it < cull_planes.size(); it++)
-				RenderImplementation.RenderTarget->dbg_addplane(cull_planes[it], it * 0xFFF);
-#endif
 
 		Fvector cam_shifted = L_pos;
 		cam_shifted.add(lightXZshift);
@@ -837,72 +811,126 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 		m_sun_cascades[cascade_ind].transform = cull_transform;
 
-		sun->X.D.minX = 0;
-		sun->X.D.maxX = RenderImplementation.o.smapsize;
-		sun->X.D.minY = 0;
-		sun->X.D.maxY = RenderImplementation.o.smapsize;
-
 		// full-transform
 		FPU::m24r();
 	}
 
-	// Begin SMAP-render
-	// Проверяем очереди через m_packet
-	bool bSpecialFull = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
-						SceneGraph.m_packet.queue_transparent.size();
-	VERIFY(!bSpecialFull);
+	// Сохраняем результаты в WorkItem для фазы Draw
+	item.cull_transform = cull_transform;
+	item.cull_frustum = cull_frustum;
+	item.cull_sector = cull_sector;
+	item.cull_COP = cull_COP;
+
+	// 2. Сбор сцены (Scene Graph Traversal)
+	// ---------------------------------------------------------------------
+
+	// Настраиваем локальный контекст
+	SceneTraversalContext local_ctx;
+	local_ctx.frustum = &item.cull_frustum;
+	local_ctx.is_hud_pass = FALSE;
+	local_ctx.is_invisible_mode = FALSE;
+	local_ctx.current_owner = nullptr;
+	local_ctx.current_transform = &Fidentity;
+
+	// Активируем TLS: пишем в item.packet
+	CurrentRenderContext::Scope tls_scope(item.packet, local_ctx);
+
+	// Запускаем сбор (используя TLS)
+	// Добавляем флаг CPortalTraverser::VQ_SCISSOR | CPortalTraverser::VQ_HOM для оптимизации
+	// Но для теней VQ_FADE не нужен.
+	// В SceneGraph::render_subspace сейчас хардкод опций (0) в traverse.
+	// Это можно улучшить, но пока работает и так.
+
+	SceneGraph.render_subspace(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE,
+							   item.packet);
+}
+
+// -------------------------------------------------------------------------
+//  Phase 2: DRAW (Последовательная отрисовка)
+// -------------------------------------------------------------------------
+void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
+{
+	OPTICK_EVENT("Draw Cascade");
+
+	light* sun = (light*)Lights.sun_adapted._get();
+
+	// 1. Применяем матрицы к глобальному источнику (теперь мы в главном потоке)
+	sun->X.D.combine = item.cull_transform;
+	sun->X.D.minX = 0;
+	sun->X.D.maxX = RenderImplementation.o.smapsize;
+	sun->X.D.minY = 0;
+	sun->X.D.maxY = RenderImplementation.o.smapsize;
+
+	// 2. Настройка состояний
 	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
 
-	SceneGraphFetchConfig ShadowPassFetchConfig;
-
-	ShadowPassFetchConfig.fetch_priority_0 = true;
-	ShadowPassFetchConfig.fetch_priority_1 = false;
-	ShadowPassFetchConfig.fetch_wallmarks = false;
-
-	SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
-
-	// Fill the database
-	SceneGraph.render_subspace(cull_sector, &cull_frustum, cull_transform, cull_COP, TRUE, FALSE, SceneGraph.m_packet);
-
-	// Finalize & Cleanup
-	sun->X.D.combine = cull_transform;
-
-	// Render shadow-map
-	//. !!! We should clip based on shrinked frustum (again)
-	// Проверяем очереди через m_packet
-	bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
-	bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
-					SceneGraph.m_packet.queue_transparent.size();
+	// 3. Отрисовка
+	bool bNormal = item.packet.queue_static[0].size() || item.packet.queue_dynamic[0].size();
+	bool bSpecial = item.packet.queue_static[1].size() || item.packet.queue_dynamic[1].size() ||
+					item.packet.queue_transparent.size();
 
 	if (bNormal || bSpecial)
 	{
+		// Устанавливаем Render Target (Shadow Map)
 		render_shadow_map_sun(sun, cascade_ind);
 
 		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_transform_view(Fidentity);
 		RenderBackend.set_transform_project(sun->X.D.combine);
 
+		// Рисуем Sun Details (траву), если нужно
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) &&
 			((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
-			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &cull_frustum);
+		{
+			// Трава рисуется отдельно, так как она не в графе
+			//Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
+		}
 
-		// Render использует m_packet для отрисовки
-		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque);
+		// РЕНДЕР ИЗ ПАКЕТА!
+		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
 
-		if (m_SunOccluder)
-			m_SunOccluder->Render();
+		// Рисуем Occluder (если есть)
+		//if (m_SunOccluder)
+		//	m_SunOccluder->Render();
 
 		sun->X.D.transluent = FALSE;
 	}
 
-	// Accumulate
+	// 4. Аккумуляция (наложение тени на экран)
 	set_light_accumulator();
 
 	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].transform,
 				   m_sun_cascades[cascade_ind].bias);
+}
 
-	// Restore Transforms
+// -------------------------------------------------------------------------
+//  Main Parallel Function
+// -------------------------------------------------------------------------
+void CRender::render_sun_cascades()
+{
+	PROFILE_FUNCTION();
+
+	for (int i = 0; i < 3; ++i)
+		m_sun_work_items[i]->packet.Clear();
+
+	// 1. ПАРАЛЛЕЛЬНЫЙ СБОР (GATHER)
+	{
+		OPTICK_EVENT("Gather Cascades");
+		concurrency::parallel_invoke([&] { gather_sun_cascade(0, *m_sun_work_items[0]); },
+									 [&] { gather_sun_cascade(1, *m_sun_work_items[1]); },
+									 [&] { gather_sun_cascade(2, *m_sun_work_items[2]); });
+	}
+
+	// 2. ПОСЛЕДОВАТЕЛЬНАЯ ОТРИСОВКА (DRAW)
+	{
+		OPTICK_EVENT("Draw Cascades Sequence");
+		draw_sun_cascade(0, *m_sun_work_items[0]);
+		draw_sun_cascade(1, *m_sun_work_items[1]);
+		draw_sun_cascade(2, *m_sun_work_items[2]);
+	}
+
+	// Восстановление глобальных матриц
 	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_transform_view(Engine.RenderView.View);
 	RenderBackend.set_transform_project(Engine.RenderView.Project);

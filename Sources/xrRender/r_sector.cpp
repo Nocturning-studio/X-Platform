@@ -1,314 +1,65 @@
-// Portal.cpp: implementation of the CPortal class.
-//
-//////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "r_sector.h"
-#include "..\xrEngine\xrLevel.h"
-#include "..\xrEngine\xr_object.h"
-#include "..\xrEngine\fbasicvisual.h"
-#include "..\xrEngine\IGame_Persistent.h"
+#include "r_portal.h"
+#include "render.h" // Для доступа к глобальному списку ресурсов при загрузке
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CPortal::CPortal()
+
+CSector::CSector() : m_root_visual(nullptr)
 {
-#ifdef DEBUG
-	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
-#endif
-}
-
-CPortal::~CPortal()
-{
-#ifdef DEBUG
-	Engine.Events.Render.Remove(this);
-#endif
-}
-
-#ifdef DEBUG
-void CPortal::OnRender()
-{
-	if (psDeviceFlags.is(rsOcclusionDraw))
-	{
-		VERIFY(poly.size());
-		// draw rect
-		DEFINE_VECTOR(FVF::L, LVec, LVecIt);
-		static LVec V;
-		V.resize(poly.size() + 2);
-		Fvector C = {0, 0, 0};
-		for (u32 k = 0; k < poly.size(); k++)
-		{
-			C.add(poly[k]);
-			V[k + 1].set(poly[k], 0x800000FF);
-		}
-		V.back().set(poly[0], 0x800000FF);
-		C.div((float)poly.size());
-		V[0].set(C, 0x800000FF);
-
-		RenderBackend.set_transform_world(Fidentity);
-		// draw solid
-		RenderBackend.set_Shader(Device.m_SelectionShader);
-		RenderBackend.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
-
-		// draw wire
-		if (bDebug)
-		{
-			RenderImplementation.set_render_mode(CRender::MODE_NEAR);
-		}
-		else
-		{
-			Device.SetNearer(TRUE);
-		}
-		RenderBackend.set_Shader(Device.m_WireShader);
-		RenderBackend.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
-		if (bDebug)
-		{
-			RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
-		}
-		else
-		{
-			Device.SetNearer(FALSE);
-		}
-	}
-}
-#endif
-//
-void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
-{
-	////OPTICK_EVENT("CPortal::Setup");
-
-	// calc sphere
-	Fbox BB;
-	BB.invalidate();
-	for (int v = 0; v < vcnt; v++)
-		BB.modify(V[v]);
-	BB.getsphere(S.P, S.R);
-
-	//
-	poly.assign(V, vcnt);
-	pFace = face;
-	pBack = back;
-	m_traversal_marker = 0xffffffff;
-
-	Fvector N, T;
-	N.set(0, 0, 0);
-
-	FPU::m64r();
-	u32 _cnt = 0;
-	for (int i = 2; i < vcnt; i++)
-	{
-		T.mknormal_non_normalized(poly[0], poly[i - 1], poly[i]);
-		float m = T.magnitude();
-		if (m > EPS_S)
-		{
-			N.add(T.div(m));
-			_cnt++;
-		}
-	}
-
-	if(!_cnt)
-		Msg("Invalid portal detected!");
-
-	N.div(float(_cnt));
-	P.build(poly[0], N);
-	FPU::m24r();
 }
 
 CSector::~CSector()
 {
+	// Очищаем контейнеры.
+	// Сами объекты (CPortal, IRender_Visual) удаляются в CRender::level_Unload,
+	// так что здесь мы просто забываем указатели.
+	m_portals.clear();
+	m_root_visual = nullptr;
 }
 
-extern float r_ssaDISCARD;
-extern float r_ssaLOD_A, r_ssaLOD_B;
+//////////////////////////////////////////////////////////////////////
+// Loading
+//////////////////////////////////////////////////////////////////////
 
-void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& traverser)
+void CSector::Load(IReader& fs)
 {
-	// Register traversal process
-	if (r_marker != traverser.i_marker)
+	// 1. Загрузка Порталов
+	// В чанке fsP_Portals хранится список ID порталов (u16)
+	if (fs.find_chunk(fsP_Portals))
 	{
-		r_marker = traverser.i_marker;
-		traverser.r_sectors.push_back(this); // Пишем в локальный список!
-		r_frustums.clear();
-		r_scissors.clear();
-	}
-	r_frustums.push_back(F);
-	r_scissors.push_back(R_scissor);
+		u32 size = fs.find_chunk(fsP_Portals);
+		R_ASSERT(0 == (size & 1)); // Размер должен быть кратен 2 (sizeof(u16))
+		u32 count = size / 2;
 
-	// Search visible portals and go through them
-	sPoly S, D;
-	for (u32 I = 0; I < m_portals.size(); I++)
-	{
-		if (m_portals[I]->m_traversal_marker == traverser.i_marker)
-			continue;
+		m_portals.reserve(count);
 
-		CPortal* PORTAL = m_portals[I];
-		CSector* pSector;
-
-		// Select sector
-		if (PORTAL->bDualRender)
+		while (count)
 		{
-			pSector = PORTAL->getSector(this);
+			u16 portal_id = fs.r_u16();
+			// Получаем указатель на портал из глобального пула рендера
+			CPortal* portal = (CPortal*)RenderImplementation.getPortal(portal_id);
+			m_portals.push_back(portal);
+			count--;
 		}
-		else
-		{
-			pSector = PORTAL->getSectorBack(traverser.i_vBase);
-			if (pSector == this)
-				continue;
-			if (pSector == traverser.i_start)
-				continue;
-		}
-
-		// Early-out sphere
-		if (!F.testSphere_dirty(PORTAL->S.P, PORTAL->S.R))
-			continue;
-
-		// ScreenSpaceArea
-		if (traverser.i_options & CPortalTraverser::VQ_SSA)
-		{
-			Fvector dir2portal;
-			dir2portal.sub(PORTAL->S.P, traverser.i_vBase);
-			float R = PORTAL->S.R;
-			float distSQ = dir2portal.square_magnitude();
-			float ScreenSpaceArea = R * R / distSQ;
-			dir2portal.div(_sqrt(distSQ));
-			ScreenSpaceArea *= _abs(PORTAL->P.n.dotproduct(dir2portal));
-
-			if (ScreenSpaceArea < r_ssaDISCARD)
-				continue;
-
-			if (traverser.i_options & CPortalTraverser::VQ_FADE)
-			{
-				if (ScreenSpaceArea < r_ssaLOD_A)
-					traverser.fade_portal(PORTAL, ScreenSpaceArea); // Локальный fade list
-				if (ScreenSpaceArea < r_ssaLOD_B)
-					continue;
-			}
-		}
-
-		// Clip by frustum
-		svector<Fvector, 8>& POLY = PORTAL->getPoly();
-		S.assign(&*POLY.begin(), POLY.size());
-		D.clear();
-		sPoly* P = F.ClipPoly(S, D);
-		if (0 == P)
-			continue;
-
-		// Scissor and optimized HOM-testing
-		_scissor scissor;
-
-		if (traverser.i_options & CPortalTraverser::VQ_SCISSOR && (!PORTAL->bDualRender))
-		{
-			Fbox2 bb;
-			bb.invalidate();
-			float depth = flt_max;
-			sPoly& p = *P;
-			for (u32 vit = 0; vit < p.size(); vit++)
-			{
-				Fvector4 t;
-				Fmatrix& M = traverser.i_mTransform_01;
-				Fvector& v = p[vit];
-
-				t.x = v.x * M._11 + v.y * M._21 + v.z * M._31 + M._41;
-				t.y = v.x * M._12 + v.y * M._22 + v.z * M._32 + M._42;
-				t.z = v.x * M._13 + v.y * M._23 + v.z * M._33 + M._43;
-				t.w = v.x * M._14 + v.y * M._24 + v.z * M._34 + M._44;
-				t.mul(1.f / t.w);
-
-				// ... (расчет bbox scissor) ...
-				if (t.x < bb.min.x)
-					bb.min.x = t.x;
-				if (t.x > bb.max.x)
-					bb.max.x = t.x;
-				if (t.y < bb.min.y)
-					bb.min.y = t.y;
-				if (t.y > bb.max.y)
-					bb.max.y = t.y;
-				if (t.z < depth)
-					depth = t.z;
-			}
-
-			if (depth < EPS)
-			{
-				scissor = R_scissor;
-				// Cull by HOM
-				if ((traverser.i_options & CPortalTraverser::VQ_HOM) && (!RenderImplementation.HOM.visible(*P)))
-					continue;
-			}
-			else
-			{
-				// ... (intersection logic) ...
-				if (bb.min.x > R_scissor.min.x)
-					scissor.min.x = bb.min.x;
-				else
-					scissor.min.x = R_scissor.min.x;
-				if (bb.min.y > R_scissor.min.y)
-					scissor.min.y = bb.min.y;
-				else
-					scissor.min.y = R_scissor.min.y;
-				if (bb.max.x < R_scissor.max.x)
-					scissor.max.x = bb.max.x;
-				else
-					scissor.max.x = R_scissor.max.x;
-				if (bb.max.y < R_scissor.max.y)
-					scissor.max.y = bb.max.y;
-				else
-					scissor.max.y = R_scissor.max.y;
-				scissor.depth = depth;
-
-				if (scissor.min.x >= scissor.max.x)
-					continue;
-				if (scissor.min.y >= scissor.max.y)
-					continue;
-
-				// Cull by HOM
-				if ((traverser.i_options & CPortalTraverser::VQ_HOM) &&
-					(!RenderImplementation.HOM.visible(scissor, depth)))
-					continue;
-			}
-		}
-		else
-		{
-			scissor = R_scissor;
-			// Cull by HOM
-			if ((traverser.i_options & CPortalTraverser::VQ_HOM) && (!RenderImplementation.HOM.visible(*P)))
-				continue;
-		}
-
-		// Create _new_ frustum and recurse
-		CFrustum Clip;
-		Clip.CreateFromPortal(P, PORTAL->P.n, traverser.i_vBase, traverser.i_mTransform);
-		PORTAL->m_traversal_marker = traverser.i_marker;
-		PORTAL->bDualRender = FALSE;
-
-		// РЕКУРСИЯ: Передаем traverser дальше
-		pSector->traverse(Clip, scissor, traverser);
-	}
-}
-
-void CSector::load(IReader& fs)
-{
-	////OPTICK_EVENT("CPortal::load");
-
-	// Assign portal polygons
-	u32 size = fs.find_chunk(fsP_Portals);
-	R_ASSERT(0 == (size & 1));
-	u32 count = size / 2;
-	m_portals.reserve(count);
-	while (count)
-	{
-		u16 ID = fs.r_u16();
-		CPortal* P = (CPortal*)RenderImplementation.getPortal(ID);
-		m_portals.push_back(P);
-		count--;
 	}
 
+	// 2. Загрузка Корневого Визуала (Геометрии)
 	if (g_dedicated_server)
-		m_root = 0;
+	{
+		m_root_visual = nullptr;
+	}
 	else
 	{
-		// Assign visual
-		size = fs.find_chunk(fsP_Root);
-		R_ASSERT(size == 4);
-		m_root = RenderImplementation.getVisual(fs.r_u32());
+		if (fs.find_chunk(fsP_Root))
+		{
+			u32 size = fs.find_chunk(fsP_Root);
+			R_ASSERT(size == 4); // ID визуала - это u32
+
+			u32 visual_id = fs.r_u32();
+			m_root_visual = RenderImplementation.getVisual(visual_id);
+		}
 	}
 }

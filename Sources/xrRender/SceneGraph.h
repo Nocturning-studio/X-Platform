@@ -4,6 +4,8 @@
 #include "..\xrEngine\ispatial.h"
 #include "SceneGraphTypes.h"
 #include "r_sector.h"
+#include "r_portal.h"
+#include "r_portal_traverser.h"
 
 class CRender;
 class IRender_Visual;
@@ -77,8 +79,26 @@ struct SceneGraphPacket
 	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
 
+	SceneGraphPacket()
+	{
+		//  онструктор теперь просто зовет reset, ресурсы грузим €вно
+		portal_traverser.Reset();
+	}
+
+	// ƒобавл€ем методы управлени€ ресурсами
+	void InitResources()
+	{
+		portal_traverser.CreateResources();
+	}
+
+	void FreeResources()
+	{
+		portal_traverser.DestroyResources();
+	}
+
 	void Clear()
 	{
+		portal_traverser.Reset();
 		queue_static[0].clear();
 		queue_static[1].clear();
 		queue_dynamic[0].clear();
@@ -99,7 +119,6 @@ struct SceneGraphPacket
 
 	void Destroy()
 	{
-		portal_traverser.destroy();
 		queue_static[0].destroy();
 		queue_static[1].destroy();
 		queue_dynamic[0].destroy();

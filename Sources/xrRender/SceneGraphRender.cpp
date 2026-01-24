@@ -626,25 +626,31 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	VERIFY(start_sector);
 	VERIFY(view_frustum);
 
-	m_traversal_marker++; // Увеличиваем маркер, чтобы не обрабатывать один объект дважды за этот проход
+	// Увеличиваем маркер (хотя теперь он используется меньше, он нужен для отладки или легаси кода)
+	m_traversal_marker++;
 
 	// -------------------------------------------------------------------------
-	// Подготовка локального контекста
+	// 1. Подготовка локального контекста (TLS)
 	// -------------------------------------------------------------------------
 	SceneTraversalContext local_ctx;
-	local_ctx.frustum = view_frustum; // Устанавливаем фрустум для этого прохода
-	local_ctx.is_hud_pass = FALSE;	  // Для теней HUD обычно false
+	local_ctx.frustum = view_frustum; // Базовый фрустум
+	local_ctx.is_hud_pass = FALSE;
 	local_ctx.is_invisible_mode = FALSE;
-	local_ctx.current_owner = nullptr; // Сброс владельца
-	local_ctx.current_transform = &Fidentity; 
+	local_ctx.current_owner = nullptr;
+	local_ctx.current_transform = &Fidentity;
 
-	// Активируем TLS: теперь add_Visual будет писать в 'dest' используя 'local_ctx'
+	// Активируем TLS: теперь все вызовы add_Visual/Geometry пойдут в 'dest'
+	// и будут использовать 'local_ctx'
 	CurrentRenderContext::Scope tls_scope(dest, local_ctx);
 
 	// -------------------------------------------------------------------------
-	// Precise Portals (Dual Render Force)
+	// 2. Precise Portals (Внимание: Потенциально небезопасно в MT)
 	// -------------------------------------------------------------------------
-	// Если камера слишком близко к порталу, принудительно включаем рендеринг обоих секторов
+	// Если precise_portals=TRUE передается в параллельных потоках,
+	// запись в pPortal->bDualRender может вызвать гонку данных.
+	// Обычно для теней (cascades) это FALSE.
+	// Поле bDualRender удалено, так как оно нарушает потокобезопасность.
+	/*
 	if (precise_portals && RenderImplementation.rmPortals)
 	{
 		Fvector box_radius;
@@ -654,47 +660,56 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 
 		for (int K = 0; K < RenderImplementation.Sectors_xrc.r_count(); K++)
 		{
-			u32 portal_id = RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
+			u32 portal_id =
+				RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
 			CPortal* pPortal = (CPortal*)RenderImplementation.Portals[portal_id];
 			pPortal->bDualRender = TRUE;
 		}
 	}
+	*/
 
 	// -------------------------------------------------------------------------
-	// Обход порталов (Portal Traversal)
+	// 3. Обход порталов (Traverse)
 	// -------------------------------------------------------------------------
-	// Заполняет список видимых секторов и фрустумов
-	dest.portal_traverser.traverse(start_sector, *view_frustum, camera_pos, mCombined, 0);
+	// Запускаем локальный траверсер пакета.
+	// Он заполнит свой внутренний список GetVisibleSectors().
+	dest.portal_traverser.Traverse((CSector*)start_sector, *view_frustum, camera_pos, mCombined, 0);
+
+	// Получаем ссылку на результаты обхода (const reference, читать быстро)
+	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
 	// -------------------------------------------------------------------------
-	// Сбор СТАТИКИ (Static Geometry)
+	// 4. Сбор СТАТИКИ (Static Geometry)
 	// -------------------------------------------------------------------------
-	for (u32 s_it = 0; s_it < dest.portal_traverser.r_sectors.size(); s_it++)
+	// Проходим по результатам обхода
+	for (const auto& sec_vis : visible_sectors)
 	{
-		CSector* sector = (CSector*)dest.portal_traverser.r_sectors[s_it];
-		IRender_Visual* root_visual = sector->root();
+		CSector* sector = sec_vis.sector;
+		IRender_Visual* root_visual = sector->GetRootVisual();
 
-		for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+		// Итерируемся по фрустумам, через которые виден этот сектор.
+		// Эти фрустумы теперь лежат в структуре SectorVisibility, а не в самом секторе.
+		for (const auto& frustum : sec_vis.frustums)
 		{
-			// Берем фрустум портала
-			CFrustum& portal_frustum = sector->r_frustums[v_it];
+			// Обновляем контекст: для статики нужен конкретный фрустум портала
+			local_ctx.frustum = &frustum;
 
-			// Обновляем фрустум в контексте на более узкий (портальный)
-			local_ctx.frustum = &portal_frustum;
-
-			// Вызываем add_Static с ЛОКАЛЬНЫМ контекстом
-			add_Static(root_visual, portal_frustum.getMask(), local_ctx, dest);
+			// Добавляем геометрию (маска плоскостей берется из local_ctx.frustum внутри)
+			add_Static(root_visual, frustum.getMask(), local_ctx, dest);
 		}
 	}
 
+	// Возвращаем общий фрустум в контекст (на случай если динамика захочет его использовать,
+	// хотя ниже мы переопределяем его снова)
 	local_ctx.frustum = view_frustum;
 
 	// -------------------------------------------------------------------------
-	// Сбор ДИНАМИКИ (Dynamic Geometry)
+	// 5. Сбор ДИНАМИКИ (Dynamic Geometry)
 	// -------------------------------------------------------------------------
 	if (render_dynamic)
 	{
-		// Запрос выполняется используя переданный view_frustum, а не глобальный
+		// Делаем запрос к пространственному дереву, используя ОБЩИЙ фрустум каскада
+		// Результат пишется в dest.lstRenderables
 		g_SpatialSpace->q_frustum(dest.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
 
 		for (u32 o_it = 0; o_it < dest.lstRenderables.size(); o_it++)
@@ -704,36 +719,60 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 
 			if (0 == sector)
 				continue;
-			if (dest.portal_traverser.i_marker != sector->r_marker)
+
+			// --- ПРОВЕРКА ВИДИМОСТИ СЕКТОРА ---
+			// Раньше мы проверяли маркер: if (sector->r_marker != ...)
+			// Теперь сектор не хранит маркер текущего прохода.
+			// Мы должны найти этот сектор в списке visible_sectors нашего траверсера.
+
+			const CPortalTraverser::SectorVisibility* active_vis_data = nullptr;
+
+			// Линейный поиск. При N < 100 секторов в кадре это быстрее, чем map или hash table.
+			for (const auto& item : visible_sectors)
+			{
+				if (item.sector == sector)
+				{
+					active_vis_data = &item;
+					break;
+				}
+			}
+
+			// Если сектор объекта не найден в списке видимых - объект не видим.
+			if (!active_vis_data)
 				continue;
 
-			for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+			// --- ПРОВЕРКА ПО ФРУСТУМАМ СЕКТОРА ---
+			// Берем фрустумы из найденной структуры данных
+			for (const auto& frustum : active_vis_data->frustums)
 			{
-				CFrustum& portal_frustum = sector->r_frustums[v_it];
-
-				// Используем локальный фрустум портала
-				if (!portal_frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+				// Быстрый тест сферы с конкретным фрустумом
+				if (!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 					continue;
 
 				IRenderable* renderable = spatial->dcast_Renderable();
 				if (0 == renderable)
 					continue;
 
-				// Настраиваем контекст
-				local_ctx.frustum = &portal_frustum;
+				// Настраиваем контекст для отрисовки
+				local_ctx.frustum = &frustum;
 				local_ctx.current_owner = renderable;
 
+				// Вызываем рендер объекта.
+				// Благодаря TLS, внутри вызовется add_Visual, который запишет в 'dest'.
 				renderable->renderable_Render();
+
+				// Если объект прошел проверку хотя бы одного фрустума - мы его добавили.
+				// Прерываем цикл по фрустумам, чтобы не добавлять дубликаты.
+				break;
 			}
 		}
 	}
 
 	// -------------------------------------------------------------------------
-	// F. Тень от актера (Actor Shadow Hack)
+	// 6. Тень от актера (Actor Shadow Hack)
 	// -------------------------------------------------------------------------
 	if (g_pGameLevel && (RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH))
 	{
-		// Этот метод внутри тоже вызывает add_Visual, который пойдет в пакет, настроенный в CRender
 		g_pGameLevel->pHUD->Render_Actor_Shadow();
 	}
 }

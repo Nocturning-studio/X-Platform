@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "du_sphere_part.h"
+#include "../xrEngine/du_sphere_part.h"
 
 void CRender::draw_volume(light* L)
 {
