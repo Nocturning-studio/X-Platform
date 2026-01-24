@@ -668,7 +668,7 @@
     <ClCompile Include="IInputReceiver.cpp">
       <Filter>Interfaces\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Xr_input.cpp">
+    <ClCompile Include="xr_input.cpp">
       <Filter>Interfaces\Input</Filter>
     </ClCompile>
     <ClCompile Include="ISheduled.cpp">

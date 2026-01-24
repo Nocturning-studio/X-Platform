@@ -4,6 +4,24 @@
 #include "xr_input.h"
 #include "IInputReceiver.h"
 
+#include <cstddef>
+
+#undef DIMOFS_X
+#undef DIMOFS_Y
+#undef DIMOFS_Z
+#undef DIMOFS_BUTTON0
+#undef DIMOFS_BUTTON1
+#undef DIMOFS_BUTTON2
+#undef DIMOFS_BUTTON3
+
+#define DIMOFS_X offsetof(DIMOUSESTATE, lX)
+#define DIMOFS_Y offsetof(DIMOUSESTATE, lY)
+#define DIMOFS_Z offsetof(DIMOUSESTATE, lZ)
+#define DIMOFS_BUTTON0 (offsetof(DIMOUSESTATE, rgbButtons) + 0)
+#define DIMOFS_BUTTON1 (offsetof(DIMOUSESTATE, rgbButtons) + 1)
+#define DIMOFS_BUTTON2 (offsetof(DIMOUSESTATE, rgbButtons) + 2)
+#define DIMOFS_BUTTON3 (offsetof(DIMOUSESTATE, rgbButtons) + 3)
+
 CInput* pInput = NULL;
 IInputReceiver dummyController;
 

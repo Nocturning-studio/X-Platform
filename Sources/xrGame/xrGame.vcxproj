@@ -564,8 +564,7 @@
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 
- /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <ShowProgress>LinkVerbose</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -684,7 +683,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -805,7 +804,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -881,7 +880,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -958,7 +957,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -1036,7 +1035,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -1113,7 +1112,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -1504,8 +1503,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 
- /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <ShowProgress>LinkVerbose</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1623,7 +1621,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -1742,7 +1740,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  /bigobj %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK /Z7</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions) /OPT:REF,ICF /FILEALIGN:4096 /DEBUG:FASTLINK</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>

@@ -162,9 +162,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cl_intersect.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -291,9 +288,6 @@
     <ClInclude Include="SceneGraphTypes.h">
       <Filter>Core\Dynamic scene graph</Filter>
     </ClInclude>
-    <ClInclude Include="du_sphere_part.h">
-      <Filter>Render pipeline\Rendertargets</Filter>
-    </ClInclude>
     <ClInclude Include="r_rendertarget.h">
       <Filter>Render pipeline\Rendertargets</Filter>
     </ClInclude>
@@ -396,6 +390,9 @@
     <ClInclude Include="r_portal_traverser.h">
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrEngine\du_sphere_part.h">
+      <Filter>Render pipeline\Rendertargets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -411,9 +408,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="r_loader.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="r_sector_detect.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="doug_lea_memory_allocator.c">
@@ -593,9 +587,6 @@
     <ClCompile Include="r_sun.cpp">
       <Filter>Render pipeline\Core</Filter>
     </ClCompile>
-    <ClCompile Include="du_sphere_part.cpp">
-      <Filter>Render pipeline\Rendertargets</Filter>
-    </ClCompile>
     <ClCompile Include="r_rendertarget.cpp">
       <Filter>Render pipeline\Rendertargets</Filter>
     </ClCompile>
@@ -661,6 +652,12 @@
     </ClCompile>
     <ClCompile Include="r_portal.cpp">
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+    </ClCompile>
+    <ClCompile Include="r_sector_detect.cpp">
+      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrEngine\du_sphere_part.cpp">
+      <Filter>Render pipeline\Rendertargets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
