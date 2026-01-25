@@ -740,8 +740,6 @@ void xrRender_initconsole()
 
 	CMD2(CCC_tf_MipBias, "r_tf_mipbias", &ps_r_tf_Mipbias);
 
-	CMD3(CCC_Mask, "r_z_prepass", &ps_r_ls_flags, RFLAG_Z_PREPASS);
-
 	//CMD3(CCC_Mask, "r_use_nvdbt", &ps_r_ls_flags, RFLAG_USE_NVDBT);
 
 	CMD4(CCC_Float, "r_ls_depth_scale", &ps_r_ls_depth_scale, 0.5, 1.5);

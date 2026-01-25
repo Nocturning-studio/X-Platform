@@ -212,44 +212,6 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		g_pGameLevel->pHUD->Render_Last();
 }
 
-void CRender::render_depth_prepass()
-{
-	PROFILE_FUNCTION();
-
-	SceneGraphFetchConfig DepthPrepassFetchConfig;
-
-	DepthPrepassFetchConfig.fetch_priority_0 = true;
-	DepthPrepassFetchConfig.fetch_priority_1 = false;
-	DepthPrepassFetchConfig.fetch_wallmarks = false;
-
-	SceneGraph.SetFetchConfig(DepthPrepassFetchConfig);
-
-	SceneGraph.SetCullingBoundsCollector(NULL);
-
-	set_active_phase(PHASE_DEPTH_PREPASS);
-
-	render_main(Engine.RenderView.ViewProjection, false);
-
-	RenderBackend.set_ColorWriteEnable(FALSE);
-	RenderBackend.set_ZWriteEnable(TRUE);
-
-	RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-
-	RenderBackend.enable_anisotropy_filtering();
-
-	if (Details)
-		Details->Render(DetailsRenderMode::DepthOnly);
-
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::HUD);
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::LOD, 0, true, true);
-
-	RenderBackend.disable_anisotropy_filtering();
-
-	RenderBackend.set_ColorWriteEnable(TRUE);
-	RenderBackend.set_ZWriteEnable(FALSE);
-}
-
 IC float u_diffuse2s(float x, float y, float z)
 {
 	float v = (x + y + z) / 3.f;
@@ -275,6 +237,8 @@ void CRender::render_gbuffer_primary()
 
 	SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
 
+	set_active_phase(PHASE_NORMAL);
+
 	// 2. Конфигурация рекордера (Сбор баундов для теней)
 	if (m_need_render_sun)
 		SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
@@ -282,7 +246,6 @@ void CRender::render_gbuffer_primary()
 		SceneGraph.SetCullingBoundsCollector(NULL);
 
 	// 3. Фаза наполнения графа (Traverse & Cull)
-	set_active_phase(PHASE_NORMAL);
 	render_main(Engine.RenderView.ViewProjection, true); // Самый дорогой вызов - наполняет мапы SceneGraph
 
 	// 4. Очистка состояния сбора (чтобы не повлиять на следующие этапы)
@@ -298,9 +261,6 @@ void CRender::render_gbuffer_primary()
 	RenderBackend.enable_anisotropy_filtering();
 
 	set_gbuffer();
-
-	if (ps_r_ls_flags.test(RFLAG_Z_PREPASS))
-		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
 
 	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
@@ -330,9 +290,6 @@ void CRender::render_gbuffer_secondary()
 
 	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-
-	if (ps_r_ls_flags.test(RFLAG_Z_PREPASS))
-		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 

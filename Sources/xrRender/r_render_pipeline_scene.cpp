@@ -30,10 +30,6 @@ void CRender::RenderScene()
 
 	clear_gbuffer();
 
-	//******* Z-prefill calc - DEFERRER RENDERER
-	if (ps_r_ls_flags.test(RFLAG_Z_PREPASS))
-		render_depth_prepass();
-
 	//******* Main render :: PART-0	-- first
 	render_gbuffer_primary();
 
