@@ -13,7 +13,6 @@ class ENGINE_API CThreadManager
   public:
 	using ParallelTask = fastdelegate::FastDelegate0<>;
 
-	// Приоритет задачи
 	enum class TaskPriority : u32
 	{
 		Critical = 400,
@@ -23,7 +22,6 @@ class ENGINE_API CThreadManager
 		Background = 0
 	};
 
-	// Тип задачи
 	enum class TaskType : u8
 	{
 		General,
@@ -31,7 +29,6 @@ class ENGINE_API CThreadManager
 	};
 
   private:
-	// Внутренняя структура задачи
 	struct TaskItem
 	{
 		ParallelTask Delegate;
@@ -43,23 +40,21 @@ class ENGINE_API CThreadManager
 		}
 	};
 
-	// Контекст рабочего потока
 	struct WorkerContext
 	{
 		CThreadManager* Manager;
 		u32 ThreadID;
-		std::thread Thread;
 		std::condition_variable WakeCondition;
 		std::mutex WakeMutex;
 		bool ShouldWake;
+		std::thread Thread;
 
-		WorkerContext() : Manager(nullptr), ThreadID(0), ShouldWake(false)
+		// Флаг, что поток завершил работу над текущим кадром
+		bool FrameCompleted;
+
+		WorkerContext() : Manager(nullptr), ThreadID(0), ShouldWake(false), FrameCompleted(false)
 		{
 		}
-
-		// Запрещаем копирование
-		WorkerContext(const WorkerContext&) = delete;
-		WorkerContext& operator=(const WorkerContext&) = delete;
 	};
 
   private:
@@ -70,55 +65,55 @@ class ENGINE_API CThreadManager
 	// Атомарные курсоры
 	std::atomic<u32> m_cursorGeneral{0};
 	std::atomic<u32> m_cursorAI{0};
-	std::atomic<u32> m_completedThreadsCount{0};
 
-	// Синхронизация - делаем mutable для использования в const-методах
+	// Синхронизация
 	mutable std::recursive_mutex m_mutexGeneral;
 	mutable std::recursive_mutex m_mutexAI;
 
 	// Синхронизация завершения кадра
 	std::condition_variable m_eventFrameComplete;
 	std::mutex m_eventFrameCompleteMutex;
-	bool m_frameCompleteReady;
 
-	// Потоки - используем вектор указателей
+	// Счетчик завершивших потоки для текущего кадра
+	std::atomic<u32> m_threadsCompleted{0};
+
+	// Общее количество воркеров
+	std::atomic<u32> m_totalWorkers{0};
+
+	// Потоки
 	xr_vector<WorkerContext*> m_workerContexts;
 
 	// Состояние
 	std::atomic<bool> m_shouldExit{false};
 	std::atomic<bool> m_isInitialized{false};
 
-	// Процедура рабочего потока
+	// Флаг, что все потоки готовы к новому кадру
+	std::atomic<bool> m_allThreadsReady{false};
+
 	static void WorkerThreadProc(void* context);
 
   public:
-	// Регистратор для Legacy-задач
 	CRegistrator<pureFrame> LegacyFrameMT;
 
   public:
 	CThreadManager();
 	~CThreadManager();
 
-	// Запрет копирования
 	CThreadManager(const CThreadManager&) = delete;
 	CThreadManager& operator=(const CThreadManager&) = delete;
 
 	void Initialize();
 	void Destroy();
 
-	// Добавление задачи в очередь
 	void AddParallelTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal,
 						 TaskType type = TaskType::General);
 
-	// Удаление задачи
 	void RemoveParallelTask(const ParallelTask& delegate);
 	bool HasParallelTask(const ParallelTask& delegate) const;
 
-	// Управление циклом
 	void SignalFrameStart();
 	void WaitForFrameEnd();
 
-	// API для блокировок
 	void EnterCritical();
 	void LeaveCritical();
 	bool TryEnterCritical();

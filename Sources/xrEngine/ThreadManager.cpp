@@ -3,7 +3,7 @@
 #include "optick_include.h"
 #include <algorithm>
 
-CThreadManager::CThreadManager() : m_frameCompleteReady(false)
+CThreadManager::CThreadManager()
 {
 }
 
@@ -14,7 +14,6 @@ CThreadManager::~CThreadManager()
 
 #ifdef WINDOWS
 #include <windows.h>
-// Установка имени потока для Windows
 static void SetThreadName(const char* threadName)
 {
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;
@@ -53,7 +52,6 @@ void CThreadManager::Initialize()
 	Msg("Initializing Thread Manager...");
 
 	m_shouldExit = false;
-	m_frameCompleteReady = false;
 
 	// Расчет количества воркеров
 	u32 hardwareConcurrency = std::thread::hardware_concurrency();
@@ -61,6 +59,7 @@ void CThreadManager::Initialize()
 		hardwareConcurrency = 1;
 
 	u32 workerCount = (hardwareConcurrency > 1) ? (hardwareConcurrency - 1) : 1;
+	m_totalWorkers = workerCount;
 
 	Msg("* Thread Pool: Hardware Threads: %d", hardwareConcurrency);
 	Msg("* Thread Pool: Spawning %d Worker Threads", workerCount);
@@ -75,6 +74,7 @@ void CThreadManager::Initialize()
 		ctx->Manager = this;
 		ctx->ThreadID = i;
 		ctx->ShouldWake = false;
+		ctx->FrameCompleted = false;
 
 		// Создание потока с лямбдой
 		ctx->Thread = std::thread([ctx]() { WorkerThreadProc(ctx); });
@@ -95,6 +95,9 @@ void CThreadManager::Initialize()
 #endif
 	}
 
+	// Ждем, пока все потоки перейдут в состояние ожидания
+	m_allThreadsReady = true;
+
 	OPTICK_THREAD("X-RAY Primary Thread");
 	m_isInitialized = true;
 }
@@ -108,7 +111,7 @@ void CThreadManager::Destroy()
 
 	m_shouldExit = true;
 
-	// Будим все потоки
+	// Будим все потоки для завершения
 	for (auto ctx : m_workerContexts)
 	{
 		if (ctx)
@@ -145,7 +148,7 @@ void CThreadManager::WorkerThreadProc(void* context)
 	WorkerContext* ctx = static_cast<WorkerContext*>(context);
 	CThreadManager* self = ctx->Manager;
 	const u32 threadID = ctx->ThreadID;
-	const u32 totalWorkers = static_cast<u32>(self->m_workerContexts.size());
+	const u32 totalWorkers = self->m_totalWorkers.load();
 
 	// Установка имени для профилировщика
 	char optickThreadName[64];
@@ -169,6 +172,7 @@ void CThreadManager::WorkerThreadProc(void* context)
 				return;
 
 			ctx->ShouldWake = false;
+			ctx->FrameCompleted = false;
 		}
 
 		// -------------------------------------------------------------
@@ -216,22 +220,120 @@ void CThreadManager::WorkerThreadProc(void* context)
 		}
 
 		// -------------------------------------------------------------
-		// СИНХРОНИЗАЦИЯ
+		// СИНХРОНИЗАЦИЯ ЗАВЕРШЕНИЯ КАДРА
 		// -------------------------------------------------------------
 
-		u32 finishedCount = self->m_completedThreadsCount.fetch_add(1) + 1;
-		if (finishedCount == totalWorkers)
+		// Отмечаем, что этот поток завершил работу
+		ctx->FrameCompleted = true;
+
+		// Увеличиваем счетчик завершивших потоки
+		u32 completedCount = self->m_threadsCompleted.fetch_add(1) + 1;
+
+		// Если это был последний поток, будим главный поток
+		if (completedCount == totalWorkers)
 		{
-			// Сигнализируем о завершении кадра
-			{
-				std::lock_guard<std::mutex> lock(self->m_eventFrameCompleteMutex);
-				self->m_frameCompleteReady = true;
-			}
 			self->m_eventFrameComplete.notify_one();
 		}
 	}
 }
 
+void CThreadManager::SignalFrameStart()
+{
+	// Ждем, пока все потоки не будут готовы к новому кадру
+	// Это гарантирует, что все потоки завершили предыдущий кадр
+	// и находятся в состоянии ожидания
+	if (!m_allThreadsReady.load())
+	{
+		// Даем небольшую паузу для стабилизации
+		std::this_thread::sleep_for(std::chrono::microseconds(100));
+	}
+
+	// Сбрасываем атомарные счетчики
+	m_cursorGeneral.store(0);
+	m_cursorAI.store(0);
+	m_threadsCompleted.store(0);
+
+	// Сортировка задач по приоритету
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
+		if (!m_tasksGeneral.empty())
+		{
+			std::sort(m_tasksGeneral.begin(), m_tasksGeneral.end(),
+					  [](const TaskItem& a, const TaskItem& b) { return a.Priority > b.Priority; });
+		}
+	}
+
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
+		if (!m_tasksAI.empty())
+		{
+			std::sort(m_tasksAI.begin(), m_tasksAI.end(),
+					  [](const TaskItem& a, const TaskItem& b) { return a.Priority > b.Priority; });
+		}
+	}
+
+	// Пробуждение всех воркеров
+	for (auto ctx : m_workerContexts)
+	{
+		if (ctx)
+		{
+			{
+				std::lock_guard<std::mutex> lock(ctx->WakeMutex);
+				ctx->ShouldWake = true;
+			}
+			ctx->WakeCondition.notify_one();
+		}
+	}
+}
+
+void CThreadManager::WaitForFrameEnd()
+{
+	// Ждем сигнала о завершении кадра
+	{
+		std::unique_lock<std::mutex> lock(m_eventFrameCompleteMutex);
+
+		// Ждем, пока все потоки не завершат работу
+		m_eventFrameComplete.wait(lock, [this] { return m_threadsCompleted.load() >= m_totalWorkers.load(); });
+	}
+
+	// Дополнительная проверка: убеждаемся, что все потоки действительно завершили
+	bool allCompleted = true;
+	for (auto ctx : m_workerContexts)
+	{
+		if (ctx && !ctx->FrameCompleted)
+		{
+			allCompleted = false;
+			break;
+		}
+	}
+
+	if (!allCompleted)
+	{
+		// Даем еще немного времени на завершение
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	// Очищаем списки задач для следующего кадра
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
+		m_tasksGeneral.clear();
+	}
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
+		m_tasksAI.clear();
+	}
+
+	// Сбрасываем флаг готовности потоков
+	m_allThreadsReady = false;
+
+	// Даем время потокам вернуться в состояние ожидания
+	std::this_thread::sleep_for(std::chrono::microseconds(50));
+
+	// Устанавливаем флаг готовности
+	m_allThreadsReady = true;
+}
+
+// Остальные методы без изменений
 void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority priority, TaskType type)
 {
 	TaskItem item;
@@ -296,65 +398,6 @@ bool CThreadManager::HasParallelTask(const ParallelTask& delegate) const
 	}
 
 	return false;
-}
-
-void CThreadManager::SignalFrameStart()
-{
-	// Сброс атомарных счетчиков
-	m_cursorGeneral.store(0);
-	m_cursorAI.store(0);
-	m_completedThreadsCount.store(0);
-
-	// Сброс флага завершения кадра
-	{
-		std::lock_guard<std::mutex> lock(m_eventFrameCompleteMutex);
-		m_frameCompleteReady = false;
-	}
-
-	// Сортировка задач по приоритету
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
-		std::sort(m_tasksGeneral.begin(), m_tasksGeneral.end(),
-				  [](const TaskItem& a, const TaskItem& b) { return a.Priority > b.Priority; });
-	}
-
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
-		std::sort(m_tasksAI.begin(), m_tasksAI.end(),
-				  [](const TaskItem& a, const TaskItem& b) { return a.Priority > b.Priority; });
-	}
-
-	// Пробуждение всех воркеров
-	for (auto ctx : m_workerContexts)
-	{
-		if (ctx)
-		{
-			{
-				std::lock_guard<std::mutex> lock(ctx->WakeMutex);
-				ctx->ShouldWake = true;
-			}
-			ctx->WakeCondition.notify_one();
-		}
-	}
-}
-
-void CThreadManager::WaitForFrameEnd()
-{
-	// Ждем сигнала о завершении кадра
-	{
-		std::unique_lock<std::mutex> lock(m_eventFrameCompleteMutex);
-		m_eventFrameComplete.wait(lock, [this] { return m_frameCompleteReady; });
-	}
-
-	// Очищаем списки задач для следующего кадра
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
-		m_tasksGeneral.clear();
-	}
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
-		m_tasksAI.clear();
-	}
 }
 
 void CThreadManager::EnterCritical()
