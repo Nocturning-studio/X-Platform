@@ -3,6 +3,8 @@
 #include "optick_include.h"
 #include <algorithm>
 
+#define WINDOWS
+
 CThreadManager::CThreadManager() : m_workerCount(0)
 {
 	// Инициализируем массив
