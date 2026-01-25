@@ -119,9 +119,10 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 	// Предотвращает дублирование объекта, если он виден через несколько порталов.
 	// atomic_exchange возвращает старое значение.
 	// Если старое значение уже равно текущему, значит другой поток успел нас опередить.
-	if (pVisual->vis.m_traversal_marker.exchange(m_traversal_marker, std::memory_order_acq_rel) == m_traversal_marker)
+	if (pVisual->vis.m_traversal_marker.exchange(ctx.traversal_marker_id, std::memory_order_acq_rel) ==
+		ctx.traversal_marker_id)
 		return;
-	pVisual->vis.m_traversal_marker = m_traversal_marker;
+	pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
 	// -------------------------------------------------------------------------
 	// 2. Метрики (SSA & Distance)
@@ -320,9 +321,10 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	// Предотвращает дублирование объекта, если он виден через несколько порталов.
 	// atomic_exchange возвращает старое значение.
 	// Если старое значение уже равно текущему, значит другой поток успел нас опередить.
-	if (pVisual->vis.m_traversal_marker.exchange(m_traversal_marker, std::memory_order_acq_rel) == m_traversal_marker)
+	if (pVisual->vis.m_traversal_marker.exchange(ctx.traversal_marker_id, std::memory_order_acq_rel) ==
+		ctx.traversal_marker_id)
 		return;
-	pVisual->vis.m_traversal_marker = m_traversal_marker;
+	pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
 	// 2. Метрики (позиция уже мировая)
 	float distance_sq;

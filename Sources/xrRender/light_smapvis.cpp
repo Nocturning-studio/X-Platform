@@ -64,7 +64,7 @@ void smapvis::end()
 		if (testQ_V)
 		{
 			RenderImplementation.occq_begin(testQ_id);
-			RenderImplementation.SceneGraph.m_traversal_marker += 1;
+			RenderImplementation.SceneGraph.m_traversal_marker.fetch_add(1);
 
 			// Передаем текущий контекст рендера
 			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V, RenderImplementation.m_TraversalContext,

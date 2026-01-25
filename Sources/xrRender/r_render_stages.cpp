@@ -29,8 +29,12 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// -------------------------------------------------------------------------
 	// 0. Настройка контекста (TLS)
 	// -------------------------------------------------------------------------
+	u32 current_marker = SceneGraph.m_traversal_marker.fetch_add(1) + 1;
+	
 	// Устанавливаем основной фрустум в контекст
 	m_TraversalContext.frustum = &ViewBase;
+
+	m_TraversalContext.traversal_marker_id = current_marker;
 
 	// Активируем TLS для основного прохода.
 	// Используем глобальный пакет SceneGraph и глобальный контекст CRender.

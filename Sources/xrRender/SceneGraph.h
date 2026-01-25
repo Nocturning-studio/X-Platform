@@ -190,12 +190,15 @@ struct SceneTraversalContext
 	const CFrustum* frustum;
 	BOOL is_hud_pass;
 	BOOL is_invisible_mode;
+	u32 traversal_marker_id;
 
-	SceneTraversalContext() : current_owner(NULL), 
-							  current_transform(NULL), 
-							  frustum(NULL), 
-							  is_hud_pass(FALSE), 
-							  is_invisible_mode(FALSE)
+	SceneTraversalContext()
+			:current_owner(NULL), 
+			current_transform(NULL), 
+			frustum(NULL), 
+			is_hud_pass(FALSE), 
+			is_invisible_mode(FALSE),
+			traversal_marker_id(0)
 	{
 	}
 };
@@ -248,7 +251,7 @@ class CSceneGraph
 
 	R_feedback* m_feedback_interface;
 	u32 val_feedback_breakp;
-	u32 m_traversal_marker;
+	std::atomic<u32> m_traversal_marker; 
 
 	u32 counter_S;
 	u32 counter_D;
@@ -290,7 +293,6 @@ class CSceneGraph
 	// Low-level insertion
 	void EnqueueDynamic(IRender_Visual* pVisual, Fvector& Center, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
-
 
 	// === Traversal Logic ===
 	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic,

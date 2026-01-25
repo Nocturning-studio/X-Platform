@@ -880,19 +880,18 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		RenderBackend.set_transform_project(sun->X.D.combine);
 
 		// Рисуем Sun Details (траву), если нужно
-		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS) &&
-			((SE_SUN_NEAR == cascade_ind) || (SE_SUN_MIDDLE == cascade_ind)))
+		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 		{
 			// Трава рисуется отдельно, так как она не в графе
-			//Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
+			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
 		}
 
 		// РЕНДЕР ИЗ ПАКЕТА!
 		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
 
 		// Рисуем Occluder (если есть)
-		//if (m_SunOccluder)
-		//	m_SunOccluder->Render();
+		if (m_SunOccluder)
+			m_SunOccluder->Render();
 
 		sun->X.D.transluent = FALSE;
 	}

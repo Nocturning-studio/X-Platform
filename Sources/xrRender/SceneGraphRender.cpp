@@ -638,6 +638,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	local_ctx.is_invisible_mode = FALSE;
 	local_ctx.current_owner = nullptr;
 	local_ctx.current_transform = &Fidentity;
+	local_ctx.traversal_marker_id = m_traversal_marker.fetch_add(1) + 1;
 
 	// Активируем TLS: теперь все вызовы add_Visual/Geometry пойдут в 'dest'
 	// и будут использовать 'local_ctx'
