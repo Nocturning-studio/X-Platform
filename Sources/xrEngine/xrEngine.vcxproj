@@ -1696,9 +1696,9 @@
     <ClInclude Include="ai_script_lua_extension.h" />
     <ClInclude Include="ai_script_lua_space.h" />
     <ClInclude Include="ai_script_space.h" />
-    <ClInclude Include="Blenders\Blender.h" />
-    <ClInclude Include="Blenders\Blender_CLSID.h" />
-    <ClInclude Include="Blenders\Blender_Recorder.h" />
+    <ClInclude Include="Blender.h" />
+    <ClInclude Include="Blender_CLSID.h" />
+    <ClInclude Include="Blender_Recorder.h" />
     <ClInclude Include="bone.h" />
     <ClInclude Include="CameraBase.h" />
     <ClInclude Include="CameraDebug.h" />
@@ -1842,9 +1842,9 @@
   <ItemGroup>
     <ClCompile Include="ai_script_lua_debug.cpp" />
     <ClCompile Include="ai_script_lua_extension.cpp" />
-    <ClCompile Include="Blenders\Blender.cpp" />
-    <ClCompile Include="Blenders\Blender_Palette.cpp" />
-    <ClCompile Include="Blenders\Blender_Recorder.cpp" />
+    <ClCompile Include="Blender.cpp" />
+    <ClCompile Include="Blender_Palette.cpp" />
+    <ClCompile Include="Blender_Recorder.cpp" />
     <ClCompile Include="Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />

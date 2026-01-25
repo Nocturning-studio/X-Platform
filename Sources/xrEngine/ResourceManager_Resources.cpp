@@ -10,8 +10,8 @@
 
 #include "ResourceManager.h"
 #include "tss.h"
-#include "blenders\blender.h"
-#include "blenders\blender_recorder.h"
+#include "blender.h"
+#include "blender_recorder.h"
 
 #include "ShaderResourceTraits.h"
 #include "ShaderCompile.h"

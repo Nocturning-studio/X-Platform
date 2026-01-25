@@ -411,15 +411,6 @@
     <ClInclude Include="WaveForm.h">
       <Filter>Render\Execution &amp; 3D\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Blenders\Blender.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="Blenders\Blender_CLSID.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="Blenders\Blender_Recorder.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
     <ClInclude Include="tss.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
@@ -663,6 +654,15 @@
     <ClInclude Include="RenderView.h">
       <Filter>Render\Camera view</Filter>
     </ClInclude>
+    <ClInclude Include="Blender.h">
+      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="Blender_CLSID.h">
+      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="Blender_Recorder.h">
+      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">
@@ -838,15 +838,6 @@
     </ClCompile>
     <ClCompile Include="xr_effgamma.cpp">
       <Filter>Render\Execution &amp; 3D\Gamma</Filter>
-    </ClCompile>
-    <ClCompile Include="Blenders\Blender.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="Blenders\Blender_Palette.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="Blenders\Blender_Recorder.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="Blender_Recorder_StandartBinding.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
@@ -1120,6 +1111,15 @@
     </ClCompile>
     <ClCompile Include="RenderView.cpp">
       <Filter>Render\Camera view</Filter>
+    </ClCompile>
+    <ClCompile Include="Blender.cpp">
+      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="Blender_Palette.cpp">
+      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="Blender_Recorder.cpp">
+      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

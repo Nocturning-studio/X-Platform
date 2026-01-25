@@ -1,5 +1,5 @@
 #pragma once
-#include "blenders\blender.h"
+#include "blender.h"
 
 class CBlender_skybox : public IBlender
 {

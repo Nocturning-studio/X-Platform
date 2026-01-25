@@ -7,8 +7,8 @@
 #pragma warning(pop)
 
 #include "ResourceManager.h"
-#include "blenders\Blender_Recorder.h"
-#include "blenders\Blender.h"
+#include "Blender_Recorder.h"
+#include "Blender.h"
 
 #include "../xrRender/r_color_converting.h"
 
