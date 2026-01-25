@@ -3,8 +3,16 @@
 #include "optick_include.h"
 #include <algorithm>
 
-CThreadManager::CThreadManager()
+CThreadManager::CThreadManager() : m_workerCount(0)
 {
+	// Инициализируем массив
+	for (u32 i = 0; i < MAX_WORKERS; ++i)
+	{
+		m_workers[i].Manager = nullptr;
+		m_workers[i].ThreadID = i;
+		m_workers[i].ShouldWake = false;
+		m_workers[i].FrameCompleted = false;
+	}
 }
 
 CThreadManager::~CThreadManager()
@@ -53,35 +61,53 @@ void CThreadManager::Initialize()
 
 	m_shouldExit = false;
 
-	// Расчет количества воркеров
+	// Расчет количества воркеров: оставляем 1 ядро для основного потока
 	u32 hardwareConcurrency = std::thread::hardware_concurrency();
 	if (hardwareConcurrency == 0)
 		hardwareConcurrency = 1;
 
-	u32 workerCount = (hardwareConcurrency > 1) ? (hardwareConcurrency - 1) : 1;
-	m_totalWorkers = workerCount;
+	m_workerCount = (hardwareConcurrency > 1) ? (hardwareConcurrency - 1) : 1;
+
+	// Проверяем, не превышает ли количество воркеров максимальное
+	if (m_workerCount > MAX_WORKERS)
+	{
+		m_workerCount = MAX_WORKERS;
+		Msg("* Thread Pool: Warning! Limiting worker count to %d (max supported)", MAX_WORKERS);
+	}
 
 	Msg("* Thread Pool: Hardware Threads: %d", hardwareConcurrency);
-	Msg("* Thread Pool: Spawning %d Worker Threads", workerCount);
-	Msg("* Thread Pool: AI Dedicated Thread: %s", (workerCount > 1) ? "Yes (Worker #1)" : "No (Shared on #0)");
+	Msg("* Thread Pool: Spawning %d Worker Threads", m_workerCount);
+	Msg("* Thread Pool: AI Dedicated Thread: %s", (m_workerCount > 1) ? "Yes (Worker #1)" : "No (Shared on #0)");
 
-	// Создание контекстов
-	m_workerContexts.reserve(workerCount);
-
-	for (u32 i = 0; i < workerCount; ++i)
+	// Инициализируем только нужное количество воркеров
+	for (u32 i = 0; i < m_workerCount; ++i)
 	{
-		WorkerContext* ctx = xr_new<WorkerContext>();
-		ctx->Manager = this;
-		ctx->ThreadID = i;
-		ctx->ShouldWake = false;
-		ctx->FrameCompleted = false;
+		WorkerContext& ctx = m_workers[i];
+		ctx.Manager = this;
+		ctx.ThreadID = i;
+		ctx.ShouldWake = false;
+		ctx.FrameCompleted = false;
+
+		// Захватываем фиксированное количество потоков для каждого воркера
+		const u32 totalWorkers = m_workerCount;
 
 		// Создание потока с лямбдой
-		ctx->Thread = std::thread([ctx]() { WorkerThreadProc(ctx); });
+		ctx.Thread = std::thread([&ctx, totalWorkers]() {
+			// Устанавливаем имя для профилировщика
+			char optickThreadName[64];
+			if (ctx.ThreadID == 0)
+				sprintf_s(optickThreadName, "X-RAY Worker #0 (Audio/Gen)");
+			else if (ctx.ThreadID == 1)
+				sprintf_s(optickThreadName, "X-RAY Worker #1 (AI/Gen)");
+			else
+				sprintf_s(optickThreadName, "X-RAY Worker #%d (Gen)", ctx.ThreadID);
 
-		m_workerContexts.push_back(ctx);
+			OPTICK_THREAD(optickThreadName);
 
-		// Установка имени потока
+			WorkerThreadProc(&ctx);
+		});
+
+		// Установка имени потока (Windows)
 #ifdef WINDOWS
 		char threadName[64];
 		if (i == 0)
@@ -94,9 +120,6 @@ void CThreadManager::Initialize()
 		SetThreadName(threadName);
 #endif
 	}
-
-	// Ждем, пока все потоки перейдут в состояние ожидания
-	m_allThreadsReady = true;
 
 	OPTICK_THREAD("X-RAY Primary Thread");
 	m_isInitialized = true;
@@ -112,54 +135,45 @@ void CThreadManager::Destroy()
 	m_shouldExit = true;
 
 	// Будим все потоки для завершения
-	for (auto ctx : m_workerContexts)
+	for (u32 i = 0; i < m_workerCount; ++i)
 	{
-		if (ctx)
+		WorkerContext& ctx = m_workers[i];
 		{
-			{
-				std::lock_guard<std::mutex> lock(ctx->WakeMutex);
-				ctx->ShouldWake = true;
-			}
-			ctx->WakeCondition.notify_one();
+			std::lock_guard<std::mutex> lock(ctx.WakeMutex);
+			ctx.ShouldWake = true;
 		}
+		ctx.WakeCondition.notify_one();
 	}
 
 	// Ждем завершения потоков
-	for (auto ctx : m_workerContexts)
+	for (u32 i = 0; i < m_workerCount; ++i)
 	{
-		if (ctx && ctx->Thread.joinable())
-			ctx->Thread.join();
+		WorkerContext& ctx = m_workers[i];
+		if (ctx.Thread.joinable())
+			ctx.Thread.join();
+
+		// Сбрасываем состояние
+		ctx.Manager = nullptr;
+		ctx.ShouldWake = false;
+		ctx.FrameCompleted = false;
 	}
 
-	// Очищаем память
-	for (auto ctx : m_workerContexts)
-		xr_delete(ctx);
-
-	m_workerContexts.clear();
 	m_tasksGeneral.clear();
 	m_tasksAI.clear();
 	LegacyFrameMT.R.clear();
 
 	m_isInitialized = false;
+	m_workerCount = 0;
 }
 
 void CThreadManager::WorkerThreadProc(void* context)
 {
 	WorkerContext* ctx = static_cast<WorkerContext*>(context);
 	CThreadManager* self = ctx->Manager;
+
+	// Получаем количество воркеров из менеджера
+	const u32 totalWorkers = self->m_workerCount;
 	const u32 threadID = ctx->ThreadID;
-	const u32 totalWorkers = self->m_totalWorkers.load();
-
-	// Установка имени для профилировщика
-	char optickThreadName[64];
-	if (threadID == 0)
-		sprintf_s(optickThreadName, "X-RAY Worker #0 (Audio/Gen)");
-	else if (threadID == 1)
-		sprintf_s(optickThreadName, "X-RAY Worker #1 (AI/Gen)");
-	else
-		sprintf_s(optickThreadName, "X-RAY Worker #%d (Gen)", threadID);
-
-	OPTICK_THREAD(optickThreadName);
 
 	while (true)
 	{
@@ -239,15 +253,6 @@ void CThreadManager::WorkerThreadProc(void* context)
 
 void CThreadManager::SignalFrameStart()
 {
-	// Ждем, пока все потоки не будут готовы к новому кадру
-	// Это гарантирует, что все потоки завершили предыдущий кадр
-	// и находятся в состоянии ожидания
-	if (!m_allThreadsReady.load())
-	{
-		// Даем небольшую паузу для стабилизации
-		std::this_thread::sleep_for(std::chrono::microseconds(100));
-	}
-
 	// Сбрасываем атомарные счетчики
 	m_cursorGeneral.store(0);
 	m_cursorAI.store(0);
@@ -273,16 +278,14 @@ void CThreadManager::SignalFrameStart()
 	}
 
 	// Пробуждение всех воркеров
-	for (auto ctx : m_workerContexts)
+	for (u32 i = 0; i < m_workerCount; ++i)
 	{
-		if (ctx)
+		WorkerContext& ctx = m_workers[i];
 		{
-			{
-				std::lock_guard<std::mutex> lock(ctx->WakeMutex);
-				ctx->ShouldWake = true;
-			}
-			ctx->WakeCondition.notify_one();
+			std::lock_guard<std::mutex> lock(ctx.WakeMutex);
+			ctx.ShouldWake = true;
 		}
+		ctx.WakeCondition.notify_one();
 	}
 }
 
@@ -293,24 +296,7 @@ void CThreadManager::WaitForFrameEnd()
 		std::unique_lock<std::mutex> lock(m_eventFrameCompleteMutex);
 
 		// Ждем, пока все потоки не завершат работу
-		m_eventFrameComplete.wait(lock, [this] { return m_threadsCompleted.load() >= m_totalWorkers.load(); });
-	}
-
-	// Дополнительная проверка: убеждаемся, что все потоки действительно завершили
-	bool allCompleted = true;
-	for (auto ctx : m_workerContexts)
-	{
-		if (ctx && !ctx->FrameCompleted)
-		{
-			allCompleted = false;
-			break;
-		}
-	}
-
-	if (!allCompleted)
-	{
-		// Даем еще немного времени на завершение
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		m_eventFrameComplete.wait(lock, [this] { return m_threadsCompleted.load() >= m_workerCount; });
 	}
 
 	// Очищаем списки задач для следующего кадра
@@ -322,15 +308,6 @@ void CThreadManager::WaitForFrameEnd()
 		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
 		m_tasksAI.clear();
 	}
-
-	// Сбрасываем флаг готовности потоков
-	m_allThreadsReady = false;
-
-	// Даем время потокам вернуться в состояние ожидания
-	std::this_thread::sleep_for(std::chrono::microseconds(50));
-
-	// Устанавливаем флаг готовности
-	m_allThreadsReady = true;
 }
 
 // Остальные методы без изменений

@@ -4,7 +4,7 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
-#include <vector>
+#include <array>
 #include <condition_variable>
 #include <FastDelegate.h>
 
@@ -47,13 +47,23 @@ class ENGINE_API CThreadManager
 		std::condition_variable WakeCondition;
 		std::mutex WakeMutex;
 		bool ShouldWake;
-		std::thread Thread;
-
-		// Флаг, что поток завершил работу над текущим кадром
 		bool FrameCompleted;
+		std::thread Thread;
 
 		WorkerContext() : Manager(nullptr), ThreadID(0), ShouldWake(false), FrameCompleted(false)
 		{
+		}
+
+		// Запрещаем копирование
+		WorkerContext(const WorkerContext&) = delete;
+		WorkerContext& operator=(const WorkerContext&) = delete;
+
+		// Разрешаем перемещение
+		WorkerContext(WorkerContext&& other) noexcept
+			: Manager(other.Manager), ThreadID(other.ThreadID), ShouldWake(other.ShouldWake),
+			  FrameCompleted(other.FrameCompleted), Thread(std::move(other.Thread))
+		{
+			other.Manager = nullptr;
 		}
 	};
 
@@ -77,18 +87,14 @@ class ENGINE_API CThreadManager
 	// Счетчик завершивших потоки для текущего кадра
 	std::atomic<u32> m_threadsCompleted{0};
 
-	// Общее количество воркеров
-	std::atomic<u32> m_totalWorkers{0};
-
-	// Потоки
-	xr_vector<WorkerContext*> m_workerContexts;
+	// Фиксированное количество воркеров
+	static constexpr u32 MAX_WORKERS = 64; // Максимальное количество потоков
+	WorkerContext m_workers[MAX_WORKERS];
+	u32 m_workerCount;
 
 	// Состояние
 	std::atomic<bool> m_shouldExit{false};
 	std::atomic<bool> m_isInitialized{false};
-
-	// Флаг, что все потоки готовы к новому кадру
-	std::atomic<bool> m_allThreadsReady{false};
 
 	static void WorkerThreadProc(void* context);
 
@@ -117,4 +123,9 @@ class ENGINE_API CThreadManager
 	void EnterCritical();
 	void LeaveCritical();
 	bool TryEnterCritical();
+
+	u32 GetWorkerCount() const
+	{
+		return m_workerCount;
+	}
 };
