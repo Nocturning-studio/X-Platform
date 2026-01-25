@@ -53,7 +53,7 @@ void CSceneGraph::destroy()
 	// 2. Очистка списков результатов (Packet Lists)
 	m_packet.lstLODs.clear();
 	m_packet.lstLODgroups.clear();
-	m_packet.lstRenderables.clear();
+	m_packet.m_spatial_query_results.clear();
 
 	m_packet.m_visuals_static_visible.clear();
 	m_packet.m_visuals_dynamic_visible.clear();

@@ -709,12 +709,12 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	if (render_dynamic)
 	{
 		// Делаем запрос к пространственному дереву, используя ОБЩИЙ фрустум каскада
-		// Результат пишется в dest.lstRenderables
-		g_SpatialSpace->q_frustum(dest.lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
+		// Результат пишется в dest.m_spatial_query_results
+		g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
 
-		for (u32 o_it = 0; o_it < dest.lstRenderables.size(); o_it++)
+		for (u32 o_it = 0; o_it < dest.m_spatial_query_results.size(); o_it++)
 		{
-			ISpatial* spatial = dest.lstRenderables[o_it];
+			ISpatial* spatial = dest.m_spatial_query_results[o_it];
 			CSector* sector = (CSector*)spatial->spatial.sector;
 
 			if (0 == sector)

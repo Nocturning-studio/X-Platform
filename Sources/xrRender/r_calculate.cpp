@@ -58,15 +58,15 @@ void CRender::Calculate()
 	Lights.Update();
 
 	// Check if we touch some light even trough portal
-	// Используем m_packet.lstRenderables
-	SceneGraph.m_packet.lstRenderables.clear();
-	g_SpatialSpace->q_sphere(SceneGraph.m_packet.lstRenderables, 0, STYPE_LIGHTSOURCE, Engine.RenderView.Position,
+	// Используем m_packet.m_spatial_query_results
+	SceneGraph.m_packet.m_spatial_query_results.clear();
+	g_SpatialSpace->q_sphere(SceneGraph.m_packet.m_spatial_query_results, 0, STYPE_LIGHTSOURCE, Engine.RenderView.Position,
 							 EPS_L);
 
-	// Итерируемся по m_packet.lstRenderables
-	for (u32 _it = 0; _it < SceneGraph.m_packet.lstRenderables.size(); _it++)
+	// Итерируемся по m_packet.m_spatial_query_results
+	for (u32 _it = 0; _it < SceneGraph.m_packet.m_spatial_query_results.size(); _it++)
 	{
-		ISpatial* spatial = SceneGraph.m_packet.lstRenderables[_it];
+		ISpatial* spatial = SceneGraph.m_packet.m_spatial_query_results[_it];
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
 		if (0 == sector)

@@ -66,7 +66,7 @@ struct SceneGraphPacket
 	xr_vector<int, render_alloc<int>> lstLODgroups;
 
 	// Result lists
-	xr_vector<ISpatial*> lstRenderables;
+	xr_vector<ISpatial*> m_spatial_query_results;
 	xr_vector<IRender_Visual*, render_alloc<IRender_Visual*>> m_visuals_static_visible;
 
 	struct DReuseItem
@@ -112,7 +112,7 @@ struct SceneGraphPacket
 
 		lstLODs.clear();
 		lstLODgroups.clear();
-		lstRenderables.clear();
+		m_spatial_query_results.clear();
 		m_visuals_static_visible.clear();
 		m_visuals_dynamic_visible.clear();
 	}

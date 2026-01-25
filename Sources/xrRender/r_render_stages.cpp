@@ -41,7 +41,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// 1. Spatial Query: Запрашиваем объекты во фрустуме
 	// -------------------------------------------------------------------------
 	// Используем список из пакета
-	g_SpatialSpace->q_frustum(SceneGraph.m_packet.lstRenderables, ISpatial_DB::O_ORDERED,
+	g_SpatialSpace->q_frustum(SceneGraph.m_packet.m_spatial_query_results, ISpatial_DB::O_ORDERED,
 							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
 	// -------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		return dist_a < dist_b;
 	};
 
-	concurrency::parallel_sort(SceneGraph.m_packet.lstRenderables.begin(), SceneGraph.m_packet.lstRenderables.end(),
+	concurrency::parallel_sort(SceneGraph.m_packet.m_spatial_query_results.begin(), SceneGraph.m_packet.m_spatial_query_results.end(),
 							   sort_predicate);
 
 	// -------------------------------------------------------------------------
@@ -66,7 +66,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	if (active_phase() == PHASE_NORMAL)
 	{
 		uLastLTRACK++;
-		size_t renderable_count = SceneGraph.m_packet.lstRenderables.size();
+		size_t renderable_count = SceneGraph.m_packet.m_spatial_query_results.size();
 		size_t light_track_id = 0xffffffff;
 
 		if (renderable_count)
@@ -82,7 +82,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		// Round-Robin update
 		if (renderable_count)
 		{
-			if (IRenderable* renderable = SceneGraph.m_packet.lstRenderables[light_track_id]->dcast_Renderable())
+			if (IRenderable* renderable = SceneGraph.m_packet.m_spatial_query_results[light_track_id]->dcast_Renderable())
 			{
 				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
 					ros->update(renderable);
@@ -123,7 +123,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// -------------------------------------------------------------------------
 	// 6. Dynamic Geometry & Lights
 	// -------------------------------------------------------------------------
-	for (ISpatial* spatial : SceneGraph.m_packet.lstRenderables)
+	for (ISpatial* spatial : SceneGraph.m_packet.m_spatial_query_results)
 	{
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
