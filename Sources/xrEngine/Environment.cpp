@@ -49,7 +49,7 @@ CEnvironment::CEnvironment() : CurrentEnv(0), m_ambients_config(0)
 	eff_Rain = 0;
 	eff_LensFlare = 0;
 	eff_Thunderbolt = 0;
-	OnDeviceCreate();
+	OnDeviceCreate(); // Этот вызов остается, но внутри будут изменения
 
 	fGameTime = 0.f;
 	fTimeFactor = 12.f;
@@ -76,6 +76,7 @@ CEnvironment::CEnvironment() : CurrentEnv(0), m_ambients_config(0)
 	PerlinNoise1D->SetOctaves(2);
 	PerlinNoise1D->SetAmplitude(0.66666f);
 
+	// Создаем текстуры для рендер-таргетов (они все еще нужны для шейдеров)
 	tsky0 = Engine.ResourceManager->_CreateTexture("$user$sky0");
 	tsky1 = Engine.ResourceManager->_CreateTexture("$user$sky1");
 
@@ -83,14 +84,22 @@ CEnvironment::CEnvironment() : CurrentEnv(0), m_ambients_config(0)
 	tlut1 = Engine.ResourceManager->_CreateTexture("$user$lut_s1");
 
 	string_path file_name;
-	m_winds_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\winds.ltx"), TRUE, TRUE, FALSE);
-	m_ambients_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\ambients.ltx"), TRUE, TRUE, FALSE);
-	m_sound_channels_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
-	m_effects_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
-	m_suns_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
-	m_thunderbolt_collections_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
-	m_thunderbolts_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
-	CInifile* config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\environment.ltx"), TRUE, TRUE, FALSE);
+	m_winds_config =
+		xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\winds.ltx"), TRUE, TRUE, FALSE);
+	m_ambients_config =
+		xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\ambients.ltx"), TRUE, TRUE, FALSE);
+	m_sound_channels_config = xr_new<CInifile>(
+		FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
+	m_effects_config =
+		xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
+	m_suns_config =
+		xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+	m_thunderbolt_collections_config = xr_new<CInifile>(
+		FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
+	m_thunderbolts_config = xr_new<CInifile>(
+		FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
+	CInifile* config =
+		xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\environment.ltx"), TRUE, TRUE, FALSE);
 
 	// params
 	p_var_alt = deg2rad(config->r_float("environment", "altitude"));
@@ -484,7 +493,8 @@ void CEnvironment::OnFrame()
 
 	CalcWindValues();
 
-	// if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day");
+	// if (pInput->iGetAsyncKeyState(DIK_O))        
+	//	SetWeatherFX("surge_day");
 	float current_weight;
 	lerp(current_weight);
 
@@ -493,27 +503,43 @@ void CEnvironment::OnFrame()
 	else
 		set_static_sun_dir();
 
-	CurrentEnv->sky_r_textures.push_back(mk_pair(2, autoexposure));
-	CurrentEnv->sky_r_textures_irradiance.push_back(mk_pair(2, autoexposure));
-	CurrentEnv->clouds_r_textures.push_back(mk_pair(2, autoexposure));
-	CurrentEnv->lut_r_textures.push_back(mk_pair(2, autoexposure));
+	// Устанавливаем текстуры скайбокса в render targets
+	if (CurrentEnv->sky_texture_0)
+	{
+		IDirect3DBaseTexture9* e0 = CurrentEnv->sky_texture_0->surface_get();
+		tsky0->surface_set(e0);
+		_RELEASE(e0);
+	}
+	else
+		tsky0->surface_set(NULL);
 
-	//. Setup skybox textures, somewhat ugly
-	IDirect3DBaseTexture9* e0 = CurrentEnv->sky_r_textures[0].second->surface_get();
-	IDirect3DBaseTexture9* e1 = CurrentEnv->sky_r_textures[1].second->surface_get();
+	if (CurrentEnv->sky_texture_1)
+	{
+		IDirect3DBaseTexture9* e1 = CurrentEnv->sky_texture_1->surface_get();
+		tsky1->surface_set(e1);
+		_RELEASE(e1);
+	}
+	else
+		tsky1->surface_set(NULL);
 
-	tsky0->surface_set(e0);
-	_RELEASE(e0);
-	tsky1->surface_set(e1);
-	_RELEASE(e1);
+	// Устанавливаем LUT текстуры
+	if (CurrentEnv->lut_texture_0)
+	{
+		IDirect3DBaseTexture9* lut0 = CurrentEnv->lut_texture_0->surface_get();
+		tlut0->surface_set(lut0);
+		_RELEASE(lut0);
+	}
+	else
+		tlut0->surface_set(NULL);
 
-	IDirect3DBaseTexture9* lut0 = CurrentEnv->lut_r_textures[0].second->surface_get();
-	IDirect3DBaseTexture9* lut1 = CurrentEnv->lut_r_textures[1].second->surface_get();
-
-	tlut0->surface_set(lut0);
-	_RELEASE(lut0);
-	tlut1->surface_set(lut1);
-	_RELEASE(lut1);
+	if (CurrentEnv->lut_texture_1)
+	{
+		IDirect3DBaseTexture9* lut1 = CurrentEnv->lut_texture_1->surface_get();
+		tlut1->surface_set(lut1);
+		_RELEASE(lut1);
+	}
+	else
+		tlut1->surface_set(NULL);
 
 	PerlinNoise1D->SetFrequency(wind_gust_factor * MAX_NOISE_FREQ);
 	wind_strength_factor = clampr(PerlinNoise1D->GetContinious(Engine.TimeManager.GetGlobalTime()) + 0.5f, 0.f, 1.f);
@@ -814,8 +840,6 @@ void CEnvironment::load()
 	if (!CurrentEnv)
 		create_mixer();
 
-	autoexposure = Engine.ResourceManager->_CreateTexture("$user$autoexposure");
-
 	if (!eff_Rain)
 		eff_Rain = xr_new<CEffect_Rain>();
 	if (!eff_LensFlare)
@@ -864,9 +888,11 @@ void CEnvironment::unload()
 	xr_delete(eff_Thunderbolt);
 	CurrentWeather = 0;
 	CurrentWeatherName = 0;
-	CurrentEnv->clear();
+
+	if (CurrentEnv)
+		CurrentEnv->clear();
+
 	Invalidate();
-	autoexposure = 0;
 }
 
 SThunderboltDesc* CEnvironment::thunderbolt_description(CInifile& config, shared_str const& section)

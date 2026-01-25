@@ -87,19 +87,14 @@ const u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
 extern ENGINE_API float psHUD_FOV;
 void CEnvironment::RenderSky()
 {
-	//OPTICK_EVENT("CEnvironment::RenderSky");
+	// OPTICK_EVENT("CEnvironment::RenderSky");
 
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
 		return;
 #endif
-	// clouds_sh.create		("clouds","null");
-	//. this is the bug-fix for the case when the sky is broken
-	//. for some unknown reason the geoms happen to be invalid sometimes
-	//. if vTune show this in profile, please add simple cache (move-to-forward last found)
-	//. to the following functions:
-	//.		CResourceManager::_CreateDecl
-	//.		CResourceManager::CreateGeom
+
+	// Инициализация геометрии при необходимости
 	if (bNeed_re_create_env)
 	{
 		sh_2sky.create(&m_b_skybox, "skybox_2t");
@@ -108,96 +103,52 @@ void CEnvironment::RenderSky()
 		clouds_geom.create(v_clouds_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
 		bNeed_re_create_env = FALSE;
 	}
+
 	::Render->set_render_mode(::Render->MODE_FAR);
 
-	// draw sky box
+	// Матрица преобразования скайбокса
 	Fmatrix mSky;
 	mSky.rotateY(CurrentEnv->sky_rotation);
 	mSky.translate_over(Engine.RenderView.Position);
 
+	// Вычисляем цвет скайбокса
 	u32 i_offset, v_offset;
 	u32 C = color_rgba(iFloor(CurrentEnv->sky_color.x * 255.f), iFloor(CurrentEnv->sky_color.y * 255.f),
 					   iFloor(CurrentEnv->sky_color.z * 255.f), iFloor(CurrentEnv->weight * 255.f));
 
-	// Fill index buffer
+	// Заполняем индексный буфер
 	u16* pib = RenderBackend.Index.Lock(20 * 3, i_offset);
 	CopyMemory(pib, hbox_faces, 20 * 3 * 2);
 	RenderBackend.Index.Unlock(20 * 3);
 
-	// Fill vertex buffer
+	// Заполняем вершинный буфер
 	v_skybox* pv = (v_skybox*)RenderBackend.Vertex.Lock(12, sh_2geom.stride(), v_offset);
 	for (u32 v = 0; v < 12; v++)
 		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
 	RenderBackend.Vertex.Unlock(12, sh_2geom.stride());
 
-	// Render
+	// Устанавливаем состояние рендера
 	RenderBackend.set_transform_world(mSky);
 	RenderBackend.set_Geometry(sh_2geom);
 	RenderBackend.set_Shader(sh_2sky);
-	RenderBackend.set_Textures(&CurrentEnv->sky_r_textures);
+
+	// Рендерим скайбокс
 	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
 
-	// Sun
+	// Сбрасываем режим рендера
 	::Render->set_render_mode(::Render->MODE_NORMAL);
 
+	// Рендерим солнце (линз флеры)
 	eff_LensFlare->Render(TRUE, FALSE, FALSE);
 }
 
 void CEnvironment::RenderClouds()
 {
-	//OPTICK_EVENT("CEnvironment::RenderClouds");
 
-#ifndef _EDITOR
-	if (0 == g_pGameLevel)
-		return;
-#endif
-	// draw clouds
-	if (fis_zero(CurrentEnv->clouds_color.w, EPS_L))
-		return;
-
-	::Render->set_render_mode(::Render->MODE_FAR);
-
-	Fmatrix mTransform, mScale;
-	mScale.scale(10, 0.4f, 10);
-	mTransform.rotateY(CurrentEnv->sky_rotation);
-	mTransform.mulB_43(mScale);
-	mTransform.translate_over(Engine.RenderView.Position);
-
-	Fvector wd0, wd1;
-	Fvector4 wind_dir;
-	wd0.setHP(PI_DIV_4, 0);
-	wd1.setHP(PI_DIV_4 + PI_DIV_8, 0);
-	wind_dir.set(wd0.x, wd0.z, wd1.x, wd1.z).mul(0.5f).add(0.5f).mul(255.f);
-	u32 i_offset, v_offset;
-	u32 C0 = color_rgba(iFloor(wind_dir.x), iFloor(wind_dir.y), iFloor(wind_dir.w), iFloor(wind_dir.z));
-	u32 C1 = color_rgba(iFloor(CurrentEnv->clouds_color.x * 255.f), iFloor(CurrentEnv->clouds_color.y * 255.f),
-						iFloor(CurrentEnv->clouds_color.z * 255.f), iFloor(CurrentEnv->clouds_color.w * 255.f));
-
-	// Fill index buffer
-	u16* pib = RenderBackend.Index.Lock(CloudsIndices.size(), i_offset);
-	CopyMemory(pib, &CloudsIndices.front(), CloudsIndices.size() * sizeof(u16));
-	RenderBackend.Index.Unlock(CloudsIndices.size());
-
-	// Fill vertex buffer
-	v_clouds* pv = (v_clouds*)RenderBackend.Vertex.Lock(CloudsVerts.size(), clouds_geom.stride(), v_offset);
-	for (FvectorIt it = CloudsVerts.begin(); it != CloudsVerts.end(); it++, pv++)
-		pv->set(*it, C0, C1);
-	RenderBackend.Vertex.Unlock(CloudsVerts.size(), clouds_geom.stride());
-
-	// Render
-	RenderBackend.set_transform_world(mTransform);
-	RenderBackend.set_Geometry(clouds_geom);
-	RenderBackend.set_Shader(clouds_sh);
-	RenderBackend.set_Textures(&CurrentEnv->clouds_r_textures);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, CloudsVerts.size(), i_offset, CloudsIndices.size() / 3);
-
-	::Render->set_render_mode(::Render->MODE_NORMAL);
 }
 
 void CEnvironment::RenderFlares()
 {
-	//OPTICK_EVENT("CEnvironment::RenderFlares");
-
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
 		return;
@@ -213,8 +164,6 @@ float CEnvironment::GetFlaresBlendFactor()
 
 void CEnvironment::RenderThunderbolt()
 {
-	//OPTICK_EVENT("CEnvironment::RenderThunderbolt");
-
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
 		return;
@@ -225,8 +174,6 @@ void CEnvironment::RenderThunderbolt()
 
 void CEnvironment::RenderRain()
 {
-	//OPTICK_EVENT("CEnvironment::RenderRain");
-
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
 		return;
@@ -237,9 +184,7 @@ void CEnvironment::RenderRain()
 
 void CEnvironment::OnDeviceCreate()
 {
-	//OPTICK_EVENT("CEnvironment::OnDeviceCreate");
-
-	//.	bNeed_re_create_env			= TRUE;
+	// Создаем шейдеры и геометрию
 	sh_2sky.create(&m_b_skybox, "skybox_2t");
 	sh_2geom.create(v_skybox_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
 	clouds_sh.create("clouds", "null");
@@ -270,18 +215,21 @@ void CEnvironment::OnDeviceCreate()
 
 void CEnvironment::OnDeviceDestroy()
 {
-	//OPTICK_EVENT("CEnvironment::OnDeviceDestroy");
+	// OPTICK_EVENT("CEnvironment::OnDeviceDestroy");
 
+	// Очищаем поверхности render targets
 	tsky0->surface_set(NULL);
 	tsky1->surface_set(NULL);
 
 	tlut0->surface_set(NULL);
 	tlut1->surface_set(NULL);
 
+	// Уничтожаем шейдеры и геометрию
 	sh_2sky.destroy();
 	sh_2geom.destroy();
 	clouds_sh.destroy();
 	clouds_geom.destroy();
+
 	// weathers
 	{
 		EnvsMapIt _I, _E;
@@ -300,14 +248,15 @@ void CEnvironment::OnDeviceDestroy()
 			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_destroy();
 	}
-	CurrentEnv->destroy();
+
+	// Уничтожаем CurrentEnv
+	if (CurrentEnv)
+		CurrentEnv->destroy();
 }
 
 #ifdef _EDITOR
 void CEnvironment::ED_Reload()
 {
-	//OPTICK_EVENT("CEnvironment::ED_Reload");
-
 	OnDeviceDestroy();
 	OnDeviceCreate();
 }

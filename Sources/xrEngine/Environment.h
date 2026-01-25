@@ -112,7 +112,7 @@ class ENGINE_API CEnvironment
 	CEffect_Thunderbolt* eff_Thunderbolt;
 
 	float fTimeFactor;
-	ref_texture autoexposure;
+
 	ref_texture tsky0, tsky1;
 	ref_texture tlut0, tlut1;
 

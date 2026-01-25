@@ -87,12 +87,25 @@ void CRender::combine_scene_lighting()
 						sRgbToLinear(envdesc->hemi_color.z), 
 						envdesc->weight};
 
-	IDirect3DBaseTexture9* e0 = envdesc->sky_r_textures_irradiance[0].second->surface_get();
-	RenderTarget->t_irradiance_map_0->surface_set(e0);
-	_RELEASE(e0);
-	IDirect3DBaseTexture9* e1 = envdesc->sky_r_textures_irradiance[1].second->surface_get();
-	RenderTarget->t_irradiance_map_1->surface_set(e1);
-	_RELEASE(e1);
+	IDirect3DBaseTexture9* e0 = nullptr;
+	IDirect3DBaseTexture9* e1 = nullptr;
+
+	if (envdesc->sky_irradiance_0)
+		e0 = envdesc->sky_irradiance_0->surface_get();
+	if (envdesc->sky_irradiance_1)
+		e1 = envdesc->sky_irradiance_1->surface_get();
+
+	if (e0)
+	{
+		RenderTarget->t_irradiance_map_0->surface_set(e0);
+		_RELEASE(e0);
+	}
+
+	if (e1)
+	{
+		RenderTarget->t_irradiance_map_1->surface_set(e1);
+		_RELEASE(e1);
+	}
 
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_SCENE]);
 	RenderBackend.set_Constant("additional_ambient", additional_ambient);

@@ -49,8 +49,6 @@ struct TL_2c3uv
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_effectors_pass_generate_radiation_noise()
 {
-	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_generate_radiation_noise");
-
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
@@ -72,8 +70,6 @@ void CRender::render_effectors_pass_generate_radiation_noise()
 
 void CRender::render_effectors_pass_color_blind_filter()
 {
-	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_color_blind_filter");
-
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
@@ -144,8 +140,6 @@ void CRender::render_effectors_pass_color_blind_filter()
 
 void CRender::render_effectors_pass_combine()
 {
-	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_combine");
-
 	// combination/postprocess
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(NULL);
@@ -206,8 +200,6 @@ void CRender::render_effectors_pass_combine()
 
 void CRender::render_effectors_pass_resolve_gamma()
 {
-	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_resolve_gamma");
-
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
@@ -217,21 +209,11 @@ void CRender::render_effectors_pass_resolve_gamma()
 
 void CRender::render_effectors_pass_lut()
 {
-	////OPTICK_EVENT("CRenderTarget::render_effectors_pass_lut");
-
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
-	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
-	IDirect3DBaseTexture9* e0 = envdesc->lut_r_textures[0].second->surface_get();
-	RenderTarget->t_LUT_0->surface_set(e0);
-	_RELEASE(e0);
-
-	IDirect3DBaseTexture9* e1 = envdesc->lut_r_textures[1].second->surface_get();
-	RenderTarget->t_LUT_1->surface_set(e1);
-	_RELEASE(e1);
-
 	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_LUT], 0);
+	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
 	RenderBackend.set_Constant("c_lut_params", envdesc->weight, 0, 0, 0);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }

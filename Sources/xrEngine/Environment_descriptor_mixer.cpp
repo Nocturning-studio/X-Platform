@@ -9,45 +9,35 @@
 
 CEnvDescriptorMixer::CEnvDescriptorMixer(shared_str const& identifier) : CEnvDescriptor(identifier)
 {
+	sky_texture_0 = NULL;
+	sky_texture_1 = NULL;
+	sky_irradiance_0 = NULL;
+	sky_irradiance_1 = NULL;
+	clouds_texture_0 = NULL;
+	clouds_texture_1 = NULL;
+	lut_texture_0 = NULL;
+	lut_texture_1 = NULL;
+	weight = 0.0f;
 }
 
 void CEnvDescriptorMixer::destroy()
 {
-	sky_r_textures.clear();
-	sky_r_textures_irradiance.clear();
-	lut_r_textures.clear();
-	clouds_r_textures.clear();
+	// Очищаем текстуры
+	sky_texture_0 = NULL;
+	sky_texture_1 = NULL;
+	sky_irradiance_0 = NULL;
+	sky_irradiance_1 = NULL;
+	clouds_texture_0 = NULL;
+	clouds_texture_1 = NULL;
+	lut_texture_0 = NULL;
+	lut_texture_1 = NULL;
 
-	on_device_destroy();
-
-	sky_texture.destroy();
-	sky_texture_irradiance.destroy();
-	clouds_texture.destroy();
-	lut_texture.destroy();
+	// Вызываем родительский destroy
+	CEnvDescriptor::on_device_destroy();
 }
 
 void CEnvDescriptorMixer::clear()
 {
-	std::pair<u32, ref_texture> zero = mk_pair(u32(0), ref_texture(0));
-	sky_r_textures.clear();
-	sky_r_textures.push_back(zero);
-	sky_r_textures.push_back(zero);
-	sky_r_textures.push_back(zero);
-
-	sky_r_textures_irradiance.clear();
-	sky_r_textures_irradiance.push_back(zero);
-	sky_r_textures_irradiance.push_back(zero);
-	sky_r_textures_irradiance.push_back(zero);
-
-	clouds_r_textures.clear();
-	clouds_r_textures.push_back(zero);
-	clouds_r_textures.push_back(zero);
-	clouds_r_textures.push_back(zero);
-
-	lut_r_textures.clear();
-	lut_r_textures.push_back(zero);
-	lut_r_textures.push_back(zero);
-	lut_r_textures.push_back(zero);
 }
 
 int get_ref_count(IUnknown* ii);
@@ -73,21 +63,14 @@ void CEnvDescriptorMixer::lerp( CEnvironment* env,
 	// -------------------------------------------------------------------------
 	// Текстуры
 	// -------------------------------------------------------------------------
-	sky_r_textures.clear();
-	sky_r_textures.push_back(mk_pair(0, A.sky_texture));
-	sky_r_textures.push_back(mk_pair(1, B.sky_texture));
-
-	sky_r_textures_irradiance.clear();
-	sky_r_textures_irradiance.push_back(mk_pair(0, A.sky_texture_irradiance));
-	sky_r_textures_irradiance.push_back(mk_pair(1, B.sky_texture_irradiance));
-
-	clouds_r_textures.clear();
-	clouds_r_textures.push_back(mk_pair(0, A.clouds_texture));
-	clouds_r_textures.push_back(mk_pair(1, B.clouds_texture));
-
-	lut_r_textures.clear();
-	lut_r_textures.push_back(mk_pair(0, A.lut_texture));
-	lut_r_textures.push_back(mk_pair(1, B.lut_texture));
+	sky_texture_0 = A.sky_texture;
+	sky_texture_1 = B.sky_texture;
+	sky_irradiance_0 = A.sky_texture_irradiance;
+	sky_irradiance_1 = B.sky_texture_irradiance;
+	clouds_texture_0 = A.clouds_texture;
+	clouds_texture_1 = B.clouds_texture;
+	lut_texture_0 = A.lut_texture;
+	lut_texture_1 = B.lut_texture;
 
 	// -------------------------------------------------------------------------
 	// Интерполяция параметров

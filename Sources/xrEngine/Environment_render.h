@@ -7,24 +7,18 @@ class CBlender_skybox : public IBlender
 	virtual LPCSTR getComment()
 	{
 		return "INTERNAL: combiner";
-    }
-    
-	virtual BOOL canBeDetailed()
-    {
-        return FALSE;
-    }
-
-    virtual BOOL canBeLMAPped()
-	{
-		return FALSE;
 	}
 
 	virtual void Compile(CBlender_Compile& C)
-    {
+	{
 		C.begin_Pass("sky2", "sky2", "main", "main", FALSE, TRUE, FALSE);
-		C.set_Sampler("s_sky0", "$null", false, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_POINT, D3DTEXF_LINEAR, true);
-	    C.set_Sampler("s_sky1", "$null", false, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_POINT, D3DTEXF_LINEAR, true);
-        C.set_Sampler_point("s_autoexposure", "$user$autoexposure");
-        C.end_Pass();
-    }
+
+		// ”станавливаем сэмплеры дл€ текстур скайбокса
+		// Ёти сэмплеры прив€заны к рендер-таргетам "$user$sky0" и "$user$sky1"
+		// которые заполн€ютс€ в CEnvironment::OnFrame()
+		C.set_Sampler("s_sky0", "$user$sky0");
+		C.set_Sampler("s_sky1", "$user$sky1");
+
+		C.end_Pass();
+	}
 };
