@@ -31,4 +31,6 @@
 #define OPTICK_STOP_CAPTURE()
 #define OPTICK_SAVE_CAPTURE(...)
 #define OPTICK_APP(NAME)
+#define PROFILE_FUNCTION(...)
+#define PROFILE_FUNCTION_FULL(...)
 #endif
