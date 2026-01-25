@@ -1704,7 +1704,6 @@
     <ClInclude Include="CameraDebug.h" />
     <ClInclude Include="CameraDefs.h" />
     <ClInclude Include="CameraManager.h" />
-    <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="CPhotoMode.h" />
     <ClInclude Include="RenderView.h" />
     <ClInclude Include="CustomHUD.h" />
@@ -2184,7 +2183,6 @@
     <ClCompile Include="xr_object.cpp" />
     <ClCompile Include="xr_object_list.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="_scripting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OutOfVirtError.RES" />

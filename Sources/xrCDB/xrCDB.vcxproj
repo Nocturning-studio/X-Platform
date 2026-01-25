@@ -1293,6 +1293,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="Opcode.h" />
     <ClInclude Include="OPC_AABB.h" />

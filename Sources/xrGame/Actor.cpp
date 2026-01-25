@@ -45,7 +45,7 @@
 #include "xrmessages.h"
 #include "string_table.h"
 #include "usablescriptobject.h"
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
 #include "../xrEngine/skeletonanimated.h"

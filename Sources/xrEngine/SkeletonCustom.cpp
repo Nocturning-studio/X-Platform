@@ -645,7 +645,7 @@ void CKinematics::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 	for (u32 i = 0; i < children.size(); i++)
 		LL_GetChild(i)->EnumBoneVertices(C, bone_id);
 }
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 
 DEFINE_VECTOR(Fobb, OBBVec, OBBVecIt);
 

@@ -498,9 +498,6 @@
     <ClInclude Include="std_classes.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="cl_intersect.h">
-      <Filter>Engine\Collision Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrXRC.h">
       <Filter>Engine\Collision Core</Filter>
     </ClInclude>
@@ -943,9 +940,6 @@
     </ClCompile>
     <ClCompile Include="EventAPI.cpp">
       <Filter>Engine\EventAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="_scripting.cpp">
-      <Filter>Engine\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_debug.cpp">
       <Filter>Engine\Scripting</Filter>
