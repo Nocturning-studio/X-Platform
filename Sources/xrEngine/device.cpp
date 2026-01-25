@@ -30,6 +30,8 @@
 
 #include "LevelLoadingScreen.h"
 
+#include "igame_level.h"
+
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;
 
@@ -135,8 +137,6 @@ void CRenderDevice::End(void)
 #endif
 }
 
-#include "igame_level.h"
-#include <ThreadUtil.h>
 void CRenderDevice::PreCache(u32 amount)
 {
 	if (HW.Caps.bForceGPU_REF)

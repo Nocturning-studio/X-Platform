@@ -1,11 +1,11 @@
 #pragma once
 
 #include "pure.h"
-#include "../xrCore/Event.hpp"
 #include <mutex>
 #include <atomic>
 #include <thread>
 #include <vector>
+#include <condition_variable>
 #include <FastDelegate.h>
 
 class ENGINE_API CThreadManager
@@ -13,21 +13,21 @@ class ENGINE_API CThreadManager
   public:
 	using ParallelTask = fastdelegate::FastDelegate0<>;
 
-	// Приоритет задачи (влияет на порядок выполнения внутри очереди)
+	// Приоритет задачи
 	enum class TaskPriority : u32
 	{
-		Critical = 400, // Критически важные (физика персонажа)
-		High = 300,		// Высокий приоритет (AI, анимация)
-		Normal = 200,	// Обычный (общая логика)
-		Low = 100,		// Низкий (партиклы, декор)
-		Background = 0	// Фоновый (распаковка ресурсов)
+		Critical = 400,
+		High = 300,
+		Normal = 200,
+		Low = 100,
+		Background = 0
 	};
 
-	// Тип задачи (определяет, какой поток будет её выполнять)
+	// Тип задачи
 	enum class TaskType : u8
 	{
-		General, // Выполняется любым свободным потоком (Task Stealing)
-		AI // Выполняется СТРОГО последовательно на выделенном потоке
+		General,
+		AI
 	};
 
   private:
@@ -37,7 +37,6 @@ class ENGINE_API CThreadManager
 		ParallelTask Delegate;
 		TaskPriority Priority;
 
-		// Для сортировки: высокий приоритет идет первым
 		bool operator>(const TaskItem& other) const
 		{
 			return (u32)Priority > (u32)other.Priority;
@@ -47,43 +46,62 @@ class ENGINE_API CThreadManager
 	// Контекст рабочего потока
 	struct WorkerContext
 	{
-		CThreadManager* Manager; // Ссылка на родителя
-		u32 ThreadID;			 // ID внутри пула (0, 1, 2...)
-		Event WakeEvent;		 // Событие пробуждения
+		CThreadManager* Manager;
+		u32 ThreadID;
+		std::thread Thread;
+		std::condition_variable WakeCondition;
+		std::mutex WakeMutex;
+		bool ShouldWake;
+
+		WorkerContext() : Manager(nullptr), ThreadID(0), ShouldWake(false)
+		{
+		}
+
+		// Запрещаем копирование
+		WorkerContext(const WorkerContext&) = delete;
+		WorkerContext& operator=(const WorkerContext&) = delete;
 	};
 
   private:
-	// --- Очередь ОБЩИХ задач (General) ---
+	// Очереди задач
 	xr_vector<TaskItem> m_tasksGeneral;
-	std::atomic<u32> m_cursorGeneral;
-	std::recursive_mutex m_mutexGeneral;
-
-	// --- Очередь ИИ задач (AI Exclusive) ---
 	xr_vector<TaskItem> m_tasksAI;
-	std::atomic<u32> m_cursorAI;
-	std::recursive_mutex m_mutexAI;
 
-	// --- Управление потоками ---
-	xr_vector<WorkerContext*> m_workerThreads;
-	std::atomic<u32> m_completedThreadsCount;
+	// Атомарные курсоры
+	std::atomic<u32> m_cursorGeneral{0};
+	std::atomic<u32> m_cursorAI{0};
+	std::atomic<u32> m_completedThreadsCount{0};
 
-	// События
-	Event m_eventFrameComplete;
+	// Синхронизация - делаем mutable для использования в const-методах
+	mutable std::recursive_mutex m_mutexGeneral;
+	mutable std::recursive_mutex m_mutexAI;
 
-	// Флаги состояния
-	volatile BOOL m_shouldExit;
-	bool m_isInitialized;
+	// Синхронизация завершения кадра
+	std::condition_variable m_eventFrameComplete;
+	std::mutex m_eventFrameCompleteMutex;
+	bool m_frameCompleteReady;
+
+	// Потоки - используем вектор указателей
+	xr_vector<WorkerContext*> m_workerContexts;
+
+	// Состояние
+	std::atomic<bool> m_shouldExit{false};
+	std::atomic<bool> m_isInitialized{false};
 
 	// Процедура рабочего потока
 	static void WorkerThreadProc(void* context);
 
   public:
-	// Регистратор для Legacy-задач (Звук), выполняется только на Потоке #0
+	// Регистратор для Legacy-задач
 	CRegistrator<pureFrame> LegacyFrameMT;
 
   public:
 	CThreadManager();
 	~CThreadManager();
+
+	// Запрет копирования
+	CThreadManager(const CThreadManager&) = delete;
+	CThreadManager& operator=(const CThreadManager&) = delete;
 
 	void Initialize();
 	void Destroy();
@@ -92,17 +110,15 @@ class ENGINE_API CThreadManager
 	void AddParallelTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal,
 						 TaskType type = TaskType::General);
 
-	// Удаление задачи (из всех очередей)
+	// Удаление задачи
 	void RemoveParallelTask(const ParallelTask& delegate);
-
-	// Проверка наличия задачи
-	bool HasParallelTask(const ParallelTask& delegate);
+	bool HasParallelTask(const ParallelTask& delegate) const;
 
 	// Управление циклом
-	void SignalFrameStart(); // Запуск всех потоков
-	void WaitForFrameEnd();	 // Ожидание завершения
+	void SignalFrameStart();
+	void WaitForFrameEnd();
 
-	// API для блокировок (замена старых Device.mt_csEnter)
+	// API для блокировок
 	void EnterCritical();
 	void LeaveCritical();
 	bool TryEnterCritical();

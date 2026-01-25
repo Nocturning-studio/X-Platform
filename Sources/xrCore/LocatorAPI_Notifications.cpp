@@ -7,49 +7,43 @@
 
 #include "LocatorAPI_Notifications.h"
 
-void CThread::startup(void* P)
-{
-	OPTICK_THREAD("X-Ray File System notify thread");
-	OPTICK_FRAME("X-Ray File System notify thread");
+static std::mutex CS;
 
-	CThread* T = (CThread*)P;
-	T->Execute();
-}
-
-static CRITICAL_SECTION CS;
-//---------------------------------------------------------------------------
-// TShellChangeThread -------------------------------------------------------
 CFS_PathNotificator::CFS_PathNotificator() : CThread(0)
 {
-	FMutex = CreateMutex(NULL, true /* initial owner - must be Release'd by this thread*/, NULL);
+	FMutex = CreateMutex(NULL, TRUE, NULL);
 	if (FMutex)
 		WaitForSingleObject(FMutex, INFINITE);
 }
-//---------------------------------------------------------------------------
 
-CFS_PathNotificator::~CFS_PathNotificator(void)
+CFS_PathNotificator::~CFS_PathNotificator()
 {
-	for (PathIt it = events.begin(); it != events.end(); it++)
+	for (auto& path : events)
 	{
-		Path& P = *it;
-		P.FChangeEvent = 0;
-		if (P.FWaitHandle != INVALID_HANDLE_VALUE)
+		path.FChangeEvent.clear();
+		if (path.FWaitHandle != INVALID_HANDLE_VALUE)
 		{
-			HANDLE hOld = P.FWaitHandle;
-			P.FWaitHandle = 0;
+			HANDLE hOld = path.FWaitHandle;
+			path.FWaitHandle = INVALID_HANDLE_VALUE;
 			FindCloseChangeNotification(hOld);
 		}
 	}
 	events.clear();
+
+	if (FMutex)
+	{
+		CloseHandle(FMutex);
+	}
 }
-//---------------------------------------------------------------------------
 
 void CFS_PathNotificator::RegisterPath(FS_Path& path)
 {
 	shared_str dir = path.m_Path;
-	for (PathIt it = events.begin(); it != events.end(); it++)
-		if ((it->FDirectory == dir) && (it->bRecurse == path.m_Flags.is(FS_Path::flRecurse)))
+	for (const auto& event : events)
+	{
+		if ((event.FDirectory == dir) && (event.bRecurse == path.m_Flags.is(FS_Path::flRecurse)))
 			return;
+	}
 
 	events.push_back(Path());
 	Path& P = events.back();
@@ -58,67 +52,105 @@ void CFS_PathNotificator::RegisterPath(FS_Path& path)
 	P.FChangeEvent.bind(&path, &FS_Path::rescan_path_cb);
 	P.FWaitHandle = INVALID_HANDLE_VALUE;
 }
-//---------------------------------------------------------------------------
 
-void CFS_PathNotificator::Execute(void)
+void CFS_PathNotificator::Execute()
 {
-	EnterCriticalSection(&CS);
-	for (PathIt it = events.begin(); it != events.end(); it++)
+	OPTICK_THREAD("X-Ray File System notify thread");
+	OPTICK_FRAME("X-Ray File System notify thread");
+
+	// Инициализация обработчиков событий
 	{
-		Path& P = *it;
-		P.FWaitHandle = FindFirstChangeNotification(P.FDirectory.c_str(), P.bRecurse, FNotifyOptionFlags);
-		if (P.FWaitHandle == INVALID_HANDLE_VALUE)
+		std::lock_guard<std::mutex> lock(CS);
+		for (auto& P : events)
+		{
+			P.FWaitHandle = FindFirstChangeNotification(P.FDirectory.c_str(), P.bRecurse, FNotifyOptionFlags);
+
+			if (P.FWaitHandle == INVALID_HANDLE_VALUE)
+			{
 #ifndef __BORLANDC__
-			Debug.fatal(DEBUG_INFO, "Can't create notify handle for path: '%s'\nwith error: '%s'", P.FDirectory.c_str(),
-						Debug.error2string(GetLastError()));
-#else  // __BORLANDC__
-			Debug.fatal("Can't create notify handle for path: '%s'\nwith error: '%s'", P.FDirectory.c_str(),
-						Debug.error2string(GetLastError()));
-#endif // __BORLANDC__
+				Debug.fatal(DEBUG_INFO, "Can't create notify handle for path: '%s'\nwith error: '%s'",
+							P.FDirectory.c_str(), Debug.error2string(GetLastError()));
+#else
+				Debug.fatal("Can't create notify handle for path: '%s'\nwith error: '%s'", P.FDirectory.c_str(),
+							Debug.error2string(GetLastError()));
+#endif
+			}
+		}
 	}
-	LeaveCriticalSection(&CS);
-	//	if (FWaitHandle == INVALID_HANDLE_VALUE)
-	//		return;
+
+	// Основной цикл обработки событий
 	while (!Terminated)
 	{
-		HANDLEVec hHandles;
+		std::vector<HANDLE> hHandles;
 		hHandles.push_back(FMutex);
-		for (PathIt it = events.begin(); it != events.end(); it++)
-			hHandles.push_back(it->FWaitHandle);
 
-		int Obj = WaitForMultipleObjects(hHandles.size(), &*hHandles.begin(), false, INFINITE);
-		if (Obj == WAIT_OBJECT_0)
+		for (const auto& event : events)
 		{
+			if (event.FWaitHandle != INVALID_HANDLE_VALUE)
+				hHandles.push_back(event.FWaitHandle);
+		}
+
+		DWORD result = WaitForMultipleObjects(static_cast<DWORD>(hHandles.size()), hHandles.data(), FALSE, INFINITE);
+
+		if (result == WAIT_OBJECT_0)
+		{
+			// Мьютекс освобожден - выходим
 			ReleaseMutex(FMutex);
 			break;
 		}
-		else if (Obj > WAIT_OBJECT_0)
+		else if (result > WAIT_OBJECT_0)
 		{
-			u32 idx = Obj - WAIT_OBJECT_0 - 1;
+			DWORD idx = result - WAIT_OBJECT_0 - 1;
 			if (idx < events.size())
 			{
 				Path& P = events[idx];
 				if (!P.FChangeEvent.empty())
-					P.FChangeEvent();
-				if (P.FWaitHandle)
+				{
+					try
+					{
+						P.FChangeEvent();
+					}
+					catch (...)
+					{
+						// Игнорируем исключения в колбэках
+					}
+				}
+
+				if (P.FWaitHandle != INVALID_HANDLE_VALUE)
 					FindNextChangeNotification(P.FWaitHandle);
 			}
 		}
 		else
-			return;
+		{
+			// Ошибка ожидания
+			break;
+		}
+	}
+
+	// Очистка ресурсов
+	for (auto& P : events)
+	{
+		if (P.FWaitHandle != INVALID_HANDLE_VALUE)
+		{
+			FindCloseChangeNotification(P.FWaitHandle);
+			P.FWaitHandle = INVALID_HANDLE_VALUE;
+		}
 	}
 }
 //---------------------------------------------------------------------------
 
 void CLocatorAPI::SetEventNotification()
 {
-	InitializeCriticalSection(&CS);
 	FThread = new CFS_PathNotificator();
 	FThread->FNotifyOptionFlags =
 		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE;
-	for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
-		if (p_it->second->m_Flags.is(FS_Path::flNotif))
-			FThread->RegisterPath(*p_it->second);
+
+	for (const auto& pathPair : pathes)
+	{
+		if (pathPair.second->m_Flags.is(FS_Path::flNotif))
+			FThread->RegisterPath(*pathPair.second);
+	}
+
 	FThread->Start();
 }
 
@@ -127,8 +159,15 @@ void CLocatorAPI::ClearEventNotification()
 	if (FThread)
 	{
 		FThread->Terminate();
-		ReleaseMutex(FThread->FMutex); // this current thread must release the mutex
+
+		// Разблокируем мьютекс, чтобы поток мог завершиться
+		if (FThread->FMutex)
+		{
+			ReleaseMutex(FThread->FMutex);
+			// Даем потоку время завершиться
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+
 		xr_delete(FThread);
 	}
-	DeleteCriticalSection(&CS);
 }

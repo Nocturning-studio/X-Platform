@@ -1,33 +1,42 @@
-#include "ThreadUtil.h"
 #ifndef LocatorAPI_NotificationsH
 #define LocatorAPI_NotificationsH
 #pragma once
 
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
+#include <vector>
+#include <windows.h>
+
 class CThread
 {
-	static void startup(void* P);
-
   protected:
 	volatile u32 thID;
-	volatile BOOL Terminated;
+	std::atomic<bool> Terminated;
+	std::thread threadHandle;
 
   public:
-	CThread(u32 _ID)
+	CThread(u32 _ID) : thID(_ID), Terminated(false)
 	{
-		thID = _ID;
-		Terminated = FALSE;
 	}
 	virtual ~CThread()
 	{
+		Terminate();
+		if (threadHandle.joinable())
+			threadHandle.join();
 	}
+
 	void Start()
 	{
-		Threading::SpawnThread(startup, "X-Ray File System notify thread", 0, this);
+		threadHandle = std::thread([this]() { this->Execute(); });
 	}
+
 	virtual void Execute() = 0;
+
 	void Terminate()
 	{
-		Terminated = TRUE;
+		Terminated = true;
 	}
 };
 
@@ -37,16 +46,13 @@ class CFS_PathNotificator : public CThread
 	struct Path
 	{
 		shared_str FDirectory;
-		void* FWaitHandle;
+		HANDLE FWaitHandle;
 		fastdelegate::FastDelegate0<> FChangeEvent;
 		BOOL bRecurse;
 	};
-	DEFINE_VECTOR(HANDLE, HANDLEVec, HANDLEIt);
-	DEFINE_VECTOR(Path, PathVec, PathIt);
-	PathVec events;
 
-  public:
-	void* FMutex;
+	xr_vector<Path> events;
+	HANDLE FMutex;
 	unsigned FNotifyOptionFlags;
 
   protected:
@@ -58,4 +64,4 @@ class CFS_PathNotificator : public CThread
 	void RegisterPath(FS_Path& path);
 };
 
-#endif // LocatorAPI_borlandH
+#endif // LocatorAPI_NotificationsH

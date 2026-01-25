@@ -14,7 +14,6 @@
 #include "ResourceManager.h"
 
 #include "xr_object.h"
-#include <ThreadUtil.h>
 
 #include "Optick_Capture.h"
 
@@ -318,7 +317,7 @@ class CCC_Crash : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		Threading::SpawnThread(crashthread, "crash", 0, 0);
+		//Threading::SpawnThread(crashthread, "crash", 0, 0);
 	}
 };
 

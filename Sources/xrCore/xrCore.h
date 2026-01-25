@@ -193,7 +193,6 @@
 #include "rt_compressor.h"
 #include "xr_shared.h"
 #include "string_concatenations.h"
-#include "Threading.h"
 #include "Noncopyable.hpp"
 #include "xr_smart_pointers.h"
 

@@ -6,7 +6,8 @@
 
 #include "xrCDB.h"
 #include <thread>
-#include "../xrCore/ThreadUtil.h"
+#include <ppl.h>
+#include <ppltasks.h>
 
 using namespace CDB;
 using namespace Opcode;
@@ -82,19 +83,35 @@ void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, vo
 #ifdef _EDITOR
 	build_internal(V, Vcnt, T, Tcnt, bc, bcp);
 #else
-	if (strstr(Core.Params, "-single_thread_cdb") || (std::thread::hardware_concurrency() <= 3))
-	{
-		Msg("* xrCDB: Use single thread cform building");
-		build_internal(V, Vcnt, T, Tcnt, bc, bcp);
-	}
-	else
-	{
-		BTHREAD_params P = {this, V, Vcnt, T, Tcnt, bc, bcp};
-		Msg("* xrCDB: Use dedicated thread for cform building");
-		Threading::SpawnThread(build_thread, "X-Ray CDB-construction thread", 0, &P);
-		while (S_INIT == status)
-			Sleep(5);
-	}
+
+	Msg("* xrCDB: Use dedicated thread for cform building");
+
+	BTHREAD_params* P = xr_new<BTHREAD_params>();
+	P->M = this;
+	P->V = V;
+	P->Vcnt = Vcnt;
+	P->T = T;
+	P->Tcnt = Tcnt;
+	P->BC = bc;
+	P->BCP = bcp;
+
+	// Используем PPL
+	concurrency::create_task([P]() {
+		OPTICK_THREAD("xrCDB Build Thread");
+		OPTICK_FRAME("xrCDB Build Thread");
+
+		FPU::m64r();
+		P->M->cs.Enter();
+		P->M->build_internal(P->V, P->Vcnt, P->T, P->Tcnt, P->BC, P->BCP);
+		P->M->status = S_READY;
+		P->M->cs.Leave();
+		Msg("* xrCDB: cform build completed, memory usage: %d K", P->M->memory() / 1024);
+
+		xr_delete(P);
+	});
+
+	while (S_INIT == status)
+		Sleep(5);
 #endif
 }
 

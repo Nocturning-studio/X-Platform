@@ -11,7 +11,7 @@
 
 #include "../object_broker.h"
 #include "../string_table.h"
-#include <ThreadUtil.h>
+#include <ppltasks.h>
 
 void __cdecl SBCallback(void* sb, SBCallbackReason reason, void* server, void* instance);
 
@@ -155,21 +155,6 @@ void CGameSpy_Browser::Clear()
 	m_pServerList = NULL;
 };
 
-struct RefreshData
-{
-	CGameSpy_Browser* pGSBrowser;
-	string4096 FilterStr;
-};
-void RefreshInternetList(void* inData)
-{
-	OPTICK_THREAD("GameSpy Internet Refresh thread");
-	OPTICK_FRAME("GameSpy Internet Refresh thread");
-
-	RefreshData* pRData = (RefreshData*)inData;
-	pRData->pGSBrowser->RefreshListInternet(pRData->FilterStr);
-	xr_delete(pRData);
-};
-
 void CGameSpy_Browser::RefreshListInternet(const char* FilterStr)
 {
 	m_refresh_lock.Enter();
@@ -183,26 +168,37 @@ void CGameSpy_Browser::RefreshListInternet(const char* FilterStr)
 	m_refresh_lock.Leave();
 };
 
+struct RefreshData
+{
+	CGameSpy_Browser* pGSBrowser;
+	string4096 FilterStr;
+};
+
 void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 {
 	if (!m_pGSBrowser)
 		return;
+
 	SBState state = xrGS_ServerBrowserState(m_pGSBrowser);
 	if ((state != sb_connected) && (state != sb_disconnected))
 	{
 		xrGS_ServerBrowserHalt(m_pGSBrowser);
 		Msg("xrGSB Refresh Stopped\n");
 	};
+
 	xrGS_ServerBrowserClear(m_pGSBrowser);
 
 	// do an update
 	SBError error = sbe_noerror;
+
 	if (!Local)
 	{
 		m_refresh_lock.Enter();
 		m_refresh_lock.Leave();
+
 		if (m_bAbleToConnectToMasterServer)
 		{
+			// Создаем данные для задачи
 			RefreshData* pRData = xr_new<RefreshData>();
 			strcpy(pRData->FilterStr, FilterStr);
 			pRData->pGSBrowser = this;
@@ -211,21 +207,35 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 			if (MainMenu())
 				MainMenu()->Show_CTMS_Dialog();
 
-			Threading::SpawnThread(RefreshInternetList, "GameSpy Internet Refresh thread", 0, pRData);
+			// Запускаем асинхронную задачу с помощью PPL
+			concurrency::create_task([pRData]() {
+				// Устанавливаем имя потока для профилировщика
+				OPTICK_THREAD("GameSpy Internet Refresh thread");
+				OPTICK_FRAME("GameSpy Internet Refresh thread");
+
+				// Выполняем работу
+				pRData->pGSBrowser->RefreshListInternet(pRData->FilterStr);
+
+				// Освобождаем память
+				xr_delete(pRData);
+			});
 		}
+
 		if (error != sbe_noerror || !m_bAbleToConnectToMasterServer)
 		{
 			MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
 		}
 	}
 	else
+	{
 		error = xrGS_ServerBrowserLANUpdate(m_pGSBrowser, m_pServerList ? SBTrue : SBFalse);
+	}
 
 	if (error != sbe_noerror)
 	{
 		Msg("! xrGSB Error - %s", xrGS_ServerBrowserErrorDesc(m_pGSBrowser, error));
 	}
-};
+}
 
 void __cdecl SBCallback(void* sb, SBCallbackReason reason, void* server, void* instance)
 {

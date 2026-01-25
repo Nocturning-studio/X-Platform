@@ -16,7 +16,6 @@ class ENGINE_API CGammaControl;
 #include "shader.h"
 #include "R_Backend.h"
 #include <mutex>
-#include "../xrCore/Event.hpp"
 
 #define VIEWPORT_NEAR 0.2f
 #define VIEWPORT_NEAR_HUD 0.01f

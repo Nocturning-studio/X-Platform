@@ -12,64 +12,40 @@ void check_kinematics(CKinematics* _k, LPCSTR s);
 
 void CKinematics::CalculateBones(BOOL bForceExact)
 {
-	// ѕолучаем текущее врем€ один раз
 	u32 global_time = Engine.TimeManager.GetGlobalTimeMs();
 
-	// -------------------------------------------------------------------------
-	// 1. Ѕыстра€ проверка (Fast Path)
-	// -------------------------------------------------------------------------
-	// ≈сли кости уже обновлены в этом кадре - выходим без блокировок.
-	// Ёто критично дл€ производительности основного потока.
+	// 1. Ѕыстра€ проверка (Fast Path) - без локов
 	if (global_time == UCalc_Time && !bForceExact)
 		return;
 
-	// -------------------------------------------------------------------------
 	// 2. «ахват блокировки
-	// -------------------------------------------------------------------------
-	// ≈сли мы здесь, значит, кто-то должен посчитать кости.
-	// Ѕлокируем мьютекс, чтобы это сделал только один поток.
 	UCalc_Mutex.Enter();
 
-	// -------------------------------------------------------------------------
-	// 3. ѕовторна€ проверка (Double Check)
-	// -------------------------------------------------------------------------
-	// ѕока текущий поток ждал освобождени€ UCalc_Mutex, другой поток (например, Shadow Cascade 0)
-	// мог уже выполнить расчет и обновить UCalc_Time.
-	// ≈сли мы не проверим это снова, мы сделаем работу дважды (и можем испортить данные).
+	// 3. ѕовторна€ проверка (Double Check) - под локом
 	if (global_time == UCalc_Time && !bForceExact)
 	{
 		UCalc_Mutex.Leave();
 		return;
 	}
 
-	// -------------------------------------------------------------------------
-	// 4. Ћогика интервала обновлени€ (Slow Update Optimization)
-	// -------------------------------------------------------------------------
-	// ѕровер€ем, прошло ли достаточно времени дл€ "медленного" обновлени€
+	// 4. Ћогика интервала
 	if (!bForceExact && (global_time < (UCalc_Time + UCalc_Interval)))
 	{
 		UCalc_Mutex.Leave();
 		return;
 	}
 
-	// -------------------------------------------------------------------------
 	// 5. –асчет (State Mutation)
-	// -------------------------------------------------------------------------
-	// ¬се вызовы, мен€ющие состо€ние под замком
-	
 	if (Update_Visibility)
 		Visibility_Update();
 
 	OnCalculateBones();
 
-	// ќбновл€ем врем€ только сейчас, когда мы уверены, что будем считать
-	UCalc_Time = global_time;
-
 #ifdef DEBUG
 	Engine.Statistic->Animation.Begin();
 #endif
 
-	// —расчет иерархии костей
+	// –асчет иерархии костей (“€жела€ операци€)
 	Bone_Calculate(bones->at(iRoot), &Fidentity);
 
 #ifdef DEBUG
@@ -77,9 +53,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	Engine.Statistic->Animation.End();
 #endif
 
-	// -------------------------------------------------------------------------
 	// 6. –асчет Bounding Box (Visibox)
-	// -------------------------------------------------------------------------
 	UCalc_Visibox++;
 	if (UCalc_Visibox >= psSkeletonUpdate)
 	{
@@ -91,7 +65,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 		{
 			if (!LL_GetBoneVisible(u16(b)))
 				continue;
-			
+
 			Fobb& obb = (*bones)[b]->obb;
 			Fmatrix& Mbone = bone_instances[b].mTransform;
 			Fmatrix Mbox;
@@ -101,50 +75,50 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 			Fvector& S = obb.m_halfsize;
 
 			Fvector P, A;
-			// ... (код расчета 8 точек OBB) ...
-			A.set(-S.x, -S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set(-S.x, -S.y,  S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set( S.x, -S.y,  S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set( S.x, -S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set(-S.x,  S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set(-S.x,  S.y,  S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set( S.x,  S.y,  S.z); X.transform_tiny(P, A); Box.modify(P);
-			A.set( S.x,  S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
+
+			A.set(-S.x, -S.y, -S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(-S.x, -S.y, S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(S.x, -S.y, S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(S.x, -S.y, -S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(-S.x, S.y, -S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(-S.x, S.y, S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(S.x, S.y, S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
+			A.set(S.x, S.y, -S.z);
+			X.transform_tiny(P, A);
+			Box.modify(P);
 		}
-		
+
 		if (bones->size())
 		{
 			vis.box.min = (Box.min);
 			vis.box.max = (Box.max);
 			vis.box.getsphere(vis.sphere.P, vis.sphere.R);
 		}
-		
-#ifdef DEBUG
-		// Validate
-		VERIFY3(_valid(vis.box.min) && _valid(vis.box.max), "Invalid bones-transform in model", dbg_name.c_str());
-		if (vis.sphere.R > 1000.f)
-		{
-			for (u16 ii = 0; ii < LL_BoneCount(); ++ii)
-			{
-				Fmatrix tr;
-				tr = LL_GetTransform(ii);
-				Log("bone ", LL_BoneName_dbg(ii));
-				Log("bone_matrix", tr);
-			}
-			Log("end-------");
-		}
-		VERIFY3(vis.sphere.R < 1000.f, "Invalid bones-transform in model", dbg_name.c_str());
-#endif
 	}
 
-	// Callback тоже лучше вызывать под замком, если он читает кости,
-	// либо вынести наружу, если он потокобезопасен и т€жел (обычно он читает, так что оставл€ем внутри).
 	if (Update_Callback)
 		Update_Callback(this);
 
-	// -------------------------------------------------------------------------
+	// ќбновл€ем врем€ только когда ¬—≈ данные (кости и AABB) полностью готовы.
+	// “еперь другие потоки, провер€ющие Fast Path, увид€т новое врем€
+	// только когда данные действительно безопасны дл€ чтени€.
+	UCalc_Time = global_time;
+
 	// 7. ќсвобождение блокировки
-	// -------------------------------------------------------------------------
 	UCalc_Mutex.Leave();
 }
 

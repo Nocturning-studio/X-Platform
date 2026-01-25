@@ -1409,7 +1409,6 @@
     <ClCompile Include="clsid.cpp" />
     <ClCompile Include="cpuid.cpp" />
     <ClCompile Include="crc32.cpp" />
-    <ClCompile Include="Event.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="FileSystem_borland.cpp" />
     <ClCompile Include="file_stream_reader.cpp" />
@@ -1434,7 +1433,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Lock.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="LzHuf.cpp" />
     <ClCompile Include="memory_allocation_stats.cpp" />
@@ -1494,7 +1492,6 @@
     <ClCompile Include="rt_lzo1x_d2.cpp" />
     <ClCompile Include="rt_lzo1x_d3.cpp" />
     <ClCompile Include="rt_lzo_init.cpp" />
-    <ClCompile Include="ScopeLock.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -1515,9 +1512,6 @@
     </ClCompile>
     <ClCompile Include="stream_reader.cpp" />
     <ClCompile Include="string_concatenations.cpp" />
-    <ClCompile Include="Task.cpp" />
-    <ClCompile Include="TaskManager.cpp" />
-    <ClCompile Include="ThreadUtil.cpp" />
     <ClCompile Include="tinystr.cpp" />
     <ClCompile Include="tinyxml.cpp" />
     <ClCompile Include="tinyxmlerror.cpp" />
@@ -1616,7 +1610,6 @@
     <ClInclude Include="compression_ppmd_stream.h" />
     <ClInclude Include="compression_ppmd_stream_inline.h" />
     <ClInclude Include="cpuid.h" />
-    <ClInclude Include="Event.hpp" />
     <ClInclude Include="fastdelegate.h" />
     <CustomBuild Include="FileSystem.h" />
     <ClInclude Include="file_stream_reader.h" />
@@ -1646,14 +1639,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">true</ExcludedFromBuild>
     </CustomBuild>
-    <ClInclude Include="Lock.hpp" />
     <ClInclude Include="log.h" />
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="memory_monitor.h" />
     <ClInclude Include="Noncopyable.hpp" />
     <ClInclude Include="os_clipboard.h" />
-    <ClInclude Include="ParallelFor.hpp" />
-    <ClInclude Include="ParallelForEach.hpp" />
     <ClInclude Include="PPMd.h" />
     <ClInclude Include="PPMdType.h" />
     <ClInclude Include="ppmd_compressor.h" />
@@ -1668,17 +1658,12 @@
     <ClInclude Include="rt_lzo_dict.h" />
     <ClInclude Include="rt_lzo_ptr.h" />
     <ClInclude Include="rt_miniacc.h" />
-    <ClInclude Include="ScopeLock.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stream_reader.h" />
     <ClInclude Include="stream_reader_inline.h" />
     <ClInclude Include="string_concatenations.h" />
     <ClInclude Include="string_concatenations_inline.h" />
     <ClInclude Include="SubAlloc.hpp" />
-    <ClInclude Include="Task.hpp" />
-    <ClInclude Include="TaskManager.hpp" />
-    <ClInclude Include="Threading.h" />
-    <ClInclude Include="ThreadUtil.h" />
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="trivial_encryptor.h" />

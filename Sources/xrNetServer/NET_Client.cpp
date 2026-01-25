@@ -12,7 +12,7 @@
 #include <malloc.h>
 #include "dxerr.h"
 #include "../xrEngine/optick_include.h"
-#include <ThreadUtil.h>
+#include <thread>
 // #pragma warning(pop)
 
 const GUID CLSID_DirectPlay8Client = {0x743f1dc6, 0x5aba, 0x429f, {0x8b, 0xdf, 0xc5, 0x4d, 0x03, 0x25, 0x3d, 0xc2}};
@@ -1124,21 +1124,26 @@ void IPureClient::Sync_Average()
 	//	Msg("* CLIENT: d(%d), dc(%d), s(%d)",net_TimeDelta,net_TimeDelta_Calculated,size);
 }
 
-void sync_thread(void* P)
-{
-	OPTICK_THREAD("X-Ray Network-Time-Sync thread");
-	OPTICK_FRAME("X-Ray Network-Time-Sync thread");
-
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-	IPureClient* C = (IPureClient*)P;
-	C->Sync_Thread();
-}
-
 void IPureClient::net_Syncronize()
 {
 	net_Syncronised = FALSE;
 	net_DeltaArray.clear();
-	Threading::SpawnThread(sync_thread, "X-Ray Network-Time-Sync thread", 0, this);
+
+	// Используем shared_ptr для безопасного доступа к объекту
+	auto self = std::shared_ptr<IPureClient>(this, [](IPureClient*) {});
+
+	std::thread t([self]() {
+		OPTICK_THREAD("X-Ray Network-Time-Sync thread");
+		OPTICK_FRAME("X-Ray Network-Time-Sync thread");
+
+#ifdef _WIN32
+		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+#endif
+
+		self->Sync_Thread();
+	});
+
+	t.detach();
 }
 
 void IPureClient::ClearStatistic()

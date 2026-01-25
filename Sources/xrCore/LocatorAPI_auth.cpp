@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include <thread>
-#include "ThreadUtil.h"
+#include <ppl.h>
+#include <ppltasks.h>
 #pragma hdrstop
 
 struct auth_options
@@ -9,24 +9,21 @@ struct auth_options
 	xr_vector<xr_string> important;
 };
 
-void auth_entry(void* p)
-{
-	OPTICK_THREAD("X-Ray LocatorAPI Checksum thread");
-	OPTICK_FRAME("X-Ray LocatorAPI Checksum thread");
-
-	FS.auth_runtime(p);
-}
-
 void CLocatorAPI::auth_generate(xr_vector<xr_string>& ignore, xr_vector<xr_string>& important)
 {
 	auth_options* _o = xr_new<auth_options>();
 	_o->ignore = ignore;
 	_o->important = important;
 
-if (std::thread::hardware_concurrency() <= 3)
-	FS.auth_runtime(_o);
-else
-	Threading::SpawnThread(auth_entry, "X-Ray LocatorAPI Checksum thread", 0, _o);
+		// Асинхронный запуск с помощью PPL
+	concurrency::create_task([_o]() {
+		// Устанавливаем имя потока для профилировщика
+		OPTICK_THREAD("X-Ray LocatorAPI Checksum thread");
+		OPTICK_FRAME("X-Ray LocatorAPI Checksum thread");
+
+		// Запускаем основную функцию
+		FS.auth_runtime(_o);
+	});
 }
 
 u64 CLocatorAPI::auth_get()
