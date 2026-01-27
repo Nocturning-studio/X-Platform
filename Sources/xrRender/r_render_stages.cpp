@@ -33,6 +33,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 	m_TraversalContext.frustum = &ViewBase;
 	m_TraversalContext.traversal_marker_id = current_marker;
+	m_TraversalContext.current_transform = &Fidentity;
 
 	CurrentRenderContext::Scope tls_scope(SceneGraph.m_packet, m_TraversalContext);
 
