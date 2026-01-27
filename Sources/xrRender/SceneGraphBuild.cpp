@@ -886,13 +886,22 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		return;
 
 	case MT_TREE_PM:
-	case MT_TREE_ST:
+	case MT_TREE_ST: {
+		// Вычисляем позицию для сортировки
+		Fvector Tpos;
+		ctx.current_transform->transform_tiny(Tpos, pVisual->vis.sphere.P);
+
+		// Отправляем в ДИНАМИЧЕСКУЮ очередь.
+		// Это сохранит ctx.current_transform и передаст его в шейдер как m_W.
+		EnqueueDynamic(pVisual, Tpos, ctx, dest);
+	}
+	break;
+
 	default: {
-		// Обычная геометрия - в очередь
-		// Передаем ctx и dest
+		// Обычная геометрия (стены, террейн) - Identity матрица ок
 		EnqueueStatic(pVisual, ctx, dest);
 	}
-		return;
+	break;
 	}
 }
 
@@ -1201,9 +1210,18 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 	break;
 
 	case MT_TREE_ST:
-	case MT_TREE_PM:
+	case MT_TREE_PM: {
+		// Получаем мировую позицию
+		Fvector world_pos;
+		ctx.current_transform->transform_tiny(world_pos, pVisual->vis.sphere.P);
+
+		// Используем EnqueueDynamic, чтобы сохранить матрицу трансформации
+		EnqueueDynamic(pVisual, world_pos, ctx, dest);
+	}
+	break;
+
 	default: {
-		// Обычная статика - отправляем в очередь
+		// Обычная статика
 		EnqueueStatic(pVisual, ctx, dest);
 	}
 	break;
