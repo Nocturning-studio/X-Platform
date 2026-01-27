@@ -1,39 +1,43 @@
-// HOM.cpp: implementation of the CHOM class.
-//
-//////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "HOM.h"
 #include "occRasterizer.h"
 #include "../xrEngine/GameFont.h"
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
+#include <algorithm>
+
+// Удаляем ppl.h, так как растеризация должна быть однопоточной для безопасности
+// #include <ppl.h>
 
 float psOSSR = .001f;
 
+// -----------------------------------------------------------------------------
+// ИСПРАВЛЕНИЕ 1: Синхронизация
+// -----------------------------------------------------------------------------
 void __stdcall CHOM::MT_RENDER()
 {
 	PROFILE_FUNCTION();
 
-	// Быстрая проверка без блокировки
-	bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
-	if (MT_frame_rendered == Engine.TimeManager.GetFrameCount() || b_main_menu_is_active)
+	// Если уже отрисовали для этого кадра - выходим
+	if (MT_frame_rendered == Engine.TimeManager.GetFrameCount())
 		return;
 
-	// Попытка захвата мьютекса без блокировки
-	if (MT.TryEnter())
+	// Блокировка главного меню
+	if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+		return;
+
+	// ИСПРАВЛЕНИЕ: Используем Enter() вместо TryEnter().
+	// Мы ОБЯЗАНЫ дождаться окончания расчета, иначе visible() будет читать мусор.
+	MT.Enter();
+
+	// Двойная проверка под замком
+	if (MT_frame_rendered != Engine.TimeManager.GetFrameCount())
 	{
-		// Двойная проверка после захвата мьютекса
-		if (MT_frame_rendered != Engine.TimeManager.GetFrameCount() && !b_main_menu_is_active)
-		{
-			CFrustum ViewBase;
-			ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-			Enable();
-			Render(ViewBase);
-		}
-		MT.Leave();
+		CFrustum ViewBase;
+		ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+		Enable();
+		Render(ViewBase);
 	}
+
+	MT.Leave();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -42,8 +46,6 @@ void __stdcall CHOM::MT_RENDER()
 
 CHOM::CHOM()
 {
-	//////OPTICK_EVENT("CHOM::CHOM");
-
 	bEnabled = FALSE;
 	m_pModel = 0;
 	m_pTris = 0;
@@ -54,8 +56,6 @@ CHOM::CHOM()
 
 CHOM::~CHOM()
 {
-	//////OPTICK_EVENT("CHOM::~CHOM");
-
 #ifdef DEBUG
 	Engine.Events.Render.Remove(this);
 #endif
@@ -81,9 +81,6 @@ IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
 
 void CHOM::Load()
 {
-	//////OPTICK_EVENT("CHOM::Load");
-
-	// Find and open file
 	string_path fName;
 	FS.update_path(fName, "$level$", "level.hom");
 	if (!FS.exist(fName))
@@ -96,7 +93,6 @@ void CHOM::Load()
 	IReader* fs = FS.r_open(fName);
 	IReader* S = fs->open_chunk(1);
 
-	// Load tris and merge them
 	CDB::Collector CL;
 	while (!S->eof())
 	{
@@ -105,11 +101,9 @@ void CHOM::Load()
 		CL.add_face_packed_D(P.v1, P.v2, P.v3, P.flags, 0.01f);
 	}
 
-	// Determine adjacency
 	xr_vector<u32> adjacency;
 	CL.calc_adjacency(adjacency);
 
-	// Create RASTER-triangles
 	m_pTris = xr_alloc<occTri>(u32(CL.getTS()));
 	for (u32 it = 0; it < CL.getTS(); it++)
 	{
@@ -123,16 +117,11 @@ void CHOM::Load()
 		rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
 		rT.flags = clT.dummy;
 		rT.area = Area(v0, v1, v2);
-		if (rT.area < EPS_L)
-		{
-			Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
-		}
 		rT.plane.build(v0, v1, v2);
 		rT.skip = 0;
 		rT.center.add(v0, v1).add(v2).div(3.f);
 	}
 
-	// Create AABB-tree
 	m_pModel = xr_new<CDB::MODEL>();
 	m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
 	bEnabled = TRUE;
@@ -142,8 +131,6 @@ void CHOM::Load()
 
 void CHOM::Unload()
 {
-	//////OPTICK_EVENT("CHOM::Unload");
-
 	xr_delete(m_pModel);
 	xr_free(m_pTris);
 	bEnabled = FALSE;
@@ -177,28 +164,27 @@ class pred_fb
 
 void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFrustum& clip)
 {
-	// Локальные полигоны для каждого потока
 	sPoly src, dst;
 
-	// Control skipping
 	occTri& T = m_pTris[it->id];
 	u32 next = _frame + ::Random.randI(3, 10);
 
-	// Test for good occluder
 	if (!(T.flags || (T.plane.classify(COP) > 0)))
 	{
 		T.skip = next;
 		return;
 	}
 
-	// Access to triangle vertices
 	CDB::TRI& t = m_pModel->get_tris()[it->id];
 	Fvector* fvert = m_pModel->get_verts();
 	src.clear();
-	dst.clear();
+
+	// Оптимизация: reserve
+	// src.reserve(3);
 	src.push_back(fvert[t.verts[0]]);
 	src.push_back(fvert[t.verts[1]]);
 	src.push_back(fvert[t.verts[2]]);
+
 	sPoly* P = clip.ClipPoly(src, dst);
 	if (0 == P)
 	{
@@ -206,7 +192,6 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 		return;
 	}
 
-	// Transform and Rasterize
 #ifdef DEBUG
 	InterlockedIncrement(&tris_in_frame_visible);
 #endif
@@ -217,6 +202,8 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 		m_transform.transform(T.raster[0], (*P)[0]);
 		m_transform.transform(T.raster[1], (*P)[vert_it + 0]);
 		m_transform.transform(T.raster[2], (*P)[vert_it + 1]);
+		// ВНИМАНИЕ: Raster.rasterize НЕ ПОТОКОБЕЗОПАСЕН!
+		// Вызов должен происходить последовательно.
 		pixels += Raster.rasterize(&T);
 	}
 	if (0 == pixels)
@@ -227,38 +214,25 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 
 void CHOM::Render_DB(CFrustum& base)
 {
-	//////OPTICK_EVENT("CHOM::Render_DB");
-
-	// Query DB
 	xrc.frustum_options(0);
 	xrc.frustum_query(m_pModel, base);
 	if (0 == xrc.r_count())
 		return;
 
-	// Prepare
 	CDB::RESULT* it = xrc.r_begin();
 	CDB::RESULT* end = xrc.r_end();
 
 	Fvector COP = Engine.RenderView.Position;
 
-	// Удаление пропускаемых треугольников
 	end = std::remove_if(it, end, pred_fb(m_pTris));
 
 	if (it == end)
 		return;
 
-	// Сортировка
-	size_t element_count = std::distance(it, end);
-	if (element_count > 500)
-	{
-		concurrency::parallel_sort(it, end, pred_fb(m_pTris, COP));
-	}
-	else
-	{
-		std::sort(it, end, pred_fb(m_pTris, COP));
-	}
+	// Сортировка - здесь можно оставить параллельность (сортировка безопасна)
+	// Но для простоты оставим std::sort, так как треугольников HOM обычно не миллионы.
+	std::sort(it, end, pred_fb(m_pTris, COP));
 
-	// Матрицы и подготовка (без изменений)
 	float view_dim = occ_dim_0;
 	Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f,		  0.0f,
 						  0.0f,			  0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0, view_dim / 2.f + 0 + 0,
@@ -277,27 +251,16 @@ void CHOM::Render_DB(CFrustum& base)
 	tris_in_frame_visible = 0;
 #endif
 
-	// Параллельная обработка с использованием parallel_for
-	if (element_count > 200)
+	// ИСПРАВЛЕНИЕ 2: Убрана параллельная растеризация.
+	// Raster.rasterize пишет в общий буфер без блокировок. Параллелить это нельзя.
+	for (; it != end; it++)
 	{
-		concurrency::parallel_for<size_t>(0, element_count, [&](size_t i) {
-			CDB::RESULT* current_it = it + i;
-			ProcessTriangle(current_it, _frame, COP, clip);
-		});
-	}
-	else
-	{
-		for (; it != end; it++)
-		{
-			ProcessTriangle(it, _frame, COP, clip);
-		}
+		ProcessTriangle(it, _frame, COP, clip);
 	}
 }
 
 void CHOM::Render(CFrustum& base)
 {
-	//////OPTICK_EVENT("CHOM::Render");
-
 	if (!bEnabled)
 		return;
 
@@ -309,46 +272,67 @@ void CHOM::Render(CFrustum& base)
 	Engine.Statistic->RenderCALC_HOM.End();
 }
 
+// =============================================================================
+// Helper Math Functions (Projection & AABB calculation)
+// =============================================================================
+
+// Проецирует первую точку (начало расчета Bounding Rect)
 ICF BOOL transform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
 	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
+	// Если точка за ближней плоскостью отсечения (сзади камеры) - объект считается видимым
 	if (z < EPS)
 		return TRUE;
+
 	float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
+
 	min.x = max.x = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
 	min.y = max.y = (_x * X._12 + _y * X._22 + _z * X._32 + X._42) * iw;
 	minz = 0.f + z * iw;
+
 	return FALSE;
 }
 
+// Проецирует последующие точки (расширение Bounding Rect)
 ICF BOOL transform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
 	float t;
 	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
+	// Если точка за ближней плоскостью отсечения
 	if (z < EPS)
 		return TRUE;
+
 	float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
+
+	// X
 	t = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
 	if (t < min.x)
 		min.x = t;
 	else if (t > max.x)
 		max.x = t;
+
+	// Y
 	t = (_x * X._12 + _y * X._22 + _z * X._32 + X._42) * iw;
 	if (t < min.y)
 		min.y = t;
 	else if (t > max.y)
 		max.y = t;
+
+	// Z (нам нужен minZ, то есть самая близкая точка к камере)
 	t = 0.f + z * iw;
 	if (t < minz)
 		minz = t;
+
 	return FALSE;
 }
 
+// Проверка видимости для AABB (8 углов)
 IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01)
 {
-	// Find min/max points of transformed-box
 	Fvector2 min, max;
 	float z;
+
+	// Проверяем все 8 вершин бокса
 	if (transform_b0(min, max, z, m_transform_01, B.min.x, B.min.y, B.min.z))
 		return TRUE;
 	if (transform_b1(min, max, z, m_transform_01, B.min.x, B.min.y, B.max.z))
@@ -365,24 +349,28 @@ IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01)
 		return TRUE;
 	if (transform_b1(min, max, z, m_transform_01, B.max.x, B.max.y, B.min.z))
 		return TRUE;
+
+	// Запрос к растеризатору
 	return Raster.test(min.x, min.y, max.x, max.y, z);
 }
 
+// =============================================================================
+// Public Interface Implementation
+// =============================================================================
+
 BOOL CHOM::visible(Fbox3& B)
 {
-	//////OPTICK_EVENT("CHOM::visible");
-
 	if (!bEnabled)
 		return TRUE;
+	// Если камера внутри бокса - он видим
 	if (B.contains(Engine.RenderView.Position))
 		return TRUE;
+
 	return _visible(B, m_transform_01);
 }
 
 BOOL CHOM::visible(Fbox2& B, float depth)
 {
-	//////OPTICK_EVENT("CHOM::visible");
-
 	if (!bEnabled)
 		return TRUE;
 	return Raster.test(B.min.x, B.min.y, B.max.x, B.max.y, depth);
@@ -390,37 +378,39 @@ BOOL CHOM::visible(Fbox2& B, float depth)
 
 BOOL CHOM::visible(vis_data& vis)
 {
-	//////OPTICK_EVENT("CHOM::visible");
-
+	// 1. Проверка временной когерентности (Temporal Coherence)
+	// Если мы решили, что объект видим в прошлом кадре, мы можем пропустить проверку на несколько кадров
 	if (Engine.TimeManager.GetFrameCount() < vis.hom_frame)
-		return TRUE; // not at this time :)
-	if (!bEnabled)
-		return TRUE; // return - everything visible
+		return TRUE;
 
-	// Now, the test time comes
-	// 0. The object was hidden, and we must prove that each frame	- test		| frame-old, tested-new, hom_res =
-	// false;
-	// 1. The object was visible, but we must to re-check it		- test		| frame-new, tested-???, hom_res = true;
-	// 2. New object slides into view								- delay test| frame-old, tested-old, hom_res = ???;
+	if (!bEnabled)
+		return TRUE;
+
 	u32 frame_current = Engine.TimeManager.GetFrameCount();
-	// u32	frame_prev		= frame_current-1;
 
 #ifdef DEBUG
 	Engine.Statistic->RenderCALC_HOM.Begin();
 #endif
+
+	// Реальная проверка
 	BOOL result = _visible(vis.box, m_transform_01);
+
 	u32 delay = 1;
 	if (result)
 	{
-		// visible	- delay next test
+		// Если объект ВИДЕН - откладываем следующую проверку на случайное время (5-25 кадров)
+		// Это снижает нагрузку на CPU, так как видимые объекты редко становятся невидимыми мгновенно
 		delay = ::Random.randI(5 * 2, 5 * 5);
 	}
 	else
 	{
-		// hidden	- shedule to next frame
+		// Если объект СКРЫТ - проверяем каждый кадр (или через 1), чтобы "поймать" момент появления
+		delay = 1;
 	}
+
 	vis.hom_frame = frame_current + delay;
 	vis.hom_tested = frame_current;
+
 #ifdef DEBUG
 	Engine.Statistic->RenderCALC_HOM.End();
 #endif
@@ -430,42 +420,44 @@ BOOL CHOM::visible(vis_data& vis)
 
 BOOL CHOM::visible(sPoly& P)
 {
-	//////OPTICK_EVENT("CHOM::visible");
-
 	if (!bEnabled)
 		return TRUE;
 
-	// Find min/max points of transformed-box
 	Fvector2 min, max;
 	float z;
 
+	if (P.empty())
+		return TRUE;
+
+	// Проекция произвольного полигона
 	if (transform_b0(min, max, z, m_transform_01, P.front().x, P.front().y, P.front().z))
 		return TRUE;
+
 	for (u32 it = 1; it < P.size(); it++)
 		if (transform_b1(min, max, z, m_transform_01, P[it].x, P[it].y, P[it].z))
 			return TRUE;
+
 	return Raster.test(min.x, min.y, max.x, max.y, z);
 }
 
 void CHOM::Disable()
 {
-	//////OPTICK_EVENT("CHOM::Disable");
-
 	bEnabled = FALSE;
 }
 
 void CHOM::Enable()
 {
-	//////OPTICK_EVENT("CHOM::Enable");
-
 	bEnabled = m_pModel ? TRUE : FALSE;
 }
+
+// =============================================================================
+// Debug Functions
+// =============================================================================
 
 #ifdef DEBUG
 void CHOM::OnRender()
 {
-	//////OPTICK_EVENT("CHOM::OnRender");
-
+	// Отрисовка геометрии HOM (Occluders) для отладки
 	if (psDeviceFlags.is(rsOcclusionDraw))
 	{
 		if (m_pModel)
@@ -475,13 +467,18 @@ void CHOM::OnRender()
 			poly.resize(m_pModel->get_tris_count() * 3);
 			static LVec line;
 			line.resize(m_pModel->get_tris_count() * 6);
+
 			for (int it = 0; it < m_pModel->get_tris_count(); it++)
 			{
 				CDB::TRI* T = m_pModel->get_tris() + it;
 				Fvector* verts = m_pModel->get_verts();
+
+				// Заполнение треугольников (полупрозрачные)
 				poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);
 				poly[it * 3 + 1].set(*(verts + T->verts[1]), 0x80FFFFFF);
 				poly[it * 3 + 2].set(*(verts + T->verts[2]), 0x80FFFFFF);
+
+				// Заполнение линий (каркас)
 				line[it * 6 + 0].set(*(verts + T->verts[0]), 0xFFFFFFFF);
 				line[it * 6 + 1].set(*(verts + T->verts[1]), 0xFFFFFFFF);
 				line[it * 6 + 2].set(*(verts + T->verts[1]), 0xFFFFFFFF);
@@ -489,12 +486,15 @@ void CHOM::OnRender()
 				line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
 				line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
 			}
+
 			RenderBackend.set_transform_world(Fidentity);
+
 			// draw solid
 			Device.SetNearer(TRUE);
 			RenderBackend.set_Shader(Device.m_SelectionShader);
 			RenderBackend.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), poly.size() / 3);
 			Device.SetNearer(FALSE);
+
 			// draw wire
 			if (bDebug)
 			{
@@ -504,8 +504,10 @@ void CHOM::OnRender()
 			{
 				Device.SetNearer(TRUE);
 			}
+
 			RenderBackend.set_Shader(Device.m_SelectionShader);
 			RenderBackend.dbg_Draw(D3DPT_LINELIST, &*line.begin(), line.size() / 2);
+
 			if (bDebug)
 			{
 				RenderImplementation.set_render_mode(IRender_interface::MODE_NORMAL);
@@ -517,10 +519,9 @@ void CHOM::OnRender()
 		}
 	}
 }
+
 void CHOM::stats()
 {
-	//////OPTICK_EVENT("CHOM::stats");
-
 	if (m_pModel)
 	{
 		CGameFont& F = *Engine.Statistic->Font();
