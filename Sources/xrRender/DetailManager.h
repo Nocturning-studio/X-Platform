@@ -84,6 +84,7 @@ class CDetailManager
 		float scale_calculated;
 		Fmatrix mRotY;
 		u32 vis_ID;
+		u32 vis_ID_backup;
 		float c_hemi;
 		float c_sun;
 	};

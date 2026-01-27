@@ -252,7 +252,7 @@ void CDetailManager::UpdateVisibility()
 								if (ScreenSpaceArea < r_ssaDISCARD)
 									item->vis_ID = 0xff;
 								else if (ScreenSpaceArea > r_ssaCHEAP)
-									item->vis_ID = item->vis_ID;
+									item->vis_ID = item->vis_ID_backup;
 								else
 									item->vis_ID = 0;
 							}
@@ -909,6 +909,8 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 				Item.vis_ID = 0;
 			else
 				Item.vis_ID = (::Random.randI(0, 3) == 0) ? 2 : 1;
+
+			Item.vis_ID_backup = Item.vis_ID;
 
 			D.G[index].items.push_back(ItemP);
 		}
