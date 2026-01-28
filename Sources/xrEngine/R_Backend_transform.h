@@ -5,52 +5,52 @@
 class ENGINE_API R_transforms
 {
   public:
-	Fmatrix m_w;	// Basic	- world
-	Fmatrix m_invw; // derived	- world2local, cached
-	Fmatrix m_v;	// Basic	- view
-	Fmatrix m_p;	// Basic	- projection
-	Fmatrix m_wv;	// Derived	- world2view
-	Fmatrix m_vp;	// Derived	- view2projection
-	Fmatrix m_wvp;	// Derived	- world2view2projection
+	Fmatrix m_World;	// Basic	- world
+	Fmatrix m_InvWorld; // derived	- world2local, cached
+	Fmatrix m_View;	// Basic	- view
+	Fmatrix m_Project;	// Basic	- projection
+	Fmatrix m_WorldView;	// Derived	- world2view
+	Fmatrix m_ViewProject;	// Derived	- view2projection
+	Fmatrix m_WorldViewProject;	// Derived	- world2view2projection
 
-	R_constant* c_w;
-	R_constant* c_invw;
-	R_constant* c_v;
-	R_constant* c_p;
-	R_constant* c_wv;
-	R_constant* c_vp;
-	R_constant* c_wvp;
+	R_constant* c_World;
+	R_constant* c_InvWorld;
+	R_constant* c_View;
+	R_constant* c_Project;
+	R_constant* c_WorldView;
+	R_constant* c_ViewProject;
+	R_constant* c_WorldViewProject;
 
   private:
-	bool m_bInvWValid;
+	bool m_bInvWorldMatrixIsValid;
 
   public:
 	R_transforms();
 	void unmap();
-	void set_W(const Fmatrix& m);
-	void set_V(const Fmatrix& m);
-	void set_P(const Fmatrix& m);
-	IC const Fmatrix& get_W()
+	void set_World(const Fmatrix& m);
+	void set_View(const Fmatrix& m);
+	void set_Project(const Fmatrix& m);
+	IC const Fmatrix& get_World()
 	{
-		return m_w;
+		return m_World;
 	}
-	IC const Fmatrix& get_V()
+	IC const Fmatrix& get_View()
 	{
-		return m_v;
+		return m_View;
 	}
-	IC const Fmatrix& get_P()
+	IC const Fmatrix& get_Project()
 	{
-		return m_p;
+		return m_Project;
 	}
-	IC void set_c_w(R_constant* C);
-	IC void set_c_invw(R_constant* C);
-	IC void set_c_v(R_constant* C);
-	IC void set_c_p(R_constant* C);
-	IC void set_c_wv(R_constant* C);
-	IC void set_c_vp(R_constant* C);
-	IC void set_c_wvp(R_constant* C);
+	IC void set_c_World(R_constant* C);
+	IC void set_c_InvWorld(R_constant* C);
+	IC void set_c_View(R_constant* C);
+	IC void set_c_Project(R_constant* C);
+	IC void set_c_WorldView(R_constant* C);
+	IC void set_c_ViewProject(R_constant* C);
+	IC void set_c_WorldViewProject(R_constant* C);
 
   private:
-	void apply_invw();
+	void apply_InvWorld();
 };
 #endif

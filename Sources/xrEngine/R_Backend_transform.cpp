@@ -3,84 +3,84 @@
 
 #include "r_backend_transform.h"
 
-void R_transforms::set_W(const Fmatrix& m)
+void R_transforms::set_World(const Fmatrix& m)
 {
-	m_w.set(m);
-	m_wv.mul_43(m_v, m_w);
-	m_wvp.mul(m_p, m_wv);
-	if (c_w)
-		RenderBackend.set_Constant(c_w, m_w);
-	if (c_wv)
-		RenderBackend.set_Constant(c_wv, m_wv);
-	if (c_wvp)
-		RenderBackend.set_Constant(c_wvp, m_wvp);
-	m_bInvWValid = false;
-	if (c_invw)
-		apply_invw();
+	m_World.set(m);
+	m_WorldView.mul_43(m_View, m_World);
+	m_WorldViewProject.mul(m_Project, m_WorldView);
+	if (c_World)
+		RenderBackend.set_Constant(c_World, m_World);
+	if (c_WorldView)
+		RenderBackend.set_Constant(c_WorldView, m_WorldView);
+	if (c_WorldViewProject)
+		RenderBackend.set_Constant(c_WorldViewProject, m_WorldViewProject);
+	m_bInvWorldMatrixIsValid = false;
+	if (c_InvWorld)
+		apply_InvWorld();
 	RenderBackend.set_transform(D3DTS_WORLD, m);
 }
-void R_transforms::set_V(const Fmatrix& m)
+void R_transforms::set_View(const Fmatrix& m)
 {
-	m_v.set(m);
-	m_wv.mul_43(m_v, m_w);
-	m_vp.mul(m_p, m_v);
-	m_wvp.mul(m_p, m_wv);
-	if (c_v)
-		RenderBackend.set_Constant(c_v, m_v);
-	if (c_vp)
-		RenderBackend.set_Constant(c_vp, m_vp);
-	if (c_wv)
-		RenderBackend.set_Constant(c_wv, m_wv);
-	if (c_wvp)
-		RenderBackend.set_Constant(c_wvp, m_wvp);
+	m_View.set(m);
+	m_WorldView.mul_43(m_View, m_World);
+	m_ViewProject.mul(m_Project, m_View);
+	m_WorldViewProject.mul(m_Project, m_WorldView);
+	if (c_View)
+		RenderBackend.set_Constant(c_View, m_View);
+	if (c_ViewProject)
+		RenderBackend.set_Constant(c_ViewProject, m_ViewProject);
+	if (c_WorldView)
+		RenderBackend.set_Constant(c_WorldView, m_WorldView);
+	if (c_WorldViewProject)
+		RenderBackend.set_Constant(c_WorldViewProject, m_WorldViewProject);
 	RenderBackend.set_transform(D3DTS_VIEW, m);
 }
-void R_transforms::set_P(const Fmatrix& m)
+void R_transforms::set_Project(const Fmatrix& m)
 {
-	m_p.set(m);
-	m_vp.mul(m_p, m_v);
-	m_wvp.mul(m_p, m_wv);
-	if (c_p)
-		RenderBackend.set_Constant(c_p, m_p);
-	if (c_vp)
-		RenderBackend.set_Constant(c_vp, m_vp);
-	if (c_wvp)
-		RenderBackend.set_Constant(c_wvp, m_wvp);
+	m_Project.set(m);
+	m_ViewProject.mul(m_Project, m_View);
+	m_WorldViewProject.mul(m_Project, m_WorldView);
+	if (c_Project)
+		RenderBackend.set_Constant(c_Project, m_Project);
+	if (c_ViewProject)
+		RenderBackend.set_Constant(c_ViewProject, m_ViewProject);
+	if (c_WorldViewProject)
+		RenderBackend.set_Constant(c_WorldViewProject, m_WorldViewProject);
 	// always setup projection - D3D relies on it to work correctly :(
 	RenderBackend.set_transform(D3DTS_PROJECTION, m);
 }
 
-void R_transforms::apply_invw()
+void R_transforms::apply_InvWorld()
 {
-	VERIFY(c_invw);
+	VERIFY(c_InvWorld);
 
-	if (!m_bInvWValid)
+	if (!m_bInvWorldMatrixIsValid)
 	{
-		m_invw.invert_b(m_w);
-		m_bInvWValid = true;
+		m_InvWorld.invert_b(m_World);
+		m_bInvWorldMatrixIsValid = true;
 	}
 
-	RenderBackend.set_Constant(c_invw, m_invw);
+	RenderBackend.set_Constant(c_InvWorld, m_InvWorld);
 }
 
 void R_transforms::unmap()
 {
-	c_w = NULL;
-	c_v = NULL;
-	c_p = NULL;
-	c_wv = NULL;
-	c_vp = NULL;
-	c_wvp = NULL;
+	c_World = NULL;
+	c_View = NULL;
+	c_Project = NULL;
+	c_WorldView = NULL;
+	c_ViewProject = NULL;
+	c_WorldViewProject = NULL;
 }
 R_transforms::R_transforms()
 {
 	unmap();
-	m_w.identity();
-	m_invw.identity();
-	m_v.identity();
-	m_p.identity();
-	m_wv.identity();
-	m_vp.identity();
-	m_wvp.identity();
-	m_bInvWValid = true;
+	m_World.identity();
+	m_InvWorld.identity();
+	m_View.identity();
+	m_Project.identity();
+	m_WorldView.identity();
+	m_ViewProject.identity();
+	m_WorldViewProject.identity();
+	m_bInvWorldMatrixIsValid = true;
 }

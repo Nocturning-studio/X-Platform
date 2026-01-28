@@ -59,7 +59,7 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		break;
 	case RM_SINGLE: {
 		Fmatrix W;
-		W.mul_43(RenderBackend.transforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
+		W.mul_43(RenderBackend.transforms.m_World, Parent->LL_GetTransform_R(u16(RMS_boneid)));
 		RenderBackend.set_transform_world(W);
 		RenderBackend.set_Geometry(hGeom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);

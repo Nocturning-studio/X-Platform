@@ -8,40 +8,40 @@
 #include "sh_constant.h"
 #include "sh_rt.h"
 
-IC void R_transforms::set_c_w(R_constant* C)
+IC void R_transforms::set_c_World(R_constant* C)
 {
-	c_w = C;
-	RenderBackend.set_Constant(C, m_w);
+	c_World = C;
+	RenderBackend.set_Constant(C, m_World);
 };
-IC void R_transforms::set_c_invw(R_constant* C)
+IC void R_transforms::set_c_InvWorld(R_constant* C)
 {
-	c_invw = C;
-	apply_invw();
+	c_InvWorld = C;
+	apply_InvWorld();
 };
-IC void R_transforms::set_c_v(R_constant* C)
+IC void R_transforms::set_c_View(R_constant* C)
 {
-	c_v = C;
-	RenderBackend.set_Constant(C, m_v);
+	c_View = C;
+	RenderBackend.set_Constant(C, m_View);
 };
-IC void R_transforms::set_c_p(R_constant* C)
+IC void R_transforms::set_c_Project(R_constant* C)
 {
-	c_p = C;
-	RenderBackend.set_Constant(C, m_p);
+	c_Project = C;
+	RenderBackend.set_Constant(C, m_Project);
 };
-IC void R_transforms::set_c_wv(R_constant* C)
+IC void R_transforms::set_c_WorldView(R_constant* C)
 {
-	c_wv = C;
-	RenderBackend.set_Constant(C, m_wv);
+	c_WorldView = C;
+	RenderBackend.set_Constant(C, m_WorldView);
 };
-IC void R_transforms::set_c_vp(R_constant* C)
+IC void R_transforms::set_c_ViewProject(R_constant* C)
 {
-	c_vp = C;
-	RenderBackend.set_Constant(C, m_vp);
+	c_ViewProject = C;
+	RenderBackend.set_Constant(C, m_ViewProject);
 };
-IC void R_transforms::set_c_wvp(R_constant* C)
+IC void R_transforms::set_c_WorldViewProject(R_constant* C)
 {
-	c_wvp = C;
-	RenderBackend.set_Constant(C, m_wvp);
+	c_WorldViewProject = C;
+	RenderBackend.set_Constant(C, m_WorldViewProject);
 };
 
 IC void CBackend::set_transform(u32 ID, const Fmatrix& Matrix)
@@ -51,27 +51,27 @@ IC void CBackend::set_transform(u32 ID, const Fmatrix& Matrix)
 }
 IC void CBackend::set_transform_world(const Fmatrix& Matrix)
 {
-	transforms.set_W(Matrix);
+	transforms.set_World(Matrix);
 }
 IC void CBackend::set_transform_view(const Fmatrix& Matrix)
 {
-	transforms.set_V(Matrix);
+	transforms.set_View(Matrix);
 }
 IC void CBackend::set_transform_project(const Fmatrix& Matrix)
 {
-	transforms.set_P(Matrix);
+	transforms.set_Project(Matrix);
 }
 IC const Fmatrix& CBackend::get_transform_world()
 {
-	return transforms.get_W();
+	return transforms.get_World();
 }
 IC const Fmatrix& CBackend::get_transform_view()
 {
-	return transforms.get_V();
+	return transforms.get_View();
 }
 IC const Fmatrix& CBackend::get_transform_project()
 {
-	return transforms.get_P();
+	return transforms.get_Project();
 }
 
 IC void CBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)

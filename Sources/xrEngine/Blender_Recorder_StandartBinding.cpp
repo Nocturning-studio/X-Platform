@@ -25,13 +25,13 @@
 		}                                                                                                              \
 	};                                                                                                                 \
 	static cl_transform_##xf binder_##xf
-BIND_DECLARE(w);
-BIND_DECLARE(invw);
-BIND_DECLARE(v);
-BIND_DECLARE(p);
-BIND_DECLARE(wv);
-BIND_DECLARE(vp);
-BIND_DECLARE(wvp);
+BIND_DECLARE(World);
+BIND_DECLARE(InvWorld);
+BIND_DECLARE(View);
+BIND_DECLARE(Project);
+BIND_DECLARE(WorldView);
+BIND_DECLARE(ViewProject);
+BIND_DECLARE(WorldViewProject);
 
 #define DECLARE_TREE_BIND(c)                                                                                           \
 	class cl_tree_##c : public R_constant_setup                                                                        \
@@ -52,16 +52,16 @@ DECLARE_TREE_BIND(c_scale);
 DECLARE_TREE_BIND(c_bias);
 DECLARE_TREE_BIND(c_sun);
 
-class cl_invV : public R_constant_setup
+class cl_InvView : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fmatrix mInvV = Fmatrix().invert(RenderBackend.transforms.m_v);
+		Fmatrix mInvV = Fmatrix().invert(RenderBackend.transforms.m_View);
 
 		RenderBackend.set_Constant(C, mInvV);
 	}
 };
-static cl_invV binder_invv;
+static cl_InvView binder_InvView;
 
 class cl_texgen : public R_constant_setup
 {
@@ -76,7 +76,7 @@ class cl_texgen : public R_constant_setup
 		Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
-		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_wvp);
+		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_WorldViewProject);
 
 		RenderBackend.set_Constant(C, mTexgen);
 	}
@@ -96,7 +96,7 @@ class cl_VPtexgen : public R_constant_setup
 		Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
-		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_vp);
+		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_ViewProject);
 
 		RenderBackend.set_Constant(C, mTexgen);
 	}
@@ -457,7 +457,7 @@ static class cl_screen_res : public R_constant_setup
 	}
 } binder_screen_res;
 
-static class cl_invP final : public R_constant_setup
+static class cl_InvProject final : public R_constant_setup
 {
 	void setup(R_constant* C) override
 	{
@@ -465,7 +465,7 @@ static class cl_invP final : public R_constant_setup
 		m_invProject.invert(Engine.RenderView.Project);
 		RenderBackend.set_Constant(C, m_invProject);
 	}
-} binder_invP;
+} binder_InvProject;
 
 class cl_wind_params : public R_constant_setup
 {
@@ -518,15 +518,15 @@ static cl_wind_turbulence binder_wind_turbulence;
 void CBlender_Compile::SetMapping()
 {
 	// matrices
-	set_Constant("m_World", &binder_w);
-	set_Constant("m_invWorld", &binder_invw);
-	set_Constant("m_View", &binder_v);
-	set_Constant("m_invView", &binder_invv);
-	set_Constant("m_Project", &binder_p);
-	set_Constant("m_invProject", &binder_invP);
-	set_Constant("m_WorldView", &binder_wv);
-	set_Constant("m_ViewProject", &binder_vp);
-	set_Constant("m_WorldViewProject", &binder_wvp);
+	set_Constant("m_World", &binder_World);
+	set_Constant("m_invWorld", &binder_InvWorld);
+	set_Constant("m_View", &binder_View);
+	set_Constant("m_invView", &binder_InvView);
+	set_Constant("m_Project", &binder_Project);
+	set_Constant("m_invProject", &binder_InvProject);
+	set_Constant("m_WorldView", &binder_WorldView);
+	set_Constant("m_ViewProject", &binder_ViewProject);
+	set_Constant("m_WorldViewProject", &binder_WorldViewProject);
 
 	set_Constant("m_transform_v", &tree_binder_m_transform_v);
 	set_Constant("m_transform", &tree_binder_m_transform);

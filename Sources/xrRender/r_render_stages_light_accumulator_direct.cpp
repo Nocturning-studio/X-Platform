@@ -151,9 +151,9 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 	// Setup texgen
 	Fmatrix m_Texgen;
 	m_Texgen.identity();
-	RenderBackend.transforms.set_W(m_Texgen);
-	RenderBackend.transforms.set_V(Engine.RenderView.View);
-	RenderBackend.transforms.set_P(Engine.RenderView.Project);
+	RenderBackend.transforms.set_World(m_Texgen);
+	RenderBackend.transforms.set_View(Engine.RenderView.View);
+	RenderBackend.transforms.set_Project(Engine.RenderView.Project);
 	RenderBackend.u_compute_texgen_screen(m_Texgen);
 
 	// Setup geometry using backend

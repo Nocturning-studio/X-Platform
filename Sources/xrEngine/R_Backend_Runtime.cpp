@@ -380,7 +380,7 @@ void CBackend::u_compute_texgen_screen(Fmatrix& m_Texgen)
 							 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 
 							 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
-	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_wvp);
+	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
 }
 
 void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
