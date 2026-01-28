@@ -60,10 +60,10 @@ void CRender::accumulate_point_lights(light* L)
 	{
 		// Select shader
 		u32 _id = 0;
-		if (L->flags.bShadow)
+		if (L->m_LightFlags.bShadow)
 		{
-			bool bFullSize = (L->X.S.size == u32(RenderImplementation.o.smapsize));
-			if (L->X.S.transluent)
+			bool bFullSize = (L->m_TransformContext.m_ShadowContext.size == u32(RenderImplementation.o.smapsize));
+			if (L->m_TransformContext.m_ShadowContext.transluent)
 				_id = SE_L_TRANSLUENT;
 			else if (bFullSize)
 				_id = SE_L_FULLSIZE;

@@ -2,8 +2,8 @@
 
 IC bool pred_area(light* _1, light* _2)
 {
-	u32 a0 = _1->X.S.size;
-	u32 a1 = _2->X.S.size;
+	u32 a0 = _1->m_TransformContext.m_ShadowContext.size;
+	u32 a1 = _2->m_TransformContext.m_ShadowContext.size;
 	return a0 > a1; // reverse -> descending
 }
 
@@ -49,7 +49,7 @@ void CRender::render_lights(light_Package& LP)
 		source.erase(std::remove_if(source.begin(), source.end(),
 									[this](light* L) {
 										L->vis_update();
-										if (!L->vis.visible)
+										if (!L->m_VisibilityData.visible)
 											return true;
 
 										LR.compute_xf_spot(L);
@@ -88,11 +88,11 @@ void CRender::render_lights(light_Package& LP)
 			{
 				light* L = *it;
 				SMAP_Rect R;
-				if (LP_smap_pool.push(R, L->X.S.size))
+				if (LP_smap_pool.push(R, L->m_TransformContext.m_ShadowContext.size))
 				{
-					L->X.S.posX = R.min.x;
-					L->X.S.posY = R.min.y;
-					L->vis.smap_ID = smap_ID;
+					L->m_TransformContext.m_ShadowContext.posX = R.min.x;
+					L->m_TransformContext.m_ShadowContext.posY = R.min.y;
+					L->m_VisibilityData.smap_ID = smap_ID;
 					refactored.push_back(L);
 					it = source.erase(it);
 				}
@@ -133,10 +133,10 @@ void CRender::render_lights(light_Package& LP)
 		// Группировка источников по smap_ID для batch обработки
 		xr_vector<light*> current_batch;
 		xr_vector<light*>& source = LP.v_shadowed;
-		u16 current_sid = source.back()->vis.smap_ID;
+		u16 current_sid = source.back()->m_VisibilityData.smap_ID;
 
 		// Извлекаем всю группу с одинаковым smap_ID
-		while (!source.empty() && source.back()->vis.smap_ID == current_sid)
+		while (!source.empty() && source.back()->m_VisibilityData.smap_ID == current_sid)
 		{
 			current_batch.push_back(source.back());
 			source.pop_back();
@@ -152,7 +152,7 @@ void CRender::render_lights(light_Package& LP)
 
 			// render_subspace принимает dest. Для теней используем глобальный пакет (пока однопоточно)
 			// Если будет параллельный рендер теней, здесь нужно будет создавать Thread-Local пакет
-			SceneGraph.render_subspace(L->spatial.sector, L->X.S.combine, L->get_position(), TRUE, FALSE,
+			SceneGraph.render_subspace(L->spatial.sector, L->m_TransformContext.m_ShadowContext.combine, L->get_position(), TRUE, FALSE,
 									   SceneGraph.m_packet);
 
 			// Проверяем очереди через m_packet
@@ -165,19 +165,19 @@ void CRender::render_lights(light_Package& LP)
 				stats.s_merged++;
 				render_shadow_map_spot(L);
 				RenderBackend.set_transform_world(Fidentity);
-				RenderBackend.set_transform_view(L->X.S.view);
-				RenderBackend.set_transform_project(L->X.S.project);
+				RenderBackend.set_transform_view(L->m_TransformContext.m_ShadowContext.view);
+				RenderBackend.set_transform_project(L->m_TransformContext.m_ShadowContext.project);
 
 				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-					Details->Render(DetailsRenderMode::DepthOnly, &L->X.S.combine);
+					Details->Render(DetailsRenderMode::DepthOnly, &L->m_TransformContext.m_ShadowContext.combine);
 
 				// Передаем пакет в Render
 				SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
-				L->X.S.transluent = FALSE;
+				L->m_TransformContext.m_ShadowContext.transluent = FALSE;
 
 				if (bSpecial)
 				{
-					L->X.S.transluent = TRUE;
+					L->m_TransformContext.m_ShadowContext.transluent = TRUE;
 					render_shadow_map_spot_transluent(L);
 					// Передаем пакет в Render
 					SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
@@ -210,7 +210,7 @@ void CRender::render_lights(light_Package& LP)
 					light* L = LP.v_point[i];
 					L->vis_update();
 
-					if (L->vis.visible)
+					if (L->m_VisibilityData.visible)
 					{
 						accumulate_point_lights(L);
 						// Эффективное удаление
@@ -234,7 +234,7 @@ void CRender::render_lights(light_Package& LP)
 					light* L = LP.v_spot[i];
 					L->vis_update();
 
-					if (L->vis.visible)
+					if (L->m_VisibilityData.visible)
 					{
 						LR.compute_xf_spot(L);
 						accumulate_spot_lights(L);
@@ -286,7 +286,7 @@ void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
 		// Фильтрация и накопление в одном проходе
 		LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(),
 										[this](light* L) {
-											if (L->vis.visible)
+											if (L->m_VisibilityData.visible)
 											{
 												accumulate_point_lights(L);
 												return true;
@@ -305,7 +305,7 @@ void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
 		for (light* L : LP.v_spot)
 		{
 			L->vis_update();
-			if (L->vis.visible)
+			if (L->m_VisibilityData.visible)
 			{
 				LR.compute_xf_spot(L);
 			}
@@ -314,7 +314,7 @@ void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
 		// Накопление
 		LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(),
 									   [this](light* L) {
-										   if (L->vis.visible)
+										   if (L->m_VisibilityData.visible)
 										   {
 											   accumulate_spot_lights(L);
 											   return true;

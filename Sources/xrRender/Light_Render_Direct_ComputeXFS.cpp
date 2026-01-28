@@ -32,10 +32,10 @@ void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 	L_pos.set(L->get_position());
 
 	//
-	int _cached_size = L->X.S.size;
-	L->X.S.posX = L->X.S.posY = 0;
-	L->X.S.size = SMAP_adapt_max;
-	L->X.S.transluent = FALSE;
+	int _cached_size = L->m_TransformContext.m_ShadowContext.size;
+	L->m_TransformContext.m_ShadowContext.posX = L->m_TransformContext.m_ShadowContext.posY = 0;
+	L->m_TransformContext.m_ShadowContext.size = SMAP_adapt_max;
+	L->m_TransformContext.m_ShadowContext.transluent = FALSE;
 
 	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
 	// Note: we clamp screen space area to ONE, although it is not correct at all
@@ -74,12 +74,12 @@ void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 		_size = SMAP_adapt_max;
 	int _epsilon = iCeil(float(_size) * 0.01f);
 	int _diff = _abs(int(_size) - int(_cached_size));
-	L->X.S.size = (_diff >= _epsilon) ? _size : _cached_size;
+	L->m_TransformContext.m_ShadowContext.size = (_diff >= _epsilon) ? _size : _cached_size;
 
 	// make N pixel border
-	L->X.S.view.build_camera_dir(L_pos, L_dir, L_up);
+	L->m_TransformContext.m_ShadowContext.view.build_camera_dir(L_pos, L_dir, L_up);
 	// float	n			= 2.f						;
-	// float	x			= float(L->X.S.size)		;
+	// float	x			= float(L->m_TransformContext.m_ShadowContext.size)		;
 	// float	alpha		= L->get_cone()/2					;
 	// float	tan_beta	= (x+2*n)*tanf(alpha) / x	;
 	// float	g_alpha		= 2*rad2deg		(alpha);
@@ -88,7 +88,7 @@ void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 
 	// _min(L->get_cone() + deg2rad(4.5f), PI*0.98f) - Here, it is needed to enlarge the shadow map frustum to include also
 	// displaced pixels and the pixels neighbor to the examining one.
-	L->X.S.project.build_projection(_min(L->get_cone() + deg2rad(5.f), PI * 0.98f), 1.f, SMAP_near_plane, L->get_range() + EPS_S);
+	L->m_TransformContext.m_ShadowContext.project.build_projection(_min(L->get_cone() + deg2rad(5.f), PI * 0.98f), 1.f, SMAP_near_plane, L->get_range() + EPS_S);
 
-	L->X.S.combine.mul(L->X.S.project, L->X.S.view);
+	L->m_TransformContext.m_ShadowContext.combine.mul(L->m_TransformContext.m_ShadowContext.project, L->m_TransformContext.m_ShadowContext.view);
 }

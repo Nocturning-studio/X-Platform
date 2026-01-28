@@ -15,7 +15,7 @@ void CRender::render_shadow_map_spot(light* L)
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_smap_surf);
 	RenderBackend.set_Depth_Buffer(RenderTarget->rt_smap_depth->pRT);
 
-	D3DVIEWPORT9 VP = {L->X.S.posX, L->X.S.posY, L->X.S.size, L->X.S.size, 0, 1};
+	D3DVIEWPORT9 VP = {L->m_TransformContext.m_ShadowContext.posX, L->m_TransformContext.m_ShadowContext.posY, L->m_TransformContext.m_ShadowContext.size, L->m_TransformContext.m_ShadowContext.size, 0, 1};
 	CHK_DX(HW.pDevice->SetViewport(&VP));
 
 	// Misc	- draw only front-faces
@@ -32,7 +32,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 {
 	//VERIFY(RenderImplementation.o.Tshadows);
 	RenderBackend.set_ColorWriteEnable();
-	if (IRender_Light::OMNIPART == L->flags.type)
+	if (IRender_Light::OMNIPART == L->m_LightFlags.type)
 	{
 		// omni-part
 		CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, 0xffffffff, 1.0f, 0L));
@@ -50,8 +50,8 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		Fvector2 p0, p1;
 		u32 Offset;
 		u32 C = color_rgba(255, 255, 255, 255);
-		float _w = float(L->X.S.size);
-		float _h = float(L->X.S.size);
+		float _w = float(L->m_TransformContext.m_ShadowContext.size);
+		float _h = float(L->m_TransformContext.m_ShadowContext.size);
 		float d_Z = EPS_S;
 		float d_W = 1.f;
 		p0.set(.5f / _w, .5f / _h);

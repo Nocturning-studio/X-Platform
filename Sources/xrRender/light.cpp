@@ -4,10 +4,10 @@
 light::light(void) : ISpatial(g_SpatialSpace)
 {
 	spatial.type = STYPE_LIGHTSOURCE;
-	flags.type = POINT;
-	flags.bStatic = false;
-	flags.bActive = false;
-	flags.bShadow = false;
+	m_LightFlags.type = POINT;
+	m_LightFlags.bStatic = false;
+	m_LightFlags.bActive = false;
+	m_LightFlags.bShadow = false;
 	position.set(0, -1000, 0);
 	direction.set(0, -1, 0);
 	right.set(0, 0, 0);
@@ -20,11 +20,11 @@ light::light(void) : ISpatial(g_SpatialSpace)
 	ZeroMemory(omnipart, sizeof(omnipart));
 	s_spot = NULL;
 	s_point = NULL;
-	vis.frame2test = 0; // xffffffff;
-	vis.query_id = 0;
-	vis.query_order = 0;
-	vis.visible = true;
-	vis.pending = false;
+	m_VisibilityData.frame2test = 0; // xffffffff;
+	m_VisibilityData.query_id = 0;
+	m_VisibilityData.query_order = 0;
+	m_VisibilityData.visible = true;
+	m_VisibilityData.pending = false;
 	m_sectors = {};
 }
 
@@ -73,11 +73,11 @@ void light::set_texture(LPCSTR name)
 
 void light::set_shadow(bool b)
 {
-	flags.bShadow = b;
+	m_LightFlags.bShadow = b;
 
-	if (flags.type == IRender_Light::POINT)
+	if (m_LightFlags.type == IRender_Light::POINT)
 	{
-		if (flags.bShadow)
+		if (m_LightFlags.bShadow)
 		{
 			// tough: create 6 shadowed lights
 			if (0 == omnipart[0])
@@ -107,14 +107,14 @@ void light::get_sectors()
 	if (0 == sector)
 		return;
 
-	if (flags.type == IRender_Light::SPOT || flags.type == IRender_Light::OMNIPART)
+	if (m_LightFlags.type == IRender_Light::SPOT || m_LightFlags.type == IRender_Light::OMNIPART)
 	{
 		CFrustum temp = CFrustum();
-		temp.CreateFromMatrix(X.S.combine, FRUSTUM_P_ALL);
+		temp.CreateFromMatrix(m_TransformContext.m_ShadowContext.combine, FRUSTUM_P_ALL);
 
 		//m_sectors = RenderImplementation.detectSectors_frustum(sector, &temp);
 	}
-	if (flags.type == IRender_Light::POINT)
+	if (m_LightFlags.type == IRender_Light::POINT)
 	{
 		//m_sectors = RenderImplementation.detectSectors_sphere(sector, position, Fvector().set(range, range, range));
 	}
@@ -128,7 +128,7 @@ void light::set_active(bool a)
 
 	if (a)
 	{
-		if (flags.bActive)
+		if (m_LightFlags.bActive)
 			return;
 
 		// ѕроверка валидности позиции
@@ -140,7 +140,7 @@ void light::set_active(bool a)
 			//return;
 		}
 
-		flags.bActive = true;
+		m_LightFlags.bActive = true;
 
 		// ѕровер€ем, что свет правильно инициализирован
 		if (spatial.sector == nullptr)
@@ -153,9 +153,9 @@ void light::set_active(bool a)
 	}
 	else
 	{
-		if (!flags.bActive)
+		if (!m_LightFlags.bActive)
 			return;
-		flags.bActive = false;
+		m_LightFlags.bActive = false;
 		spatial_move();
 		spatial_unregister();
 	}
@@ -220,7 +220,7 @@ void light::spatial_move()
 	if (RenderImplementation.Sectors.size() > 1)
 		get_sectors();
 
-	switch (flags.type)
+	switch (m_LightFlags.type)
 	{
 	case IRender_Light::REFLECTED:
 	case IRender_Light::POINT: {
@@ -327,7 +327,7 @@ void light::transform_calc()
 	mR._44 = 1;
 
 	// switch
-	switch (flags.type)
+	switch (m_LightFlags.type)
 	{
 	case IRender_Light::REFLECTED:
 	case IRender_Light::POINT: {
@@ -367,9 +367,9 @@ static Fvector cmDir[6] = {{1.f, 0.f, 0.f},	 {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
 
 void light::_export(light_Package& package)
 {
-	if (flags.bShadow)
+	if (m_LightFlags.bShadow)
 	{
-		switch (flags.type)
+		switch (m_LightFlags.type)
 		{
 		case IRender_Light::POINT: {
 			// tough: create/update 6 shadowed lights
@@ -402,7 +402,7 @@ void light::_export(light_Package& package)
 	}
 	else
 	{
-		switch (flags.type)
+		switch (m_LightFlags.type)
 		{
 		case IRender_Light::POINT:
 			package.v_point.push_back(this);
@@ -418,7 +418,7 @@ extern float r_ssaGLOD_start, r_ssaGLOD_end;
 extern float ps_r_slight_fade;
 float light::get_LOD()
 {
-	if (!flags.bShadow)
+	if (!m_LightFlags.bShadow)
 		return 1;
 	float distSQ = Engine.RenderView.Position.distance_to_sqr(spatial.sphere.P) + EPS;
 	float ScreenSpaceArea = ps_r_slight_fade * spatial.sphere.R / distSQ;

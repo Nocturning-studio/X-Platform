@@ -10,7 +10,7 @@ void CRender::accumulate_spot_lights(light* L)
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
 	ref_shader shader;
-	if (IRender_Light::OMNIPART == L->flags.type)
+	if (IRender_Light::OMNIPART == L->m_LightFlags.type)
 	{
 		shader = L->get_shader_point();
 		if (!shader)
@@ -64,9 +64,9 @@ void CRender::accumulate_spot_lights(light* L)
 	{
 		float smapsize = float(RenderImplementation.o.smapsize);
 		float fTexelOffs = (.5f / smapsize);
-		float view_dim = float(L->X.S.size - 2) / smapsize;
-		float view_sx = float(L->X.S.posX + 1) / smapsize;
-		float view_sy = float(L->X.S.posY + 1) / smapsize;
+		float view_dim = float(L->m_TransformContext.m_ShadowContext.size - 2) / smapsize;
+		float view_sx = float(L->m_TransformContext.m_ShadowContext.posX + 1) / smapsize;
+		float view_sy = float(L->m_TransformContext.m_ShadowContext.posY + 1) / smapsize;
 		float fRange = float(1.f) * ps_r_ls_depth_scale;
 		float fBias = ps_r_ls_depth_bias;
 		Fmatrix m_TexelAdjust = {view_dim / 2.f,
@@ -89,9 +89,9 @@ void CRender::accumulate_spot_lights(light* L)
 		// compute transforms
 		Fmatrix xf_world;
 		xf_world.invert(Engine.RenderView.View);
-		Fmatrix xf_view = L->X.S.view;
+		Fmatrix xf_view = L->m_TransformContext.m_ShadowContext.view;
 		Fmatrix xf_project;
-		xf_project.mul(m_TexelAdjust, L->X.S.project);
+		xf_project.mul(m_TexelAdjust, L->m_TransformContext.m_ShadowContext.project);
 		m_Shadow.mul(xf_view, xf_world);
 		m_Shadow.mulA_44(xf_project);
 
@@ -117,7 +117,7 @@ void CRender::accumulate_spot_lights(light* L)
 								  1.0f};
 
 		// compute transforms
-		xf_project.mul(m_TexelAdjust2, L->X.S.project);
+		xf_project.mul(m_TexelAdjust2, L->m_TransformContext.m_ShadowContext.project);
 		m_Lmap.mul(xf_view, xf_world);
 		m_Lmap.mulA_44(xf_project);
 	}
@@ -134,10 +134,10 @@ void CRender::accumulate_spot_lights(light* L)
 	{
 		// Select shader
 		u32 _id = 0;
-		if (L->flags.bShadow)
+		if (L->m_LightFlags.bShadow)
 		{
-			bool bFullSize = (L->X.S.size == RenderImplementation.o.smapsize);
-			if (L->X.S.transluent)
+			bool bFullSize = (L->m_TransformContext.m_ShadowContext.size == RenderImplementation.o.smapsize);
+			if (L->m_TransformContext.m_ShadowContext.transluent)
 				_id = SE_L_TRANSLUENT;
 			else if (bFullSize)
 				_id = SE_L_FULLSIZE;

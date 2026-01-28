@@ -309,7 +309,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 	{
 		light* L = lights[i];
 
-		if (!L->vis.visible || !L->flags.bActive)
+		if (!L->m_VisibilityData.visible || !L->m_LightFlags.bActive)
 			continue;
 
 		L->transform_calc();
@@ -327,7 +327,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderBackend.set_transform_project(Engine.RenderView.Project);
 		enable_scissor(L);
 
-		u32 mask_id = (L->flags.type == IRender_Light::OMNIPART) ? SE_MASK_POINT : SE_MASK_SPOT;
+		u32 mask_id = (L->m_LightFlags.type == IRender_Light::OMNIPART) ? SE_MASK_POINT : SE_MASK_SPOT;
 		RenderBackend.set_Element(RenderTarget->s_accum_mask->E[mask_id]);
 
 		// принудительное отключение цвета
@@ -364,12 +364,12 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 
 		Fmatrix m_Shadow = Fidentity;
 		Fmatrix m_Lmap = Fidentity;
-		if (phase == PHASE_SPOT_LIGHTING || L->flags.type != IRender_Light::OMNIPART)
+		if (phase == PHASE_SPOT_LIGHTING || L->m_LightFlags.type != IRender_Light::OMNIPART)
 		{
 			float fTexelOffs = (.5f / smapsize);
-			float view_dim = float(L->X.S.size - 2) / smapsize;
-			float view_sx = float(L->X.S.posX + 1) / smapsize;
-			float view_sy = float(L->X.S.posY + 1) / smapsize;
+			float view_dim = float(L->m_TransformContext.m_ShadowContext.size - 2) / smapsize;
+			float view_sx = float(L->m_TransformContext.m_ShadowContext.posX + 1) / smapsize;
+			float view_sy = float(L->m_TransformContext.m_ShadowContext.posY + 1) / smapsize;
 			float fRange = float(1.f) * ps_r_ls_depth_scale;
 			float fBias = ps_r_ls_depth_bias;
 
@@ -392,17 +392,17 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 			Fmatrix xf_inv_view;
 			xf_inv_view.invert(Engine.RenderView.View);
 			Fmatrix xf_project;
-			xf_project.mul(m_TexelAdjust, L->X.S.project);
-			m_Shadow.mul(L->X.S.view, xf_inv_view);
+			xf_project.mul(m_TexelAdjust, L->m_TransformContext.m_ShadowContext.project);
+			m_Shadow.mul(L->m_TransformContext.m_ShadowContext.view, xf_inv_view);
 			m_Shadow.mulA_44(xf_project);
 
 			float l_dim = 1.f;
 			Fmatrix m_TexelAdjust2 = {l_dim / 2.f, 0.0f, 0.0f,	 0.0f, 0.0f,		-l_dim / 2.f, 0.0f,	 0.0f,
 									  0.0f,		   0.0f, fRange, 0.0f, l_dim / 2.f, l_dim / 2.f,  fBias, 1.0f};
-			xf_project.mul(m_TexelAdjust2, L->X.S.project);
-			m_Lmap.mul(L->X.S.view, xf_inv_view);
+			xf_project.mul(m_TexelAdjust2, L->m_TransformContext.m_ShadowContext.project);
+			m_Lmap.mul(L->m_TransformContext.m_ShadowContext.view, xf_inv_view);
 			m_Lmap.mulA_44(xf_project);
-			if (!L->flags.bShadow)
+			if (!L->m_LightFlags.bShadow)
 				m_Shadow = m_Lmap;
 		}
 
@@ -411,7 +411,7 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderBackend.set_Constant("L_dynamic_pos", L_pos_view.x, L_pos_view.y, L_pos_view.z, att_factor);
 		RenderBackend.set_Constant("L_dynamic_color", L_clr.x, L_clr.y, L_clr.z, 0.f);
 		RenderBackend.set_Constant("L_dynamic_dir", L_dir_view.x, L_dir_view.y, L_dir_view.z, 0.f);
-		if (phase == PHASE_SPOT_LIGHTING || L->flags.type != IRender_Light::OMNIPART)
+		if (phase == PHASE_SPOT_LIGHTING || L->m_LightFlags.type != IRender_Light::OMNIPART)
 		{
 			float spot_cutoff = L->get_cone();
 			float spot_inner = spot_cutoff * 0.8f;
@@ -609,7 +609,7 @@ void CRender::render_stage_occlusion_culling()
 			{
 				light* L = light_array[it];
 				L->vis_prepare(); // Эта операция должна быть последовательной!
-				if (L->vis.pending)
+				if (L->m_VisibilityData.pending)
 					pending_array.push_back(L);
 				else
 					normal_array.push_back(L);

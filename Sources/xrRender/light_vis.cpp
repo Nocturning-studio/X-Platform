@@ -18,7 +18,7 @@ void light::vis_prepare()
 	//		. perform testing				= ???,		pending
 
 	u32 frame = Engine.TimeManager.GetFrameCount();
-	if (frame < vis.frame2test)
+	if (frame < m_VisibilityData.frame2test)
 		return;
 
 	float safe_area = VIEWPORT_NEAR;
@@ -34,24 +34,24 @@ void light::vis_prepare()
 	// Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
 	// Msg	("dist:%f, sa:%f",Engine.RenderView.Position.distance_to(spatial.center),safe_area);
 	bool skiptest = false;
-	if (ps_r_lighting_flags.test(RFLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)
+	if (ps_r_lighting_flags.test(RFLAG_EXP_DONT_TEST_UNSHADOWED) && !m_LightFlags.bShadow)
 		skiptest = true;
 
 	if (skiptest || Engine.RenderView.Position.distance_to(spatial.sphere.P) <= (spatial.sphere.R * 1.01f + safe_area))
 	{ // small error
-		vis.visible = true;
-		vis.pending = false;
-		vis.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
+		m_VisibilityData.visible = true;
+		m_VisibilityData.pending = false;
+		m_VisibilityData.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
 		return;
 	}
 
 	// testing
-	vis.pending = true;
+	m_VisibilityData.pending = true;
 	transform_calc();
 	RenderBackend.set_transform_world(m_transform);
-	vis.query_order = RenderImplementation.occq_begin(vis.query_id);
+	m_VisibilityData.query_order = RenderImplementation.occq_begin(m_VisibilityData.query_id);
 	RenderImplementation.draw_volume(this);
-	RenderImplementation.occq_end(vis.query_id);
+	RenderImplementation.occq_end(m_VisibilityData.query_id);
 }
 
 void light::vis_update()
@@ -64,20 +64,20 @@ void light::vis_update()
 	//	. test-result:	invisible:
 	//		. shedule for 'next-frame' interval
 
-	if (!vis.pending)
+	if (!m_VisibilityData.pending)
 		return;
 
 	u32 frame = Engine.TimeManager.GetFrameCount();
-	u32 fragments = RenderImplementation.occq_get(vis.query_id);
+	u32 fragments = RenderImplementation.occq_get(m_VisibilityData.query_id);
 	// Log					("",fragments);
-	vis.visible = (fragments > cullfragments);
-	vis.pending = false;
-	if (vis.visible)
+	m_VisibilityData.visible = (fragments > cullfragments);
+	m_VisibilityData.pending = false;
+	if (m_VisibilityData.visible)
 	{
-		vis.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
+		m_VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
 	}
 	else
 	{
-		vis.frame2test = frame + 1;
+		m_VisibilityData.frame2test = frame + 1;
 	}
 }
