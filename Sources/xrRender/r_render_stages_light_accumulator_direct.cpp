@@ -117,7 +117,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 	Fmatrix m_shadow;
 	{
 		Fmatrix xf_project;
-		xf_project.mul(m_TexelAdjust, sun->m_TransformContext.m_Sun.combine);
+		xf_project.mul(m_TexelAdjust, sun->TransformContext.Sun.combine);
 		m_shadow.mul(xf_project, xf_invview);
 
 		// TSM bias

@@ -10,16 +10,16 @@ void light_Package::clear()
 
 IC bool pred_light_cmp(light* _1, light* _2)
 {
-	if (_1->m_VisibilityData.pending)
+	if (_1->VisibilityData.pending)
 	{
-		if (_2->m_VisibilityData.pending)
-			return _1->m_VisibilityData.query_order > _2->m_VisibilityData.query_order; // q-order
+		if (_2->VisibilityData.pending)
+			return _1->VisibilityData.query_order > _2->VisibilityData.query_order; // q-order
 		else
 			return false; // _2 should be first
 	}
 	else
 	{
-		if (_2->m_VisibilityData.pending)
+		if (_2->VisibilityData.pending)
 			return true; // _1 should be first
 		else
 			return _1->get_range() > _2->get_range(); // sort by range

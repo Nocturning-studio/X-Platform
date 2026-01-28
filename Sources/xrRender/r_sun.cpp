@@ -855,11 +855,11 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	light* sun = (light*)Lights.sun_adapted._get();
 
 	// 1. Применяем матрицы к глобальному источнику (теперь мы в главном потоке)
-	sun->m_TransformContext.m_Sun.combine = item.cull_transform;
-	sun->m_TransformContext.m_Sun.minX = 0;
-	sun->m_TransformContext.m_Sun.maxX = RenderImplementation.o.smapsize;
-	sun->m_TransformContext.m_Sun.minY = 0;
-	sun->m_TransformContext.m_Sun.maxY = RenderImplementation.o.smapsize;
+	sun->TransformContext.Sun.combine = item.cull_transform;
+	sun->TransformContext.Sun.minX = 0;
+	sun->TransformContext.Sun.maxX = RenderImplementation.o.smapsize;
+	sun->TransformContext.Sun.minY = 0;
+	sun->TransformContext.Sun.maxY = RenderImplementation.o.smapsize;
 
 	// 2. Настройка состояний
 	HOM.Disable();
@@ -877,7 +877,7 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_transform_view(Fidentity);
-		RenderBackend.set_transform_project(sun->m_TransformContext.m_Sun.combine);
+		RenderBackend.set_transform_project(sun->TransformContext.Sun.combine);
 
 		// Рисуем Sun Details (траву), если нужно
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
@@ -893,7 +893,7 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		if (m_SunOccluder)
 			m_SunOccluder->Render();
 
-		sun->m_TransformContext.m_Sun.transluent = FALSE;
+		sun->TransformContext.Sun.transluent = FALSE;
 	}
 
 	// 4. Аккумуляция (наложение тени на экран)

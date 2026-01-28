@@ -30,7 +30,7 @@ class light : public IRender_Light, public ISpatial
 	Fmatrix m_transform;
 
   public:
-	struct VisibilityData
+	struct _VisibilityData
 	{
 		u32 frame2test;	 // frame the test is sheduled to
 		u32 query_id;	 // ID of occlusion query
@@ -38,17 +38,17 @@ class light : public IRender_Light, public ISpatial
 		bool visible;	 // visible/invisible
 		bool pending;	 // test is still pending
 		u16 smap_ID;
-	};
+	} VisibilityData;
 
-	union TransformContext {
-		struct Sun
+	union _TransformContext {
+		struct _Sun
 		{
 			Fmatrix combine;
 			s32 minX, maxX;
 			s32 minY, maxY;
 			BOOL transluent;
-		} m_Sun;
-		struct ShadowContext
+		} Sun;
+		struct _ShadowContext
 		{
 			Fmatrix view;
 			Fmatrix project;
@@ -57,22 +57,18 @@ class light : public IRender_Light, public ISpatial
 			u32 posX;
 			u32 posY;
 			BOOL transluent;
-		} m_ShadowContext;
-	};
+		} ShadowContext;
+	} TransformContext;
 
-	struct LightFlags
+	struct _LightFlags
 	{
 		u32 type : 4;
 		u32 bStatic : 1;
 		u32 bActive : 1;
 		u32 bShadow : 1;
-	};
+	} LightFlags;
 
   public:
-	VisibilityData m_VisibilityData;
-	TransformContext m_TransformContext;
-	LightFlags m_LightFlags;
-
 	Fvector get_position(){return position;}
 	Fvector get_direction(){return direction;}
 	Fvector get_right(){return right;}
@@ -89,13 +85,13 @@ class light : public IRender_Light, public ISpatial
 
 	virtual void set_type(LT type)
 	{
-		m_LightFlags.type = type;
+		LightFlags.type = type;
 	}
 	virtual void get_sectors();
 	virtual void set_active(bool b);
 	virtual bool get_active()
 	{
-		return m_LightFlags.bActive;
+		return LightFlags.bActive;
 	}
 	virtual void set_shadow(bool b);
 	virtual void set_position(const Fvector& P);

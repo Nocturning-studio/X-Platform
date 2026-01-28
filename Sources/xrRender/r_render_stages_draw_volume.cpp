@@ -3,7 +3,7 @@
 
 void CRender::draw_volume(light* L)
 {
-	switch (L->m_LightFlags.type)
+	switch (L->LightFlags.type)
 	{
 	case IRender_Light::REFLECTED:
 	case IRender_Light::POINT:

@@ -8,10 +8,10 @@ void CRender::render_shadow_map_sun(light* L, u32 sub_phase)
 
 	// optimized clear
 	D3DRECT R;
-	R.x1 = L->m_TransformContext.m_Sun.minX;
-	R.x2 = L->m_TransformContext.m_Sun.maxX;
-	R.y1 = L->m_TransformContext.m_Sun.minY;
-	R.y2 = L->m_TransformContext.m_Sun.maxY;
+	R.x1 = L->TransformContext.Sun.minX;
+	R.x2 = L->TransformContext.Sun.maxX;
+	R.y1 = L->TransformContext.Sun.minY;
+	R.y2 = L->TransformContext.Sun.maxY;
 	CHK_DX(HW.pDevice->Clear(1L, &R, D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0L));
 
 	// Stencil - disable

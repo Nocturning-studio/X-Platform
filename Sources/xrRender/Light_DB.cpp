@@ -31,7 +31,7 @@ void CLight_DB::Load(IReader* fs)
 		{
 			Flight Ldata;
 			light* L = Create();
-			L->m_LightFlags.bStatic = true;
+			L->LightFlags.bStatic = true;
 			L->set_type(IRender_Light::POINT);
 			L->set_shadow(true);
 
@@ -51,7 +51,7 @@ void CLight_DB::Load(IReader* fs)
 
 				// copy to env-sun
 				sun_adapted = L = Create();
-				L->m_LightFlags.bStatic = true;
+				L->LightFlags.bStatic = true;
 				L->set_type(IRender_Light::DIRECT);
 				L->set_shadow(true);
 				L->set_rotation(Ldata.direction, tmp_R);
@@ -89,9 +89,9 @@ void CLight_DB::Unload()
 light* CLight_DB::Create()
 {
 	light* L = xr_new<light>();
-	L->m_LightFlags.bStatic = false;
-	L->m_LightFlags.bActive = false;
-	L->m_LightFlags.bShadow = true;
+	L->LightFlags.bStatic = false;
+	L->LightFlags.bActive = false;
+	L->LightFlags.bShadow = true;
 	return L;
 }
 
@@ -101,8 +101,8 @@ void CLight_DB::add_light(light* L)
 		return;
 	L->set_frame_render(Engine.TimeManager.GetFrameCount());
 	if (RenderImplementation.o.noshadows)
-		L->m_LightFlags.bShadow = FALSE;
-	if (L->m_LightFlags.bStatic && !ps_r_lighting_flags.test(RFLAG_R1LIGHTS))
+		L->LightFlags.bShadow = FALSE;
+	if (L->LightFlags.bStatic && !ps_r_lighting_flags.test(RFLAG_R1LIGHTS))
 		return;
 	if (Engine.RenderView.Position.distance_to(L->spatial.sphere.P) > ps_r_ls_far)
 		return;

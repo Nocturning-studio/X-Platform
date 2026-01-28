@@ -18,7 +18,7 @@ void light::vis_prepare()
 	//		. perform testing				= ???,		pending
 
 	u32 frame = Engine.TimeManager.GetFrameCount();
-	if (frame < m_VisibilityData.frame2test)
+	if (frame < VisibilityData.frame2test)
 		return;
 
 	float safe_area = VIEWPORT_NEAR;
@@ -34,24 +34,24 @@ void light::vis_prepare()
 	// Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
 	// Msg	("dist:%f, sa:%f",Engine.RenderView.Position.distance_to(spatial.center),safe_area);
 	bool skiptest = false;
-	if (ps_r_lighting_flags.test(RFLAG_EXP_DONT_TEST_UNSHADOWED) && !m_LightFlags.bShadow)
+	if (ps_r_lighting_flags.test(RFLAG_EXP_DONT_TEST_UNSHADOWED) && !LightFlags.bShadow)
 		skiptest = true;
 
 	if (skiptest || Engine.RenderView.Position.distance_to(spatial.sphere.P) <= (spatial.sphere.R * 1.01f + safe_area))
 	{ // small error
-		m_VisibilityData.visible = true;
-		m_VisibilityData.pending = false;
-		m_VisibilityData.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
+		VisibilityData.visible = true;
+		VisibilityData.pending = false;
+		VisibilityData.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
 		return;
 	}
 
 	// testing
-	m_VisibilityData.pending = true;
+	VisibilityData.pending = true;
 	transform_calc();
 	RenderBackend.set_transform_world(m_transform);
-	m_VisibilityData.query_order = RenderImplementation.occq_begin(m_VisibilityData.query_id);
+	VisibilityData.query_order = RenderImplementation.occq_begin(VisibilityData.query_id);
 	RenderImplementation.draw_volume(this);
-	RenderImplementation.occq_end(m_VisibilityData.query_id);
+	RenderImplementation.occq_end(VisibilityData.query_id);
 }
 
 void light::vis_update()
@@ -64,20 +64,20 @@ void light::vis_update()
 	//	. test-result:	invisible:
 	//		. shedule for 'next-frame' interval
 
-	if (!m_VisibilityData.pending)
+	if (!VisibilityData.pending)
 		return;
 
 	u32 frame = Engine.TimeManager.GetFrameCount();
-	u32 fragments = RenderImplementation.occq_get(m_VisibilityData.query_id);
+	u32 fragments = RenderImplementation.occq_get(VisibilityData.query_id);
 	// Log					("",fragments);
-	m_VisibilityData.visible = (fragments > cullfragments);
-	m_VisibilityData.pending = false;
-	if (m_VisibilityData.visible)
+	VisibilityData.visible = (fragments > cullfragments);
+	VisibilityData.pending = false;
+	if (VisibilityData.visible)
 	{
-		m_VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
+		VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
 	}
 	else
 	{
-		m_VisibilityData.frame2test = frame + 1;
+		VisibilityData.frame2test = frame + 1;
 	}
 }
