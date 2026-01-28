@@ -28,7 +28,64 @@
 
 #include "EffectorsManager.h"
 
-// definition
+struct MainSceneWorkItem
+{
+	SceneGraphPacket packet;
+
+	// Сохраняем матрицы, актуальные на момент сбора,
+	// чтобы Draw-поток мог их использовать, даже если Device уже ушел вперед
+	Fmatrix view;
+	Fmatrix projection;
+	Fmatrix view_projection;
+
+	void Init()
+	{
+		packet.InitResources();
+	}
+	void Destroy()
+	{
+		packet.FreeResources();
+	}
+	void Clear()
+	{
+		packet.Clear();
+	}
+};
+
+// Обертка для двойного буфера (как для солнца)
+struct MainSceneBuffer
+{
+	MainSceneWorkItem* items[2];
+
+	MainSceneBuffer()
+	{
+		items[0] = nullptr;
+		items[1] = nullptr;
+	}
+
+	void Init()
+	{
+		items[0] = xr_new<MainSceneWorkItem>();
+		items[0]->Init();
+		items[1] = xr_new<MainSceneWorkItem>();
+		items[1]->Init();
+	}
+
+	void Destroy()
+	{
+		if (items[0])
+		{
+			items[0]->Destroy();
+			xr_delete(items[0]);
+		}
+		if (items[1])
+		{
+			items[1]->Destroy();
+			xr_delete(items[1]);
+		}
+	}
+};
+
 class CRender : public IRender_interface, public pureFrame
 {
   public:
@@ -155,6 +212,33 @@ class CRender : public IRender_interface, public pureFrame
 	IC SunCascadeBuffer& GetSunReadBuffer()
 	{
 		return m_sun_cascades_buffer[m_sun_read_ix];
+	}
+
+	// Буферы для основных проходов
+	// Мы разделяем GBuffer и Forward, так как они могут собираться независимо
+	MainSceneBuffer m_gbuffer_gather_data;
+	MainSceneBuffer m_forward_gather_data;
+
+	// Индексы (общие для сцены, предполагаем синхронное переключение кадра)
+	u32 m_scene_write_ix;
+	u32 m_scene_read_ix;
+
+	MainSceneWorkItem& GetGBufferWriteItem()
+	{
+		return *m_gbuffer_gather_data.items[m_scene_write_ix];
+	}
+	MainSceneWorkItem& GetGBufferReadItem()
+	{
+		return *m_gbuffer_gather_data.items[m_scene_read_ix];
+	}
+
+	MainSceneWorkItem& GetForwardWriteItem()
+	{
+		return *m_forward_gather_data.items[m_scene_write_ix];
+	}
+	MainSceneWorkItem& GetForwardReadItem()
+	{
+		return *m_forward_gather_data.items[m_scene_read_ix];
 	}
 
 	//Motion blur
@@ -418,11 +502,11 @@ class CRender : public IRender_interface, public pureFrame
 	void render_effectors_pass_resolve_gamma();
 	void output_frame_to_screen();
 	bool need_render_sun();
-	void render_main(Fmatrix& mCombined, bool _fportals);
+	void render_main(Fmatrix& mCombined, bool _fportals, SceneGraphPacket& dest);
+	void render_forward_lights(xr_vector<light*>& lights, int phase, SceneGraphPacket& packet);
 	void query_wait();
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);
-	void render_sun_cascade(u32 cascade_ind);
 	void init_cacades();
 	void gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
@@ -430,7 +514,6 @@ class CRender : public IRender_interface, public pureFrame
 	void render_hom();
 	void render_ambient_occlusion();
 	void combine_scene();
-	void render_depth_prepass();
 	void render_gbuffer_primary();
 	void render_gbuffer_secondary();
 	void render_forward_lights(xr_vector<light*>& lights, int phase);

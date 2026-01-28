@@ -287,6 +287,9 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 	m_sun_write_ix = 0;
 	m_sun_read_ix = 0;
+
+	m_scene_write_ix = 0;
+	m_scene_read_ix = 0;
 }
 
 CRender::~CRender()
@@ -342,10 +345,15 @@ void CRender::create()
 	SceneGraph.m_packet.portal_traverser.CreateResources();
 
 	init_cacades();
+
+	m_gbuffer_gather_data.Init();
+	m_forward_gather_data.Init();
 }
 
 void CRender::destroy()
 {
+	m_gbuffer_gather_data.Destroy();
+	m_forward_gather_data.Destroy();
 	m_sun_cascades_buffer[0].Destroy();
 	m_sun_cascades_buffer[1].Destroy();
 	SceneGraph.m_packet.portal_traverser.DestroyResources();

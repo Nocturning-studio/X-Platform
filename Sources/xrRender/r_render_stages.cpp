@@ -10,7 +10,7 @@ void CRender::PrepareToRender()
 {
 }
 
-void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
+void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/, SceneGraphPacket& dest)
 {
 	PROFILE_FUNCTION();
 
@@ -29,22 +29,27 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	// -------------------------------------------------------------------------
 	// 0. Настройка контекста (TLS)
 	// -------------------------------------------------------------------------
+	// Получаем уникальный маркер обхода для текущего вызова
 	u32 current_marker = SceneGraph.m_traversal_marker.fetch_add(1) + 1;
 
 	m_TraversalContext.frustum = &ViewBase;
 	m_TraversalContext.traversal_marker_id = current_marker;
 	m_TraversalContext.current_transform = &Fidentity;
 
-	CurrentRenderContext::Scope tls_scope(SceneGraph.m_packet, m_TraversalContext);
+	// АКТИВИРУЕМ TLS:
+	// Теперь все вызовы add_Visual/add_Geometry внутри этого скоупа
+	// будут писать в переданный пакет 'dest'
+	CurrentRenderContext::Scope tls_scope(dest, m_TraversalContext);
 
 	// -------------------------------------------------------------------------
-	// 1. Spatial Query
+	// 1. Spatial Query (Пишем в dest)
 	// -------------------------------------------------------------------------
-	g_SpatialSpace->q_frustum(SceneGraph.m_packet.m_spatial_query_results, ISpatial_DB::O_ORDERED,
+	// Очистка не требуется, так как подразумевается, что dest.Clear() был вызван до render_main
+	g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED,
 							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
 	// -------------------------------------------------------------------------
-	// 2. Sorting
+	// 2. Sorting (Сортируем в dest)
 	// -------------------------------------------------------------------------
 	const Fvector camera_pos = Engine.RenderView.Position;
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
@@ -53,10 +58,10 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		return dist_a < dist_b;
 	};
 
-	if (!SceneGraph.m_packet.m_spatial_query_results.empty())
+	if (!dest.m_spatial_query_results.empty())
 	{
-		concurrency::parallel_sort(SceneGraph.m_packet.m_spatial_query_results.begin(),
-								   SceneGraph.m_packet.m_spatial_query_results.end(), sort_predicate);
+		concurrency::parallel_sort(dest.m_spatial_query_results.begin(), dest.m_spatial_query_results.end(),
+								   sort_predicate);
 	}
 
 	// -------------------------------------------------------------------------
@@ -66,7 +71,8 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	if (active_phase() == PHASE_NORMAL)
 	{
 		uLastLTRACK++;
-		size_t renderable_count = SceneGraph.m_packet.m_spatial_query_results.size();
+		// Используем результаты из dest
+		size_t renderable_count = dest.m_spatial_query_results.size();
 		size_t light_track_id = 0xffffffff;
 
 		if (renderable_count)
@@ -80,8 +86,8 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 		if (renderable_count)
 		{
-			if (IRenderable* renderable =
-					SceneGraph.m_packet.m_spatial_query_results[light_track_id]->dcast_Renderable())
+			// Используем результаты из dest
+			if (IRenderable* renderable = dest.m_spatial_query_results[light_track_id]->dcast_Renderable())
 			{
 				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
 					ros->update(renderable);
@@ -90,16 +96,16 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	}
 
 	// -------------------------------------------------------------------------
-	// 4. Portal Traversal
+	// 4. Portal Traversal (Траверсер внутри dest)
 	// -------------------------------------------------------------------------
-	SceneGraph.m_packet.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
-												  CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA |
-													  CPortalTraverser::VQ_FADE);
+	// Используем траверсер, привязанный к конкретному пакету
+	dest.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
+								   CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
 
 	// -------------------------------------------------------------------------
-	// 5. Static Geometry
+	// 5. Static Geometry (Берем из dest)
 	// -------------------------------------------------------------------------
-	const auto& visible_sectors = SceneGraph.m_packet.portal_traverser.GetVisibleSectors();
+	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
 	for (const auto& sec_vis : visible_sectors)
 	{
@@ -109,6 +115,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		for (const auto& frustum : sec_vis.frustums)
 		{
 			set_Frustum((CFrustum*)&frustum);
+			// add_Geometry сама возьмет dest из TLS (CurrentRenderContext)
 			add_Geometry(root_visual);
 		}
 	}
@@ -116,9 +123,9 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 	HOM.MT_SYNC();
 
 	// -------------------------------------------------------------------------
-	// 6. Dynamic Geometry & Lights
+	// 6. Dynamic Geometry & Lights (Берем из dest)
 	// -------------------------------------------------------------------------
-	for (ISpatial* spatial : SceneGraph.m_packet.m_spatial_query_results)
+	for (ISpatial* spatial : dest.m_spatial_query_results)
 	{
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
@@ -131,8 +138,9 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 
 			if (pLight->get_LOD() > EPS_L)
 			{
-				// Для света копирование не так страшно, но лучше тоже синхронизировать,
-				// если light имеет свой vis_data. Обычно light->homdata это копия.
+				// Примечание: Lights.add_light пишет в глобальный список.
+				// При полном выносе в поток это место потребует защиты мьютексом
+				// или своего буфера для lights. Пока оставляем как есть.
 				if (HOM.visible(pLight->get_homdata()))
 					Lights.add_light(pLight);
 			}
@@ -156,32 +164,28 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/)
 		}
 
 		// =====================================================================
-		// 2. HOM OCCLUSION CULLING (ИСПРАВЛЕНО)
+		// 2. HOM OCCLUSION CULLING
 		// =====================================================================
-		// Получаем ссылку на оригинал
 		vis_data& vis_orig = renderable->renderable.visual->vis;
 
-		// Создаем временную копию для трансформации AABB в мировые координаты
 		vis_data vis_temp = vis_orig;
 		vis_temp.box.transform(renderable->renderable.transform);
 
-		// Проверяем видимость
 		BOOL bVisible = HOM.visible(vis_temp);
 
-		// ВАЖНО: Возвращаем обновленные тайминги обратно в оригинал!
-		// Иначе HOM будет проверять этот объект КАЖДЫЙ кадр, вызывая мерцание.
+		// Возвращаем обновленные тайминги обратно в оригинал
 		vis_orig.hom_frame = vis_temp.hom_frame;
 		vis_orig.hom_tested = vis_temp.hom_tested;
 
 		if (bVisible)
 		{
-			// Обновляем копию для рендера (хотя это не строго обязательно для рендера, но полезно)
-			// vis_orig = vis_temp; // <-- Нельзя, это перезапишет локальный AABB на мировой!
-
 			// Рендерим
 			m_TraversalContext.frustum = &ViewBase;
 			set_Object(renderable);
+
+			// add_Visual внутри вызовется с использованием dest из TLS
 			renderable->renderable_Render();
+
 			set_Object(nullptr);
 		}
 	}
@@ -210,64 +214,84 @@ void CRender::render_gbuffer_primary()
 {
 	PROFILE_FUNCTION();
 
-	// 1. Конфигурация сбора (Fetch Config)
-	SceneGraphFetchConfig GBufferPassFetchConfig;
+	// 1. Управление буферами (SWAP)
+	// Переключаем кадр. В будущем это будет в начале кадра.
+	m_scene_write_ix = (m_scene_write_ix + 1) % 2;
+	m_scene_read_ix = m_scene_write_ix; // Пока читаем то, что пишем
 
-	GBufferPassFetchConfig.fetch_priority_0 = true;
-	GBufferPassFetchConfig.fetch_priority_1 = false;
-	GBufferPassFetchConfig.fetch_wallmarks = true;
+	// Получаем рабочие элементы
+	MainSceneWorkItem& writeItem = GetGBufferWriteItem();
+	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
-	SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+	writeItem.Clear();
 
-	set_active_phase(PHASE_NORMAL);
+	// Сохраняем матрицы для истории (чтобы Draw поток знал, как рисовать)
+	writeItem.view = Engine.RenderView.View;
+	writeItem.projection = Engine.RenderView.Project;
+	writeItem.view_projection = Engine.RenderView.ViewProjection;
 
-	// 2. Конфигурация рекордера (Сбор баундов для теней)
-	if (m_need_render_sun)
-		SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
-	else
+	// 2. GATHER PHASE (Пишем в writeItem)
+	{
+		// Конфигурация сбора
+		SceneGraphFetchConfig GBufferPassFetchConfig;
+		GBufferPassFetchConfig.fetch_priority_0 = true;
+		GBufferPassFetchConfig.fetch_priority_1 = false;
+		GBufferPassFetchConfig.fetch_wallmarks = true;
+		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+
+		set_active_phase(PHASE_NORMAL);
+
+		if (m_need_render_sun)
+			SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
+		else
+			SceneGraph.SetCullingBoundsCollector(NULL);
+
+		// ВЫЗЫВАЕМ ОБНОВЛЕННЫЙ render_main, передаем пакет
+		render_main(writeItem.view_projection, true, writeItem.packet);
+
 		SceneGraph.SetCullingBoundsCollector(NULL);
 
-	// 3. Фаза наполнения графа (Traverse & Cull)
-	render_main(Engine.RenderView.ViewProjection, true); // Самый дорогой вызов - наполняет мапы SceneGraph
+		// Сброс конфига
+		GBufferPassFetchConfig.fetch_wallmarks = false;
+		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+	}
 
-	// 4. Очистка состояния сбора (чтобы не повлиять на следующие этапы)
-	SceneGraph.SetCullingBoundsCollector(NULL);
+	// Здесь может быть точка синхронизации, если Gather будет в другом потоке
 
-	// Сброс конфига на "дефолтный безопасный" (только Pri0)
-	GBufferPassFetchConfig.fetch_wallmarks = false;
+	// 3. DRAW PHASE (Читаем из readItem)
+	{
+		Engine.Statistic->RenderCALC_GBuffer.Begin();
+		RenderBackend.enable_anisotropy_filtering();
 
-	SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+		set_gbuffer();
 
-	// 5. Фаза отрисовки (Render Backend)
-	Engine.Statistic->RenderCALC_GBuffer.Begin();
-	RenderBackend.enable_anisotropy_filtering();
+		if (psDeviceFlags.test(rsWireframe))
+			RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	set_gbuffer();
+		// Используем пакет из readItem
+		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
 
-	if (psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		if (Details)
+			Details->Render(DetailsRenderMode::Default);
 
-	// Отрисовка собранного Opaque (Priority 0)
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
+		if (psDeviceFlags.test(rsWireframe))
+			RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-	if (Details)
-		Details->Render(DetailsRenderMode::Default);
-
-	if (psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-
-	RenderBackend.disable_anisotropy_filtering();
-	Engine.Statistic->RenderCALC_GBuffer.End();
+		RenderBackend.disable_anisotropy_filtering();
+		Engine.Statistic->RenderCALC_GBuffer.End();
+	}
 }
 
 void CRender::render_gbuffer_secondary()
 {
 	PROFILE_FUNCTION();
 
-	SceneGraph.m_packet.portal_traverser.RenderFade();
+	// Используем уже собранные данные из Read Item
+	MainSceneWorkItem& readItem = GetGBufferReadItem();
+
+	SceneGraph.m_packet.portal_traverser.RenderFade(); // Тут возможно надо брать traverser из readItem, если RenderFade зависит от него
 
 	RenderBackend.enable_anisotropy_filtering();
-
 	set_gbuffer();
 
 	if (psDeviceFlags.test(rsWireframe))
@@ -275,10 +299,11 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::LOD, 0, true, true);
+	// Рендерим из readItem.packet
+	SceneGraph.Render(readItem.packet, SceneGraphRenderType::LOD, 0, true, true);
 
 	set_active_phase(PHASE_HUD);
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::HUD);
+	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
@@ -289,6 +314,7 @@ void CRender::render_gbuffer_secondary()
 
 void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 {
+	/*
 	PROFILE_FUNCTION();
 
 	if (lights.empty())
@@ -433,15 +459,9 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		SceneGraph.m_traversal_marker++;
 
 		// Используем m_packet.m_visuals_static_visible
-		for (IRender_Visual* V : SceneGraph.m_packet.m_visuals_static_visible)
+		for (IRender_Visual* V : packet.m_visuals_static_visible)
 		{
-			ShaderElement* E = rimp_select_sh_static(V, 0.0f);
-			if (!E || E->passes.empty())
-				continue;
-
-			float R_sum = V->vis.sphere.R + L_range;
-			if (V->vis.sphere.P.distance_to_sqr(L_pos) < (R_sum * R_sum))
-				SceneGraph.ProcessStaticVisual(V, m_TraversalContext, SceneGraph.m_packet);
+			SceneGraph.ProcessStaticVisual(V, m_TraversalContext, SceneGraph.m_packet);
 		}
 
 		// Используем m_packet.m_visuals_dynamic_visible
@@ -480,11 +500,18 @@ void CRender::render_forward_lights(xr_vector<light*>& lights, int phase)
 		RenderBackend.SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 		RenderBackend.set_Stencil(FALSE);
 	}
+	*/
 }
 
 void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
+
+	MainSceneWorkItem& writeItem = GetForwardWriteItem();
+	MainSceneWorkItem& readItem = GetForwardReadItem();
+
+	writeItem.Clear();
+	writeItem.view_projection = Engine.RenderView.ViewProjection;
 
 	// Используем m_packet.queue_distortion
 	VERIFY(0 == SceneGraph.m_packet.queue_distortion.size());
@@ -518,12 +545,10 @@ void CRender::render_stage_forward()
 		// !!! ИСПРАВЛЕНИЕ: Базовая фаза должна быть NORMAL, чтобы заполнился кэш !!!
 		set_active_phase(PHASE_NORMAL);
 
-		// Этот вызов заполнит граф геометрией с шейдерами normal_hq/lq
-		// И ЗАПОЛНИТ наши списки m_packet.m_visuals_... благодаря правкам в add_leafs
-		render_main(Engine.RenderView.ViewProjection, false);
+		render_main(writeItem.view_projection, false, writeItem.packet);
 
-		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
-		SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
+		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 1);
+		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Transparent);
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
@@ -552,11 +577,11 @@ void CRender::render_stage_forward()
 	// Шейдеры l_sun обычно используют blend one/one или dest_color/src_color
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	// Заново наполняем граф из кэша.
-	// render_main(Engine.RenderView.ViewProjection, false);
-	SceneGraph.render_reuse(m_TraversalContext, SceneGraph.m_packet);
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
-	SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
+	SceneGraph.render_reuse(m_TraversalContext, readItem.packet);
+
+	// DRAW
+	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 1);
+	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Transparent);
 
 	// ============================================
 	// PASS 4: Debug
