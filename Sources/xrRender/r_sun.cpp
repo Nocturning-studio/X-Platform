@@ -602,11 +602,13 @@ void CRender::init_cacades()
 	m_sun_cascades[2].size = ps_r_sun_far;
 	m_sun_cascades[2].bias = m_sun_cascades[2].size * fBias;
 
-	for (int i = 0; i < cascade_count; ++i)
-	{
-		m_sun_work_items[i] = xr_new<ShadowCascadeWorkItem>();
-		m_sun_work_items[i]->packet.InitResources();
-	}
+	// Инициализируем ОБА буфера
+	m_sun_cascades_buffer[0].Init();
+	m_sun_cascades_buffer[1].Init();
+
+	// Сброс индексов
+	m_sun_write_ix = 0;
+	m_sun_read_ix = 0;
 }
 
 // -------------------------------------------------------------------------
@@ -910,23 +912,48 @@ void CRender::render_sun_cascades()
 {
 	PROFILE_FUNCTION();
 
-	for (int i = 0; i < 3; ++i)
-		m_sun_work_items[i]->packet.Clear();
+	// -------------------------------------------------------------------------
+	// ЛОГИКА СМЕНЫ БУФЕРОВ (SWAP)
+	// -------------------------------------------------------------------------
+	// Переключаем буфер записи на следующий
+	m_sun_write_ix = (m_sun_write_ix + 1) % 2;
 
-	// 1. ПАРАЛЛЕЛЬНЫЙ СБОР (GATHER)
+	// В текущей синхронной реализации мы читаем из того же буфера, в который пишем.
+	// Если вы вынесете Gather в отдельный поток, который будет работать параллельно
+	// с рендером ПРЕДЫДУЩЕГО кадра, то здесь нужно будет ставить:
+	// m_sun_read_ix = (m_sun_write_ix + 1) % 2; // Читаем старый, пока пишем новый
+
+	// Пока оставляем синхронно для корректности текущего пайплайна:
+	m_sun_read_ix = m_sun_write_ix;
+
+	// Получаем ссылки на буферы
+	SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
+	SunCascadeBuffer& readBuffer = GetSunReadBuffer();
+
+	// Очищаем буфер записи перед использованием
+	writeBuffer.Clear();
+
+	// -------------------------------------------------------------------------
+	// 1. ПАРАЛЛЕЛЬНЫЙ СБОР (GATHER) -> Пишем в WriteBuffer
+	// -------------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Gather Cascades");
-		concurrency::parallel_invoke([&] { gather_sun_cascade(0, *m_sun_work_items[0]); },
-									 [&] { gather_sun_cascade(1, *m_sun_work_items[1]); },
-									 [&] { gather_sun_cascade(2, *m_sun_work_items[2]); });
+		concurrency::parallel_invoke([&] { gather_sun_cascade(0, *writeBuffer.items[0]); },
+									 [&] { gather_sun_cascade(1, *writeBuffer.items[1]); },
+									 [&] { gather_sun_cascade(2, *writeBuffer.items[2]); });
 	}
 
-	// 2. ПОСЛЕДОВАТЕЛЬНАЯ ОТРИСОВКА (DRAW)
+	// Здесь происходит неявная синхронизация, так как parallel_invoke блокирующий.
+	// В будущем, при использовании ThreadManager, здесь будет точка синхронизации/ожидания.
+
+	// -------------------------------------------------------------------------
+	// 2. ПОСЛЕДОВАТЕЛЬНАЯ ОТРИСОВКА (DRAW) -> Читаем из ReadBuffer
+	// -------------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Draw Cascades Sequence");
-		draw_sun_cascade(0, *m_sun_work_items[0]);
-		draw_sun_cascade(1, *m_sun_work_items[1]);
-		draw_sun_cascade(2, *m_sun_work_items[2]);
+		draw_sun_cascade(0, *readBuffer.items[0]);
+		draw_sun_cascade(1, *readBuffer.items[1]);
+		draw_sun_cascade(2, *readBuffer.items[2]);
 	}
 
 	// Восстановление глобальных матриц

@@ -270,7 +270,34 @@ CShaderMacros CRender::FetchShaderMacros()
 
 	return macros;
 }
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+CRender::CRender() : m_bFirstFrameAfterReset(false)
+{
+	LPCSTR CompilerName = "D3DCompiler_43.dll";
+	Msg("Loading d3d compiler DLL: %s", CompilerName);
+	hCompiler = LoadLibrary(CompilerName);
+
+	if (!hCompiler)
+		make_string(
+			"Can't find 'D3DCompiler_43.dll'\nPlease install latest version of DirectX before running this program");
+
+	m_actor_health = 1.0f;
+
+	m_sun_write_ix = 0;
+	m_sun_read_ix = 0;
+}
+
+CRender::~CRender()
+{
+	if (hCompiler)
+	{
+		FreeLibrary(hCompiler);
+		hCompiler = 0;
+	}
+}
+
 void CRender::create()
 {
 	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
@@ -319,6 +346,8 @@ void CRender::create()
 
 void CRender::destroy()
 {
+	m_sun_cascades_buffer[0].Destroy();
+	m_sun_cascades_buffer[1].Destroy();
 	SceneGraph.m_packet.portal_traverser.DestroyResources();
 	_RELEASE(q_sync_point[1]);
 	_RELEASE(q_sync_point[0]);
@@ -669,30 +698,6 @@ void CRender::set_render_mode(int mode)
 	IRender_Target* T = getTarget();
 	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), ZMin, ZMax};
 	CHK_DX(HW.pDevice->SetViewport(&VP));
-}
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-CRender::CRender() : m_bFirstFrameAfterReset(false)
-{
-	LPCSTR CompilerName = "D3DCompiler_43.dll";
-	Msg("Loading d3d compiler DLL: %s", CompilerName);
-	hCompiler = LoadLibrary(CompilerName);
-
-	if (!hCompiler)
-		make_string("Can't find 'D3DCompiler_43.dll'\nPlease install latest version of DirectX before running this program");
-
-	m_actor_health = 1.0f;
-}
-
-CRender::~CRender()
-{
-	if (hCompiler)
-	{
-		FreeLibrary(hCompiler);
-		hCompiler = 0;
-	}
 }
 
 #include "..\xrEngine\GameFont.h"

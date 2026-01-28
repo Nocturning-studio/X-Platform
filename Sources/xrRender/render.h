@@ -140,9 +140,22 @@ class CRender : public IRender_interface, public pureFrame
 	bool m_need_render_sun;
 	xr_vector<Sun::Cascade> m_sun_cascades;
 
-	// Массив постоянных рабочих элементов
-	// 3 каскада солнца - 3 элемента
-	ShadowCascadeWorkItem* m_sun_work_items[3]; 
+	// Двойной буфер каскадов (0 и 1)
+	SunCascadeBuffer m_sun_cascades_buffer[2];
+
+	// Индексы для доступа
+	u32 m_sun_write_ix; // Куда пишем (Gather phase)
+	u32 m_sun_read_ix;	// Откуда читаем (Draw phase)
+
+	// Хелперы для доступа
+	IC SunCascadeBuffer& GetSunWriteBuffer()
+	{
+		return m_sun_cascades_buffer[m_sun_write_ix];
+	}
+	IC SunCascadeBuffer& GetSunReadBuffer()
+	{
+		return m_sun_cascades_buffer[m_sun_read_ix];
+	}
 
 	//Motion blur
 	Fmatrix m_saved_viewproj;
