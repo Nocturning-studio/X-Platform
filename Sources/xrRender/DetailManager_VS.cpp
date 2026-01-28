@@ -394,9 +394,37 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 					continue;
 				}
 
-				// БЫСТРОЕ КОПИРОВАНИЕ (MEMCPY)
-				// Копируем сразу массив структур. Это работает очень быстро.
-				memcpy(pLockedData + currentBatchCount, srcData + processed, toCopy * sizeof(InstanceData));
+				// InstanceData = 64 байта (4 вектора по 16 байт). Идеально для SSE.
+				// Используем _mm_stream_si128 для записи мимо кэша CPU.
+
+				const __m128i* pSrcSimd = (const __m128i*)(srcData + processed);
+				__m128i* pDestSimd = (__m128i*)(pLockedData + currentBatchCount);
+
+				// Разворачиваем цикл для скорости
+				u32 i = 0;
+				// Обрабатываем по 1 инстансу (64 байта) за итерацию,
+				// внутри 4 инструкции stream.
+				for (; i < toCopy; ++i)
+				{
+					// Загружаем из обычной памяти (cached)
+					__m128i r0 = _mm_loadu_si128(pSrcSimd + 0);
+					__m128i r1 = _mm_loadu_si128(pSrcSimd + 1);
+					__m128i r2 = _mm_loadu_si128(pSrcSimd + 2);
+					__m128i r3 = _mm_loadu_si128(pSrcSimd + 3);
+
+					// Стримим в видеопамять (write-combined, bypass cache)
+					_mm_stream_si128(pDestSimd + 0, r0);
+					_mm_stream_si128(pDestSimd + 1, r1);
+					_mm_stream_si128(pDestSimd + 2, r2);
+					_mm_stream_si128(pDestSimd + 3, r3);
+
+					pSrcSimd += 4; // Сдвиг на 4 регистра (64 байта)
+					pDestSimd += 4;
+				}
+
+				// Барьер памяти не обязателен на x86 для видимости GPU после Unlock,
+				// но _mm_sfence() желателен перед Unlock, если мы используем WC память.
+				_mm_sfence();
 
 				currentBatchCount += toCopy;
 				processed += toCopy;

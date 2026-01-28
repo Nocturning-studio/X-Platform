@@ -245,16 +245,17 @@ void CDetailManager::UpdateVisibility()
 							float R = objects[sp.id]->bv_sphere.R;
 							float Rq_drcp = R * R * dist_sq_rcp;
 
-							for (auto item : sp.items)
+							for (auto& item : sp.items)
 							{
-								item->scale_calculated = item->scale * alpha_i;
-								float ScreenSpaceArea = item->scale_calculated * item->scale_calculated * Rq_drcp;
+								item.scale_calculated = item.scale * alpha_i;
+								float ScreenSpaceArea = item.scale_calculated * item.scale_calculated * Rq_drcp;
+
 								if (ScreenSpaceArea < r_ssaDISCARD)
-									item->vis_ID = 0xff;
+									item.vis_ID = 0xff;
 								else if (ScreenSpaceArea > r_ssaCHEAP)
-									item->vis_ID = item->vis_ID_backup;
+									item.vis_ID = item.vis_ID_backup;
 								else
-									item->vis_ID = 0;
+									item.vis_ID = 0;
 							}
 						}
 					}
@@ -275,66 +276,41 @@ void CDetailManager::UpdateVisibility()
 					buffer_wave1.clear_not_free();
 					buffer_wave2.clear_not_free();
 
-					for (auto pItem : sp.items)
+					for (auto& Item : sp.items)
 					{
-						if (pItem->scale_calculated > EPS && pItem->vis_ID != 0xff)
+						// Прямой доступ через точку
+						if (Item.scale_calculated > EPS && Item.vis_ID != 0xff)
 						{
-							u32 v_id = (pItem->vis_ID > 2) ? 0 : pItem->vis_ID;
+							u32 v_id = (Item.vis_ID > 2) ? 0 : Item.vis_ID;
 
-							// Выбираем нужный батч
 							DetailBatch& destBatch = sp.r_items[m_vis_calc_id][v_id];
+							destBatch.positions.push_back(Item.mRotY.c);
 
-							// 1. Сохраняем позицию для CPU (быстрый куллинг)
-							destBatch.positions.push_back(pItem->mRotY.c);
-
-							// 2. Рассчитываем матрицы для GPU с использованием SSE
-							// Мы резервируем место и получаем указатель на новую структуру, 
-							// чтобы писать прямо в память вектора без лишних копий.
 							destBatch.instances.resize(destBatch.instances.size() + 1);
 							InstanceData& inst = destBatch.instances.back();
 
-							float scale = pItem->scale_calculated;
-							Fmatrix& M = pItem->mRotY;
+							float scale = Item.scale_calculated;
+							Fmatrix& M = Item.mRotY;
 
-							// === SSE OPTIMIZATION START ===
-							// Нам нужно преобразовать матрицу X-Ray (Row-Major) в формат шейдера
-							// и умножить компоненты вращения (3x3) на scale, не трогая позицию (w).
-							// Текущая логика:
-							// Mat0 = (M._11*s, M._21*s, M._31*s, M._41*1)
-							// Mat1 = (M._12*s, M._22*s, M._32*s, M._42*1)
-							// Mat2 = (M._13*s, M._23*s, M._33*s, M._43*1)
-
-							// 1. Подготовка вектора масштаба: {scale, scale, scale, 1.0f}
-							// _mm_set_ps принимает аргументы в порядке (e3, e2, e1, e0), где e0 - младший адрес.
+							// === SSE OPTIMIZATION (оставляем твой код как есть, он хорош) ===
 							__m128 S = _mm_set_ps(1.0f, scale, scale, scale);
+							__m128 R0 = _mm_loadu_ps(&M._11);
+							__m128 R1 = _mm_loadu_ps(&M._21);
+							__m128 R2 = _mm_loadu_ps(&M._31);
+							__m128 R3 = _mm_loadu_ps(&M._41);
 
-							// 2. Загрузка строк матрицы
-							__m128 R0 = _mm_loadu_ps(&M._11); // Row 1
-							__m128 R1 = _mm_loadu_ps(&M._21); // Row 2
-							__m128 R2 = _mm_loadu_ps(&M._31); // Row 3
-							__m128 R3 = _mm_loadu_ps(&M._41); // Row 4 (Pos)
-
-							// 3. Транспонирование 4x4 (превращаем строки в столбцы)
-							// После этого:
-							// R0 содержит: _11, _21, _31, _41
-							// R1 содержит: _12, _22, _32, _42
-							// R2 содержит: _13, _23, _33, _43
 							_MM_TRANSPOSE4_PS(R0, R1, R2, R3);
 
-							// 4. Умножение на масштаб
-							R0 = _mm_mul_ps(R0, S); // Mat0
-							R1 = _mm_mul_ps(R1, S); // Mat1
-							R2 = _mm_mul_ps(R2, S); // Mat2
-							
-							// 5. Выгрузка результата прямо в структуру
+							R0 = _mm_mul_ps(R0, S);
+							R1 = _mm_mul_ps(R1, S);
+							R2 = _mm_mul_ps(R2, S);
+
 							_mm_storeu_ps((float*)&inst.Mat0, R0);
 							_mm_storeu_ps((float*)&inst.Mat1, R1);
 							_mm_storeu_ps((float*)&inst.Mat2, R2);
-							// === SSE OPTIMIZATION END ===
 
-							// Цвет (без изменений, так как это просто установка)
-							float h = pItem->c_hemi;
-							float s = pItem->c_sun;
+							float h = Item.c_hemi;
+							float s = Item.c_sun;
 							inst.Color.set(s, s, s, h);
 						}
 					}
@@ -482,8 +458,6 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 	for (u32 i = 0; i < dm_obj_in_slot; i++)
 	{
 		D->G[i].id = DS.r_id(i);
-		for (u32 clr = 0; clr < D->G[i].items.size(); clr++)
-			poolSI.destroy(D->G[i].items[clr]);
 		D->G[i].items.clear();
 	}
 
@@ -649,12 +623,6 @@ void CDetailManager::InvalidateCache()
 				for (u32 i = 0; i < dm_obj_in_slot; i++)
 				{
 					// Очищаем основной пул айтемов
-					for (u32 clr = 0; clr < S->G[i].items.size(); clr++)
-					{
-						pool_lock.Enter();
-						poolSI.destroy(S->G[i].items[clr]);
-						pool_lock.Leave();
-					}
 					S->G[i].items.clear();
 
 					// === FIX: Очищаем ОБА буфера рендера ===
@@ -849,13 +817,8 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			u32 index = (selected.size() == 1) ? selected[0] : selected[r_selection.randI(selected.size())];
 			CDetail* Dobj = objects[DS.r_id(index)];
 
-			SlotItem* ItemP;
-			{
-				pool_lock.Enter();
-				ItemP = poolSI.create();
-				pool_lock.Leave();
-			}
-			SlotItem& Item = *ItemP;
+			SlotItem Item;
+			ZeroMemory(&Item, sizeof(Item));
 
 			float rx = fx * dm_slot_size + D.vis.box.min.x;
 			Fvector Item_P;
@@ -912,7 +875,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 
 			Item.vis_ID_backup = Item.vis_ID;
 
-			D.G[index].items.push_back(ItemP);
+			D.G[index].items.push_back(Item);
 		}
 	}
 

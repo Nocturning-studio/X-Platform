@@ -78,17 +78,21 @@ class CDetailManager
 	};
 
 	// Структуры
-	struct SlotItem
+	// Выравниваем структуру для SSE операций
+	struct __declspec(align(16)) SlotItem
 	{
-		float scale;
-		float scale_calculated;
-		Fmatrix mRotY;
-		u32 vis_ID;
-		u32 vis_ID_backup;
-		float c_hemi;
-		float c_sun;
+		Fmatrix mRotY;			// 64 bytes
+		float scale;			// 4
+		float scale_calculated; // 4
+		float c_hemi;			// 4
+		float c_sun;			// 4
+		u32 vis_ID;				// 4
+		u32 vis_ID_backup;		// 4
+		u32 _pad;				// padding to 88 bytes or optimize order later
 	};
-	DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
+	// Используем xr_vector с объектами
+	typedef xr_vector<SlotItem> SlotItemVec;
+	typedef SlotItemVec::iterator SlotItemVecIt;
 
 	struct InstanceData
 	{
@@ -215,9 +219,6 @@ class CDetailManager
 	Slot cache_pool[dm_cache_size];
 	int cache_cx;
 	int cache_cz;
-
-	PSS poolSI;
-	xrCriticalSection pool_lock; // Мьютекс
 
 	void UpdateVisibility();
 
