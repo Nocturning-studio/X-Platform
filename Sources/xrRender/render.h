@@ -138,7 +138,7 @@ class CRender : public IRender_interface, public pureFrame
 	bool m_b_collect_visuals;
 
 	bool m_need_render_sun;
-	xr_vector<sun::cascade> m_sun_cascades;
+	xr_vector<Sun::Cascade> m_sun_cascades;
 
 	// Массив постоянных рабочих элементов
 	// 3 каскада солнца - 3 элемента

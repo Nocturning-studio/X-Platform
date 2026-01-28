@@ -25,24 +25,28 @@ struct ShadowCascadeWorkItem
 	}
 };
 
-namespace sun
+namespace Sun
 {
 
-struct ray
+struct Ray
 {
-	ray( ) { }
-	ray( Fvector3 const& _P, Fvector3 const& _D ):	P(_P), D(_D) { }
+	Fvector3 Direction;
+	Fvector3 Position;
 
-	Fvector3 D;
-	Fvector3 P;
+	Ray()
+	{
+	}
+	Ray(Fvector3 const& _P, Fvector3 const& _D) : Position(_P), Direction(_D)
+	{
+	}
 };
 
-struct cascade 
+struct Cascade 
 {
-	cascade () : reset_chain( false )	{}
+	Cascade () : reset_chain( false )	{}
 
 	Fmatrix			transform;
-	xr_vector<ray>	rays;
+	xr_vector<Ray>	rays;
 	float			size;
 	float			bias;
 	bool			reset_chain;

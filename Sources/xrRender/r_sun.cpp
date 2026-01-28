@@ -140,9 +140,9 @@ template <bool _debug> class FixedConvexVolume
 		Fplane plane;
 	};
 
-	xr_vector<sun::ray> view_frustum_rays;
-	sun::ray view_ray;
-	sun::ray light_ray;
+	xr_vector<Sun::Ray> view_frustum_rays;
+	Sun::Ray view_ray;
+	Sun::Ray light_ray;
 	Fvector3 light_cuboid_points[LIGHT_CUBOIDVERTICES_COUNT];
 	_poly light_cuboid_polys[LIGHT_CUBOIDSIDEPOLYS_COUNT];
 
@@ -181,7 +181,7 @@ template <bool _debug> class FixedConvexVolume
 	{
 		translation.set(0.f, 0.f, 0.f);
 
-		if (fis_zero(1 - abs(view_ray.D.dotproduct(light_ray.D)), EPS_S))
+		if (fis_zero(1 - abs(view_ray.Direction.dotproduct(light_ray.Direction)), EPS_S))
 			return;
 
 		// compute planes for each polygon.
@@ -196,7 +196,7 @@ template <bool _debug> class FixedConvexVolume
 		// find one or two planes that align to view frustum from behind.
 		for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
 		{
-			float tmp_dot = view_ray.D.dotproduct(light_cuboid_polys[i].plane.n);
+			float tmp_dot = view_ray.Direction.dotproduct(light_cuboid_polys[i].plane.n);
 			if (tmp_dot <= EPS_L)
 				continue;
 
@@ -218,7 +218,7 @@ template <bool _debug> class FixedConvexVolume
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
 				float tmp_dist = 0;
-				Fvector tmp_point = view_frustum_rays[i].P;
+				Fvector tmp_point = view_frustum_rays[i].Position;
 
 				tmp_dist = light_cuboid_polys[align_planes[p]].plane.classify(tmp_point);
 				min_dist = _min(tmp_dist, min_dist);
@@ -232,7 +232,7 @@ template <bool _debug> class FixedConvexVolume
 		translation.add(align_vector);
 
 		// Move light ray by the alignment shift.
-		light_ray.P.add(align_vector);
+		light_ray.Position.add(align_vector);
 
 		// Here we can skip this stage us in the next pass we need only normals of planes.
 		// in the next translate_light_model call will contain this shift as well.
@@ -247,15 +247,15 @@ template <bool _debug> class FixedConvexVolume
 			float max_mag = 0;
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
-				float plane_dot_ray = view_frustum_rays[i].D.dotproduct(light_cuboid_polys[align_planes[p]].plane.n);
+				float plane_dot_ray = view_frustum_rays[i].Direction.dotproduct(light_cuboid_polys[align_planes[p]].plane.n);
 				if (plane_dot_ray < 0)
 				{
 					Fvector per_plane_view;
-					per_plane_view.crossproduct(light_cuboid_polys[align_planes[p]].plane.n, view_ray.D);
+					per_plane_view.crossproduct(light_cuboid_polys[align_planes[p]].plane.n, view_ray.Direction);
 					Fvector per_view_to_plane;
-					per_view_to_plane.crossproduct(per_plane_view, view_ray.D);
+					per_view_to_plane.crossproduct(per_plane_view, view_ray.Direction);
 
-					float tmp_mag = -plane_dot_ray / view_frustum_rays[i].D.dotproduct(per_view_to_plane);
+					float tmp_mag = -plane_dot_ray / view_frustum_rays[i].Direction.dotproduct(per_view_to_plane);
 
 					max_mag = (max_mag < tmp_mag) ? tmp_mag : max_mag;
 				}
@@ -271,21 +271,21 @@ template <bool _debug> class FixedConvexVolume
 		}
 
 		translation.add(align_vector);
-		light_ray.P.add(align_vector);
+		light_ray.Position.add(align_vector);
 		translate_light_model(translation);
 
 		// compute culling planes by rays as edges
 		for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 		{
 			Fvector tmp_vector;
-			tmp_vector.crossproduct(view_frustum_rays[i].D, light_ray.D);
+			tmp_vector.crossproduct(view_frustum_rays[i].Direction, light_ray.Direction);
 
 			// check if the vectors are parallel
 			if (fis_zero(tmp_vector.square_magnitude(), EPS))
 				continue;
 
 			Fplane tmp_plane;
-			tmp_plane.build(view_frustum_rays[i].P, tmp_vector);
+			tmp_plane.build(view_frustum_rays[i].Position, tmp_vector);
 
 			float sign = 0;
 			if (check_cull_plane_valid(tmp_plane, sign, 5))
@@ -297,23 +297,23 @@ template <bool _debug> class FixedConvexVolume
 		}
 
 		// compute culling planes by ray points pairs as edges
-		if (clip_by_view_near && abs(view_ray.D.dotproduct(light_ray.D)) < 0.8)
+		if (clip_by_view_near && abs(view_ray.Direction.dotproduct(light_ray.Direction)) < 0.8)
 		{
 			Fvector perp_light_view, perp_light_to_view;
-			perp_light_view.crossproduct(view_ray.D, light_ray.D);
-			perp_light_to_view.crossproduct(perp_light_view, light_ray.D);
+			perp_light_view.crossproduct(view_ray.Direction, light_ray.Direction);
+			perp_light_to_view.crossproduct(perp_light_view, light_ray.Direction);
 
 			Fplane plane;
-			plane.build(view_ray.P, perp_light_to_view);
+			plane.build(view_ray.Position, perp_light_to_view);
 
 			float max_dist = -1000;
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
-				max_dist = _max(plane.classify(view_frustum_rays[i].P), max_dist);
+				max_dist = _max(plane.classify(view_frustum_rays[i].Position), max_dist);
 
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
-				Fvector P = view_frustum_rays[i].P;
-				P.mad(view_frustum_rays[i].D, 5);
+				Fvector P = view_frustum_rays[i].Position;
+				P.mad(view_frustum_rays[i].Direction, 5);
 
 				if (plane.classify(P) > max_dist)
 				{
@@ -344,16 +344,16 @@ template <bool _debug> class FixedConvexVolume
 			for (int p = 0; p < 4; ++p)
 			{
 				float dist;
-				if ((light_cuboid_polys[p].plane.n.dotproduct(view_frustum_rays[i].D)) > -0.1)
+				if ((light_cuboid_polys[p].plane.n.dotproduct(view_frustum_rays[i].Direction)) > -0.1)
 					dist = map_size;
 				else
-					light_cuboid_polys[p].plane.intersectRayDist(view_frustum_rays[i].P, view_frustum_rays[i].D, dist);
+					light_cuboid_polys[p].plane.intersectRayDist(view_frustum_rays[i].Position, view_frustum_rays[i].Direction, dist);
 
 				if (dist > EPS_L && dist < min_dist)
 					min_dist = dist;
 			}
 
-			view_frustum_rays[i].P.mad(view_frustum_rays[i].D, min_dist);
+			view_frustum_rays[i].Position.mad(view_frustum_rays[i].Direction, min_dist);
 		}
 	}
 
@@ -365,8 +365,8 @@ template <bool _debug> class FixedConvexVolume
 		for (u32 j = 0; j < view_frustum_rays.size(); ++j)
 		{
 			float tmp_dist = 0.f;
-			Fvector tmp_pt = view_frustum_rays[j].P;
-			tmp_pt.mad(view_frustum_rays[j].D, mad_factor);
+			Fvector tmp_pt = view_frustum_rays[j].Position;
+			tmp_pt.mad(view_frustum_rays[j].Direction, mad_factor);
 			tmp_dist = plane.classify(tmp_pt);
 
 			if (fis_zero(tmp_dist, EPS_L))
@@ -696,16 +696,16 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 					edge_vec.sub(near_p);
 					edge_vec.normalize();
 
-					light_cuboid.view_frustum_rays.push_back(sun::ray(near_p, edge_vec));
+					light_cuboid.view_frustum_rays.push_back(Sun::Ray(near_p, edge_vec));
 				}
 			}
 			else
 				light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
 
-			light_cuboid.view_ray.P = Engine.RenderView.Position;
-			light_cuboid.view_ray.D = Engine.RenderView.Direction;
-			light_cuboid.light_ray.P = L_pos;
-			light_cuboid.light_ray.D = L_dir;
+			light_cuboid.view_ray.Position = Engine.RenderView.Position;
+			light_cuboid.view_ray.Direction = Engine.RenderView.Direction;
+			light_cuboid.light_ray.Position = L_pos;
+			light_cuboid.light_ray.Direction = L_dir;
 		}
 
 		// THIS NEED TO BE A CONSTATNT
