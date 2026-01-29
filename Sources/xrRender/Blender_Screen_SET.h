@@ -14,8 +14,6 @@ class CBlender_Screen_SET : public IBlender
 	xrP_Integer oAREF;
 	xrP_BOOL oZTest;
 	xrP_BOOL oZWrite;
-	xrP_BOOL oLighting;
-	xrP_BOOL oFog;
 	xrP_BOOL oClamp;
 
   public:
@@ -39,8 +37,6 @@ class CBlender_Screen_SET : public IBlender
 		oAREF.max = 255;
 		oZTest.value = FALSE;
 		oZWrite.value = FALSE;
-		oLighting.value = FALSE;
-		oFog.value = FALSE;
 		oClamp.value = TRUE;
 	}
 
@@ -91,8 +87,6 @@ class CBlender_Screen_SET : public IBlender
 		xrPWRITE_PROP(fs, "Alpha ref", xrPID_INTEGER, oAREF);
 		xrPWRITE_PROP(fs, "Z-test", xrPID_BOOL, oZTest);
 		xrPWRITE_PROP(fs, "Z-write", xrPID_BOOL, oZWrite);
-		xrPWRITE_PROP(fs, "Lighting", xrPID_BOOL, oLighting);
-		xrPWRITE_PROP(fs, "Fog", xrPID_BOOL, oFog);
 	}
 
 	void Load(IReader& fs, u16 version)
@@ -107,8 +101,6 @@ class CBlender_Screen_SET : public IBlender
 			xrPREAD_PROP(fs, xrPID_INTEGER, oAREF);
 			xrPREAD_PROP(fs, xrPID_BOOL, oZTest);
 			xrPREAD_PROP(fs, xrPID_BOOL, oZWrite);
-			xrPREAD_PROP(fs, xrPID_BOOL, oLighting);
-			xrPREAD_PROP(fs, xrPID_BOOL, oFog);
 			break;
 		case 3:
 			xrPREAD_PROP(fs, xrPID_TOKEN, oBlend);
@@ -117,8 +109,6 @@ class CBlender_Screen_SET : public IBlender
 			xrPREAD_PROP(fs, xrPID_INTEGER, oAREF);
 			xrPREAD_PROP(fs, xrPID_BOOL, oZTest);
 			xrPREAD_PROP(fs, xrPID_BOOL, oZWrite);
-			xrPREAD_PROP(fs, xrPID_BOOL, oLighting);
-			xrPREAD_PROP(fs, xrPID_BOOL, oFog);
 			break;
 		default:
 			xrPREAD_PROP(fs, xrPID_TOKEN, oBlend);
@@ -127,8 +117,6 @@ class CBlender_Screen_SET : public IBlender
 			xrPREAD_PROP(fs, xrPID_INTEGER, oAREF);
 			xrPREAD_PROP(fs, xrPID_BOOL, oZTest);
 			xrPREAD_PROP(fs, xrPID_BOOL, oZWrite);
-			xrPREAD_PROP(fs, xrPID_BOOL, oLighting);
-			xrPREAD_PROP(fs, xrPID_BOOL, oFog);
 			break;
 		}
 	}
