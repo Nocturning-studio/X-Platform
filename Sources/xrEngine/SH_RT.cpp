@@ -200,7 +200,8 @@ CRTC::CRTC()
 	pSurface = NULL;
 	pRT[0] = pRT[1] = pRT[2] = pRT[3] = pRT[4] = pRT[5] = NULL;
 	dwSize = 0;
-	fmt = D3DFMT_UNKNOWN;
+	d3dfmt = D3DFMT_UNKNOWN;
+	fmt = RHI_Format::Unknown;
 }
 CRTC::~CRTC()
 {
@@ -210,41 +211,58 @@ CRTC::~CRTC()
 	Engine.ResourceManager->_DeleteRTC(this);
 }
 
-void CRTC::create(LPCSTR Name, u32 size, D3DFORMAT f, u32 levels)
+void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 {
+	if (pSurface)
+		return;
+
 	R_ASSERT(HW.pDevice && Name && Name[0] && size && btwIsPow2(size));
-	_order = CPU::GetCLK(); 
+	_order = CPU::GetCLK();
 
 	HRESULT _hr;
 
 	dwSize = size;
 	fmt = f;
 
+	// 1. Конвертируем формат для DX9
+	D3DFORMAT d3dfmt = RHIFormat_To_D3D9(f);
+
 	// Get caps
 	D3DCAPS9 caps;
 	R_CHK(HW.pDevice->GetDeviceCaps(&caps));
 
-	// Check width-and-height of render target surface
-	if (size > caps.MaxTextureWidth)
-		return;
-	if (size > caps.MaxTextureHeight)
+	// Check size (cubemaps are usually square power of 2)
+	if (size > caps.MaxTextureWidth || size > caps.MaxTextureHeight)
 		return;
 
+	// 2. Определяем Usage (рендерим в цвет или в глубину)
+	u32 usage = D3DUSAGE_RENDERTARGET;
+	if (IsDepthStencilFormat(f))
+	{
+		usage = D3DUSAGE_DEPTHSTENCIL;
+	}
+
 	// Validate render-target usage
-	_hr = HW.pD3D->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, D3DUSAGE_RENDERTARGET, D3DRTYPE_CUBETEXTURE, f);
+	// Используем D3DRTYPE_CUBETEXTURE
+	_hr = HW.pD3D->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_CUBETEXTURE, d3dfmt);
 	if (FAILED(_hr))
 		return;
 
 	// Try to create texture/surface
 	Engine.ResourceManager->Evict();
-	_hr = HW.pDevice->CreateCubeTexture(size, levels, D3DUSAGE_RENDERTARGET, f, D3DPOOL_DEFAULT, &pSurface, NULL);
+
+	_hr = HW.pDevice->CreateCubeTexture(size, levels, usage, d3dfmt, D3DPOOL_DEFAULT, &pSurface, NULL);
+
 	if (FAILED(_hr) || (0 == pSurface))
 		return;
 
 	// OK
 	Msg("* created RTc(%s), 6(%d)", Name, size);
+
+	// Получаем поверхности для каждой грани
 	for (u32 face = 0; face < 6; face++)
 		R_CHK(pSurface->GetCubeMapSurface((D3DCUBEMAP_FACES)face, 0, pRT + face));
+
 	pTexture = Engine.ResourceManager->_CreateTexture(Name);
 	pTexture->surface_set(pSurface);
 }
@@ -266,7 +284,7 @@ void CRTC::reset_end()
 	create(*cName, dwSize, fmt);
 }
 
-void resptrcode_crtc::create(LPCSTR Name, u32 size, D3DFORMAT f, u32 levels)
+void resptrcode_crtc::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 {
 	_set(Engine.ResourceManager->_CreateRTC(Name, size, f, levels));
 }

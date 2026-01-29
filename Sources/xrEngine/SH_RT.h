@@ -110,14 +110,15 @@ class ENGINE_API CRTC : public xr_resource_named
 	ref_texture pTexture;
 
 	u32 dwSize;
-	D3DFORMAT fmt;
+	xrRHI::RHI_Format fmt;
+	D3DFORMAT d3dfmt;
 
 	u64 _order;
 
 	CRTC();
 	~CRTC();
 
-	void create(LPCSTR name, u32 size, D3DFORMAT f, u32 levels = 1);
+	void create(LPCSTR name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
 	void destroy();
 	void reset_begin();
 	void reset_end();
@@ -181,7 +182,7 @@ class ENGINE_API CRTC : public xr_resource_named
 };
 struct ENGINE_API resptrcode_crtc : public resptr_base<CRTC>
 {
-	void create(LPCSTR Name, u32 size, D3DFORMAT f, u32 levels = 1);
+	void create(LPCSTR Name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
 	void destroy()
 	{
 		_set(NULL);
