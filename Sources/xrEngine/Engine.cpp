@@ -318,18 +318,9 @@ void CEngine::UpdateGameLogic()
 	// Профилирование логики процессора
 	Statistic->EngineTOTAL.Begin();
 
-	// Логика "первого кадра" или загрузки
-	// В оригинале ProcessLoading просто вызывал seqFrame один раз и ставил флаг
+	Events.Frame.Process(rp_Frame);
 	if (!IsLoaded())
-	{
-		Events.Frame.Process(rp_Frame);
 		SetLoaded();
-	}
-	else
-	{
-		// Основной апдейт игровых систем (Actor, Level, Weather и т.д.)
-		Events.Frame.Process(rp_Frame);
-	}
 
 	Statistic->EngineTOTAL.End();
 }
@@ -358,6 +349,7 @@ void CEngine::ProcessFrame()
 	// 1. Проверка готовности устройства
 	if (!Device.b_is_Ready)
 	{
+		OPTICK_EVENT("Waiting for Device.b_is_Ready");
 		Sleep(100);
 		return;
 	}

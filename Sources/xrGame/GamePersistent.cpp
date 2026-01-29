@@ -527,48 +527,6 @@ void CGamePersistent::OnFrame()
 	if (!g_pGameLevel->bReady)
 		return;
 
-	/*
-	if (Device.Paused())
-	{
-#ifndef MASTER_GOLD
-		if (Level().CurrentViewEntity())
-		{
-			if (!g_actor || (g_actor->ID() != Level().CurrentViewEntity()->ID()))
-			{
-				CCustomMonster* custom_monster = smart_cast<CCustomMonster*>(Level().CurrentViewEntity());
-				if (custom_monster) // can be spectator in multiplayer
-					custom_monster->UpdateCamera();
-			}
-			else
-			{
-				CCameraBase* C = NULL;
-				if (g_actor)
-				{
-					if (!Actor()->Holder())
-						C = Actor()->cam_Active();
-					else
-						C = Actor()->Holder()->Camera();
-
-					Actor()->Cameras().UpdateFromCamera(C);
-					Actor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
-				}
-			}
-		}
-#else  // MASTER_GOLD
-		if (g_actor)
-		{
-			CCameraBase* C = NULL;
-			if (!Actor()->Holder())
-				C = Actor()->cam_Active();
-			else
-				C = Actor()->Holder()->Camera();
-
-			Actor()->Cameras().UpdateFromCamera(C);
-			Actor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
-		}
-#endif // MASTER_GOLD
-	}
-	*/
 	__super::OnFrame();
 
 	if (!Device.Paused())

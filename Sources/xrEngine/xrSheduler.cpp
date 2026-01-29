@@ -46,6 +46,8 @@ void CSheduler::Destroy()
 
 void CSheduler::internal_Registration()
 {
+	PROFILE_FUNCTION();
+
 	for (u32 it = 0; it < Registration.size(); it++)
 	{
 		ItemReg& R = Registration[it];
@@ -299,10 +301,19 @@ void CSheduler::Pop()
 
 void CSheduler::ProcessStep()
 {
+	PROFILE_FUNCTION();
+
 	// Normal priority
 	u32 dwTime = Engine.TimeManager.GetGlobalTimeMs();
 	CTimer eTimer;
-	for (int i = 0; !Items.empty() && Top().dwTimeForExecute < dwTime; ++i)
+
+	// Константа для ограничения количества обрабатываемых объектов за кадр
+	static const u32 MAX_ITEMS_PER_FRAME = 10;
+	u32 processedCount = 0;
+
+	// Также сохраняем ограничение по времени (существующее)
+	for (int i = 0; processedCount < MAX_ITEMS_PER_FRAME && !Items.empty() && Top().dwTimeForExecute < dwTime;
+		 ++i, ++processedCount)
 	{
 		u32 delta_ms = dwTime - Top().dwTimeForExecute;
 
@@ -336,10 +347,6 @@ void CSheduler::ProcessStep()
 #ifdef DEBUG_SCHEDULER
 			Msg("SCHEDULER: process unregister [%s][%x][%s]", *T.scheduled_name, T.Object, "false");
 #endif // DEBUG_SCHEDULER
-	   //			if (T.Object)
-	   //				Msg					("0x%08x UNREGISTERS because shedule_Needed() returned false",T.Object);
-	   //			else
-	   //				Msg					("UNREGISTERS unknown object");
 			Pop();
 			continue;
 		}
@@ -351,8 +358,6 @@ void CSheduler::ProcessStep()
 		__try
 		{
 #endif // DEBUG
-	   // Real update call
-	   // Msg						("------- %d:",Engine.TimeManager.GetFrameCount());
 #ifdef DEBUG
 			T.Object->dbg_startframe = Engine.TimeManager.GetFrameCount();
 			eTimer.Start();
@@ -366,14 +371,8 @@ void CSheduler::ProcessStep()
 			u32 dwUpdate = dwMin + iFloor(float(dwMax - dwMin) * scale);
 			clamp(dwUpdate, u32(_max(dwMin, u32(20))), dwMax);
 
-			//			try {
 			T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(_max(u32(T.Object->shedule.t_max), u32(1000)))));
-			//			} catch (...) {
-#ifdef DEBUG
-//				Msg		("! xrSheduler: object '%s' raised an exception", _obj_name);
-//				throw	;
-#endif
-//			}
+
 #ifdef DEBUG
 			u32 execTime = eTimer.GetElapsed_ms();
 #endif
@@ -387,12 +386,9 @@ void CSheduler::ProcessStep()
 
 			ItemsProcessed.push_back(TNext);
 #ifdef DEBUG
-			//		u32	execTime				= eTimer.GetElapsed_ms		();
-			// VERIFY3					(T.Object->dbg_update_shedule == T.Object->dbg_startframe, "Broken sequence of
-			// calls to 'shedule_Update'", _obj_name );
 			if (delta_ms > 3 * dwUpdate)
 			{
-				// Msg	("! xrSheduler: failed to shedule object [%s] (%dms)",	_obj_name, delta_ms	);
+				// Msg("! xrSheduler: failed to shedule object [%s] (%dms)", _obj_name, delta_ms);
 			}
 			if (execTime > 15)
 			{
@@ -410,7 +406,7 @@ void CSheduler::ProcessStep()
 		}
 #endif // DEBUG
 
-		//
+		// Проверяем ограничение по времени (оставляем существующую логику)
 		if ((i % 3) != (3 - 1))
 			continue;
 
@@ -431,19 +427,19 @@ void CSheduler::ProcessStep()
 
 	// always try to decrease target
 	psShedulerTarget -= psShedulerReaction;
-}
-/*
-void CSheduler::Switch				()
-{
-	if (fibered)
+
+#ifdef DEBUG_SCHEDULER
+	if (processedCount > 0)
 	{
-		fibered						= FALSE;
-		SwitchToFiber				(fiber_main);
+		Msg("SCHEDULER: Processed %d/%d items this frame", processedCount, Items.size());
 	}
+#endif // DEBUG_SCHEDULER
 }
-*/
+
 void CSheduler::Update()
 {
+	PROFILE_FUNCTION();
+
 	R_ASSERT(Engine.Statistic);
 	// Initialize
 	Engine.Statistic->Sheduler.Begin();
@@ -458,29 +454,16 @@ void CSheduler::Update()
 	// Realtime priority
 	m_processing_now = true;
 	u32 dwTime = Engine.TimeManager.GetGlobalTimeMs();
-	for (u32 it = 0; it < ItemsRT.size(); it++)
 	{
-		Item& T = ItemsRT[it];
-		R_ASSERT(T.Object);
-#ifdef DEBUG_SCHEDULER
-		Msg("SCHEDULER: process step [%s][%x][true]", *T.Object->shedule_Name(), T.Object);
-#endif // DEBUG_SCHEDULER
-		if (!T.Object->shedule_Needed())
-		{
-#ifdef DEBUG_SCHEDULER
-			Msg("SCHEDULER: process unregister [%s][%x][%s]", *T.Object->shedule_Name(), T.Object, "false");
-#endif // DEBUG_SCHEDULER
-			T.dwTimeOfLastExecute = dwTime;
-			continue;
-		}
-
-		u32 Elapsed = dwTime - T.dwTimeOfLastExecute;
-#ifdef DEBUG
-		VERIFY(T.Object->dbg_startframe != Engine.TimeManager.GetFrameCount());
-		T.Object->dbg_startframe = Engine.TimeManager.GetFrameCount();
-#endif
-		T.Object->shedule_Update(Elapsed);
-		T.dwTimeOfLastExecute = dwTime;
+		OPTICK_EVENT("Processing ItemsRT");
+		concurrency::parallel_for(0u, ItemsRT.size(), [&](size_t i) {
+			Item& T = ItemsRT[i];
+			if (T.Object->shedule_Needed())
+			{
+				T.Object->shedule_Update(dwTime - T.dwTimeOfLastExecute);
+				T.dwTimeOfLastExecute = dwTime;
+			}
+		});
 	}
 
 	// Normal (sheduled)
