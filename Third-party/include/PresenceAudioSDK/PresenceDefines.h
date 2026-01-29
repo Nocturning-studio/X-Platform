@@ -221,7 +221,7 @@ namespace Presence
     {
         bool useMultithreading = true;  // Use background thread for calculations (recommended true)
         float maxRayDistance = 200.0f;  // Maximum ray length in meters (Culling distance)
-        int maxBounces = 3;             // Recursion depth (number of sound bounces). Optimal 2-3.
+        int maxBounces = 8;             // Recursion depth (number of sound bounces). Optimal 2-3.
         float updateInterval = 0.033f;  // Physics update interval in seconds (~30 FPS)
 
         Settings() = default;

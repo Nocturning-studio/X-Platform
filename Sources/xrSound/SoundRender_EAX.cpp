@@ -112,13 +112,14 @@ void CSoundRender_Core::UpdateEAX()
 	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF, &ep.flAirAbsorptionHF,
 				sizeof(float));
 	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_FLAGS, &ep.dwFlags, sizeof(DWORD));
+	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE,
+			  &ep.flEnvironmentSize, sizeof(float));
 }
 
 void CSoundRender_Core::commit_eax(SEAXEnvironmentData* EAXEnvData)
 {
 	const SEAXEnvironmentData& env = *EAXEnvData;
 
-	// 1. Применяем настройки СЛУШАТЕЛЯ (Listener) - Сама комната
 	EAXLISTENERPROPERTIES ep;
 	ZeroMemory(&ep, sizeof(ep));
 
@@ -162,6 +163,7 @@ void CSoundRender_Core::commit_eax(SEAXEnvironmentData* EAXEnvData)
 	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF,
 			  &ep.flAirAbsorptionHF, sizeof(float));
 	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_FLAGS, &ep.dwFlags, sizeof(DWORD));
+	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &ep.flEnvironmentSize, sizeof(float));
 
 	if (bDeferredEAX)
 	{
