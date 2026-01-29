@@ -833,6 +833,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	local_ctx.is_invisible_mode = FALSE;
 	local_ctx.current_owner = nullptr;
 	local_ctx.current_transform = &Fidentity;
+	local_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
 	// Активируем TLS: пишем в item.packet
 	CurrentRenderContext::Scope tls_scope(item.packet, local_ctx);

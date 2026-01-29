@@ -49,97 +49,6 @@ class CGlow : public IRender_Glow
 	{
 	}
 };
-
-float r_dtex_range = 50.f;
-//////////////////////////////////////////////////////////////////////////
-ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq)
-{
-	if (!pVisual)
-	{
-		return 0;
-	}
-
-	if (!pVisual->shader._get())
-	{
-		return 0;
-	}
-
-	int id = SE_R1_NORMAL_HQ;
-
-	switch (active_phase())
-	{
-	case CRender::PHASE_HUD:	// HUD Forward Base Pass
-	case CRender::PHASE_NORMAL: // Forward Base Pass
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
-		break;
-	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
-		id = SE_R1_LPOINT;
-		break;
-	case CRender::PHASE_SPOT_LIGHTING: // Additive Spot Light Pass
-		id = SE_R1_LSPOT;
-		break;
-	case CRender::PHASE_SUN_LIGHTING: // Additive Sun Light Pass
-		id = SE_R1_LSUN;
-		break;
-	case CRender::PHASE_SHADOW_DEPTH:
-		id = SE_SHADOW_DEPTH;
-		break;
-	case CRender::PHASE_DEPTH_PREPASS:
-		id = SE_DEPTH_PREPASS;
-		break;
-	}
-
-	return pVisual->shader->E[id]._get();
-}
-
-ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq)
-{
-	if (!pVisual)
-	{
-		return 0;
-	}
-
-	if (!pVisual->shader._get())
-	{
-		return 0;
-	}
-
-	int id = SE_R1_NORMAL_HQ;
-
-	switch (active_phase())
-	{
-	case CRender::PHASE_HUD:	// HUD Forward Base Pass
-	case CRender::PHASE_NORMAL: // Forward Base Pass
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
-		break;
-	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
-		id = SE_R1_LPOINT;
-		break;
-	case CRender::PHASE_SPOT_LIGHTING: // Additive Spot Light Pass
-		id = SE_R1_LSPOT;
-		break;
-	case CRender::PHASE_SUN_LIGHTING: // Additive Sun Light Pass
-		id = SE_R1_LSUN;
-		break;
-	case CRender::PHASE_SHADOW_DEPTH:
-		id = SE_SHADOW_DEPTH;
-		break;
-	case CRender::PHASE_DEPTH_PREPASS:
-		id = SE_DEPTH_PREPASS;
-		break;
-	}
-
-	return pVisual->shader->E[id]._get();
-}
-//////////////////////////////////////////////////////////////////////////
-static class cl_parallax : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		float h = ps_r_df_parallax_h;
-		RenderBackend.set_Constant(C, h, -(h / 2.0f), 1.f / r_dtex_range, 1.f / r_dtex_range);
-	}
-} binder_parallax;
 //////////////////////////////////////////////////////////////////////////
 static class cl_sun_far : public R_constant_setup
 {
@@ -315,7 +224,6 @@ void CRender::create()
 	o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
 
 	// constants
-	Engine.ResourceManager->RegisterConstantSetup("parallax_heigt", &binder_parallax);
 	Engine.ResourceManager->RegisterConstantSetup("sun_far", &binder_sun_far);
 	Engine.ResourceManager->RegisterConstantSetup("sun_dir", &binder_sun_dir);
 	Engine.ResourceManager->RegisterConstantSetup("sun_normal_bias", &binder_sun_normal_bias);

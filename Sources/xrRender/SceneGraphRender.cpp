@@ -639,6 +639,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	local_ctx.current_owner = nullptr;
 	local_ctx.current_transform = &Fidentity;
 	local_ctx.traversal_marker_id = m_traversal_marker.fetch_add(1) + 1;
+	local_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
 	// Активируем TLS: теперь все вызовы add_Visual/Geometry пойдут в 'dest'
 	// и будут использовать 'local_ctx'
@@ -772,7 +773,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	// -------------------------------------------------------------------------
 	// 6. Тень от актера (Actor Shadow Hack)
 	// -------------------------------------------------------------------------
-	if (g_pGameLevel && (RenderImplementation.active_phase() == RenderImplementation.PHASE_SHADOW_DEPTH))
+	if (g_pGameLevel && (local_ctx.render_phase == RenderImplementation.PHASE_SHADOW_DEPTH))
 	{
 		g_pGameLevel->pHUD->Render_Actor_Shadow();
 	}

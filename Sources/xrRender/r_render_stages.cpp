@@ -35,6 +35,7 @@ void CRender::render_main(Fmatrix& view_projection, bool /*_use_portals*/, Scene
 	m_TraversalContext.frustum = &ViewBase;
 	m_TraversalContext.traversal_marker_id = current_marker;
 	m_TraversalContext.current_transform = &Fidentity;
+	m_TraversalContext.render_phase = CRender::PHASE_NORMAL;
 
 	// АКТИВИРУЕМ TLS:
 	// Теперь все вызовы add_Visual/add_Geometry внутри этого скоупа

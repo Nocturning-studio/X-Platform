@@ -101,6 +101,88 @@ ICF float CalcScreenSpaceArea(float& distSQ, Fvector& C, float R)
 	return R / distSQ;
 }
 
+float r_dtex_range = 50.f;
+
+ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
+{
+	if (!pVisual)
+	{
+		return 0;
+	}
+
+	if (!pVisual->shader._get())
+	{
+		return 0;
+	}
+
+	int id = SE_R1_NORMAL_HQ;
+
+	switch (ctx.render_phase)
+	{
+	case CRender::PHASE_HUD:	// HUD Forward Base Pass
+	case CRender::PHASE_NORMAL: // Forward Base Pass
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
+		break;
+	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
+		id = SE_R1_LPOINT;
+		break;
+	case CRender::PHASE_SPOT_LIGHTING: // Additive Spot Light Pass
+		id = SE_R1_LSPOT;
+		break;
+	case CRender::PHASE_SUN_LIGHTING: // Additive Sun Light Pass
+		id = SE_R1_LSUN;
+		break;
+	case CRender::PHASE_SHADOW_DEPTH:
+		id = SE_SHADOW_DEPTH;
+		break;
+	case CRender::PHASE_DEPTH_PREPASS:
+		id = SE_DEPTH_PREPASS;
+		break;
+	}
+
+	return pVisual->shader->E[id]._get();
+}
+
+ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
+{
+	if (!pVisual)
+	{
+		return 0;
+	}
+
+	if (!pVisual->shader._get())
+	{
+		return 0;
+	}
+
+	int id = SE_R1_NORMAL_HQ;
+
+	switch (ctx.render_phase)
+	{
+	case CRender::PHASE_HUD:	// HUD Forward Base Pass
+	case CRender::PHASE_NORMAL: // Forward Base Pass
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
+		break;
+	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
+		id = SE_R1_LPOINT;
+		break;
+	case CRender::PHASE_SPOT_LIGHTING: // Additive Spot Light Pass
+		id = SE_R1_LSPOT;
+		break;
+	case CRender::PHASE_SUN_LIGHTING: // Additive Sun Light Pass
+		id = SE_R1_LSUN;
+		break;
+	case CRender::PHASE_SHADOW_DEPTH:
+		id = SE_SHADOW_DEPTH;
+		break;
+	case CRender::PHASE_DEPTH_PREPASS:
+		id = SE_DEPTH_PREPASS;
+		break;
+	}
+
+	return pVisual->shader->E[id]._get();
+}
+
 // ===============================================================================================
 //  Метод: EnqueueDynamic
 //  Назначение: Добавление динамического объекта в очередь рендеринга.
@@ -164,7 +246,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 	// 4. Выбор шейдера (Technique Selection)
 	// -------------------------------------------------------------------------
 	CRender& render_impl = RenderImplementation;
-	ShaderElement* shader_element = render_impl.rimp_select_sh_dynamic(pVisual, distance_sq);
+	ShaderElement* shader_element = render_impl.rimp_select_sh_dynamic(pVisual, distance_sq, ctx);
 
 	if (!shader_element)
 		return;
@@ -354,7 +436,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	// 4. Выбор шейдера
 	CRender& render_impl = RenderImplementation;
-	ShaderElement* shader_element = render_impl.rimp_select_sh_static(pVisual, distance_sq);
+	ShaderElement* shader_element = render_impl.rimp_select_sh_static(pVisual, distance_sq, ctx);
 
 	if (!shader_element)
 		return;
@@ -578,7 +660,7 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	}
 
 	// 2. Отсечение для Shadow Map
-	if (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH)
+	if (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH)
 	{
 		if (sphere_volume < 50000.f && adjusted_distance > ps_r_sun_far)
 			return false;
@@ -627,7 +709,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 
 	// 1. Проверка на значимость (Distance / Size Culling)
 	// Несмотря на то, что объект "видим" по фрустуму, он может быть слишком маленьким.
-	bool is_shadow_phase = (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH);
+	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx для корректного расчета дистанции
 	if (!ShouldRenderVisual(pVisual, false, is_shadow_phase, ctx))
 		return;
@@ -720,7 +802,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 			//    Для теней воллмарки обычно не нужны (они плоские).
 			if (bExact && !ctx.is_invisible_mode)
 			{
-				if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
+				if (ctx.render_phase == CRender::PHASE_NORMAL)
 					pV->CalculateWallmarks();
 			}
 
@@ -742,7 +824,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 
 		// Если это основной проход, сохраняем объект для переиспользования в следующих кадрах/проходах (Reuse List).
 		// Это позволяет избежать повторного обхода дерева сцены для этого объекта.
-		if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
+		if (ctx.render_phase == CRender::PHASE_NORMAL)
 		{
 			SceneGraphPacket::DReuseItem item;
 			item.visual = pVisual;
@@ -777,13 +859,13 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		return;
 
 	// 2. Проверка на значимость
-	bool is_shadow_phase = (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH);
+	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx
 	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
 	// 3. Сохранение для Reuse
-	if (RenderImplementation.active_phase() == CRender::PHASE_NORMAL)
+	if (ctx.render_phase == CRender::PHASE_NORMAL)
 	{
 		// Сохраняем в список переданного пакета (dest)
 		dest.m_visuals_static_visible.push_back(pVisual);
@@ -933,7 +1015,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 
 	// 3. Проверка на значимость (Distance / Size Culling)
 	// ShouldRenderVisual теперь тоже принимает ctx
-	bool is_shadow_phase = (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH);
+	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	if (!ShouldRenderVisual(pVisual, false, is_shadow_phase, ctx))
 		return FALSE;
 
@@ -1036,7 +1118,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 			{
 				pKinematics->CalculateBones(TRUE);
 
-				if (RenderImplementation.active_phase() != CRender::PHASE_SHADOW_DEPTH)
+				if (ctx.render_phase != CRender::PHASE_SHADOW_DEPTH)
 					pKinematics->CalculateWallmarks();
 			}
 
@@ -1085,7 +1167,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 		return;
 
 	// 3. Проверка на значимость (Distance / Size Culling)
-	bool is_shadow_phase = (RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH);
+	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx для корректного расчета дистанции
 	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
