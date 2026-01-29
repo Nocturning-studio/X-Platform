@@ -141,6 +141,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 	// Shading
 	pShader.create(cShader, cTexture);
 	pGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+	m_FontTex.create(cTexture);
 }
 
 CGameFont::~CGameFont()
@@ -149,6 +150,7 @@ CGameFont::~CGameFont()
 		xr_free(TCMap);
 
 	// Shading
+	m_FontTex.destroy();
 	pShader.destroy();
 	pGeom.destroy();
 }
@@ -174,18 +176,30 @@ u32 CGameFont::smart_strlen(const char* S)
 
 void CGameFont::OnRender()
 {
-	//OPTICK_EVENT("CGameFont::OnRender");
-
 	VERIFY(g_bRendering);
 	if (pShader)
 		RenderBackend.set_Shader(pShader);
 
 	if (!(uFlags & fsValid))
 	{
-		CTexture* T = RenderBackend.get_ActiveTexture(0);
-		vTS.set((int)T->get_Width(), (int)T->get_Height());
-		fTCHeight = fHeight / float(vTS.y);
-		uFlags |= fsValid;
+		// БЫЛО: (Требует FFP)
+		// CTexture* T = RenderBackend.get_ActiveTexture(0);
+		// vTS.set((int)T->get_Width(), (int)T->get_Height());
+
+		// СТАЛО: (Используем наш сохраненный ресурс)
+		// m_FontTex работает как смарт-поинтер, разыменовываясь в CTexture*
+		// или имеет методы get_Width/get_Height напрямую (зависит от версии движка)
+
+		if (m_FontTex)
+		{
+			vTS.set((int)m_FontTex->get_Width(), (int)m_FontTex->get_Height());
+			// На всякий случай проверка на ноль
+			if (vTS.y == 0)
+				vTS.y = 1;
+
+			fTCHeight = fHeight / float(vTS.y);
+			uFlags |= fsValid;
+		}
 	}
 
 	for (u32 i = 0; i < strings.size();)

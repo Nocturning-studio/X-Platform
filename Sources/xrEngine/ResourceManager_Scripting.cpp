@@ -47,8 +47,6 @@ class adopt_sampler
 
 	adopt_sampler& _projective(bool _b)
 	{
-		if (C)
-			C->i_Projective(stage, _b);
 		return *this;
 	}
 
@@ -324,7 +322,6 @@ class adopt_compiler
 
 	adopt_compiler& _fog(bool _fog)
 	{
-		C->PassSET_LightFog(FALSE, _fog);
 		return *this;
 	}
 

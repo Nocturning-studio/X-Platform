@@ -168,7 +168,6 @@ class ENGINE_API CBackend
 	}
 
 	// API
-	IC void set_transform(u32 ID, const Fmatrix& M);
 	IC void set_transform_world(const Fmatrix& M);
 	IC void set_transform_view(const Fmatrix& M);
 	IC void set_transform_project(const Fmatrix& M);

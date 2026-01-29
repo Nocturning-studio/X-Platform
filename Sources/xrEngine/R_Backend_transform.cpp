@@ -17,7 +17,6 @@ void R_transforms::set_World(const Fmatrix& m)
 	m_bInvWorldMatrixIsValid = false;
 	if (c_InvWorld)
 		apply_InvWorld();
-	RenderBackend.set_transform(D3DTS_WORLD, m);
 }
 void R_transforms::set_View(const Fmatrix& m)
 {
@@ -33,7 +32,6 @@ void R_transforms::set_View(const Fmatrix& m)
 		RenderBackend.set_Constant(c_WorldView, m_WorldView);
 	if (c_WorldViewProject)
 		RenderBackend.set_Constant(c_WorldViewProject, m_WorldViewProject);
-	RenderBackend.set_transform(D3DTS_VIEW, m);
 }
 void R_transforms::set_Project(const Fmatrix& m)
 {
@@ -46,8 +44,6 @@ void R_transforms::set_Project(const Fmatrix& m)
 		RenderBackend.set_Constant(c_ViewProject, m_ViewProject);
 	if (c_WorldViewProject)
 		RenderBackend.set_Constant(c_WorldViewProject, m_WorldViewProject);
-	// always setup projection - D3D relies on it to work correctly :(
-	RenderBackend.set_transform(D3DTS_PROJECTION, m);
 }
 
 void R_transforms::apply_InvWorld()

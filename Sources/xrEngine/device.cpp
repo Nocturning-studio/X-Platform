@@ -318,7 +318,7 @@ void CRenderDevice::_SetupStates()
 	HW.Caps.Update();
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
 	{
-		float fBias = -.5f;
+		float fBias = 1.0f;
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 4));
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&fBias))));
 		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
@@ -333,28 +333,10 @@ void CRenderDevice::_SetupStates()
 	RenderBackend.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 	RenderBackend.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
 
-	RenderBackend.SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
-	RenderBackend.SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-	RenderBackend.SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL);
-	RenderBackend.SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, D3DMCS_COLOR1);
 	RenderBackend.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
 	RenderBackend.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
 	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-
-	// ******************** Fog parameters
-	RenderBackend.SetRenderState(D3DRS_FOGCOLOR, 0);
-	RenderBackend.SetRenderState(D3DRS_RANGEFOGENABLE, FALSE);
-	if (HW.Caps.bTableFog)
-	{
-		RenderBackend.SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_EXP2);
-		RenderBackend.SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE);
-	}
-	else
-	{
-		RenderBackend.SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_NONE);
-		RenderBackend.SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_EXP2);
-	}
 }
 
 void CRenderDevice::_Create(LPCSTR shName)

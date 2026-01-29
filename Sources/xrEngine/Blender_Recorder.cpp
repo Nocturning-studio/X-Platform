@@ -89,19 +89,6 @@ void CBlender_Compile::SetParams(int iPriority, bool bStrictB2F)
 {
 	SH->flags.iPriority = iPriority;
 	SH->flags.bStrictB2F = bStrictB2F;
-	if (bStrictB2F)
-	{
-#ifdef _EDITOR
-		if (1 != (SH->flags.iPriority / 2))
-		{
-			Log("!If StrictB2F true then Priority must div 2.");
-			SH->flags.bStrictB2F = FALSE;
-		}
-#else
-		//VERIFY(1 == (SH->flags.iPriority / 2));
-#endif
-	}
-	// SH->Flags.bLighting		= FALSE;
 }
 
 void CBlender_Compile::PassBegin()
@@ -124,10 +111,6 @@ void CBlender_Compile::PassBegin()
 
 void CBlender_Compile::PassEnd()
 {
-	// Last Stage - disable
-	RS.SetTSS(Stage(), D3DTSS_COLOROP, D3DTOP_DISABLE);
-	RS.SetTSS(Stage(), D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
 	// Create pass
 	ref_state state = Engine.ResourceManager->_CreateState(RS.GetContainer());
 
@@ -225,13 +208,6 @@ void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bA
 	PassSET_ablend_aref(bATest, aRef);
 }
 
-void CBlender_Compile::PassSET_LightFog(BOOL bLight, BOOL bFog)
-{
-	RS.SetRS(D3DRS_LIGHTING, BC(bLight));
-	RS.SetRS(D3DRS_FOGENABLE, BC(bFog));
-	// SH->Flags.bLighting				|= !!bLight;
-}
-
 void CBlender_Compile::StageBegin()
 {
 	StageSET_Address(D3DTADDRESS_WRAP); // Wrapping enabled by default
@@ -247,42 +223,11 @@ void CBlender_Compile::StageSET_Address(u32 adr)
 	RS.SetSAMP(Stage(), D3DSAMP_ADDRESSV, adr);
 }
 
-void CBlender_Compile::StageSET_Transform(u32 tf, u32 tc)
-{
-#ifdef _EDITOR
-	RS.SetTSS(Stage(), D3DTSS_TEXTURETRANSFORMFLAGS, tf);
-	RS.SetTSS(Stage(), D3DTSS_TEXCOORDINDEX, tc);
-#endif
-}
-
-void CBlender_Compile::StageSET_Color(u32 a1, u32 op, u32 a2)
-{
-	RS.SetColor(Stage(), a1, op, a2);
-}
-
-void CBlender_Compile::StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3)
-{
-	RS.SetColor3(Stage(), a1, op, a2, a3);
-}
-
-void CBlender_Compile::StageSET_Alpha(u32 a1, u32 op, u32 a2)
-{
-	RS.SetAlpha(Stage(), a1, op, a2);
-}
-
 void CBlender_Compile::StageSET_TMC(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel)
 {
 	Stage_Texture(T);
 	Stage_Matrix(M, UVW_channel);
 	Stage_Constant(C);
-}
-
-void CBlender_Compile::StageTemplate_LMAP0()
-{
-	StageSET_Address(D3DTADDRESS_CLAMP);
-	StageSET_Color(D3DTA_TEXTURE, D3DTOP_SELECTARG1, D3DTA_DIFFUSE);
-	StageSET_Alpha(D3DTA_TEXTURE, D3DTOP_SELECTARG1, D3DTA_DIFFUSE);
-	StageSET_TMC("$base1", "$null", "$null", 1);
 }
 
 void CBlender_Compile::Stage_Texture(LPCSTR name, u32, u32 fmin, u32 fmip, u32 fmag)
@@ -307,35 +252,6 @@ void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
 	int id = ParseName(name);
 	CMatrix* M = Engine.ResourceManager->_CreateMatrix((id >= 0) ? *lst[id] : name);
 	passMatrices.push_back(M);
-
-	// Setup transform pipeline
-	u32 ID = Stage();
-	if (M)
-	{
-		switch (M->dwMode)
-		{
-		case CMatrix::modeProgrammable:
-			StageSET_Transform(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEPOSITION | ID);
-			break;
-		case CMatrix::modeTCM:
-			StageSET_Transform(D3DTTFF_COUNT2, D3DTSS_TCI_PASSTHRU | iChannel);
-			break;
-		case CMatrix::modeC_refl:
-			StageSET_Transform(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | ID);
-			break;
-		case CMatrix::modeS_refl:
-			StageSET_Transform(D3DTTFF_COUNT2, D3DTSS_TCI_CAMERASPACENORMAL | ID);
-			break;
-		default:
-			StageSET_Transform(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
-			break;
-		}
-	}
-	else
-	{
-		// No Transform at all
-		StageSET_Transform(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
-	}
 }
 void CBlender_Compile::Stage_Constant(LPCSTR name)
 {
@@ -362,18 +278,10 @@ void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCS
 	// Теперь они лягут в чистый RS и не сотрутся.
 	PassSET_ZB(bZtest, bZwrite);
 	PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
-	PassSET_LightFog(FALSE, bFog);
 }
 
 void CBlender_Compile::commit_Pass()
 {
-	// Сброс эмулятора
-	//RS.Invalidate();
-
-	//ctable.clear();
-	//passTextures.clear();
-	//passMatrices.clear();
-	//passConstants.clear();
 	dwStage = 0;
 
 	// Макросы
@@ -408,13 +316,6 @@ void CBlender_Compile::commit_Pass()
 	// SetMapping привязывает сэмплеры к симулятору.
 	// Важно: он использует dest.ps, который теперь безопасно обновлен (даже если он пуст).
 	SetMapping();
-
-	// Отключение последнего стейджа
-	if (0 == xr_stricmp(pass_ps, "null"))
-	{
-		RS.SetTSS(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
-		RS.SetTSS(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	}
 }
 
 void CBlender_Compile::set_Constant(LPCSTR name, R_constant_setup* s)
@@ -427,10 +328,8 @@ void CBlender_Compile::set_Constant(LPCSTR name, R_constant_setup* s)
 
 u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 {
-	//
 	string256 name;
 	strcpy_s(name, _name);
-	//. andy	if (strext(name)) *strext(name)=0;
 	Engine.ResourceManager->fix_texture_name(name);
 
 	// Find index
@@ -440,8 +339,6 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 	R_ASSERT(C->type == RC_sampler);
 	u32 stage = C->samp.index;
 
-	// Create texture
-	// while (stage>=passTextures.size())	passTextures.push_back		(NULL);
 	return stage;
 }
 
@@ -449,14 +346,6 @@ void CBlender_Compile::i_Texture(u32 s, LPCSTR name)
 {
 	if (name)
 		passTextures.push_back(mk_pair(s, ref_texture(Engine.ResourceManager->_CreateTexture(name))));
-}
-
-void CBlender_Compile::i_Projective(u32 s, bool b)
-{
-	if (b)
-		RS.SetTSS(s, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE | D3DTTFF_PROJECTED);
-	else
-		RS.SetTSS(s, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 }
 
 void CBlender_Compile::i_Address(u32 s, u32 address)
@@ -516,9 +405,6 @@ u32 CBlender_Compile::set_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_Proj
 		// Sampler states
 		i_Address(dwStage, address);
 		i_Filter(dwStage, fmin, fmip, fmag);
-
-		if (dwStage < 4)
-			i_Projective(dwStage, b_ps1x_ProjectiveDivide);
 	}
 	return dwStage;
 }

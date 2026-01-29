@@ -48,6 +48,7 @@ class ENGINE_API CGameFont
 
 	ref_shader pShader;
 	ref_geom pGeom;
+	ref_texture m_FontTex;
 
 	u32 nNumChars;
 

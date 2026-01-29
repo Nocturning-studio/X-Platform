@@ -120,7 +120,6 @@ class ENGINE_API CBlender_Compile
 	{
 		PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, bAref, ref);
 	}
-	void PassSET_LightFog(BOOL bLight, BOOL bFog);
 	void PassEnd();
 
 	void PassSET_PS(LPCSTR name, LPCSTR entry);
@@ -147,7 +146,6 @@ class ENGINE_API CBlender_Compile
 	// R1/R2-compiler	[programmable]
 	u32 i_Sampler(LPCSTR name);
 	void i_Texture(u32 s, LPCSTR name);
-	void i_Projective(u32 s, bool b);
 	void i_Address(u32 s, u32 address);
 	void i_BorderColor(u32 s, u32 color);
 	void i_Filter_Min(u32 s, u32 f);

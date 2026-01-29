@@ -43,12 +43,6 @@ IC void R_transforms::set_c_WorldViewProject(R_constant* C)
 	c_WorldViewProject = C;
 	RenderBackend.set_Constant(C, m_WorldViewProject);
 };
-
-IC void CBackend::set_transform(u32 ID, const Fmatrix& Matrix)
-{
-	stat.transforms++;
-	CHK_DX(HW.pDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID, (D3DMATRIX*)&Matrix));
-}
 IC void CBackend::set_transform_world(const Fmatrix& Matrix)
 {
 	transforms.set_World(Matrix);

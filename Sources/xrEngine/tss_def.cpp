@@ -15,7 +15,6 @@ IDirect3DStateBlock9* SimulatorStates::record()
 			CHK_DX(HW.pDevice->SetRenderState((D3DRENDERSTATETYPE)S.v1, S.v2));
 			break;
 		case 1:
-			CHK_DX(HW.pDevice->SetTextureStageState(S.v1, (D3DTEXTURESTAGESTATETYPE)S.v2, S.v3));
 			break;
 		case 2: {
 			CHK_DX(HW.pDevice->SetSamplerState(
@@ -47,25 +46,6 @@ void SimulatorStates::set_RS(u32 a, u32 b)
 	// Register
 	State st;
 	st.set_RS(a, b);
-	States.push_back(st);
-}
-
-void SimulatorStates::set_TSS(u32 a, u32 b, u32 c)
-{
-	// Search duplicates
-	for (int t = 0; t < int(States.size()); t++)
-	{
-		State& S = States[t];
-		if ((1 == S.type) && (a == S.v1) && (b == S.v2))
-		{
-			States.erase(States.begin() + t);
-			break;
-		}
-	}
-
-	// Register
-	State st;
-	st.set_TSS(a, b, c);
 	States.push_back(st);
 }
 
