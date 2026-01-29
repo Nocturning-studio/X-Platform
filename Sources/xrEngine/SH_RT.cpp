@@ -1,7 +1,78 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include "../xrRHI/xrRHI_Types.h"
 #include "ResourceManager.h"
+
+using namespace xrRHI;
+
+// Хелпер для конвертации в D3D9
+static D3DFORMAT RHIFormat_To_D3D9(RHI_Format fmt)
+{
+	switch (fmt)
+	{
+	case RHI_Format::NULLRT:
+		return (D3DFORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
+
+	case RHI_Format::RGBA8_UNORM:
+		return D3DFMT_A8R8G8B8;
+	case RHI_Format::A8_UNORM:
+		return D3DFMT_A8;
+	case RHI_Format::R8_UNORM:
+		return D3DFMT_L8; // Часто используется как R8 в DX9
+
+	case RHI_Format::RGBA16_FLOAT:
+		return D3DFMT_A16B16G16R16F;
+	case RHI_Format::RG16_FLOAT:
+		return D3DFMT_G16R16F;
+	case RHI_Format::R16_FLOAT:
+		return D3DFMT_R16F;
+
+	case RHI_Format::D16_UNORM:
+		return D3DFMT_D16;
+	case RHI_Format::D24_UNORM_S8_UINT:
+		return D3DFMT_D24S8;
+	case RHI_Format::D32_FLOAT:
+		return D3DFMT_D32F_LOCKABLE;
+
+	case RHI_Format::D15S1:
+		return D3DFMT_D15S1;
+	case RHI_Format::D24X8:
+		return D3DFMT_D24X8;
+	case RHI_Format::D32_LOCKABLE:
+		return D3DFMT_D32;
+
+	case RHI_Format::D24S8_Shadow:
+		return (D3DFORMAT)MAKEFOURCC('I', 'N', 'T', 'Z');
+	case RHI_Format::D16_Shadow:
+		return (D3DFORMAT)MAKEFOURCC('D', 'F', '1', '6');
+	case RHI_Format::D24X4S4:
+		return D3DFMT_D24X4S4;
+
+	default:
+		return D3DFMT_UNKNOWN;
+	}
+}
+
+// Хелпер для определения Usage (заменяет твой switch)
+static bool IsDepthStencilFormat(RHI_Format fmt)
+{
+	switch (fmt)
+	{
+	case RHI_Format::D16_UNORM:
+	case RHI_Format::D15S1:
+	case RHI_Format::D24_UNORM_S8_UINT:
+	case RHI_Format::D24X8:
+	case RHI_Format::D32_LOCKABLE:
+	case RHI_Format::D32_FLOAT:
+	case RHI_Format::D24S8_Shadow:
+	case RHI_Format::D16_Shadow:
+	case RHI_Format::D24X4S4:
+		return true;
+	default:
+		return false;
+	}
+}
 
 CRT::CRT()
 {
@@ -9,7 +80,8 @@ CRT::CRT()
 	pRT = NULL;
 	dwWidth = 0;
 	dwHeight = 0;
-	fmt = D3DFMT_UNKNOWN;
+	d3dfmt = D3DFMT_UNKNOWN;
+	fmt = RHI_Format::Unknown;
 }
 CRT::~CRT()
 {
@@ -19,13 +91,13 @@ CRT::~CRT()
 	Engine.ResourceManager->_DeleteRT(this);
 }
 
-void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
+void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
 	if (pSurface)
 		return;
 
 	R_ASSERT(HW.pDevice && Name && Name[0] && w && h);
-	_order = CPU::GetCLK(); 
+	_order = CPU::GetCLK();
 
 	HRESULT _hr;
 
@@ -33,11 +105,14 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
 	dwHeight = h;
 	fmt = f;
 
+	// Конвертируем формат для вызовов DX9
+	d3dfmt = RHIFormat_To_D3D9(f);
+
 	// Get caps
 	D3DCAPS9 caps;
 	R_CHK(HW.pDevice->GetDeviceCaps(&caps));
 
-	// Pow2
+	// Pow2 check
 	if (!btwIsPow2(w) || !btwIsPow2(h))
 	{
 		if (!HW.Caps.raster.bNonPow2)
@@ -47,7 +122,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
 		}
 	}
 
-	// Check width-and-height of render target surface
+	// Check width-and-height limits
 	if (w > caps.MaxTextureWidth)
 	{
 		Msg("*!Resolution of RT(%s), %dx%d, %d is bigger the maximal!!!", Name, w, h, levels);
@@ -58,35 +133,17 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
 		Msg("*!Resolution of RT(%s), %dx%d, %d is bigger the maximal!!!", Name, w, h, levels);
 		return;
 	}
-	
-#pragma todo("NSDeathman to ALL: Разобраться с предупреждением")
-#pragma warning(disable: 4063)
-	// Select usage
-	u32 usage = 0;
-	switch (fmt)
+
+	// Определяем Usage (рендерим в цвет или в глубину)
+	// Мы используем наш RHI хелпер, вместо хардкода switch по D3DFMT
+	u32 usage = D3DUSAGE_RENDERTARGET;
+	if (IsDepthStencilFormat(f))
 	{
-	case D3DFMT_D16_LOCKABLE:
-	case D3DFMT_D32:
-	case D3DFMT_D15S1:
-	case D3DFMT_D24S8:
-	case D3DFMT_D24X8:
-	case D3DFMT_D24X4S4:
-	case D3DFMT_D16:
-	case D3DFMT_D32F_LOCKABLE:
-	case D3DFMT_D24FS8:
-	case MAKEFOURCC('D', 'F', '2', '4'): // fetch smap (ATI 9500)
-	case MAKEFOURCC('D', 'F', '1', '6'): // fetch smap (ATI X1300)
-	case MAKEFOURCC('R', 'A', 'W', 'Z'): // depth as texture (GeForce 6000-7000)
-	case MAKEFOURCC('I', 'N', 'T', 'Z'): // depth as texture (GeForce 8000+, HD 4000+) 
-	case MAKEFOURCC('R', 'E', 'S', 'Z'): // msaa depth as texture (HD 4000+)
 		usage = D3DUSAGE_DEPTHSTENCIL;
-		break;
-	default:
-		usage = D3DUSAGE_RENDERTARGET;
 	}
 
 	// Validate render-target usage
-	_hr = HW.pD3D->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_TEXTURE, f);
+	_hr = HW.pD3D->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_TEXTURE, d3dfmt);
 	if (FAILED(_hr))
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d (CheckDeviceFormat)!!!", Name, w, h, levels);
@@ -95,17 +152,17 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
 
 	// Try to create texture/surface
 	Engine.ResourceManager->Evict();
-	_hr = HW.pDevice->CreateTexture(w, h, levels, usage, f, D3DPOOL_DEFAULT, &pSurface, NULL);
+
+	_hr = HW.pDevice->CreateTexture(w, h, levels, usage, d3dfmt, D3DPOOL_DEFAULT, &pSurface, NULL);
+
 	if (FAILED(_hr) || (0 == pSurface))
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d (CreateTexture)!!!", Name, w, h, levels);
 		return;
 	}
 
-		// OK
-//#ifdef DEBUG
+	// OK
 	Msg("* created RT(%s), %dx%d, %d", Name, w, h, levels);
-//#endif // DEBUG
 	R_CHK(pSurface->GetSurfaceLevel(0, &pRT));
 	pTexture = Engine.ResourceManager->_CreateTexture(Name);
 	pTexture->surface_set(pSurface);
@@ -129,7 +186,7 @@ void CRT::reset_end()
 {
 	create(*cName, dwWidth, dwHeight, fmt);
 }
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
 	_set(Engine.ResourceManager->_CreateRT(Name, w, h, f, levels));
 }

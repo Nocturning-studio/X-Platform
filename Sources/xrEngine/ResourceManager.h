@@ -120,7 +120,7 @@ class ENGINE_API CResourceManager
 	R_constant_table* _CreateConstantTable(R_constant_table& C);
 	void _DeleteConstantTable(const R_constant_table* C);
 
-	CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels = 1);
+	CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
 	void _DeleteRT(const CRT* RT);
 
 	CRTC* _CreateRTC(LPCSTR Name, u32 size, D3DFORMAT f, u32 levels = 1);

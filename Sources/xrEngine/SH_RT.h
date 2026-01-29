@@ -2,6 +2,8 @@
 #define SH_RT_H
 #pragma once
 
+#include "../xrRHI/xrRHI_Types.h"
+
 //////////////////////////////////////////////////////////////////////////
 class ENGINE_API CRT : public xr_resource_named
 {
@@ -12,14 +14,15 @@ class ENGINE_API CRT : public xr_resource_named
 
 	u32 dwWidth;
 	u32 dwHeight;
-	D3DFORMAT fmt;
+	xrRHI::RHI_Format fmt;
+	D3DFORMAT d3dfmt;
 
 	u64 _order;
 
 	CRT();
 	~CRT();
 
-	void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels = 1);
+	void create(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
 	void destroy();
 	void reset_begin();
 	void reset_end();
@@ -90,7 +93,7 @@ class ENGINE_API CRT : public xr_resource_named
 };
 struct ENGINE_API resptrcode_crt : public resptr_base<CRT>
 {
-	void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels = 1);
+	void create(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
 	void destroy()
 	{
 		_set(NULL);

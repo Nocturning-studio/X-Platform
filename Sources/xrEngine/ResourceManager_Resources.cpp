@@ -161,7 +161,7 @@ void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 levels)
+CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels)
 {
 	R_ASSERT(Name && Name[0] && w && h);
 

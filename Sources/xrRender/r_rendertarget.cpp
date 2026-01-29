@@ -24,6 +24,8 @@
 #include "blender_bent_normals.h"
 #include "blender_hi_z.h"
 ///////////////////////////////////////////////////////////////////////////////////
+using namespace xrRHI;
+///////////////////////////////////////////////////////////////////////////////////
 void CRenderTarget::create_textures()
 {
 	Msg("Creating render target textures");
@@ -36,54 +38,54 @@ void CRenderTarget::create_textures()
 	// G-Buffer
 	if (ps_r_shading_mode == 0)
 	{
-		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
-		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
+		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	}
 	else
 	{
-		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
-		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, D3DFMT_A8R8G8B8);
-		rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, D3DFMT_R16F);
-		rt_GBuffer[3].create(r_RT_GBuffer_4, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
+		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
+		rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, RHI_Format::R16_FLOAT);
+		rt_GBuffer[3].create(r_RT_GBuffer_4, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	}
 
-	rt_Hi_z.create(r_RT_Hi_z, dwWidth, dwHeight, D3DFMT_R16F, 9);
+	rt_Hi_z.create(r_RT_Hi_z, dwWidth, dwHeight, RHI_Format::R16_FLOAT, 9);
 
-	rt_Bent_Normals.create(r_RT_Bent_Normals, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_Bent_Normals.create(r_RT_Bent_Normals, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	
 	// DOF Resources
 	// G16R16F: R = Real CoC, G = Dilated (Max) CoC
-	rt_dof_coc.create(r_RT_dof_coc, dwWidth, dwHeight, D3DFMT_G16R16F);
+	rt_dof_coc.create(r_RT_dof_coc, dwWidth, dwHeight, RHI_Format::RG16_FLOAT);
 	// R16F, разрешение / 8 (тайлы 8x8)
 	// Содержит Max Near CoC для тайла.
 	u32 tileW = dwWidth / 8;
 	u32 tileH = dwHeight / 8;
-	rt_dof_dilation.create(r_RT_dof_dilation, tileW, tileH, D3DFMT_R16F);
-	// Буферы для слоев (можно уменьшить разрешение для производительности, например dwWidth/2)
-	rt_dof_near.create(r_RT_dof_near, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
-	rt_dof_far.create(r_RT_dof_far, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_dof_dilation.create(r_RT_dof_dilation, tileW, tileH, RHI_Format::R16_FLOAT);
+	// Буферы для слоев
+	rt_dof_near.create(r_RT_dof_near, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
+	rt_dof_far.create(r_RT_dof_far, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
-	rt_Volumetric_Sun.create(r_RT_Volumetric_Sun, dwWidth, dwHeight, D3DFMT_A8);
+	rt_Volumetric_Sun.create(r_RT_Volumetric_Sun, dwWidth, dwHeight, RHI_Format::A8_UNORM);
 
-	rt_Light_Accumulator.create(r_RT_Light_Accumulator, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_Light_Accumulator.create(r_RT_Light_Accumulator, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
-	rt_Distortion_Mask.create(r_RT_distortion_mask, dwWidth, dwHeight, D3DFMT_G16R16F);
+	rt_Distortion_Mask.create(r_RT_distortion_mask, dwWidth, dwHeight, RHI_Format::RG16_FLOAT);
 
-	rt_Generic[0].create(r_RT_generic0, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
-	rt_Generic[1].create(r_RT_generic1, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_Generic[0].create(r_RT_generic0, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
+	rt_Generic[1].create(r_RT_generic1, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
-	rt_Motion_Blur_Previous_Frame_Depth.create(r_RT_mblur_previous_frame_depth, dwWidth, dwHeight, D3DFMT_R16F);
-	rt_Motion_Blur_Dilation_Map_0.create(r_RT_mblur_dilation_map_0, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_G16R16F);
-	rt_Motion_Blur_Dilation_Map_1.create(r_RT_mblur_dilation_map_1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_G16R16F);
+	rt_Motion_Blur_Previous_Frame_Depth.create(r_RT_mblur_previous_frame_depth, dwWidth, dwHeight, RHI_Format::R16_FLOAT);
+	rt_Motion_Blur_Dilation_Map_0.create(r_RT_mblur_dilation_map_0, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), RHI_Format::RG16_FLOAT);
+	rt_Motion_Blur_Dilation_Map_1.create(r_RT_mblur_dilation_map_1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), RHI_Format::RG16_FLOAT);
 
-	rt_BackbufferMip.create(r_RT_backbuffer_mip, dwWidth, dwHeight, D3DFMT_A16B16G16R16F, 3);
-	rt_Reflections.create(r_RT_reflections, dwWidth, dwHeight, D3DFMT_A16B16G16R16F);
+	rt_BackbufferMip.create(r_RT_backbuffer_mip, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT, 3);
+	rt_Reflections.create(r_RT_reflections, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
-	rt_Radiation_Noise[0].create(r_RT_radiation_noise0, dwWidth, dwHeight, D3DFMT_L8);
-	rt_Radiation_Noise[1].create(r_RT_radiation_noise1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), D3DFMT_L8);
-	rt_Radiation_Noise[2].create(r_RT_radiation_noise2, u32(dwWidth * 0.25f), u32(dwHeight * 0.25f), D3DFMT_L8);
+	rt_Radiation_Noise[0].create(r_RT_radiation_noise0, dwWidth, dwHeight, RHI_Format::R8_UNORM);
+	rt_Radiation_Noise[1].create(r_RT_radiation_noise1, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), RHI_Format::R8_UNORM);
+	rt_Radiation_Noise[2].create(r_RT_radiation_noise2, u32(dwWidth * 0.25f), u32(dwHeight * 0.25f), RHI_Format::R8_UNORM);
 
-	rt_ao.create(r_RT_ao, dwWidth, dwHeight, D3DFMT_L8);
+	rt_ao.create(r_RT_ao, dwWidth, dwHeight, RHI_Format::R8_UNORM);
 
 	t_irradiance_map_0.create(r_T_irradiance0);
 	t_irradiance_map_1.create(r_T_irradiance1);
@@ -94,15 +96,15 @@ void CRenderTarget::create_textures()
 	// BLOOM
 	float BloomResolutionMultiplier = 0.5f;
 	u32 w = u32(dwWidth * BloomResolutionMultiplier), h = u32(dwHeight * BloomResolutionMultiplier);
-	rt_Bloom[0].create(r_RT_bloom1, w, h, D3DFMT_A16B16G16R16F);
-	rt_Bloom[1].create(r_RT_bloom2, w, h, D3DFMT_A16B16G16R16F);
-	rt_Bloom_Blades[0].create(r_RT_bloom_blades1, w, h, D3DFMT_A16B16G16R16F);
-	rt_Bloom_Blades[1].create(r_RT_bloom_blades2, w, h, D3DFMT_A16B16G16R16F);
+	rt_Bloom[0].create(r_RT_bloom1, w, h, RHI_Format::RGBA16_FLOAT);
+	rt_Bloom[1].create(r_RT_bloom2, w, h, RHI_Format::RGBA16_FLOAT);
+	rt_Bloom_Blades[0].create(r_RT_bloom_blades1, w, h, RHI_Format::RGBA16_FLOAT);
+	rt_Bloom_Blades[1].create(r_RT_bloom_blades2, w, h, RHI_Format::RGBA16_FLOAT);
 
 	// autoexposure
-	rt_LUM_Mip_Chain.create(r_RT_autoexposure_mip_chain, dwWidth, dwWidth, D3DFMT_R16F, 9);
-	rt_SceneLuminance.create(r_RT_autoexposure_luminance, 1, 1, D3DFMT_R16F);
-	rt_SceneLuminancePrevious.create(r_RT_autoexposure_luminance_previous, 1, 1, D3DFMT_R16F);
+	rt_LUM_Mip_Chain.create(r_RT_autoexposure_mip_chain, dwWidth, dwWidth, RHI_Format::R16_FLOAT, 9);
+	rt_SceneLuminance.create(r_RT_autoexposure_luminance, 1, 1, RHI_Format::R16_FLOAT);
+	rt_SceneLuminancePrevious.create(r_RT_autoexposure_luminance_previous, 1, 1, RHI_Format::R16_FLOAT);
 }
 
 void CRenderTarget::create_blenders()
@@ -209,8 +211,8 @@ CRenderTarget::CRenderTarget()
 		return;
 
 	u32 size = RenderImplementation.o.smapsize;
-	rt_smap_depth.create(r_RT_smap_depth, size, size, D3DFMT_D32F_LOCKABLE);
-	rt_smap_surf.create(r_RT_smap_surf, size, size, (D3DFORMAT)MAKEFOURCC('N', 'U', 'L', 'L'));
+	rt_smap_depth.create(r_RT_smap_depth, size, size, RHI_Format::D32_FLOAT);
+	rt_smap_surf.create(r_RT_smap_surf, size, size, RHI_Format::NULLRT);
 	rt_smap_ZB = NULL;
 
 	static CTimer phase_timer;
