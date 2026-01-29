@@ -502,8 +502,7 @@ class CRender : public IRender_interface, public pureFrame
 	void render_effectors_pass_resolve_gamma();
 	void output_frame_to_screen();
 	bool need_render_sun();
-	void render_main(Fmatrix& mCombined, bool _fportals, SceneGraphPacket& dest);
-	void render_forward_lights(xr_vector<light*>& lights, int phase, SceneGraphPacket& packet);
+	void render_main(Fmatrix& mCombined, SceneGraphPacket& dest);
 	void query_wait();
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);
