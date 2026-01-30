@@ -155,6 +155,8 @@ void CSunOccluder::Unload()
 
 void CSunOccluder::Render()
 {
+	PROFILE_FUNCTION();
+
 	if (!m_Loaded)
 		return;
 

@@ -1781,6 +1781,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="R_Backend.h" />
+    <ClInclude Include="R_Backend_RenderTarget.h" />
     <ClInclude Include="R_Backend_Runtime.h" />
     <ClInclude Include="R_Backend_tree.h" />
     <ClInclude Include="R_Backend_transform.h" />
@@ -1795,7 +1796,6 @@
     <ClInclude Include="SH_Atomic.h" />
     <ClInclude Include="SH_Constant.h" />
     <ClInclude Include="SH_Matrix.h" />
-    <ClInclude Include="SH_RT.h" />
     <ClInclude Include="SH_Texture.h" />
     <ClInclude Include="SkeletonAnimated.h" />
     <ClInclude Include="SkeletonCustom.h" />
@@ -2027,6 +2027,7 @@
     <ClCompile Include="ResourceManager_Scripting.cpp" />
     <ClCompile Include="R_Backend.cpp" />
     <ClCompile Include="R_Backend_DBG.cpp" />
+    <ClCompile Include="R_Backend_RenderTarget.cpp" />
     <ClCompile Include="R_Backend_Runtime.cpp" />
     <ClCompile Include="R_Backend_tree.cpp" />
     <ClCompile Include="R_Backend_transform.cpp">
@@ -2056,7 +2057,6 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="SH_Matrix.cpp" />
-    <ClCompile Include="SH_RT.cpp" />
     <ClCompile Include="SH_Texture.cpp" />
     <ClCompile Include="SkeletonAnimated.cpp" />
     <ClCompile Include="SkeletonCustom.cpp" />

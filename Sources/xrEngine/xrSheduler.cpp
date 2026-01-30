@@ -308,7 +308,7 @@ void CSheduler::ProcessStep()
 	CTimer eTimer;
 
 	// Константа для ограничения количества обрабатываемых объектов за кадр
-	static const u32 MAX_ITEMS_PER_FRAME = 10;
+	static const u32 MAX_ITEMS_PER_FRAME = 100;
 	u32 processedCount = 0;
 
 	// Также сохраняем ограничение по времени (существующее)

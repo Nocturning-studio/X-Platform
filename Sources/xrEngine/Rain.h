@@ -1,83 +1,63 @@
-// Rain.h: interface for the CRain class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#ifndef RainH
-#define RainH
 #pragma once
+#ifndef RAIN_EFFECT_H_INCLUDED
+#define RAIN_EFFECT_H_INCLUDED
 
 #include "xr_collide_defs.h"
 
-// refs
+// Forward declarations
 class ENGINE_API IRender_DetailModel;
 
-//
 class ENGINE_API CEffect_Rain
 {
   private:
-	struct Item
+	// -------------------------------------------------------------------------
+	// Constants & Settings
+	// -------------------------------------------------------------------------
+	static constexpr int MAX_DESIRED_DROPS = 2500;
+	static constexpr float SOURCE_RADIUS = 20.0f;
+	static constexpr float SOURCE_OFFSET = 30.0f;
+	static constexpr float MAX_DROP_DISTANCE = SOURCE_OFFSET * 1.5f;
+	static constexpr float SINK_OFFSET = -(MAX_DROP_DISTANCE - SOURCE_OFFSET);
+	static constexpr float DROP_WIDTH = 0.30f;
+	static constexpr float DROP_SPEED_MIN = 45.0f;
+	static constexpr float DROP_SPEED_MAX = 90.0f;
+
+	static constexpr int MAX_PARTICLES = 1000;
+	static constexpr int PARTICLES_CACHE = 400;
+	static constexpr float PARTICLE_TIME = 0.3f;
+
+	// -------------------------------------------------------------------------
+	// Internal Structures
+	// -------------------------------------------------------------------------
+	struct RainDrop
 	{
-		Fvector P;
-		Fvector Phit;
-		Fvector D;
+		Fvector P;	  // Position
+		Fvector Phit; // Hit position (end of life)
+		Fvector D;	  // Direction
 		float fSpeed;
 		u32 dwTime_Life;
 		u32 dwTime_Hit;
 		u32 uv_set;
-		void invalidate()
+
+		void Invalidate()
 		{
 			dwTime_Life = 0;
 		}
 	};
-	struct Particle
+
+	struct SplashParticle
 	{
-		Particle *next, *prev;
+		SplashParticle *next, *prev;
 		Fmatrix mTransform;
 		Fsphere bounds;
 		float time;
 	};
-	enum States
+
+	enum EState
 	{
 		stIdle = 0,
 		stWorking
 	};
-
-  private:
-	// Visualization	(rain)
-	ref_shader SH_Rain;
-	ref_geom hGeom_Rain;
-
-	// Visualization	(drops)
-	IRender_DetailModel* DM_Drop;
-	ref_geom hGeom_Drops;
-
-	// Data and logic
-	xr_vector<Item> items;
-	States state;
-
-	// Particles
-	xr_vector<Particle> particle_pool;
-	Particle* particle_active;
-	Particle* particle_idle;
-
-	// Sounds
-	ref_sound snd_Ambient;
-
-	// Utilities
-	void p_create();
-	void p_destroy();
-
-	void p_remove(Particle* P, Particle*& LST);
-	void p_insert(Particle* P, Particle*& LST);
-	int p_size(Particle* LST);
-	Particle* p_allocate();
-	void p_free(Particle* P);
-
-	// Some methods
-	void Born(Item& dest, float radius);
-	void Hit(Fvector& pos);
-	BOOL RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
-	void RenewItem(Item& dest, float height, BOOL bHit);
 
   public:
 	CEffect_Rain();
@@ -88,8 +68,56 @@ class ENGINE_API CEffect_Rain
 
 	void InvalidateState()
 	{
-		state = stIdle;
+		m_state = stIdle;
 	}
+
+  private:
+	// -------------------------------------------------------------------------
+	// Core Logic
+	// -------------------------------------------------------------------------
+	void SpawnDrop(RainDrop& dest, float radius);
+	void SpawnSplash(const Fvector& pos);
+	void RenewDrop(RainDrop& dest, float height, BOOL bHit);
+
+	// Physics Helpers
+	BOOL RayTrace(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
+
+	// Render Helpers
+	void UpdateAndRenderDrops(u32 desired_items, u32 rain_color);
+	void UpdateAndRenderSplashes(u32 rain_color);
+
+	// -------------------------------------------------------------------------
+	// Particle System (Manual Linked List Management)
+	// -------------------------------------------------------------------------
+	void InitParticlePool();
+	void DestroyParticlePool();
+
+	SplashParticle* AllocateParticle();
+	void FreeParticle(SplashParticle* P);
+
+	void ListRemove(SplashParticle* P, SplashParticle*& LST);
+	void ListInsert(SplashParticle* P, SplashParticle*& LST);
+
+  private:
+	// -------------------------------------------------------------------------
+	// Members
+	// -------------------------------------------------------------------------
+
+	// Resources
+	ref_shader m_sh_rain;
+	ref_geom m_geom_rain;
+	ref_geom m_geom_drops;
+	IRender_DetailModel* m_dm_drop;
+	ref_sound m_snd_ambient;
+
+	// Data
+	xr_vector<RainDrop> m_drops;
+	EState m_state;
+
+	// Particles Data
+	xr_vector<SplashParticle> m_particle_pool;
+	SplashParticle* m_particle_active;
+	SplashParticle* m_particle_idle;
 };
 
-#endif // RainH
+#endif // RAIN_EFFECT_H_INCLUDED

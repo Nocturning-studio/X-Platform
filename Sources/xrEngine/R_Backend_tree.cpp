@@ -13,8 +13,6 @@ void R_tree::unmap()
 	c_m_transform_v = 0;
 	c_m_transform = 0;
 	c_consts = 0;
-	c_wave = 0;
-	c_wind = 0;
 	c_c_scale = 0;
 	c_c_bias = 0;
 	c_c_sun = 0;
@@ -36,18 +34,6 @@ void R_tree::set_consts(float x, float y, float z, float w)
 {
 	if (c_consts)
 		RenderBackend.set_Constant(c_consts, x, y, z, w);
-}
-
-void R_tree::set_wave(Fvector4& vec)
-{
-	if (c_wave)
-		RenderBackend.set_Constant(c_wave, vec);
-}
-
-void R_tree::set_wind(Fvector4& vec)
-{
-	if (c_wind)
-		RenderBackend.set_Constant(c_wind, vec);
 }
 
 void R_tree::set_c_scale(float x, float y, float z, float w)

@@ -164,6 +164,8 @@ float CEnvironment::GetFlaresBlendFactor()
 
 void CEnvironment::RenderThunderbolt()
 {
+	PROFILE_FUNCTION();
+
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
 		return;
@@ -174,6 +176,8 @@ void CEnvironment::RenderThunderbolt()
 
 void CEnvironment::RenderRain()
 {
+	PROFILE_FUNCTION();
+
 #ifndef _EDITOR
 	if (0 == g_pGameLevel)
 		return;

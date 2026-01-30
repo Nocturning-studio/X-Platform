@@ -13,7 +13,7 @@
 #include "sh_texture.h"
 #include "sh_matrix.h"
 #include "sh_constant.h"
-#include "sh_rt.h"
+#include "R_Backend_RenderTarget.h"
 
 typedef xr_vector<shared_str> sh_list;
 class ENGINE_API CBlender_Compile;

@@ -91,12 +91,6 @@
     <Filter Include="Render\Execution &amp; 3D\Shaders\Textures">
       <UniqueIdentifier>{81472fa7-a743-489b-8725-c5b113c58a95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\ShaderManager">
-      <UniqueIdentifier>{7deb06de-3c1f-44a8-98c7-3cb9155ef1ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator">
-      <UniqueIdentifier>{5cef2cc9-69b1-4272-ba65-88bae03f7305}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\Shaders\Resources">
       <UniqueIdentifier>{b104494e-fe57-4f0f-b010-808f2c228d82}</UniqueIdentifier>
     </Filter>
@@ -225,6 +219,12 @@
     </Filter>
     <Filter Include="Render\Camera view">
       <UniqueIdentifier>{63460ad0-eae8-45c6-b91e-973f5bf1ca88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Execution &amp; 3D\Shaders\Resource Manager">
+      <UniqueIdentifier>{7deb06de-3c1f-44a8-98c7-3cb9155ef1ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Execution &amp; 3D\Shaders\Resource Manager\doug_lea_memory_allocator">
+      <UniqueIdentifier>{5cef2cc9-69b1-4272-ba65-88bae03f7305}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -433,16 +433,16 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
     <ClInclude Include="ETextureParams.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="TextureDescrManager.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="doug_lea_memory_allocator.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager\doug_lea_memory_allocator</Filter>
     </ClInclude>
     <ClInclude Include="r_constants.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
@@ -454,9 +454,6 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_Matrix.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_RT.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_Texture.h">
@@ -550,13 +547,13 @@
       <Filter>Game API\Environment\Hemisphere</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCompile.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="ShaderResourceTraits.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="ShaderMacros.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="CPhotoMode.h">
       <Filter>Game API\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
@@ -659,6 +656,9 @@
     </ClInclude>
     <ClInclude Include="Blender_Recorder.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="R_Backend_RenderTarget.h">
+      <Filter>Render\Backend</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -858,28 +858,28 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
     <ClCompile Include="ETextureParams.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Loader.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Reset.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Resources.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Scripting.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="TextureDescrManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="doug_lea_memory_allocator.c">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager\doug_lea_memory_allocator</Filter>
     </ClCompile>
     <ClCompile Include="r_constants.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
@@ -891,9 +891,6 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Matrix.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_RT.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Texture.cpp">
@@ -984,7 +981,7 @@
       <Filter>Game API\Environment\Hemisphere</Filter>
     </ClCompile>
     <ClCompile Include="ShaderMacros.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="CPhotoMode.cpp">
       <Filter>Game API\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
@@ -1114,6 +1111,9 @@
     </ClCompile>
     <ClCompile Include="Blender_Recorder.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="R_Backend_RenderTarget.cpp">
+      <Filter>Render\Backend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

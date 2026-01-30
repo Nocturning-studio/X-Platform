@@ -1,7 +1,9 @@
-#ifndef SH_RT_H
-#define SH_RT_H
+#ifndef R_BACKEND_RENDERTARGET_H
+#define R_BACKEND_RENDERTARGET_H
 #pragma once
 
+#include "xr_resource.h"
+#include "SH_Texture.h" // Необходимо для ref_texture
 #include "../xrRHI/xrRHI_Types.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,6 +93,7 @@ class ENGINE_API CRT : public xr_resource_named
 		return surface;
 	}
 };
+
 struct ENGINE_API resptrcode_crt : public resptr_base<CRT>
 {
 	void create(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
@@ -180,6 +183,7 @@ class ENGINE_API CRTC : public xr_resource_named
 		return surface;
 	}
 };
+
 struct ENGINE_API resptrcode_crtc : public resptr_base<CRTC>
 {
 	void create(LPCSTR Name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
@@ -190,4 +194,4 @@ struct ENGINE_API resptrcode_crtc : public resptr_base<CRTC>
 };
 typedef resptr_core<CRTC, resptrcode_crtc> ref_rtc;
 
-#endif // SH_RT_H
+#endif // R_BACKEND_RENDERTARGET_H

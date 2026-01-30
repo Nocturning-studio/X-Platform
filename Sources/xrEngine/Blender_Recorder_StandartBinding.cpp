@@ -46,8 +46,6 @@ BIND_DECLARE(WorldViewProject);
 DECLARE_TREE_BIND(m_transform_v);
 DECLARE_TREE_BIND(m_transform);
 DECLARE_TREE_BIND(consts);
-DECLARE_TREE_BIND(wave);
-DECLARE_TREE_BIND(wind);
 DECLARE_TREE_BIND(c_scale);
 DECLARE_TREE_BIND(c_bias);
 DECLARE_TREE_BIND(c_sun);
@@ -531,8 +529,6 @@ void CBlender_Compile::SetMapping()
 	set_Constant("m_transform_v", &tree_binder_m_transform_v);
 	set_Constant("m_transform", &tree_binder_m_transform);
 	set_Constant("consts", &tree_binder_consts);
-	set_Constant("wave", &tree_binder_wave);
-	set_Constant("wind", &tree_binder_wind);
 	set_Constant("c_scale", &tree_binder_c_scale);
 	set_Constant("c_bias", &tree_binder_c_bias);
 	set_Constant("c_sun", &tree_binder_c_sun);

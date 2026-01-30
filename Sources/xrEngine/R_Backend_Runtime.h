@@ -6,7 +6,7 @@
 #include "sh_texture.h"
 #include "sh_matrix.h"
 #include "sh_constant.h"
-#include "sh_rt.h"
+#include "R_Backend_RenderTarget.h"
 
 IC void R_transforms::set_c_World(R_constant* C)
 {

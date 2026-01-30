@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "../xrRHI/xrRHI_Types.h"
+#include "R_Backend_RenderTarget.h"
 #include "ResourceManager.h"
+#include "../xrRHI/xrRHI_Types.h"
 
 using namespace xrRHI;
 
@@ -54,7 +55,7 @@ static D3DFORMAT RHIFormat_To_D3D9(RHI_Format fmt)
 	}
 }
 
-// Хелпер для определения Usage (заменяет твой switch)
+// Хелпер для определения Usage
 static bool IsDepthStencilFormat(RHI_Format fmt)
 {
 	switch (fmt)
@@ -74,6 +75,10 @@ static bool IsDepthStencilFormat(RHI_Format fmt)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
+// CRT Implementation
+//////////////////////////////////////////////////////////////////////////
+
 CRT::CRT()
 {
 	pSurface = NULL;
@@ -83,6 +88,7 @@ CRT::CRT()
 	d3dfmt = D3DFMT_UNKNOWN;
 	fmt = RHI_Format::Unknown;
 }
+
 CRT::~CRT()
 {
 	destroy();
@@ -135,7 +141,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	}
 
 	// Определяем Usage (рендерим в цвет или в глубину)
-	// Мы используем наш RHI хелпер, вместо хардкода switch по D3DFMT
 	u32 usage = D3DUSAGE_RENDERTARGET;
 	if (IsDepthStencilFormat(f))
 	{
@@ -178,20 +183,26 @@ void CRT::destroy()
 	_RELEASE(pRT);
 	_RELEASE(pSurface);
 }
+
 void CRT::reset_begin()
 {
 	destroy();
 }
+
 void CRT::reset_end()
 {
 	create(*cName, dwWidth, dwHeight, fmt);
 }
+
 void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
 	_set(Engine.ResourceManager->_CreateRT(Name, w, h, f, levels));
 }
 
 //////////////////////////////////////////////////////////////////////////
+// CRTC Implementation
+//////////////////////////////////////////////////////////////////////////
+
 CRTC::CRTC()
 {
 	if (pSurface)
@@ -203,6 +214,7 @@ CRTC::CRTC()
 	d3dfmt = D3DFMT_UNKNOWN;
 	fmt = RHI_Format::Unknown;
 }
+
 CRTC::~CRTC()
 {
 	destroy();
@@ -225,7 +237,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	fmt = f;
 
 	// 1. Конвертируем формат для DX9
-	D3DFORMAT d3dfmt = RHIFormat_To_D3D9(f);
+	d3dfmt = RHIFormat_To_D3D9(f);
 
 	// Get caps
 	D3DCAPS9 caps;
@@ -275,10 +287,12 @@ void CRTC::destroy()
 		_RELEASE(pRT[face]);
 	_RELEASE(pSurface);
 }
+
 void CRTC::reset_begin()
 {
 	destroy();
 }
+
 void CRTC::reset_end()
 {
 	create(*cName, dwSize, fmt);
