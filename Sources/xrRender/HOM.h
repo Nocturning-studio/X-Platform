@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../xrEngine/IGame_Persistent.h"
+#include <occRasterizer.h>
 
 class occTri;
 
@@ -27,6 +28,12 @@ class CHOM
 	xrCriticalSection MT;
 	volatile u32 MT_frame_rendered;
 
+	// Двойная буферизация растеризатора
+	// 0 - читаем (Main Thread), 1 - пишем (Worker Thread), и наоборот
+	occRasterizer m_Raster[2];
+	u32 m_idx_read;	 // Индекс буфера, из которого читает visible()
+	u32 m_idx_write; // Индекс буфера, в который пишет MT_RENDER()
+
 	void ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFrustum& clip);
 
 	void Render_DB(CFrustum& base);
@@ -35,8 +42,6 @@ class CHOM
 	void Load();
 	void Unload();
 	void Render(CFrustum& base);
-	void Render_ZB();
-	//	void					Debug		();
 
 	void occlude(Fbox2& space)
 	{
@@ -44,17 +49,11 @@ class CHOM
 	void Disable();
 	void Enable();
 
+	void StartFrame();
+
 	void __stdcall MT_RENDER();
 	ICF void MT_SYNC()
 	{
-		if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-			return;
-
-		// Быстрая проверка перед вызовом MT_RENDER
-		if (MT_frame_rendered != Engine.TimeManager.GetFrameCount())
-		{
-			MT_RENDER();
-		}
 	}
 
 	BOOL visible(vis_data& vis);

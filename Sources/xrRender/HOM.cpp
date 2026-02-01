@@ -4,40 +4,29 @@
 #include "../xrEngine/GameFont.h"
 #include <algorithm>
 
-// Удаляем ppl.h, так как растеризация должна быть однопоточной для безопасности
-// #include <ppl.h>
-
 float psOSSR = .001f;
 
 // -----------------------------------------------------------------------------
-// ИСПРАВЛЕНИЕ 1: Синхронизация
-// -----------------------------------------------------------------------------
+void CHOM::StartFrame()
+{
+	// Меняем буферы местами
+	// То, что записали в прошлом кадре (Write), теперь становится доступно для чтения (Read)
+	// А старый буфер чтения отдаем на перезапись
+	std::swap(m_idx_read, m_idx_write);
+}
+
 void __stdcall CHOM::MT_RENDER()
 {
 	PROFILE_FUNCTION();
 
-	// Если уже отрисовали для этого кадра - выходим
-	if (MT_frame_rendered == Engine.TimeManager.GetFrameCount())
-		return;
-
-	// Блокировка главного меню
 	if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
 		return;
 
-	// ИСПРАВЛЕНИЕ: Используем Enter() вместо TryEnter().
-	// Мы ОБЯЗАНЫ дождаться окончания расчета, иначе visible() будет читать мусор.
-	MT.Enter();
-
-	// Двойная проверка под замком
-	if (MT_frame_rendered != Engine.TimeManager.GetFrameCount())
-	{
-		CFrustum ViewBase;
-		ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-		Enable();
-		Render(ViewBase);
-	}
-
-	MT.Leave();
+	// Мы пишем в m_idx_write, а Main Thread читает из m_idx_read.
+	CFrustum ViewBase;
+	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	Enable();
+	Render(ViewBase);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -49,6 +38,9 @@ CHOM::CHOM()
 	bEnabled = FALSE;
 	m_pModel = 0;
 	m_pTris = 0;
+	m_idx_read = 0;
+	m_idx_write = 1;
+
 #ifdef DEBUG
 	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1000);
 #endif
@@ -165,7 +157,6 @@ class pred_fb
 void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFrustum& clip)
 {
 	sPoly src, dst;
-
 	occTri& T = m_pTris[it->id];
 	u32 next = _frame + ::Random.randI(3, 10);
 
@@ -178,9 +169,6 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 	CDB::TRI& t = m_pModel->get_tris()[it->id];
 	Fvector* fvert = m_pModel->get_verts();
 	src.clear();
-
-	// Оптимизация: reserve
-	// src.reserve(3);
 	src.push_back(fvert[t.verts[0]]);
 	src.push_back(fvert[t.verts[1]]);
 	src.push_back(fvert[t.verts[2]]);
@@ -202,9 +190,9 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 		m_transform.transform(T.raster[0], (*P)[0]);
 		m_transform.transform(T.raster[1], (*P)[vert_it + 0]);
 		m_transform.transform(T.raster[2], (*P)[vert_it + 1]);
-		// ВНИМАНИЕ: Raster.rasterize НЕ ПОТОКОБЕЗОПАСЕН!
-		// Вызов должен происходить последовательно.
-		pixels += Raster.rasterize(&T);
+
+		// ВАЖНО: Используем буфер ЗАПИСИ
+		pixels += m_Raster[m_idx_write].rasterize(&T);
 	}
 	if (0 == pixels)
 	{
@@ -265,10 +253,12 @@ void CHOM::Render(CFrustum& base)
 		return;
 
 	Engine.Statistic->RenderCALC_HOM.Begin();
-	Raster.clear();
+
+	// Используем буфер для ЗАПИСИ
+	m_Raster[m_idx_write].clear();
 	Render_DB(base);
-	Raster.propagade();
-	MT_frame_rendered = Engine.TimeManager.GetFrameCount();
+	m_Raster[m_idx_write].propagade();
+
 	Engine.Statistic->RenderCALC_HOM.End();
 }
 
@@ -327,12 +317,11 @@ ICF BOOL transform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, flo
 }
 
 // Проверка видимости для AABB (8 углов)
-IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01)
+IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01, occRasterizer& raster)
 {
 	Fvector2 min, max;
 	float z;
 
-	// Проверяем все 8 вершин бокса
 	if (transform_b0(min, max, z, m_transform_01, B.min.x, B.min.y, B.min.z))
 		return TRUE;
 	if (transform_b1(min, max, z, m_transform_01, B.min.x, B.min.y, B.max.z))
@@ -350,8 +339,7 @@ IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01)
 	if (transform_b1(min, max, z, m_transform_01, B.max.x, B.max.y, B.min.z))
 		return TRUE;
 
-	// Запрос к растеризатору
-	return Raster.test(min.x, min.y, max.x, max.y, z);
+	return raster.test(min.x, min.y, max.x, max.y, z);
 }
 
 // =============================================================================
@@ -362,24 +350,22 @@ BOOL CHOM::visible(Fbox3& B)
 {
 	if (!bEnabled)
 		return TRUE;
-	// Если камера внутри бокса - он видим
 	if (B.contains(Engine.RenderView.Position))
 		return TRUE;
 
-	return _visible(B, m_transform_01);
+	// Читаем из ГОТОВОГО буфера (прошлый кадр)
+	return _visible(B, m_transform_01, m_Raster[m_idx_read]);
 }
 
 BOOL CHOM::visible(Fbox2& B, float depth)
 {
 	if (!bEnabled)
 		return TRUE;
-	return Raster.test(B.min.x, B.min.y, B.max.x, B.max.y, depth);
+	return m_Raster[m_idx_read].test(B.min.x, B.min.y, B.max.x, B.max.y, depth);
 }
 
 BOOL CHOM::visible(vis_data& vis)
 {
-	// 1. Проверка временной когерентности (Temporal Coherence)
-	// Если мы решили, что объект видим в прошлом кадре, мы можем пропустить проверку на несколько кадров
 	if (Engine.TimeManager.GetFrameCount() < vis.hom_frame)
 		return TRUE;
 
@@ -392,19 +378,16 @@ BOOL CHOM::visible(vis_data& vis)
 	Engine.Statistic->RenderCALC_HOM.Begin();
 #endif
 
-	// Реальная проверка
-	BOOL result = _visible(vis.box, m_transform_01);
+	// Читаем из ГОТОВОГО буфера
+	BOOL result = _visible(vis.box, m_transform_01, m_Raster[m_idx_read]);
 
 	u32 delay = 1;
 	if (result)
 	{
-		// Если объект ВИДЕН - откладываем следующую проверку на случайное время (5-25 кадров)
-		// Это снижает нагрузку на CPU, так как видимые объекты редко становятся невидимыми мгновенно
 		delay = ::Random.randI(5 * 2, 5 * 5);
 	}
 	else
 	{
-		// Если объект СКРЫТ - проверяем каждый кадр (или через 1), чтобы "поймать" момент появления
 		delay = 1;
 	}
 
@@ -418,6 +401,7 @@ BOOL CHOM::visible(vis_data& vis)
 	return result;
 }
 
+
 BOOL CHOM::visible(sPoly& P)
 {
 	if (!bEnabled)
@@ -429,7 +413,6 @@ BOOL CHOM::visible(sPoly& P)
 	if (P.empty())
 		return TRUE;
 
-	// Проекция произвольного полигона
 	if (transform_b0(min, max, z, m_transform_01, P.front().x, P.front().y, P.front().z))
 		return TRUE;
 
@@ -437,7 +420,7 @@ BOOL CHOM::visible(sPoly& P)
 		if (transform_b1(min, max, z, m_transform_01, P[it].x, P[it].y, P[it].z))
 			return TRUE;
 
-	return Raster.test(min.x, min.y, max.x, max.y, z);
+	return m_Raster[m_idx_read].test(min.x, min.y, max.x, max.y, z);
 }
 
 void CHOM::Disable()

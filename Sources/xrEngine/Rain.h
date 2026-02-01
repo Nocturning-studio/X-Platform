@@ -159,6 +159,8 @@ class ENGINE_API CEffect_Rain
 
 	// Индекс буфера, который сейчас "Фронтальный" (из которого читаем)
 	u32 m_front_buffer_idx;
+
+	xrCriticalSection m_particle_cs;
 };
 
 #endif // RAIN_EFFECT_H_INCLUDED

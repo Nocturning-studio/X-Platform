@@ -338,8 +338,13 @@ void CRender::OnFrame()
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
 	}
 
-	// MT-HOM (@front)
-	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(&HOM, &CHOM::MT_RENDER));
+	{
+		// 1. Меняем буферы
+		HOM.StartFrame();
+
+		// 2. Запускаем задачу, которая будет писать в НОВЫЙ буфер
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(&HOM, &CHOM::MT_RENDER));
+	}
 }
 
 // Implementation

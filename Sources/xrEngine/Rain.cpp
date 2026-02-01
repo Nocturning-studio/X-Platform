@@ -12,32 +12,57 @@
 #include "xr_object.h"
 #endif
 //////////////////////////////////////////////////////////////////////
-// Xorshift RNG - очень быстрый и не требует глобального состояния
+// Xorshift RNG с MurmurHash3 инициализацией
 //////////////////////////////////////////////////////////////////////
 struct FastRandom
 {
 	u32 state;
-	FastRandom(u32 seed) : state(seed)
+
+	// Конструктор теперь делает "лавину" битов (Avalanche effect).
+	// Даже если seed отличается на 1 бит, state изменится до неузнаваемости.
+	FastRandom(u32 seed)
 	{
+		state = seed;
 		if (state == 0)
 			state = 123456789;
+
+		// MurmurHash3 finalizer mix function
+		// Это разбивает линейную зависимость от времени и индекса
+		state ^= state >> 16;
+		state *= 0x85ebca6b;
+		state ^= state >> 13;
+		state *= 0xc2b2ae35;
+		state ^= state >> 16;
 	}
 
+	// Возвращает float от min до max
 	IC float randF(float min, float max)
 	{
 		return min + randF() * (max - min);
 	}
 
+	// Возвращает float [0..1]
 	IC float randF()
-	{ // 0..1
+	{
+		// Xorshift32 algorithm
 		state ^= state << 13;
 		state ^= state >> 17;
 		state ^= state << 5;
-		return float(state) * (1.0f / 4294967296.0f);
+
+		// Оптимизированное преобразование в float [0..1)
+		// Используем маску мантиссы IEEE 754 (быстрее, чем деление/умножение)
+		// union позволяет делать это без нарушения strict aliasing в MSVC
+		union {
+			u32 i;
+			float f;
+		} u;
+		u.i = (state & 0x007FFFFF) | 0x3F800000;
+		return u.f - 1.0f;
 	}
 
+	// Возвращает int [0..max-1]
 	IC int randI(int max)
-	{ // 0..max-1
+	{
 		return iFloor(randF() * max);
 	}
 };
@@ -91,7 +116,7 @@ CEffect_Rain::~CEffect_Rain()
 void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 {
 	// -------------------------------------------------------------------------
-	// 1. Параметры окружения (Чтение Environment безопасно)
+	// 1. Параметры окружения
 	// -------------------------------------------------------------------------
 	CEnvDescriptorMixer* env = g_pGamePersistent->Environment().CurrentEnv;
 	float wind_strength = env->wind_strength;
@@ -100,48 +125,34 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	// -------------------------------------------------------------------------
 	// 2. Расчет угла падения (Tilt)
 	// -------------------------------------------------------------------------
-	// Чем сильнее ветер, тем острее угол
 	float tilt_factor = 1.0f - (wind_strength * 0.6f);
 	float angle_deg = 90.0f * tilt_factor;
 	clamp(angle_deg, 55.0f, 90.0f);
 
-	// Матрица вращения для направления падения
 	Fmatrix m_rotate;
 	float rot_x = deg2rad(angle_deg);
 	float rot_y = -(wind_direction + PI_DIV_2);
 	m_rotate.setXYZi(rot_x, rot_y, 0.0f);
-
-	// Устанавливаем направление
 	dest.D.set(m_rotate.k);
 
 	// -------------------------------------------------------------------------
-	// 3. Расчет позиции спавна (Volume Spawning)
+	// 3. Расчет позиции спавна
 	// -------------------------------------------------------------------------
-
-	// Случайная высота от 5м до потолка (SOURCE_OFFSET)
-	// Используем R.randF() вместо ::Random
 	float min_h = 5.0f;
 	float max_h = SOURCE_OFFSET;
 	float spawn_h = min_h + R.randF() * (max_h - min_h);
 
-	// Смещение "против ветра" (Upwind Offset).
-	// Чтобы капли, рожденные высоко, падали в поле зрения камеры,
-	// их нужно сдвинуть навстречу ветру.
 	float wind_shift_dist = spawn_h / tanf(deg2rad(angle_deg));
-
 	Fvector wind_shift_dir;
 	wind_shift_dir.setHP(wind_direction, 0.0f);
 	wind_shift_dir.mul(-wind_shift_dist);
 
-	// Равномерное распределение по кругу
-	// sqrt нужен для равномерной плотности площади круга
 	float dist = radius * _sqrt(R.randF());
 	float ang = R.randF(0.0f, PI_MUL_2);
 
 	Fvector offset;
 	offset.set(dist * _cos(ang), 0.f, dist * _sin(ang));
 
-	// Финальная позиция = Камера + Круг + Смещение ветра + Высота
 	Fvector& cam_pos = Engine.RenderView.Position;
 	dest.P.set(cam_pos.x + offset.x + wind_shift_dir.x, cam_pos.y + spawn_h, cam_pos.z + offset.z + wind_shift_dir.z);
 
@@ -151,56 +162,47 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	dest.fSpeed = R.randF(DROP_SPEED_MIN, DROP_SPEED_MAX) * (1.0f + wind_strength * 0.25f);
 
 	// -------------------------------------------------------------------------
-	// 5. Трассировка луча (RayTrace)
+	// 5. Трассировка луча
 	// -------------------------------------------------------------------------
 	float check_dist = MAX_DROP_DISTANCE * 1.5f;
 	float hit_dist = check_dist;
 
-	// ВАЖНО: rqtStatic - самый безопасный вариант для многопоточности.
-	// Мы проверяем только геометрию уровня. Дождь сквозь динамику (акторов) - это
-	// допустимый компромисс ради скорости и стабильности.
 	BOOL b_hit = RayTrace(dest.P, dest.D, hit_dist, collide::rqtStatic);
 
 	// -------------------------------------------------------------------------
-	// 6. Расчет времени жизни
+	// 6. Расчет времени жизни (ИСПРАВЛЕНО)
 	// -------------------------------------------------------------------------
-
-	// Выбираем случайный UV-сет (текстуру капли)
 	dest.uv_set = R.randI(2);
 
-	// Время полета в миллисекундах до точки удара (или конца дистанции)
-	float time_to_fly = 1000.0f * hit_dist / dest.fSpeed;
-
-	// Получаем время потокобезопасно (Engine.TimeManager читает атомарные переменные или константы кадра)
+	// Получаем время потокобезопасно
 	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 	u32 delta = Engine.TimeManager.GetDeltaTimeMs();
 
 	if (b_hit)
 	{
-		// Капля ударится о землю
-		dest.dwTime_Life = cur_time + iFloor(time_to_fly) - delta;
-		dest.dwTime_Hit = dest.dwTime_Life; // Время удара совпадает со смертью
+		// Смещаем точку удара немного вверх от поверхности (5 см)
+		const float SURFACE_OFFSET = 0.05f;
+		hit_dist -= SURFACE_OFFSET;
 
-		// Точка удара для спавна брызг
 		dest.Phit.mad(dest.P, dest.D, hit_dist);
+
+		// Время полета до точки удара (в миллисекундах)
+		float time_to_fly = 1000.0f * hit_dist / dest.fSpeed;
+		dest.dwTime_Life = cur_time + iFloor(time_to_fly) - delta;
+		dest.dwTime_Hit = dest.dwTime_Life;
 	}
 	else
 	{
-		// Капля улетит в никуда (не попала в геометрию)
+		// Капля не попала в геометрию
+		float time_to_fly = 1000.0f * check_dist / dest.fSpeed;
 		dest.dwTime_Life = cur_time + iFloor(time_to_fly) - delta;
-
-		// Время удара ставим далеко в будущее, чтобы splash никогда не сработал
-		dest.dwTime_Hit = cur_time + iFloor(2.0f * time_to_fly) - delta;
+		dest.dwTime_Hit = 0;   // 0 означает "нет удара"
 		dest.Phit.set(dest.P); // Значение не важно
 	}
 }
 
 BOOL CEffect_Rain::RayTrace(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
-#ifdef _EDITOR
-	Tools->RayPick(s, d, range);
-	return TRUE;
-#else
 	if (!g_pGameLevel)
 		return FALSE;
 
@@ -208,9 +210,10 @@ BOOL CEffect_Rain::RayTrace(const Fvector& s, const Fvector& d, float& range, co
 	CObject* E = g_pGameLevel->CurrentViewEntity();
 	BOOL res = g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
 	if (res)
-		range = RQ.range;
+	{
+		range = RQ.range - 0.01f;
+	}
 	return res;
-#endif
 }
 
 void CEffect_Rain::SimulateDrops(float dt)
@@ -224,9 +227,9 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(MAX_DESIRED_DROPS));
 
-	// Инициализация при старте (оставляем как есть, это один раз)
+	// Инициализация при необходимости
 	{
-		FastRandom R(123); // Временный рандом для инита
+		FastRandom R(123);
 		while (m_drops.size() < desired_items)
 		{
 			RainDrop one;
@@ -242,63 +245,163 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 	const Fvector& view_pos = Engine.RenderView.Position;
 	u32 global_time = Engine.TimeManager.GetGlobalTimeMs();
+	u32 current_frame = Engine.TimeManager.GetFrameCount();
 	float radius_wrap_sqr = _sqr((SOURCE_RADIUS + 2.0f));
 
-	// 1. Локальные буферы для Render Items
+	// Локальные буферы
 	concurrency::combinable<xr_vector<RainDrawParam>> local_render_buffers;
-
-	// 2. Локальные буферы для отложенных Splash (координаты)
-	// Чтобы не лочить particle system
 	concurrency::combinable<xr_vector<Fvector>> local_splash_queue;
 
-	// ПАРАЛЛЕЛЬНЫЙ ЦИКЛ БЕЗ LOCK_GUARD
+	// ПАРАЛЛЕЛЬНЫЙ ЦИКЛ
 	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i) {
-		// Создаем seed на основе индекса и времени, чтобы у каждого потока/капли был уникальный рандом
-		FastRandom R(u32(i + global_time));
+		// Генерация уникального seed
+		u32 seed = u32(i) ^ (current_frame * 719393u) ^ global_time;
+		FastRandom R(seed);
 
 		RainDrop& drop = m_drops[i];
 		bool respawn_needed = false;
+		bool just_hit = false; // Флаг, что капля только что ударилась
 
-		// Check Life
-		if (drop.dwTime_Life < global_time)
-			respawn_needed = true;
+		// ---------------------------------------------------------------------
+		// 1. ПРОВЕРКА СТОЛКНОВЕНИЯ НА ТЕКУЩЕМ ШАГЕ
+		// ---------------------------------------------------------------------
+		float move_dist = drop.fSpeed * dt;
+		float check_dist = move_dist * 1.1f; // Проверяем чуть дальше
 
-		// Physics
-		drop.P.mad(drop.D, drop.fSpeed * dt);
+		// Рассчитываем новую позицию
+		Fvector new_pos;
+		new_pos.mad(drop.P, drop.D, move_dist);
 
-		// Check Bounds
-		if (!respawn_needed)
+		// Проверяем луч от текущей позиции к новой
+		float hit_dist = check_dist;
+
+		if (RayTrace(drop.P, drop.D, hit_dist, collide::rqtStatic))
 		{
-			if (drop.P.distance_to_sqr(view_pos) > radius_wrap_sqr)
-				respawn_needed = true;
-			else if ((drop.P.y - view_pos.y) < SINK_OFFSET)
-				respawn_needed = true;
+			// Капля ударилась на этом шаге!
+			// Устанавливаем позицию В ТОЧНОСТИ ДО ПОВЕРХНОСТИ
+			const float MIN_HIT_OFFSET = 0.01f;
+			hit_dist -= MIN_HIT_OFFSET;
+
+			drop.P.mad(drop.P, drop.D, hit_dist); // Останавливаем в точке удара
+			drop.Phit = drop.P;					  // Точка удара совпадает с позицией
+			drop.dwTime_Hit = global_time;
+			drop.dwTime_Life = global_time; // Умирает сразу
+			just_hit = true;
+
+			// Спавним брызги
+			if (drop.Phit.distance_to_sqr(view_pos) < 400.0f)
+			{
+				local_splash_queue.local().push_back(drop.Phit);
+			}
+		}
+		else
+		{
+			// Без столкновения - обычное движение
+			drop.P = new_pos;
 		}
 
-		// RESPAWN (NO MUTEX NEEDED NOW!)
-		if (respawn_needed)
+		// ---------------------------------------------------------------------
+		// 2. ПРОВЕРКА РЕСПАВНА
+		// ---------------------------------------------------------------------
+		if (!just_hit)
 		{
-			// Теперь это безопасно, так как R - локальный, а drop[i] уникален для потока
+			// Проверка по времени жизни
+			if (drop.dwTime_Life < global_time)
+				respawn_needed = true;
+
+			// Проверка границ
+			if (!respawn_needed)
+			{
+				if (drop.P.distance_to_sqr(view_pos) > radius_wrap_sqr)
+					respawn_needed = true;
+				else if ((drop.P.y - view_pos.y) < SINK_OFFSET)
+					respawn_needed = true;
+			}
+		}
+
+		// ---------------------------------------------------------------------
+		// 3. РЕСПАВН ПРИ НЕОБХОДИМОСТИ
+		// ---------------------------------------------------------------------
+		if (respawn_needed || just_hit)
+		{
 			SpawnDrop(drop, SOURCE_RADIUS, R);
 		}
 
-		// SPLASH LOGIC (DEFERRED)
-		if (drop.dwTime_Hit < global_time)
+		// ---------------------------------------------------------------------
+		// 4. ОБРАБОТКА БРЫЗГ (для капель, которые ударились по расписанию)
+		// ---------------------------------------------------------------------
+		if (drop.dwTime_Hit != 0 && drop.dwTime_Hit <= global_time)
 		{
-			if (drop.Phit.distance_to_sqr(view_pos) < 400.0f)
+			// Если капля ударилась по расписанию (не в этом кадре)
+			if (!just_hit && drop.Phit.distance_to_sqr(view_pos) < 400.0f)
 			{
-				// Вместо SpawnSplash добавляем позицию в локальную очередь
 				local_splash_queue.local().push_back(drop.Phit);
 			}
 		}
 
-		// RENDER CULLING
+		// ---------------------------------------------------------------------
+		// 5. RENDER CULLING (ОСНОВНАЯ ИСПРАВЛЕНИЕ - КАПЛЯ ДОХОДИТ ДО ПОВЕРХНОСТИ)
+		// ---------------------------------------------------------------------
+
+		// НЕ ОТРИСОВЫВАЕМ КАПЛИ, КОТОРЫЕ УЖЕ УДАРИЛИСЬ
+		if (drop.dwTime_Hit != 0 && global_time >= drop.dwTime_Hit)
+		{
+			return;
+		}
+
+		// Рассчитываем визуальную длину капли
 		float speed_factor = drop.fSpeed / DROP_SPEED_MIN;
-		float len = 3.5f * speed_factor;
+		float visual_len = 3.5f * speed_factor;
+
+		// Если у капли есть точка удара, ограничиваем длину расстоянием до нее
+		if (drop.dwTime_Hit != 0)
+		{
+			float distance_to_hit = drop.P.distance_to(drop.Phit);
+
+			// Если до удара осталось меньше визуальной длины - укорачиваем каплю
+			if (distance_to_hit < visual_len)
+			{
+				// Но не делаем каплю слишком короткой
+				if (distance_to_hit > 0.2f)
+				{
+					visual_len = distance_to_hit * 0.9f; // 90% оставшегося расстояния
+				}
+				else
+				{
+					// Очень близко к удару - не рисуем
+					return;
+				}
+			}
+		}
+
+		// Рассчитываем позиции для рендеринга
 		Fvector pos_head = drop.P;
 		Fvector pos_trail;
-		pos_trail.mad(pos_head, drop.D, -len);
+		pos_trail.mad(pos_head, drop.D, -visual_len);
 
+		// Проверяем, не проходит ли капля сквозь геометрию
+		// Делаем быструю проверку луча от хвоста к голове
+		float ray_len = visual_len;
+		Fvector ray_dir;
+		ray_dir.sub(pos_head, pos_trail);
+		ray_dir.normalize();
+
+		if (RayTrace(pos_trail, ray_dir, ray_len, collide::rqtStatic))
+		{
+			// Капля пересекает геометрию - корректируем
+			if (ray_len < visual_len * 0.1f)
+			{
+				// Капля почти внутри геометрии - не рисуем
+				return;
+			}
+			else
+			{
+				// Укорачиваем каплю до точки пересечения
+				pos_head.mad(pos_trail, ray_dir, ray_len * 0.95f);
+			}
+		}
+
+		// Проверка видимости
 		Fvector center;
 		center.sub(pos_head, pos_trail);
 		center.mul(0.5f);
@@ -308,7 +411,6 @@ void CEffect_Rain::SimulateDrops(float dt)
 		if (::Render->ViewBase.testSphere_dirty(center, radius))
 		{
 			auto& local_vec = local_render_buffers.local();
-			// Микро-оптимизация: проверка empty дешевле reserve каждый раз
 			if (local_vec.empty())
 				local_vec.reserve(128);
 
@@ -318,7 +420,6 @@ void CEffect_Rain::SimulateDrops(float dt)
 			item.PosHead = pos_head;
 			item.PosTrail = pos_trail;
 			u32 s = drop.uv_set;
-			// Упрощенный доступ, если компилятор тупит
 			item.UV[0] = s_drops_uv[s][0];
 			item.UV[1] = s_drops_uv[s][1];
 			item.UV[2] = s_drops_uv[s][2];
@@ -326,11 +427,9 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 	});
 
-	// 4. Слияние результатов (Merge) - это очень быстро
+	// Merge результатов
 	{
 		OPTICK_EVENT("Merge Queues");
-
-		// Сливаем рендер
 		local_render_buffers.combine_each([&](const xr_vector<RainDrawParam>& local_vec) {
 			if (!local_vec.empty())
 			{
@@ -338,11 +437,10 @@ void CEffect_Rain::SimulateDrops(float dt)
 			}
 		});
 
-		// Сливаем и обрабатываем сплеши (уже в одном потоке!)
 		local_splash_queue.combine_each([&](const xr_vector<Fvector>& local_splashes) {
 			for (const auto& pos : local_splashes)
 			{
-				SpawnSplash(pos); // Теперь безопасно вызываем оригинальный метод с партиклами
+				SpawnSplash(pos);
 			}
 		});
 	}
@@ -459,7 +557,7 @@ void CEffect_Rain::Render()
 	UpdateAndRenderDrops(desired_items, u_rain_color);
 
 	// 2. Render Splashes
-	UpdateAndRenderSplashes(u_rain_color);
+	//UpdateAndRenderSplashes(u_rain_color);
 }
 
 void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
