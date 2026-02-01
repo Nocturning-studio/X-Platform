@@ -22,7 +22,7 @@ class ENGINE_API CEffect_Rain
 	static constexpr float DROP_SPEED_MIN = 45.0f;
 	static constexpr float DROP_SPEED_MAX = 90.0f;
 
-	static constexpr int MAX_PARTICLES = 1000;
+	static constexpr int MAX_PARTICLES = 500;
 	static constexpr int PARTICLES_CACHE = 400;
 	static constexpr float PARTICLE_TIME = 0.3f;
 
@@ -109,9 +109,8 @@ class ENGINE_API CEffect_Rain
 		GetWriteBuffer().clear();
 	}
 
-	void SpawnDrop(RainDrop& dest, float radius);
+	void SpawnDrop(RainDrop& dest, float radius, struct FastRandom& R);
 	void SpawnSplash(const Fvector& pos);
-	void RenewDrop(RainDrop& dest, float height, BOOL bHit);
 
 	// Physics Helpers
 	BOOL RayTrace(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);

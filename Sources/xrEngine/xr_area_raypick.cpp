@@ -7,25 +7,34 @@
 #include "igame_level.h"
 #include "Engine.h"
 #include "GameFont.h"
-
+//--------------------------------------------------------------------------------
 using namespace collide;
-
 //--------------------------------------------------------------------------------
 // RayTest - Occluded/No
 //--------------------------------------------------------------------------------
 BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt,
 						   collide::ray_cache* cache, CObject* ignore_object)
 {
-	Lock.Enter();
 	BOOL _ret = _RayTest(start, dir, range, tgt, cache, ignore_object);
-	r_spatial.clear();
-	Lock.Leave();
+
+	// Î÷èùàåì ëîêàëüíûé áóôåğ ïîòîêà
+	GetRayThreadData().r_spatial.clear_not_free();
 	return _ret;
 }
+
 BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt,
 							collide::ray_cache* cache, CObject* ignore_object)
 {
 	VERIFY(_abs(dir.magnitude() - 1) < EPS);
+
+	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ ÒÅÊÓÙÅÃÎ ÏÎÒÎÊÀ
+	RayQueryThreadData& data = GetRayThreadData();
+
+	// Ñîçäàåì ññûëêè äëÿ óäîáñòâà
+	xrXRC& xrc = data.xrc;
+	collide::rq_results& r_temp = data.r_temp;
+	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
+
 	r_temp.r_clear();
 
 	xrc.ray_options(CDB::OPT_ONLYFIRST);
@@ -34,10 +43,11 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 	// dynamic test
 	if (tgt & rqtDyn)
 	{
-		u32 d_flags =
-			STYPE_COLLIDEABLE | ((tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((tgt & rqtShape) ? STYPE_SHAPE : 0);
+		u32 d_flags = STYPE_COLLIDEABLE | ((tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((tgt & rqtShape) ? STYPE_SHAPE : 0);
+
 		// traverse object database
 		g_SpatialSpace->q_ray(r_spatial, 0, d_flags, start, dir, range);
+
 		// Determine visibility for dynamic part of scene
 		for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 		{
@@ -54,6 +64,7 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 			}
 		}
 	}
+
 	// static test
 	if (tgt & rqtStatic)
 	{
@@ -109,16 +120,22 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 BOOL CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R,
 						   CObject* ignore_object)
 {
-	Lock.Enter();
 	BOOL _res = _RayPick(start, dir, range, tgt, R, ignore_object);
-	r_spatial.clear();
-	Lock.Leave();
+	GetRayThreadData().r_spatial.clear_not_free();
 	return _res;
 }
+
 BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R,
 							CObject* ignore_object)
 {
+	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	RayQueryThreadData& data = GetRayThreadData();
+	xrXRC& xrc = data.xrc;
+	collide::rq_results& r_temp = data.r_temp;
+	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
+
 	r_temp.r_clear();
+
 	R.O = 0;
 	R.range = range;
 	R.element = -1;
@@ -178,15 +195,20 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB,
 							LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
-	Lock.Enter();
 	BOOL _res = _RayQuery2(dest, R, CB, user_data, tb, ignore_object);
-	r_spatial.clear_not_free();
-	Lock.Leave();
+	GetRayThreadData().r_spatial.clear_not_free();
 	return (_res);
 }
+
 BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB,
 							  LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
+	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	RayQueryThreadData& data = GetRayThreadData();
+	xrXRC& xrc = data.xrc;
+	collide::rq_results& r_temp = data.r_temp;
+	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
+
 	// initialize query
 	r_dest.r_clear();
 	r_temp.r_clear();
@@ -253,6 +275,14 @@ BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
 BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB,
 							  LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
+	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	RayQueryThreadData& data = GetRayThreadData();
+	xrXRC& xrc = data.xrc;
+	collide::rq_results& r_temp = data.r_temp;
+	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
+
+	r_temp.r_clear();
+
 	// initialize query
 	r_dest.r_clear();
 
@@ -354,6 +384,12 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 	if (R.range < EPS || !_valid(R.range))
 		Debug.fatal(DEBUG_INFO, "Invalid RayQuery range passed: %f.", R.range);
 #endif
+	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	RayQueryThreadData& data = GetRayThreadData();
+	xrXRC& xrc = data.xrc;
+	collide::rq_results& r_temp = data.r_temp;
+	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
+
 	// initialize query
 	r_dest.r_clear();
 	r_temp.r_clear();

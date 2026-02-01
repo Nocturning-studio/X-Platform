@@ -128,6 +128,13 @@ CObjectSpace::~CObjectSpace()
 IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range,
 								CObject* ignore_object)
 {
+	// =========================================================================
+	// ѕолучаем r_spatial из потокобезопасного хранилища
+	RayQueryThreadData& data = GetRayThreadData();
+	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
+	r_spatial.clear_not_free(); // ќб€зательно чистим перед использованием
+	// =========================================================================
+
 	// Query objects
 	q_nearest.clear_not_free();
 	Fsphere Q;

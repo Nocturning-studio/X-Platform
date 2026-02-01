@@ -15,13 +15,9 @@ class ENGINE_API CObject;
 class ENGINE_API CObjectSpace
 {
   private:
-	// Debug
-	xrCriticalSection Lock;
 	CDB::MODEL Static;
 	Fbox m_BoundingVolume;
-	xrXRC xrc;						// MT: dangerous
-	collide::rq_results r_temp;		// MT: dangerous
-	xr_vector<ISpatial*> r_spatial; // MT: dangerous
+
   public:
 #ifdef DEBUG
 	ref_shader sh_debug;
@@ -30,6 +26,29 @@ class ENGINE_API CObjectSpace
 #endif
 
   private:
+	struct RayQueryThreadData
+	{
+		xrXRC xrc;
+		collide::rq_results r_temp;
+		xr_vector<ISpatial*> r_spatial;
+
+		// Kонструктор для резерва памяти, чтобы избежать аллокаций на первом кадре
+		RayQueryThreadData()
+		{
+			r_spatial.reserve(128);
+		}
+	};
+
+	RayQueryThreadData& GetRayThreadData()
+	{
+		// thread_local гарантирует, что у каждого потока будет своя копия этой переменной.
+		// Она инициализируется один раз при первом обращении в потоке.
+		static thread_local RayQueryThreadData data;
+		return data;
+	}
+
+  private:
+
 	BOOL _RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt,
 				  collide::ray_cache* cache, CObject* ignore_object);
 	BOOL _RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R,
