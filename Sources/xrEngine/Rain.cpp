@@ -38,6 +38,13 @@ CEffect_Rain::CEffect_Rain()
 
 	InitParticlePool();
 	FS.r_close(F);
+
+	// Инициализируем индекс
+	m_front_buffer_idx = 0;
+
+	// Резервируем память сразу, чтобы избежать аллокаций на старте
+	m_render_buffers[0].reserve(MAX_DESIRED_DROPS);
+	m_render_buffers[1].reserve(MAX_DESIRED_DROPS);
 }
 
 CEffect_Rain::~CEffect_Rain()
@@ -157,6 +164,12 @@ BOOL CEffect_Rain::RayTrace(const Fvector& s, const Fvector& d, float& range, co
 // MAIN UPDATE / RENDER LOOPS
 // ===========================================================================================
 
+void __stdcall CEffect_Rain::MT_CALC()
+{
+	// Вызываем нашу логику, используя сохраненный dt
+	SimulateDrops(m_worker_dt);
+}
+
 void CEffect_Rain::OnFrame()
 {
 	PROFILE_FUNCTION();
@@ -208,6 +221,30 @@ void CEffect_Rain::OnFrame()
 		m_snd_ambient.set_position(snd_pos);
 		m_snd_ambient.set_volume(1.1f * factor * hemi_factor);
 	}
+
+	if (m_state == stWorking)
+	{
+		// 1. Swap Buffers
+		// Меняем буферы местами. Front идет на рендер (с данными прошлого кадра),
+		// Back освобождается для записи нового кадра в потоке.
+		SwapBuffers();
+
+		// 2. Сохраняем DT
+		// В поток нельзя передать аргументы напрямую через этот макрос,
+		// поэтому сохраняем dt в член класса.
+		m_worker_dt = Engine.TimeManager.GetDeltaTime();
+
+		// 3. Добавляем задачу в ThreadManager
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CEffect_Rain::MT_CALC));
+	}
+	else
+	{
+		// Очистка если дождь кончился
+		if (!GetReadBuffer().empty())
+			GetReadBuffer().clear();
+		if (!GetWriteBuffer().empty())
+			GetWriteBuffer().clear();
+	}
 }
 
 void CEffect_Rain::Render()
@@ -237,13 +274,20 @@ void CEffect_Rain::Render()
 	UpdateAndRenderSplashes(u_rain_color);
 }
 
-void CEffect_Rain::UpdateAndRenderDrops(u32 desired_items, u32 rain_color)
+void CEffect_Rain::SimulateDrops(float dt)
 {
-	PROFILE_FUNCTION();
+	PROFILE_FUNCTION(); // "Sim Phase"
 
-	// Fill pool
+	// 1. Setup (Env params)
+	CEnvDescriptorMixer* env = g_pGamePersistent->Environment().CurrentEnv;
+	float factor = env->rain_density;
+	if (factor < EPS_L)
+		return;
+
+	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(MAX_DESIRED_DROPS));
+
+	// Доспавн (однопоточный, так как это редко и меняет размер вектора)
 	{
-		// OPTICK_EVENT("Fill drops database"); // Можно раскомментить
 		while (m_drops.size() < desired_items)
 		{
 			RainDrop one;
@@ -252,152 +296,185 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 desired_items, u32 rain_color)
 		}
 	}
 
-	// Lock Buffers
-	// ВАЖНО: Мы лочим буфер на MAX возможное число вершин.
-	// Если мы пропустим (cull) некоторые капли, мы просто запишем меньше и разлочим меньше.
-	u32 v_offset;
-	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock(desired_items * 4, m_geom_rain->vb_stride, v_offset);
-	FVF::LIT* start = verts;
+	// Буфер записи (Back Buffer)
+	auto& write_queue = GetWriteBuffer();
+	write_queue.clear();
+	// Резерв примерно, чтобы при слиянии не было лишних реаллокаций
+	if (write_queue.capacity() < m_drops.size())
+		write_queue.reserve(m_drops.size());
 
+	// 2. Подготовка к параллелизму
 	const Fvector& view_pos = Engine.RenderView.Position;
-	float dt = Engine.TimeManager.GetDeltaTime();
+	u32 global_time = Engine.TimeManager.GetGlobalTimeMs();
+	float radius_wrap_sqr = _sqr((SOURCE_RADIUS + 2.0f));
 
-	// Квадрат радиуса для "зацикливания" дождя вокруг игрока
-	float radius_wrap_sqr = _sqr((SOURCE_RADIUS + 2.0f)); // Чуть больше радиуса спавна
+	// Используем combinable для создания локальных буферов для каждого потока.
+	// Это решает проблему гонки данных при записи в вектор.
+	concurrency::combinable<xr_vector<RainDrawParam>> local_buffers;
 
-	// Pre-calculate common vectors to avoid reconstruction in loop
-	Fvector cam_dir_vec;
-	Fvector line_top;
+	// Мьютекс для защиты "редких" операций (SpawnDrop/SpawnSplash/Random)
+	// Поскольку спавн происходит редко, блокировка не убьет производительность.
+	std::mutex safe_lock;
 
-	{
-		OPTICK_EVENT("Process drops");
-		for (auto& drop : m_drops)
+	// 3. ПАРАЛЛЕЛЬНЫЙ ЦИКЛ
+	// range: итератор по индексам
+	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i) {
+		// Ссылка на каплю
+		RainDrop& drop = m_drops[i];
+
+		// --- A. Управление жизненным циклом (Respawn) ---
+		bool respawn_needed = false;
+
+		if (drop.dwTime_Life < global_time)
 		{
-			// --- 1. UPDATE LOGIC ---
+			respawn_needed = true;
+		}
 
-			// Проверка жизни
-			if (drop.dwTime_Life < Engine.TimeManager.GetGlobalTimeMs())
-			{
-				SpawnDrop(drop, SOURCE_RADIUS);
-				// После респавна drop имеет новую позицию, продолжаем обработку
-			}
+		// --- B. Физика (потокобезопасно, т.к. меняем только свою drop) ---
+		drop.P.mad(drop.D, drop.fSpeed * dt);
 
-			// Создание брызг (Splash)
-			if (drop.dwTime_Hit < Engine.TimeManager.GetGlobalTimeMs())
-			{
-				// Спавним брызг только если он в радиусе видимости (оптимизация)
-				if (drop.Phit.distance_to_sqr(view_pos) < 400.0f) // 20m
-					SpawnDrop(drop, SOURCE_RADIUS);
-				SpawnSplash(drop.Phit);
-			}
-
-			// Движение
-			drop.P.mad(drop.D, drop.fSpeed * dt);
-
-			// --- 2. WRAP AROUND LOGIC (Оптимизированная) ---
-			// Если капля ушла слишком далеко от центра камеры (по горизонтали), перемещаем её
-			// на противоположную сторону или респавним.
-			// Самый простой способ: просто респавн.
+		// --- C. Проверка границ (Wrap Around) ---
+		if (!respawn_needed)
+		{
 			if (drop.P.distance_to_sqr(view_pos) > radius_wrap_sqr)
 			{
-				SpawnDrop(drop, SOURCE_RADIUS);
+				respawn_needed = true;
 			}
-
-			// Если упала ниже уровня "смерти" (sink_offset)
-			if ((drop.P.y - view_pos.y) < SINK_OFFSET)
+			else if ((drop.P.y - view_pos.y) < SINK_OFFSET)
 			{
-				// Вместо Invalidate лучше сразу респавн, чтобы не было пустых дыр
-				SpawnDrop(drop, SOURCE_RADIUS);
+				respawn_needed = true;
 			}
-
-			// --- 3. ROOF CHECK ---
-			// УДАЛЕНО из цикла! Это экономит те самые 4ms.
-			// Проверка должна быть либо при спавне, либо вообще отсутствовать для дешевизны.
-
-			// --- 4. RENDER PREP ---
-
-			float speed_factor = drop.fSpeed / DROP_SPEED_MIN;
-			float len = 3.5f * speed_factor;
-			float width_var = 1.0f; // Упростили синус, он почти не виден, но жрет такты
-
-			Fvector pos_head = drop.P;
-			Fvector pos_trail;
-			pos_trail.mad(pos_head, drop.D, -len);
-
-			// Culling (Frustum Check)
-			Fvector center;
-			center.sub(pos_head, pos_trail);
-			center.mul(0.5f);				   // Half vector
-			float radius = center.magnitude(); // Radius
-			center.add(pos_trail);			   // Center point
-
-			if (!::Render->ViewBase.testSphere_dirty(center, radius))
-				continue; // Skip invisible drops
-
-			// --- 5. FILL VERTICES ---
-
-			// Billboard math
-			Fvector cam_dir;
-			cam_dir.sub(center, view_pos);
-			cam_dir.normalize();
-
-			Fvector line_dir;
-			line_dir.sub(pos_head, pos_trail);
-			line_dir.normalize();
-
-			line_top.crossproduct(cam_dir, line_dir);
-
-			float w = DROP_WIDTH; // * width_var;
-			u32 s = drop.uv_set;
-
-			// Вершины (Quad)
-			// Порядок вершин важен для QuadIB (обычно 0-1-2, 2-1-3 или по часовой)
-			// В X-Ray часто используется такой паттерн:
-			Fvector p;
-
-			// 0: Trail Left
-			p.mad(pos_trail, line_top, -w);
-			verts->set(p, rain_color, s_drops_uv[s][0].x, s_drops_uv[s][0].y);
-			verts++;
-
-			// 1: Trail Right
-			p.mad(pos_trail, line_top, w);
-			verts->set(p, rain_color, s_drops_uv[s][1].x, s_drops_uv[s][1].y);
-			verts++;
-
-			// 2: Head Left
-			p.mad(pos_head, line_top, -w);
-			verts->set(p, rain_color, s_drops_uv[s][2].x, s_drops_uv[s][2].y);
-			verts++;
-
-			// 3: Head Right
-			p.mad(pos_head, line_top, w);
-			verts->set(p, rain_color, s_drops_uv[s][3].x, s_drops_uv[s][3].y);
-			verts++;
 		}
-	}
 
-	// Unlock
-	u32 v_count = (u32)(verts - start);
-	RenderBackend.Vertex.Unlock(v_count, m_geom_rain->vb_stride);
+		// ВЫПОЛНЕНИЕ РЕСПАВНА (КРИТИЧЕСКАЯ СЕКЦИЯ)
+		// SpawnDrop использует ::Random и RayTrace, они могут быть не потокобезопасны.
+		if (respawn_needed)
+		{
+			std::lock_guard<std::mutex> lock(safe_lock);
+			SpawnDrop(drop, SOURCE_RADIUS);
+		}
 
-	// Draw
-	if (v_count > 0)
+		// --- D. Логика всплесков (Splash) ---
+		if (drop.dwTime_Hit < global_time)
+		{
+			if (drop.Phit.distance_to_sqr(view_pos) < 400.0f)
+			{
+				// SpawnSplash меняет список частиц -> нужен лок
+				std::lock_guard<std::mutex> lock(safe_lock);
+				SpawnSplash(drop.Phit);
+			}
+		}
+
+		// --- E. Подготовка данных для рендера (Culling) ---
+		float speed_factor = drop.fSpeed / DROP_SPEED_MIN;
+		float len = 3.5f * speed_factor;
+
+		Fvector pos_head = drop.P;
+		Fvector pos_trail;
+		pos_trail.mad(pos_head, drop.D, -len);
+
+		Fvector center;
+		center.sub(pos_head, pos_trail);
+		center.mul(0.5f);
+		float radius = center.magnitude();
+		center.add(pos_trail);
+
+		// Frustum Check (чтение ViewBase обычно безопасно, если рендер не меняет матрицу в этот момент)
+		// В крайнем случае, можно вынести копию View Frustum в локальную переменную перед циклом.
+		if (::Render->ViewBase.testSphere_dirty(center, radius))
+		{
+			// --- F. Запись в ЛОКАЛЬНЫЙ буфер потока ---
+			// .local() возвращает ссылку на вектор текущего потока. Блокировка не нужна!
+			auto& local_vec = local_buffers.local();
+
+			// Оптимизация аллокации (простая эвристика)
+			if (local_vec.empty())
+				local_vec.reserve(256);
+
+			local_vec.emplace_back();
+			RainDrawParam& item = local_vec.back();
+
+			item.PosHead = pos_head;
+			item.PosTrail = pos_trail;
+
+			u32 s = drop.uv_set;
+			item.UV[0] = s_drops_uv[s][0];
+			item.UV[1] = s_drops_uv[s][1];
+			item.UV[2] = s_drops_uv[s][2];
+			item.UV[3] = s_drops_uv[s][3];
+		}
+	});
+
+	// 4. Слияние результатов (Merge)
+	// Объединяем векторы всех потоков в один write_queue
+	local_buffers.combine_each([&](const xr_vector<RainDrawParam>& local_vec) {
+		if (!local_vec.empty())
+		{
+			write_queue.insert(write_queue.end(), local_vec.begin(), local_vec.end());
+		}
+	});
+}
+
+void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
+{
+	PROFILE_FUNCTION(); // "Draw Phase"
+
+	// Ссылка на буфер ЧТЕНИЯ (Front Buffer)
+	const auto& read_queue = GetReadBuffer();
+
+	size_t count = read_queue.size();
+	if (count == 0)
+		return;
+
+	// Lock Buffer
+	u32 v_offset;
+	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock(count * 4, m_geom_rain->vb_stride, v_offset);
+
+	// Вспомогательные
+	const Fvector& view_pos = Engine.RenderView.Position;
+	Fvector cam_dir, line_dir, line_top, p, center;
+	float w = DROP_WIDTH;
+
+	// Просто молотим данные из буфера в видеокарту
+	for (const auto& item : read_queue)
 	{
-		// Отключаем Culling треугольников, чтобы видеть дождь с любой стороны (на всякий случай)
-		RenderBackend.set_CullMode(CULL_DISABLE);
-		RenderBackend.set_transform_world(Fidentity);
-		RenderBackend.set_Shader(m_sh_rain);
-		RenderBackend.set_Geometry(m_geom_rain);
+		// Билбординг (поворот к камере)
+		// Считаем тут, так как позиция камеры могла измениться с момента симуляции (если многопоток)
+		center.add(item.PosHead, item.PosTrail);
+		center.mul(0.5f);
 
-		// ВАЖНО: PrimitiveCount calculation
-		// v_count вершин / 4 вершины на квад * 2 треугольника на квад
-		u32 prim_count = v_count / 2;
+		cam_dir.sub(center, view_pos);
+		cam_dir.normalize();
 
-		RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, v_count, 0, prim_count);
+		line_dir.sub(item.PosHead, item.PosTrail);
+		line_dir.normalize();
 
-		RenderBackend.set_CullMode(D3DCULL_CCW);
+		line_top.crossproduct(cam_dir, line_dir);
+
+		// Геометрия
+		p.mad(item.PosTrail, line_top, -w);
+		verts->set(p, rain_color, item.UV[0].x, item.UV[0].y);
+		verts++;
+		p.mad(item.PosTrail, line_top, w);
+		verts->set(p, rain_color, item.UV[1].x, item.UV[1].y);
+		verts++;
+		p.mad(item.PosHead, line_top, -w);
+		verts->set(p, rain_color, item.UV[2].x, item.UV[2].y);
+		verts++;
+		p.mad(item.PosHead, line_top, w);
+		verts->set(p, rain_color, item.UV[3].x, item.UV[3].y);
+		verts++;
 	}
+
+	RenderBackend.Vertex.Unlock(count * 4, m_geom_rain->vb_stride);
+
+	// Draw Call
+	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.set_Shader(m_sh_rain);
+	RenderBackend.set_Geometry(m_geom_rain);
+	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, count * 4, 0, count * 2);
+	RenderBackend.set_CullMode(D3DCULL_CCW);
 }
 
 void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)

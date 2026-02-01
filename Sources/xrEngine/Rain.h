@@ -29,6 +29,15 @@ class ENGINE_API CEffect_Rain
 	// -------------------------------------------------------------------------
 	// Internal Structures
 	// -------------------------------------------------------------------------
+	// Структура, полностью готовая к отрисовке.
+	// В ней нет логики, только данные для GPU.
+	struct RainDrawParam
+	{
+		Fvector PosHead;  // Позиция головы капли
+		Fvector PosTrail; // Позиция хвоста капли
+		Fvector2 UV[4]; // Готовые UV координаты (можно оптимизировать, передавая индекс, но для буфера так быстрее)
+	};
+
 	struct RainDrop
 	{
 		Fvector P;	  // Position
@@ -75,6 +84,31 @@ class ENGINE_API CEffect_Rain
 	// -------------------------------------------------------------------------
 	// Core Logic
 	// -------------------------------------------------------------------------
+	// Метод симуляции
+	void SimulateDrops(float dt);
+
+	void __stdcall MT_CALC();
+
+	// Хелперы для удобства
+	xr_vector<RainDrawParam>& GetReadBuffer()
+	{
+		return m_render_buffers[m_front_buffer_idx];
+	}
+	xr_vector<RainDrawParam>& GetWriteBuffer()
+	{
+		return m_render_buffers[1 - m_front_buffer_idx];
+	}
+
+	void SwapBuffers()
+	{
+		// Меняем индекс: 0 -> 1, 1 -> 0
+		m_front_buffer_idx = 1 - m_front_buffer_idx;
+
+		// Очищаем "новый" буфер записи, чтобы он был готов принимать данные.
+		// Важно: clear() не освобождает память (capacity остается), поэтому это быстро.
+		GetWriteBuffer().clear();
+	}
+
 	void SpawnDrop(RainDrop& dest, float radius);
 	void SpawnSplash(const Fvector& pos);
 	void RenewDrop(RainDrop& dest, float height, BOOL bHit);
@@ -118,6 +152,14 @@ class ENGINE_API CEffect_Rain
 	xr_vector<SplashParticle> m_particle_pool;
 	SplashParticle* m_particle_active;
 	SplashParticle* m_particle_idle;
+
+	float m_worker_dt;
+	
+	// Буфер отрисовки, один для чтения (GPU), один для записи (CPU/Physics)
+	xr_vector<RainDrawParam> m_render_buffers[2];
+
+	// Индекс буфера, который сейчас "Фронтальный" (из которого читаем)
+	u32 m_front_buffer_idx;
 };
 
 #endif // RAIN_EFFECT_H_INCLUDED
