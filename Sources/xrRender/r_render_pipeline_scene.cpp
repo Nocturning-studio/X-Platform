@@ -14,9 +14,9 @@ void CRender::RenderScene()
 	{
 		m_saved_viewproj.set(Engine.RenderView.ViewProjection);
 		m_saved_invview.invert(Engine.RenderView.View);
+		m_bFirstFrameAfterReset = false;
+		return;
 	}
-
-	PrepareToRender();
 
 	// Configure
 	m_need_render_sun = need_render_sun();
@@ -28,6 +28,8 @@ void CRender::RenderScene()
 	// Sync point
 	query_wait();
 
+	PrepareToRender();
+
 	clear_gbuffer();
 
 	//******* Main render :: PART-0	-- first
@@ -35,13 +37,6 @@ void CRender::RenderScene()
 
 	//******* Main render :: PART-1 (second)
 	render_gbuffer_secondary();
-
-	if (m_bFirstFrameAfterReset)
-	{
-		m_bFirstFrameAfterReset = false;
-		motion_blur_pass_save_depth();
-		return;
-	}
 
 	// Wall marks
 	if (Wallmarks)

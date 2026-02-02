@@ -503,6 +503,7 @@ class CRender : public IRender_interface, public pureFrame
 	void output_frame_to_screen();
 	bool need_render_sun();
 	void render_main(Fmatrix& mCombined, SceneGraphPacket& dest);
+	void CalculateSceneVisibility();
 	void query_wait();
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);

@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::PrepareToRender()
 {
+	CalculateSceneVisibility();
 }
 
 void CRender::render_main(Fmatrix& view_projection, SceneGraphPacket& dest)
@@ -199,6 +200,83 @@ void CRender::render_main(Fmatrix& view_projection, SceneGraphPacket& dest)
 		g_pGameLevel->pHUD->Render_Last();
 }
 
+void CRender::CalculateSceneVisibility()
+{
+	PROFILE_FUNCTION();
+
+	// 1. Управление буферами (SWAP)
+	// Переключаем индексы буферов один раз за кадр здесь.
+	// Write - куда пишем сейчас. Read - откуда будем читать в фазах рендеринга.
+	m_scene_write_ix = (m_scene_write_ix + 1) % 2;
+
+	// В синхронном режиме (пока нет многопоточности) читаем из того же буфера, в который пишем.
+	// При параллельном исполнении здесь будет: m_scene_read_ix = (m_scene_write_ix + 1) % 2;
+	m_scene_read_ix = m_scene_write_ix;
+
+	// -------------------------------------------------------------------------
+	// PHASE A: GBuffer Gather (Priority 0 + Wallmarks)
+	// -------------------------------------------------------------------------
+	{
+		MainSceneWorkItem& item = GetGBufferWriteItem();
+		item.Clear();
+
+		// Сохраняем матрицы для истории (чтобы Draw поток знал, как рисовать)
+		item.view = Engine.RenderView.View;
+		item.projection = Engine.RenderView.Project;
+		item.view_projection = Engine.RenderView.ViewProjection;
+
+		// Конфигурация сбора для GBuffer
+		SceneGraphFetchConfig GBufferPassFetchConfig;
+		GBufferPassFetchConfig.fetch_priority_0 = true;	 // Обычная геометрия
+		GBufferPassFetchConfig.fetch_priority_1 = false; // Сложные материалы (потом)
+		GBufferPassFetchConfig.fetch_wallmarks = true;	 // Воллмарки
+		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+
+		// Устанавливаем фазу (влияет на выбор шейдеров в rimp_select_sh_...)
+		set_active_phase(PHASE_NORMAL);
+
+		// Сбор баундов для теней (только в основном проходе)
+		if (m_need_render_sun)
+			SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
+		else
+			SceneGraph.SetCullingBoundsCollector(NULL);
+
+		// Сбор данных (запись в item.packet)
+		render_main(item.view_projection, item.packet);
+
+		// Очистка состояния
+		SceneGraph.SetCullingBoundsCollector(NULL);
+	}
+
+	// -------------------------------------------------------------------------
+	// PHASE B: Forward Gather (Priority 1 + Transparents)
+	// -------------------------------------------------------------------------
+	{
+		MainSceneWorkItem& item = GetForwardWriteItem();
+		item.Clear();
+
+		// Сохраняем матрицы
+		item.view = Engine.RenderView.View;
+		item.projection = Engine.RenderView.Project;
+		item.view_projection = Engine.RenderView.ViewProjection;
+
+		// Конфигурация сбора для Forward
+		SceneGraphFetchConfig ForwardPassFetchConfig;
+		ForwardPassFetchConfig.fetch_priority_0 = false; // Уже отрисовали в GBuffer
+		ForwardPassFetchConfig.fetch_priority_1 = true; // Геометрия со сложными шейдерами (Forward)
+		ForwardPassFetchConfig.fetch_wallmarks = false; // Уже собрали (или не нужны здесь)
+		SceneGraph.SetFetchConfig(ForwardPassFetchConfig);
+
+		set_active_phase(PHASE_NORMAL);
+
+		// Сбор данных (запись в item.packet)
+		render_main(item.view_projection, item.packet);
+	}
+
+	// Восстанавливаем дефолтный конфиг на всякий случай
+	SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
+}
+
 IC float u_diffuse2s(float x, float y, float z)
 {
 	float v = (x + y + z) / 3.f;
@@ -215,51 +293,11 @@ void CRender::render_gbuffer_primary()
 {
 	PROFILE_FUNCTION();
 
-	// 1. Управление буферами (SWAP)
-	// Переключаем кадр. В будущем это будет в начале кадра.
-	m_scene_write_ix = (m_scene_write_ix + 1) % 2;
-	m_scene_read_ix = m_scene_write_ix; // Пока читаем то, что пишем
-
-	// Получаем рабочие элементы
-	MainSceneWorkItem& writeItem = GetGBufferWriteItem();
+	// 1. Получаем данные для отрисовки (READ Item)
+	// Данные уже были собраны в CalculateSceneVisibility
 	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
-	writeItem.Clear();
-
-	// Сохраняем матрицы для истории (чтобы Draw поток знал, как рисовать)
-	writeItem.view = Engine.RenderView.View;
-	writeItem.projection = Engine.RenderView.Project;
-	writeItem.view_projection = Engine.RenderView.ViewProjection;
-
-	// 2. GATHER PHASE (Пишем в writeItem)
-	{
-		// Конфигурация сбора
-		SceneGraphFetchConfig GBufferPassFetchConfig;
-		GBufferPassFetchConfig.fetch_priority_0 = true;
-		GBufferPassFetchConfig.fetch_priority_1 = false;
-		GBufferPassFetchConfig.fetch_wallmarks = true;
-		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
-
-		set_active_phase(PHASE_NORMAL);
-
-		if (m_need_render_sun)
-			SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
-		else
-			SceneGraph.SetCullingBoundsCollector(NULL);
-
-		// ВЫЗЫВАЕМ ОБНОВЛЕННЫЙ render_main, передаем пакет
-		render_main(writeItem.view_projection, writeItem.packet);
-
-		SceneGraph.SetCullingBoundsCollector(NULL);
-
-		// Сброс конфига
-		GBufferPassFetchConfig.fetch_wallmarks = false;
-		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
-	}
-
-	// Здесь может быть точка синхронизации, если Gather будет в другом потоке
-
-	// 3. DRAW PHASE (Читаем из readItem)
+	// 2. DRAW PHASE
 	{
 		Engine.Statistic->RenderCALC_GBuffer.Begin();
 		RenderBackend.enable_anisotropy_filtering();
@@ -287,10 +325,12 @@ void CRender::render_gbuffer_secondary()
 {
 	PROFILE_FUNCTION();
 
-	// Используем уже собранные данные из Read Item
+	// Используем уже собранные данные из Read Item (GBuffer packet)
 	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
-	SceneGraph.m_packet.portal_traverser.RenderFade(); // Тут возможно надо брать traverser из readItem, если RenderFade зависит от него
+	// Примечание: Portal Traverser обновляется в render_main,
+	// поэтому он находится внутри readItem.packet.
+	readItem.packet.portal_traverser.RenderFade();
 
 	RenderBackend.enable_anisotropy_filtering();
 	set_gbuffer();
@@ -301,8 +341,10 @@ void CRender::render_gbuffer_secondary()
 	RenderBackend.set_ZWriteEnable(FALSE);
 
 	// Рендерим из readItem.packet
+	// LODs
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::LOD, 0, true, true);
 
+	// HUD (оружие) обычно рисуется поверх или в GBuffer, если нужно
 	set_active_phase(PHASE_HUD);
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
@@ -317,19 +359,18 @@ void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
 
-	MainSceneWorkItem& writeItem = GetForwardWriteItem();
-	MainSceneWorkItem& readItem = GetForwardReadItem();
+	// Берем данные из READ Item для Forward прохода
+	MainSceneWorkItem& readItem =
+		GetForwardWriteItem(); // ВНИМАНИЕ: Тут была ошибка в именовании в оригинале, должно быть GetForwardReadItem()
 
-	writeItem.Clear();
-	writeItem.view_projection = Engine.RenderView.ViewProjection;
+	// Исправляем на ReadItem:
+	MainSceneWorkItem& currentReadItem = GetForwardReadItem();
 
-	// Используем m_packet.queue_distortion
-	VERIFY(0 == SceneGraph.m_packet.queue_distortion.size());
+	// Используем queue_distortion из текущего пакета, проверка на пустоту (ассерт)
+	VERIFY(0 == currentReadItem.packet.queue_distortion.size());
 
-	// Очищаем списки с прошлого кадра
-	// Используем m_packet для списков Reuse
-	SceneGraph.m_packet.m_visuals_static_visible.clear();
-	SceneGraph.m_packet.m_visuals_dynamic_visible.clear();
+	// Reuse списки очищаются внутри SceneGraph::Render или вручную, если нужно,
+	// но здесь мы просто читаем.
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
@@ -340,54 +381,41 @@ void CRender::render_stage_forward()
 	// PASS 1: Base Pass (Ambient + Texture + Hemi)
 	// ============================================
 	{
-		// Настраиваем состояния: Базовый проход ПИШЕТ цвет и Z
 		RenderBackend.set_ColorWriteEnable();
 		RenderBackend.set_ZWriteEnable(TRUE);
 
-		SceneGraphFetchConfig ForwardPassFetchConfig;
-
-		ForwardPassFetchConfig.fetch_priority_0 = false;
-		ForwardPassFetchConfig.fetch_priority_1 = true;
-		ForwardPassFetchConfig.fetch_wallmarks = false;
-
-		SceneGraph.SetFetchConfig(ForwardPassFetchConfig);
-
 		set_active_phase(PHASE_NORMAL);
 
-		render_main(writeItem.view_projection, writeItem.packet);
-
-		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 1);
-		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Transparent);
+		// Рендерим собранное (Priority 1)
+		SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);
+		SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Transparent);
 
 		g_pGamePersistent->Environment().RenderThunderbolt();
 		g_pGamePersistent->Environment().RenderRain();
 	}
 
 	// ============================================
-	// PASS 3: Sun Light
+	// PASS 3: Sun Light (Reuse)
 	// ============================================
 	// Смена фазы
 	set_active_phase(PHASE_SUN_LIGHTING);
 
 	RenderBackend.set_ColorWriteEnable();
-
 	RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-
-	// Z-Write должен быть FALSE для аддитивного солнца
-	// Иначе оно будет перезаписывать глубину и "бороться" с базовой геометрией.
-	// Шейдеры l_sun обычно используют blend one/one или dest_color/src_color
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	SceneGraph.render_reuse(m_TraversalContext, readItem.packet);
+	SceneTraversalContext reuse_ctx = m_TraversalContext;
+	reuse_ctx.render_phase = PHASE_SUN_LIGHTING;
+
+	SceneGraph.render_reuse(reuse_ctx, currentReadItem.packet);
 
 	// DRAW
-	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 1);
-	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Transparent);
+	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);
+	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Transparent);
 
 	// ============================================
 	// PASS 4: Debug
 	// ============================================
-
 	if (m_SunOccluder && ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
 		m_SunOccluder->Render();
 }

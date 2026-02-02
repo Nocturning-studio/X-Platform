@@ -703,7 +703,7 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx,
 									   SceneGraphPacket& dest)
 {
-	if (0 == pVisual)
+	if (!pVisual)
 		return;
 
 	// 1. Проверка на значимость (Distance / Size Culling)
@@ -852,6 +852,9 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 // ===============================================================================================
 void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
+	if (!pVisual)
+		return;
+
 	// 1. Occlusion Culling (HOM)
 	// Даже если объект прошел проверку по порталам, он может быть закрыт стеной внутри сектора.
 	if (!RenderImplementation.HOM.visible(pVisual->vis))
