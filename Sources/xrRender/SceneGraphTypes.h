@@ -22,7 +22,7 @@ struct DynamicRenderNode
 	float ScreenSpaceArea;
 	IRenderable* pObject;
 	IRender_Visual* pVisual;
-	Fmatrix Matrix; // copy
+	Fmatrix* pMatrix;
 };
 
 struct _MatrixItemS : public DynamicRenderNode

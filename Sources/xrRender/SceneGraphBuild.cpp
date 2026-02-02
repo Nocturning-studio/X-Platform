@@ -235,9 +235,9 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 			auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
 
 			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = ctx.current_owner; // Владелец из контекста
+			node->val.pObject = ctx.current_owner;
 			node->val.pVisual = pVisual;
-			node->val.Matrix = *ctx.current_transform; // Матрица из контекста
+			node->val.pMatrix = ctx.current_transform;
 			node->val.se = shader_distortion;
 		}
 	}
@@ -268,7 +268,6 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 	// 6. Маршрутизация (Routing)
 	// -------------------------------------------------------------------------
 
-	// --- A. HUD (First Person View) ---
 	if (ctx.is_hud_pass)
 	{
 		if (shader_element->flags.bStrictB2F)
@@ -277,7 +276,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 			node->val.ScreenSpaceArea = screen_space_area;
 			node->val.pObject = ctx.current_owner;
 			node->val.pVisual = pVisual;
-			node->val.Matrix = *ctx.current_transform;
+			node->val.pMatrix = ctx.current_transform;
 			node->val.se = shader_element;
 		}
 		else
@@ -286,7 +285,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 			node->val.ScreenSpaceArea = screen_space_area;
 			node->val.pObject = ctx.current_owner;
 			node->val.pVisual = pVisual;
-			node->val.Matrix = *ctx.current_transform;
+			node->val.pMatrix = ctx.current_transform;
 			node->val.se = shader_element;
 		}
 		return;
@@ -299,7 +298,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 		node->val.ScreenSpaceArea = screen_space_area;
 		node->val.pObject = ctx.current_owner;
 		node->val.pVisual = pVisual;
-		node->val.Matrix = *ctx.current_transform;
+		node->val.pMatrix = ctx.current_transform;
 		node->val.se = shader_element;
 		return;
 	}
@@ -311,7 +310,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 		node->val.ScreenSpaceArea = screen_space_area;
 		node->val.pObject = ctx.current_owner;
 		node->val.pVisual = pVisual;
-		node->val.Matrix = *ctx.current_transform;
+		node->val.pMatrix = ctx.current_transform;
 		node->val.se = pVisual->shader->E[4]._get();
 	}
 
@@ -322,7 +321,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 		node->val.ScreenSpaceArea = screen_space_area;
 		node->val.pObject = ctx.current_owner;
 		node->val.pVisual = pVisual;
-		node->val.Matrix = *ctx.current_transform;
+		node->val.pMatrix = ctx.current_transform;
 		node->val.se = shader_element;
 		return;
 	}
@@ -332,7 +331,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, Fvector& object_center
 	// -------------------------------------------------------------------------
 
 	// Создаем узел, используя данные из ctx
-	DynamicRenderNode item = {screen_space_area, ctx.current_owner, pVisual, *ctx.current_transform};
+	DynamicRenderNode item = {screen_space_area, ctx.current_owner, pVisual, ctx.current_transform};
 
 	SPass& pass = *shader_element->passes.front();
 
@@ -429,7 +428,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 			node->val.ScreenSpaceArea = screen_space_area;
 			node->val.pObject = nullptr; // У статики нет владельца
 			node->val.pVisual = pVisual;
-			node->val.Matrix = Fidentity; // У статики Identity матрица
+			node->val.pMatrix = &Fidentity; // У статики Identity матрица
 			node->val.se = shader_distortion;
 		}
 	}
@@ -457,7 +456,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		node->val.ScreenSpaceArea = screen_space_area;
 		node->val.pObject = nullptr;
 		node->val.pVisual = pVisual;
-		node->val.Matrix = Fidentity;
+		node->val.pMatrix = &Fidentity;
 		node->val.se = shader_element;
 		return;
 	}
@@ -469,7 +468,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		node->val.ScreenSpaceArea = screen_space_area;
 		node->val.pObject = nullptr;
 		node->val.pVisual = pVisual;
-		node->val.Matrix = Fidentity;
+		node->val.pMatrix = &Fidentity;
 		node->val.se = pVisual->shader->E[4]._get();
 	}
 
@@ -480,7 +479,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		node->val.ScreenSpaceArea = screen_space_area;
 		node->val.pObject = nullptr;
 		node->val.pVisual = pVisual;
-		node->val.Matrix = Fidentity;
+		node->val.pMatrix = &Fidentity;
 		node->val.se = shader_element;
 		return;
 	}

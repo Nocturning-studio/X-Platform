@@ -57,7 +57,7 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 
 	for (const auto& node : batch)
 	{
-		RenderBackend.set_transform_world(node.Matrix);
+		RenderBackend.set_transform_world(*node.pMatrix);
 		RenderImplementation.apply_object(node.pObject);
 		RenderImplementation.apply_lmaterial();
 
@@ -74,7 +74,7 @@ static void __fastcall RenderSortedNode(SceneGraphTypes::mapSorted_Node* node)
 	VERIFY(pVisual && pVisual->shader._get());
 
 	RenderBackend.set_Element(node->val.se);
-	RenderBackend.set_transform_world(node->val.Matrix);
+	RenderBackend.set_transform_world(*node->val.pMatrix);
 	RenderImplementation.apply_object(node->val.pObject);
 	RenderImplementation.apply_lmaterial();
 

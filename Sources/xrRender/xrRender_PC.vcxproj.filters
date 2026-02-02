@@ -28,9 +28,6 @@
     <Filter Include="Render Console">
       <UniqueIdentifier>{25048830-d3aa-4387-b01b-a2a0cdbac8ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Dynamic scene graph">
-      <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Occlusion culling\HOM Occlusion">
       <UniqueIdentifier>{192e35d4-dc12-4e11-a00b-860e34665128}</UniqueIdentifier>
     </Filter>
@@ -160,6 +157,9 @@
     <Filter Include="Core\Stripifier">
       <UniqueIdentifier>{90ddcd80-88df-482f-9b11-217190755c23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Scene Graph">
+      <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -283,10 +283,10 @@
       <Filter>Render Console</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraph.h">
-      <Filter>Core\Dynamic scene graph</Filter>
+      <Filter>Core\Scene Graph</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraphTypes.h">
-      <Filter>Core\Dynamic scene graph</Filter>
+      <Filter>Core\Scene Graph</Filter>
     </ClInclude>
     <ClInclude Include="r_rendertarget.h">
       <Filter>Render pipeline\Rendertargets</Filter>
@@ -573,10 +573,10 @@
       <Filter>Render Console</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraphBuild.cpp">
-      <Filter>Core\Dynamic scene graph</Filter>
+      <Filter>Core\Scene Graph</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraphRender.cpp">
-      <Filter>Core\Dynamic scene graph</Filter>
+      <Filter>Core\Scene Graph</Filter>
     </ClCompile>
     <ClCompile Include="r_calculate.cpp">
       <Filter>Render pipeline\Core</Filter>
