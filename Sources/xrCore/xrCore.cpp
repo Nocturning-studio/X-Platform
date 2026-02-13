@@ -10,6 +10,7 @@
 #ifdef DEBUG
 #include <malloc.h>
 #endif // DEBUG
+#include "xrCPU.h"
 
 XRCORE_API xrCore Core;
 XRCORE_API u32 build_id;
@@ -70,24 +71,17 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 		DWORD sz_comp = sizeof(CompName);
 		GetComputerName(CompName, &sz_comp);
 
-		// Mathematics & PSI detection
-		CPU::Detect();
-
 		Memory._initialize(strstr(Params, "-mem_debug") ? TRUE : FALSE);
 
 		DUMP_PHASE;
 
 		InitLog();
-		_initialize_cpu();
-
-		//		Debug._initialize	();
-
+		CPU::Initialize();
 		rtc_initialize();
 
 		xr_FS = xr_new<CLocatorAPI>();
 
 		xr_EFS = xr_new<EFS_Utils>();
-		//.		R_ASSERT			(co_res==S_OK);
 	}
 	if (init_fs)
 	{

@@ -64,8 +64,7 @@ void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, vo
 {
 	R_ASSERT(S_INIT == status);
 	R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
-
-	_initialize_cpu_thread();
+	_mm_setcsr(_mm_getcsr() | 0x8000 | 0x0040);
 #ifdef _EDITOR
 	build_internal(V, Vcnt, T, Tcnt, bc, bcp);
 #else

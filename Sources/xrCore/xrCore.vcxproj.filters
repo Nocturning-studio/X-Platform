@@ -300,6 +300,9 @@
     <ClCompile Include="xrSyncronize.cpp">
       <Filter>Critical section</Filter>
     </ClCompile>
+    <ClCompile Include="xrCPU.cpp">
+      <Filter>CPUID</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -604,6 +607,9 @@
     </ClInclude>
     <ClInclude Include="fastdelegate.h">
       <Filter>Third-Party</Filter>
+    </ClInclude>
+    <ClInclude Include="xrCPU.h">
+      <Filter>CPUID</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

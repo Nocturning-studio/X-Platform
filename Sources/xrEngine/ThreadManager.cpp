@@ -24,6 +24,13 @@ CThreadManager::~CThreadManager()
 
 #ifdef WINDOWS
 #include <windows.h>
+void InitializeThread()
+{
+	// ¬ключаем Flush-to-Zero (FTZ) и Denormals-are-Zero (DAZ).
+	// Ёто предотвращает падение FPS, когда значени€ станов€тс€ очень близкими к нулю.
+	_mm_setcsr(_mm_getcsr() | 0x8000 | 0x0040);
+}
+
 static void SetThreadName(const char* threadName)
 {
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;
@@ -105,7 +112,7 @@ void CThreadManager::Initialize()
 				sprintf_s(optickThreadName, "X-RAY Worker #%d (Gen)", ctx.ThreadID);
 
 			OPTICK_THREAD(optickThreadName);
-
+			InitializeThread();
 			WorkerThreadProc(&ctx);
 		});
 

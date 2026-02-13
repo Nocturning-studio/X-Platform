@@ -1,7 +1,7 @@
 #ifndef FTimerH
 #define FTimerH
 #pragma once
-
+#include "xrCPU.h"
 class CTimer_paused;
 
 class XRCORE_API pauseMngr

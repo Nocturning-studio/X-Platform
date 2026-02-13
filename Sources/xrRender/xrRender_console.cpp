@@ -588,7 +588,7 @@ class CCC_DetailQuality : public CCC_Token
 			break;
 		case 4: // Ultra
 			ps_r_Detail_density = 0.3f;
-			ps_r_Detail_radius = 100.0f;
+			ps_r_Detail_radius = 200.0f;
 			ps_r_Detail_scale = 1.00f;
 			ps_r_Detail_height = 0.00f;
 			break;
