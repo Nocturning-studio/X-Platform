@@ -1,156 +1,27 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include <process.h>
-
-// mmsystem.h
-#define MMNOSOUND
-#define MMNOMIDI
-#define MMNOAUX
-#define MMNOMIXER
-#define MMNOJOY
-#include <mmsystem.h>
 #include <thread>
+#include <chrono>
+#include <intrin.h> // Для __rdtsc
 #include "../xrEngine/optick_include.h"
 
-// Initialized on startup
+// Глобальные объекты
 XRCORE_API Fmatrix Fidentity;
 XRCORE_API Dmatrix Didentity;
 XRCORE_API CRandom Random;
 
-#ifdef _M_AMD64
-u16 getFPUsw()
-{
-	return 0;
-}
-
-namespace FPU
-{
-XRCORE_API void m24(void)
-{
-	_control87(_PC_24, MCW_PC);
-	_control87(_RC_CHOP, MCW_RC);
-}
-XRCORE_API void m24r(void)
-{
-	_control87(_PC_24, MCW_PC);
-	_control87(_RC_NEAR, MCW_RC);
-}
-XRCORE_API void m53(void)
-{
-	_control87(_PC_53, MCW_PC);
-	_control87(_RC_CHOP, MCW_RC);
-}
-XRCORE_API void m53r(void)
-{
-	_control87(_PC_53, MCW_PC);
-	_control87(_RC_NEAR, MCW_RC);
-}
-XRCORE_API void m64(void)
-{
-	_control87(_PC_64, MCW_PC);
-	_control87(_RC_CHOP, MCW_RC);
-}
-XRCORE_API void m64r(void)
-{
-	_control87(_PC_64, MCW_PC);
-	_control87(_RC_NEAR, MCW_RC);
-}
-
-void initialize()
-{
-}
-}; // namespace FPU
-#else
-u16 getFPUsw()
-{
-	u16 SW;
-	__asm fstcw SW;
-	return SW;
-}
-
-namespace FPU
-{
-u16 _24 = 0;
-u16 _24r = 0;
-u16 _53 = 0;
-u16 _53r = 0;
-u16 _64 = 0;
-u16 _64r = 0;
-
-XRCORE_API void m24()
-{
-	u16 p = _24;
-	__asm fldcw p;
-}
-XRCORE_API void m24r()
-{
-	u16 p = _24r;
-	__asm fldcw p;
-}
-XRCORE_API void m53()
-{
-	u16 p = _53;
-	__asm fldcw p;
-}
-XRCORE_API void m53r()
-{
-	u16 p = _53r;
-	__asm fldcw p;
-}
-XRCORE_API void m64()
-{
-	u16 p = _64;
-	__asm fldcw p;
-}
-XRCORE_API void m64r()
-{
-	u16 p = _64r;
-	__asm fldcw p;
-}
-
-void initialize()
-{
-	_clear87();
-
-	_control87(_PC_24, MCW_PC);
-	_control87(_RC_CHOP, MCW_RC);
-	_24 = getFPUsw(); // 24, chop
-	_control87(_RC_NEAR, MCW_RC);
-	_24r = getFPUsw(); // 24, rounding
-
-	_control87(_PC_53, MCW_PC);
-	_control87(_RC_CHOP, MCW_RC);
-	_53 = getFPUsw(); // 53, chop
-	_control87(_RC_NEAR, MCW_RC);
-	_53r = getFPUsw(); // 53, rounding
-
-	_control87(_PC_64, MCW_PC);
-	_control87(_RC_CHOP, MCW_RC);
-	_64 = getFPUsw(); // 64, chop
-	_control87(_RC_NEAR, MCW_RC);
-	_64r = getFPUsw(); // 64, rounding
-
-#ifndef XRCORE_STATIC
-
-	m24r();
-
-#endif // XRCORE_STATIC
-
-	::Random.seed(u32(CPU::GetCLK() % (1i64 << 32i64)));
-}
-}; // namespace FPU
-#endif
-
+// Реализация функций внутри пространства имен CPU
 namespace CPU
 {
-XRCORE_API u64 clk_per_second;
-XRCORE_API u64 clk_per_milisec;
-XRCORE_API u64 clk_per_microsec;
-XRCORE_API u64 clk_overhead;
-XRCORE_API float clk_to_seconds;
-XRCORE_API float clk_to_milisec;
-XRCORE_API float clk_to_microsec;
+XRCORE_API u64 clk_per_second = 0;
+XRCORE_API u64 clk_per_milisec = 0;
+XRCORE_API u64 clk_per_microsec = 0;
+XRCORE_API u64 clk_overhead = 0;
+XRCORE_API float clk_to_seconds = 0.0f;
+XRCORE_API float clk_to_milisec = 0.0f;
+XRCORE_API float clk_to_microsec = 0.0f;
+
 XRCORE_API u64 qpc_freq = 0;
 XRCORE_API u64 qpc_overhead = 0;
 XRCORE_API u32 qpc_counter = 0;
@@ -159,177 +30,137 @@ XRCORE_API processor_info ID;
 
 XRCORE_API u64 QPC()
 {
-	u64 _dest;
-	QueryPerformanceCounter((PLARGE_INTEGER)&_dest);
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
 	qpc_counter++;
-	return _dest;
+	return static_cast<u64>(li.QuadPart);
 }
 
-#ifdef M_BORLAND
-u64 __fastcall GetCLK(void)
+// Реализация GetCLK через интринсик
+XRCORE_API u64 GetCLK()
 {
-	_asm db 0x0F;
-	_asm db 0x31;
+	return __rdtsc();
 }
-#endif
 
 void Detect()
 {
-	// Timers & frequency
-	u64 start, end;
-	u32 dwStart, dwTest;
+	// 1. Частота QPC
+	LARGE_INTEGER liFreq;
+	if (QueryPerformanceFrequency(&liFreq))
+		qpc_freq = static_cast<u64>(liFreq.QuadPart);
+	else
+		qpc_freq = 1000;
 
+	// 2. Оверхед QPC
+	u64 start = QPC();
+	for (int i = 0; i < 256; i++)
+		QPC();
+	u64 end = QPC();
+	qpc_overhead = (end - start) / 256;
+
+	// 3. Оверхед RDTSC
+	start = GetCLK();
+	for (int i = 0; i < 256; i++)
+		GetCLK();
+	end = GetCLK();
+	clk_overhead = (end - start) / 256;
+
+	// 4. Калибровка
 	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
 
-	// Detect Freq
-	dwTest = timeGetTime();
-	do
-	{
-		dwStart = timeGetTime();
-	} while (dwTest == dwStart);
-	start = GetCLK();
-	while (timeGetTime() - dwStart < 1000)
-		;
-	end = GetCLK();
-	clk_per_second = end - start;
+	u64 qpc_start = QPC();
+	u64 tsc_start = GetCLK();
 
-	// Detect RDTSC Overhead
-	clk_overhead = 0;
-	u64 dummy = 0;
-	int i = 0;
-	for (; i < 256; i++)
-	{
-		start = GetCLK();
-		clk_overhead += GetCLK() - start - dummy;
-	}
-	clk_overhead /= 256;
+	u64 qpc_wait = qpc_freq / 10; // Ждем 100мс
 
-	// Detect QPC Overhead
-	QueryPerformanceFrequency((PLARGE_INTEGER)&qpc_freq);
-	qpc_overhead = 0;
-	for (i = 0; i < 256; i++)
+	while ((QPC() - qpc_start) < qpc_wait)
 	{
-		start = QPC();
-		qpc_overhead += QPC() - start - dummy;
+		_mm_pause();
 	}
-	qpc_overhead /= 256;
+
+	u64 qpc_end = QPC();
+	u64 tsc_end = GetCLK();
 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
-	clk_per_second -= clk_overhead;
+	u64 qpc_elapsed = qpc_end - qpc_start;
+	u64 tsc_elapsed = tsc_end - tsc_start;
+
+	if (qpc_elapsed > 0)
+		clk_per_second = (tsc_elapsed * qpc_freq) / qpc_elapsed;
+	else
+		clk_per_second = 2500000000ULL; // Фолбэк
+
 	clk_per_milisec = clk_per_second / 1000;
 	clk_per_microsec = clk_per_milisec / 1000;
-
-	_control87(_PC_64, MCW_PC);
-	//		_control87	( _RC_CHOP, MCW_RC );
-	double a, b;
-	a = 1;
-	b = double(clk_per_second);
-	clk_to_seconds = float(double(a / b));
-	a = 1000;
-	b = double(clk_per_second);
-	clk_to_milisec = float(double(a / b));
-	a = 1000000;
-	b = double(clk_per_second);
-	clk_to_microsec = float(double(a / b));
+	clk_to_seconds = 1.0f / (float)clk_per_second;
+	clk_to_milisec = 1000.0f / (float)clk_per_second;
+	clk_to_microsec = 1000000.0f / (float)clk_per_second;
 }
-}; // namespace CPU
+} // namespace CPU
+
+//------------------------------------------------------------------------------------
+void _initialize_cpu_thread()
+{
+	// Включаем Flush-to-Zero и Denormals-are-Zero для SSE
+	_mm_setcsr(_mm_getcsr() | 0x8000 | 0x0040);
+}
 
 //------------------------------------------------------------------------------------
 void _initialize_cpu(void)
 {
-	// General CPU identification
 	if (!query_processor_info(&CPU::ID))
-		FATAL("! Can't detect CPU/FPU");
+		FATAL("! Can't detect CPU info");
+
+	CPU::Detect();
 
 	Msg("* CPU Info:");
-	Msg("* CPU Frequency: %.2f mhz", float(CPU::clk_per_second / u64(1000000)));
-	Msg("* CPU Thread count: %d", std::thread::hardware_concurrency());
+	Msg("* CPU Frequency: ~%.2f MHz", float(CPU::clk_per_second) / 1000000.0f);
+	Msg("* CPU Hardware Threads: %d", std::thread::hardware_concurrency());
 
-    string256 features;
-	strcpy(features, "RDTSC");
+	string256 features;
+	strcpy_s(features, "RDTSC");
 	if (CPU::ID.hasFeature(CpuFeature::Sse))
-		strcat(features, ", SSE");
+		strcat_s(features, ", SSE");
 	if (CPU::ID.hasFeature(CpuFeature::Sse2))
-		strcat(features, ", SSE2");
+		strcat_s(features, ", SSE2");
 	if (CPU::ID.hasFeature(CpuFeature::Sse3))
-		strcat(features, ", SSE3");
+		strcat_s(features, ", SSE3");
 	if (CPU::ID.hasFeature(CpuFeature::Sse41))
-		strcat(features, ", SSE4.1");
+		strcat_s(features, ", SSE4.1");
 	if (CPU::ID.hasFeature(CpuFeature::Sse42))
-		strcat(features, ", SSE4.2");
-	if (CPU::ID.hasFeature(CpuFeature::Ssse3))
-		strcat(features, ", SSSE3");
-	if (CPU::ID.hasFeature(CpuFeature::Mmx))
-		strcat(features, ", MMX");
-	if (CPU::ID.hasFeature(CpuFeature::_3dNow))
-		strcat(features, ", 3DNow!");
-	if (CPU::ID.hasFeature(CpuFeature::MWait))
-		strcat(features, ", MONITOR/MWAIT");
+		strcat_s(features, ", SSE4.2");
 	if (CPU::ID.hasFeature(CpuFeature::HT))
-		strcat(features, ", HTT");
+		strcat_s(features, ", HTT");
 
-	Msg("* CPU features: %s \n", features);
+	Msg("* CPU features: %s", features);
 
-	Fidentity.identity();  // Identity matrix
-	Didentity.identity();  // Identity matrix
-	pvInitializeStatics(); // Lookup table for compressed normals
-	FPU::initialize();
+	Fidentity.identity();
+	Didentity.identity();
+	pvInitializeStatics();
+
 	_initialize_cpu_thread();
+
+	// Здесь мы вызываем CPU::GetCLK() явно, используя пространство имен
+	::Random.seed(u32(CPU::GetCLK()));
 }
 
-#ifdef M_BORLAND
-void _initialize_cpu_thread()
-{
-}
-#else
-// per-thread initialization
-#include <xmmintrin.h>
-#define _MM_DENORMALS_ZERO_MASK 0x0040
-#define _MM_DENORMALS_ZERO_ON 0x0040
-#define _MM_FLUSH_ZERO_MASK 0x8000
-#define _MM_FLUSH_ZERO_ON 0x8000
-#define _MM_SET_FLUSH_ZERO_MODE(mode) _mm_setcsr((_mm_getcsr() & ~_MM_FLUSH_ZERO_MASK) | (mode))
-#define _MM_SET_DENORMALS_ZERO_MODE(mode) _mm_setcsr((_mm_getcsr() & ~_MM_DENORMALS_ZERO_MASK) | (mode))
-static BOOL _denormals_are_zero_supported = TRUE;
-void debug_on_thread_spawn();
-
-void _initialize_cpu_thread()
-{
-	debug_on_thread_spawn();
-#ifndef XRCORE_STATIC
-	// fpu & sse
-	FPU::m24r();
-#endif // XRCORE_STATIC
-	if (CPU::ID.hasFeature(CpuFeature::Sse))
-	{
-		//_mm_setcsr ( _mm_getcsr() | (_MM_FLUSH_ZERO_ON+_MM_DENORMALS_ZERO_ON) );
-		_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-		if (_denormals_are_zero_supported)
-		{
-			__try
-			{
-				_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				_denormals_are_zero_supported = FALSE;
-			}
-		}
-	}
-}
-#endif
-// threading API
-#pragma pack(push, 8)
-struct THREAD_NAME
-{
-	DWORD dwType;
-	LPCSTR szName;
-	DWORD dwThreadID;
-	DWORD dwFlags;
-};
+//------------------------------------------------------------------------------------
 void thread_name(const char* name)
 {
+	if (!IsDebuggerPresent())
+		return;
+
+#pragma pack(push, 8)
+	struct THREAD_NAME
+	{
+		DWORD dwType;
+		LPCSTR szName;
+		DWORD dwThreadID;
+		DWORD dwFlags;
+	};
+#pragma pack(pop)
+
 	THREAD_NAME tn;
 	tn.dwType = 0x1000;
 	tn.szName = name;
@@ -337,47 +168,14 @@ void thread_name(const char* name)
 	tn.dwFlags = 0;
 	__try
 	{
-		RaiseException(0x406D1388, 0, sizeof(tn) / sizeof(DWORD), (DWORD*)&tn);
+		RaiseException(0x406D1388, 0, sizeof(tn) / sizeof(DWORD), (ULONG_PTR*)&tn);
 	}
-	__except (EXCEPTION_CONTINUE_EXECUTION)
+	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
 	}
 }
-#pragma pack(pop)
 
-struct THREAD_STARTUP
-{
-	thread_t* entry;
-	char* name;
-	void* args;
-};
-
-void __cdecl thread_entry(void* _params)
-{
-	// initialize
-	THREAD_STARTUP* startup = (THREAD_STARTUP*)_params;
-	thread_name(startup->name);
-	thread_t* entry = startup->entry;
-	void* arglist = startup->args;
-	xr_delete(startup);
-	_initialize_cpu_thread();
-
-	// call
-	entry(arglist);
-}
-
-void thread_spawn(thread_t* entry, const char* name, unsigned stack, void* arglist)
-{
-	Msg("Spawning thread: %s", name);
-	Debug._initialize(false);
-
-	THREAD_STARTUP* startup = xr_new<THREAD_STARTUP>();
-	startup->entry = entry;
-	startup->name = (char*)name;
-	startup->args = arglist;
-	_beginthread(thread_entry, stack, startup);
-}
-
+// Сплайны (math implementation)
 void spline1(float t, Fvector* p, Fvector* ret)
 {
 	float t2 = t * t;

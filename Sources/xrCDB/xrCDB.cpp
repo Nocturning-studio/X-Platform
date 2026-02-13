@@ -60,20 +60,6 @@ struct BTHREAD_params
 	void* BCP;
 };
 
-void MODEL::build_thread(void* params)
-{
-	OPTICK_THREAD("xrCDB Build Thread");
-	OPTICK_FRAME("xrCDB Build Thread");
-
-	FPU::m64r();
-	BTHREAD_params P = *((BTHREAD_params*)params);
-	P.M->cs.Enter();
-	P.M->build_internal(P.V, P.Vcnt, P.T, P.Tcnt, P.BC, P.BCP);
-	P.M->status = S_READY;
-	P.M->cs.Leave();
-	Msg("* xrCDB: cform build completed, memory usage: %d K",P.M->memory()/1024);
-}
-
 void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
 {
 	R_ASSERT(S_INIT == status);
@@ -100,7 +86,6 @@ void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, vo
 		OPTICK_THREAD("xrCDB Build Thread");
 		OPTICK_FRAME("xrCDB Build Thread");
 
-		FPU::m64r();
 		P->M->cs.Enter();
 		P->M->build_internal(P->V, P->Vcnt, P->T, P->Tcnt, P->BC, P->BCP);
 		P->M->status = S_READY;

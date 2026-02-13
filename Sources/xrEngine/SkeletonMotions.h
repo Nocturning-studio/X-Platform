@@ -13,10 +13,10 @@ typedef void (*PlayCallback)(CBlend* P);
 
 const u32 MAX_PARTS = 4;
 const u32 MAX_CHANNELS = 4;
-const f32 SAMPLE_FPS = 30.f;
-const f32 SAMPLE_SPF = (1.f / SAMPLE_FPS);
-const f32 KEY_Quant = 32767.f;
-const f32 KEY_QuantI = 1.f / KEY_Quant;
+const float SAMPLE_FPS = 30.f;
+const float SAMPLE_SPF = (1.f / SAMPLE_FPS);
+const float KEY_Quant = 32767.f;
+const float KEY_QuantI = 1.f / KEY_Quant;
 
 //*** Key frame definition ************************************************************************
 enum

@@ -28,7 +28,6 @@ void CPortal::Setup(Fvector* v_ptr, int v_count, CSector* face, CSector* back)
 	N.set(0, 0, 0);
 
 	// Robust normal calculation
-	FPU::m64r();
 	u32 valid_tris = 0;
 	for (int i = 2; i < v_count; i++)
 	{
@@ -46,5 +45,4 @@ void CPortal::Setup(Fvector* v_ptr, int v_count, CSector* face, CSector* back)
 		Msg("! Invalid portal geometry detected");
 
 	m_plane.build(m_vertices[0], N);
-	FPU::m24r();
 }

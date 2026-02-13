@@ -110,7 +110,6 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 							 1.0f};
 
 	// Compute shadow matrix
-	FPU::m64r();
 	Fmatrix xf_invview;
 	xf_invview.invert(Engine.RenderView.View);
 
@@ -127,7 +126,6 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 		bias_t.translate(bias);
 		m_shadow.mulB_44(bias_t);
 	}
-	FPU::m24r();
 
 	float NormalBias = 0.0f;
 	float DirectionalBias = 0.0f;

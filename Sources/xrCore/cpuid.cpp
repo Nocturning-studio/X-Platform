@@ -8,16 +8,6 @@
 #include <memory>
 #include <intrin.h>
 
-#ifdef _EDITOR
-unsgined int query_processor_info(processor_info* pinfo)
-{
-	ZeroMemory(pinfo, sizeof(processor_info));
-
-	pinfo->feature = static_cast<u32>(CpuFeature::Mmx) | static_cast<u32>(CpuFeature::Sse);
-	return pinfo->feature;
-}
-#else
-
 #undef _CPUID_DEBUG
 
 void nativeCpuId(int regs[4], int i)
@@ -185,4 +175,3 @@ unsigned int query_processor_info(processor_info* pinfo)
 
 	return pinfo->features;
 }
-#endif

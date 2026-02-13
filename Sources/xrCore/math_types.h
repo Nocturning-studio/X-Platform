@@ -1,21 +1,15 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
+#include <cstdint>
+#include <limits>
 
-// Type defs
-typedef signed char s8;
-typedef unsigned char u8;
-
-typedef signed short s16;
-typedef unsigned short u16;
-
-typedef signed int s32;
-typedef unsigned int u32;
-
-typedef signed __int64 s64;
-typedef unsigned __int64 u64;
-
-typedef float f32;
-typedef double f64;
+using s8  = int8_t;
+using u8  = uint8_t;
+using s16 = int16_t;
+using u16 = uint16_t;
+using s32 = int32_t;
+using u32 = uint32_t;
+using s64 = int64_t;
+using u64 = uint64_t;
 
 typedef char* pstr;
 typedef const char* pcstr;
@@ -24,11 +18,13 @@ typedef const char* const cpcstr;
 
 // windoze stuff
 #ifndef _WINDOWS_
-typedef int BOOL;
 typedef pstr LPSTR;
 typedef pcstr LPCSTR;
-#define TRUE true
-#define FALSE false
+using BOOL = int;
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
 #endif
 
 // Type limits
@@ -43,8 +39,6 @@ typedef pcstr LPCSTR;
 
 #define flt_max type_max(float)
 #define flt_min type_min(float)
-// #define FLT_MAX         3.402823466e+38F        /* max value */
-// #define FLT_MIN         1.175494351e-38F        /* min positive value */
 #define FLT_MAX flt_max
 #define FLT_MIN flt_min
 
@@ -68,5 +62,3 @@ typedef char string2048[2048];
 typedef char string4096[4096];
 
 typedef char string_path[2 * _MAX_PATH];
-
-#endif

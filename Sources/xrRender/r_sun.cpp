@@ -635,7 +635,6 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	Fmatrix cull_transform;
 
 	{
-		FPU::m64r();
 		// Lets begin from base frustum
 		Fmatrix fulltransform_inv = ex_full_inverse;
 #ifdef _DEBUG
@@ -812,9 +811,6 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		cull_transform.mulB_44(adjust);
 
 		m_sun_cascades[cascade_ind].transform = cull_transform;
-
-		// full-transform
-		FPU::m24r();
 	}
 
 	// Сохраняем результаты в WorkItem для фазы Draw

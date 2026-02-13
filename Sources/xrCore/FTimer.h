@@ -53,13 +53,8 @@ class XRCORE_API CTimerBase
 	}
 	IC float GetElapsed_sec() const
 	{
-#ifndef _EDITOR
-		FPU::m64r();
-#endif
 		float _result = float(double(GetElapsed_ticks()) / double(CPU::qpc_freq));
-#ifndef _EDITOR
-		FPU::m24r();
-#endif
+
 		return _result;
 	}
 	IC void Dump() const
@@ -120,15 +115,7 @@ class XRCORE_API CTimer : public CTimerBase
 
 	IC u64 GetElapsed_ticks() const
 	{
-#ifndef _EDITOR
-		FPU::m64r();
-#endif // _EDITOR
-
 		u64 result = GetElapsed_ticks(inherited::GetElapsed_ticks());
-
-#ifndef _EDITOR
-		FPU::m24r();
-#endif // _EDITOR
 
 		return (result);
 	}
@@ -140,13 +127,8 @@ class XRCORE_API CTimer : public CTimerBase
 
 	IC float GetElapsed_sec() const
 	{
-#ifndef _EDITOR
-		FPU::m64r();
-#endif
 		float result = float(double(GetElapsed_ticks()) / double(CPU::qpc_freq));
-#ifndef _EDITOR
-		FPU::m24r();
-#endif
+
 		return (result);
 	}
 
@@ -243,13 +225,8 @@ class XRCORE_API CStatTimer
 	}
 	IC float GetElapsed_sec() const
 	{
-#ifndef _EDITOR
-		FPU::m64r();
-#endif
 		float _result = float(double(GetElapsed_ticks()) / double(CPU::qpc_freq));
-#ifndef _EDITOR
-		FPU::m24r();
-#endif
+
 		return _result;
 	}
 };

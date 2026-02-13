@@ -134,7 +134,7 @@ class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer
 	virtual void PHSetMaterial(u16 m);
 	void PHSaveState(NET_Packet& P);
 	void PHLoadState(IReader& P);
-	virtual f32 GetMass();
+	virtual float GetMass();
 	virtual void PHHit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space, float impulse,
 					   ALife::EHitType hit_type = ALife::eHitTypeWound);
 	virtual void Hit(SHit* pHDS);

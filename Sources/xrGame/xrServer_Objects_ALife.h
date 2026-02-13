@@ -419,7 +419,7 @@ add_to_type_list(CSE_ALifeSmartZone)
 #define script_type_list save_type_list(CSE_ALifeSmartZone)
 
 	SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectPhysic, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) u32 type;
-f32 mass;
+float mass;
 shared_str fixed_bones;
 CSE_ALifeObjectPhysic(LPCSTR caSection);
 virtual ~CSE_ALifeObjectPhysic();

@@ -519,7 +519,6 @@ DEFINE_VECTOR(Fcolor, FcolorVec, FcolorIt);
 DEFINE_VECTOR(Fcolor*, LPFcolorVec, LPFcolorIt);
 DEFINE_VECTOR(LPSTR, LPSTRVec, LPSTRIt);
 DEFINE_VECTOR(LPCSTR, LPCSTRVec, LPCSTRIt);
-// DEFINE_VECTOR(string64,string64Vec,string64It);
 DEFINE_VECTOR(xr_string, SStringVec, SStringVecIt);
 
 DEFINE_VECTOR(s8, S8Vec, S8It);

@@ -7,9 +7,6 @@
     <Filter Include="Math">
       <UniqueIdentifier>{664e636f-935c-49c8-999e-af304ee213a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Math\CPU">
-      <UniqueIdentifier>{2e917324-8d08-43e5-a638-52eeaf6748d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math\STLext">
       <UniqueIdentifier>{1d61846a-2fb8-4f40-93f6-fc70e2870688}</UniqueIdentifier>
     </Filter>
@@ -25,9 +22,6 @@
     <Filter Include="FS\file_stream_reader">
       <UniqueIdentifier>{3d25beb9-34a8-4293-b60f-a91ec118010c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Memory manager">
-      <UniqueIdentifier>{ae1bbcd8-70dc-45b2-a74b-cf52560c4964}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Debug core">
       <UniqueIdentifier>{26de6e07-a5b3-43b0-a256-8caf7ece2863}</UniqueIdentifier>
     </Filter>
@@ -39,9 +33,6 @@
     </Filter>
     <Filter Include="intrusive_ptr">
       <UniqueIdentifier>{441a696d-4c38-4b74-a1bb-e296d12102a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="memory_monitor">
-      <UniqueIdentifier>{06c23d43-8ebc-4b3c-a31c-691cf13634b1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression">
       <UniqueIdentifier>{78536b74-bbe6-4787-8716-1fd786cb22f0}</UniqueIdentifier>
@@ -94,6 +85,21 @@
     <Filter Include="Build identification">
       <UniqueIdentifier>{421f90c7-42c7-4c99-ae6d-5fe8528a3b88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CPUID">
+      <UniqueIdentifier>{2e917324-8d08-43e5-a638-52eeaf6748d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Third-Party">
+      <UniqueIdentifier>{c2c6c7bd-5f6a-4d39-a46e-acffffd7727b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{04cd6fef-9c21-4fd1-a808-e2d8fd8f7da0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory\Memory monitor">
+      <UniqueIdentifier>{06c23d43-8ebc-4b3c-a31c-691cf13634b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory\Memory manager">
+      <UniqueIdentifier>{ae1bbcd8-70dc-45b2-a74b-cf52560c4964}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -115,7 +121,7 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="cpuid.cpp">
-      <Filter>Math\CPU</Filter>
+      <Filter>CPUID</Filter>
     </ClCompile>
     <ClCompile Include="_std_extensions.cpp">
       <Filter>Math\Extensions</Filter>
@@ -160,34 +166,34 @@
       <Filter>FS\file_stream_reader</Filter>
     </ClCompile>
     <ClCompile Include="memory_allocation_stats.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="memory_usage.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_align.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_debug.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_POOL.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_pso_Copy.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_pso_Fill.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_pso_Fill32.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_subst.cpp">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrDebug.cpp">
       <Filter>Debug core</Filter>
@@ -235,7 +241,7 @@
       <Filter>shared memory/string library</Filter>
     </ClCompile>
     <ClCompile Include="memory_monitor.cpp">
-      <Filter>memory_monitor</Filter>
+      <Filter>Memory\Memory monitor</Filter>
     </ClCompile>
     <ClCompile Include="ppmd_compressor.cpp">
       <Filter>Compression\ppmd</Filter>
@@ -362,7 +368,7 @@
     <ClInclude Include="_sphere.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="_types.h">
+    <ClInclude Include="math_types.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="_vector2.h">
@@ -378,7 +384,7 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="cpuid.h">
-      <Filter>Math\CPU</Filter>
+      <Filter>CPUID</Filter>
     </ClInclude>
     <ClInclude Include="FixedMap.h">
       <Filter>Math\STLext</Filter>
@@ -402,9 +408,6 @@
       <Filter>Math\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="clsid.h">
-      <Filter>Math\Extensions</Filter>
-    </ClInclude>
-    <ClInclude Include="fastdelegate.h">
       <Filter>Math\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="xr_trims.h">
@@ -438,22 +441,22 @@
       <Filter>FS\file_stream_reader</Filter>
     </ClInclude>
     <ClInclude Include="xrMemory.h">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMemory_align.h">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMEMORY_POOL.h">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMemory_pso.h">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMemory_pure.h">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMemory_subst.h">
-      <Filter>Memory manager</Filter>
+      <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrDebug.h">
       <Filter>Debug core</Filter>
@@ -504,7 +507,7 @@
       <Filter>intrusive_ptr</Filter>
     </ClInclude>
     <ClInclude Include="memory_monitor.h">
-      <Filter>memory_monitor</Filter>
+      <Filter>Memory\Memory monitor</Filter>
     </ClInclude>
     <ClInclude Include="ppmd_compressor.h">
       <Filter>Compression\ppmd</Filter>
@@ -598,6 +601,9 @@
     </ClInclude>
     <ClInclude Include="build_identificator.h">
       <Filter>Build identification</Filter>
+    </ClInclude>
+    <ClInclude Include="fastdelegate.h">
+      <Filter>Third-Party</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

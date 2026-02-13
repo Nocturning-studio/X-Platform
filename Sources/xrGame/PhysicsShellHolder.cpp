@@ -221,7 +221,7 @@ void CPhysicsShellHolder::PHSetLinearVell(Fvector& velocity)
 	m_pPhysicsShell->set_LinearVel(velocity);
 }
 
-f32 CPhysicsShellHolder::GetMass()
+float CPhysicsShellHolder::GetMass()
 {
 	return m_pPhysicsShell ? m_pPhysicsShell->getMass() : 0;
 }

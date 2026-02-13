@@ -14,7 +14,7 @@
 #define XRCDB_API __declspec(dllimport)
 #endif
 
-#ifdef M_VISUAL
+#ifdef MSVC_COMPILER
 #define ALIGN(a) __declspec(align(a))
 #else
 #define ALIGN(a)

@@ -3,7 +3,7 @@
 #pragma once
 #include "d3dx9.h"
 #include "../xrCore/xrstring.h"
-#include "../xrCore/_types.h"
+#include "../xrCore/math_types.h"
 
 class ENGINE_API CShaderMacros
 {

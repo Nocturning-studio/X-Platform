@@ -96,7 +96,7 @@ struct DetailSlot // was(4+4+3*4+2 = 22b), now(8+2*4=16b)
 		s32 _base = iFloor((base + 200) / .2f);
 		clamp(_base, 0, 4095);
 		y_base = _base;
-		f32 _error = base - r_ybase();
+		float _error = base - r_ybase();
 		s32 _height = iCeil((height + _error) / .1f);
 		clamp(_height, 0, 255);
 		y_height = _height;

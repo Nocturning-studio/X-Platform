@@ -10,7 +10,7 @@ ICF u32 color_rgba(u32 r, u32 g, u32 b, u32 a)
 {
 	return color_argb(a, r, g, b);
 }
-ICF u32 color_argb_f(f32 a, f32 r, f32 g, f32 b)
+ICF u32 color_argb_f(float a, float r, float g, float b)
 {
 	s32 _r = clampr(iFloor(r * 255.f), 0, 255);
 	s32 _g = clampr(iFloor(g * 255.f), 0, 255);
@@ -18,7 +18,7 @@ ICF u32 color_argb_f(f32 a, f32 r, f32 g, f32 b)
 	s32 _a = clampr(iFloor(a * 255.f), 0, 255);
 	return color_argb(_a, _r, _g, _b);
 }
-ICF u32 color_rgba_f(f32 r, f32 g, f32 b, f32 a)
+ICF u32 color_rgba_f(float r, float g, float b, float a)
 {
 	return color_argb_f(a, r, g, b);
 }

@@ -101,8 +101,6 @@ bool CEngine::Initialize()
 	// 5. Инициализация ядра (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");
 
-	FPU::m24r();
-
 	// 6. Инициализация настроек (Settings / INI)
 	{
 		Msg("Initializing Settings...");

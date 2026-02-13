@@ -635,14 +635,14 @@ void CRender::Statistics(CGameFont* _F)
 	stats.s_merged = 0;
 	stats.s_finalclip = 0;
 	F.OutSkip();
-	F.OutNext(" **** Occ-Q(%03.1f) **** ", 100.f * f32(stats.o_culled) / f32(stats.o_queries ? stats.o_queries : 1));
+	F.OutNext(" **** Occ-Q(%03.1f) **** ", 100.f * float(stats.o_culled) / float(stats.o_queries ? stats.o_queries : 1));
 	F.OutNext(" total  : %2d", stats.o_queries);
 	stats.o_queries = 0;
 	F.OutNext(" culled : %2d", stats.o_culled);
 	stats.o_culled = 0;
 	F.OutSkip();
 	u32 ict = stats.ic_total + stats.ic_culled;
-	F.OutNext(" **** iCULL(%03.1f) **** ", 100.f * f32(stats.ic_culled) / f32(ict ? ict : 1));
+	F.OutNext(" **** iCULL(%03.1f) **** ", 100.f * float(stats.ic_culled) / float(ict ? ict : 1));
 	F.OutNext(" visible: %2d", stats.ic_total);
 	stats.ic_total = 0;
 	F.OutNext(" culled : %2d", stats.ic_culled);
