@@ -49,7 +49,7 @@ void SBinocVisibleObj::create_default(u32 color)
 	m_rt.SetOriginalRect(RECT_SIZE, 0, RECT_SIZE, RECT_SIZE);
 	m_rb.SetOriginalRect(RECT_SIZE, RECT_SIZE, RECT_SIZE, RECT_SIZE);
 
-	u32 clr = subst_alpha(color, 128);
+	u32 clr = color_set_alpha(color, 128);
 	m_lt.SetColor(clr);
 	m_lb.SetColor(clr);
 	m_rt.SetColor(clr);
@@ -123,7 +123,7 @@ void SBinocVisibleObj::Update()
 		{
 			// target locked
 			m_flags.set(flTargetLocked, TRUE);
-			u32 clr = subst_alpha(m_lt.GetColor(), 255);
+			u32 clr = color_set_alpha(m_lt.GetColor(), 255);
 
 			//-----------------------------------------------------
 			CActor* pActor = NULL;

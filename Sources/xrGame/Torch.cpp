@@ -250,13 +250,13 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	guid_bone = K->LL_BoneID(pUserData->r_string("torch_definition", "guide_bone"));
 	VERIFY(guid_bone != BI_NONE);
 
-	Fcolor clr = pUserData->r_fcolor("torch_definition", "color");
+	fcolor clr = pUserData->r_fcolor("torch_definition", "color");
 	fBrightness = clr.intensity();
 	float range = pUserData->r_float("torch_definition", "range");
 	light_render->set_color(clr);
 	light_render->set_range(range);
 
-	Fcolor clr_o = pUserData->r_fcolor("torch_definition", "omni_color");
+	fcolor clr_o = pUserData->r_fcolor("torch_definition", "omni_color");
 	float range_o = pUserData->r_float("torch_definition", "omni_range");
 	light_omni->set_color(clr_o);
 	light_omni->set_range(range_o);
@@ -438,7 +438,7 @@ void CTorch::UpdateCL()
 	// возвращает в формате BGR
 	u32 clr = lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame);
 
-	Fcolor fclr;
+	fcolor fclr;
 	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
 	fclr.mul_rgb(fBrightness / 255.f);
 	if (can_use_dynamic_lights())

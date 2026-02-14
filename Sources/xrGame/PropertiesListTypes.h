@@ -582,11 +582,11 @@ class WaveValue : public CustomValue<WaveForm>
 };
 //------------------------------------------------------------------------------
 
-IC bool operator==(const Fcolor& A, const Fcolor& B)
+IC bool operator==(const fcolor& A, const fcolor& B)
 {
 	return !!A.similar_rgba(B);
 }
-typedef CustomValue<Fcolor> ColorValue;
+typedef CustomValue<fcolor> ColorValue;
 //------------------------------------------------------------------------------
 
 template <class T> class NumericValue : public CustomValue<T>

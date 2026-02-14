@@ -143,7 +143,7 @@ void CMincer::AffectPullAlife(CEntityAlive* EA, const float3& throw_in_dir, floa
 {
 	float power = Power(dist);
 	// float3 dir;
-	// dir.random_dir(throw_in_dir,2.f*M_PI);
+	// dir.random_dir(throw_in_dir,2.f*PI);
 	if (EA->CLS_ID != CLSID_OBJECT_ACTOR)
 	{
 		float3 pos_in_bone_space;

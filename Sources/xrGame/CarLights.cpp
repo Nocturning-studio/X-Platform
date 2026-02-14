@@ -48,7 +48,7 @@ void SCarLight::ParseDefinitions(LPCSTR section)
 	CKinematics* pKinematics = smart_cast<CKinematics*>(m_holder->PCar()->Visual());
 	CInifile* ini = pKinematics->LL_UserData();
 
-	Fcolor clr;
+	fcolor clr;
 	clr.set(ini->r_fcolor(section, "color"));
 	// clr.mul_rgb				(torch->spot_brightness);
 	// fBrightness				= torch->spot_brightness;

@@ -46,7 +46,7 @@ void CUIProgressBar::UpdateProgressBar()
 
 	if (m_bUseColor)
 	{
-		Fcolor curr;
+		fcolor curr;
 		curr.lerp(m_minColor, m_maxColor, fCurrentLength);
 		m_UIProgressItem.GetStaticItem()->SetColor(curr);
 	}

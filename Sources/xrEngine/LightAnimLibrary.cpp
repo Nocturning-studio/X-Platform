@@ -134,7 +134,7 @@ u32 CLAItem::InterpolateRGB(int frame)
 
 	R_ASSERT(Keys.size() > 1);
 	// интерполируем цвет
-	Fcolor c, c0, c1;
+	fcolor c, c0, c1;
 	float a0 = (float)A->first;
 	float a1 = (float)B->first;
 	c0.set(A->second);
@@ -243,7 +243,7 @@ void ELightAnimLibrary::Load()
 				if (version == 0)
 				{
 					for (CLAItem::KeyPairIt it = I->Keys.begin(); it != I->Keys.end(); it++)
-						it->second = subst_alpha(bgr2rgb(it->second), color_get_A(it->second));
+						it->second = color_set_alpha(bgr2rgb(it->second), color_get_A(it->second));
 				}
 				Items.push_back(I);
 				O->close();

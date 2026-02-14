@@ -25,8 +25,8 @@ class CUIProgressBar : public CUIWindow
 
   public:
 	bool m_bUseColor;
-	Fcolor m_minColor;
-	Fcolor m_maxColor;
+	fcolor m_minColor;
+	fcolor m_maxColor;
 	float m_inertion; //
   public:
 	CUIStatic m_UIProgressItem;

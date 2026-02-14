@@ -66,7 +66,7 @@ void FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
 	concurrency::parallel_sort(&S.x, &S.x + 3);
 	float a = S.y;
 	float Sf = 4.f * (0.5f * (r * r * asinf(a / r) + a * _sqrt(r * r - a * a)));
-	float Ss = M_PI * r * r;
+	float Ss = PI * r * r;
 	lod_factor = Sf / Ss;
 }
 void FLOD::Copy(IRender_Visual* pFrom)

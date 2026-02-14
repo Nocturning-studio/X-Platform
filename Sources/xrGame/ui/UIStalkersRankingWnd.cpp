@@ -278,9 +278,9 @@ void CUIStalkerRankingInfoItem::Init(CUIXml* xml, LPCSTR path, int idx)
 void CUIStalkerRankingInfoItem::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
-	m_text1->SetTextColor(subst_alpha(m_text1->GetTextColor(), b ? 255 : m_stored_alpha));
-	m_text2->SetTextColor(subst_alpha(m_text2->GetTextColor(), b ? 255 : m_stored_alpha));
-	m_text3->SetTextColor(subst_alpha(m_text3->GetTextColor(), b ? 255 : m_stored_alpha));
+	m_text1->SetTextColor(color_set_alpha(m_text1->GetTextColor(), b ? 255 : m_stored_alpha));
+	m_text2->SetTextColor(color_set_alpha(m_text2->GetTextColor(), b ? 255 : m_stored_alpha));
+	m_text3->SetTextColor(color_set_alpha(m_text3->GetTextColor(), b ? 255 : m_stored_alpha));
 	if (b)
 	{
 		m_StalkersRankingWnd->ShowHumanInfo(m_humanID);

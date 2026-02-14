@@ -89,7 +89,7 @@ void CHelicopter::UpdateHeliParticles()
 		{
 			int frame;
 			u32 clr = m_lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // òþ÷ò¨ð•ðõª ò ¯þ¨üðªõ BGR
-			Fcolor fclr;
+			fcolor fclr;
 			fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
 			fclr.mul_rgb(m_light_brightness / 255.f);
 			m_light_render->set_color(fclr);

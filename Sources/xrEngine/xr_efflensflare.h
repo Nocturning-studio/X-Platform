@@ -81,7 +81,7 @@ class ENGINE_API CLensFlare
 	BOOL bRender;
 
 	// variable
-	Fcolor LightColor;
+	fcolor LightColor;
 	float fGradientValue;
 
 	ref_geom hGeom;

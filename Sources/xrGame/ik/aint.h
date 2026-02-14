@@ -33,7 +33,7 @@
 #define _AINTH
 
 // #ifdef _WINDOWS
-// #define M_PI            3.14159265358979323846
+// #define PI            3.14159265358979323846
 // #endif
 
 #define AINT_EPSILON (1e-5f)
@@ -46,7 +46,7 @@ inline int equal(float x, float y, const float eps = AINT_EPSILON)
 
 inline int istwopi(float x, const float eps = AINT_EPSILON)
 {
-	return equal(x, 2.0f * M_PI, eps);
+	return equal(x, 2.0f * PI, eps);
 }
 
 inline int iszero(float x, const float eps = AINT_EPSILON)
@@ -69,15 +69,15 @@ inline int ge(float x, float y, const float eps = AINT_EPSILON)
 //
 // inline float angle_normalize(float psi)
 //{
-//    if (fabs(psi-2*M_PI) < AINT_EPSILON)
-//	psi = 2*M_PI;
+//    if (fabs(psi-2*PI) < AINT_EPSILON)
+//	psi = 2*PI;
 //    else
-//	while (psi > 2*M_PI)  psi -= 2* M_PI;
+//	while (psi > 2*PI)  psi -= 2* PI;
 //
 //    if (fabs(psi) < AINT_EPSILON)
 //	psi = 0.0;
 //    else
-//	while (psi < 0) psi += 2* M_PI;
+//	while (psi < 0) psi += 2* PI;
 //
 //    return psi;
 //}
@@ -95,12 +95,12 @@ inline float angle_distance(float a1, float a2)
 
 	if (a1 > a2)
 	{
-		t1 = 2 * M_PI - a1 + a2;
+		t1 = 2 * PI - a1 + a2;
 		t2 = a1 - a2;
 	}
 	else
 	{
-		t1 = 2 * M_PI - a2 + a1;
+		t1 = 2 * PI - a2 + a1;
 		t2 = a2 - a1;
 	}
 	if (t2 < t1)
@@ -139,10 +139,10 @@ class AngleInt
 	void split(AngleInt& l, AngleInt& h) const
 	{
 		l.Set(0, high);
-		h.Set(low, 2 * M_PI);
+		h.Set(low, 2 * PI);
 	}
 
-	AngleInt() : low(0), high(2 * M_PI)
+	AngleInt() : low(0), high(2 * PI)
 	{
 	}
 	AngleInt(float l, float h);
@@ -166,7 +166,7 @@ class AngleInt
 
 	int IsFullRange(float eps = AINT_BIG_EPSILON) const
 	{
-		return _abs(high - 2 * M_PI) < eps && _abs(low) < eps;
+		return _abs(high - 2 * PI) < eps && _abs(low) < eps;
 	}
 
 	int IsEmpty(float eps = AINT_BIG_EPSILON) const
@@ -174,7 +174,7 @@ class AngleInt
 		if (low <= high)
 			return (_abs(low - high) < eps);
 		else
-			return (_abs(low - 2 * M_PI) + _abs(high) < eps);
+			return (_abs(low - 2 * PI) + _abs(high) < eps);
 	}
 
 	// returns T if a is in the angle range

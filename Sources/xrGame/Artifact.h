@@ -62,7 +62,7 @@ class CArtefact : public CHudItemObject, public CPHUpdateObject
 	bool m_bLightsEnabled;
 	// подсветка во время полета и работы двигателя
 	ref_light m_pTrailLight;
-	Fcolor m_TrailLightColor;
+	fcolor m_TrailLightColor;
 	float m_fTrailLightRange;
 
   protected:

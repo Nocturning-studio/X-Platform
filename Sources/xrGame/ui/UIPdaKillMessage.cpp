@@ -87,8 +87,8 @@ float CUIPdaKillMessage::InitText(CUIStatic& refStatic, float x, PlayerInfoKillM
 
 void CUIPdaKillMessage::SetTextColor(u32 color)
 {
-	m_victim_name.SetTextColor(subst_alpha(m_victim_name.GetTextColor(), color_get_A(color)));
-	m_killer_name.SetTextColor(subst_alpha(m_killer_name.GetTextColor(), color_get_A(color)));
+	m_victim_name.SetTextColor(color_set_alpha(m_victim_name.GetTextColor(), color_get_A(color)));
+	m_killer_name.SetTextColor(color_set_alpha(m_killer_name.GetTextColor(), color_get_A(color)));
 	CUIStatic::SetTextColor(color);
 }
 

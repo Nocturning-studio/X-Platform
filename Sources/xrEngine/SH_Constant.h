@@ -17,7 +17,7 @@ class ENGINE_API CConstant : public xr_resource_named
 	};
 
   public:
-	Fcolor const_float;
+	fcolor const_float;
 	u32 const_dword;
 
 	u32 dwFrame;
@@ -36,7 +36,7 @@ class ENGINE_API CConstant : public xr_resource_named
 		const_float.set(r, g, b, a);
 		const_dword = const_float.get();
 	}
-	IC void set_float(Fcolor& c)
+	IC void set_float(fcolor& c)
 	{
 		const_float.set(c);
 		const_dword = const_float.get();

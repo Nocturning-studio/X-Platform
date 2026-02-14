@@ -237,7 +237,7 @@ void CDrawUtilities::OnDeviceCreate()
 
 	for (int i = 0; i < LINE_DIVISION; i++)
 	{
-		float angle = M_PI * 2.f * (i / (float)LINE_DIVISION);
+		float angle = PI * 2.f * (i / (float)LINE_DIVISION);
 		float _sa = _sin(angle), _ca = _cos(angle);
 		circledef1[i].x = _ca;
 		circledef1[i].y = _sa;
@@ -506,7 +506,7 @@ void CDrawUtilities::DrawRomboid(const float3& p, float r, u32 c)
 	static const WORD IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
 	u32 vBase, iBase;
 
-	Fcolor C;
+	fcolor C;
 	C.set(c);
 	C.mul_rgb(0.75);
 	u32 c1 = C.get();

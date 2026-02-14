@@ -1493,7 +1493,7 @@ void PASpeedLimit::Transform(const float4x4&)
 void PATargetColor::Execute(ParticleEffect* effect, float dt)
 {
 	float scaleFac = scale * dt;
-	Fcolor c_p, c_t;
+	fcolor c_p, c_t;
 
 	for (u32 i = 0; i < effect->p_count; i++)
 	{

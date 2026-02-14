@@ -105,9 +105,9 @@ class XRCORE_API IWriter
 		w(p.c_str() ? p.c_str() : "", (u32)p.size());
 		w_u8(0);
 	}
-	IC void w_fcolor(const Fcolor& v)
+	IC void w_fcolor(const fcolor& v)
 	{
-		w(&v, sizeof(Fcolor));
+		w(&v, sizeof(fcolor));
 	}
 	IC void w_fvector4(const float4& v)
 	{
@@ -350,9 +350,9 @@ template <typename implementation_type> class IReaderBase
 	{
 		r(&v, sizeof(int2));
 	}
-	IC void r_fcolor(Fcolor& v)
+	IC void r_fcolor(fcolor& v)
 	{
-		r(&v, sizeof(Fcolor));
+		r(&v, sizeof(fcolor));
 	}
 
 	IC float r_float_q16(float min, float max)

@@ -75,7 +75,7 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
 	VERIFY(bone_x.id != BI_NONE);
 	bone_y.id = K->LL_BoneID(pUserData->r_string("projector_definition", "rotation_bone_y"));
 	VERIFY(bone_y.id != BI_NONE);
-	Fcolor clr = pUserData->r_fcolor("projector_definition", "color");
+	fcolor clr = pUserData->r_fcolor("projector_definition", "color");
 	fBrightness = clr.intensity();
 	light_render->set_color(clr);
 	light_render->set_range(pUserData->r_float("projector_definition", "range"));
@@ -151,7 +151,7 @@ void CProjector::UpdateCL()
 			// возвращает в формате BGR
 			u32 clr = lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame);
 
-			Fcolor fclr;
+			fcolor fclr;
 			fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
 			fclr.mul_rgb(fBrightness / 255.f);
 			light_render->set_color(fclr);

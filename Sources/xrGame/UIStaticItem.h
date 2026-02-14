@@ -95,7 +95,7 @@ class CUIStaticItem : public IUISimpleTextureControl, public CUICustomItem
 	{
 		dwColor = clr;
 	}
-	IC void SetColor(Fcolor clr)
+	IC void SetColor(fcolor clr)
 	{
 		dwColor = clr.get();
 	}
