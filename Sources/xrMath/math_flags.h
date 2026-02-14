@@ -21,7 +21,7 @@ template <class T> class Flags
 	IC Flags() : flags(0)
 	{
 	}
-	IC explicit Flags(T init) : flags(init)
+	IC Flags(T init) : flags(init)
 	{
 	}
 
@@ -132,15 +132,15 @@ template <class T> class Flags
 };
 
 // Определения для конкретных размеров
-using Flags8 = Flags<uint8_t>;
-using Flags16 = Flags<uint16_t>;
-using Flags32 = Flags<uint32_t>;
-using Flags64 = Flags<uint64_t>;
+using Flags8 = Flags<u8>;
+using Flags16 = Flags<u16>;
+using Flags32 = Flags<u32>;
+using Flags64 = Flags<u64>;
 
 // Синонимы из старой реализации
-using flags8 = Flags<uint8_t>;
-using flags16 = Flags<uint16_t>;
-using flags32 = Flags<uint32_t>;
-using flags64 = Flags<uint64_t>;
+using flags8 = Flags<u8>;
+using flags16 = Flags<u16>;
+using flags32 = Flags<u32>;
+using flags64 = Flags<u64>;
 
 XRAY_END

@@ -141,7 +141,8 @@ template <class T> struct _quaternion;
 #include "_compressed_normal.h"
 #include "_plane.h"
 #include "_plane2.h"
-#include "_flags.h"
+//#include "_flags.h"
+#include "../xrMath/math_flags.h"
 
 #pragma pack(pop)
 

@@ -338,9 +338,6 @@
     <ClInclude Include="_fbox2.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="_flags.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="_math.h">
       <Filter>Math</Filter>
     </ClInclude>
