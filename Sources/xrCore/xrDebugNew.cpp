@@ -22,9 +22,6 @@ static BOOL bException = FALSE;
 
 #ifdef USE_BUG_TRAP
 #include "../bugtrap/bugtrap.h" // for BugTrap functionality
-#ifdef __BORLANDC__
-#pragma comment(lib, "BugTrapB.lib") // Link to ANSI DLL
-#endif
 #endif // USE_BUG_TRAP
 
 #include <new.h>	// for _set_new_mode

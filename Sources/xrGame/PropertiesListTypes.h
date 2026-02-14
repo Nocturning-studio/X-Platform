@@ -4,9 +4,6 @@
 
 #include "WaveForm.H"
 
-#ifdef __BORLANDC__
-#include "ElTree.hpp"
-#endif
 //---------------------------------------------------------------------------
 enum EPropType
 {
@@ -281,12 +278,6 @@ class PropItem
 	{
 		return type;
 	}
-#ifdef __BORLANDC__
-	IC TElTreeItem* Item()
-	{
-		return (TElTreeItem*)item;
-	}
-#endif
 	IC LPCSTR Key()
 	{
 		return key.c_str();

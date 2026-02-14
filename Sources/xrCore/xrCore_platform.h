@@ -16,12 +16,6 @@
 #define _WIN32_WINNT _WIN32_WINNT_VISTA
 #endif
 
-#ifdef __BORLANDC__
-#include <vcl.h>
-#include <mmsystem.h>
-#include <stdint.h>
-#endif
-
 #define NOGDICAPMASKS
 #define NOSYSMETRICS
 #define NOMENUS
@@ -42,9 +36,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4005)
 #include <windows.h>
-#ifndef __BORLANDC__
 #include <windowsx.h>
-#endif
 #pragma warning(pop)
 
 #endif

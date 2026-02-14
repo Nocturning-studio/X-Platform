@@ -67,13 +67,8 @@ void CFS_PathNotificator::Execute()
 
 			if (P.FWaitHandle == INVALID_HANDLE_VALUE)
 			{
-#ifndef __BORLANDC__
 				Debug.fatal(DEBUG_INFO, "Can't create notify handle for path: '%s'\nwith error: '%s'",
 							P.FDirectory.c_str(), Debug.error2string(GetLastError()));
-#else
-				Debug.fatal("Can't create notify handle for path: '%s'\nwith error: '%s'", P.FDirectory.c_str(),
-							Debug.error2string(GetLastError()));
-#endif
 			}
 		}
 	}
