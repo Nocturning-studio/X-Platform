@@ -23,8 +23,8 @@ class CBreakableObject : public CPhysicsShellHolder
 	static float m_damage_threshold;
 	static float m_health_threshhold;
 	static float m_immunity_factor;
-	Fvector m_contact_damage_pos;
-	Fvector m_contact_damage_dir;
+	float3 m_contact_damage_pos;
+	float3 m_contact_damage_dir;
 
 	float fHealth;
 	CPHStaticGeomShell* m_pUnbrokenObject;
@@ -65,7 +65,7 @@ class CBreakableObject : public CPhysicsShellHolder
 	void ActivateBroken();
 	void Split();
 	void Break();
-	void ApplyExplosion(const Fvector& dir, float impulse);
+	void ApplyExplosion(const float3& dir, float impulse);
 	void CheckHitBreak(float power, ALife::EHitType hit_type);
 	void ProcessDamage();
 	void SendDestroy();

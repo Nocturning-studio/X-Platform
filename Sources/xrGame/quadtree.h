@@ -87,7 +87,7 @@ template <typename _object_type> class CQuadTree
 	typedef CFixedStorage<CListItem> CListItemStorage;
 
   protected:
-	Fvector m_center;
+	float3 m_center;
 	float m_radius;
 	int m_max_depth;
 	CQuadNode* m_root;
@@ -96,10 +96,10 @@ template <typename _object_type> class CQuadTree
 	size_t m_leaf_count;
 
   protected:
-	IC u32 neighbour_index(const Fvector& position, Fvector& center, float distance) const;
-	IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node,
-					Fvector center, float distance, int depth) const;
-	IC _object_type* remove(const _object_type* object, CQuadNode*& node, Fvector center, float distance, int depth);
+	IC u32 neighbour_index(const float3& position, float3& center, float distance) const;
+	IC void nearest(const float3& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node,
+					float3 center, float distance, int depth) const;
+	IC _object_type* remove(const _object_type* object, CQuadNode*& node, float3 center, float distance, int depth);
 	IC void all(xr_vector<_object_type*>& objects, CQuadNode* node, int depth) const;
 
   public:
@@ -108,8 +108,8 @@ template <typename _object_type> class CQuadTree
 	IC void clear();
 	IC void insert(_object_type* object);
 	IC _object_type* remove(const _object_type* object);
-	IC _object_type* find(const Fvector& position);
-	IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, bool clear = true) const;
+	IC _object_type* find(const float3& position);
+	IC void nearest(const float3& position, float radius, xr_vector<_object_type*>& objects, bool clear = true) const;
 	IC void all(xr_vector<_object_type*>& objects, bool clear = true) const;
 	IC size_t size() const;
 };

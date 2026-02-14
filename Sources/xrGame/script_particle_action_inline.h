@@ -41,7 +41,7 @@ IC CScriptParticleAction::CScriptParticleAction(LPCSTR caPartcileToRun, const CP
 	SetVelocity(tParticleParams.m_tParticleVelocity);
 }
 
-IC void CScriptParticleAction::SetPosition(const Fvector& tPosition)
+IC void CScriptParticleAction::SetPosition(const float3& tPosition)
 {
 	m_tParticlePosition = tPosition;
 	m_tGoalType = eGoalTypeParticlePosition;
@@ -56,14 +56,14 @@ IC void CScriptParticleAction::SetBone(LPCSTR caBoneName)
 	m_bCompleted = false;
 }
 
-IC void CScriptParticleAction::SetAngles(const Fvector& tAngleOffset)
+IC void CScriptParticleAction::SetAngles(const float3& tAngleOffset)
 {
 	m_tParticleAngles = tAngleOffset;
 	m_bStartedToPlay = false;
 	m_bCompleted = false;
 }
 
-IC void CScriptParticleAction::SetVelocity(const Fvector& tVelocity)
+IC void CScriptParticleAction::SetVelocity(const float3& tVelocity)
 {
 	m_tParticleVelocity = tVelocity;
 	m_bStartedToPlay = false;

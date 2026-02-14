@@ -199,7 +199,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 	virtual void renderable_Render();
 	virtual void OnEvent(NET_Packet& P, u16 type);
 	virtual void Hit(SHit* pHDS){};
-	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir){};
+	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, float3 Pos, float3 Dir){};
 	virtual BOOL BonePassBullet(int boneID)
 	{
 		return FALSE;
@@ -380,7 +380,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 		return false;
 	}
 	// [12.11.07] Alexander Maniluk: added this method for moving object
-	virtual void MoveTo(Fvector const& position){};
+	virtual void MoveTo(float3 const& position){};
   public:
 	typedef CScriptCallbackEx<void> CScriptCallbackExVoid;
 

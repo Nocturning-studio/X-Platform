@@ -27,7 +27,7 @@ CElevatorState::CElevatorState()
 float CElevatorState::ClimbDirection()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 	m_ladder->DToPlain(m_character, d);
 	float dir = m_character->ControlAccel().dotproduct(d);
 	if (dir > EPS_L)
@@ -76,7 +76,7 @@ void CElevatorState::InitContact(dContact* c, bool& do_collide, u16, u16)
 
 void CElevatorState::SetElevator(CClimableObject* climable)
 {
-	Fvector d;
+	float3 d;
 	float dist = climable->DDToAxis(m_character, d);
 	if (m_ladder == climable || dist > out_dist)
 		return;
@@ -123,7 +123,7 @@ void CElevatorState::SwitchState(Estate new_state)
 void CElevatorState::UpdateStNone()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 	m_ladder->DToPlain(m_character, d);
 	if (m_ladder->BeforeLadder(m_character) && m_ladder->InTouch(m_character) &&
 		dXZDotNormalized(d, m_character->CamDir()) > look_angle_cosine)
@@ -140,7 +140,7 @@ void CElevatorState::UpdateStNone()
 	}
 	else
 	{
-		Fvector temp;
+		float3 temp;
 		float d_to_lower = m_ladder->DDLowerP(m_character, temp), d_to_upper = m_ladder->DDUpperP(m_character, temp);
 		if (d_to_lower < d_to_upper)
 		{
@@ -158,7 +158,7 @@ void CElevatorState::UpdateStNone()
 void CElevatorState::UpdateStNearUp()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 
 	if (m_ladder->InTouch(m_character) && m_character->CamDir().y < -M_PI / 20.f &&
 		// d.dotproduct(m_character->ControlAccel())<0.f&&
@@ -174,7 +174,7 @@ void CElevatorState::UpdateStNearUp()
 void CElevatorState::UpdateStNearDown()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 	float dist = m_ladder->DDLowerP(m_character, d);
 	if (m_ladder->InTouch(m_character) && dXZDotNormalized(d, m_character->CamDir()) > look_angle_cosine &&
 		d.dotproduct(m_character->ControlAccel()) > 0.f && ClimbDirection() > 0.f &&
@@ -187,16 +187,16 @@ void CElevatorState::UpdateStNearDown()
 void CElevatorState::UpdateStClimbingDown()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 
 	if (ClimbDirection() > 0.f && m_ladder->BeforeLadder(m_character))
 		SwitchState(clbClimbingUp);
 	float to_ax = m_ladder->DDToAxis(m_character, d);
-	Fvector ca;
+	float3 ca;
 	ca.set(m_character->ControlAccel());
 	float control_a = to_mag_and_dir(ca);
 	if (!fis_zero(to_ax) && !fis_zero(control_a) &&
-		abs(-ca.dotproduct(Fvector(m_ladder->Norm()).normalize())) < M_SQRT1_2)
+		abs(-ca.dotproduct(float3(m_ladder->Norm()).normalize())) < M_SQRT1_2)
 		SwitchState(clbDepart);
 	if (m_ladder->AxDistToLowerP(m_character) - m_character->FootRadius() < stop_climbing_dist)
 		SwitchState(clbNearDown);
@@ -205,7 +205,7 @@ void CElevatorState::UpdateStClimbingDown()
 	if (m_ladder->AxDistToUpperP(m_character) < -m_character->FootRadius())
 		SwitchState(clbNoLadder);
 
-	Fvector vel;
+	float3 vel;
 	m_character->GetVelocity(vel);
 	if (vel.y > EPS_S)
 	{
@@ -220,16 +220,16 @@ void CElevatorState::UpdateStClimbingDown()
 void CElevatorState::UpdateStClimbingUp()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 
 	if (ClimbDirection() < 0.f && m_ladder->BeforeLadder(m_character))
 		SwitchState(clbClimbingDown);
 	float to_ax = m_ladder->DDToAxis(m_character, d);
-	Fvector ca;
+	float3 ca;
 	ca.set(m_character->ControlAccel());
 	float control_a = to_mag_and_dir(ca);
 	if (!fis_zero(to_ax) && !fis_zero(control_a) &&
-		abs(-ca.dotproduct(Fvector(m_ladder->Norm()).normalize())) < M_SQRT1_2)
+		abs(-ca.dotproduct(float3(m_ladder->Norm()).normalize())) < M_SQRT1_2)
 		SwitchState(clbDepart);
 	if (m_ladder->AxDistToUpperP(m_character) + m_character->FootRadius() < stop_climbing_dist)
 		SwitchState(clbNearUp);
@@ -240,7 +240,7 @@ void CElevatorState::UpdateStClimbingUp()
 	// if(fis_zero(control_a))
 	//	m_character->ApplyForce(d,m_character->Mass());
 }
-void CElevatorState::UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, const Fvector& control_accel, float ca)
+void CElevatorState::UpdateClimbingCommon(const float3& d_to_ax, float to_ax, const float3& control_accel, float ca)
 {
 	VERIFY(m_ladder && m_character);
 	if (to_ax - m_character->FootRadius() > out_dist)
@@ -256,11 +256,11 @@ void CElevatorState::UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, c
 		m_character->ApplyForce(d_to_ax, m_character->Mass() * ph_world->Gravity()); //
 	}
 }
-bool CElevatorState::GetControlDir(Fvector& dir)
+bool CElevatorState::GetControlDir(float3& dir)
 {
 	bool ret = true;
 	VERIFY(m_ladder && m_character);
-	Fvector d;
+	float3 d;
 	float dist;
 	switch (m_state)
 	{
@@ -314,7 +314,7 @@ static const u32 depart_time = 3000;
 void CElevatorState::UpdateDepart()
 {
 	VERIFY(m_ladder && m_character);
-	Fvector temp;
+	float3 temp;
 	float d_to_lower = m_ladder->DDLowerP(m_character, temp), d_to_upper = m_ladder->DDUpperP(m_character, temp);
 	if (d_to_lower < d_to_upper)
 	{
@@ -327,7 +327,7 @@ void CElevatorState::UpdateDepart()
 			SwitchState(clbNearUp);
 	}
 
-	// Fvector p;m_character->GetFootCenter(p);
+	// float3 p;m_character->GetFootCenter(p);
 	// p.sub(m_start_position);
 	// if(	p.magnitude()>depart_dist ||
 	//	Engine.TimeManager.GetGlobalTimeMs()-m_start_time>depart_time)
@@ -347,24 +347,24 @@ void CElevatorState::Depart()
 	if (m_ladder && ClimbingState())
 		SwitchState(clbDepart);
 }
-void CElevatorState::GetLeaderNormal(Fvector& dir)
+void CElevatorState::GetLeaderNormal(float3& dir)
 {
 	if (!m_ladder)
 		return;
 	VERIFY(m_ladder && m_character);
 	m_ladder->DDNorm(dir);
-	// Fvector d;
+	// float3 d;
 	// m_ladder->DToAxis(m_character,d);
 	// if(dir.dotproduct(d)>0.f) dir.invert();
 }
 
-void CElevatorState::GetJumpDir(const Fvector& accel, Fvector& dir)
+void CElevatorState::GetJumpDir(const float3& accel, float3& dir)
 {
 	VERIFY(m_ladder && m_character);
-	Fvector norm, side;
+	float3 norm, side;
 	m_ladder->DDNorm(norm);
 	m_ladder->DDSide(side);
-	Fvector ac;
+	float3 ac;
 	ac.set(accel).normalize_safe();
 	float side_component = ac.dotproduct(side);
 	dir.set(norm);
@@ -399,7 +399,7 @@ CElevatorState::SEnertionState CElevatorState::m_etable[CElevatorState::clbNoSta
 
 bool CElevatorState::StateSwitchInertion(Estate new_state)
 {
-	Fvector p;
+	float3 p;
 	m_character->GetFootCenter(p);
 	p.sub(m_start_position);
 	if (m_etable[m_state][new_state].dist < p.magnitude() ||

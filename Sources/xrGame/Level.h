@@ -281,7 +281,7 @@ class CLevel : public IGame_Level, public IPureClient
 	u32 Objects_net_Save(NET_Packet* _Packet, u32 start, u32 count);
 	virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 
-	void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
+	void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, float3 pos); // only ask server
 	void g_sv_Spawn(CSE_Abstract* E);							 // server reply/command spawning
 
 	// Save/Load/State
@@ -354,7 +354,7 @@ class CLevel : public IGame_Level, public IPureClient
 	// by Mad Max
 	bool IsServer();
 	bool IsClient();
-	CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id,
+	CSE_Abstract* spawn_item(LPCSTR section, const float3& position, u32 level_vertex_id, u16 parent_id,
 							 bool return_item = false);
 
   protected:

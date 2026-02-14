@@ -751,12 +751,12 @@ template <class T> struct _matrix
 		dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
 		dest.z = v.x * _13 + v.y * _23 + v.z * _33 + _43;
 	}
-	ICF void transform_tiny32(Fvector2& dest, const Tvector& v) const // preferred to use
+	ICF void transform_tiny32(float2& dest, const Tvector& v) const // preferred to use
 	{
 		dest.x = v.x * _11 + v.y * _21 + v.z * _31 + _41;
 		dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
 	}
-	ICF void transform_tiny23(Tvector& dest, const Fvector2& v) const // preferred to use
+	ICF void transform_tiny23(Tvector& dest, const float2& v) const // preferred to use
 	{
 		dest.x = v.x * _11 + v.y * _21 + _41;
 		dest.y = v.x * _12 + v.y * _22 + _42;
@@ -768,7 +768,7 @@ template <class T> struct _matrix
 		dest.y = v.x * _12 + v.y * _22 + v.z * _32;
 		dest.z = v.x * _13 + v.y * _23 + v.z * _33;
 	}
-	IC void transform(Fvector4& dest, const Tvector& v) const // preferred to use
+	IC void transform(float4& dest, const Tvector& v) const // preferred to use
 	{
 		dest.w = v.x * _14 + v.y * _24 + v.z * _34 + _44;
 		dest.x = (v.x * _11 + v.y * _21 + v.z * _31 + _41) / dest.w;
@@ -885,8 +885,8 @@ template <class T> struct _matrix
 	}
 };
 
-typedef _matrix<float> Fmatrix;
-typedef _matrix<double> Dmatrix;
+typedef _matrix<float> float4x4;
+typedef _matrix<double> double4x4;
 
 template <class T> BOOL _valid(const _matrix<T>& m)
 {
@@ -894,7 +894,7 @@ template <class T> BOOL _valid(const _matrix<T>& m)
 		   _valid(m.c) && _valid(m._44_);
 }
 
-extern XRCORE_API Fmatrix Fidentity;
-extern XRCORE_API Dmatrix Didentity;
+extern XRCORE_API float4x4 Fidentity;
+extern XRCORE_API double4x4 Didentity;
 
 #endif

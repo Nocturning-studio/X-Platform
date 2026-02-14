@@ -37,9 +37,9 @@ class CSightManager : public CSetupManager<CSightControlAction, CAI_Stalker, u32
 	virtual void reload(LPCSTR section);
 	void remove_links(CObject* object);
 	void Exec_Look(float dt);
-	bool bfIf_I_SeePosition(Fvector tPosition) const;
-	void SetPointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, const CGameObject* object = 0);
-	void SetFirePointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, const CGameObject* object = 0);
+	bool bfIf_I_SeePosition(float3 tPosition) const;
+	void SetPointLookAngles(const float3& tPosition, float& yaw, float& pitch, const CGameObject* object = 0);
+	void SetFirePointLookAngles(const float3& tPosition, float& yaw, float& pitch, const CGameObject* object = 0);
 	void SetDirectionLook();
 	void SetLessCoverLook(const LevelGraph::CVertex* tpNode, bool bDifferenceLook);
 	void SetLessCoverLook(const LevelGraph::CVertex* tpNode, float fMaxHeadTurnAngle, bool bDifferenceLook);

@@ -134,7 +134,7 @@ class ENGINE_API COMotion : public CCustomMotion
 
 	void Clear();
 
-	void _Evaluate(float t, Fvector& T, Fvector& R);
+	void _Evaluate(float t, float3& T, float3& R);
 	virtual void Save(IWriter& F);
 	virtual bool Load(IReader& F);
 
@@ -146,7 +146,7 @@ class ENGINE_API COMotion : public CCustomMotion
 #endif
 #ifdef _EDITOR
 	void FindNearestKey(float t, float& min_k, float& max_k, float eps = EPS_L);
-	void CreateKey(float t, const Fvector& P, const Fvector& R);
+	void CreateKey(float t, const float3& P, const float3& R);
 	void DeleteKey(float t);
 	void NormalizeKeys();
 	int KeyCount();
@@ -194,7 +194,7 @@ class ENGINE_API CSMotion : public CCustomMotion
 	CSMotion(CSMotion* src);
 	virtual ~CSMotion();
 
-	void _Evaluate(int bone_idx, float t, Fvector& T, Fvector& R);
+	void _Evaluate(int bone_idx, float t, float3& T, float3& R);
 
 	void CopyMotion(CSMotion* src);
 

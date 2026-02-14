@@ -9,7 +9,7 @@ class ENGINE_API IRenderable
   public:
 	struct
 	{
-		Fmatrix transform;
+		float4x4 transform;
 		IRender_Visual* visual;
 		IRender_ObjectSpecific* pROS;
 		BOOL pROS_Allowed;

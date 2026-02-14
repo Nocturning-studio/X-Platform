@@ -22,7 +22,7 @@
 
 namespace PAPI
 {
-class pVector : public Fvector
+class pVector : public float3
 {
   public:
 	IC pVector(float ax, float ay, float az)
@@ -209,7 +209,7 @@ class IParticleManager
 	// update&render
 	virtual void Update(int effect_id, int alist_id, float dt) = 0;
 	virtual void Render(int effect_id) = 0;
-	virtual void Transform(int alist_id, const Fmatrix& m, const Fvector& velocity) = 0;
+	virtual void Transform(int alist_id, const float4x4& m, const float3& velocity) = 0;
 
 	// effect
 	virtual void RemoveParticle(int effect_id, u32 p_id) = 0;

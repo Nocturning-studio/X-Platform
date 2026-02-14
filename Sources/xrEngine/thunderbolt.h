@@ -21,7 +21,7 @@ struct SThunderboltDesc
 	struct SFlare
 	{
 		float fOpacity;
-		Fvector2 fRadius;
+		float2 fRadius;
 		shared_str texture;
 		shared_str shader;
 		ref_shader hShader;
@@ -71,8 +71,8 @@ class ENGINE_API CEffect_Thunderbolt
 	SThunderboltDesc* current;
 
   private:
-	Fmatrix current_transform;
-	Fvector3 current_direction;
+	float4x4 current_transform;
+	float3 current_direction;
 
 	ref_geom hGeom_model;
 	// states
@@ -85,7 +85,7 @@ class ENGINE_API CEffect_Thunderbolt
 
 	ref_geom hGeom_gradient;
 
-	Fvector lightning_center;
+	float3 lightning_center;
 	float lightning_size;
 	float lightning_phase;
 
@@ -95,7 +95,7 @@ class ENGINE_API CEffect_Thunderbolt
 	BOOL bEnabled;
 
   private:
-	BOOL RayPick(const Fvector& s, const Fvector& d, float& range);
+	BOOL RayPick(const float3& s, const float3& d, float& range);
 	void Bolt(shared_str id, float period, float life_time);
 
   public:

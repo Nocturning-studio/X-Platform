@@ -165,13 +165,13 @@ CLensFlare::~CLensFlare()
 #ifndef _EDITOR
 struct STranspParam
 {
-	Fvector P;
-	Fvector D;
+	float3 P;
+	float3 D;
 	float f;
 	CLensFlare* parent;
 	float vis;
 	float vis_threshold;
-	STranspParam(CLensFlare* p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold)
+	STranspParam(CLensFlare* p, const float3& _P, const float3& _D, float _f, float _vis_threshold)
 		: P(_P), D(_D), f(_f), parent(p), vis(1.f), vis_threshold(_vis_threshold)
 	{
 	}
@@ -193,7 +193,7 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 		vis = g_pGamePersistent->MtlTransparent(T->material);
 		if (fis_zero(vis))
 		{
-			Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			float3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
 			fp->parent->m_ray_cache.set(fp->P, fp->D, fp->f, TRUE);
 			fp->parent->m_ray_cache.verts[0].set(V[T->verts[0]]);
 			fp->parent->m_ray_cache.verts[1].set(V[T->verts[1]]);
@@ -233,7 +233,7 @@ void CLensFlare::OnFrame(shared_str id)
 
 	// color
 	float tf = g_pGamePersistent->Environment().fTimeFactor;
-	Fvector& c = g_pGamePersistent->Environment().CurrentEnv->sun_color;
+	float3& c = g_pGamePersistent->Environment().CurrentEnv->sun_color;
 	LightColor.set(c.x, c.y, c.z, 1.f);
 
 	CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
@@ -276,9 +276,9 @@ void CLensFlare::OnFrame(shared_str id)
 	//
 	float fDot;
 
-	Fvector vecPos;
+	float3 vecPos;
 
-	Fmatrix matEffCamPos;
+	float4x4 matEffCamPos;
 	matEffCamPos.identity();
 	// Calculate our position and direction
 
@@ -362,7 +362,7 @@ void CLensFlare::OnFrame(shared_str id)
 	// gradient
 	if (m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
 	{
-		Fvector scr_pos;
+		float3 scr_pos;
 		Engine.RenderView.ViewProjection.transform(scr_pos, vecLight);
 		float kx = 1, ky = 1;
 		float sun_blend = 0.5f;
@@ -401,8 +401,8 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 
 	Fcolor dwLight;
 	Fcolor color;
-	Fvector vec, vecSx, vecSy;
-	Fvector vecDx, vecDy;
+	float3 vec, vecSx, vecSy;
+	float3 vecDx, vecDy;
 
 	dwLight.set(LightColor);
 	svector<ref_shader, MAX_Flares> _2render;

@@ -16,8 +16,8 @@ class CCarWeapon : public CShootingObject
 	virtual void UpdateFire();
 	virtual void OnShot();
 	void UpdateBarrelDir();
-	virtual const Fvector& get_CurrentFirePoint();
-	virtual const Fmatrix& get_ParticlesTransform();
+	virtual const float3& get_CurrentFirePoint();
+	virtual const float4x4& get_ParticlesTransform();
 
 	CPhysicsShellHolder* m_object;
 	bool m_bActive;
@@ -41,8 +41,8 @@ class CCarWeapon : public CShootingObject
 	void Load(LPCSTR section);
 	void UpdateCL();
 	void Action(int id, u32 flags);
-	void SetParam(int id, Fvector2 val);
-	void SetParam(int id, Fvector val);
+	void SetParam(int id, float2 val);
+	void SetParam(int id, float3 val);
 	bool AllowFire();
 	float FireDirDiff();
 	IC bool IsActive()
@@ -53,24 +53,24 @@ class CCarWeapon : public CShootingObject
 	{
 		return m_weapon_h;
 	};
-	const Fvector& ViewCameraPos();
-	const Fvector& ViewCameraDir();
-	const Fvector& ViewCameraNorm();
+	const float3& ViewCameraPos();
+	const float3& ViewCameraDir();
+	const float3& ViewCameraNorm();
 
 	void Render_internal();
 
   private:
 	u16 m_rotate_x_bone, m_rotate_y_bone, m_fire_bone, m_camera_bone;
 	float m_tgt_x_rot, m_tgt_y_rot, m_cur_x_rot, m_cur_y_rot, m_bind_x_rot, m_bind_y_rot;
-	Fvector m_bind_x, m_bind_y;
-	Fvector m_fire_dir, m_fire_pos, m_fire_norm;
+	float3 m_bind_x, m_bind_y;
+	float3 m_fire_dir, m_fire_pos, m_fire_norm;
 
-	Fmatrix m_i_bind_x_transform, m_i_bind_y_transform, m_fire_bone_transform;
-	Fvector2 m_lim_x_rot, m_lim_y_rot; // in bone space
+	float4x4 m_i_bind_x_transform, m_i_bind_y_transform, m_fire_bone_transform;
+	float2 m_lim_x_rot, m_lim_y_rot; // in bone space
 	float m_min_gun_speed, m_max_gun_speed;
 	CCartridge* m_Ammo;
 	float m_barrel_speed;
-	Fvector m_destEnemyDir;
+	float3 m_destEnemyDir;
 	bool m_allow_fire;
 	HUD_SOUND m_sndShot;
 };

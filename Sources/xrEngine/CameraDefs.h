@@ -27,10 +27,10 @@ enum ECamEffectorType
 
 struct ENGINE_API SCamEffectorInfo
 {
-	Fvector p;
-	Fvector d;
-	Fvector n;
-	Fvector r;
+	float3 p;
+	float3 d;
+	float3 n;
+	float3 r;
 	float fFov;
 	float fFar;
 	float fAspect;

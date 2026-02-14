@@ -162,7 +162,7 @@ void Log(const char* msg, float dop)
 	Log(buf);
 }
 
-void Log(const char* msg, const Fvector& dop)
+void Log(const char* msg, const float3& dop)
 {
 	char buf[1024];
 
@@ -170,7 +170,7 @@ void Log(const char* msg, const Fvector& dop)
 	Log(buf);
 }
 
-void Log(const char* msg, const Fmatrix& dop)
+void Log(const char* msg, const float4x4& dop)
 {
 	char buf[1024];
 

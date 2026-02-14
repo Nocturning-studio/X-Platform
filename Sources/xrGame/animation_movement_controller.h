@@ -3,18 +3,18 @@
 class CBlend;
 class animation_movement_controller : private boost::noncopyable
 {
-	Fmatrix& m_pObjTransform;
-	Fmatrix m_startObjTransform;
-	Fmatrix m_startRootTransform;
+	float4x4& m_pObjTransform;
+	float4x4 m_startObjTransform;
+	float4x4 m_startRootTransform;
 	CKinematics* m_pKinematicsC;
 	CBlend* m_control_blend;
 	static void RootBoneCallback(CBoneInstance* B);
 	void deinitialize();
 
   public:
-	animation_movement_controller(Fmatrix* _pObjTransform, CKinematics* _pKinematicsC, CBlend* b);
+	animation_movement_controller(float4x4* _pObjTransform, CKinematics* _pKinematicsC, CBlend* b);
 	~animation_movement_controller();
-	void ObjStartTransform(Fmatrix& m) const
+	void ObjStartTransform(float4x4& m) const
 	{
 		m.set(m_startObjTransform);
 	}

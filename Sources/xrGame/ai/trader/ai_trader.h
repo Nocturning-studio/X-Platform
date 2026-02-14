@@ -83,15 +83,15 @@ class CAI_Trader : public CEntityAlive, public CInventoryOwner, public CScriptEn
 
 	virtual void Die(CObject* who);
 	virtual void Think();
-	virtual void HitSignal(float /**P/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/){};
-	virtual void HitImpulse(float /**P/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/){};
+	virtual void HitSignal(float /**P/**/, float3& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/){};
+	virtual void HitImpulse(float /**P/**/, float3& /**vWorldDir/**/, float3& /**vLocalDir/**/){};
 	virtual void Hit(SHit* pHDS)
 	{
 		inherited::Hit(pHDS);
 	}
 	virtual void UpdateCL();
 
-	virtual void g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void g_fireParams(const CHudItem* pHudItem, float3& P, float3& D);
 	virtual void g_WeaponBones(int& L, int& R1, int& R2);
 	virtual float ffGetFov() const
 	{

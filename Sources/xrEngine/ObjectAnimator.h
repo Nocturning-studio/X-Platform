@@ -15,7 +15,7 @@ class ENGINE_API CObjectAnimator
 
 	shared_str m_Name;
 
-	Fmatrix m_Transform;
+	float4x4 m_Transform;
 	SAnimParams m_MParam;
 	MotionVec m_Motions;
 	float m_Speed;
@@ -51,7 +51,7 @@ class ENGINE_API CObjectAnimator
 		return m_MParam.bPlay;
 	}
 
-	IC const Fmatrix& Transform()
+	IC const float4x4& Transform()
 	{
 		return m_Transform;
 	}

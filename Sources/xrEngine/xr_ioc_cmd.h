@@ -356,23 +356,23 @@ class ENGINE_API CCC_Float : public IConsole_Command
 class ENGINE_API CCC_Vector3 : public IConsole_Command
 {
   protected:
-	Fvector* value;
-	Fvector min, max;
+	float3* value;
+	float3 min, max;
 
   public:
-	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) : IConsole_Command(N), value(V)
+	CCC_Vector3(LPCSTR N, float3* V, const float3 _min, const float3 _max) : IConsole_Command(N), value(V)
 	{
 		min.set(_min);
 		max.set(_max);
 	};
-	Fvector* GetValuePtr() const
+	float3* GetValuePtr() const
 	{
 		return value;
 	};
 
 	virtual void Execute(LPCSTR args)
 	{
-		Fvector v;
+		float3 v;
 		if (3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
 		{
 			InvalidSyntax();

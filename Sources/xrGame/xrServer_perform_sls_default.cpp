@@ -64,7 +64,7 @@ void xrServer::SLS_Default()
 		return;
 
 	_actor = smart_cast<CSE_ALifeCreatureActor*>(entity_Create("actor"));
-	_actor->o_Position = Fvector().set(0.f, 0.f, 0.f);
+	_actor->o_Position = float3().set(0.f, 0.f, 0.f);
 	_actor->set_name_replace("designer");
 	_actor->s_flags.flags |= M_SPAWN_OBJECT_ASPLAYER;
 	NET_Packet packet;

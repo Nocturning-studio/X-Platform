@@ -21,8 +21,8 @@ struct PARTICLES_API pDomain
 	BOOL Within(const pVector&) const;
 	void Generate(pVector&) const;
 	// transformation
-	void transform(const pDomain& domain, const Fmatrix& m);
-	void transform_dir(const pDomain& domain, const Fmatrix& m);
+	void transform(const pDomain& domain, const float4x4& m);
+	void transform_dir(const pDomain& domain, const float4x4& m);
 	// This constructor is used when default constructing a
 	// ParticleAction that has a pDomain.
 	IC pDomain()

@@ -94,12 +94,12 @@ public:
 		self->base::spatial_move();
 	}
 
-	virtual	Fvector			spatial_sector_point		()
+	virtual	float3			spatial_sector_point		()
 	{
-		return	(call_member<Fvector>(this,"spatial_sector_point"));
+		return	(call_member<float3>(this,"spatial_sector_point"));
 	}
 
-	static	Fvector			spatial_sector_point_static	(base *self)
+	static	float3			spatial_sector_point_static	(base *self)
 	{
 		return	(self->base::spatial_sector_point());
 	}
@@ -227,7 +227,7 @@ typedef IRenderableWrapper<IRenderable, luabind::wrap_base> CIRenderableWrapper;
 ///**
 //	virtual BOOL			Ready				();
 //	virtual CObject*		H_SetParent			(CObject* O);
-//	virtual void			Center				(Fvector& C) const;
+//	virtual void			Center				(float3& C) const;
 //	virtual float			Radius				() const;
 //	virtual const Fbox&		BoundingBox			() const;
 //	virtual void			Load				(LPCSTR section);
@@ -242,7 +242,7 @@ typedef IRenderableWrapper<IRenderable, luabind::wrap_base> CIRenderableWrapper;
 //	virtual void			net_MigrateActive	(NET_Packet& P);
 //	virtual void			net_Relcase			(CObject* O);
 //	virtual	SavedPosition	ps_Element			(u32 ID) const;
-//	virtual void			ForceTransform		(const Fmatrix& m);
+//	virtual void			ForceTransform		(const float4x4& m);
 //	virtual void			OnHUDDraw			(CCustomHUD* hud);
 //	virtual void			OnH_B_Chield		();
 //	virtual void			OnH_B_Independent	(bool just_before_destroy);
@@ -312,23 +312,23 @@ class CEntityWrapper : public CEntity, public luabind::wrap_base
 	{
 	}
 
-	virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element)
+	virtual void HitSignal(float P, float3& local_dir, CObject* who, s16 element)
 	{
 		luabind::call_member<void>(this, "HitSignal", P, local_dir, who, element);
 	}
 
-	static void HitSignal_static(CEntity* self, float P, Fvector& local_dir, CObject* who, s16 element)
+	static void HitSignal_static(CEntity* self, float P, float3& local_dir, CObject* who, s16 element)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError,
 										"You are trying to call a pure virtual function CEntity::HitSignal!");
 	}
 
-	virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir)
+	virtual void HitImpulse(float P, float3& vWorldDir, float3& vLocalDir)
 	{
 		luabind::call_member<void>(this, "HitImpulse", P, vWorldDir, vLocalDir);
 	}
 
-	static void HitImpulse_static(float P, Fvector& vWorldDir, Fvector& vLocalDir)
+	static void HitImpulse_static(float P, float3& vWorldDir, float3& vLocalDir)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError,
 										"You are trying to call a pure virtual function CEntity::HitImpulse!");

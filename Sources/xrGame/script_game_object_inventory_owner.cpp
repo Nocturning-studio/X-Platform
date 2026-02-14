@@ -306,7 +306,7 @@ void CScriptGameObject::DropItem(CScriptGameObject* pItem)
 	CGameObject::u_EventSend(P);
 }
 
-void CScriptGameObject::DropItemAndTeleport(CScriptGameObject* pItem, Fvector position)
+void CScriptGameObject::DropItemAndTeleport(CScriptGameObject* pItem, float3 position)
 {
 	DropItem(pItem);
 
@@ -806,7 +806,7 @@ LPCSTR CScriptGameObject::base_out_restrictions()
 	return (*monster->movement().restrictions().base_out_restrictions());
 }
 
-bool CScriptGameObject::accessible_position(const Fvector& position)
+bool CScriptGameObject::accessible_position(const float3& position)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster)
@@ -832,7 +832,7 @@ bool CScriptGameObject::accessible_vertex_id(u32 level_vertex_id)
 	return (monster->movement().restrictions().accessible(level_vertex_id));
 }
 
-u32 CScriptGameObject::accessible_nearest(const Fvector& position, Fvector& result)
+u32 CScriptGameObject::accessible_nearest(const float3& position, float3& result)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster)

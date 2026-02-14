@@ -30,7 +30,7 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
 	float m_PickDofFstop;
 	float m_PickDofFocalDepth;
 	float m_DofChangeSpeed;
-	Fvector m_dof[4]; // 0-dest 1-current 2-from 3-original
+	float3 m_dof[4]; // 0-dest 1-current 2-from 3-original
 	float m_dofDiaphragm;
 	bool m_bNightVisionState;
 
@@ -84,15 +84,15 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
 
 	virtual bool CanBePaused();
 
-	Fvector3 m_DofUI;
+	float3 m_DofUI;
 
 	// Depth of field
 	virtual void SetPickableEffectorDOF(bool bSet);
-	virtual void SetEffectorDOF(const Fvector& needed_dof);
+	virtual void SetEffectorDOF(const float3& needed_dof);
 	virtual void RestoreEffectorDOF();
 
-	virtual void GetCurrentDof(Fvector3& dof);
-	virtual void SetBaseDof(const Fvector3& dof);
+	virtual void GetCurrentDof(float3& dof);
+	virtual void SetBaseDof(const float3& dof);
 
 	// Night vision
 	virtual bool GetNightVisionState()

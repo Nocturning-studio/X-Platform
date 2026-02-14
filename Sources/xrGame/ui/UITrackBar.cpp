@@ -231,7 +231,7 @@ void CUITrackBar::UpdatePos()
 	float btn_width = m_pSlider->GetWidth();
 	float window_width = GetWidth();
 	float free_space = window_width - btn_width;
-	Fvector2 pos = m_pSlider->GetWndPos();
+	float2 pos = m_pSlider->GetWndPos();
 
 	float __fval = (m_b_is_float) ? m_f_val : (float)m_i_val;
 	float __fmax = (m_b_is_float) ? m_f_max : (float)m_i_max;

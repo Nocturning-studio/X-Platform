@@ -25,10 +25,10 @@ class CDangerLocation : public intrusive_base
 	flags m_mask;
 
   public:
-	IC bool operator==(const Fvector& position) const;
+	IC bool operator==(const float3& position) const;
 	virtual bool operator==(const CObject* object) const;
 	virtual bool useful() const;
-	virtual const Fvector& position() const = 0;
+	virtual const float3& position() const = 0;
 	IC const flags& mask() const;
 };
 

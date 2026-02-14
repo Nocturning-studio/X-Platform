@@ -7,9 +7,9 @@
 class light : public IRender_Light, public ISpatial
 {
   private:
-	Fvector position;
-	Fvector direction;
-	Fvector right;
+	float3 position;
+	float3 direction;
+	float3 right;
 	float range;
 	float cone;
 	Fcolor color;
@@ -27,7 +27,7 @@ class light : public IRender_Light, public ISpatial
 	ref_shader s_point;
 
 	u32 m_transform_frame;
-	Fmatrix m_transform;
+	float4x4 m_transform;
 
   public:
 	struct _VisibilityData
@@ -43,16 +43,16 @@ class light : public IRender_Light, public ISpatial
 	union _TransformContext {
 		struct _Sun
 		{
-			Fmatrix combine;
+			float4x4 combine;
 			s32 minX, maxX;
 			s32 minY, maxY;
 			BOOL transluent;
 		} Sun;
 		struct _ShadowContext
 		{
-			Fmatrix view;
-			Fmatrix project;
-			Fmatrix combine;
+			float4x4 view;
+			float4x4 project;
+			float4x4 combine;
 			u32 size;
 			u32 posX;
 			u32 posY;
@@ -69,9 +69,9 @@ class light : public IRender_Light, public ISpatial
 	} LightFlags;
 
   public:
-	Fvector get_position(){return position;}
-	Fvector get_direction(){return direction;}
-	Fvector get_right(){return right;}
+	float3 get_position(){return position;}
+	float3 get_direction(){return direction;}
+	float3 get_right(){return right;}
 	float get_range(){return range;}
 	float get_cone(){return cone;}
 	Fcolor get_color(){return color;}
@@ -79,7 +79,7 @@ class light : public IRender_Light, public ISpatial
 	ref_shader get_shader_spot(){return s_spot;}
 	ref_shader get_shader_point(){return s_point;}
 	u32 get_transform_frame(){return m_transform_frame;}
-	Fmatrix get_transform(){return m_transform;}
+	float4x4 get_transform(){return m_transform;}
 	smapvis get_smapvis(){return svis;}
 	virtual vis_data& get_homdata();
 
@@ -94,8 +94,8 @@ class light : public IRender_Light, public ISpatial
 		return LightFlags.bActive;
 	}
 	virtual void set_shadow(bool b);
-	virtual void set_position(const Fvector& P);
-	virtual void set_rotation(const Fvector& D, const Fvector& R);
+	virtual void set_position(const float3& P);
+	virtual void set_rotation(const float3& D, const float3& R);
 	virtual void set_cone(float angle);
 	virtual void set_range(float R);
 	virtual void set_virtual_size(float R){};
@@ -110,7 +110,7 @@ class light : public IRender_Light, public ISpatial
 	virtual void set_texture(LPCSTR name);
 
 	virtual void spatial_move();
-	virtual Fvector spatial_sector_point();
+	virtual float3 spatial_sector_point();
 
 	void set_frame_render(u32 frame)
 	{

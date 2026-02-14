@@ -109,7 +109,7 @@ CPHActivationShape::~CPHActivationShape()
 {
 	VERIFY(!m_body && !m_geom);
 }
-void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_size, CPhysicsShellHolder* ref_obj,
+void CPHActivationShape::Create(const float3 start_pos, const float3 start_size, CPhysicsShellHolder* ref_obj,
 								EType _type /*=etBox*/, u16 flags)
 {
 	VERIFY(ref_obj);
@@ -151,7 +151,7 @@ void CPHActivationShape::Destroy()
 	dBodyDestroy(m_body);
 	m_body = NULL;
 }
-bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_displacement, float max_rotation,
+bool CPHActivationShape::Activate(const float3 need_size, u16 steps, float max_displacement, float max_rotation,
 								  bool un_freeze_later /*	=false*/)
 {
 
@@ -159,9 +159,9 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
 	if (ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
 	{
 		DBG_OpenCashedDraw();
-		Fmatrix M;
+		float4x4 M;
 		PHDynamicData::DMXPStoFMX(dBodyGetRotation(m_body), dBodyGetPosition(m_body), M);
-		Fvector v;
+		float3 v;
 		dGeomBoxGetLengths(m_geom, cast_fp(v));
 		v.mul(0.5f);
 		DBG_DrawOBB(M, v, D3DCOLOR_XRGB(0, 255, 0));
@@ -198,8 +198,8 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
 		dGeomUserDataAddObjectContactCallback(m_geom, StaticEnvironment);
 	max_depth_shape = 0.f;
 
-	Fvector from_size;
-	Fvector step_size, size;
+	float3 from_size;
+	float3 step_size, size;
 	dGeomBoxGetLengths(m_geom, cast_fp(from_size));
 	step_size.sub(need_size, from_size);
 	step_size.mul(fnum_steps_r);
@@ -246,9 +246,9 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
 	if (ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
 	{
 		DBG_OpenCashedDraw();
-		Fmatrix M;
+		float4x4 M;
 		PHDynamicData::DMXPStoFMX(dBodyGetRotation(m_body), dBodyGetPosition(m_body), M);
-		Fvector v;
+		float3 v;
 		v.set(need_size);
 		v.mul(0.5f);
 		DBG_DrawOBB(M, v, D3DCOLOR_XRGB(0, 255, 255));
@@ -257,11 +257,11 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
 #endif
 	return ret;
 }
-const Fvector& CPHActivationShape::Position()
+const float3& CPHActivationShape::Position()
 {
 	return cast_fv(dBodyGetPosition(m_body));
 }
-void CPHActivationShape::Size(Fvector& size)
+void CPHActivationShape::Size(float3& size)
 {
 	dGeomBoxGetLengths(m_geom, cast_fp(size));
 }
@@ -299,7 +299,7 @@ void CPHActivationShape::CutVelocity(float l_limit, float /*a_limit*/)
 	}
 }
 
-void CPHActivationShape::set_rotation(const Fmatrix& sof)
+void CPHActivationShape::set_rotation(const float4x4& sof)
 {
 	dMatrix3 rot;
 	PHDynamicData::FMXtoDMX(sof, rot);

@@ -41,14 +41,14 @@ class CScriptParticles
 	virtual ~CScriptParticles();
 
 	void Play();
-	void PlayAtPos(const Fvector& pos);
+	void PlayAtPos(const float3& pos);
 	void Stop();
 	void StopDeffered();
 
 	bool IsPlaying() const;
 	bool IsLooped() const;
 
-	void MoveTo(const Fvector& pos, const Fvector& vel);
+	void MoveTo(const float3& pos, const float3& vel);
 
 	void LoadPath(LPCSTR caPathName);
 	void StartPath(bool looped);

@@ -11,7 +11,7 @@ void CRender::PrepareToRender()
 	CalculateSceneVisibility();
 }
 
-void CRender::render_main(Fmatrix& view_projection, SceneGraphPacket& dest)
+void CRender::render_main(float4x4& view_projection, SceneGraphPacket& dest)
 {
 	PROFILE_FUNCTION();
 
@@ -53,7 +53,7 @@ void CRender::render_main(Fmatrix& view_projection, SceneGraphPacket& dest)
 	// -------------------------------------------------------------------------
 	// 2. Sorting (Сортируем в dest)
 	// -------------------------------------------------------------------------
-	const Fvector camera_pos = Engine.RenderView.Position;
+	const float3 camera_pos = Engine.RenderView.Position;
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
 		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
 		float dist_b = b->spatial.sphere.P.distance_to_sqr(camera_pos);

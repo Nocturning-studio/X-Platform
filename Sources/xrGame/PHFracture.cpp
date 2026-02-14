@@ -52,17 +52,17 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element, u16 fract
 	const CBoneInstance& new_bi = pKinematics->LL_GetBoneInstance(new_element->m_SelfID);
 	const CBoneInstance& old_bi = pKinematics->LL_GetBoneInstance(element->m_SelfID);
 
-	Fmatrix shift_pivot;
+	float4x4 shift_pivot;
 	shift_pivot.set(new_bi.mTransform);
 	shift_pivot.invert();
 	shift_pivot.mulB_43(old_bi.mTransform);
 	/////////////////////////////////////////////
 	float density = element->getDensity();
 	new_element->SetShell(element->PHShell());
-	Fmatrix current_transtform;
+	float4x4 current_transtform;
 	element->GetGlobalTransformDynamic(&current_transtform);
 	InitNewElement(new_element, shift_pivot, density);
-	Fmatrix shell_form;
+	float4x4 shell_form;
 	element->PHShell()->GetGlobalTransformDynamic(&shell_form);
 	current_transtform.mulA_43(shell_form);
 	new_element->SetTransform(current_transtform);
@@ -158,7 +158,7 @@ void CPHFracturesHolder::SplitProcess(CPHElement* element, ELEMENT_PAIR_VECTOR& 
 	}
 }
 
-void CPHFracturesHolder::InitNewElement(CPHElement* element, const Fmatrix& shift_pivot, float density)
+void CPHFracturesHolder::InitNewElement(CPHElement* element, const float4x4& shift_pivot, float density)
 {
 	element->CreateSimulBase();
 	element->ReInitDynamics(shift_pivot, density);
@@ -212,7 +212,7 @@ bool CPHFracturesHolder::PhDataUpdate(CPHElement* element)
 	return m_has_breaks;
 }
 
-void CPHFracturesHolder::AddImpact(const Fvector& force, const Fvector& point, u16 id)
+void CPHFracturesHolder::AddImpact(const float3& force, const float3& point, u16 id)
 {
 	m_impacts.push_back(SPHImpact(force, point, id));
 }
@@ -298,21 +298,21 @@ bool CPHFracture::Update(CPHElement* element)
 
 	////itterate through impacts & calculate
 	dBodyID body = element->get_body();
-	// const Fvector& v_bodyvel=*((Fvector*)dBodyGetLinearVel(body));
+	// const float3& v_bodyvel=*((float3*)dBodyGetLinearVel(body));
 	CPHFracturesHolder* holder = element->FracturesHolder();
 	PH_IMPACT_STORAGE& impacts = holder->Impacts();
 
-	Fvector second_part_force, first_part_force, second_part_torque, first_part_torque;
+	float3 second_part_force, first_part_force, second_part_torque, first_part_torque;
 	second_part_force.set(0.f, 0.f, 0.f);
 	first_part_force.set(0.f, 0.f, 0.f);
 	second_part_torque.set(0.f, 0.f, 0.f);
 	first_part_torque.set(0.f, 0.f, 0.f);
 
-	// const Fvector& body_local_pos=element->local_mass_Center();
-	const Fvector& body_global_pos = *(const Fvector*)dBodyGetPosition(body);
-	Fvector body_to_first, body_to_second;
-	body_to_first.set(*((const Fvector*)m_firstM.c));	//,body_local_pos
-	body_to_second.set(*((const Fvector*)m_secondM.c)); //,body_local_pos
+	// const float3& body_local_pos=element->local_mass_Center();
+	const float3& body_global_pos = *(const float3*)dBodyGetPosition(body);
+	float3 body_to_first, body_to_second;
+	body_to_first.set(*((const float3*)m_firstM.c));	//,body_local_pos
+	body_to_second.set(*((const float3*)m_secondM.c)); //,body_local_pos
 	// float body_to_first_smag=body_to_first.square_magnitude();
 	// float body_to_second_smag=body_to_second.square_magnitude();
 	int num = dBodyGetNumJoints(body);
@@ -325,13 +325,13 @@ bool CPHFracture::Update(CPHElement* element)
 		VERIFY2(feedback, "Feedback was not set!!!");
 		dxJoint* b_joint = (dxJoint*)joint;
 		bool b_body_second = (b_joint->node[1].body == body);
-		Fvector joint_position;
+		float3 joint_position;
 		if (dJointGetType(joint) == dJointTypeContact)
 		{
 			dxJointContact* c_joint = (dxJointContact*)joint;
 			dGeomID first_geom = c_joint->contact.geom.g1;
 			dGeomID second_geom = c_joint->contact.geom.g2;
-			joint_position.set(*(Fvector*)c_joint->contact.geom.pos);
+			joint_position.set(*(float3*)c_joint->contact.geom.pos);
 			if (dGeomGetClass(first_geom) == dGeomTransformClass)
 			{
 				first_geom = dGeomTransformGetGeom(first_geom);
@@ -375,54 +375,54 @@ bool CPHFracture::Update(CPHElement* element)
 			}
 		}
 		// accomulate forces applied by joints to first and second parts
-		Fvector body_to_joint;
+		float3 body_to_joint;
 		body_to_joint.sub(joint_position, body_global_pos);
 		if (applied_to_second)
 		{
-			Fvector shoulder;
+			float3 shoulder;
 			shoulder.sub(body_to_joint, body_to_second);
 			if (b_body_second)
 			{
 
-				Fvector joint_force;
-				joint_force.set(*(const Fvector*)feedback->f2);
+				float3 joint_force;
+				joint_force.set(*(const float3*)feedback->f2);
 				second_part_force.add(joint_force);
-				Fvector torque;
+				float3 torque;
 				torque.crossproduct(shoulder, joint_force);
 				second_part_torque.add(torque);
 			}
 			else
 			{
 
-				Fvector joint_force;
-				joint_force.set(*(const Fvector*)feedback->f1);
+				float3 joint_force;
+				joint_force.set(*(const float3*)feedback->f1);
 				second_part_force.add(joint_force);
 
-				Fvector torque;
+				float3 torque;
 				torque.crossproduct(shoulder, joint_force);
 				second_part_torque.add(torque);
 			}
 		}
 		else
 		{
-			Fvector shoulder;
+			float3 shoulder;
 			shoulder.sub(body_to_joint, body_to_first);
 			if (b_body_second)
 			{
 
-				Fvector joint_force;
-				joint_force.set(*(const Fvector*)feedback->f2);
+				float3 joint_force;
+				joint_force.set(*(const float3*)feedback->f2);
 				first_part_force.add(joint_force);
-				Fvector torque;
+				float3 torque;
 				torque.crossproduct(shoulder, joint_force);
 				first_part_torque.add(torque);
 			}
 			else
 			{
-				Fvector joint_force;
-				joint_force.set(*(const Fvector*)feedback->f1);
+				float3 joint_force;
+				joint_force.set(*(const float3*)feedback->f1);
 				first_part_force.add(joint_force);
-				Fvector torque;
+				float3 torque;
 				torque.crossproduct(shoulder, joint_force);
 				first_part_torque.add(torque);
 			}
@@ -436,31 +436,31 @@ bool CPHFracture::Update(CPHElement* element)
 
 		if ((geom >= m_start_geom_num && geom < m_end_geom_num))
 		{
-			Fvector force;
+			float3 force;
 			force.set(i_i->force);
 			force.mul(phRigidBreakWeaponFactor);
-			Fvector second_to_point;
+			float3 second_to_point;
 			second_to_point.sub(body_to_second, i_i->point);
 			// force.mul(30.f);
 			second_part_force.add(force);
-			Fvector torque;
+			float3 torque;
 			torque.crossproduct(second_to_point, force);
 			second_part_torque.add(torque);
 		}
 		else
 		{
-			Fvector force;
+			float3 force;
 			force.set(i_i->force);
-			Fvector first_to_point;
+			float3 first_to_point;
 			first_to_point.sub(body_to_first, i_i->point);
 			// force.mul(4.f);
 			first_part_force.add(force);
-			Fvector torque;
+			float3 torque;
 			torque.crossproduct(first_to_point, force);
 			second_part_torque.add(torque);
 		}
 	}
-	Fvector gravity_force;
+	float3 gravity_force;
 	gravity_force.set(0.f, -ph_world->Gravity() * m_firstM.mass, 0.f);
 	first_part_force.add(gravity_force);
 	second_part_force.add(gravity_force);
@@ -479,7 +479,7 @@ bool CPHFracture::Update(CPHElement* element)
 
 	// compute breaking torque
 	/// break_torque=glI2*glInvI*first_part_torque-glI1*glInvI*second_part_torque+crossproduct(second_in_bone,second_part_force)-crossproduct(first_in_bone,first_part_force)
-	Fvector break_torque, vtemp;
+	float3 break_torque, vtemp;
 
 	dMULTIPLY0_331((float*)&break_torque, glInvI, (float*)&first_part_torque);
 	dMULTIPLY0_331((float*)&break_torque, glI2, (float*)&break_torque);
@@ -488,9 +488,9 @@ bool CPHFracture::Update(CPHElement* element)
 	dMULTIPLY0_331((float*)&vtemp, glI1, (float*)&vtemp);
 	break_torque.sub(vtemp);
 
-	// Fvector first_in_bone,second_in_bone;
-	// first_in_bone.sub(*((const Fvector*)m_firstM.c),m_pos_in_element);
-	// second_in_bone.sub(*((const Fvector*)m_secondM.c),m_pos_in_element);
+	// float3 first_in_bone,second_in_bone;
+	// first_in_bone.sub(*((const float3*)m_firstM.c),m_pos_in_element);
+	// second_in_bone.sub(*((const float3*)m_secondM.c),m_pos_in_element);
 
 	// vtemp.crossproduct(second_in_bone,second_part_force);
 	// break_torque.add(vtemp);
@@ -512,7 +512,7 @@ bool CPHFracture::Update(CPHElement* element)
 #endif
 	}
 
-	Fvector break_force; //=1/(m1+m2)*(F1*m2-F2*m1)+r2xT2/(r2^2)-r1xT1/(r1^2)
+	float3 break_force; //=1/(m1+m2)*(F1*m2-F2*m1)+r2xT2/(r2^2)-r1xT1/(r1^2)
 	break_force.set(first_part_force);
 	break_force.mul(m_secondM.mass);
 	vtemp.set(second_part_force);

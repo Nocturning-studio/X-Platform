@@ -81,13 +81,13 @@ class CAlienEffector : public CEffectorCam
 	typedef CEffectorCam inherited;
 
 	float m_time_total;
-	Fvector dangle_target;
-	Fvector dangle_current;
+	float3 dangle_target;
+	float3 dangle_current;
 
 	CAI_Bloodsucker* monster;
 
 	float m_current_fov;
-	Fmatrix m_prev_eye_matrix;
+	float4x4 m_prev_eye_matrix;
 	float m_inertion;
 
   public:
@@ -116,7 +116,7 @@ CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj) : in
 
 	m_prev_eye_matrix.c = get_head_position(monster);
 	m_prev_eye_matrix.k = monster->Direction();
-	Fvector::generate_orthonormal_basis(m_prev_eye_matrix.k, m_prev_eye_matrix.j, m_prev_eye_matrix.i);
+	float3::generate_orthonormal_basis(m_prev_eye_matrix.k, m_prev_eye_matrix.j, m_prev_eye_matrix.i);
 	m_inertion = 1.f;
 	m_current_fov = BSA_MIN_FOV;
 }
@@ -124,7 +124,7 @@ CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj) : in
 BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	// Инициализация
-	Fmatrix Mdef;
+	float4x4 Mdef;
 	Mdef.identity();
 	Mdef.j.set(info.n);
 	Mdef.k.set(info.d);
@@ -148,7 +148,7 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	}
 
 	// update inertion
-	Fmatrix cur_matrix;
+	float4x4 cur_matrix;
 	cur_matrix.k = monster->Direction();
 	cur_matrix.c = get_head_position(monster);
 
@@ -160,7 +160,7 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	// set pos and dir with inertion
 	m_prev_eye_matrix.c.inertion(cur_matrix.c, m_inertion);
 	m_prev_eye_matrix.k.inertion(cur_matrix.k, m_inertion);
-	Fvector::generate_orthonormal_basis_normalized(m_prev_eye_matrix.k, m_prev_eye_matrix.j, m_prev_eye_matrix.i);
+	float3::generate_orthonormal_basis_normalized(m_prev_eye_matrix.k, m_prev_eye_matrix.j, m_prev_eye_matrix.i);
 
 	// apply position and direction
 	Mdef = m_prev_eye_matrix;
@@ -176,10 +176,10 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	//////////////////////////////////////////////////////////////////////////
 
 	// Установить углы смещения
-	Fmatrix R;
+	float4x4 R;
 	R.setHPB(dangle_current.x, dangle_current.y, dangle_current.z);
 
-	Fmatrix mR;
+	float4x4 mR;
 	mR.mul(Mdef, R);
 
 	info.d.set(mR.k);

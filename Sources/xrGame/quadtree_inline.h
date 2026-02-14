@@ -54,7 +54,7 @@ IC size_t CSQuadTree::size() const
 }
 
 TEMPLATE_SPECIALIZATION
-IC u32 CSQuadTree::neighbour_index(const Fvector& position, Fvector& center, float distance) const
+IC u32 CSQuadTree::neighbour_index(const float3& position, float3& center, float distance) const
 {
 	if (position.x <= center.x)
 		if (position.z <= center.z)
@@ -88,7 +88,7 @@ IC void CSQuadTree::insert(_object_type* object)
 {
 	//OPTICK_EVENT("CSQuadTree::insert");
 	START_PROFILE("Covers/insert")
-	Fvector center = m_center;
+	float3 center = m_center;
 	float distance = m_radius;
 	CQuadNode** node = &m_root;
 	for (int depth = 0;; ++depth)
@@ -116,9 +116,9 @@ IC void CSQuadTree::insert(_object_type* object)
 }
 
 TEMPLATE_SPECIALIZATION
-IC _object_type* CSQuadTree::find(const Fvector& position)
+IC _object_type* CSQuadTree::find(const float3& position)
 {
-	Fvector center = m_center;
+	float3 center = m_center;
 	float distance = m_radius;
 	CQuadNode* node = m_root;
 	for (int depth = 0;; ++depth)
@@ -145,7 +145,7 @@ IC _object_type* CSQuadTree::find(const Fvector& position)
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, bool clear) const
+IC void CSQuadTree::nearest(const float3& position, float radius, xr_vector<_object_type*>& objects, bool clear) const
 {
 	//OPTICK_EVENT("CSQuadTree::nearest");
 	START_PROFILE("Covers/nearest")
@@ -156,8 +156,8 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node,
-							Fvector center, float distance, int depth) const
+IC void CSQuadTree::nearest(const float3& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node,
+							float3 center, float distance, int depth) const
 {
 	if (!node)
 		return;
@@ -173,7 +173,7 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
 	}
 
 	distance *= .5f;
-	Fvector next_center = center;
+	float3 next_center = center;
 	u32 index = neighbour_index(position, next_center, distance);
 	VERIFY(index < 4);
 	if (_abs(position.z - center.z) < radius)
@@ -270,7 +270,7 @@ IC _object_type* CSQuadTree::remove(const _object_type* object)
 }
 
 TEMPLATE_SPECIALIZATION
-IC _object_type* CSQuadTree::remove(const _object_type* object, CQuadNode*& node, Fvector center, float distance,
+IC _object_type* CSQuadTree::remove(const _object_type* object, CQuadNode*& node, float3 center, float distance,
 									int depth)
 {
 	VERIFY(node);

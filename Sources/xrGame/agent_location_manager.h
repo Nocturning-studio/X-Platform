@@ -32,7 +32,7 @@ class CAgentLocationManager
 
   public:
 	IC CAgentLocationManager(CAgentManager* object);
-	IC CDangerLocationPtr location(const Fvector& position);
+	IC CDangerLocationPtr location(const float3& position);
 	IC CDangerLocationPtr location(const CObject* object);
 	IC void clear();
 	void update();

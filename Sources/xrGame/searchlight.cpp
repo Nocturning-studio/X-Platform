@@ -36,7 +36,7 @@ void CProjector::BoneCallbackX(CBoneInstance* B)
 {
 	CProjector* P = static_cast<CProjector*>(B->Callback_Param);
 
-	Fmatrix M;
+	float4x4 M;
 	M.setHPB(0.0f, P->_current.pitch, 0.0f);
 	B->mTransform.mulB_43(M);
 }
@@ -49,7 +49,7 @@ void CProjector::BoneCallbackY(CBoneInstance* B)
 	if (angle_normalize_signed(P->_start.yaw - P->_current.yaw) > 0)
 		delta_yaw = -delta_yaw;
 
-	Fmatrix M;
+	float4x4 M;
 	M.setHPB(-delta_yaw, 0.0, 0.0f);
 	B->mTransform.mulB_43(M);
 }
@@ -159,7 +159,7 @@ void CProjector::UpdateCL()
 		}
 
 		CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
-		Fmatrix M;
+		float4x4 M;
 
 		M.mul(Transform(), BI.mTransform);
 
@@ -219,10 +219,10 @@ bool CProjector::bfAssignObject(CScriptEntityAction* tpEntityAction)
 	return (true);
 }
 
-void CProjector::SetTarget(const Fvector& target_pos)
+void CProjector::SetTarget(const float3& target_pos)
 {
 	float th, tp;
-	Fvector().sub(target_pos, Position()).getHP(th, tp);
+	float3().sub(target_pos, Position()).getHP(th, tp);
 
 	float delta_h;
 	delta_h = angle_difference(th, _start.yaw);
@@ -237,7 +237,7 @@ void CProjector::SetTarget(const Fvector& target_pos)
 	_target.pitch = tp;
 }
 
-Fvector CProjector::GetCurrentDirection()
+float3 CProjector::GetCurrentDirection()
 {
-	return (Fvector().setHP(_current.yaw, _current.pitch));
+	return (float3().setHP(_current.yaw, _current.pitch));
 }

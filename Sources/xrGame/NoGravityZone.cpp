@@ -38,7 +38,7 @@ void CNoGravityZone::switchGravity(SZoneObjectInfo& io, bool val)
 			CPhysicsElement* e = shell->get_ElementByStoreOrder(u16(Random.randI(0, shell->get_ElementsNumber())));
 			if (e->isActive())
 			{
-				e->applyImpulseTrace(Fvector().random_point(e->getRadius()), Fvector().random_dir(),
+				e->applyImpulseTrace(float3().random_point(e->getRadius()), float3().random_dir(),
 									 shell->getMass() * ph_world->Gravity() * fixed_step, e->m_SelfID);
 			}
 		}
@@ -54,7 +54,7 @@ void CNoGravityZone::switchGravity(SZoneObjectInfo& io, bool val)
 		mc->SetForcedPhysicsControl(!val);
 		if (!val && mc->Environment() == CPHMovementControl::peOnGround)
 		{
-			Fvector gn;
+			float3 gn;
 			mc->GroundNormal(gn);
 			mc->ApplyImpulse(gn, mc->GetMass() * ph_world->Gravity() * fixed_step);
 		}

@@ -27,10 +27,10 @@ class CScriptEntity
 	{
 		CScriptGameObject* m_lua_game_object;
 		int m_sound_type;
-		Fvector m_position;
+		float3 m_position;
 		float m_sound_power;
 
-		IC CSavedSound(CScriptGameObject* lua_game_object, int sound_type, const Fvector& position, float sound_power)
+		IC CSavedSound(CScriptGameObject* lua_game_object, int sound_type, const float3& position, float sound_power)
 			: m_lua_game_object(lua_game_object), m_sound_type(sound_type), m_position(position),
 			  m_sound_power(sound_power)
 		{
@@ -78,7 +78,7 @@ class CScriptEntity
 	virtual DLL_Pure* _construct();
 
   public:
-	const Fmatrix GetUpdatedMatrix(shared_str caBoneName, const Fvector& tPositionOffset, const Fvector& tAngleOffset);
+	const float4x4 GetUpdatedMatrix(shared_str caBoneName, const float3& tPositionOffset, const float3& tAngleOffset);
 	void vfUpdateParticles();
 	void vfUpdateSounds();
 	virtual void vfFinishAction(CScriptEntityAction* tpEntityAction);
@@ -104,7 +104,7 @@ class CScriptEntity
 	virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
 	virtual bool bfAssignMonsterAction(CScriptEntityAction* tpEntityAction);
 
-	virtual void sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power);
+	virtual void sound_callback(const CObject* object, int sound_type, const float3& position, float sound_power);
 
 	virtual LPCSTR GetPatrolPathName();
 	bool bfScriptAnimation();

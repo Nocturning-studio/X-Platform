@@ -135,7 +135,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			Level().m_feel_deny.feel_touch_deny(Obj, 1000);
 
 			// [12.11.07] Alexander Maniluk: extended GE_OWNERSHIP_REJECT packet for drop item to selected position
-			Fvector dropPosition;
+			float3 dropPosition;
 			if (!P.r_eof())
 			{
 				P.r_vec3(dropPosition);
@@ -228,7 +228,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	}
 	break;
 	case GE_MOVE_ACTOR: {
-		Fvector NewPos, NewRot;
+		float3 NewPos, NewRot;
 		P.r_vec3(NewPos);
 		P.r_vec3(NewRot);
 
@@ -270,7 +270,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	break;
 	case GE_ACTOR_JUMPING: {
 		/*
-		Fvector dir;
+		float3 dir;
 		P.r_dir(dir);
 		float jump = P.r_float();
 		NET_SavedAccel = dir;
@@ -284,9 +284,9 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
-void CActor::MoveActor(Fvector NewPos, Fvector NewDir)
+void CActor::MoveActor(float3 NewPos, float3 NewDir)
 {
-	Fmatrix M = Transform();
+	float4x4 M = Transform();
 	M.translate(NewPos);
 	r_model_yaw = NewDir.y;
 	r_torso.yaw = NewDir.y;

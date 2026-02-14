@@ -54,7 +54,7 @@ class cl_InvView : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fmatrix mInvV = Fmatrix().invert(RenderBackend.transforms.m_View);
+		float4x4 mInvV = float4x4().invert(RenderBackend.transforms.m_View);
 
 		RenderBackend.set_Constant(C, mInvV);
 	}
@@ -65,13 +65,13 @@ class cl_texgen : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fmatrix mTexgen;
+		float4x4 mTexgen;
 
 		float _w = float(Device.dwWidth);
 		float _h = float(Device.dwHeight);
 		float o_w = (.5f / _w);
 		float o_h = (.5f / _h);
-		Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
+		float4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
 		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_WorldViewProject);
@@ -85,13 +85,13 @@ class cl_VPtexgen : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fmatrix mTexgen;
+		float4x4 mTexgen;
 
 		float _w = float(Device.dwWidth);
 		float _h = float(Device.dwHeight);
 		float o_w = (.5f / _w);
 		float o_h = (.5f / _h);
-		Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
+		float4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
 		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_ViewProject);
@@ -105,7 +105,7 @@ static cl_VPtexgen binder_VPtexgen;
 class cl_fog_params : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -123,7 +123,7 @@ static cl_fog_params binder_fog_params;
 class cl_fog_color : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -139,7 +139,7 @@ static cl_fog_color binder_fog_color;
 static class cl_fog_density final : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 FogDensity;
+	float4 FogDensity;
 	void setup(R_constant* C) override
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -154,7 +154,7 @@ static class cl_fog_density final : public R_constant_setup
 static class cl_fog_sky_influence final : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 FogDensity;
+	float4 FogDensity;
 	void setup(R_constant* C) override
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -169,7 +169,7 @@ static class cl_fog_sky_influence final : public R_constant_setup
 static class cl_vertical_fog_intensity final : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 VerticalFogIntensity;
+	float4 VerticalFogIntensity;
 	void setup(R_constant* C) override
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -184,7 +184,7 @@ static class cl_vertical_fog_intensity final : public R_constant_setup
 static class cl_vertical_fog_density final : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 VerticalFogDensity;
+	float4 VerticalFogDensity;
 	void setup(R_constant* C) override
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -199,7 +199,7 @@ static class cl_vertical_fog_density final : public R_constant_setup
 static class cl_vertical_fog_height final : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 VerticalFogHeight;
+	float4 VerticalFogHeight;
 	void setup(R_constant* C) override
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -276,7 +276,7 @@ static class cl_sepia_params : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
-		Fvector3 SepiaColor = E->m_SepiaColor;
+		float3 SepiaColor = E->m_SepiaColor;
 		float SepiaPower = E->m_SepiaPower;
 		RenderBackend.set_Constant(C, sRgbToLinear(SepiaColor.x), sRgbToLinear(SepiaColor.y), sRgbToLinear(SepiaColor.z), SepiaPower);
 	}
@@ -308,7 +308,7 @@ class cl_eye_P : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fvector& V = Engine.RenderView.Position;
+		float3& V = Engine.RenderView.Position;
 		RenderBackend.set_Constant(C, V.x, V.y, V.z, 1);
 	}
 };
@@ -319,7 +319,7 @@ class cl_eye_D : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fvector& V = Engine.RenderView.Direction;
+		float3& V = Engine.RenderView.Direction;
 		RenderBackend.set_Constant(C, V.x, V.y, V.z, 0);
 	}
 };
@@ -330,7 +330,7 @@ class cl_eye_N : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		Fvector& V = Engine.RenderView.Top;
+		float3& V = Engine.RenderView.Top;
 		RenderBackend.set_Constant(C, V.x, V.y, V.z, 0);
 	}
 };
@@ -340,7 +340,7 @@ static cl_eye_N binder_eye_N;
 class cl_sun0_color : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -358,7 +358,7 @@ static class cl_env_color : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
-		Fvector4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS,sRgbToLinear( envdesc->hemi_color.y) * 2 + EPS,
+		float4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS,sRgbToLinear( envdesc->hemi_color.y) * 2 + EPS,
 						   sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
 		RenderBackend.set_Constant(C, envclr);
 	}
@@ -367,7 +367,7 @@ static class cl_env_color : public R_constant_setup
 class cl_sun0_dir_w : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -382,12 +382,12 @@ static cl_sun0_dir_w binder_sun0_dir_w;
 class cl_sun0_dir_e : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
 		{
-			Fvector D;
+			float3 D;
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			Engine.RenderView.View.transform_dir(D, desc->sun_dir);
 			D.normalize();
@@ -402,7 +402,7 @@ static cl_sun0_dir_e binder_sun0_dir_e;
 class cl_amb_color : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -418,7 +418,7 @@ static cl_amb_color binder_amb_color;
 class cl_ambient_brightness : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -434,7 +434,7 @@ static cl_ambient_brightness binder_ambient_brightness;
 class cl_hemi_color : public R_constant_setup
 {
 	u32 marker;
-	Fvector4 result;
+	float4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Engine.TimeManager.GetFrameCount())
@@ -459,7 +459,7 @@ static class cl_InvProject final : public R_constant_setup
 {
 	void setup(R_constant* C) override
 	{
-		Fmatrix m_invProject;
+		float4x4 m_invProject;
 		m_invProject.invert(Engine.RenderView.Project);
 		RenderBackend.set_Constant(C, m_invProject);
 	}

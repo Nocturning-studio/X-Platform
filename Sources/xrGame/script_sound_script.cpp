@@ -36,10 +36,10 @@ void CScriptSound::script_register(lua_State* L)
 				  .def("play", (void(CScriptSound::*)(CScriptGameObject*, float))(&CScriptSound::Play))
 				  .def("play", (void(CScriptSound::*)(CScriptGameObject*, float, int))(&CScriptSound::Play))
 				  .def("play_at_pos",
-					   (void(CScriptSound::*)(CScriptGameObject*, const Fvector&))(&CScriptSound::PlayAtPos))
+					   (void(CScriptSound::*)(CScriptGameObject*, const float3&))(&CScriptSound::PlayAtPos))
 				  .def("play_at_pos",
-					   (void(CScriptSound::*)(CScriptGameObject*, const Fvector&, float))(&CScriptSound::PlayAtPos))
-				  .def("play_at_pos", (void(CScriptSound::*)(CScriptGameObject*, const Fvector&, float, int))(
+					   (void(CScriptSound::*)(CScriptGameObject*, const float3&, float))(&CScriptSound::PlayAtPos))
+				  .def("play_at_pos", (void(CScriptSound::*)(CScriptGameObject*, const float3&, float, int))(
 										  &CScriptSound::PlayAtPos))
 				  .def("play_no_feedback", &CScriptSound::PlayNoFeedback)
 				  .def("stop", &CScriptSound::Stop)

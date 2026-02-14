@@ -27,7 +27,7 @@ class vision_client : public ISheduled, public Feel::Vision
   private:
 	u32 m_state;
 	u32 m_time_stamp;
-	Fvector m_position;
+	float3 m_position;
 
   private:
 	IC const CEntity& object() const;
@@ -51,7 +51,7 @@ class vision_client : public ISheduled, public Feel::Vision
 
   public:
 	virtual BOOL feel_vision_isRelevant(CObject* object) = 0;
-	virtual void camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view,
+	virtual void camera(float3& position, float3& direction, float3& normal, float& field_of_view,
 						float& aspect_ratio, float& near_plane, float& far_plane) = 0;
 
   public:

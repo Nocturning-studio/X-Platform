@@ -367,12 +367,12 @@ LPCSTR CSE_Abstract::name_replace() const
 	return (s_name_replace);
 }
 
-Fvector& CSE_Abstract::position()
+float3& CSE_Abstract::position()
 {
 	return (o_Position);
 }
 
-Fvector& CSE_Abstract::angle()
+float3& CSE_Abstract::angle()
 {
 	return (o_Angle);
 }

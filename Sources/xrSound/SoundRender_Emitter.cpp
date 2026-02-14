@@ -9,7 +9,7 @@
 extern u32 psSoundModel;
 extern float psSoundVEffects;
 
-void CSoundRender_Emitter::set_position(const Fvector& pos)
+void CSoundRender_Emitter::set_position(const float3& pos)
 {
 	if (source()->channels_num() == 1)
 		p_source.position = pos;

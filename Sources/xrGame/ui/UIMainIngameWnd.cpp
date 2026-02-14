@@ -528,7 +528,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		else
 			return false;
 
-		Fvector tmpV;
+		float3 tmpV;
 
 		if (1 == g_bHudAdjustMode) // zoom offset
 		{
@@ -1095,7 +1095,7 @@ void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 	UIPdaOnline.ResetClrAnimation();
 
 	if (b_snd)
-		HUD_SOUND::PlaySound(m_contactSnd, Fvector().set(0, 0, 0), 0, true);
+		HUD_SOUND::PlaySound(m_contactSnd, float3().set(0, 0, 0), 0, true);
 }
 
 void CUIMainIngameWnd::SetPickUpItem(CInventoryItem* PickUpItem)
@@ -1266,19 +1266,19 @@ void CUIMainIngameWnd::draw_adjust_mode()
 			CWeaponHUD* pWpnHud = NULL;
 			pWpnHud = m_pWeapon->GetHUD();
 
-			Fvector FP, SP, FP2;
+			float3 FP, SP, FP2;
 
 			CKinematics* V = smart_cast<CKinematics*>(pWpnHud->Visual());
 			VERIFY(V);
 			V->CalculateBones();
 
 			// fire point&direction
-			Fmatrix& fire_mat = V->LL_GetTransform(u16(pWpnHud->FireBone()));
-			Fmatrix& parent = pWpnHud->Transform();
+			float4x4& fire_mat = V->LL_GetTransform(u16(pWpnHud->FireBone()));
+			float4x4& parent = pWpnHud->Transform();
 
-			const Fvector& fp = pWpnHud->FirePoint();
-			const Fvector& fp2 = pWpnHud->FirePoint2();
-			const Fvector& sp = pWpnHud->ShellPoint();
+			const float3& fp = pWpnHud->FirePoint();
+			const float3& fp2 = pWpnHud->FirePoint2();
+			const float3& sp = pWpnHud->ShellPoint();
 
 			fire_mat.transform_tiny(FP, fp);
 			parent.transform_tiny(FP);
@@ -1295,9 +1295,9 @@ void CUIMainIngameWnd::draw_adjust_mode()
 		}
 		else
 		{
-			Fvector FP = m_pWeapon->get_CurrentFirePoint();
-			Fvector FP2 = m_pWeapon->get_CurrentFirePoint2();
-			Fvector SP = m_pWeapon->get_LastSP();
+			float3 FP = m_pWeapon->get_CurrentFirePoint();
+			float3 FP2 = m_pWeapon->get_CurrentFirePoint2();
+			float3 SP = m_pWeapon->get_LastSP();
 			RenderBackend.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
 			RenderBackend.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
 			RenderBackend.dbg_DrawAABB(SP, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 255, 0));

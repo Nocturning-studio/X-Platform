@@ -35,13 +35,13 @@ class CTelekinesis : public CPHUpdateObject
 	void remove_object(TELE_OBJECTS_IT it);
 	void remove_object(CPhysicsShellHolder* obj);
 	// бросить все объекты в позицию 'target'
-	void fire_all(const Fvector& target);
+	void fire_all(const float3& target);
 
 	// бросить объект 'obj' в позицию 'target' с учетом коэф силы
-	void fire(CPhysicsShellHolder* obj, const Fvector& target, float power);
+	void fire(CPhysicsShellHolder* obj, const float3& target, float power);
 
 	// бросить объект 'obj' в позицию 'target' с учетом коэф силы
-	void fire_t(CPhysicsShellHolder* obj, const Fvector& target, float time);
+	void fire_t(CPhysicsShellHolder* obj, const float3& target, float time);
 
 	// вернуть активность телекинеза
 	bool is_active()

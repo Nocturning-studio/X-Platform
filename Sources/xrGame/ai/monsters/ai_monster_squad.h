@@ -19,7 +19,7 @@ struct SMemberGoal
 {
 	EMemberGoalType type;
 	CEntity* entity;
-	Fvector position;
+	float3 position;
 	u32 node;
 
 	SMemberGoal()
@@ -50,9 +50,9 @@ struct SSquadCommand
 	ESquadCommandType type; // тип команды
 
 	CEntity* entity;
-	Fvector position;
+	float3 position;
 	u32 node;
-	Fvector direction;
+	float3 direction;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ class CMonsterSquad
 	struct _elem
 	{
 		CEntity* pE;
-		Fvector p_from;
+		float3 p_from;
 		float yaw;
 	};
 	xr_vector<_elem> lines;

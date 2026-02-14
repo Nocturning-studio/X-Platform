@@ -152,19 +152,19 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 	if (!inherited::ProcessCam(info))
 		return FALSE;
 
-	const Fmatrix& m = m_objectAnimator->Transform();
+	const float4x4& m = m_objectAnimator->Transform();
 	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
 	if (!m_bAbsolutePositioning)
 	{
-		Fmatrix Mdef;
+		float4x4 Mdef;
 		Mdef.identity();
 		Mdef.j = info.n;
 		Mdef.k = info.d;
 		Mdef.i.crossproduct(info.n, info.d);
 		Mdef.c = info.p;
 
-		Fmatrix mr;
+		float4x4 mr;
 		mr.mul(Mdef, m);
 		info.d = mr.k;
 		info.n = mr.j;
@@ -184,17 +184,17 @@ BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 	if (!inherited::inherited::ProcessCam(info))
 		return FALSE;
 
-	const Fmatrix& m = m_objectAnimator->Transform();
+	const float4x4& m = m_objectAnimator->Transform();
 	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
-	Fmatrix Mdef;
+	float4x4 Mdef;
 	Mdef.identity();
 	Mdef.j = info.n;
 	Mdef.k = info.d;
 	Mdef.i.crossproduct(info.n, info.d);
 	Mdef.c = info.p;
 
-	Fmatrix mr;
+	float4x4 mr;
 	mr.mul(Mdef, m);
 
 	Fquaternion q_src, q_dst, q_res;
@@ -207,7 +207,7 @@ BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 	VERIFY(t >= 0.f && t <= 1.f);
 	q_res.slerp(q_src, q_dst, t);
 
-	Fmatrix res;
+	float4x4 res;
 	res.rotation(q_res);
 	res.c.lerp(info.p, mr.c, t);
 
@@ -384,8 +384,8 @@ void DeathEffector::Update()
 #define ACTOR_EFF_DELTA_ANGLE_Z 0.5f * PI / 180
 #define ACTOR_EFF_ANGLE_SPEED 1.5f
 
-CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector& src_pos,
-														   const Fvector& target_pos, float time)
+CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(ECamEffectorType type, const float3& src_pos,
+														   const float3& target_pos, float time)
 	: inherited(eCEControllerPsyHit, flt_max)
 {
 	m_time_total = time;
@@ -405,7 +405,7 @@ const float _max_fov_add = 160.f;
 
 BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	Fmatrix Mdef;
+	float4x4 Mdef;
 	Mdef.identity();
 	Mdef.j.set(info.n);
 	Mdef.k.set(m_direction);
@@ -445,13 +445,13 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 	//////////////////////////////////////////////////////////////////////////
 
 	// Óñòàíîâèòü óãëû ñìåùåíèÿ
-	Fmatrix R;
+	float4x4 R;
 	if (m_time_current > m_time_total)
 		R.identity();
 	else
 		R.setHPB(m_dangle_current.x, m_dangle_current.y, m_dangle_current.z);
 
-	Fmatrix mR;
+	float4x4 mR;
 	mR.mul(Mdef, R);
 
 	info.d.set(mR.k);

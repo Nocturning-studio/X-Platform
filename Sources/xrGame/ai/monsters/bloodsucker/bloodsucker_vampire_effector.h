@@ -27,13 +27,13 @@ class CVampireCameraEffector : public CEffectorCam
 	typedef CEffectorCam inherited;
 
 	float m_time_total;
-	Fvector dangle_target;
-	Fvector dangle_current;
+	float3 dangle_target;
+	float3 dangle_current;
 
 	float m_dist;
-	Fvector m_direction;
+	float3 m_direction;
 
   public:
-	CVampireCameraEffector(float time, const Fvector& src, const Fvector& tgt);
+	CVampireCameraEffector(float time, const float3& src, const float3& tgt);
 	virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };

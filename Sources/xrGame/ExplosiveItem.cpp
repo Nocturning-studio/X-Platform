@@ -31,8 +31,8 @@ void CExplosiveItem::net_Destroy()
 	CExplosive::net_Destroy();
 }
 
-// void CExplosiveItem::Hit(float P, Fvector &dir,	CObject* who, s16 element,
-//						Fvector position_in_object_space, float impulse,
+// void CExplosiveItem::Hit(float P, float3 &dir,	CObject* who, s16 element,
+//						float3 position_in_object_space, float impulse,
 //						ALife::EHitType hit_type)
 void CExplosiveItem::Hit(SHit* pHDS)
 {
@@ -49,7 +49,7 @@ void CExplosiveItem::Hit(SHit* pHDS)
 }
 void CExplosiveItem::StartTimerEffects()
 {
-	CParticlesPlayer::StartParticles(pSettings->r_string(*cNameSect(), "set_timer_particles"), Fvector().set(0, 1, 0),
+	CParticlesPlayer::StartParticles(pSettings->r_string(*cNameSect(), "set_timer_particles"), float3().set(0, 1, 0),
 									 ID());
 }
 void CExplosiveItem::OnEvent(NET_Packet& P, u16 type)
@@ -67,7 +67,7 @@ void CExplosiveItem::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetCondition()))
 	{
-		Fvector normal;
+		float3 normal;
 		FindNormal(normal);
 		CExplosive::GenExplodeEvent(Position(), normal);
 		CParticlesPlayer::StopParticles(ID(), BI_NONE, true);
@@ -90,11 +90,11 @@ void CExplosiveItem::net_Relcase(CObject* O)
 	CExplosive::net_Relcase(O);
 	inherited::net_Relcase(O);
 }
-void CExplosiveItem::ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos)
+void CExplosiveItem::ActivateExplosionBox(const float3& size, float3& in_out_pos)
 {
 	// PKinematics(Visual())->CalculateBones();
 }
-void CExplosiveItem::GetRayExplosionSourcePos(Fvector& pos)
+void CExplosiveItem::GetRayExplosionSourcePos(float3& pos)
 {
 	random_point_in_object_box(pos, this);
 }

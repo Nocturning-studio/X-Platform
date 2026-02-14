@@ -13,12 +13,12 @@ IC u32 convert(float c)
 		C = 255;
 	return C;
 }
-IC void MouseRayFromPoint(Fvector& direction, int x, int y, Fmatrix& m_CamMat)
+IC void MouseRayFromPoint(float3& direction, int x, int y, float4x4& m_CamMat)
 {
 	int halfwidth = Device.dwWidth / 2;
 	int halfheight = Device.dwHeight / 2;
 
-	Ivector2 point2;
+	int2 point2;
 	point2.set(x - halfwidth, halfheight - y);
 
 	float size_y = VIEWPORT_NEAR * tanf(deg2rad(60.f) * 0.5f);

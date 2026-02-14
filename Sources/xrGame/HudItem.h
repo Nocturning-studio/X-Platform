@@ -32,7 +32,7 @@ class CHudItem
 		return this;
 	}
 
-	virtual void PlaySound(HUD_SOUND& snd, const Fvector& position);
+	virtual void PlaySound(HUD_SOUND& snd, const float3& position);
 
 	///////////////////////////////////////////////
 	// общие функции HUD
@@ -112,9 +112,9 @@ class CHudItem
 	virtual void UpdateHudPosition();
 
 	// просчет инерции для HUD
-	virtual void UpdateHudInertion(Fmatrix& hud_trans);
+	virtual void UpdateHudInertion(float4x4& hud_trans);
 	// просчет дополнительных вычислений (переопределяется в потомках)
-	virtual void UpdateHudAdditonal(Fmatrix&);
+	virtual void UpdateHudAdditonal(float4x4&);
 
 	virtual void UpdateTransform() = 0;
 	void animGet(MotionSVec& lst, LPCSTR prefix);

@@ -7,7 +7,7 @@
 #endif
 
 #ifdef DEBUG
-void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fvector& U)
+void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, float3& P, float3& D, float3& U)
 {
 	float YFov = deg2rad(FOV);
 	float XFov = deg2rad(FOV / A);
@@ -20,7 +20,7 @@ void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector& P, Fvector
 
 	// calc x-axis (viewhoriz) and store cop
 	// here we are assuring that vectors are perpendicular & normalized
-	Fvector R, COP;
+	float3 R, COP;
 	D.normalize();
 	R.crossproduct(D, U);
 	R.normalize();
@@ -29,8 +29,8 @@ void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector& P, Fvector
 	COP.set(P);
 
 	// calculate the corner vertices of the window
-	Fvector sPts[4]; // silhouette points (corners of window)
-	Fvector Offset, T;
+	float3 sPts[4]; // silhouette points (corners of window)
+	float3 Offset, T;
 	Offset.add(D, COP);
 
 	sPts[0].mul(R, wR);
@@ -47,13 +47,13 @@ void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector& P, Fvector
 	sPts[3].add(T);
 
 	// find projector direction vectors (from cop through silhouette pts)
-	Fvector ProjDirs[4];
+	float3 ProjDirs[4];
 	ProjDirs[0].sub(sPts[0], COP);
 	ProjDirs[1].sub(sPts[1], COP);
 	ProjDirs[2].sub(sPts[2], COP);
 	ProjDirs[3].sub(sPts[3], COP);
 
-	Fvector _F[4];
+	float3 _F[4];
 	_F[0].mad(COP, ProjDirs[0], _FAR);
 	_F[1].mad(COP, ProjDirs[1], _FAR);
 	_F[2].mad(COP, ProjDirs[2], _FAR);
@@ -62,7 +62,7 @@ void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector& P, Fvector
 	F.CreateFromPoints(_F, 4, COP);
 }
 
-void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fvector& U)
+void dbg_draw_frustum(float FOV, float _FAR, float A, float3& P, float3& D, float3& U)
 {
 	// if (!bDebug)		return;
 
@@ -77,7 +77,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 
 	// calc x-axis (viewhoriz) and store cop
 	// here we are assuring that vectors are perpendicular & normalized
-	Fvector R, COP;
+	float3 R, COP;
 	D.normalize();
 	R.crossproduct(D, U);
 	R.normalize();
@@ -86,8 +86,8 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 	COP.set(P);
 
 	// calculate the corner vertices of the window
-	Fvector sPts[4]; // silhouette points (corners of window)
-	Fvector Offset, T;
+	float3 sPts[4]; // silhouette points (corners of window)
+	float3 Offset, T;
 	Offset.add(D, COP);
 
 	sPts[0].mul(R, wR);
@@ -104,7 +104,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 	sPts[3].add(T);
 
 	// find projector direction vectors (from cop through silhouette pts)
-	Fvector ProjDirs[4];
+	float3 ProjDirs[4];
 	ProjDirs[0].sub(sPts[0], COP);
 	ProjDirs[1].sub(sPts[1], COP);
 	ProjDirs[2].sub(sPts[2], COP);
@@ -113,7 +113,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 
-	Fvector _F[4];
+	float3 _F[4];
 	_F[0].mad(COP, ProjDirs[0], _FAR);
 	_F[1].mad(COP, ProjDirs[1], _FAR);
 	_F[2].mad(COP, ProjDirs[2], _FAR);
@@ -121,7 +121,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fv
 
 	//	u32 CT	= color_rgba(255,255,255,64);
 	u32 CL = color_rgba(255, 0, 0, 255);
-	Fmatrix& M = Fidentity;
+	float4x4& M = Fidentity;
 	ref_shader l_tShaderReference = Level().ObjectSpace.dbgGetShader();
 	RenderBackend.set_Shader(l_tShaderReference);
 	//	RenderBackend.dbg_DrawTRI	(M,COP,_F[0],_F[1],CT);

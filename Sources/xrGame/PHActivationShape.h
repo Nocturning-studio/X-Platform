@@ -27,18 +27,18 @@ class CPHActivationShape : public CPHObject
 	};
 	CPHActivationShape();
 	~CPHActivationShape();
-	void Create(const Fvector start_pos, const Fvector start_size, CPhysicsShellHolder* ref_obj, EType type = etBox,
+	void Create(const float3 start_pos, const float3 start_size, CPhysicsShellHolder* ref_obj, EType type = etBox,
 				u16 flags = 0);
 	void Destroy();
-	bool Activate(const Fvector need_size, u16 steps, float max_displacement, float max_rotation,
+	bool Activate(const float3 need_size, u16 steps, float max_displacement, float max_rotation,
 				  bool un_freeze_later = false);
-	const Fvector& Position();
-	void Size(Fvector& size);
+	const float3& Position();
+	void Size(float3& size);
 	dBodyID ODEBody()
 	{
 		return m_body;
 	}
-	void set_rotation(const Fmatrix& rot);
+	void set_rotation(const float4x4& rot);
 
   private:
 	virtual void PhDataUpdate(dReal step);

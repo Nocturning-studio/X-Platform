@@ -24,7 +24,7 @@ IC void CLevelLocationSelector::before_search(_vertex_id_type& vertex_id)
 	{
 		if (!m_restricted_object->accessible(vertex_id))
 		{
-			Fvector dest_pos;
+			float3 dest_pos;
 			vertex_id = m_restricted_object->accessible_nearest(m_graph->vertex_position(vertex_id), dest_pos);
 		}
 		m_restricted_object->add_border(vertex_id, m_evaluator->m_fRadius);

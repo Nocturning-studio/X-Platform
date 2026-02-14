@@ -10,7 +10,7 @@
 #define HEMI3_VERTS 196
 
 #pragma warning(disable : 4305)
-const Fvector hemi_1[HEMI1_VERTS] = {
+const float3 hemi_1[HEMI1_VERTS] = {
 	{0.525730, 0.850655, -0.000000},  {0.162460, 0.850655, 0.500000},	{0.000000, 1.000000, -0.000000},
 	{-0.425324, 0.850655, 0.309015},  {-0.425324, 0.850655, -0.309017}, {0.162460, 0.850655, -0.500000},
 	{0.688194, 0.525730, 0.500000},	  {-0.262865, 0.525730, 0.809013},	{-0.850647, 0.525730, -0.000001},
@@ -29,7 +29,7 @@ const u16 hemi_1v[HEMI1_FACES * 3] = {
 	17, 18, 12, 18, 19, 7,	19, 20, 13, 20, 21, 8,	21, 22, 14, 22, 23, 9,	23, 24, 15, 24, 25, 10,
 };
 
-const Fvector hemi_2[HEMI2_VERTS] = {
+const float3 hemi_2[HEMI2_VERTS] = {
 	{0.273268, 0.961937, -0.000000},  {0.084444, 0.961937, 0.259892},	{0.000000, 1.000000, -0.000000},
 	{0.525730, 0.850655, -0.000000},  {0.361805, 0.894424, 0.262865},	{0.162460, 0.850655, 0.500000},
 	{-0.221077, 0.961937, 0.160622},  {-0.138196, 0.894424, 0.425324},	{-0.425324, 0.850655, 0.309015},
@@ -82,7 +82,7 @@ const u16 hemi_2v[HEMI2_FACES * 3] = {
 	72, 89, 77, 76, 75, 79, 30, 77, 90, 75, 90, 79, 75, 90, 80, 79,
 };
 
-const Fvector hemi_3[HEMI3_VERTS] = {
+const float3 hemi_3[HEMI3_VERTS] = {
 	{+0.0000, +0.5000, +0.0000}, {+0.2629, +0.4253, +0.0000}, {+0.0812, +0.4253, +0.2500}, {-0.2127, +0.4253, +0.1545},
 	{-0.2127, +0.4253, -0.1545}, {+0.0812, +0.4253, -0.2500}, {+0.4472, +0.2236, +0.0000}, {+0.1382, +0.2236, +0.4253},
 	{-0.3618, +0.2236, +0.2629}, {-0.3618, +0.2236, -0.2629}, {+0.1382, +0.2236, -0.4253}, {+0.3441, +0.2629, +0.2500},
@@ -137,7 +137,7 @@ const Fvector hemi_3[HEMI3_VERTS] = {
 
 void ECORE_API xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)
 {
-	const Fvector* hemi = 0;
+	const float3* hemi = 0;
 	int h_count = xrHemisphereVertices(quality, hemi);
 	VERIFY(h_count > 0);
 	// Calculate energy
@@ -158,7 +158,7 @@ void ECORE_API xrHemisphereBuild(int quality, float energy, xrHemisphereIterator
 	}
 }
 
-int ECORE_API xrHemisphereVertices(int quality, const Fvector*& verts)
+int ECORE_API xrHemisphereVertices(int quality, const float3*& verts)
 {
 	// SELECT table
 	int h_count = 0;

@@ -99,7 +99,7 @@ class CControl_Manager
 	bool check_start_conditions(ControlCom::EControlType);
 
 	// path buidler specials
-	bool build_path_line(CControl_Com*, const Fvector& target, u32 node, u32 vel_mask);
+	bool build_path_line(CControl_Com*, const float3& target, u32 node, u32 vel_mask);
 
   private:
 	ControlCom::EControlType com_type(CControl_Com*);

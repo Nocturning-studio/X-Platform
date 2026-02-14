@@ -139,7 +139,7 @@ void CWallmarksEngine::static_wm_render(CWallmarksEngine::static_wallmark* W, FV
 }
 
 //--------------------------------------------------------------------------------
-void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::static_wallmark& W)
+void CWallmarksEngine::RecurseTri(u32 t, float4x4& mView, CWallmarksEngine::static_wallmark& W)
 {
 	////OPTICK_EVENT("CWallmarksEngine::RecurseTri");
 
@@ -150,7 +150,7 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::stati
 
 	// Some vars
 	u32* v_ids = T->verts;
-	Fvector* v_data = sml_collector.getV();
+	float3* v_data = sml_collector.getV();
 	sml_poly_src.clear();
 	sml_poly_src.push_back(v_data[v_ids[0]]);
 	sml_poly_src.push_back(v_data[v_ids[1]]);
@@ -167,7 +167,7 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::stati
 	{
 		// Create vertices and triangulate poly (tri-fan style triangulation)
 		FVF::LIT V0, V1, V2;
-		Fvector UV;
+		float3 UV;
 
 		mView.transform_tiny(UV, (*P)[0]);
 		V0.set((*P)[0], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);
@@ -193,7 +193,7 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::stati
 			CDB::TRI* SML = sml_collector.getT() + adj;
 			v_ids = SML->verts;
 
-			Fvector test_normal;
+			float3 test_normal;
 			test_normal.mknormal(v_data[v_ids[0]], v_data[v_ids[1]], v_data[v_ids[2]]);
 			float cosa = test_normal.dotproduct(sml_normal);
 			if (cosa < 0.034899f)
@@ -203,13 +203,13 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::stati
 	}
 }
 
-void CWallmarksEngine::BuildMatrix(Fmatrix& mView, float invsz, const Fvector& from)
+void CWallmarksEngine::BuildMatrix(float4x4& mView, float invsz, const float3& from)
 {
 	////OPTICK_EVENT("CWallmarksEngine::BuildMatrix");
 
 	// build projection
-	Fmatrix mScale;
-	Fvector at, up, right, y;
+	float4x4 mScale;
+	float3 at, up, right, y;
 	at.sub(from, sml_normal);
 	y.set(0, 1, 0);
 	if (_abs(sml_normal.y) > .99f)
@@ -221,7 +221,7 @@ void CWallmarksEngine::BuildMatrix(Fmatrix& mView, float invsz, const Fvector& f
 	mView.mulA_43(mScale);
 }
 
-void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point,
+void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const float3* pVerts, const float3& contact_point,
 											ref_shader hShader, float sz)
 {
 	////OPTICK_EVENT("CWallmarksEngine::AddWallmark_internal");
@@ -230,7 +230,7 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVert
 	// calculate adjacency
 	{
 		Fbox bb_query;
-		Fvector bbc, bbd;
+		float3 bbc, bbd;
 		bb_query.set(contact_point, contact_point);
 		bb_query.grow(sz * 2.5f);
 		bb_query.get_CD(bbc, bbd);
@@ -253,12 +253,12 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVert
 	}
 
 	// calc face normal
-	Fvector N;
+	float3 N;
 	N.mknormal(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]]);
 	sml_normal.set(N);
 
 	// build 3D ortho-frustum
-	Fmatrix mView, mRot;
+	float4x4 mView, mRot;
 	BuildMatrix(mView, 1 / sz, contact_point);
 	mRot.rotateZ(::Random.randF(deg2rad(-20.f), deg2rad(20.f)));
 	mView.mulA_43(mRot);
@@ -315,7 +315,7 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVert
 	}
 }
 
-void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point,
+void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const float3* pVerts, const float3& contact_point,
 										 ref_shader hShader, float sz)
 {
 	////OPTICK_EVENT("CWallmarksEngine::AddStaticWallmark");
@@ -330,8 +330,8 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, 
 	lock.Leave();
 }
 
-void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start,
-										   const Fvector& dir, float size)
+void CWallmarksEngine::AddSkeletonWallmark(const float4x4* xf, CKinematics* obj, ref_shader& sh, const float3& start,
+										   const float3& dir, float size)
 {
 	////OPTICK_EVENT("CWallmarksEngine::AddSkeletonWallmark");
 
@@ -411,8 +411,8 @@ void CWallmarksEngine::Render()
 	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_transform_project(Engine.RenderView.Project);
 
-	Fmatrix mSavedView = Engine.RenderView.View;
-	Fvector mViewPos;
+	float4x4 mSavedView = Engine.RenderView.View;
+	float3 mViewPos;
 	mViewPos.mad(Engine.RenderView.Position, Engine.RenderView.Direction, ps_r_WallmarkSHIFT_V);
 	Engine.RenderView.View.build_camera_dir(mViewPos, Engine.RenderView.Direction, Engine.RenderView.Top);
 	RenderBackend.set_transform_view(Engine.RenderView.View);

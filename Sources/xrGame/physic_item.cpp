@@ -180,7 +180,7 @@ void CPhysicItem::create_box2sphere_physic_shell()
 	CPhysicsElement* E = P_create_Element();
 	R_ASSERT(E);
 
-	Fvector ax;
+	float3 ax;
 	float radius;
 	CHOOSE_MAX(obb.m_halfsize.x, ax.set(obb.m_rotate.i); ax.mul(obb.m_halfsize.x);
 			   radius = _min(obb.m_halfsize.y, obb.m_halfsize.z); obb.m_halfsize.y /= 2.f;

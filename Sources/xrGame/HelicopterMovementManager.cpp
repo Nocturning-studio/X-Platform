@@ -129,7 +129,7 @@ void SHeliMovementState::UpdatePatrolPath()
 
 			currPatrolVertex = currPatrolPath->vertex((*b).vertex_id());
 
-			Fvector p = currPatrolVertex->data().position();
+			float3 p = currPatrolVertex->data().position();
 			desiredPoint = p;
 		}
 		else
@@ -160,8 +160,8 @@ bool SHeliMovementState::AlreadyOnPoint()
 
 	if (dist < onPointRangeDist)
 	{
-		Fvector P1 = currP;
-		Fvector dir;
+		float3 P1 = currP;
+		float3 dir;
 		dir.setHP(currPathH, 0.0f);
 		P1.mad(dir, curLinearSpeed * STEP);
 		float new_dist = desiredPoint.distance_to(P1);
@@ -173,14 +173,14 @@ bool SHeliMovementState::AlreadyOnPoint()
 	return res;
 }
 
-void SHeliMovementState::getPathAltitude(Fvector& point, float base_altitude)
+void SHeliMovementState::getPathAltitude(float3& point, float base_altitude)
 {
 	Fbox boundingVolume = Level().ObjectSpace.GetBoundingVolume();
-	Fvector boundSize;
+	float3 boundSize;
 	boundingVolume.getsize(boundSize);
 
 	collide::rq_result cR;
-	Fvector down_dir;
+	float3 down_dir;
 	down_dir.set(0.0f, -1.0f, 0.0f);
 
 	point.y = boundingVolume.max.y + EPS_L;
@@ -202,7 +202,7 @@ void SHeliMovementState::getPathAltitude(Fvector& point, float base_altitude)
 	clamp(point.y, minY, maxY);
 	VERIFY(_valid(point));
 }
-void SHeliMovementState::SetDestPosition(Fvector* pos)
+void SHeliMovementState::SetDestPosition(float3* pos)
 {
 	desiredPoint = *pos;
 	type = eMovToPoint;
@@ -319,7 +319,7 @@ float SHeliMovementState::GetSafeAltitude()
 	return boundingVolume.max.y + safe_altitude_add;
 }
 
-void SHeliMovementState::CreateRoundPoints(Fvector center, float radius, float start_h, float end_h,
+void SHeliMovementState::CreateRoundPoints(float3 center, float radius, float start_h, float end_h,
 										   xr_vector<STmpPt>& round_points)
 {
 	float height = center.y;
@@ -332,7 +332,7 @@ void SHeliMovementState::CreateRoundPoints(Fvector center, float radius, float s
 	dir_h = start_h;
 	while (dir_h + td < end_h)
 	{
-		Fvector dir, new_pt;
+		float3 dir, new_pt;
 		dir.setHP(dir_h, 0.0f);
 		new_pt.mad(center, dir, radius);
 		new_pt.y = height;
@@ -341,7 +341,7 @@ void SHeliMovementState::CreateRoundPoints(Fvector center, float radius, float s
 	}
 }
 
-void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool clockwise_)
+void SHeliMovementState::goByRoundPath(float3 center_, float radius_, bool clockwise_)
 {
 	if (type == eMovRoundPath)
 		clockwise_ = !clockwise_;
@@ -440,9 +440,9 @@ void SHeliMovementState::SetSpeedInDestPoint(float val)
 	speedInDestPoint = val;
 }
 
-Fvector CHelicopter::GetCurrVelocityVec()
+float3 CHelicopter::GetCurrVelocityVec()
 {
-	Fvector dir;
+	float3 dir;
 	dir.setHP(m_movement.currPathH, m_movement.currPathP);
 	//	dir.sub				(m_movement.desiredPoint,m_movement.currP);
 	dir.normalize_safe();
@@ -460,21 +460,21 @@ void CHelicopter::OnRender()
 		CPatrolPath::const_vertex_iterator b = m_movement.currPatrolPath->vertices().begin();
 		CPatrolPath::const_vertex_iterator e = m_movement.currPatrolPath->vertices().end();
 		for ( ; b != e; ++b) {
-			Fvector p = (*b).second->data().position();
+			float3 p = (*b).second->data().position();
 			Level().debug_renderer().draw_aabb  (p,0.1f,0.1f,0.1f,D3DCOLOR_XRGB(0,255,0));
 		}
 	*/
 	/*
-		Fvector pos			= Level().CurrentEntity()->Position();
+		float3 pos			= Level().CurrentEntity()->Position();
 		static float	radius		= 50.0f;//meters
 		float	round_len	= 2*PI*radius;
 		static float	dist		= 10.0f;//dist between points
 		float	td			= 2*PI*dist/round_len;
 		float	dir_h		= 0.0f;
-		xr_vector<Fvector>	round_points;
+		xr_vector<float3>	round_points;
 
 		while(dir_h+td<2*PI){
-			Fvector dir, new_pt;
+			float3 dir, new_pt;
 			dir.setHP(dir_h,0.0f);
 			new_pt.mad(pos,dir,radius);
 			new_pt.y += 1.0f;
@@ -482,8 +482,8 @@ void CHelicopter::OnRender()
 			dir_h	+= td;
 		}
 
-		xr_vector<Fvector>::iterator it = round_points.begin();
-		xr_vector<Fvector>::iterator it_e = round_points.end();
+		xr_vector<float3>::iterator it = round_points.begin();
+		xr_vector<float3>::iterator it_e = round_points.end();
 		for(;it!=it_e;++it){
 			Level().debug_renderer().draw_aabb  ((*it),0.1f,0.1f,0.1f,D3DCOLOR_XRGB(0,255,0));
 		}

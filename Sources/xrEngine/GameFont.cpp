@@ -14,7 +14,7 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
 #endif
 
 extern ENGINE_API BOOL g_bRendering;
-ENGINE_API Fvector2 g_current_font_scale = {1.0f, 1.0f};
+ENGINE_API float2 g_current_font_scale = {1.0f, 1.0f};
 
 CGameFont::CGameFont(LPCSTR section, u32 flags)
 {
@@ -77,12 +77,12 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 	CInifile* ini = CInifile::Create(fn);
 
 	nNumChars = 0x100;
-	TCMap = (Fvector*)xr_realloc((void*)TCMap, nNumChars * sizeof(Fvector));
+	TCMap = (float3*)xr_realloc((void*)TCMap, nNumChars * sizeof(float3));
 
 	if (ini->section_exist("mb_symbol_coords"))
 	{
 		nNumChars = 0x10000;
-		TCMap = (Fvector*)xr_realloc((void*)TCMap, nNumChars * sizeof(Fvector));
+		TCMap = (float3*)xr_realloc((void*)TCMap, nNumChars * sizeof(float3));
 		uFlags |= fsMultibyte;
 		fHeight = ini->r_float("mb_symbol_coords", "height");
 
@@ -93,7 +93,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 			sprintf_s(buf, sizeof(buf), "%05d", i);
 			if (ini->line_exist("mb_symbol_coords", buf))
 			{
-				Fvector v = ini->r_fvector3("mb_symbol_coords", buf);
+				float3 v = ini->r_fvector3("mb_symbol_coords", buf);
 				TCMap[i].set(v.x, v.y, 1 + v[2] - v[0]);
 			}
 			else
@@ -106,7 +106,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 		for (u32 i = 0; i < nNumChars; i++)
 		{
 			sprintf_s(buf, sizeof(buf), "%03d", i);
-			Fvector v = ini->r_fvector3("symbol_coords", buf);
+			float3 v = ini->r_fvector3("symbol_coords", buf);
 			TCMap[i].set(v.x, v.y, v[2] - v[0]);
 		}
 	}
@@ -271,7 +271,7 @@ void CGameFont::OnRender()
 				float tu, tv;
 				for (int j = 0; j < len; j++)
 				{
-					Fvector l;
+					float3 l;
 
 					l = IsMultibyte() ? GetCharTC(wsStr[1 + j]) : GetCharTC((u16)(u8)PS.string[j]);
 

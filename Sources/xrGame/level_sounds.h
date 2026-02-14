@@ -6,12 +6,12 @@
 struct SStaticSound
 {
 	ref_sound m_Source;
-	Ivector2 m_ActiveTime;
-	Ivector2 m_PlayTime;
-	Ivector2 m_PauseTime;
+	int2 m_ActiveTime;
+	int2 m_PlayTime;
+	int2 m_PauseTime;
 	u32 m_NextTime;
 	u32 m_StopTime;
-	Fvector m_Position;
+	float3 m_Position;
 	float m_Volume;
 	float m_Freq;
 
@@ -27,8 +27,8 @@ struct SMusicTrack
 	shared_str m_DbgName;
 #endif
 	ref_sound m_SourceStereo;
-	Ivector2 m_ActiveTime;
-	Ivector2 m_PauseTime;
+	int2 m_ActiveTime;
+	int2 m_PauseTime;
 	float m_Volume;
 
   public:

@@ -19,7 +19,7 @@ const u32 clCOARSE = (1 << 7);			// coarse test (triangles vs obb)
 
 struct clQueryTri
 {
-	Fvector p[3];
+	float3 p[3];
 	const CDB::TRI* T;
 };
 
@@ -28,7 +28,7 @@ struct clQueryCollision
 	xr_vector<CObject*> objects; // affected objects
 	xr_vector<clQueryTri> tris;	 // triangles		(if queried)
 	xr_vector<Fobb> boxes;		 // boxes/ellipsoids	(if queried)
-	xr_vector<Fvector4> spheres; // spheres			(if queried)
+	xr_vector<float4> spheres; // spheres			(if queried)
 
 	IC void Clear()
 	{
@@ -37,7 +37,7 @@ struct clQueryCollision
 		boxes.clear();
 		spheres.clear();
 	}
-	IC void AddTri(const Fmatrix& m, const CDB::TRI* one, const Fvector* verts)
+	IC void AddTri(const float4x4& m, const CDB::TRI* one, const float3* verts)
 	{
 		clQueryTri T;
 		m.transform_tiny(T.p[0], verts[one->verts[0]]);
@@ -46,7 +46,7 @@ struct clQueryCollision
 		T.T = one;
 		tris.push_back(T);
 	}
-	IC void AddTri(const CDB::TRI* one, const Fvector* verts)
+	IC void AddTri(const CDB::TRI* one, const float3* verts)
 	{
 		clQueryTri T;
 		T.p[0] = verts[one->verts[0]];
@@ -55,14 +55,14 @@ struct clQueryCollision
 		T.T = one;
 		tris.push_back(T);
 	}
-	IC void AddBox(const Fmatrix& M, const Fbox& B)
+	IC void AddBox(const float4x4& M, const Fbox& B)
 	{
 		Fobb box;
-		Fvector c;
+		float3 c;
 		B.getcenter(c);
 		B.getradius(box.m_halfsize);
 
-		Fmatrix T, R;
+		float4x4 T, R;
 		T.translate(c);
 		R.mul_43(M, T);
 
@@ -100,7 +100,7 @@ class ENGINE_API ICollisionForm
 	virtual ~ICollisionForm();
 
 	virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) = 0;
-	// virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags)	= 0;
+	// virtual void	_BoxQuery		( const Fbox& B, const float4x4& M, u32 flags)	= 0;
 
 	IC CObject* Owner() const
 	{
@@ -132,8 +132,8 @@ class ENGINE_API CCF_Skeleton : public ICollisionForm
 		union {
 			struct
 			{
-				Fmatrix b_IM; // world 2 bone transform
-				Fvector b_hsize;
+				float4x4 b_IM; // world 2 bone transform
+				float3 b_hsize;
 			};
 			struct
 			{
@@ -158,7 +158,7 @@ class ENGINE_API CCF_Skeleton : public ICollisionForm
 		{
 			return (elem_id != (u16(-1))) && (type != 0);
 		}
-		void center(Fvector& center) const;
+		void center(float3& center) const;
 	};
 	DEFINE_VECTOR(SElement, ElementVec, ElementVecIt);
 
@@ -176,7 +176,7 @@ class ENGINE_API CCF_Skeleton : public ICollisionForm
 	CCF_Skeleton(CObject* _owner);
 
 	virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
-	bool _ElementCenter(u16 elem_id, Fvector& e_center);
+	bool _ElementCenter(u16 elem_id, float3& e_center);
 	const ElementVec& _GetElements()
 	{
 		return elements;
@@ -199,7 +199,7 @@ class ENGINE_API CCF_EventBox : public ICollisionForm
 	CCF_EventBox(CObject* _owner);
 
 	virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
-	// virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
+	// virtual void	_BoxQuery		( const Fbox& B, const float4x4& M, u32 flags);
 
 	BOOL Contact(CObject* O);
 };
@@ -211,8 +211,8 @@ class ENGINE_API CCF_Shape : public ICollisionForm
 		Fsphere sphere;
 		struct
 		{
-			Fmatrix box;
-			Fmatrix ibox;
+			float4x4 box;
+			float4x4 ibox;
 		};
 	};
 	struct shape_def
@@ -226,10 +226,10 @@ class ENGINE_API CCF_Shape : public ICollisionForm
 	CCF_Shape(CObject* _owner);
 
 	virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
-	// virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
+	// virtual void	_BoxQuery		( const Fbox& B, const float4x4& M, u32 flags);
 
 	void add_sphere(Fsphere& S);
-	void add_box(Fmatrix& B);
+	void add_box(float4x4& B);
 	void ComputeBounds();
 	BOOL Contact(CObject* O);
 	xr_vector<shape_def>& Shapes()

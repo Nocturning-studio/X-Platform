@@ -23,7 +23,7 @@ void CWeaponMounted::BoneCallbackX(CBoneInstance* B)
 
 	if (P->Owner())
 	{
-		Fmatrix rX;
+		float4x4 rX;
 		rX.rotateX(P->camera->pitch + P->m_dAngle.y);
 		B->mTransform.mulB_43(rX);
 	}
@@ -35,7 +35,7 @@ void CWeaponMounted::BoneCallbackY(CBoneInstance* B)
 
 	if (P->Owner())
 	{
-		Fmatrix rY;
+		float4x4 rY;
 		rY.rotateY(P->camera->yaw + P->m_dAngle.x);
 		B->mTransform.mulB_43(rY);
 	}
@@ -225,13 +225,13 @@ void CWeaponMounted::OnKeyboardHold(int dik)
 
 void CWeaponMounted::cam_Update(float dt, float fov)
 {
-	Fvector P, Da;
+	float3 P, Da;
 	Da.set(0, 0, 0);
 
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
-	const Fmatrix& C = K->LL_GetTransform(camera_bone);
+	const float4x4& C = K->LL_GetTransform(camera_bone);
 	Transform().transform_tiny(P, C.c);
 
 	if (OwnerActor())
@@ -244,7 +244,7 @@ void CWeaponMounted::cam_Update(float dt, float fov)
 	Level().Cameras().UpdateFromCamera(Camera());
 }
 
-bool CWeaponMounted::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
+bool CWeaponMounted::Use(const float3& pos, const float3& dir, const float3& foot_pos)
 {
 	return !Owner();
 }
@@ -262,10 +262,10 @@ bool CWeaponMounted::attach_Actor(CGameObject* actor)
 	CBoneInstance& biY = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(rotate_y_bone);
 	biY.set_callback(bctCustom, BoneCallbackY, this);
 	// set actor to mounted position
-	const Fmatrix& A = K->LL_GetTransform(actor_bone);
-	Fvector ap;
+	const float4x4& A = K->LL_GetTransform(actor_bone);
+	float3 ap;
 	Transform().transform_tiny(ap, A.c);
-	Fmatrix AP;
+	float4x4 AP;
 	AP.translate(ap);
 	if (OwnerActor())
 		OwnerActor()->SetPhPosition(AP);
@@ -289,7 +289,7 @@ void CWeaponMounted::detach_Actor()
 	processing_deactivate();
 }
 
-Fvector CWeaponMounted::ExitPosition()
+float3 CWeaponMounted::ExitPosition()
 {
 	return Transform().c;
 }
@@ -363,7 +363,7 @@ void CWeaponMounted::UpdateFire()
 	}
 }
 
-const Fmatrix& CWeaponMounted::get_ParticlesTransform()
+const float4x4& CWeaponMounted::get_ParticlesTransform()
 {
 	return fire_bone_transform;
 }

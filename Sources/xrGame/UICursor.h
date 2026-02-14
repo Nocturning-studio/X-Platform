@@ -8,8 +8,8 @@ class CUIStatic;
 class CUICursor : public pureRender
 {
 	bool bVisible;
-	Fvector2 vPos;
-	Fvector2 vPrevPos;
+	float2 vPos;
+	float2 vPrevPos;
 
 	CUIStatic* m_static;
 	void InitInternal();
@@ -19,10 +19,10 @@ class CUICursor : public pureRender
 	virtual ~CUICursor();
 	virtual void OnRender();
 
-	Fvector2 GetCursorPositionDelta();
+	float2 GetCursorPositionDelta();
 
-	Fvector2 GetCursorPosition();
-	void SetUICursorPosition(Fvector2 pos);
+	float2 GetCursorPosition();
+	void SetUICursorPosition(float2 pos);
 	void UpdateCursorPosition();
 
 	bool IsVisible()

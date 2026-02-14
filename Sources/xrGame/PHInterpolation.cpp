@@ -18,7 +18,7 @@ void CPHInterpolation::SetBody(dBodyID body)
 	if (!body)
 		return;
 	m_body = body;
-	qPositions.fill_in(*((Fvector*)dBodyGetPosition(m_body)));
+	qPositions.fill_in(*((float3*)dBodyGetPosition(m_body)));
 	const dReal* dQ = dBodyGetQuaternion(m_body);
 	Fquaternion fQ;
 	fQ.set(-dQ[0], dQ[1], dQ[2], dQ[3]);
@@ -29,7 +29,7 @@ void CPHInterpolation::UpdatePositions()
 {
 	VERIFY(m_body);
 	/// VERIFY2(dV_valid(dBodyGetPosition(m_body)),"invalid body position in update interpolation");
-	qPositions.push_back(*((Fvector*)dBodyGetPosition(m_body)));
+	qPositions.push_back(*((float3*)dBodyGetPosition(m_body)));
 }
 
 void CPHInterpolation::UpdateRotations()
@@ -42,7 +42,7 @@ void CPHInterpolation::UpdateRotations()
 	qRotations.push_back(fQ);
 }
 
-void CPHInterpolation::InterpolatePosition(Fvector& pos)
+void CPHInterpolation::InterpolatePosition(float3& pos)
 {
 	// if(!b_udating_positions)
 	pos.lerp(qPositions[0], qPositions[1], ph_world->m_frame_time / fixed_step);
@@ -50,7 +50,7 @@ void CPHInterpolation::InterpolatePosition(Fvector& pos)
 	// pos.lerp(*bkp_pos,bk_pos,ph_world->FrameTime(b_frame_mark)/fixed_step);
 }
 
-void CPHInterpolation::InterpolateRotation(Fmatrix& rot)
+void CPHInterpolation::InterpolateRotation(float4x4& rot)
 {
 	Fquaternion q;
 	float t = ph_world->m_frame_time / fixed_step;
@@ -65,7 +65,7 @@ void CPHInterpolation::InterpolateRotation(Fmatrix& rot)
 void CPHInterpolation::ResetPositions()
 {
 	VERIFY2(dBodyStateValide(m_body), "Invalid body state");
-	qPositions.fill_in(*((Fvector*)dBodyGetPosition(m_body)));
+	qPositions.fill_in(*((float3*)dBodyGetPosition(m_body)));
 }
 
 void CPHInterpolation::ResetRotations()
@@ -84,13 +84,13 @@ void CPHInterpolation::GetRotation(Fquaternion& q, u16 num)
 	q.set(qRotations[num]);
 }
 
-void CPHInterpolation::GetPosition(Fvector& p, u16 num)
+void CPHInterpolation::GetPosition(float3& p, u16 num)
 {
 	if (!m_body)
 		return;
 	p.set(qPositions[num]);
 }
-void CPHInterpolation::SetPosition(const Fvector& p, u16 num)
+void CPHInterpolation::SetPosition(const float3& p, u16 num)
 {
 	if (!m_body)
 		return;

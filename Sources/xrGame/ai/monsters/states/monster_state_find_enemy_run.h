@@ -6,7 +6,7 @@ template <typename _Object> class CStateMonsterFindEnemyRun : public CState<_Obj
 {
 	typedef CState<_Object> inherited;
 
-	Fvector target_point;
+	float3 target_point;
 	u32 target_vertex;
 
   public:

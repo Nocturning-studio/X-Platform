@@ -75,7 +75,7 @@ class ENGINE_API CEnvironment
 
 	// wind blast params
 	float wind_blast_strength;
-	Fvector wind_blast_direction;
+	float3 wind_blast_direction;
 	Fquaternion wind_blast_start_time;
 	Fquaternion wind_blast_stop_time;
 	float wind_blast_strength_start_value;

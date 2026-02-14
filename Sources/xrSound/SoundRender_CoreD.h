@@ -17,10 +17,10 @@ class CSoundRender_CoreD: public CSoundRender_Core
 	struct SListener 
 	{
 		u32				dwSize;
-		Fvector			vPosition;
-		Fvector			vVelocity;
-		Fvector			vOrientFront; 
-		Fvector			vOrientTop; 
+		float3			vPosition;
+		float3			vVelocity;
+		float3			vOrientFront; 
+		float3			vOrientTop; 
 		float			fDistanceFactor;
 		float			fRolloffFactor;
 		float			fDopplerFactor;
@@ -36,7 +36,7 @@ public:
 	DSCAPS						dsCaps;
 	SListener					Listener;
 private:
-	virtual void			update_listener			(const Fvector& P, const Fvector& D, const Fvector& N, float dt);
+	virtual void			update_listener			(const float3& P, const float3& D, const float3& N, float dt);
 	virtual void			i_eax_set				(const GUID* guid, u32 prop, void* val, u32 sz);
 	virtual void			i_eax_get				(const GUID* guid, u32 prop, void* val, u32 sz);
 public:
@@ -48,7 +48,7 @@ public:
 
 	virtual void			set_master_volume		( float f		);
     
-	virtual const Fvector&	listener_position		( )				{ return Listener.vPosition; }
+	virtual const float3&	listener_position		( )				{ return Listener.vPosition; }
 };
 extern CSoundRender_CoreD* SoundRenderD;
 #endif

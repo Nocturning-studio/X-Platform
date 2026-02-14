@@ -663,12 +663,9 @@ template <class T> struct _vector3
 		}
 	}
 };
-typedef _vector3<float> Fvector;
-typedef _vector3<float> Fvector3;
-typedef _vector3<double> Dvector;
-typedef _vector3<double> Dvector3;
-typedef _vector3<s32> Ivector;
-typedef _vector3<s32> Ivector3;
+typedef _vector3<float> float3;
+typedef _vector3<double> double3;
+typedef _vector3<s32> int3;
 
 template <class T> BOOL _valid(const _vector3<T>& v)
 {
@@ -749,7 +746,7 @@ IC BOOL exact_normalize(float* a)
 	}
 	return TRUE;
 }
-IC BOOL exact_normalize(Fvector3& a)
+IC BOOL exact_normalize(float3& a)
 {
 	return exact_normalize(&a.x);
 }

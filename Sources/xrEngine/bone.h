@@ -28,7 +28,7 @@ enum EJointType
 
 struct ECORE_API SJointLimit
 {
-	Fvector2 limit;
+	float2 limit;
 	float spring_factor;
 	float damping_factor;
 	SJointLimit()
@@ -128,7 +128,7 @@ struct ECORE_API SJointIKData
 		break_force = 0.f;
 		break_torque = 0.f;
 	}
-	void clamp_by_limits(Fvector& dest_xyz);
+	void clamp_by_limits(float3& dest_xyz);
 	void Export(IWriter& F)
 	{
 		F.w_u32(type);
@@ -178,22 +178,22 @@ class ECORE_API CBone
 	shared_str name;
 	shared_str parent_name;
 	shared_str wmap;
-	Fvector rest_offset;
-	Fvector rest_rotate; // XYZ format (Game format)
+	float3 rest_offset;
+	float3 rest_rotate; // XYZ format (Game format)
 	float rest_length;
 
-	Fvector mot_offset;
-	Fvector mot_rotate; // XYZ format (Game format)
+	float3 mot_offset;
+	float3 mot_rotate; // XYZ format (Game format)
 	float mot_length;
 
-	Fmatrix mot_transform;
+	float4x4 mot_transform;
 
-	Fmatrix rest_transform;
-	Fmatrix rest_i_transform;
+	float4x4 rest_transform;
+	float4x4 rest_i_transform;
 
-	Fmatrix last_transform;
+	float4x4 last_transform;
 
-	Fmatrix render_transform;
+	float4x4 render_transform;
 
   public:
 	int SelfID;
@@ -212,7 +212,7 @@ class ECORE_API CBone
 	SBoneShape shape;
 
 	float mass;
-	Fvector center_of_mass;
+	float3 center_of_mass;
 
   public:
 	CBone();
@@ -232,7 +232,7 @@ class ECORE_API CBone
 	{
 		wmap = p;
 	}
-	void SetRestParams(float length, const Fvector& offset, const Fvector& rotate)
+	void SetRestParams(float length, const float3& offset, const float3& rotate)
 	{
 		rest_offset.set(offset);
 		rest_rotate.set(rotate);
@@ -261,11 +261,11 @@ class ECORE_API CBone
 	}
 
 	// transformation
-	const Fvector& _Offset()
+	const float3& _Offset()
 	{
 		return mot_offset;
 	}
-	const Fvector& _Rotate()
+	const float3& _Rotate()
 	{
 		return mot_rotate;
 	}
@@ -273,36 +273,36 @@ class ECORE_API CBone
 	{
 		return mot_length;
 	}
-	IC Fmatrix& _RTransform()
+	IC float4x4& _RTransform()
 	{
 		return rest_transform;
 	}
-	IC Fmatrix& _RITransform()
+	IC float4x4& _RITransform()
 	{
 		return rest_i_transform;
 	}
-	IC Fmatrix& _MTransform()
+	IC float4x4& _MTransform()
 	{
 		return mot_transform;
 	}
-	IC Fmatrix& _LTransform()
+	IC float4x4& _LTransform()
 	{
 		return last_transform;
 	}
-	IC Fmatrix& _RenderTransform()
+	IC float4x4& _RenderTransform()
 	{
 		return render_transform;
 	}
-	IC Fvector& _RestOffset()
+	IC float3& _RestOffset()
 	{
 		return rest_offset;
 	}
-	IC Fvector& _RestRotate()
+	IC float3& _RestRotate()
 	{
 		return rest_rotate;
 	}
 
-	void _Update(const Fvector& T, const Fvector& R)
+	void _Update(const float3& T, const float3& R)
 	{
 		mot_offset.set(T);
 		mot_rotate.set(R);
@@ -330,15 +330,15 @@ class ECORE_API CBone
 	void CopyData(CBone* bone);
 
 #ifdef _EDITOR
-	void ShapeScale(const Fvector& amount);
-	void ShapeRotate(const Fvector& amount);
-	void ShapeMove(const Fvector& amount);
-	void BindRotate(const Fvector& amount);
-	void BindMove(const Fvector& amount);
-	void BoneMove(const Fvector& amount);
-	void BoneRotate(const Fvector& axis, float angle);
+	void ShapeScale(const float3& amount);
+	void ShapeRotate(const float3& amount);
+	void ShapeMove(const float3& amount);
+	void BindRotate(const float3& amount);
+	void BindMove(const float3& amount);
+	void BoneMove(const float3& amount);
+	void BoneRotate(const float3& axis, float angle);
 
-	bool Pick(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& parent);
+	bool Pick(float& dist, const float3& S, const float3& D, const float4x4& parent);
 
 	void Select(BOOL flag)
 	{

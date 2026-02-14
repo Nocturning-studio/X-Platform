@@ -153,7 +153,7 @@ void	CSoundRender_TargetD::fill_parameters()
 
 	// 1. Set 3D params (including mode)
 	{
-		Fvector&			p_pos	= pEmitter->p_source.position;
+		float3&			p_pos	= pEmitter->p_source.position;
 
 		R_CHK(pControl->SetMode			(pEmitter->b2D ? DS3DMODE_HEADRELATIVE : DS3DMODE_NORMAL,DS3D_DEFERRED));
 		R_CHK(pControl->SetMinDistance	(pEmitter->p_source.min_distance,	DS3D_DEFERRED));

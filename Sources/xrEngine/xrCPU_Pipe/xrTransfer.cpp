@@ -3,7 +3,7 @@
 #define GeomBytes 24 // pos+norm
 
 void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride, LPWORD iDest, LPWORD iSrc, u32 iCount,
-							  u32 iOffset, Fmatrix* transform)
+							  u32 iOffset, float4x4* transform)
 {
 	// Transfer vertices
 	if (transform)
@@ -18,10 +18,10 @@ void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride
 		case 8: // 32 byte vertex	(pos(12)+norm(12)+uv1(8))
 			for (; sit != send; sit += vStride, dit += vStride)
 			{
-				Fvector* sP = (Fvector*)sit;
-				Fvector* dP = (Fvector*)dit;
-				Fvector* sN = (Fvector*)(sit + 3 * 4);
-				Fvector* dN = (Fvector*)(dit + 3 * 4);
+				float3* sP = (float3*)sit;
+				float3* dP = (float3*)dit;
+				float3* sN = (float3*)(sit + 3 * 4);
+				float3* dN = (float3*)(dit + 3 * 4);
 				transform->transform_tiny(*dP, *sP);
 				transform->transform_dir(*dN, *sN);
 				CopyMemory(dit + GeomBytes, sit + GeomBytes, 8);
@@ -30,10 +30,10 @@ void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride
 		case 16: // 40 byte vertex	(pos(12)+norm(12)+uv1(8)+uv2(8))
 			for (; sit != send; sit += vStride, dit += vStride)
 			{
-				Fvector* sP = (Fvector*)sit;
-				Fvector* dP = (Fvector*)dit;
-				Fvector* sN = (Fvector*)(sit + 3 * 4);
-				Fvector* dN = (Fvector*)(dit + 3 * 4);
+				float3* sP = (float3*)sit;
+				float3* dP = (float3*)dit;
+				float3* sN = (float3*)(sit + 3 * 4);
+				float3* dN = (float3*)(dit + 3 * 4);
 				transform->transform_tiny(*dP, *sP);
 				transform->transform_dir(*dN, *sN);
 				CopyMemory(dit + GeomBytes, sit + GeomBytes, 16);
@@ -42,10 +42,10 @@ void __stdcall xrTransfer_x86(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStride
 		default: // any size
 			for (; sit != send; sit += vStride, dit += vStride)
 			{
-				Fvector* sP = (Fvector*)sit;
-				Fvector* dP = (Fvector*)dit;
-				Fvector* sN = (Fvector*)(sit + 3 * 4);
-				Fvector* dN = (Fvector*)(dit + 3 * 4);
+				float3* sP = (float3*)sit;
+				float3* dP = (float3*)dit;
+				float3* sN = (float3*)(sit + 3 * 4);
+				float3* dN = (float3*)(dit + 3 * 4);
 				transform->transform_tiny(*dP, *sP);
 				transform->transform_dir(*dN, *sN);
 				CopyMemory(dit + GeomBytes, sit + GeomBytes, remain);

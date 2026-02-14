@@ -28,7 +28,7 @@ SBullet::~SBullet()
 {
 }
 
-void SBullet::Init(const Fvector& position, const Fvector& direction, float starting_speed, float power, float impulse,
+void SBullet::Init(const float3& position, const float3& direction, float starting_speed, float power, float impulse,
 				   u16 sender_id, u16 sendersweapon_id, ALife::EHitType e_hit_type, float maximum_distance,
 				   const CCartridge& cartridge, bool SendHit)
 {
@@ -120,7 +120,7 @@ void CBulletManager::Load()
 		m_ExplodeParticles.push_back(_GetItem(explode_particles, k, tmp));
 }
 
-void CBulletManager::PlayExplodePS(const Fmatrix& xf)
+void CBulletManager::PlayExplodePS(const float4x4& xf)
 {
 	if (!m_ExplodeParticles.empty())
 	{
@@ -132,7 +132,7 @@ void CBulletManager::PlayExplodePS(const Fmatrix& xf)
 	}
 }
 
-void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvector& pos)
+void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const float3& pos)
 {
 	if (m_WhineSounds.empty())
 		return;
@@ -151,7 +151,7 @@ void CBulletManager::Clear()
 	m_Events.clear();
 }
 
-void CBulletManager::AddBullet(const Fvector& position, const Fvector& direction, float starting_speed, float power,
+void CBulletManager::AddBullet(const float3& position, const float3& direction, float starting_speed, float power,
 							   float impulse, u16 sender_id, u16 sendersweapon_id, ALife::EHitType e_hit_type,
 							   float maximum_distance, const CCartridge& cartridge, bool SendHit, bool AimBullet)
 {
@@ -204,7 +204,7 @@ void CBulletManager::UpdateWorkload()
 			if (!CalcBullet(rq_storage, rq_spatial, &bullet, m_dwStepTime))
 			{
 				collide::rq_result res;
-				RegisterEvent(EVENT_REMOVE, FALSE, &bullet, Fvector().set(0, 0, 0), res, (u16)k);
+				RegisterEvent(EVENT_REMOVE, FALSE, &bullet, float3().set(0, 0, 0), res, (u16)k);
 				//				if (bullet.flags.allow_sendhit && GameID() != GAME_SINGLE)
 				//					Game().m_WeaponUsageStatistic->OnBullet_Remove(&bullet);
 				//				m_Bullets[k] = m_Bullets.back();
@@ -231,7 +231,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 	// запомнить текущую скорость пули, т.к. в
 	// RayQuery() она может поменяться из-за рикошетов
 	// и столкновений с объектами
-	Fvector cur_dir = bullet->dir;
+	float3 cur_dir = bullet->dir;
 	bullet_test_callback_data bullet_data;
 	bullet_data.pBullet = bullet;
 	bullet_data.bStopTracing = true;
@@ -274,7 +274,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 		// с учетом гравитации
 		bullet->dir.mul(bullet->speed);
 
-		Fvector air_resistance = bullet->dir;
+		float3 air_resistance = bullet->dir;
 		if (GameID() == GAME_SINGLE)
 			air_resistance.mul(-m_fAirResistanceK * delta_time_sec);
 		else
@@ -306,9 +306,9 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 BOOL g_bDrawBulletHit = FALSE;
 #endif
 
-float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fvector& dir)
+float SqrDistancePointToSegment(const float3& pt, const float3& orig, const float3& dir)
 {
-	Fvector diff;
+	float3 diff;
 	diff.sub(pt, orig);
 	float fT = diff.dotproduct(dir);
 
@@ -327,7 +327,7 @@ float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fv
 		else
 		{
 			fT /= fSqrLen;
-			diff.sub(Fvector().mul(dir, fT));
+			diff.sub(float3().mul(dir, fT));
 		}
 	}
 
@@ -383,7 +383,7 @@ void CBulletManager::Render()
 
 		float width = m_fTracerWidth;
 		float dist2segSqr =
-			SqrDistancePointToSegment(Engine.RenderView.Position, bullet->pos, Fvector().mul(bullet->dir, length));
+			SqrDistancePointToSegment(Engine.RenderView.Position, bullet->pos, float3().mul(bullet->dir, length));
 		//---------------------------------------------
 		float MaxDistSqr = 1.0f;
 		float MinDistSqr = 0.09f;
@@ -400,11 +400,11 @@ void CBulletManager::Render()
 		}
 		/*
 		//---------------------------------------------
-		Fvector vT, v0, v1;
+		float3 vT, v0, v1;
 		vT.mad(Engine.RenderView.Position, Engine.RenderView.Direction, _sqrt(dist2segSqr));
 		v0.mad(vT, Engine.RenderView.Top, width*.5f);
 		v1.mad(vT, Engine.RenderView.Top, -width*.5f);
-		Fvector v0r, v1r;
+		float3 v0r, v1r;
 		Engine.RenderView.ViewProjection.transform(v0r, v0);
 		Engine.RenderView.ViewProjection.transform(v1r, v1);
 		float ViewWidth = v1r.distance_to(v0r);
@@ -414,7 +414,7 @@ void CBulletManager::Render()
 		//		Msg("dist - [%f]", dist);
 		//---------------------------------------------
 
-		Fvector center;
+		float3 center;
 		center.mad(bullet->pos, bullet->dir, -length * .5f);
 		tracers.Render(verts, bullet->pos, center, bullet->dir, length, width, bullet->m_u8ColorID);
 	}
@@ -464,7 +464,7 @@ void CBulletManager::CommitEvents() // @ the start of frame
 	m_Events.clear_and_reserve();
 }
 
-void CBulletManager::RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point,
+void CBulletManager::RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bullet, const float3& end_point,
 								   collide::rq_result& R, u16 tgt_material)
 {
 	m_Events.push_back(_event());

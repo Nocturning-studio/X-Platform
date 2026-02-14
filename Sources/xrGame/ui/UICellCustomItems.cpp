@@ -208,15 +208,15 @@ void CUIWeaponCellItem::OnAfterChild()
 		InitAddon(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(), m_addon_offset[eLauncher]);
 }
 
-void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_offset)
+void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, float2 addon_offset)
 {
 
 	Frect tex_rect;
-	Fvector2 base_scale;
+	float2 base_scale;
 	base_scale.x = GetWidth() / (INV_GRID_WIDTHF * m_grid_size.x);
 	base_scale.y = GetHeight() / (INV_GRID_HEIGHTF * m_grid_size.y);
 
-	Fvector2 cell_size;
+	float2 cell_size;
 	cell_size.x = pSettings->r_u32(section, "inv_grid_width") * INV_GRID_WIDTHF;
 	cell_size.y = pSettings->r_u32(section, "inv_grid_height") * INV_GRID_HEIGHTF;
 
@@ -295,7 +295,7 @@ CBuyItemCustomDrawCell::CBuyItemCustomDrawCell(LPCSTR str, CGameFont* pFont)
 
 void CBuyItemCustomDrawCell::OnDraw(CUICellItem* cell)
 {
-	Fvector2 pos;
+	float2 pos;
 	cell->GetAbsolutePos(pos);
 	UI()->ClientToScreenScaled(pos, pos.x, pos.y);
 	m_pFont->Out(pos.x, pos.y, m_string);

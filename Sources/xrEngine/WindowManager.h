@@ -18,7 +18,7 @@ class ENGINE_API CWindowManager
 	{
 		return m_hWnd;
 	}
-	Fvector2 GetResolution() const
+	float2 GetResolution() const
 	{
 		return {(float)m_width, (float)m_height};
 	}
@@ -27,7 +27,7 @@ class ENGINE_API CWindowManager
 		m_width = w;
 		m_height = h;
 	}
-	void SetResolution(Ivector2 Resolution)
+	void SetResolution(int2 Resolution)
 	{
 		m_width = Resolution.x;
 		m_height = Resolution.y;

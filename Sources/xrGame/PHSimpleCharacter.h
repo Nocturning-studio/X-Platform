@@ -26,8 +26,8 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 		SCollisionDamageInfo();
 		void Construct();
 		float ContactVelocity() const;
-		void HitDir(Fvector& dir) const;
-		IC const Fvector& HitPos() const
+		void HitDir(float3& dir) const;
+		IC const float3& HitPos() const
 		{
 			return cast_fv(m_damege_contact.geom.pos);
 		}
@@ -47,7 +47,7 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	/////////////////////////// callback
 	ObjectContactCallbackFun* m_object_contact_callback;
 	////////////////////////// geometry
-	Fvector m_last_move;
+	float3 m_last_move;
 	dGeomID m_geom_shell;
 	dGeomID m_wheel;
 	dGeomID m_hat;
@@ -67,8 +67,8 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	dJointFeedback m_capture_joint_feedback;
 	////////////////////////// movement
 	dVector3 m_control_force;
-	Fvector m_acceleration;
-	Fvector m_cam_dir;
+	float3 m_acceleration;
+	float3 m_cam_dir;
 	dVector3 m_wall_contact_normal;
 	dVector3 m_ground_contact_normal;
 	dVector3 m_clamb_depart_position;
@@ -83,7 +83,7 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 
 	dVector3 m_jump_depart_position;
 	dVector3 m_death_position;
-	Fvector m_jump_accel;
+	float3 m_jump_accel;
 
 	// movement state
 	bool is_contact;
@@ -115,7 +115,7 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	bool b_clamb_jump;
 	bool b_external_impulse;
 	u64 m_ext_impuls_stop_step;
-	Fvector m_ext_imulse;
+	float3 m_ext_imulse;
 	bool b_death_pos;
 	bool b_foot_mtl_check;
 	dReal m_friction_factor;
@@ -156,7 +156,7 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 			return false;
 	}
 	virtual EEnvironment CheckInvironment();
-	virtual void GroundNormal(Fvector& norm);
+	virtual void GroundNormal(float3& norm);
 	virtual const ICollisionDamageInfo* CollisionDamageInfo() const
 	{
 		return this;
@@ -167,11 +167,11 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	{
 		return m_collision_damage_info.ContactVelocity();
 	}
-	virtual void HitDir(Fvector& dir) const
+	virtual void HitDir(float3& dir) const
 	{
 		return m_collision_damage_info.HitDir(dir);
 	}
-	virtual const Fvector& HitPos() const
+	virtual const float3& HitPos() const
 	{
 		return m_collision_damage_info.HitPos();
 	}
@@ -208,21 +208,21 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	void SetStaticContactCallBack(ContactCallbackFun* calback);
 	virtual void SwitchOFFInitContact();
 	virtual void SwitchInInitContact();
-	virtual void SetAcceleration(Fvector accel);
-	virtual Fvector GetAcceleration()
+	virtual void SetAcceleration(float3 accel);
+	virtual float3 GetAcceleration()
 	{
 		return m_acceleration;
 	};
-	virtual void SetCamDir(const Fvector& cam_dir);
-	virtual const Fvector& CamDir() const
+	virtual void SetCamDir(const float3& cam_dir);
+	virtual const float3& CamDir() const
 	{
 		return m_cam_dir;
 	}
 	virtual void SetMaterial(u16 material);
-	virtual void SetPosition(Fvector pos);
-	virtual void GetVelocity(Fvector& vvel);
-	virtual void GetSmothedVelocity(Fvector& vvel);
-	virtual void SetVelocity(Fvector vel);
+	virtual void SetPosition(float3 pos);
+	virtual void GetVelocity(float3& vvel);
+	virtual void GetSmothedVelocity(float3& vvel);
+	virtual void SetVelocity(float3 vel);
 	virtual void SetAirControlFactor(float factor)
 	{
 		m_air_control_factor = factor;
@@ -236,17 +236,17 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	{
 		m_collision_damage_factor = f;
 	}
-	virtual void GetPosition(Fvector& vpos);
-	virtual void GetPreviousPosition(Fvector& pos);
+	virtual void GetPosition(float3& vpos);
+	virtual void GetPreviousPosition(float3& pos);
 	virtual float FootRadius();
-	virtual void DeathPosition(Fvector& deathPos);
-	virtual void IPosition(Fvector& pos);
+	virtual void DeathPosition(float3& deathPos);
+	virtual void IPosition(float3& pos);
 	virtual u16 ContactBone();
-	virtual void ApplyImpulse(const Fvector& dir, const dReal P);
-	virtual void ApplyForce(const Fvector& force);
-	virtual void ApplyForce(const Fvector& dir, float force);
+	virtual void ApplyImpulse(const float3& dir, const dReal P);
+	virtual void ApplyForce(const float3& force);
+	virtual void ApplyForce(const float3& dir, float force);
 	virtual void ApplyForce(float x, float y, float z);
-	virtual void AddControlVel(const Fvector& vel);
+	virtual void AddControlVel(const float3& vel);
 	virtual void SetMaximumVelocity(dReal vel)
 	{
 		m_max_velocity = vel;
@@ -263,7 +263,7 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	{
 		return b_jumping || b_jump;
 	};
-	virtual const Fvector& ControlAccel() const
+	virtual const float3& ControlAccel() const
 	{
 		return m_acceleration;
 	}

@@ -5,7 +5,7 @@
 #include "du_box.h"
 //---------------------------------------------------------------------------
 // #pragma package(smart_init)
-Fvector du_box_vertices2[DU_BOX_NUMVERTEX2] = {
+float3 du_box_vertices2[DU_BOX_NUMVERTEX2] = {
 	{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f},
 	{-0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
 	{+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
@@ -15,7 +15,7 @@ Fvector du_box_vertices2[DU_BOX_NUMVERTEX2] = {
 	{-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
 	{+0.5f, +0.5f, -0.5f}};
 
-Fvector du_box_vertices[DU_BOX_NUMVERTEX] = {
+float3 du_box_vertices[DU_BOX_NUMVERTEX] = {
 	{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f},
 	{-0.5f, +0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f},
 };

@@ -41,8 +41,8 @@ class ECORE_API R_tree
 		c_c_sun = C;
 	}
 
-	void set_m_transform_v(Fmatrix& mat);
-	void set_m_transform(Fmatrix& mat);
+	void set_m_transform_v(float4x4& mat);
+	void set_m_transform(float4x4& mat);
 	void set_consts(float x, float y, float z, float w);
 	void set_c_scale(float x, float y, float z, float w);
 	void set_c_bias(float x, float y, float z, float w);

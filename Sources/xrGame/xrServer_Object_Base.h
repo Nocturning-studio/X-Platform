@@ -85,8 +85,8 @@ Flags16 s_flags; // state flags
 xr_vector<u16> children;
 
 // update data
-Fvector o_Position;
-Fvector o_Angle;
+float3 o_Position;
+float3 o_Angle;
 CLASS_ID m_tClassID;
 int m_script_clsid;
 shared_str m_ini_string;
@@ -129,20 +129,20 @@ virtual void __stdcall set_name_replace(LPCSTR s)
 	xr_free(s_name_replace);
 	s_name_replace = xr_strdup(s);
 };
-virtual Fvector& __stdcall position();
-virtual Fvector& __stdcall angle();
+virtual float3& __stdcall position();
+virtual float3& __stdcall angle();
 virtual Flags16& __stdcall flags();
 virtual CSE_Visual* __stdcall visual();
 virtual ISE_Shape* __stdcall shape();
 virtual CSE_Motion* __stdcall motion();
 virtual bool __stdcall validate();
-virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,
+virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const float4x4& parent,
 								 int priority, bool strictB2F)
 {
 }
 //
 
-IC const Fvector& Position() const
+IC const float3& Position() const
 {
 	return o_Position;
 };

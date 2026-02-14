@@ -99,7 +99,7 @@ add_to_type_list(CSE_Motion)
 
 	struct ISE_AbstractLEOwner
 {
-	virtual void __stdcall get_bone_transform(LPCSTR name, Fmatrix& transform) = 0;
+	virtual void __stdcall get_bone_transform(LPCSTR name, float4x4& transform) = 0;
 };
 
 struct ISE_Abstract
@@ -126,15 +126,15 @@ struct ISE_Abstract
 	virtual void __stdcall set_name(LPCSTR) = 0;
 	virtual LPCSTR __stdcall name_replace() const = 0;
 	virtual void __stdcall set_name_replace(LPCSTR) = 0;
-	virtual Fvector& __stdcall position() = 0;
-	virtual Fvector& __stdcall angle() = 0;
+	virtual float3& __stdcall position() = 0;
+	virtual float3& __stdcall angle() = 0;
 	virtual Flags16& __stdcall flags() = 0;
 	virtual ISE_Shape* __stdcall shape() = 0;
 	virtual CSE_Visual* __stdcall visual() = 0;
 	virtual CSE_Motion* __stdcall motion() = 0;
 	virtual bool __stdcall validate() = 0;
 	virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected,
-									 const Fmatrix& parent, int priority, bool strictB2F) = 0;
+									 const float4x4& parent, int priority, bool strictB2F) = 0;
 };
 
 #pragma warning(pop)

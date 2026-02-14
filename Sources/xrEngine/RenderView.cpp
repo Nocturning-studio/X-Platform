@@ -23,7 +23,7 @@ CRenderView::CRenderView()
 	Aspect = 1.f;
 }
 
-void CRenderView::SetupView(const Fvector& pos, const Fvector& dir, const Fvector& top)
+void CRenderView::SetupView(const float3& pos, const float3& dir, const float3& top)
 {
 	Position.set(pos);
 	Direction.set(dir);

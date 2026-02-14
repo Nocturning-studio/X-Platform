@@ -48,7 +48,7 @@ bool CStateMonsterAttackRunAttackAbstract::check_start_conditions()
 		return false;
 
 	// try to build path
-	Fvector target_position;
+	float3 target_position;
 	target_position.mad(object->Position(), object->Direction(), object->db().m_run_attack_path_dist);
 
 	// if (!object->control().path_builder().build_special(target_position, u32(-1),

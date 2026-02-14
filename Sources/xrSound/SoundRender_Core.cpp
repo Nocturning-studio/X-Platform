@@ -137,7 +137,7 @@ void CSoundRender_Core::_initialize(u64 window)
 
 	A_CHK(alListener3f(AL_POSITION, 0.f, 0.f, 0.f));
 	A_CHK(alListener3f(AL_VELOCITY, 0.f, 0.f, 0.f));
-	Fvector orient[2] = {{0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}};
+	float3 orient[2] = {{0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}};
 	A_CHK(alListenerfv(AL_ORIENTATION, &orient[0].x));
 	A_CHK(alListenerf(AL_GAIN, 0.5f));
 
@@ -238,7 +238,7 @@ void CSoundRender_Core::set_master_volume(float f)
 	}
 }
 
-void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, float dt)
+void CSoundRender_Core::update_listener(const float3& P, const float3& D, const float3& N, float dt)
 {
 	if (!Listener.position.similar(P))
 	{
@@ -308,9 +308,9 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	// Load tris and merge them
 	struct SOM_poly
 	{
-		Fvector3 v1;
-		Fvector3 v2;
-		Fvector3 v3;
+		float3 v1;
+		float3 v2;
+		float3 v3;
 		u32 b2sided;
 		float occ;
 	};
@@ -418,8 +418,8 @@ void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 		S._feedback()->switch_to_2D();
 }
 
-void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol,
-										 float* freq, Fvector2* range)
+void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, float delay, float3* pos, float* vol,
+										 float* freq, float2* range)
 {
 	if (!bPresent || 0 == S._handle())
 		return;
@@ -457,7 +457,7 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 	S._p = orig;
 }
 
-void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
+void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const float3& pos, u32 flags, float delay)
 {
 	if (!bPresent || 0 == S._handle())
 		return;

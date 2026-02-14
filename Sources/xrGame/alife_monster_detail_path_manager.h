@@ -26,7 +26,7 @@ class CALifeMonsterDetailPathManager
 	{
 		GameGraph::_GRAPH_ID m_game_vertex_id;
 		u32 m_level_vertex_id;
-		Fvector m_position;
+		float3 m_position;
 	};
 
   private:
@@ -58,7 +58,7 @@ class CALifeMonsterDetailPathManager
 	IC object_type& object() const;
 
   public:
-	void target(const GameGraph::_GRAPH_ID& game_vertex_id, const u32& level_vertex_id, const Fvector& position);
+	void target(const GameGraph::_GRAPH_ID& game_vertex_id, const u32& level_vertex_id, const float3& position);
 	void target(const GameGraph::_GRAPH_ID& game_vertex_id);
 	void target(const CALifeSmartTerrainTask& task);
 	void target(const CALifeSmartTerrainTask* task);
@@ -76,7 +76,7 @@ class CALifeMonsterDetailPathManager
 	bool failed() const;
 	IC const PATH& path() const;
 	IC const float& walked_distance() const;
-	Fvector draw_level_position() const;
+	float3 draw_level_position() const;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

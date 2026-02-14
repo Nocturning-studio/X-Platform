@@ -8,13 +8,13 @@
 
 struct _hw
 {
-	Fvector p0;
-	Fvector p1;
-	Fvector n0;
-	Fvector n1;
+	float3 p0;
+	float3 p1;
+	float3 n0;
+	float3 n1;
 	u32 sun_af;
-	Fvector2 t0;
-	Fvector2 t1;
+	float2 t0;
+	float2 t1;
 	u32 rgbh0;
 	u32 rgbh1;
 };
@@ -41,7 +41,7 @@ void FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
 		data->r(facets[f].v, sizeof(facets[f].v));
 		_vertex* v = facets[f].v;
 
-		Fvector Normal, T;
+		float3 Normal, T;
 		Normal.set(0, 0, 0);
 		T.mknormal(v[0].v, v[1].v, v[2].v);
 		Normal.add(T);
@@ -60,7 +60,7 @@ void FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
 	geom.create(dwDecl_FLOD, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 
 	// lod correction
-	Fvector3 S;
+	float3 S;
 	vis.box.getradius(S);
 	float r = vis.sphere.R;
 	concurrency::parallel_sort(&S.x, &S.x + 3);
@@ -81,7 +81,7 @@ void FLOD::Copy(IRender_Visual* pFrom)
 void FLOD::Render(float LOD)
 {
 	/*
-	Fvector				Ldir;
+	float3				Ldir;
 	Ldir.sub			(vis.sphere.P,Engine.RenderView.Position);
 	Ldir.normalize		();
 

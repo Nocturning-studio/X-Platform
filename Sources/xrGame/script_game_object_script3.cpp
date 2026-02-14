@@ -72,13 +72,13 @@ class_<CScriptGameObject>& script_register_game_object2(class_<CScriptGameObject
 		.def("restore_sound_threshold", &CScriptGameObject::restore_sound_threshold)
 
 		// sight manager
-		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, const Fvector* vector3d,
+		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, const float3* vector3d,
 													  u32 dwLookOverDelay))(&CScriptGameObject::set_sight))
 		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, bool torso_look, bool path))(
 							  &CScriptGameObject::set_sight))
-		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, const Fvector& vector3d,
+		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, const float3& vector3d,
 													  bool torso_look))(&CScriptGameObject::set_sight))
-		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, const Fvector* vector3d))(
+		.def("set_sight", (void(CScriptGameObject::*)(SightManager::ESightType sight_type, const float3* vector3d))(
 							  &CScriptGameObject::set_sight))
 		.def("set_sight",
 			 (void(CScriptGameObject::*)(CScriptGameObject * object_to_look))(&CScriptGameObject::set_sight))
@@ -228,8 +228,8 @@ class_<CScriptGameObject>& script_register_game_object2(class_<CScriptGameObject
 
 		// Script Zone
 		.def("active_zone_contact", &CScriptGameObject::active_zone_contact)
-		.def("inside", (bool(CScriptGameObject::*)(const Fvector&, float) const)(&CScriptGameObject::inside))
-		.def("inside", (bool(CScriptGameObject::*)(const Fvector&) const)(&CScriptGameObject::inside))
+		.def("inside", (bool(CScriptGameObject::*)(const float3&, float) const)(&CScriptGameObject::inside))
+		.def("inside", (bool(CScriptGameObject::*)(const float3&) const)(&CScriptGameObject::inside))
 		.def("set_fastcall", &CScriptGameObject::set_fastcall)
 		.def("set_const_force", &CScriptGameObject::set_const_force)
 		.def("info_add", &CScriptGameObject::info_add)

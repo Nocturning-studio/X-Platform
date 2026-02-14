@@ -53,20 +53,20 @@ class CHolderCustom
 
 	virtual void cam_Update(float dt, float fov = 90.0f) = 0;
 
-	virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) = 0;
+	virtual bool Use(const float3& pos, const float3& dir, const float3& foot_pos) = 0;
 	virtual bool attach_Actor(CGameObject* actor);
 	virtual void detach_Actor();
 	virtual bool allowWeapon() const = 0;
 	virtual bool HUDView() const = 0;
-	virtual Fvector ExitPosition() = 0;
-	virtual Fvector ExitVelocity()
+	virtual float3 ExitPosition() = 0;
+	virtual float3 ExitVelocity()
 	{
-		return Fvector().set(0, 0, 0);
+		return float3().set(0, 0, 0);
 	}
 	virtual CCameraBase* Camera() = 0;
 	virtual void Action(int id, u32 flags){};
-	virtual void SetParam(int id, Fvector2 val){};
-	virtual void SetParam(int id, Fvector val){};
+	virtual void SetParam(int id, float2 val){};
+	virtual void SetParam(int id, float3 val){};
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

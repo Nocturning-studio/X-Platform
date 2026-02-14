@@ -45,7 +45,7 @@ class CSoundRender_Emitter : public CSound_emitter
 	float smooth_volume;
 	float occluder_volume; // USER
 	float fade_volume;
-	Fvector occluder[3];
+	float3 occluder[3];
 
 	State m_current_state;
 	u32 m_stream_cursor;
@@ -83,7 +83,7 @@ class CSoundRender_Emitter : public CSound_emitter
 	}
 	virtual void switch_to_2D();
 	virtual void switch_to_3D();
-	virtual void set_position(const Fvector& pos);
+	virtual void set_position(const float3& pos);
 	virtual void set_pitch_using(bool use_pitch)
 	{
 		p_source.use_pitch = use_pitch;

@@ -117,7 +117,7 @@ void CWeaponKnife::OnStateSwitch(u32 S)
 	}
 }
 
-void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
+void CWeaponKnife::KnifeStrike(const float3& pos, const float3& dir)
 {
 	CCartridge cartridge;
 	cartridge.m_buckShot = 1;
@@ -168,7 +168,7 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 			else
 				m_pHUD->animPlay(random_anim(mhud_attack2_e), TRUE, this, GetState());
 
-			Fvector p1, d;
+			float3 p1, d;
 			p1.set(get_LastFP());
 			d.set(get_LastFD());
 

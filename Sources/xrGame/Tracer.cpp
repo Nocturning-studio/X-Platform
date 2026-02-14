@@ -35,11 +35,11 @@ CTracer::~CTracer()
 {
 }
 
-IC void FillSprite_Circle(FVF::LIT*& pv, const Fvector& pos, const float r1, float r2, u32 color)
+IC void FillSprite_Circle(FVF::LIT*& pv, const float3& pos, const float r1, float r2, u32 color)
 {
-	const Fvector& T = Engine.RenderView.Top;
-	const Fvector& R = Engine.RenderView.Right;
-	Fvector Vr, Vt;
+	const float3& T = Engine.RenderView.Top;
+	const float3& R = Engine.RenderView.Right;
+	float3 Vr, Vt;
 	Vr.x = R.x * r1;
 	Vr.y = R.y * r1;
 	Vr.z = R.z * r1;
@@ -47,7 +47,7 @@ IC void FillSprite_Circle(FVF::LIT*& pv, const Fvector& pos, const float r1, flo
 	Vt.y = T.y * r2;
 	Vt.z = T.z * r2;
 
-	Fvector a, b, c, d;
+	float3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -62,14 +62,14 @@ IC void FillSprite_Circle(FVF::LIT*& pv, const Fvector& pos, const float r1, flo
 	pv++;
 }
 
-IC void FillSprite_Line(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, float r1, float r2, u32 color)
+IC void FillSprite_Line(FVF::LIT*& pv, const float3& pos, const float3& dir, float r1, float r2, u32 color)
 {
-	const Fvector& T = dir;
+	const float3& T = dir;
 
-	Fvector R;
+	float3 R;
 	R.crossproduct(T, Engine.RenderView.Direction).normalize_safe();
 
-	Fvector Vr, Vt;
+	float3 Vr, Vt;
 	Vr.x = R.x * r1;
 	Vr.y = R.y * r1;
 	Vr.z = R.z * r1;
@@ -77,7 +77,7 @@ IC void FillSprite_Line(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, f
 	Vt.y = T.y * r2;
 	Vt.z = T.z * r2;
 
-	Fvector a, b, c, d;
+	float3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -92,12 +92,12 @@ IC void FillSprite_Line(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, f
 	pv++;
 }
 
-void CTracer::Render(FVF::LIT*& verts, const Fvector& pos, const Fvector& center, const Fvector& dir, float length,
+void CTracer::Render(FVF::LIT*& verts, const float3& pos, const float3& center, const float3& dir, float length,
 					 float width, u8 colorID)
 {
 	//OPTICK_EVENT("CTracer::Render");
 
-	if (::Render->ViewBase.testSphere_dirty((Fvector&)center, length * .5f))
+	if (::Render->ViewBase.testSphere_dirty((float3&)center, length * .5f))
 	{
 		if (colorID >= m_aColors.size())
 			colorID = 0;

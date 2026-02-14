@@ -11,7 +11,7 @@ class CMapSpot : public CUIStatic
 
   public:
 	bool m_bScale;
-	Fvector2 m_originSize;
+	float2 m_originSize;
 	CMapSpot(CMapLocation*);
 	virtual ~CMapSpot();
 	virtual void Load(CUIXml* xml, LPCSTR path);

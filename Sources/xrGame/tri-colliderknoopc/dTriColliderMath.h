@@ -93,14 +93,14 @@ ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Point* VRT)
 	cast_fv(triangle.norm).normalize();
 	triangle.pos = dDOT(VRT[0], triangle.norm);
 }
-ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Fvector* V_array)
+ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const float3* V_array)
 {
 	const Point vertices[3] = {Point((dReal*)&V_array[XTri->verts[0]]), Point((dReal*)&V_array[XTri->verts[1]]),
 							   Point((dReal*)&V_array[XTri->verts[2]])};
 	InitTriangle(XTri, triangle, vertices);
 }
 
-ICF void CalculateTri(CDB::TRI* XTri, const float* pos, Triangle& triangle, const Fvector* V_array)
+ICF void CalculateTri(CDB::TRI* XTri, const float* pos, Triangle& triangle, const float3* V_array)
 {
 	InitTriangle(XTri, triangle, V_array);
 	triangle.dist = dDOT(pos, triangle.norm) - triangle.pos;

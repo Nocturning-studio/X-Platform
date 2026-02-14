@@ -30,8 +30,8 @@ DEF_VECTOR(ABULLETS, BulletData);
 
 struct HitData
 {
-	Fvector Pos0;
-	Fvector Pos1;
+	float3 Pos0;
+	float3 Pos1;
 
 	s16 BoneID;
 	shared_str BoneName;
@@ -213,7 +213,7 @@ struct WeaponUsageStatistic
 	//-----------------------------------------------
 	void OnWeaponBought(game_PlayerState* ps, LPCSTR WeaponName);
 	void OnBullet_Fire(SBullet* pBullet, const CCartridge& cartridge);
-	void OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation);
+	void OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, float3 HitLocation);
 	void OnBullet_Remove(SBullet* pBullet);
 	//-----------------------------------------------
 

@@ -25,7 +25,7 @@
 CDemoRecord* xrDemoRecord = 0;
 CDemoRecord::force_position CDemoRecord::g_position = {false, {0, 0, 0}};
 //////////////////////////////////////////////////////////////////////
-void CDemoRecord::update_whith_timescale(Fvector& v, const Fvector& v_delta)
+void CDemoRecord::update_whith_timescale(float3& v, const float3& v_delta)
 {
 	VERIFY(!fis_zero(Engine.TimeManager.GetTimeFactor()));
 	float scale = 1.f / Engine.TimeManager.GetTimeFactor();
@@ -43,8 +43,8 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 	m_Camera.invert(Engine.RenderView.View);
 
 	// parse yaw
-	Fvector& dir = m_Camera.k;
-	Fvector DYaw;
+	float3& dir = m_Camera.k;
+	float3 DYaw;
 	DYaw.set(dir.x, 0.f, dir.z);
 	DYaw.normalize_safe();
 	if (DYaw.x < 0)
@@ -111,9 +111,9 @@ void CDemoRecord::Close()
 }
 
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
-Fvector CDemoRecord::cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f},
+float3 CDemoRecord::cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f},
 							{0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
-Fvector CDemoRecord::cmDir[6] = {{1.f, 0.f, 0.f},  {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
+float3 CDemoRecord::cmDir[6] = {{1.f, 0.f, 0.f},  {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
 						   {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f},  {0.f, 0.f, -1.f}};
 
 Flags32 CDemoRecord::s_hud_flag = {0};
@@ -139,7 +139,7 @@ void CDemoRecord::MakeScreenshotFace()
 INT g_bDR_LM_UsePointsBBox = 0;
 INT g_bDR_LM_4Steps = 0;
 INT g_iDR_LM_Step = 0;
-Fvector g_DR_LM_Min, g_DR_LM_Max;
+float3 g_DR_LM_Min, g_DR_LM_Max;
 
 void GetLM_BBox(Fbox& bb, INT Step)
 {
@@ -239,7 +239,7 @@ void CDemoRecord::MakeLevelMapProcess()
 	m_Stage++;
 }
 
-void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
+void CDemoRecord::MakeCubeMapFace(float3& D, float3& N)
 {
 	Console->Execute("r_disable_postprocess on");
 
@@ -420,7 +420,7 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 		g_position.p.set(m_Position);
 	}
 
-	Fvector vmove;
+	float3 vmove;
 	vmove.set(m_Camera.k);
 	vmove.normalize_safe();
 	vmove.mul(m_vT.z);
@@ -597,7 +597,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 
 void CDemoRecord::IR_OnKeyboardHold(int dik)
 {
-	Fvector vT_delta{}, vR_delta{};
+	float3 vT_delta{}, vR_delta{};
 	switch (dik)
 	{
 	case DIK_A:
@@ -647,7 +647,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
 void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 {
 	float scale = .5f; // psMouseSens;
-	Fvector vR_delta{};
+	float3 vR_delta{};
 	if (dx || dy)
 	{
 		vR_delta.y += float(dx) * scale;												// heading
@@ -658,7 +658,7 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 
 void CDemoRecord::IR_OnMouseHold(int btn)
 {
-	Fvector vT_delta{};
+	float3 vT_delta{};
 	switch (btn)
 	{
 	case 0:
@@ -673,8 +673,8 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 
 void CDemoRecord::ChangeDepthOfFieldFocalDepth(int direction)
 {
-	Fvector3 dof_params_old;
-	Fvector3 dof_params_actual;
+	float3 dof_params_old;
+	float3 dof_params_actual;
 
 	g_pGamePersistent->GetCurrentDof(dof_params_old);
 
@@ -699,8 +699,8 @@ void CDemoRecord::ChangeDepthOfFieldFocalDepth(int direction)
 
 void CDemoRecord::ChangeDepthOfFieldFocalLength(int direction)
 {
-	Fvector3 dof_params_old;
-	Fvector3 dof_params_actual;
+	float3 dof_params_old;
+	float3 dof_params_actual;
 
 	g_pGamePersistent->GetCurrentDof(dof_params_old);
 
@@ -724,8 +724,8 @@ void CDemoRecord::ChangeDepthOfFieldFocalLength(int direction)
 
 void CDemoRecord::ChangeDepthOfFieldFStop(int direction)
 {
-	Fvector3 dof_params_old;
-	Fvector3 dof_params_actual;
+	float3 dof_params_old;
+	float3 dof_params_actual;
 
 	g_pGamePersistent->GetCurrentDof(dof_params_old);
 

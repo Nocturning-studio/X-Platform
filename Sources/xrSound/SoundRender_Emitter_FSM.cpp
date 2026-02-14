@@ -60,8 +60,8 @@ void CSoundRender_Emitter::update(float dt)
 		// [SOM Priority] Начальный расчет окклюзии
 		// -----------------------------------------------------------------------
 		{
-			Fvector l_pos = SoundRender->listener_position();
-			Fvector s_pos = p_source.position;
+			float3 l_pos = SoundRender->listener_position();
+			float3 s_pos = p_source.position;
 
 			// 1. Проверяем SOM геометрию (стены, гермодвери, перекрытия уровней)
 			float fSomOcclusion = SoundRender->get_occlusion_to(l_pos, s_pos);
@@ -130,8 +130,8 @@ void CSoundRender_Emitter::update(float dt)
 		// [SOM Priority] Начальный расчет окклюзии для зацикленных звуков
 		// -----------------------------------------------------------------------
 		{
-			Fvector l_pos = SoundRender->listener_position();
-			Fvector s_pos = p_source.position;
+			float3 l_pos = SoundRender->listener_position();
+			float3 s_pos = p_source.position;
 
 			float fSomOcclusion = SoundRender->get_occlusion_to(l_pos, s_pos);
 
@@ -355,8 +355,8 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 		// -----------------------------------------------------------------------------------------
 
 		float target_occlusion = 1.0f;
-		Fvector l_pos = SoundRender->listener_position();
-		Fvector s_pos = p_source.position;
+		float3 l_pos = SoundRender->listener_position();
+		float3 s_pos = p_source.position;
 
 		// Шаг 1: Проверяем грубую геометрию (Sound Occlusion Model)
 		// get_occlusion_to трассирует луч только по SOM-модели.

@@ -97,7 +97,7 @@ void game_cl_ArtefactHunt::Init()
 					sprintf_s(ParticleStr, "teambase_particle_%d", RP_team);
 					if (pSettings->line_exist("artefacthunt_gamedata", ParticleStr))
 					{
-						Fmatrix transform;
+						float4x4 transform;
 						transform.identity();
 						transform.setXYZ(R.A);
 						transform.translate_over(R.P);
@@ -213,7 +213,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage(u32 msg, NET_Packet& P)
 		sprintf_s(Text, tmp, CTeamInfo::GetTeam_color_tag(int(Team)), pPlayer->name, Color_Main, Color_Artefact);
 		CommonMessageOut(Text);
 
-		//			pMessageSounds[0].play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
+		//			pMessageSounds[0].play_at_pos(NULL, float3().set(0,0,0), sm_2D, 0);
 		PlaySndMessage(ID_AF_LOST);
 	}
 	break;

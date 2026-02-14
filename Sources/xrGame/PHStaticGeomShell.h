@@ -31,7 +31,7 @@ class CPHStaticGeomShell : public CPHGeometryOwner, public CPHObject, public CPH
 	};
 
   public:
-	void Activate(const Fmatrix& form);
+	void Activate(const float4x4& form);
 	void Deactivate();
 	CPHStaticGeomShell();
 };

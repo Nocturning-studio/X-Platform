@@ -63,7 +63,7 @@ class CUIDragDropListEx : public CUIWindow, public CUIWndCallback
 	};
 	Flags8 m_flags;
 	CUICellItem* m_selected_item;
-	Ivector2 m_orig_cell_capacity;
+	int2 m_orig_cell_capacity;
 
   protected:
 	CUICellContainer* m_container;
@@ -90,9 +90,9 @@ class CUIDragDropListEx : public CUIWindow, public CUIWndCallback
 	DRAG_DROP_EVENT m_f_item_selected;
 	DRAG_DROP_EVENT m_f_item_rbutton_click;
 
-	const Ivector2& CellsCapacity();
-	void SetCellsCapacity(const Ivector2 c);
-	void SetStartCellsCapacity(const Ivector2 c)
+	const int2& CellsCapacity();
+	void SetCellsCapacity(const int2 c);
+	void SetStartCellsCapacity(const int2 c)
 	{
 		m_orig_cell_capacity = c;
 		SetCellsCapacity(c);
@@ -102,12 +102,12 @@ class CUIDragDropListEx : public CUIWindow, public CUIWndCallback
 		VERIFY(ItemsCount() == 0);
 		SetCellsCapacity(m_orig_cell_capacity);
 	};
-	const Ivector2& CellSize();
-	void SetCellSize(const Ivector2 new_sz);
+	const int2& CellSize();
+	void SetCellSize(const int2 new_sz);
 	int ScrollPos();
 	void ReinitScroll();
 	void GetClientArea(Frect& r);
-	Fvector2 GetDragItemPosition();
+	float2 GetDragItemPosition();
 
 	void SetAutoGrow(bool b);
 	bool IsAutoGrow();
@@ -119,8 +119,8 @@ class CUIDragDropListEx : public CUIWindow, public CUIWndCallback
   public:
 	// items management
 	virtual void SetItem(CUICellItem* itm);					   // auto
-	virtual void SetItem(CUICellItem* itm, Fvector2 abs_pos);  // start at cursor pos
-	virtual void SetItem(CUICellItem* itm, Ivector2 cell_pos); // start at cell
+	virtual void SetItem(CUICellItem* itm, float2 abs_pos);  // start at cursor pos
+	virtual void SetItem(CUICellItem* itm, int2 cell_pos); // start at cell
 	bool CanSetItem(CUICellItem* itm);
 
 	u32 ItemsCount();
@@ -154,11 +154,11 @@ class CUICellContainer : public CUIWindow
   protected:
 	CUIDragDropListEx* m_pParentDragDropList;
 
-	Ivector2 m_cellsCapacity; // count		(col,	row)
-	Ivector2 m_cellSize;	  // pixels	(width, height)
+	int2 m_cellsCapacity; // count		(col,	row)
+	int2 m_cellSize;	  // pixels	(width, height)
 	UI_CELLS_VEC m_cells;
 
-	void GetTexUVLT(Fvector2& uv, u32 col, u32 row);
+	void GetTexUVLT(float2& uv, u32 col, u32 row);
 	void ReinitSize();
 	u32 GetCellsInRange(const Irect& rect, UI_CELLS_VEC& res);
 
@@ -169,30 +169,30 @@ class CUICellContainer : public CUIWindow
   protected:
 	virtual void Draw();
 
-	IC const Ivector2& CellsCapacity()
+	IC const int2& CellsCapacity()
 	{
 		return m_cellsCapacity;
 	};
-	void SetCellsCapacity(const Ivector2& c);
-	IC const Ivector2& CellSize()
+	void SetCellsCapacity(const int2& c);
+	IC const int2& CellSize()
 	{
 		return m_cellSize;
 	};
-	void SetCellSize(const Ivector2& new_sz);
-	Ivector2 TopVisibleCell();
-	CUICell& GetCellAt(const Ivector2& pos);
-	Ivector2 PickCell(const Fvector2& abs_pos);
-	Ivector2 GetItemPos(CUICellItem* itm);
-	Ivector2 FindFreeCell(const Ivector2& size);
-	bool HasFreeSpace(const Ivector2& size);
-	bool IsRoomFree(const Ivector2& pos, const Ivector2& size);
+	void SetCellSize(const int2& new_sz);
+	int2 TopVisibleCell();
+	CUICell& GetCellAt(const int2& pos);
+	int2 PickCell(const float2& abs_pos);
+	int2 GetItemPos(CUICellItem* itm);
+	int2 FindFreeCell(const int2& size);
+	bool HasFreeSpace(const int2& size);
+	bool IsRoomFree(const int2& pos, const int2& size);
 
 	bool AddSimilar(CUICellItem* itm);
 	CUICellItem* FindSimilar(CUICellItem* itm);
 
-	void PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos);
+	void PlaceItemAtPos(CUICellItem* itm, int2& cell_pos);
 	CUICellItem* RemoveItem(CUICellItem* itm, bool force_root);
-	bool ValidCell(const Ivector2& pos) const;
+	bool ValidCell(const int2& pos) const;
 
 	void Grow();
 	void Shrink();

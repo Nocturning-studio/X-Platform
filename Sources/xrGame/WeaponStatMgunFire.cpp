@@ -7,12 +7,12 @@
 #include "actorEffector.h"
 #include "EffectorShot.h"
 
-const Fvector& CWeaponStatMgun::get_CurrentFirePoint()
+const float3& CWeaponStatMgun::get_CurrentFirePoint()
 {
 	return m_fire_pos;
 }
 
-const Fmatrix& CWeaponStatMgun::get_ParticlesTransform()
+const float4x4& CWeaponStatMgun::get_ParticlesTransform()
 {
 	return m_fire_bone_transform;
 }

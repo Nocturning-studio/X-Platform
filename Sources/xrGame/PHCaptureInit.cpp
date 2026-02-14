@@ -202,8 +202,8 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 void CPHCapture::Init(CInifile* ini)
 {
-	Fvector dir;
-	Fvector capture_bone_position;
+	float3 dir;
+	float3 capture_bone_position;
 	capture_bone_position.set(m_capture_bone->mTransform.c);
 	b_character_feedback = true;
 	(m_character->PhysicsRefObject())->Transform().transform_tiny(capture_bone_position);

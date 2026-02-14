@@ -30,7 +30,7 @@
 #define PDA_XML "pda.xml"
 u32 g_pda_info_state = 0;
 
-void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_places);
+void RearrangeTabButtons(CUITabControl* pTab, xr_vector<float2>& vec_sign_places);
 
 CUIPdaWnd::CUIPdaWnd()
 {
@@ -294,7 +294,7 @@ void CUIPdaWnd::PdaContentsChanged(pda_section::part type)
 		HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
 	}
 }
-void draw_sign(CUIStatic* s, Fvector2& pos)
+void draw_sign(CUIStatic* s, float2& pos)
 {
 	s->SetWndPos(pos);
 	s->Draw();
@@ -305,10 +305,10 @@ void CUIPdaWnd::DrawUpdatedSections()
 	m_updatedSectionImage->Update();
 	m_oldSectionImage->Update();
 
-	Fvector2 tab_pos;
+	float2 tab_pos;
 	UITabControl->GetAbsolutePos(tab_pos);
 
-	Fvector2 pos;
+	float2 pos;
 
 	pos = m_sign_places_main[eptQuests];
 	pos.add(tab_pos);
@@ -379,7 +379,7 @@ void CUIPdaWnd::Reset()
 		UIEventsWnd->Reset();
 }
 
-void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_places)
+void RearrangeTabButtons(CUITabControl* pTab, xr_vector<float2>& vec_sign_places)
 {
 	TABS_VECTOR* btn_vec = pTab->GetButtonsVector();
 	TABS_VECTOR::iterator it = btn_vec->begin();
@@ -387,9 +387,9 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	vec_sign_places.clear();
 	vec_sign_places.resize(btn_vec->size());
 
-	Fvector2 pos;
+	float2 pos;
 	pos.set((*it)->GetWndPos());
-	Fvector2 sign_sz;
+	float2 sign_sz;
 	sign_sz.set(9.0f + 3.0f, 11.0f);
 	u32 idx = 0;
 	float btn_text_len = 0.0f;

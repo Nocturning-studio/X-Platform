@@ -76,7 +76,7 @@ void CParticleEffect::RefreshShader()
 	OnDeviceCreate();
 }
 
-void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform)
+void CParticleEffect::UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform)
 {
 	m_RT_Flags.set(flRT_Transform, bTransform);
 	if (bTransform)
@@ -139,7 +139,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				for (u32 i = 0; i < p_cnt; i++)
 				{
 					Particle& m = particles[i];
-					vis.box.modify((Fvector&)m.pos);
+					vis.box.modify((float3&)m.pos);
 					if (m.size.x > p_size)
 						p_size = m.size.x;
 					if (m.size.y > p_size)
@@ -230,12 +230,12 @@ void CParticleEffect::OnDeviceDestroy()
 	}
 }
 //----------------------------------------------------
-IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt,
-				   const Fvector2& rb, float r1, float r2, u32 clr, float angle)
+IC void FillSprite(FVF::LIT*& pv, const float3& T, const float3& R, const float3& pos, const float2& lt,
+				   const float2& rb, float r1, float r2, u32 clr, float angle)
 {
 	float sa = _sin(angle);
 	float ca = _cos(angle);
-	Fvector Vr, Vt;
+	float3 Vr, Vt;
 	Vr.x = T.x * r1 * sa + R.x * r1 * ca;
 	Vr.y = T.y * r1 * sa + R.y * r1 * ca;
 	Vr.z = T.z * r1 * sa + R.z * r1 * ca;
@@ -243,7 +243,7 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvec
 	Vt.y = T.y * r2 * ca - R.y * r2 * sa;
 	Vt.z = T.z * r2 * ca - R.z * r2 * sa;
 
-	Fvector a, b, c, d;
+	float3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -258,15 +258,15 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvec
 	pv++;
 }
 
-IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb,
+IC void FillSprite(FVF::LIT*& pv, const float3& pos, const float3& dir, const float2& lt, const float2& rb,
 				   float r1, float r2, u32 clr, float angle)
 {
 	float sa = _sin(angle);
 	float ca = _cos(angle);
-	const Fvector& T = dir;
-	Fvector R;
+	const float3& T = dir;
+	float3 R;
 	R.crossproduct(T, Engine.RenderView.Direction).normalize_safe();
-	Fvector Vr, Vt;
+	float3 Vr, Vt;
 	Vr.x = T.x * r1 * sa + R.x * r1 * ca;
 	Vr.y = T.y * r1 * sa + R.y * r1 * ca;
 	Vr.z = T.z * r1 * sa + R.z * r1 * ca;
@@ -274,7 +274,7 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
 	Vt.y = T.y * r2 * ca - R.y * r2 * sa;
 	Vt.z = T.z * r2 * ca - R.z * r2 * sa;
 
-	Fvector a, b, c, d;
+	float3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -307,7 +307,7 @@ void CParticleEffect::Render(float)
 			{
 				PAPI::Particle& m = particles[i];
 
-				Fvector2 lt, rb;
+				float2 lt, rb;
 				lt.set(0.f, 0.f);
 				rb.set(1.f, 1.f);
 				if (m_Def->m_Flags.is(CPEDef::dfFramed))
@@ -325,11 +325,11 @@ void CParticleEffect::Render(float)
 					float speed = m.vel.magnitude();
 					if ((speed < EPS_S) && m_Def->m_Flags.is(CPEDef::dfWorldAlign))
 					{
-						Fmatrix M;
+						float4x4 M;
 						M.setXYZ(m_Def->m_APDefaultRotation);
 						if (m_RT_Flags.is(flRT_Transform))
 						{
-							Fvector p;
+							float3 p;
 							m_Transform.transform_tiny(p, m.pos);
 							M.mulA_43(m_Transform);
 							FillSprite(pv, M.k, M.i, p, lt, rb, r_x, r_y, m.color, m.rot.x);
@@ -341,7 +341,7 @@ void CParticleEffect::Render(float)
 					}
 					else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
 					{
-						Fmatrix M;
+						float4x4 M;
 						M.identity();
 						M.k.div(m.vel, speed);
 						M.j.set(0, 1, 0);
@@ -353,7 +353,7 @@ void CParticleEffect::Render(float)
 						M.j.normalize();
 						if (m_RT_Flags.is(flRT_Transform))
 						{
-							Fvector p;
+							float3 p;
 							m_Transform.transform_tiny(p, m.pos);
 							M.mulA_43(m_Transform);
 							FillSprite(pv, M.j, M.i, p, lt, rb, r_x, r_y, m.color, m.rot.x);
@@ -365,14 +365,14 @@ void CParticleEffect::Render(float)
 					}
 					else
 					{
-						Fvector dir;
+						float3 dir;
 						if (speed >= EPS_S)
 							dir.div(m.vel, speed);
 						else
 							dir.setHP(-m_Def->m_APDefaultRotation.y, -m_Def->m_APDefaultRotation.x);
 						if (m_RT_Flags.is(flRT_Transform))
 						{
-							Fvector p, d;
+							float3 p, d;
 							m_Transform.transform_tiny(p, m.pos);
 							m_Transform.transform_dir(d, dir);
 							FillSprite(pv, p, d, lt, rb, r_x, r_y, m.color, m.rot.x);
@@ -387,7 +387,7 @@ void CParticleEffect::Render(float)
 				{
 					if (m_RT_Flags.is(flRT_Transform))
 					{
-						Fvector p;
+						float3 p;
 						m_Transform.transform_tiny(p, m.pos);
 						FillSprite(pv, Engine.RenderView.Top, Engine.RenderView.Right, p, lt, rb, r_x, r_y, m.color, m.rot.x);
 					}

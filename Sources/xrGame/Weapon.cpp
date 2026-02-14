@@ -83,9 +83,9 @@ CWeapon::~CWeapon()
 	xr_delete(m_UIScope);
 }
 
-// void CWeapon::Hit(float P, Fvector &dir,
+// void CWeapon::Hit(float P, float3 &dir,
 //		    CObject* who, s16 element,
-//		    Fvector position_in_object_space,
+//		    float3 position_in_object_space,
 //		    float impulse,
 //		    ALife::EHitType hit_type)
 void CWeapon::Hit(SHit* pHDS)
@@ -131,11 +131,11 @@ void CWeapon::UpdateTransform()
 			boneL = boneR2;
 #pragma todo("TO ALL: serious performance problem")
 		V->CalculateBones();
-		Fmatrix& mL = V->LL_GetTransform(u16(boneL));
-		Fmatrix& mR = V->LL_GetTransform(u16(boneR));
+		float4x4& mL = V->LL_GetTransform(u16(boneL));
+		float4x4& mR = V->LL_GetTransform(u16(boneR));
 		// Calculate
-		Fmatrix mRes;
-		Fvector R, D, N;
+		float4x4 mRes;
+		float3 R, D, N;
 		D.sub(mL.c, mR.c);
 
 		if (fis_zero(D.magnitude()))
@@ -175,12 +175,12 @@ void CWeapon::UpdateFireDependencies_internal()
 			V->CalculateBones();
 
 			// fire point&direction
-			Fmatrix& fire_mat = V->LL_GetTransform(u16(m_pHUD->FireBone()));
-			Fmatrix& parent = m_pHUD->Transform();
+			float4x4& fire_mat = V->LL_GetTransform(u16(m_pHUD->FireBone()));
+			float4x4& parent = m_pHUD->Transform();
 
-			const Fvector& fp = m_pHUD->FirePoint();
-			const Fvector& fp2 = m_pHUD->FirePoint2();
-			const Fvector& sp = m_pHUD->ShellPoint();
+			const float3& fp = m_pHUD->FirePoint();
+			const float3& fp2 = m_pHUD->FirePoint2();
+			const float3& sp = m_pHUD->ShellPoint();
 
 			fire_mat.transform_tiny(m_firedeps.vLastFP, fp);
 			parent.transform_tiny(m_firedeps.vLastFP);
@@ -195,17 +195,17 @@ void CWeapon::UpdateFireDependencies_internal()
 
 			m_firedeps.m_FireParticlesTransform.identity();
 			m_firedeps.m_FireParticlesTransform.k.set(m_firedeps.vLastFD);
-			Fvector::generate_orthonormal_basis_normalized(m_firedeps.m_FireParticlesTransform.k,
+			float3::generate_orthonormal_basis_normalized(m_firedeps.m_FireParticlesTransform.k,
 														   m_firedeps.m_FireParticlesTransform.j,
 														   m_firedeps.m_FireParticlesTransform.i);
 		}
 		else
 		{
 			// 3rd person or no parent
-			Fmatrix& parent = Transform();
-			Fvector& fp = vLoadedFirePoint;
-			Fvector& fp2 = vLoadedFirePoint2;
-			Fvector& sp = vLoadedShellPoint;
+			float4x4& parent = Transform();
+			float3& fp = vLoadedFirePoint;
+			float3& fp2 = vLoadedFirePoint2;
+			float3& sp = vLoadedShellPoint;
 
 			parent.transform_tiny(m_firedeps.vLastFP, fp);
 			parent.transform_tiny(m_firedeps.vLastFP2, fp2);
@@ -237,12 +237,12 @@ void CWeapon::ForceUpdateFireParticles()
 			Log("H_Parent", H_Parent()->cNameSect().c_str());
 		}
 
-		Fvector p, d;
+		float3 p, d;
 		smart_cast<CEntity*>(H_Parent())->g_fireParams(this, p, d);
 
-		Fmatrix _pxf;
+		float4x4 _pxf;
 		_pxf.k = d;
-		_pxf.i.crossproduct(Fvector().set(0.0f, 1.0f, 0.0f), _pxf.k);
+		_pxf.i.crossproduct(float3().set(0.0f, 1.0f, 0.0f), _pxf.k);
 		_pxf.j.crossproduct(_pxf.k, _pxf.i);
 		_pxf.c = Transform().c;
 
@@ -260,7 +260,7 @@ void CWeapon::Load(LPCSTR section)
 
 #ifdef DEBUG
 	{
-		Fvector pos, ypr;
+		float3 pos, ypr;
 		pos = pSettings->r_fvector3(section, "position");
 		ypr = pSettings->r_fvector3(section, "orientation");
 		ypr.mul(PI / 180.f);
@@ -272,7 +272,7 @@ void CWeapon::Load(LPCSTR section)
 	m_StrapOffset = m_Offset;
 	if (pSettings->line_exist(section, "strap_position") && pSettings->line_exist(section, "strap_orientation"))
 	{
-		Fvector pos, ypr;
+		float3 pos, ypr;
 		pos = pSettings->r_fvector3(section, "strap_position");
 		ypr = pSettings->r_fvector3(section, "strap_orientation");
 		ypr.mul(PI / 180.f);
@@ -461,9 +461,9 @@ void CWeapon::Load(LPCSTR section)
 	if (pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
 		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
 
-	m_ZoomDof = READ_IF_EXISTS(pSettings, r_fvector3, section, "zoom_dof", Fvector().set(0.5, 1.0, 180));
+	m_ZoomDof = READ_IF_EXISTS(pSettings, r_fvector3, section, "zoom_dof", float3().set(0.5, 1.0, 180));
 
-	m_ReloadDof = READ_IF_EXISTS(pSettings, r_fvector4, section, "reload_dof", Fvector4().set(2.0, 0.5, 5, 1.7));
+	m_ReloadDof = READ_IF_EXISTS(pSettings, r_fvector4, section, "reload_dof", float4().set(2.0, 0.5, 5, 1.7));
 
 	//////////////////////////////////////////////////////////
 
@@ -829,7 +829,7 @@ void CWeapon::SetDefaults()
 	m_bZoomMode = false;
 }
 
-void CWeapon::UpdatePosition(const Fmatrix& trans)
+void CWeapon::UpdatePosition(const float4x4& trans)
 {
 	Position().set(trans.c);
 	Transform().mul(trans, m_strapped_mode ? m_StrapOffset : m_Offset);
@@ -1379,7 +1379,7 @@ void CWeapon::reload(LPCSTR section)
 	}
 
 	{
-		Fvector pos, ypr;
+		float3 pos, ypr;
 		pos = pSettings->r_fvector3(section, "position");
 		ypr = pSettings->r_fvector3(section, "orientation");
 		ypr.mul(PI / 180.f);
@@ -1391,7 +1391,7 @@ void CWeapon::reload(LPCSTR section)
 	m_StrapOffset = m_Offset;
 	if (pSettings->line_exist(section, "strap_position") && pSettings->line_exist(section, "strap_orientation"))
 	{
-		Fvector pos, ypr;
+		float3 pos, ypr;
 		pos = pSettings->r_fvector3(section, "strap_position");
 		ypr = pSettings->r_fvector3(section, "strap_orientation");
 		ypr.mul(PI / 180.f);
@@ -1500,7 +1500,7 @@ bool CWeapon::ready_to_kill() const
 			GetAmmoElapsed());
 }
 
-void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
+void CWeapon::UpdateHudAdditonal(float4x4& trans)
 {
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if (!pActor)
@@ -1509,16 +1509,16 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	if ((pActor->IsZoomAimingMode() && m_fZoomRotationFactor <= 1.f) ||
 		(!pActor->IsZoomAimingMode() && m_fZoomRotationFactor > 0.f))
 	{
-		Fmatrix hud_rotation;
+		float4x4 hud_rotation;
 		hud_rotation.identity();
 		hud_rotation.rotateX(m_pHUD->ZoomRotateX() * m_fZoomRotationFactor);
 
-		Fmatrix hud_rotation_y;
+		float4x4 hud_rotation_y;
 		hud_rotation_y.identity();
 		hud_rotation_y.rotateY(m_pHUD->ZoomRotateY() * m_fZoomRotationFactor);
 		hud_rotation.mulA_43(hud_rotation_y);
 
-		Fvector offset = m_pHUD->ZoomOffset();
+		float3 offset = m_pHUD->ZoomOffset();
 		offset.mul(m_fZoomRotationFactor);
 		hud_rotation.translate_over(offset);
 		trans.mulB_43(hud_rotation);

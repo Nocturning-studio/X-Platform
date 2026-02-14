@@ -41,15 +41,15 @@ s16 q_tc(float v)
 	return s16(_v);
 }
 #ifdef _DEBUG
-float errN(Fvector3 v, u8* qv)
+float errN(float3 v, u8* qv)
 {
-	Fvector3 uv;
+	float3 uv;
 	uv.set(float(qv[0]), float(qv[1]), float(qv[2])).div(255.f).mul(2.f).sub(1.f);
 	uv.normalize();
 	return v.dotproduct(uv);
 }
 #else
-float errN(Fvector3 v, u8* qv)
+float errN(float3 v, u8* qv)
 {
 	return 0;
 }
@@ -73,7 +73,7 @@ struct vertHW_1W
 	u32 _T;
 	u32 _B;
 	s16 _tc[2];
-	void set(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index)
+	void set(float3& P, float3 N, float3 T, float3 B, float2& tc, int index)
 	{
 		N.normalize_safe();
 		T.normalize_safe();
@@ -92,7 +92,7 @@ struct vertHW_1W
 	{
 		return (u16)color_get_A(_N_I) / 3;
 	}
-	void get_pos(Fvector& p)
+	void get_pos(float3& p)
 	{
 		p.x = u_P(_P[0]);
 		p.y = u_P(_P[1]);
@@ -119,7 +119,7 @@ struct vertHW_2W
 	u32 _T;
 	u32 _B;
 	s16 _tc_i[4];
-	void set(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, float w)
+	void set(float3& P, float3 N, float3 T, float3 B, float2& tc, int index0, int index1, float w)
 	{
 		N.normalize_safe();
 		T.normalize_safe();
@@ -144,17 +144,17 @@ struct vertHW_2W
 	{
 		return (u16)_tc_i[w + 2] / 3;
 	}
-	void get_pos(Fvector& p)
+	void get_pos(float3& p)
 	{
 		p.x = u_P(_P[0]);
 		p.y = u_P(_P[1]);
 		p.z = u_P(_P[2]);
 	}
-	void get_pos_bones(Fvector& p, CKinematics* Parent)
+	void get_pos_bones(float3& p, CKinematics* Parent)
 	{
-		Fvector P0, P1;
-		Fmatrix& transform0 = Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform;
-		Fmatrix& transform1 = Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
+		float3 P0, P1;
+		float4x4& transform0 = Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform;
+		float4x4& transform1 = Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
 		get_pos(P0);
 		transform0.transform_tiny(P0);
 		get_pos(P1);
@@ -254,7 +254,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 			vertBoned1W* src = (vertBoned1W*)_verts_;
 			for (u32 it = 0; it < V.vCount; it++)
 			{
-				Fvector2 uv;
+				float2 uv;
 				uv.set(src->u, src->v);
 				dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * 3);
 				dst++;
@@ -277,7 +277,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 			vertBoned2W* src = (vertBoned2W*)_verts_;
 			for (u32 it = 0; it < V.vCount; it++)
 			{
-				Fvector2 uv;
+				float2 uv;
 				uv.set(src->u, src->v);
 				dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * 3, int(src->matrix1) * 3, src->w);
 				dst++;
@@ -372,7 +372,7 @@ void CSkeletonX_PM::AfterLoad(CKinematics* parent, u16 child_idx)
 	inherited2::_CollectBoneFaces(this, iBase + SW.offset, SW.num_tris * 3);
 }
 
-BOOL CSkeletonX_ext::_PickBoneHW1W(Fvector& normal, float& dist, const Fvector& S, const Fvector& D, Fvisual* V,
+BOOL CSkeletonX_ext::_PickBoneHW1W(float3& normal, float& dist, const float3& S, const float3& D, Fvisual* V,
 								   u16* indices, CBoneData::FacesVec& faces)
 {
 	vertHW_1W* vertices;
@@ -380,12 +380,12 @@ BOOL CSkeletonX_ext::_PickBoneHW1W(Fvector& normal, float& dist, const Fvector& 
 	bool intersect = FALSE;
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		for (u32 k = 0; k < 3; k++)
 		{
 			vertHW_1W& vert = vertices[indices[idx + k]];
-			const Fmatrix& transform = Parent->LL_GetBoneInstance(vert.get_bone()).mRenderTransform;
+			const float4x4& transform = Parent->LL_GetBoneInstance(vert.get_bone()).mRenderTransform;
 			vert.get_pos(p[k]);
 			transform.transform_tiny(p[k]);
 		}
@@ -400,7 +400,7 @@ BOOL CSkeletonX_ext::_PickBoneHW1W(Fvector& normal, float& dist, const Fvector& 
 	CHK_DX(V->p_rm_Vertices->Unlock());
 	return intersect;
 }
-BOOL CSkeletonX_ext::_PickBoneHW2W(Fvector& normal, float& dist, const Fvector& S, const Fvector& D, Fvisual* V,
+BOOL CSkeletonX_ext::_PickBoneHW2W(float3& normal, float& dist, const float3& S, const float3& D, Fvisual* V,
 								   u16* indices, CBoneData::FacesVec& faces)
 {
 	vertHW_2W* vertices;
@@ -408,14 +408,14 @@ BOOL CSkeletonX_ext::_PickBoneHW2W(Fvector& normal, float& dist, const Fvector& 
 	bool intersect = FALSE;
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		for (u32 k = 0; k < 3; k++)
 		{
-			Fvector P0, P1;
+			float3 P0, P1;
 			vertHW_2W& vert = vertices[indices[idx + k]];
-			Fmatrix& transform0 = Parent->LL_GetBoneInstance(vert.get_bone(0)).mRenderTransform;
-			Fmatrix& transform1 = Parent->LL_GetBoneInstance(vert.get_bone(1)).mRenderTransform;
+			float4x4& transform0 = Parent->LL_GetBoneInstance(vert.get_bone(0)).mRenderTransform;
+			float4x4& transform1 = Parent->LL_GetBoneInstance(vert.get_bone(1)).mRenderTransform;
 			vert.get_pos(P0);
 			transform0.transform_tiny(P0);
 			vert.get_pos(P1);
@@ -434,7 +434,7 @@ BOOL CSkeletonX_ext::_PickBoneHW2W(Fvector& normal, float& dist, const Fvector& 
 	return intersect;
 }
 
-BOOL CSkeletonX_ext::_PickBone(Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, Fvisual* V,
+BOOL CSkeletonX_ext::_PickBone(float3& normal, float& dist, const float3& start, const float3& dir, Fvisual* V,
 							   u16 bone_id, u32 iBase, u32 iCount)
 {
 	VERIFY(Parent && (ChildIDX != u16(-1)));
@@ -466,11 +466,11 @@ BOOL CSkeletonX_ext::_PickBone(Fvector& normal, float& dist, const Fvector& star
 	CHK_DX(V->p_rm_Indices->Unlock());
 	return result;
 }
-BOOL CSkeletonX_ST::PickBone(Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+BOOL CSkeletonX_ST::PickBone(float3& normal, float& dist, const float3& start, const float3& dir, u16 bone_id)
 {
 	return inherited2::_PickBone(normal, dist, start, dir, this, bone_id, iBase, iCount);
 }
-BOOL CSkeletonX_PM::PickBone(Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+BOOL CSkeletonX_PM::PickBone(float3& normal, float& dist, const float3& start, const float3& dir, u16 bone_id)
 {
 	FSlideWindow& SW = nSWI.sw[0];
 	return inherited2::_PickBone(normal, dist, start, dir, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
@@ -487,14 +487,14 @@ void CSkeletonX_PM::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 	inherited2::_EnumBoneVertices(C, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
 }
 
-void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX_ext::_FillVerticesHW1W(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 									   Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	vertHW_1W* vertices;
 	CHK_DX(V->p_rm_Vertices->Lock(V->vBase, V->vCount, (void**)&vertices, D3DLOCK_READONLY));
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k = 0; k < 3; k++)
@@ -503,21 +503,21 @@ void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& w
 			F.bone_id[k][0] = vert.get_bone();
 			F.bone_id[k][1] = F.bone_id[k][0];
 			F.weight[k] = 0.f;
-			const Fmatrix& transform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			const float4x4& transform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
 			vert.get_pos(F.vert[k]);
 			transform.transform_tiny(p[k], F.vert[k]);
 		}
-		Fvector test_normal;
+		float3 test_normal;
 		test_normal.mknormal(p[0], p[1], p[2]);
 		float cosa = test_normal.dotproduct(normal);
 		if (cosa < EPS)
 			continue;
 		if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
 		{
-			Fvector UV;
+			float3 UV;
 			for (u32 k = 0; k < 3; k++)
 			{
-				Fvector2& uv = F.uv[k];
+				float2& uv = F.uv[k];
 				view.transform_tiny(UV, p[k]);
 				uv.x = (1 + UV.x) * .5f;
 				uv.y = (1 - UV.y) * .5f;
@@ -527,41 +527,41 @@ void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& w
 	}
 	CHK_DX(V->p_rm_Vertices->Unlock());
 }
-void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX_ext::_FillVerticesHW2W(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 									   Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	vertHW_2W* vertices;
 	CHK_DX(V->p_rm_Vertices->Lock(V->vBase, V->vCount, (void**)&vertices, D3DLOCK_READONLY));
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k = 0; k < 3; k++)
 		{
-			Fvector P0, P1;
+			float3 P0, P1;
 			vertHW_2W& vert = vertices[indices[idx + k]];
 			F.bone_id[k][0] = vert.get_bone(0);
 			F.bone_id[k][1] = vert.get_bone(1);
 			F.weight[k] = vert.get_weight();
-			Fmatrix& transform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-			Fmatrix& transform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+			float4x4& transform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			float4x4& transform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
 			vert.get_pos(F.vert[k]);
 			transform0.transform_tiny(P0, F.vert[k]);
 			transform1.transform_tiny(P1, F.vert[k]);
 			p[k].lerp(P0, P1, F.weight[k]);
 		}
-		Fvector test_normal;
+		float3 test_normal;
 		test_normal.mknormal(p[0], p[1], p[2]);
 		float cosa = test_normal.dotproduct(normal);
 		if (cosa < EPS)
 			continue;
 		if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
 		{
-			Fvector UV;
+			float3 UV;
 			for (u32 k = 0; k < 3; k++)
 			{
-				Fvector2& uv = F.uv[k];
+				float2& uv = F.uv[k];
 				view.transform_tiny(UV, p[k]);
 				uv.x = (1 + UV.x) * .5f;
 				uv.y = (1 - UV.y) * .5f;
@@ -572,7 +572,7 @@ void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& w
 	CHK_DX(V->p_rm_Vertices->Unlock());
 }
 
-void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX_ext::_FillVertices(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 								   Fvisual* V, u16 bone_id, u32 iBase, u32 iCount)
 {
 	VERIFY(Parent && (ChildIDX != u16(-1)));
@@ -601,12 +601,12 @@ void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, c
 	CHK_DX(V->p_rm_Indices->Unlock());
 }
 
-void CSkeletonX_ST::FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX_ST::FillVertices(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 								 u16 bone_id)
 {
 	inherited2::_FillVertices(view, wm, normal, size, this, bone_id, iBase, iCount);
 }
-void CSkeletonX_PM::FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX_PM::FillVertices(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 								 u16 bone_id)
 {
 	FSlideWindow& SW = nSWI.sw[0];
@@ -624,7 +624,7 @@ void CSkeletonX_ext::TEnumBoneVertices	( Vertices1W &verteses, u16 bone_id, u16*
 SEnumVerticesCallback &C ) const
 {
 		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
+		float3			p[3];
 		u32 idx			= (*it)*3;
 		for (u32 k=0; k<3; k++){
 			vertBoned1W& vert		= Vertices1W[indices[idx+k]];
@@ -635,10 +635,10 @@ void CSkeletonX_ext::TEnumBoneVertices	( Vertices2W &verteses, u16 bone_id, u16*
 SEnumVerticesCallback &C ) const
 {
 		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
+		float3			p[3];
 		u32 idx			= (*it)*3;
 		for (u32 k=0; k<3; k++){
-			Fvector		P0,P1;
+			float3		P0,P1;
 			vertBoned2W& vert		= Vertices2W[indices[idx+k]];
 		}}
 
@@ -647,7 +647,7 @@ void CSkeletonX_ext::TEnumBoneVertices	( vertHW_1W &verteses, u16 bone_id, u16* 
 SEnumVerticesCallback &C ) const
 {
 		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
+		float3			p[3];
 		u32 idx			= (*it)*3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k=0; k<3; k++){
@@ -658,11 +658,11 @@ void CSkeletonX_ext::TEnumBoneVertices	( vertHW_2W &verteses, u16 bone_id, u16* 
 SEnumVerticesCallback &C ) const
 {
 	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
+		float3			p[3];
 		u32 idx			= (*it)*3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k=0; k<3; k++){
-			Fvector		P0,P1;
+			float3		P0,P1;
 			vertHW_2W& vert			= vertices[indices[idx+k]];
 
 		}}
@@ -679,7 +679,7 @@ IC void TEnumBoneVertices(vertex_buffer_type vertices, u16* indices, CBoneData::
 		u32 idx = (*it) * 3;
 		for (u32 k = 0; k < 3; k++)
 		{
-			Fvector P;
+			float3 P;
 			vertices[indices[idx + k]].get_pos(P);
 			C(P);
 		}

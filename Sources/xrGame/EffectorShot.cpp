@@ -150,14 +150,14 @@ void CWeaponShotEffector::Clear()
 	m_LastSeed = 0;
 };
 
-void CWeaponShotEffector::GetDeltaAngle(Fvector& delta_angle)
+void CWeaponShotEffector::GetDeltaAngle(float3& delta_angle)
 {
 	delta_angle.x = -fAngleVert;
 	delta_angle.y = -fAngleHorz;
 	delta_angle.z = 0.0f;
 }
 
-void CWeaponShotEffector::GetLastDelta(Fvector& delta_angle)
+void CWeaponShotEffector::GetLastDelta(float3& delta_angle)
 {
 	delta_angle.x = -fLastDeltaVert;
 	delta_angle.y = -fLastDeltaHorz;

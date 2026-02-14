@@ -31,7 +31,7 @@ void CUIFrameRect::InitTexture(const char* texture)
 
 	if (FS.exist(fn, "$game_textures$", buf, ".ini"))
 	{
-		Fvector4 v;
+		float4 v;
 		// uFlags.set	(flSingleTex,TRUE);
 		CInifile* ini = CInifile::Create(fn, TRUE);
 		LPCSTR sh = ini->r_string("frame", "shader");
@@ -91,11 +91,11 @@ void CUIFrameRect::UpdateSize()
 {
 	VERIFY(g_bRendering);
 	// texture size
-	Fvector2 ts;
+	float2 ts;
 	float rem_x, rem_y;
 	int tile_x, tile_y;
 
-	Fvector2 _bk, _lt, _lb, _rb, _rt, _l, _r, _t, _b;
+	float2 _bk, _lt, _lb, _rb, _rt, _l, _r, _t, _b;
 
 	_bk.set(frame[fmBK].GetOriginalRect().width(), frame[fmBK].GetOriginalRect().height());
 	_lt.set(frame[fmLT].GetOriginalRect().width(), frame[fmLT].GetOriginalRect().height());
@@ -107,7 +107,7 @@ void CUIFrameRect::UpdateSize()
 	_t.set(frame[fmT].GetOriginalRect().width(), frame[fmT].GetOriginalRect().height());
 	_b.set(frame[fmB].GetOriginalRect().width(), frame[fmB].GetOriginalRect().height());
 
-	Fvector2 wnd_pos = GetWndPos();
+	float2 wnd_pos = GetWndPos();
 	frame[fmLT].SetPos(wnd_pos.x, wnd_pos.y);
 	frame[fmRT].SetPos(wnd_pos.x + m_wndSize.x - _rt.x, wnd_pos.y);
 	frame[fmLB].SetPos(wnd_pos.x, wnd_pos.y + m_wndSize.y - _lb.y);
@@ -178,8 +178,8 @@ void CUIFrameRect::Update()
 
 void CUIFrameRect::SetWndPos(float x, float y)
 {
-	Fvector2 _old_pos = GetWndPos();
-	Fvector2 _new_pos = Fvector2().set(x, y);
+	float2 _old_pos = GetWndPos();
+	float2 _new_pos = float2().set(x, y);
 	if (_old_pos.similar(_new_pos, EPS, EPS))
 		return;
 
@@ -187,7 +187,7 @@ void CUIFrameRect::SetWndPos(float x, float y)
 	uFlags.set(flValidSize, false);
 }
 
-void CUIFrameRect::SetWndSize(const Fvector2& size)
+void CUIFrameRect::SetWndSize(const float2& size)
 {
 	CUISimpleWindow::SetWndSize(size);
 	uFlags.set(flValidSize, false);
@@ -199,10 +199,10 @@ void CUIFrameRect::SetWndRect(const Frect& rect)
 	uFlags.set(flValidSize, false);
 }
 
-void CUIFrameRect::SetWndPos(const Fvector2& pos)
+void CUIFrameRect::SetWndPos(const float2& pos)
 {
 
-	//.	Fvector2 _old_pos = GetWndPos();
+	//.	float2 _old_pos = GetWndPos();
 	//.	if(_old_pos.similar(pos,EPS,EPS))	return;
 
 	CUISimpleWindow::SetWndPos(pos);
@@ -223,7 +223,7 @@ void CUIFrameRect::SetWidth(float width)
 
 void CUIFrameRect::Draw(float x, float y)
 {
-	Fvector2 p = GetWndPos();
+	float2 p = GetWndPos();
 	float dx = p.x - x;
 	float dy = p.y - y;
 	if (!fis_zero(dx) || !fis_zero(dy))

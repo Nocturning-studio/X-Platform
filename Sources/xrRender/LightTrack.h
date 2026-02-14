@@ -44,8 +44,8 @@ class CROS_impl : public IRender_ObjectSpecific
 
   private:
 	void smart_update(IRenderable* O);
-	void calc_sky_hemi_value(Fvector& position, CObject* _object);
-	static inline void accum_hemi(float* hemi_cube, Fvector3& dir, float scale);
+	void calc_sky_hemi_value(float3& position, CObject* _object);
+	static inline void accum_hemi(float* hemi_cube, float3& dir, float scale);
 
   private:
 	// Состояние трассировки
@@ -61,7 +61,7 @@ class CROS_impl : public IRender_ObjectSpecific
 	// Управление обновлением
 	u32 dwFrame;
 	u32 dwFrameSmooth;
-	Fvector last_position;
+	float3 last_position;
 	s32 ticks_to_update;
 	s32 sky_rays_uptodate;
 

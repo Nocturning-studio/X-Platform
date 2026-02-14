@@ -160,7 +160,7 @@ class CWeaponMagazined : public CWeapon
 	//  [7/20/2005]
 	// после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-за Абакана)
 	int m_iShootEffectorStart;
-	Fvector m_vStartPos, m_vStartDir;
+	float3 m_vStartPos, m_vStartDir;
 	//  [7/20/2005]
 	// флаг того, что мы остановились после того как выстреляли
 	// ровно столько патронов, сколько было задано в m_iQueueSize
@@ -182,7 +182,7 @@ class CWeaponMagazined : public CWeapon
 	bool m_bChamberHasAmmo;
 
 	float m_fSavedTimeFactor;
-	Fvector3 m_SavedDof;
+	float3 m_SavedDof;
 	//////////////////////////////////////////////
 	// режим приближения
 	//////////////////////////////////////////////

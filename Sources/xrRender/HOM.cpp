@@ -56,12 +56,12 @@ CHOM::~CHOM()
 #pragma pack(push, 4)
 struct HOM_poly
 {
-	Fvector v1, v2, v3;
+	float3 v1, v2, v3;
 	u32 flags;
 };
 #pragma pack(pop)
 
-IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
+IC float Area(float3& v0, float3& v1, float3& v2)
 {
 	float e1 = v0.distance_to(v1);
 	float e2 = v0.distance_to(v2);
@@ -101,9 +101,9 @@ void CHOM::Load()
 	{
 		CDB::TRI& clT = CL.getT()[it];
 		occTri& rT = m_pTris[it];
-		Fvector& v0 = CL.getV()[clT.verts[0]];
-		Fvector& v1 = CL.getV()[clT.verts[1]];
-		Fvector& v2 = CL.getV()[clT.verts[2]];
+		float3& v0 = CL.getV()[clT.verts[0]];
+		float3& v1 = CL.getV()[clT.verts[1]];
+		float3& v2 = CL.getV()[clT.verts[2]];
 		rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
 		rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
 		rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
@@ -132,13 +132,13 @@ class pred_fb
 {
   public:
 	occTri* m_pTris;
-	Fvector camera;
+	float3 camera;
 
   public:
 	pred_fb(occTri* _t) : m_pTris(_t)
 	{
 	}
-	pred_fb(occTri* _t, Fvector& _c) : m_pTris(_t), camera(_c)
+	pred_fb(occTri* _t, float3& _c) : m_pTris(_t), camera(_c)
 	{
 	}
 	ICF bool operator()(const CDB::RESULT& _1, const CDB::RESULT& _2) const
@@ -154,7 +154,7 @@ class pred_fb
 	}
 };
 
-void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFrustum& clip)
+void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const float3& COP, CFrustum& clip)
 {
 	sPoly src, dst;
 	occTri& T = m_pTris[it->id];
@@ -167,7 +167,7 @@ void CHOM::ProcessTriangle(CDB::RESULT* it, u32 _frame, const Fvector& COP, CFru
 	}
 
 	CDB::TRI& t = m_pModel->get_tris()[it->id];
-	Fvector* fvert = m_pModel->get_verts();
+	float3* fvert = m_pModel->get_verts();
 	src.clear();
 	src.push_back(fvert[t.verts[0]]);
 	src.push_back(fvert[t.verts[1]]);
@@ -210,7 +210,7 @@ void CHOM::Render_DB(CFrustum& base)
 	CDB::RESULT* it = xrc.r_begin();
 	CDB::RESULT* end = xrc.r_end();
 
-	Fvector COP = Engine.RenderView.Position;
+	float3 COP = Engine.RenderView.Position;
 
 	end = std::remove_if(it, end, pred_fb(m_pTris));
 
@@ -222,10 +222,10 @@ void CHOM::Render_DB(CFrustum& base)
 	std::sort(it, end, pred_fb(m_pTris, COP));
 
 	float view_dim = occ_dim_0;
-	Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f,		  0.0f,
+	float4x4 m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f,		  0.0f,
 						  0.0f,			  0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0, view_dim / 2.f + 0 + 0,
 						  0.0f,			  1.0f};
-	Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f,		   0.0f,
+	float4x4 m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f,		   0.0f,
 							 0.0f,		0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0,
 							 0.0f,		1.0f};
 	m_transform.mul(m_viewport, Engine.RenderView.ViewProjection);
@@ -267,7 +267,7 @@ void CHOM::Render(CFrustum& base)
 // =============================================================================
 
 // Проецирует первую точку (начало расчета Bounding Rect)
-ICF BOOL transform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+ICF BOOL transform_b0(float2& min, float2& max, float& minz, float4x4& X, float _x, float _y, float _z)
 {
 	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
 	// Если точка за ближней плоскостью отсечения (сзади камеры) - объект считается видимым
@@ -284,7 +284,7 @@ ICF BOOL transform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, flo
 }
 
 // Проецирует последующие точки (расширение Bounding Rect)
-ICF BOOL transform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+ICF BOOL transform_b1(float2& min, float2& max, float& minz, float4x4& X, float _x, float _y, float _z)
 {
 	float t;
 	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
@@ -317,9 +317,9 @@ ICF BOOL transform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, flo
 }
 
 // Проверка видимости для AABB (8 углов)
-IC BOOL _visible(Fbox& B, Fmatrix& m_transform_01, occRasterizer& raster)
+IC BOOL _visible(Fbox& B, float4x4& m_transform_01, occRasterizer& raster)
 {
-	Fvector2 min, max;
+	float2 min, max;
 	float z;
 
 	if (transform_b0(min, max, z, m_transform_01, B.min.x, B.min.y, B.min.z))
@@ -407,7 +407,7 @@ BOOL CHOM::visible(sPoly& P)
 	if (!bEnabled)
 		return TRUE;
 
-	Fvector2 min, max;
+	float2 min, max;
 	float z;
 
 	if (P.empty())
@@ -454,7 +454,7 @@ void CHOM::OnRender()
 			for (int it = 0; it < m_pModel->get_tris_count(); it++)
 			{
 				CDB::TRI* T = m_pModel->get_tris() + it;
-				Fvector* verts = m_pModel->get_verts();
+				float3* verts = m_pModel->get_verts();
 
 				// Заполнение треугольников (полупрозрачные)
 				poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);

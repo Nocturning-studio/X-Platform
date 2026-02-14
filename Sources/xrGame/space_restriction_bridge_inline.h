@@ -21,7 +21,7 @@ IC CSpaceRestrictionBase& CSpaceRestrictionBridge::object() const
 }
 
 template <typename T>
-IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const Fvector& position, Fvector& result,
+IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const float3& position, float3& result,
 												   bool out_restriction)
 {
 	VERIFY(initialized());
@@ -42,7 +42,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const Fvector
 	// Используем range-based for для чистоты и скорости
 	for (u32 vertex_id : border_list)
 	{
-		// vertex_position обычно возвращает значение, а не ссылку, но это легковесный Fvector
+		// vertex_position обычно возвращает значение, а не ссылку, но это легковесный float3
 		float distance_sqr = level_graph.vertex_position(vertex_id).distance_to_sqr(position);
 		if (distance_sqr < min_dist_sqr)
 		{
@@ -89,7 +89,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const Fvector
 	// --- PHASE 3: Суб-вертексная точность (5 точек) ---
 	// Оптимизация: разворачиваем цикл switch, убираем sqrt
 	{
-		Fvector center = level_graph.vertex_position(selected);
+		float3 center = level_graph.vertex_position(selected);
 		// Предвычисляем оффсет
 		float offset = level_graph.header().cell_size() * .5f - EPS_L;
 
@@ -104,7 +104,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const Fvector
 		// 1. Проверяем 4 угла
 		for (int i = 0; i < 4; ++i)
 		{
-			Fvector pt;
+			float3 pt;
 			pt.x = center.x + offsets_x[i];
 			pt.z = center.z + offsets_z[i];
 			// Тяжелая операция вычисления Y через плоскость ноды

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-extern Fvector du_cone_vertices[DU_CONE_NUMVERTEX];
+extern float3 du_cone_vertices[DU_CONE_NUMVERTEX];
 
 void CRender::accumulate_spot_lights(light* L)
 {
@@ -56,11 +56,11 @@ void CRender::accumulate_spot_lights(light* L)
 	RenderBackend.set_CullMode(CULL_FRONTFACE); // back
 
 	// 2D texgens
-	Fmatrix m_Texgen;
+	float4x4 m_Texgen;
 	RenderBackend.u_compute_texgen_screen(m_Texgen);
 
 	// Shadow transform (+texture adjustment matrix)
-	Fmatrix m_Shadow, m_Lmap;
+	float4x4 m_Shadow, m_Lmap;
 	{
 		float smapsize = float(RenderImplementation.o.smapsize);
 		float fTexelOffs = (.5f / smapsize);
@@ -69,7 +69,7 @@ void CRender::accumulate_spot_lights(light* L)
 		float view_sy = float(L->TransformContext.ShadowContext.posY + 1) / smapsize;
 		float fRange = float(1.f) * ps_r_ls_depth_scale;
 		float fBias = ps_r_ls_depth_bias;
-		Fmatrix m_TexelAdjust = {view_dim / 2.f,
+		float4x4 m_TexelAdjust = {view_dim / 2.f,
 								 0.0f,
 								 0.0f,
 								 0.0f,
@@ -87,10 +87,10 @@ void CRender::accumulate_spot_lights(light* L)
 								 1.0f};
 
 		// compute transforms
-		Fmatrix xf_world;
+		float4x4 xf_world;
 		xf_world.invert(Engine.RenderView.View);
-		Fmatrix xf_view = L->TransformContext.ShadowContext.view;
-		Fmatrix xf_project;
+		float4x4 xf_view = L->TransformContext.ShadowContext.view;
+		float4x4 xf_project;
 		xf_project.mul(m_TexelAdjust, L->TransformContext.ShadowContext.project);
 		m_Shadow.mul(xf_view, xf_world);
 		m_Shadow.mulA_44(xf_project);
@@ -99,7 +99,7 @@ void CRender::accumulate_spot_lights(light* L)
 		view_dim = 1.f;
 		view_sx = 0.f;
 		view_sy = 0.f;
-		Fmatrix m_TexelAdjust2 = {view_dim / 2.f,
+		float4x4 m_TexelAdjust2 = {view_dim / 2.f,
 								  0.0f,
 								  0.0f,
 								  0.0f,
@@ -123,7 +123,7 @@ void CRender::accumulate_spot_lights(light* L)
 	}
 
 	// Common constants
-	Fvector L_dir, L_clr, L_pos;
+	float3 L_dir, L_clr, L_pos;
 	L_clr.set(L->get_color().r, L->get_color().g, L->get_color().b);
 	L_clr.mul(L->get_LOD());
 	Engine.RenderView.View.transform_tiny(L_pos, L->get_position());

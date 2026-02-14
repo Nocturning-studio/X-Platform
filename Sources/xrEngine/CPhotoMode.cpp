@@ -25,7 +25,7 @@ CPhotoMode::g_position =
 };
 
 // +X, -X, +Y, -Y, +Z, -Z
-Fvector CPhotoMode::cmNorm[6] = 
+float3 CPhotoMode::cmNorm[6] = 
 {
 	{0.f, 1.f, 0.f}, 
 	{0.f, 1.f, 0.f}, 
@@ -35,7 +35,7 @@ Fvector CPhotoMode::cmNorm[6] =
 	{0.f, 1.f, 0.f}
 };
 
-Fvector CPhotoMode::cmDir[6] = 
+float3 CPhotoMode::cmDir[6] = 
 {
 	{1.f, 0.f, 0.f},  
 	{-1.f, 0.f, 0.f}, 
@@ -48,7 +48,7 @@ Fvector CPhotoMode::cmDir[6] =
 Flags32 CPhotoMode::s_hud_flag = { NULL };
 Flags32 CPhotoMode::s_dev_flags = { NULL };
 //////////////////////////////////////////////////////////////////////
-void CPhotoMode::update_whith_timescale(Fvector& v, const Fvector& v_delta)
+void CPhotoMode::update_whith_timescale(float3& v, const float3& v_delta)
 {
 	VERIFY(!fis_zero(Engine.TimeManager.GetTimeFactor()));
 	float scale = 1.f / Engine.TimeManager.GetTimeFactor();
@@ -64,8 +64,8 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	m_Camera.invert(Engine.RenderView.View);
 
 	// parse yaw
-	Fvector& dir = m_Camera.k;
-	Fvector DYaw;
+	float3& dir = m_Camera.k;
+	float3 DYaw;
 	DYaw.set(dir.x, 0.f, dir.z);
 	DYaw.normalize_safe();
 
@@ -186,7 +186,7 @@ void CPhotoMode::MakeScreenshotFace()
 	m_Stage++;
 }
 
-void CPhotoMode::MakeCubeMapFace(Fvector& D, Fvector& N)
+void CPhotoMode::MakeCubeMapFace(float3& D, float3& N)
 {
 	string32 buf;
 	switch (m_Stage)
@@ -337,7 +337,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 			g_position.p.set(m_Position);
 		}
 
-		Fvector vmove;
+		float3 vmove;
 		vmove.set(m_Camera.k);
 		vmove.normalize_safe();
 		vmove.mul(m_vT.z);
@@ -449,8 +449,8 @@ void CPhotoMode::SwitchActorVisibility()
 
 void CPhotoMode::ChangeDepthOfFieldFocalDepth(int direction)
 {
-	Fvector3 dof_params_old;
-	Fvector3 dof_params_actual;
+	float3 dof_params_old;
+	float3 dof_params_actual;
 
 	g_pGamePersistent->GetCurrentDof(dof_params_old);
 
@@ -475,8 +475,8 @@ void CPhotoMode::ChangeDepthOfFieldFocalDepth(int direction)
 
 void CPhotoMode::ChangeDepthOfFieldFocalLength(int direction)
 {
-	Fvector3 dof_params_old;
-	Fvector3 dof_params_actual;
+	float3 dof_params_old;
+	float3 dof_params_actual;
 
 	g_pGamePersistent->GetCurrentDof(dof_params_old);
 
@@ -500,8 +500,8 @@ void CPhotoMode::ChangeDepthOfFieldFocalLength(int direction)
 
 void CPhotoMode::ChangeDepthOfFieldFStop(int direction)
 {
-	Fvector3 dof_params_old;
-	Fvector3 dof_params_actual;
+	float3 dof_params_old;
+	float3 dof_params_actual;
 
 	g_pGamePersistent->GetCurrentDof(dof_params_old);
 
@@ -624,7 +624,7 @@ void CPhotoMode::IR_OnKeyboardPress(int dik)
 
 void CPhotoMode::IR_OnKeyboardHold(int dik)
 {
-	Fvector vT_delta{}, vR_delta{};
+	float3 vT_delta{}, vR_delta{};
 	switch (dik)
 	{
 	case DIK_A:
@@ -678,7 +678,7 @@ void CPhotoMode::IR_OnKeyboardHold(int dik)
 void CPhotoMode::IR_OnMouseMove(int dx, int dy)
 {
 	float scale = .5f; // psMouseSens;
-	Fvector vR_delta{};
+	float3 vR_delta{};
 	if (dx || dy)
 	{
 		vR_delta.y += float(dx) * scale;													// heading

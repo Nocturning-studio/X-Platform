@@ -215,12 +215,9 @@ template <class T> struct _vector4
 	}
 };
 
-typedef _vector4<float> Fvector4;
-typedef _vector4<double> Dvector4;
-typedef _vector4<s32> Ivector4;
-typedef __declspec(align(16)) _vector4<float> Fvector4a;
-typedef __declspec(align(16)) _vector4<double> Dvector4a;
-typedef __declspec(align(16)) _vector4<s32> Ivector4a;
+typedef _vector4<float> float4;
+typedef _vector4<double> double4;
+typedef _vector4<s32> int4;
 
 template <class T> BOOL _valid(const _vector4<T>& v)
 {

@@ -129,16 +129,16 @@ void CAI_Flesh::CheckSpecParams(u32 spec_params)
 // Необходима для определения пересечения копыта плоти с баунд-сферой крысы
 // Параметры: ConeVertex - вершина конуса, ConeAngle - угол конуса (между поверхностью и высотой)
 // ConeDir - направление конуса, SphereCenter - центр сферы, SphereRadius - радиус сферы
-bool CAI_Flesh::ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter,
+bool CAI_Flesh::ConeSphereIntersection(float3 ConeVertex, float ConeAngle, float3 ConeDir, float3 SphereCenter,
 									   float SphereRadius)
 {
 	float fInvSin = 1.0f / _sin(ConeAngle);
 	float fCosSqr = _cos(ConeAngle) * _cos(ConeAngle);
 
-	Fvector kCmV;
+	float3 kCmV;
 	kCmV.sub(SphereCenter, ConeVertex);
-	Fvector kD = kCmV;
-	Fvector tempV = ConeDir;
+	float3 kD = kCmV;
+	float3 tempV = ConeDir;
 	tempV.mul(SphereRadius * fInvSin);
 	kD.add(tempV);
 

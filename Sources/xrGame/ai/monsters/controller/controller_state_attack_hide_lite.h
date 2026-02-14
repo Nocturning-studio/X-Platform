@@ -8,7 +8,7 @@ template <typename _Object> class CStateControlHideLite : public CState<_Object>
 
 	struct
 	{
-		Fvector position;
+		float3 position;
 		u32 node;
 	} target;
 

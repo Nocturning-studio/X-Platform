@@ -75,9 +75,9 @@ class ENGINE_API CLensFlare
 	float fBlend;
 	u32 dwFrame;
 
-	Fvector vSunDir;
-	Fvector vecLight;
-	Fvector vecX, vecY, vecDir, vecAxis, vecCenter;
+	float3 vSunDir;
+	float3 vecLight;
+	float3 vecX, vecY, vecDir, vecAxis, vecCenter;
 	BOOL bRender;
 
 	// variable

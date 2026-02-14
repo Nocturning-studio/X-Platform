@@ -210,7 +210,7 @@ void CSE_ALifeMonsterAbstract::vfCheckForPopulationChanges()
 	}
 }
 
-Fvector CSE_ALifeMonsterAbstract::draw_level_position() const
+float3 CSE_ALifeMonsterAbstract::draw_level_position() const
 {
 #if 0
 	brain().update				();

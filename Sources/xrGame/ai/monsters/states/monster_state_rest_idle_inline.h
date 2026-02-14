@@ -105,7 +105,7 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 
 		SStateDataLookToPoint data;
 
-		Fvector dir;
+		float3 dir;
 		object->CoverMan->less_cover_direction(dir);
 
 		data.point.mad(object->Position(), dir, 10.f);

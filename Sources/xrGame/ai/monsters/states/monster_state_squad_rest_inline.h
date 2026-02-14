@@ -66,7 +66,7 @@ void CStateMonsterSquadRestAbstract::setup_substates()
 		else
 		{
 
-			Fvector dest_pos = random_position(squad->GetLeader()->Position(), LEADER_RADIUS);
+			float3 dest_pos = random_position(squad->GetLeader()->Position(), LEADER_RADIUS);
 			if (!object->control().path_builder().restrictions().accessible(dest_pos))
 			{
 				data.vertex = object->control().path_builder().restrictions().accessible_nearest(dest_pos, data.point);

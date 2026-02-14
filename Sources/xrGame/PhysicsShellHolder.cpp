@@ -65,7 +65,7 @@ BOOL CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
 	return ret;
 }
 
-void CPhysicsShellHolder::PHHit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space,
+void CPhysicsShellHolder::PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space,
 								float impulse, ALife::EHitType hit_type /* ALife::eHitTypeWound*/)
 {
 	if (impulse > 0)
@@ -73,8 +73,8 @@ void CPhysicsShellHolder::PHHit(float P, Fvector& dir, CObject* who, s16 element
 			m_pPhysicsShell->applyHit(p_in_object_space, dir, impulse, element, hit_type);
 }
 
-// void	CPhysicsShellHolder::Hit(float P, Fvector &dir, CObject* who, s16 element,
-//						 Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+// void	CPhysicsShellHolder::Hit(float P, float3 &dir, CObject* who, s16 element,
+//						 float3 p_in_object_space, float impulse, ALife::EHitType hit_type)
 void CPhysicsShellHolder::Hit(SHit* pHDS)
 {
 	PHHit(pHDS->damage(), pHDS->dir, pHDS->who, pHDS->boneID, pHDS->p_in_bone_space, pHDS->impulse, pHDS->hit_type);
@@ -97,8 +97,8 @@ void CPhysicsShellHolder::correct_spawn_pos()
 {
 	VERIFY(PPhysicsShell());
 
-	Fvector size;
-	Fvector c;
+	float3 size;
+	float3 c;
 	get_box(PPhysicsShell(), Transform(), size, c);
 
 	CPHActivationShape activation_shape;
@@ -117,7 +117,7 @@ void CPhysicsShellHolder::correct_spawn_pos()
 
 	PPhysicsShell()->EnableCollision();
 
-	Fvector ap = activation_shape.Position();
+	float3 ap = activation_shape.Position();
 #ifdef DEBUG
 	if (!valid_pos(ap, phBoundaries))
 	{
@@ -130,7 +130,7 @@ void CPhysicsShellHolder::correct_spawn_pos()
 #endif // DEBUG
 	VERIFY(valid_pos(activation_shape.Position(), phBoundaries));
 
-	Fmatrix trans;
+	float4x4 trans;
 	trans.identity();
 	trans.c.sub(ap, c);
 	PPhysicsShell()->TransformPosition(trans);
@@ -142,13 +142,13 @@ void CPhysicsShellHolder::activate_physic_shell()
 {
 	VERIFY(!m_pPhysicsShell);
 	create_physic_shell();
-	Fvector l_fw, l_up;
+	float3 l_fw, l_up;
 	l_fw.set(Transform().k);
 	l_up.set(Transform().j);
 	l_fw.mul(2.f);
 	l_up.mul(2.f);
 
-	Fmatrix l_p1, l_p2;
+	float4x4 l_p1, l_p2;
 	l_p1.set(Transform());
 	l_p2.set(Transform());
 	l_fw.mul(2.f);
@@ -202,7 +202,7 @@ void CPhysicsShellHolder::PHSetMaterial(LPCSTR m)
 		m_pPhysicsShell->SetMaterial(m);
 }
 
-void CPhysicsShellHolder::PHGetLinearVell(Fvector& velocity)
+void CPhysicsShellHolder::PHGetLinearVell(float3& velocity)
 {
 	if (!m_pPhysicsShell)
 	{
@@ -212,7 +212,7 @@ void CPhysicsShellHolder::PHGetLinearVell(Fvector& velocity)
 	m_pPhysicsShell->get_LinearVel(velocity);
 }
 
-void CPhysicsShellHolder::PHSetLinearVell(Fvector& velocity)
+void CPhysicsShellHolder::PHSetLinearVell(float3& velocity)
 {
 	if (!m_pPhysicsShell)
 	{
@@ -316,7 +316,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
 		P.w_u16(0);
 	}
 	/////////////////////////////
-	Fvector min, max;
+	float3 min, max;
 
 	min.set(flt_max, flt_max, flt_max);
 	max.set(-flt_max, -flt_max, -flt_max);
@@ -327,7 +327,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
 	{
 		SPHNetState state;
 		PHGetSyncItem(i)->get_State(state);
-		Fvector& p = state.position;
+		float3& p = state.position;
 		if (p.x < min.x)
 			min.x = p.x;
 		if (p.y < min.y)
@@ -371,8 +371,8 @@ void CPhysicsShellHolder::PHLoadState(IReader& P)
 		K->LL_SetBoneRoot(P.r_u16());
 	}
 
-	Fvector min = P.r_vec3();
-	Fvector max = P.r_vec3();
+	float3 min = P.r_vec3();
+	float3 max = P.r_vec3();
 
 	VERIFY(!min.similar(max));
 

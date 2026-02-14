@@ -343,7 +343,7 @@ virtual void vfDetachAll(bool bFictitious = false){};
 void vfCheckForPopulationChanges();
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
-virtual Fvector draw_level_position() const;
+virtual float3 draw_level_position() const;
 virtual bool redundant() const;
 #endif
 virtual bool need_update(CSE_ALifeDynamicObject* object);
@@ -360,8 +360,8 @@ add_to_type_list(CSE_ALifeMonsterAbstract)
 								 CSE_PHSkeleton)
 
 		u16 mstate;
-Fvector accel;
-Fvector velocity;
+float3 accel;
+float3 velocity;
 //	float							fArmor;
 float fRadiation;
 u8 weapon;

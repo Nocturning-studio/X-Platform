@@ -40,7 +40,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 
 	if (GO)
 	{
-		Fvector pos;
+		float3 pos;
 		Transform().transform_tiny(pos, CFORM()->getSphere().P);
 
 #ifdef DEBUG
@@ -50,10 +50,10 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 			Msg("%s %s", *GO->cName(), pow);
 #endif
 
-		Fvector dir;
+		float3 dir;
 		dir.set(0, 0, 0);
 
-		Fvector position_in_bone_space;
+		float3 position_in_bone_space;
 		float power = (GameID() == GAME_SINGLE) ? Power(GO->Position().distance_to(pos)) : 0.0f;
 		float impulse = 0.f;
 		if (power > EPS)
@@ -73,7 +73,7 @@ void CRadioactiveZone::feel_touch_new(CObject* O)
 	{
 		if (O->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
-			CreateHit(O->ID(), ID(), Fvector().set(0, 0, 0), 0.0f, BI_NONE, Fvector().set(0, 0, 0), 0.0f,
+			CreateHit(O->ID(), ID(), float3().set(0, 0, 0), 0.0f, BI_NONE, float3().set(0, 0, 0), 0.0f,
 					  ALife::eHitTypeRadiation);
 		}
 	};
@@ -114,7 +114,7 @@ void CRadioactiveZone::UpdateWorkload(u32 dt)
 	if (IsEnabled() && GameID() != GAME_SINGLE)
 	{
 		OBJECT_INFO_VEC_IT it;
-		Fvector pos;
+		float3 pos;
 		Transform().transform_tiny(pos, CFORM()->getSphere().P);
 		for (it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		{
@@ -133,10 +133,10 @@ void CRadioactiveZone::UpdateWorkload(u32 dt)
 				HS.GenHeader(GE_HIT, (*it).object->ID());
 				HS.whoID = ID();
 				HS.weaponID = ID();
-				HS.dir = Fvector().set(0, 0, 0);
+				HS.dir = float3().set(0, 0, 0);
 				HS.power = power;
 				HS.boneID = BI_NONE;
-				HS.p_in_bone_space = Fvector().set(0, 0, 0);
+				HS.p_in_bone_space = float3().set(0, 0, 0);
 				HS.impulse = 0.0f;
 				HS.hit_type = ALife::eHitTypeRadiation;
 

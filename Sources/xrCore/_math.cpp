@@ -6,12 +6,12 @@
 #include "../xrEngine/optick_include.h"
 
 // Глобальные объекты
-XRCORE_API Fmatrix Fidentity;
-XRCORE_API Dmatrix Didentity;
+XRCORE_API float4x4 Fidentity;
+XRCORE_API double4x4 Didentity;
 XRCORE_API CRandom Random;
 
 // Сплайны (math implementation)
-void spline1(float t, Fvector* p, Fvector* ret)
+void spline1(float t, float3* p, float3* ret)
 {
 	float t2 = t * t;
 	float t3 = t2 * t;
@@ -33,7 +33,7 @@ void spline1(float t, Fvector* p, Fvector* ret)
 	}
 }
 
-void spline2(float t, Fvector* p, Fvector* ret)
+void spline2(float t, float3* p, float3* ret)
 {
 	float s = 1.0f - t;
 	float t2 = t * t;
@@ -53,7 +53,7 @@ void spline2(float t, Fvector* p, Fvector* ret)
 #define beta1 1.0f
 #define beta2 0.8f
 
-void spline3(float t, Fvector* p, Fvector* ret)
+void spline3(float t, float3* p, float3* ret)
 {
 	float s = 1.0f - t;
 	float t2 = t * t;

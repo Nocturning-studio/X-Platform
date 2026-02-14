@@ -156,7 +156,7 @@ void CBaseMonster::Die(CObject* who)
 		m_controlled->on_die();
 }
 
-// void CBaseMonster::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse,
+// void CBaseMonster::Hit(float P,float3 &dir,CObject*who,s16 element,float3 p_in_object_space,float impulse,
 // ALife::EHitType hit_type)
 void CBaseMonster::Hit(SHit* pHDS)
 {
@@ -174,7 +174,7 @@ void CBaseMonster::Hit(SHit* pHDS)
 	inherited::Hit(pHDS);
 }
 
-void CBaseMonster::PHHit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space, float impulse,
+void CBaseMonster::PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
 						 ALife::EHitType hit_type /*=ALife::eHitTypeWound*/)
 {
 	m_pPhysics_support->in_Hit(P, dir, who, element, p_in_object_space, impulse, hit_type);
@@ -467,17 +467,17 @@ void CBaseMonster::set_action(EAction action)
 	anim().m_tAction = action;
 }
 
-CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvector& position, const Fvector& dir,
+CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const float3& position, const float3& dir,
 											  BOOL auto_remove, BOOL transformed)
 {
 	CParticlesObject* ps = CParticlesObject::Create(name.c_str(), auto_remove);
 
 	// вычислить позицию и направленность партикла
-	Fmatrix matrix;
+	float4x4 matrix;
 
 	matrix.identity();
 	matrix.k.set(dir);
-	Fvector::generate_orthonormal_basis_normalized(matrix.k, matrix.j, matrix.i);
+	float3::generate_orthonormal_basis_normalized(matrix.k, matrix.j, matrix.i);
 	matrix.translate_over(position);
 
 	(transformed) ? ps->SetTransform(matrix) : ps->UpdateParent(matrix, zero_vel);

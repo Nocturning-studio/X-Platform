@@ -10,7 +10,7 @@ void CRender::motion_blur_pass_prepare_dilation_map()
 	////OPTICK_EVENT("CRenderTarget::motion_blur_pass_prepare_dilation_map");
 
 	// (new-camera) -> (world) -> (old_viewproj)
-	Fmatrix m_previous, m_current, m_invview;
+	float4x4 m_previous, m_current, m_invview;
 	m_invview.invert(Engine.RenderView.View);
 	m_previous.mul(RenderImplementation.m_saved_viewproj, m_invview);
 	m_current.set(Engine.RenderView.Project);

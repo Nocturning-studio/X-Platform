@@ -40,7 +40,7 @@ bool CStateMonsterAttackCampStealOutAbstract::check_completion()
 	if (time_state_started + STATE_EXECUTE_TIME < time())
 		return true;
 
-	Fvector pos = ai().level_graph().vertex_position(object->EnemyMan.get_my_vertex_enemy_last_seen());
+	float3 pos = ai().level_graph().vertex_position(object->EnemyMan.get_my_vertex_enemy_last_seen());
 	if ((object->Position().distance_to(pos) < 2.f) && object->control().path_builder().is_path_end(0.f))
 		return true;
 

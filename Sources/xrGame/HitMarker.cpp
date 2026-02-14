@@ -6,8 +6,8 @@
 #include "../xrEngine/LightAnimLibrary.h"
 #include "UIStaticItem.h"
 
-static Fvector2 as_PC[5];
-static Fvector2 as_TC[5];
+static float2 as_PC[5];
+static float2 as_TC[5];
 const static u32 as_id[4 * 3] = {0, 1, 4, 1, 2, 4, 2, 3, 4, 3, 0, 4};
 
 //--------------------------------------------------------------------
@@ -52,16 +52,16 @@ void CHitMarker::Render()
 }
 //--------------------------------------------------------------------
 
-void CHitMarker::Hit(int id, const Fvector& dir)
+void CHitMarker::Hit(int id, const float3& dir)
 {
 
-	Fvector hit_dir = dir;
+	float3 hit_dir = dir;
 	hit_dir.mul(-1.0f);
 	m_HitMarks.push_back(xr_new<SHitMark>(hShader2, hit_dir));
 }
 //--------------------------------------------------------------------
 
-SHitMark::SHitMark(const ref_shader& sh, const Fvector& dir)
+SHitMark::SHitMark(const ref_shader& sh, const float3& dir)
 {
 	m_StartTime = Engine.TimeManager.GetGlobalTime();
 	m_lanim = LALib.FindItem("hud_hit_mark");

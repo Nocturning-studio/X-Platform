@@ -9,12 +9,12 @@ class ENGINE_API IRender_DetailModel
   public:
 	struct fvfVertexIn
 	{
-		Fvector P;
+		float3 P;
 		float u, v;
 	};
 	struct fvfVertexOut
 	{
-		Fvector P;
+		float3 P;
 		u32 C;
 		float u, v;
 	};
@@ -33,8 +33,8 @@ class ENGINE_API IRender_DetailModel
 	u32 number_indices;
 
   public:
-	virtual void transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
-	virtual void transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
+	virtual void transfer(float4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
+	virtual void transfer(float4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
 	virtual ~IRender_DetailModel(){};
 };
 

@@ -14,7 +14,7 @@ void CMatrix::Calculate()
 	case modeDetail:
 		return;
 	case modeTCM: {
-		Fmatrix T;
+		float4x4 T;
 		float sU = 1, sV = 1, t = Engine.TimeManager.GetGlobalTime();
 		tc_trans(transform, .5f, .5f);
 		if (tcm & tcmRotate)
@@ -65,7 +65,7 @@ void CMatrix::Calculate()
 	}
 		return;
 	case modeC_refl: {
-		Fmatrix M = Engine.RenderView.View;
+		float4x4 M = Engine.RenderView.View;
 		M._41 = 0.f;
 		M._42 = 0.f;
 		M._43 = 0.f;

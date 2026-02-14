@@ -111,8 +111,8 @@ void CStalkerActionDetectAnomaly::initialize()
 	object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
 	m_inertia_time = 15000 + ::Random32.random(5000);
 
-	Fvector result;
-	object().eye_matrix.transform_tiny(result, Fvector().set(0.f, 0.f, 10.f));
+	float3 result;
+	object().eye_matrix.transform_tiny(result, float3().set(0.f, 0.f, 10.f));
 	object().throw_target(result);
 }
 

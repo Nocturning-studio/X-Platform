@@ -14,7 +14,7 @@ weapon_hud_container* g_pWeaponHUDContainer = 0;
 BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
 {
 	// Geometry and transform
-	Fvector pos, ypr;
+	float3 pos, ypr;
 	pos = pSettings->r_fvector3(section, "position");
 	ypr = pSettings->r_fvector3(section, "orientation");
 	ypr.mul(PI / 180.f);
@@ -110,7 +110,7 @@ void CWeaponHUD::net_DestroyHud()
 	Visible(false);
 }
 
-void CWeaponHUD::UpdatePosition(const Fmatrix& trans)
+void CWeaponHUD::UpdatePosition(const float4x4& trans)
 {
 	m_Transform.mul(trans, m_shared_data.get_value()->m_offset);
 	VERIFY(!fis_zero(DET(m_Transform)));

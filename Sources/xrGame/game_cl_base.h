@@ -13,7 +13,7 @@ class CUIDialogWnd;
 
 struct SZoneMapEntityData
 {
-	Fvector pos;
+	float3 pos;
 	u32 color;
 	SZoneMapEntityData()
 	{

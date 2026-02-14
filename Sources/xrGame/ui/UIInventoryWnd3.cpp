@@ -226,7 +226,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		UIPropertiesBox.AutoUpdateSize();
 		UIPropertiesBox.BringAllToTop();
 
-		Fvector2 cursor_pos;
+		float2 cursor_pos;
 		Frect vis_rect;
 		GetAbsoluteRect(vis_rect);
 		cursor_pos = GetUICursor()->GetCursorPosition();

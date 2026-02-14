@@ -67,14 +67,14 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 				continue;
 
 			Fobb& obb = (*bones)[b]->obb;
-			Fmatrix& Mbone = bone_instances[b].mTransform;
-			Fmatrix Mbox;
+			float4x4& Mbone = bone_instances[b].mTransform;
+			float4x4 Mbox;
 			obb.transform_get(Mbox);
-			Fmatrix X;
+			float4x4 X;
 			X.mul_43(Mbone, Mbox);
-			Fvector& S = obb.m_halfsize;
+			float3& S = obb.m_halfsize;
 
-			Fvector P, A;
+			float3 P, A;
 
 			A.set(-S.x, -S.y, -S.z);
 			X.transform_tiny(P, A);
@@ -126,14 +126,14 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 void check_kinematics(CKinematics* _k, LPCSTR s)
 {
 	CKinematics* K = _k;
-	Fmatrix& MrootBone = K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
+	float4x4& MrootBone = K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
 	if (MrootBone.c.y > 10000)
 	{
 		Msg("all bones transform:--------[%s]", s);
 
 		for (u16 ii = 0; ii < K->LL_BoneCount(); ++ii)
 		{
-			Fmatrix tr;
+			float4x4 tr;
 
 			tr = K->LL_GetTransform(ii);
 			Log("bone ", K->LL_BoneName_dbg(ii));
@@ -145,7 +145,7 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 }
 #endif
 
-void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix* parent)
+void CKinematics::Bone_Calculate(CBoneData* bd, float4x4* parent)
 {
 	u16 SelfID = bd->GetSelfID();
 	if (LL_GetBoneVisible(SelfID))

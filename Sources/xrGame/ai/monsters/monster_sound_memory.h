@@ -40,7 +40,7 @@ typedef struct tagSoundElement
 {
 	const CObject* who;
 	TSoundDangerValue type;
-	Fvector position; // позиция звука, не объекта, издавшего звук
+	float3 position; // позиция звука, не объекта, издавшего звук
 	float power;
 	TTime time; // время обнаружения звука
 
@@ -59,7 +59,7 @@ typedef struct tagSoundElement
 	{
 		return (value < s.value);
 	}
-	IC void SetConvert(const CObject* who, int eType, const Fvector& position, float power, TTime time)
+	IC void SetConvert(const CObject* who, int eType, const float3& position, float power, TTime time)
 	{
 		this->who = who;
 		type = ConvertSoundType((ESoundTypes)eType);
@@ -69,7 +69,7 @@ typedef struct tagSoundElement
 	}
 	TSoundDangerValue ConvertSoundType(ESoundTypes stype);
 
-	void CalcValue(TTime cur_time, Fvector cur_pos)
+	void CalcValue(TTime cur_time, float3 cur_pos)
 	{
 		value = FACTOR_SOUND_TYPE * u32(NONE_DANGEROUS_SOUND - WEAPON_SHOOTING) -
 				iFloor(FACTOR_DISTANCE * cur_pos.distance_to(position)) -
@@ -95,7 +95,7 @@ class CMonsterSoundMemory
 	void init_external(CBaseMonster* M, TTime mem_time);
 
 	void HearSound(const SoundElem& s);
-	void HearSound(const CObject* who, int eType, const Fvector& Position, float power, TTime time);
+	void HearSound(const CObject* who, int eType, const float3& Position, float power, TTime time);
 	IC bool IsRememberSound()
 	{
 		return (!Sounds.empty());

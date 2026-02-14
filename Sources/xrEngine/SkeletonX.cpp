@@ -58,7 +58,7 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		RenderBackend.stat.r.s_dynamic_sw.add(vCount);
 		break;
 	case RM_SINGLE: {
-		Fmatrix W;
+		float4x4 W;
 		W.mul_43(RenderBackend.transforms.m_World, Parent->LL_GetTransform_R(u16(RMS_boneid)));
 		RenderBackend.set_transform_world(W);
 		RenderBackend.set_Geometry(hGeom);
@@ -73,7 +73,7 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		u32 count = RMS_bonecount;
 		for (u32 mid = 0; mid < count; mid++)
 		{
-			Fmatrix& M = Parent->LL_GetTransform_R(u16(mid));
+			float4x4& M = Parent->LL_GetTransform_R(u16(mid));
 			u32 id = mid * 3;
 			RenderBackend.set_Array_Constant(&*array, id + 0, M._11, M._21, M._31, M._41);
 			RenderBackend.set_Array_Constant(&*array, id + 1, M._12, M._22, M._32, M._42);
@@ -274,19 +274,19 @@ BOOL CSkeletonX::has_visible_bones()
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
 #include "../xrCDB/cl_intersect.h"
-BOOL CSkeletonX::_PickBoneSoft1W(Fvector& normal, float& dist, const Fvector& S, const Fvector& D, u16* indices,
+BOOL CSkeletonX::_PickBoneSoft1W(float3& normal, float& dist, const float3& S, const float3& D, u16* indices,
 								 CBoneData::FacesVec& faces)
 {
 	VERIFY(*Vertices1W);
 	bool intersect = FALSE;
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		for (u32 k = 0; k < 3; k++)
 		{
 			vertBoned1W& vert = Vertices1W[indices[idx + k]];
-			const Fmatrix& transform = Parent->LL_GetBoneInstance((u16)vert.matrix).mRenderTransform;
+			const float4x4& transform = Parent->LL_GetBoneInstance((u16)vert.matrix).mRenderTransform;
 			transform.transform_tiny(p[k], vert.P);
 		}
 		float u, v, range = flt_max;
@@ -300,21 +300,21 @@ BOOL CSkeletonX::_PickBoneSoft1W(Fvector& normal, float& dist, const Fvector& S,
 	return intersect;
 }
 
-BOOL CSkeletonX::_PickBoneSoft2W(Fvector& normal, float& dist, const Fvector& S, const Fvector& D, u16* indices,
+BOOL CSkeletonX::_PickBoneSoft2W(float3& normal, float& dist, const float3& S, const float3& D, u16* indices,
 								 CBoneData::FacesVec& faces)
 {
 	VERIFY(*Vertices2W);
 	bool intersect = FALSE;
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		for (u32 k = 0; k < 3; k++)
 		{
-			Fvector P0, P1;
+			float3 P0, P1;
 			vertBoned2W& vert = Vertices2W[indices[idx + k]];
-			Fmatrix& transform0 = Parent->LL_GetBoneInstance(vert.matrix0).mRenderTransform;
-			Fmatrix& transform1 = Parent->LL_GetBoneInstance(vert.matrix1).mRenderTransform;
+			float4x4& transform0 = Parent->LL_GetBoneInstance(vert.matrix0).mRenderTransform;
+			float4x4& transform1 = Parent->LL_GetBoneInstance(vert.matrix1).mRenderTransform;
 			transform0.transform_tiny(P0, vert.P);
 			transform1.transform_tiny(P1, vert.P);
 			p[k].lerp(P0, P1, vert.w);
@@ -331,13 +331,13 @@ BOOL CSkeletonX::_PickBoneSoft2W(Fvector& normal, float& dist, const Fvector& S,
 }
 
 // Fill Vertices
-void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX::_FillVerticesSoft1W(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 									 u16* indices, CBoneData::FacesVec& faces)
 {
 	VERIFY(*Vertices1W);
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k = 0; k < 3; k++)
@@ -346,21 +346,21 @@ void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm,
 			F.bone_id[k][0] = (u16)vert.matrix;
 			F.bone_id[k][1] = F.bone_id[k][0];
 			F.weight[k] = 0.f;
-			const Fmatrix& transform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			const float4x4& transform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
 			F.vert[k].set(vert.P);
 			transform.transform_tiny(p[k], F.vert[k]);
 		}
-		Fvector test_normal;
+		float3 test_normal;
 		test_normal.mknormal(p[0], p[1], p[2]);
 		float cosa = test_normal.dotproduct(normal);
 		if (cosa < EPS)
 			continue;
 		if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
 		{
-			Fvector UV;
+			float3 UV;
 			for (u32 k = 0; k < 3; k++)
 			{
-				Fvector2& uv = F.uv[k];
+				float2& uv = F.uv[k];
 				view.transform_tiny(UV, p[k]);
 				uv.x = (1 + UV.x) * .5f;
 				uv.y = (1 - UV.y) * .5f;
@@ -369,40 +369,40 @@ void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm,
 		}
 	}
 }
-void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size,
+void CSkeletonX::_FillVerticesSoft2W(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
 									 u16* indices, CBoneData::FacesVec& faces)
 {
 	VERIFY(*Vertices2W);
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		Fvector p[3];
+		float3 p[3];
 		u32 idx = (*it) * 3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k = 0; k < 3; k++)
 		{
-			Fvector P0, P1;
+			float3 P0, P1;
 			vertBoned2W& vert = Vertices2W[indices[idx + k]];
 			F.bone_id[k][0] = vert.matrix0;
 			F.bone_id[k][1] = vert.matrix1;
 			F.weight[k] = vert.w;
-			Fmatrix& transform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-			Fmatrix& transform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+			float4x4& transform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			float4x4& transform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
 			F.vert[k].set(vert.P);
 			transform0.transform_tiny(P0, F.vert[k]);
 			transform1.transform_tiny(P1, F.vert[k]);
 			p[k].lerp(P0, P1, F.weight[k]);
 		}
-		Fvector test_normal;
+		float3 test_normal;
 		test_normal.mknormal(p[0], p[1], p[2]);
 		float cosa = test_normal.dotproduct(normal);
 		if (cosa < EPS)
 			continue;
 		if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
 		{
-			Fvector UV;
+			float3 UV;
 			for (u32 k = 0; k < 3; k++)
 			{
-				Fvector2& uv = F.uv[k];
+				float2& uv = F.uv[k];
 				view.transform_tiny(UV, p[k]);
 				uv.x = (1 + UV.x) * .5f;
 				uv.y = (1 - UV.y) * .5f;

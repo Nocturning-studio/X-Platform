@@ -44,8 +44,8 @@ CLevelGraph::CLevelGraph()
 #ifndef AI_COMPILER
 	m_current_level_id = -1;
 	m_current_actual = false;
-	m_current_center = Fvector().set(flt_max, flt_max, flt_max);
-	m_current_radius = Fvector().set(flt_max, flt_max, flt_max);
+	m_current_center = float3().set(flt_max, flt_max, flt_max);
+	m_current_radius = float3().set(flt_max, flt_max, flt_max);
 #endif
 #endif
 }
@@ -55,7 +55,7 @@ CLevelGraph::~CLevelGraph()
 	FS.r_close(m_reader);
 }
 
-u32 CLevelGraph::vertex(const Fvector& position) const
+u32 CLevelGraph::vertex(const float3& position) const
 {
 	CLevelGraph::CPosition _node_position;
 	vertex_position(_node_position, position);
@@ -76,7 +76,7 @@ u32 CLevelGraph::vertex(const Fvector& position) const
 	return (selected);
 }
 
-u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
+u32 CLevelGraph::vertex(u32 current_node_id, const float3& position) const
 {
 	//OPTICK_EVENT("CLevelGraph::vertex");
 
@@ -167,7 +167,7 @@ u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
 	// there is no node for the current position
 	// try to search the nearest one iteratively
 	SContour _contour;
-	Fvector point;
+	float3 point;
 	u32 best_vertex_id = current_node_id;
 	contour(_contour, current_node_id);
 	nearest(point, position, _contour);
@@ -198,7 +198,7 @@ u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
 	STOP_PROFILE
 }
 
-u32 CLevelGraph::vertex_id(const Fvector& position) const
+u32 CLevelGraph::vertex_id(const float3& position) const
 {
 	CPosition _vertex_position = vertex_position(position);
 	CVertex* B = m_nodes;

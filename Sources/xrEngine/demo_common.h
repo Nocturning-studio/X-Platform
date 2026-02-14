@@ -9,14 +9,14 @@
 struct FrameData
 {
 	// Critical params for camera transform matrix
-	Fvector3 HPB;
-	Fvector3 Position;
+	float3 HPB;
+	float3 Position;
 
 	// Jump/Spline camera moving parameter
 	u32 InterpolationType;
 
 	// Postprocess
-	Fvector3 DOF;
+	float3 DOF;
 
 	// Overlays
 	bool UseCinemaBorders;
@@ -36,8 +36,8 @@ extern u32 TotalFramesCount;
 /////////////////////////////////////////////////////////////////
 extern float g_fGlobalFov;
 extern float g_fFov;
-extern Fvector3 g_vGlobalDepthOfFieldParameters;
-extern Fvector3 g_fDOF;
+extern float3 g_vGlobalDepthOfFieldParameters;
+extern float3 g_fDOF;
 extern float g_fDiaphragm;
 extern float g_fGlobalDiaphragm;
 extern bool g_bAutofocusEnabled;
@@ -52,7 +52,7 @@ extern void ResetParameters();
 extern void SaveAllFramesDataToIni(int FramesCount);
 extern void ReadAllFramesDataFromIni(const char* name);
 /////////////////////////////////////////////////////////////////
-extern Fmatrix MakeCameraMatrixFromFrameNumber(int Frame);
+extern float4x4 MakeCameraMatrixFromFrameNumber(int Frame);
 extern bool NeedInterpolation(int Frame);
 extern u32 GetInterpolationType(u32 frame);
 /////////////////////////////////////////////////////////////////

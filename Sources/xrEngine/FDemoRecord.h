@@ -16,26 +16,26 @@ class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver
 	static struct force_position
 	{
 		bool set_position;
-		Fvector p;
+		float3 p;
 	} g_position;
 
-	static Fvector cmNorm[6];
-	static Fvector cmDir[6];
+	static float3 cmNorm[6];
+	static float3 cmDir[6];
 	
 	static Flags32 s_hud_flag;
 	static Flags32 s_dev_flags;
 
 	int iCount;
-	Fvector m_HPB;
-	Fvector m_Position;
-	Fmatrix m_Camera;
+	float3 m_HPB;
+	float3 m_Position;
+	float4x4 m_Camera;
 	u32 m_Stage;
 
 	bool m_bNeedDisableInterpolation;
-	Fvector m_vT;
-	Fvector m_vR;
-	Fvector m_vVelocity;
-	Fvector m_vAngularVelocity;
+	float3 m_vT;
+	float3 m_vR;
+	float3 m_vVelocity;
+	float3 m_vAngularVelocity;
 	bool m_bShowInputInfo;
 	bool m_bGlobalHudDraw;
 	bool m_bGlobalCrosshairDraw;
@@ -64,7 +64,7 @@ class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver
 	void SwitchWatermarkVisibility();
 	void SwitchShowInputInfo();
 
-	void MakeCubeMapFace(Fvector& D, Fvector& N);
+	void MakeCubeMapFace(float3& D, float3& N);
 	void MakeLevelMapProcess();
 	void MakeScreenshotFace();
 	void DeleteKey();
@@ -79,7 +79,7 @@ class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver
 	void Update(SCamEffectorInfo& info);
 
   public:
-	void update_whith_timescale(Fvector& v, const Fvector& v_delta);
+	void update_whith_timescale(float3& v, const float3& v_delta);
 	CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
 	virtual ~CDemoRecord();
 
@@ -92,11 +92,11 @@ class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver
 	virtual void IR_OnMouseWheel(int direction);
 
 	virtual BOOL ProcessCam(SCamEffectorInfo& info);
-	static void SetGlobalPosition(const Fvector& p)
+	static void SetGlobalPosition(const float3& p)
 	{
 		g_position.p.set(p), g_position.set_position = true;
 	}
-	static void GetGlobalPosition(Fvector& p)
+	static void GetGlobalPosition(float3& p)
 	{
 		p.set(g_position.p);
 	}

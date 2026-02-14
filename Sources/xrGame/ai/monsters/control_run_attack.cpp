@@ -111,11 +111,11 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
 		// distance
 		float path_dist = anim_time * velocity.velocity.linear;
 
-		Fvector dir;
+		float3 dir;
 		dir.sub(m_object->EnemyMan.get_enemy()->Position(), m_object->Position());
 		dir.normalize_safe();
 
-		Fvector target_position;
+		float3 target_position;
 		target_position.mad(m_object->Position(), dir, path_dist);
 
 		if (!m_man->build_path_line(this, target_position, u32(-1),

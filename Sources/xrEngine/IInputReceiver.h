@@ -9,12 +9,12 @@
 class ENGINE_API IInputReceiver
 {
   public:
-	void IR_GetLastMouseDelta(Ivector2& p);
-	void IR_GetMousePosScreen(Ivector2& p);
-	void IR_GetMousePosReal(HWND hwnd, Ivector2& p);
-	void IR_GetMousePosReal(Ivector2& p);
-	void IR_GetMousePosIndependent(Fvector2& f);
-	void IR_GetMousePosIndependentCrop(Fvector2& f);
+	void IR_GetLastMouseDelta(int2& p);
+	void IR_GetMousePosScreen(int2& p);
+	void IR_GetMousePosReal(HWND hwnd, int2& p);
+	void IR_GetMousePosReal(int2& p);
+	void IR_GetMousePosIndependent(float2& f);
+	void IR_GetMousePosIndependentCrop(float2& f);
 	BOOL IR_GetKeyState(int dik);
 	BOOL IR_GetBtnState(int btn);
 	void IR_Capture(void);

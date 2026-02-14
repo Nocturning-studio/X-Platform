@@ -30,7 +30,7 @@ enum EFC_Visible
 #define FRUSTUM_P_ALL (FRUSTUM_P_LRTB | FRUSTUM_P_NEAR | FRUSTUM_P_FAR)
 
 #define FRUSTUM_SAFE (FRUSTUM_MAXPLANES * 4)
-typedef svector<Fvector, FRUSTUM_SAFE> sPoly;
+typedef svector<float3, FRUSTUM_SAFE> sPoly;
 ENGINE_API extern u32 frustum_aabb_remap[8][6];
 
 class ENGINE_API CFrustum
@@ -50,12 +50,12 @@ class ENGINE_API CFrustum
 		// calc extreme pts (neg,pos) along normal axis (pos in dir of norm, etc.)
 		u32* id = frustum_aabb_remap[P.aabb_overlap_id];
 
-		Fvector Neg;
+		float3 Neg;
 		Neg.set(mM[id[3]], mM[id[4]], mM[id[5]]);
 		if (P.classify(Neg) > 0)
 			return fcvNone;
 
-		Fvector Pos;
+		float3 Pos;
 		Pos.set(mM[id[0]], mM[id[1]], mM[id[2]]);
 		if (P.classify(Pos) <= 0)
 			return fcvFully;
@@ -69,16 +69,16 @@ class ENGINE_API CFrustum
 		p_count = 0;
 	}
 	void _add(Fplane& P);
-	void _add(Fvector& P1, Fvector& P2, Fvector& P3);
+	void _add(float3& P1, float3& P2, float3& P3);
 
 	void SimplifyPoly_AABB(sPoly* P, Fplane& plane);
 
-	void CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip);
-	BOOL CreateFromClipPoly(Fvector* p, int count, Fvector& vBase,
+	void CreateOccluder(float3* p, int count, float3& vBase, CFrustum& clip);
+	BOOL CreateFromClipPoly(float3* p, int count, float3& vBase,
 							CFrustum& clip); // returns 'false' if creation failed
-	void CreateFromPoints(Fvector* p, int count, Fvector& vBase);
-	void CreateFromMatrix(Fmatrix& M, u32 mask);
-	void CreateFromPortal(sPoly* P, Fvector& vPN, Fvector& vBase, Fmatrix& mFullTransform);
+	void CreateFromPoints(float3* p, int count, float3& vBase);
+	void CreateFromMatrix(float4x4& M, u32 mask);
+	void CreateFromPortal(sPoly* P, float3& vPN, float3& vBase, float4x4& mFullTransform);
 	void CreateFromPlanes(Fplane* p, int count);
 
 	sPoly* ClipPoly(sPoly& src, sPoly& dest) const;
@@ -88,18 +88,18 @@ class ENGINE_API CFrustum
 		return (1 << p_count) - 1;
 	}
 
-	EFC_Visible testSphere(Fvector& c, float r, u32& test_mask) const;
-	BOOL testSphere_dirty(Fvector& c, float r) const;
+	EFC_Visible testSphere(float3& c, float r, u32& test_mask) const;
+	BOOL testSphere_dirty(float3& c, float r) const;
 	EFC_Visible testAABB(const float* mM, u32& test_mask) const;
-	EFC_Visible testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const;
-	BOOL testPolyInside_dirty(Fvector* p, int count) const;
+	EFC_Visible testSAABB(float3& c, float r, const float* mM, u32& test_mask) const;
+	BOOL testPolyInside_dirty(float3* p, int count) const;
 
 	IC BOOL testPolyInside(sPoly& src) const
 	{
 		sPoly d;
 		return !!ClipPoly(src, d);
 	}
-	IC BOOL testPolyInside(Fvector* p, int count) const
+	IC BOOL testPolyInside(float3* p, int count) const
 	{
 		sPoly src(p, count);
 		return testPolyInside(src);

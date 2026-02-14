@@ -621,7 +621,7 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 	float shadowOffsetX = xml_doc.ReadAttribFlt(path, index, "shadow_offset_x", 0);
 	float shadowOffsetY = xml_doc.ReadAttribFlt(path, index, "shadow_offset_y", 0);
 
-	pWnd->SetShadowOffset(Fvector2().set(shadowOffsetX, shadowOffsetY));
+	pWnd->SetShadowOffset(float2().set(shadowOffsetX, shadowOffsetY));
 
 	// init hint static
 	string256 hint;
@@ -710,8 +710,8 @@ bool CUIXmlInit::InitButton(CUIXml& xml_doc, LPCSTR path, int index, CUIButton* 
 	if (text_hint)
 		pWnd->m_hint_text = CStringTable().translate(text_hint);
 
-	pWnd->SetShadowOffset(Fvector2().set(shadowOffsetX, shadowOffsetY));
-	pWnd->SetPushOffset(Fvector2().set(pushOffsetX, pushOffsetY));
+	pWnd->SetShadowOffset(float2().set(shadowOffsetX, shadowOffsetY));
+	pWnd->SetPushOffset(float2().set(pushOffsetX, pushOffsetY));
 
 	return true;
 }
@@ -730,7 +730,7 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 
 	pWnd->Init(x, y, width, height);
 
-	Ivector2 w_cell_sz, w_cells;
+	int2 w_cell_sz, w_cells;
 
 	w_cell_sz.x = xml_doc.ReadAttribInt(path, index, "cell_width");
 	w_cell_sz.y = xml_doc.ReadAttribInt(path, index, "cell_height");

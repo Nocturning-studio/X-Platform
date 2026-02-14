@@ -208,7 +208,7 @@ void CUIWindow::Update()
 	{
 		bool cursor_on_window;
 
-		Fvector2 temp = GetUICursor()->GetCursorPosition();
+		float2 temp = GetUICursor()->GetCursorPosition();
 		Frect r;
 		GetAbsoluteRect(r);
 		cursor_on_window = !!r.in(temp);

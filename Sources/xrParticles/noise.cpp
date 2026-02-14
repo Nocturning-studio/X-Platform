@@ -25,7 +25,7 @@ static float g[B + B + 2][3];
 void noise3Init();
 
 //--------------------------------------------------------------------
-float noise3(const Fvector& vec)
+float noise3(const float3& vec)
 {
 	int bx0, bx1;
 	int by0, by1;
@@ -137,11 +137,11 @@ void noise3Init()
 }
 
 //--------------------------------------------------------------------
-float fractalsum3(const Fvector& v, float freq, int octaves)
+float fractalsum3(const float3& v, float freq, int octaves)
 {
 	int i;
 	float sum = 0.0;
-	Fvector v_;
+	float3 v_;
 	float boost = freq;
 	v_[0] = v[0] * freq;
 	v_[1] = v[1] * freq;
@@ -159,11 +159,11 @@ float fractalsum3(const Fvector& v, float freq, int octaves)
 }
 
 //--------------------------------------------------------------------
-float turbulence3(const Fvector& v, float freq, int octaves)
+float turbulence3(const float3& v, float freq, int octaves)
 {
 	int i;
 	float sum = 0.0;
-	Fvector v_;
+	float3 v_;
 	float boost = freq;
 	v_[0] = v[0] * freq;
 	v_[1] = v[1] * freq;

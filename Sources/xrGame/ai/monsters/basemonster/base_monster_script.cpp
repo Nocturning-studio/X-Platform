@@ -146,7 +146,7 @@ bool CBaseMonster::bfAssignWatch(CScriptEntityAction* tpEntityAction)
 	if (l_tWatchAction.completed())
 		return false;
 
-	Fvector new_pos;
+	float3 new_pos;
 	switch (l_tWatchAction.m_tWatchType)
 	{
 	case SightManager::eSightTypePosition:

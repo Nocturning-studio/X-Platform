@@ -115,7 +115,7 @@ void CAI_Boar::BoneCallback(CBoneInstance* B)
 	if (!P->look_at_enemy)
 		return;
 
-	Fmatrix M;
+	float4x4 M;
 	M.setHPB(0.0f, -P->_cur_delta, 0.0f);
 	B->mTransform.mulB_43(M);
 }
@@ -142,7 +142,7 @@ void CAI_Boar::CheckSpecParams(u32 spec_params)
 {
 	// if ((spec_params & ASP_ROTATION_JUMP) == ASP_ROTATION_JUMP) {
 	//	float yaw, pitch;
-	//	Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getHP(yaw,pitch);
+	//	float3().sub(EnemyMan.get_enemy()->Position(), Position()).getHP(yaw,pitch);
 	//	yaw *= -1;
 	//	yaw = angle_normalize(yaw);
 

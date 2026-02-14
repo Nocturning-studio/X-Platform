@@ -57,7 +57,7 @@ class CSpectator : public CGameObject, public IInputReceiver
 	virtual BOOL net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
 
-	virtual void Center(Fvector& C) const
+	virtual void Center(float3& C) const
 	{
 		C.set(Position());
 	}

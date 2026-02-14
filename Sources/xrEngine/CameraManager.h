@@ -21,9 +21,9 @@ struct ENGINE_API SPPInfo
 			return color_rgba(_r, _g, _b, 0);
 		}
 
-		IC operator const Fvector&()
+		IC operator const float3&()
 		{
-			return *((Fvector*)this);
+			return *((float3*)this);
 		}
 
 		IC SColor& operator+=(const SColor& ppi)
@@ -147,19 +147,19 @@ class ENGINE_API CCameraManager
 	CEffectorPP* AddPPEffector(CEffectorPP* ef);
 	void RemovePPEffector(EEffectorPPType type);
 
-	IC Fvector Position() const
+	IC float3 Position() const
 	{
 		return m_cam_info.p;
 	}
-	IC Fvector Direction() const
+	IC float3 Direction() const
 	{
 		return m_cam_info.d;
 	}
-	IC Fvector Up() const
+	IC float3 Up() const
 	{
 		return m_cam_info.n;
 	}
-	IC Fvector Right() const
+	IC float3 Right() const
 	{
 		return m_cam_info.r;
 	}
@@ -180,11 +180,11 @@ class ENGINE_API CCameraManager
 		return m_cam_info.parent;
 	}
 
-	IC void camera_Matrix(Fmatrix& M)
+	IC void camera_Matrix(float4x4& M)
 	{
 		M.set(m_cam_info.r, m_cam_info.n, m_cam_info.d, m_cam_info.p);
 	}
-	void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest,
+	void Update(const float3& P, const float3& D, const float3& N, float fFOV_Dest, float fASPECT_Dest,
 				float fFAR_Dest, u32 flags);
 	void UpdateFromCamera(const CCameraBase* C);
 

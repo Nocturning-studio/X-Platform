@@ -23,7 +23,7 @@ class CSightControlAction : public CSightAction
 	IC bool completed() const;
 	IC bool use_torso_look() const;
 	IC const SightManager::ESightType& sight_type() const;
-	IC const Fvector& vector3d() const;
+	IC const float3& vector3d() const;
 	IC const CGameObject& object() const;
 };
 

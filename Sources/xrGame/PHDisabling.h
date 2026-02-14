@@ -6,10 +6,10 @@
 
 struct SDisableVector
 {
-	Fvector sum;
-	Fvector previous;
-	float UpdatePrevious(const Fvector& new_vector);
-	float Update(const Fvector& new_vector);
+	float3 sum;
+	float3 previous;
+	float UpdatePrevious(const float3& new_vector);
+	float Update(const float3& new_vector);
 	void Reset();
 	void Init();
 	float SumMagnitude();
@@ -57,7 +57,7 @@ struct CBaseDisableData
 class CPHDisablingBase : public virtual CBaseDisableData
 {
   public:
-	void UpdateValues(const Fvector& new_pos, const Fvector& new_vel);
+	void UpdateValues(const float3& new_pos, const float3& new_vel);
 	virtual void UpdateL2();
 	virtual void set_DisableParams(const SOneDDOParams& params);
 

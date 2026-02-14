@@ -951,7 +951,7 @@ void CUIBuyWnd::ActivatePropertiesBox()
 	m_propertiesBox.AutoUpdateSize();
 	m_propertiesBox.BringAllToTop();
 
-	Fvector2 cursor_pos;
+	float2 cursor_pos;
 	Frect vis_rect;
 
 	GetAbsoluteRect(vis_rect);

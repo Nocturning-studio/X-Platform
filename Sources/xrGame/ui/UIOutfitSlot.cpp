@@ -24,7 +24,7 @@ CUIOutfitDragDropList::~CUIOutfitDragDropList()
 void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 {
 	/*
-	static Fvector2 fNoOutfit			= pSettings->r_fvector2(m_default_outfit, "full_scale_icon");
+	static float2 fNoOutfit			= pSettings->r_fvector2(m_default_outfit, "full_scale_icon");
 	Frect								r;
 	r.x1								= fNoOutfit.x*ICON_GRID_WIDTH;
 	r.y1								= fNoOutfit.y*ICON_GRID_HEIGHT;
@@ -103,14 +103,14 @@ void CUIOutfitDragDropList::SetItem(CUICellItem* itm)
 	SetOutfit(itm);
 }
 
-void CUIOutfitDragDropList::SetItem(CUICellItem* itm, Fvector2 abs_pos)
+void CUIOutfitDragDropList::SetItem(CUICellItem* itm, float2 abs_pos)
 {
 	if (itm)
 		inherited::SetItem(itm, abs_pos);
 	SetOutfit(itm);
 }
 
-void CUIOutfitDragDropList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
+void CUIOutfitDragDropList::SetItem(CUICellItem* itm, int2 cell_pos)
 {
 	if (itm)
 		inherited::SetItem(itm, cell_pos);

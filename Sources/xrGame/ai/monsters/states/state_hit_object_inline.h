@@ -27,8 +27,8 @@ void CStateMonsterHitObjectAbstract::execute()
 	{
 		m_hitted = true;
 
-		Fvector dir;
-		dir.add(Fvector().sub(target->Position(), object->Position()), object->Direction());
+		float3 dir;
+		dir.add(float3().sub(target->Position(), object->Position()), object->Direction());
 		dir.normalize();
 		target->m_pPhysicsShell->applyImpulse(dir, IMPULSE * target->m_pPhysicsShell->getMass());
 	}
@@ -53,7 +53,7 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
 			continue;
 
 		// определить дистанцию до врага
-		Fvector d;
+		float3 d;
 		d.sub(obj->Position(), object->Position());
 
 		// проверка на  Field-Of-Hit

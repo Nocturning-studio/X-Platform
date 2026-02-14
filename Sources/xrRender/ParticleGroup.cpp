@@ -169,9 +169,9 @@ void CParticleGroup::SItem::Clear()
 void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m)
 {
 	CParticleEffect* C = static_cast<CParticleEffect*>(RenderImplementation.model_CreatePE(eff_name));
-	Fmatrix M;
+	float4x4 M;
 	M.identity();
-	Fvector vel;
+	float3 vel;
 	vel.sub(m.pos, m.posB);
 	vel.div(fDT_STEP);
 	if (emitter->m_RT_Flags.is(CParticleEffect::flRT_Transform))
@@ -179,7 +179,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR e
 		M.set(emitter->m_Transform);
 		M.transform_dir(vel);
 	};
-	Fvector p;
+	float3 p;
 	M.transform_tiny(p, m.pos);
 	M.c.set(p);
 	C->Play();
@@ -200,9 +200,9 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
 	CParticleEffect* C = static_cast<CParticleEffect*>(RenderImplementation.model_CreatePE(nm));
 	if (!C->IsLooped())
 	{
-		Fmatrix M;
+		float4x4 M;
 		M.identity();
-		Fvector vel;
+		float3 vel;
 		vel.sub(m.pos, m.posB);
 		vel.div(fDT_STEP);
 		if (emitter->m_RT_Flags.is(CParticleEffect::flRT_Transform))
@@ -210,7 +210,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
 			M.set(emitter->m_Transform);
 			M.transform_dir(vel);
 		};
-		Fvector p;
+		float3 p;
 		M.transform_tiny(p, m.pos);
 		M.c.set(p);
 		C->Play();
@@ -259,7 +259,7 @@ BOOL CParticleGroup::SItem::IsPlaying()
 	CParticleEffect* PE = static_cast<CParticleEffect*>(_effect);
 	return PE ? PE->IsPlaying() : FALSE;
 }
-void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform)
+void CParticleGroup::SItem::UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform)
 {
 	CParticleEffect* PE = static_cast<CParticleEffect*>(_effect);
 	if (PE)
@@ -327,9 +327,9 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 					{
 						PAPI::Particle& m = particles[i];
 						CParticleEffect* C = static_cast<CParticleEffect*>(_children_related[i]);
-						Fmatrix M;
+						float4x4 M;
 						M.translate(m.pos);
-						Fvector vel;
+						float3 vel;
 						vel.sub(m.pos, m.posB);
 						vel.div(fDT_STEP);
 						C->UpdateParent(M, vel, FALSE);
@@ -489,7 +489,7 @@ void CParticleGroup::OnFrame(u32 u_dt)
 	}
 }
 
-void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bTransform)
+void CParticleGroup::UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform)
 {
 	m_InitialPosition = m.c;
 	for (SItemVecIt i_it = items.begin(); i_it != items.end(); i_it++)

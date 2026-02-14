@@ -6,7 +6,7 @@ BOOL xrServer::PerformRP(CSE_Abstract* EEE)
 	/*
 	// Get LIST of respawn points
 	if (EEE->g_team() >= (int)(Level().Teams.size()))	return FALSE;
-	svector<Fvector4,maxRP>&	RP					= Level().Teams[EEE->g_team()].RespawnPoints;
+	svector<float4,maxRP>&	RP					= Level().Teams[EEE->g_team()].RespawnPoints;
 	if (RP.empty())									return FALSE;
 
 	u32	selected	= 0;
@@ -26,7 +26,7 @@ BOOL xrServer::PerformRP(CSE_Abstract* EEE)
 	}
 
 	// Perform spawn
-	Fvector4&			P = Level().Teams[EEE->g_team()].RespawnPoints[selected];
+	float4&			P = Level().Teams[EEE->g_team()].RespawnPoints[selected];
 	EEE->o_Position.set	(P.x,P.y,P.z);
 	EEE->o_Angle.set	(0,P.w,0);
 	*/

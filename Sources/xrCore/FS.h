@@ -109,29 +109,29 @@ class XRCORE_API IWriter
 	{
 		w(&v, sizeof(Fcolor));
 	}
-	IC void w_fvector4(const Fvector4& v)
+	IC void w_fvector4(const float4& v)
 	{
-		w(&v, sizeof(Fvector4));
+		w(&v, sizeof(float4));
 	}
-	IC void w_fvector3(const Fvector3& v)
+	IC void w_fvector3(const float3& v)
 	{
-		w(&v, sizeof(Fvector3));
+		w(&v, sizeof(float3));
 	}
-	IC void w_fvector2(const Fvector2& v)
+	IC void w_fvector2(const float2& v)
 	{
-		w(&v, sizeof(Fvector2));
+		w(&v, sizeof(float2));
 	}
-	IC void w_ivector4(const Ivector4& v)
+	IC void w_ivector4(const int4& v)
 	{
-		w(&v, sizeof(Ivector4));
+		w(&v, sizeof(int4));
 	}
-	IC void w_ivector3(const Ivector3& v)
+	IC void w_ivector3(const int3& v)
 	{
-		w(&v, sizeof(Ivector3));
+		w(&v, sizeof(int3));
 	}
-	IC void w_ivector2(const Ivector2& v)
+	IC void w_ivector2(const int2& v)
 	{
-		w(&v, sizeof(Ivector2));
+		w(&v, sizeof(int2));
 	}
 
 	// quant writing functions
@@ -155,11 +155,11 @@ class XRCORE_API IWriter
 	{
 		w_float_q8(angle_normalize(a), 0, PI_MUL_2);
 	}
-	IC void w_dir(const Fvector& D)
+	IC void w_dir(const float3& D)
 	{
 		w_u16(pvCompress(D));
 	}
-	void w_sdir(const Fvector& D);
+	void w_sdir(const float3& D);
 	void __cdecl w_printf(const char* format, ...);
 
 	// generalized chunking
@@ -260,15 +260,15 @@ template <typename implementation_type> class IReaderBase
 		impl().r(ptr, cnt);
 	}
 
-	IC Fvector r_vec3()
+	IC float3 r_vec3()
 	{
-		Fvector tmp;
+		float3 tmp;
 		r(&tmp, 3 * sizeof(float));
 		return tmp;
 	};
-	IC Fvector4 r_vec4()
+	IC float4 r_vec4()
 	{
-		Fvector4 tmp;
+		float4 tmp;
 		r(&tmp, 4 * sizeof(float));
 		return tmp;
 	};
@@ -326,29 +326,29 @@ template <typename implementation_type> class IReaderBase
 		r(&tmp, sizeof(tmp));
 		return tmp;
 	};
-	IC void r_fvector4(Fvector4& v)
+	IC void r_fvector4(float4& v)
 	{
-		r(&v, sizeof(Fvector4));
+		r(&v, sizeof(float4));
 	}
-	IC void r_fvector3(Fvector3& v)
+	IC void r_fvector3(float3& v)
 	{
-		r(&v, sizeof(Fvector3));
+		r(&v, sizeof(float3));
 	}
-	IC void r_fvector2(Fvector2& v)
+	IC void r_fvector2(float2& v)
 	{
-		r(&v, sizeof(Fvector2));
+		r(&v, sizeof(float2));
 	}
-	IC void r_ivector4(Ivector4& v)
+	IC void r_ivector4(int4& v)
 	{
-		r(&v, sizeof(Ivector4));
+		r(&v, sizeof(int4));
 	}
-	IC void r_ivector4(Ivector3& v)
+	IC void r_ivector4(int3& v)
 	{
-		r(&v, sizeof(Ivector3));
+		r(&v, sizeof(int3));
 	}
-	IC void r_ivector4(Ivector2& v)
+	IC void r_ivector4(int2& v)
 	{
-		r(&v, sizeof(Ivector2));
+		r(&v, sizeof(int2));
 	}
 	IC void r_fcolor(Fcolor& v)
 	{
@@ -377,12 +377,12 @@ template <typename implementation_type> class IReaderBase
 	{
 		return r_float_q8(0, PI_MUL_2);
 	}
-	IC void r_dir(Fvector& A)
+	IC void r_dir(float3& A)
 	{
 		u16 t = r_u16();
 		pvDecompress(A, t);
 	}
-	IC void r_sdir(Fvector& A)
+	IC void r_sdir(float3& A)
 	{
 		u16 t = r_u16();
 		float s = r_float();

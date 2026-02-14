@@ -47,11 +47,11 @@ class CUIWeaponCellItem : public CUIInventoryCellItem
 
   protected:
 	CUIStatic* m_addons[eMaxAddon];
-	Fvector2 m_addon_offset[eMaxAddon];
+	float2 m_addon_offset[eMaxAddon];
 	void CreateIcon(eAddonType);
 	void DestroyIcon(eAddonType);
 	CUIStatic* GetIcon(eAddonType);
-	void InitAddon(CUIStatic* s, LPCSTR section, Fvector2 offset);
+	void InitAddon(CUIStatic* s, LPCSTR section, float2 offset);
 	bool is_scope();
 	bool is_silencer();
 	bool is_launcher();

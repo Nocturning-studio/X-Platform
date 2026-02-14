@@ -213,7 +213,7 @@ CSightParams CScriptGameObject::sight_params()
 
 		CSightParams result;
 		result.m_object = 0;
-		result.m_vector = Fvector().set(flt_max, flt_max, flt_max);
+		result.m_vector = float3().set(flt_max, flt_max, flt_max);
 		result.m_sight_type = SightManager::eSightTypeDummy;
 		return (result);
 	}

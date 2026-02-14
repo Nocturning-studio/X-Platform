@@ -341,14 +341,14 @@ BOOL b_death_anim_velocity = TRUE;
 #endif
 const float cmp_angle = M_PI / 10.f;
 const float cmp_ldisp = 0.1f;
-IC bool cmp(const Fmatrix& f0, const Fmatrix& f1)
+IC bool cmp(const float4x4& f0, const float4x4& f1)
 {
-	Fmatrix if0;
+	float4x4 if0;
 	if0.invert(f0);
-	Fmatrix cm;
+	float4x4 cm;
 	cm.mul_43(if0, f1);
 
-	Fvector ax;
+	float3 ax;
 	float ang;
 	Fquaternion q;
 	q.set(cm);
@@ -357,13 +357,13 @@ IC bool cmp(const Fmatrix& f0, const Fmatrix& f1)
 	return ang < cmp_angle && cm.c.square_magnitude() < cmp_ldisp * cmp_ldisp;
 }
 
-bool is_similar(const Fmatrix& m0, const Fmatrix& m1, float param)
+bool is_similar(const float4x4& m0, const float4x4& m1, float param)
 {
-	Fmatrix tmp1;
+	float4x4 tmp1;
 	tmp1.invert(m0);
-	Fmatrix tmp2;
+	float4x4 tmp2;
 	tmp2.mul(tmp1, m1);
-	Fvector ax;
+	float3 ax;
 	float ang;
 	Fquaternion q;
 	q.set(tmp2);
@@ -393,7 +393,7 @@ bool is_similar(const Fmatrix& m0, const Fmatrix& m1, float param)
 void CCharacterPhysicsSupport::KillHit(CObject* who, ALife::EHitType hit_type, float& impulse)
 {
 	TestForWounded();
-	Fmatrix prev_pose;
+	float4x4 prev_pose;
 	prev_pose.set(mTransform);
 	ActivateShell(who);
 #ifdef DEBUG
@@ -422,7 +422,7 @@ void CCharacterPhysicsSupport::KillHit(CObject* who, ALife::EHitType hit_type, f
 		m_flags.set(fl_block_hit, TRUE);
 }
 
-void CCharacterPhysicsSupport::in_Hit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space,
+void CCharacterPhysicsSupport::in_Hit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space,
 									  float impulse, ALife::EHitType hit_type, bool is_killing)
 {
 	if (m_EntityAlife.use_simplified_visual())
@@ -513,7 +513,7 @@ void CCharacterPhysicsSupport::in_UpdateCL()
 #ifdef DEBUG
 	if (Type() == etStalker && ph_dbg_draw_mask1.test(phDbgHitAnims))
 	{
-		Fmatrix m;
+		float4x4 m;
 		m_hit_animations.GetBaseMatrix(m, m_EntityAlife);
 		DBG_DrawMatrix(m, 1.5f);
 		/*
@@ -522,12 +522,12 @@ void CCharacterPhysicsSupport::in_UpdateCL()
 				u16 pb = K->LL_GetBoneRoot();
 				u16 nb = K->LL_BoneID("bip01_neck");
 				u16 eb = K->LL_BoneID("eye_right");
-				Fmatrix &mh  = K->LL_GetTransform(hb);
-				Fmatrix &mp  = K->LL_GetTransform(pb);
-				Fmatrix &me	 = K->LL_GetTransform(eb);
-				Fmatrix &mn	 = K->LL_GetTransform(nb);
+				float4x4 &mh  = K->LL_GetTransform(hb);
+				float4x4 &mp  = K->LL_GetTransform(pb);
+				float4x4 &me	 = K->LL_GetTransform(eb);
+				float4x4 &mn	 = K->LL_GetTransform(nb);
 				float d = DET(mh);
-				if(Fvector().sub(mh.c,mp.c).magnitude() < 0.3f||d<0.7 )//|| Fvector().sub(me.c,mn.c) < 0.5
+				if(float3().sub(mh.c,mp.c).magnitude() < 0.3f||d<0.7 )//|| float3().sub(me.c,mn.c) < 0.5
 				{
 
 					K->CalculateBones_Invalidate();
@@ -568,7 +568,7 @@ void CCharacterPhysicsSupport::CreateSkeleton()
 {
 	if (m_pPhysicsShell)
 		return;
-	Fvector velocity;
+	float3 velocity;
 	m_PhysicMovementControl->GetCharacterVelocity(velocity);
 	m_PhysicMovementControl->GetDeathPosition(m_EntityAlife.Position());
 	m_PhysicMovementControl->DestroyCharacter();
@@ -601,9 +601,9 @@ bool CCharacterPhysicsSupport::DoCharacterShellCollide()
 	}
 	return true;
 }
-void CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from, bool character_create /*=false*/)
+void CCharacterPhysicsSupport::CollisionCorrectObjPos(const float3& start_from, bool character_create /*=false*/)
 {
-	Fvector shift;
+	float3 shift;
 	shift.sub(start_from, m_EntityAlife.Position());
 
 	Fbox box;
@@ -611,8 +611,8 @@ void CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from,
 		box.set(movement()->Box());
 	else
 		box.set(m_EntityAlife.BoundingBox());
-	Fvector vbox;
-	Fvector activation_pos;
+	float3 vbox;
+	float3 activation_pos;
 	box.get_CD(activation_pos, vbox);
 	shift.add(activation_pos);
 	vbox.mul(2.f);
@@ -628,7 +628,7 @@ void CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from,
 	activation_shape.Destroy();
 }
 
-void CCharacterPhysicsSupport::set_movement_position(const Fvector& pos)
+void CCharacterPhysicsSupport::set_movement_position(const float3& pos)
 {
 	VERIFY(movement());
 
@@ -645,7 +645,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	// animation movement controller issues
 	bool anim_mov_ctrl = m_EntityAlife.animation_movement_controlled();
 	CBoneInstance& BR = K->LL_GetBoneInstance(K->LL_GetBoneRoot());
-	Fmatrix start_transform;
+	float4x4 start_transform;
 	start_transform.identity();
 	CBlend* anim_mov_blend = 0;
 	// float	blend_time = 0;
@@ -693,10 +693,10 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	////////////////////////////////////////////////////////////////////////////
 	if (m_pPhysicsShell)
 		return;
-	Fvector velocity;
+	float3 velocity;
 	m_PhysicMovementControl->GetCharacterVelocity(velocity);
 	velocity.mul(1.3f);
-	Fvector dp, start;
+	float3 dp, start;
 	start.set(m_EntityAlife.Position());
 	if (!m_PhysicMovementControl->CharacterExist())
 		dp.set(m_EntityAlife.Position());
@@ -748,7 +748,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 	// end seting params
 
 	// fly back after correction
-	FlyTo(Fvector().sub(start, m_EntityAlife.Position()));
+	FlyTo(float3().sub(start, m_EntityAlife.Position()));
 	//
 
 	// actualize
@@ -763,7 +763,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 		anim_mov_blend->timeCurrent + Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed <
 			anim_mov_blend->timeTotal - SAMPLE_SPF - EPS) //.
 	{
-		const Fmatrix sv_transform = mTransform;
+		const float4x4 sv_transform = mTransform;
 		mTransform.set(start_transform);
 		// anim_mov_blend->blendPower = 1;
 		anim_mov_blend->timeCurrent += Engine.TimeManager.GetDeltaTime() * anim_mov_blend->speed;
@@ -811,7 +811,7 @@ bool CCharacterPhysicsSupport::CanRemoveObject()
 	}
 }
 
-void CCharacterPhysicsSupport::PHGetLinearVell(Fvector& velocity)
+void CCharacterPhysicsSupport::PHGetLinearVell(float3& velocity)
 {
 	if (m_pPhysicsShell && m_pPhysicsShell->isActive())
 	{
@@ -883,7 +883,7 @@ void StaticEnvironmentCB(bool& do_colide, bool bo1, dContact& c, SGameMtl* mater
 	do_colide = false;
 }
 
-void CCharacterPhysicsSupport::FlyTo(const Fvector& disp)
+void CCharacterPhysicsSupport::FlyTo(const float3& disp)
 {
 	VERIFY(m_pPhysicsShell);
 	float ammount = disp.magnitude();
@@ -896,7 +896,7 @@ void CCharacterPhysicsSupport::FlyTo(const Fvector& disp)
 	void* cd = m_pPhysicsShell->get_CallbackData();
 	m_pPhysicsShell->set_CallbackData(m_pPhysicsShell->PIsland());
 	m_pPhysicsShell->UnFreeze();
-	Fvector vel;
+	float3 vel;
 	vel.set(disp);
 	const u16 steps_num = 10;
 	const float fsteps_num = steps_num;
@@ -925,12 +925,12 @@ void CCharacterPhysicsSupport::TestForWounded()
 	CKinematics* CKA = smart_cast<CKinematics*>(m_EntityAlife.Visual());
 	CKA->CalculateBones();
 	CBoneInstance CBI = CKA->LL_GetBoneInstance(0);
-	Fmatrix position_matrix;
+	float4x4 position_matrix;
 	position_matrix.mul(mTransform, CBI.mTransform);
 
 	xrXRC xrc;
 	xrc.ray_options(0);
-	xrc.ray_query(Level().ObjectSpace.GetStaticModel(), position_matrix.c, Fvector().set(0.0f, -1.0f, 0.0f),
+	xrc.ray_query(Level().ObjectSpace.GetStaticModel(), position_matrix.c, float3().set(0.0f, -1.0f, 0.0f),
 				  pelvis_factor_low_pose_detect);
 
 	if (xrc.r_count())

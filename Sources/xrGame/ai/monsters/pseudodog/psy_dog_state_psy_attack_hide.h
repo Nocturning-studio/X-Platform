@@ -7,7 +7,7 @@ template <typename _Object> class CStatePsyDogHide : public CState<_Object>
 
 	struct
 	{
-		Fvector position;
+		float3 position;
 		u32 node;
 	} target;
 

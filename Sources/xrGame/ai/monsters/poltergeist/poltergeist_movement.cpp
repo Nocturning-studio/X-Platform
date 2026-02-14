@@ -3,7 +3,7 @@
 #include "poltergeist.h"
 #include "../../../detail_path_manager.h"
 
-void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_control, Fvector& dest_position,
+void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_control, float3& dest_position,
 												 float time_delta)
 {
 	if (!m_monster->is_hidden())
@@ -38,7 +38,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 	float desirable_dist = dist;
 
 	// определить целевую точку
-	Fvector target;
+	float3 target;
 
 	u32 prev_cur_point_index = detail().curr_travel_point_index();
 
@@ -63,7 +63,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 
 	target.set(detail().path()[detail().curr_travel_point_index() + 1].position);
 	// определить направление к целевой точке
-	Fvector dir_to_target;
+	float3 dir_to_target;
 	dir_to_target.sub(target, dest_position);
 
 	// дистанция до целевой точки
@@ -99,7 +99,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 	}
 
 	// установить позицию
-	Fvector motion;
+	float3 motion;
 	motion.mul(dir_to_target, dist / dist_to_target);
 	dest_position.add(motion);
 
@@ -115,9 +115,9 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 	dest_position = m_monster->Position();
 }
 
-Fvector CPoltergeisMovementManager::CalculateRealPosition()
+float3 CPoltergeisMovementManager::CalculateRealPosition()
 {
-	Fvector ret_val = m_monster->m_current_position;
+	float3 ret_val = m_monster->m_current_position;
 	ret_val.y += m_monster->m_height;
 	return (ret_val);
 }

@@ -32,8 +32,8 @@ class CUIFrameRect : public CUISimpleWindow, CUIMultiTextureOwner // public CUIC
 	virtual void Draw();
 	virtual void Draw(float x, float y);
 	virtual void SetWndPos(float x, float y);
-	virtual void SetWndPos(const Fvector2& pos);
-	virtual void SetWndSize(const Fvector2& size);
+	virtual void SetWndPos(const float2& pos);
+	virtual void SetWndSize(const float2& size);
 	virtual void SetWndRect(const Frect& rect);
 	virtual void SetWidth(float width);
 	virtual void SetHeight(float height);

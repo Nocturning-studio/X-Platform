@@ -62,7 +62,7 @@ class CCustomMonster : public CEntityAlive,
 
   public:
 	// Eyes
-	Fmatrix eye_matrix;
+	float4x4 eye_matrix;
 	int eye_bone;
 	float eye_fov;
 	float eye_range;
@@ -71,18 +71,18 @@ class CCustomMonster : public CEntityAlive,
 
 	u32 eye_pp_stage;
 	u32 eye_pp_timestamp;
-	Fvector m_tEyeShift;
+	float3 m_tEyeShift;
 	float m_fEyeShiftYaw;
 	BOOL NET_WasExtrapolating;
 
-	Fvector tWatchDirection;
+	float3 tWatchDirection;
 
 	virtual void Think() = 0;
 
 	float m_fTimeUpdateDelta;
 	u32 m_dwLastUpdateTime;
 	u32 m_current_update;
-	//	Fmatrix				m_tServerTransform;
+	//	float4x4				m_tServerTransform;
 
 	u32 m_dwCurrentTime; // time updated in UpdateCL
 
@@ -91,7 +91,7 @@ class CCustomMonster : public CEntityAlive,
 		u32 dwTimeStamp;   // server(game) timestamp
 		float o_model;	   // model yaw
 		SRotation o_torso; // torso in world coords
-		Fvector p_pos;	   // in world coords
+		float3 p_pos;	   // in world coords
 		float fHealth;
 
 		// non-exported (temporal)
@@ -116,8 +116,8 @@ class CCustomMonster : public CEntityAlive,
 	virtual BOOL feel_touch_on_contact(CObject*);
 	virtual BOOL feel_touch_contact(CObject*);
 	// utils
-	void mk_orientation(Fvector& dir, Fmatrix& mR);
-	void mk_rotation(Fvector& dir, SRotation& R);
+	void mk_orientation(float3& dir, float4x4& mR);
+	void mk_rotation(float3& dir, SRotation& R);
 
 	// stream executors
 	virtual void Exec_Action(float dt);
@@ -148,7 +148,7 @@ class CCustomMonster : public CEntityAlive,
 	virtual BOOL net_Spawn(CSE_Abstract* DC);
 	virtual void Die(CObject* who);
 
-	virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who);
+	virtual void HitSignal(float P, float3& vLocalDir, CObject* who);
 	virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/){};
 	virtual void shedule_Update(u32 DT);
 	virtual void UpdateCL();
@@ -158,7 +158,7 @@ class CCustomMonster : public CEntityAlive,
 	virtual void net_Import(NET_Packet& P); // import from server
 	virtual void net_Relcase(CObject* O);
 
-	virtual void SelectAnimation(const Fvector& _view, const Fvector& _move, float speed) = 0;
+	virtual void SelectAnimation(const float3& _view, const float3& _move, float speed) = 0;
 
 	// debug
 #ifdef DEBUG
@@ -172,7 +172,7 @@ class CCustomMonster : public CEntityAlive,
 	};
 
 	IC bool angle_lerp_bounds(float& a, float b, float c, float d);
-	IC void vfNormalizeSafe(Fvector& Vector);
+	IC void vfNormalizeSafe(float3& Vector);
 
   public:
 	virtual float ffGetFov() const
@@ -262,7 +262,7 @@ class CCustomMonster : public CEntityAlive,
 
 	IC CMemoryManager& memory() const;
 	virtual float feel_vision_mtl_transp(CObject* O, u32 element);
-	virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position,
+	virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const float3& Position,
 								float power);
 
 	virtual bool useful(const CItemManager* manager, const CGameObject* object) const;

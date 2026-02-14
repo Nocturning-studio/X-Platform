@@ -16,7 +16,7 @@ void CParticleParams::script_register(lua_State* L)
 {
 	module(L)[class_<CParticleParams>("particle_params")
 				  .def(constructor<>())
-				  .def(constructor<const Fvector&>())
-				  .def(constructor<const Fvector&, const Fvector&>())
-				  .def(constructor<const Fvector&, const Fvector&, const Fvector&>())];
+				  .def(constructor<const float3&>())
+				  .def(constructor<const float3&, const float3&>())
+				  .def(constructor<const float3&, const float3&, const float3&>())];
 }

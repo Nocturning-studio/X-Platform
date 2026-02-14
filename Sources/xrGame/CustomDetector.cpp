@@ -104,7 +104,7 @@ void CCustomDetector::shedule_Update(u32 dt)
 
 	if (H_Parent() && H_Parent() == Level().CurrentViewEntity())
 	{
-		Fvector P;
+		float3 P;
 		P.set(H_Parent()->Position());
 		feel_touch_update(P, m_fRadius);
 		UpdateNightVisionMode();
@@ -162,7 +162,7 @@ void CCustomDetector::UpdateCL()
 		if ((float)zone_info.snd_time > current_snd_time)
 		{
 			zone_info.snd_time = 0;
-			HUD_SOUND::PlaySound(zone_type.detect_snds, Fvector().set(0, 0, 0), this, true, false);
+			HUD_SOUND::PlaySound(zone_type.detect_snds, float3().set(0, 0, 0), this, true, false);
 		}
 		else
 			zone_info.snd_time += Engine.TimeManager.GetDeltaTimeMs();
@@ -308,7 +308,7 @@ void CCustomDetector::UpdateNightVisionMode()
 
 		if (bOn)
 		{
-			Fvector zero_vector;
+			float3 zero_vector;
 			zero_vector.set(0.f, 0.f, 0.f);
 
 			if (!zone_info.pParticle)

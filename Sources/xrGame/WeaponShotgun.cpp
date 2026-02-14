@@ -123,7 +123,7 @@ void CWeaponShotgun::OnShotBoth()
 	m_pHUD->animPlay(random_anim(mhud_shot_boths), FALSE, this, GetState());
 
 	// Shell Drop
-	Fvector vel;
+	float3 vel;
 	PHGetLinearVell(vel);
 	OnShellDrop(get_LastSP(), vel);
 
@@ -151,7 +151,7 @@ void CWeaponShotgun::switch2_Fire2()
 	if (fTime <= 0)
 	{
 		// Fire
-		Fvector p1, d;
+		float3 p1, d;
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
 

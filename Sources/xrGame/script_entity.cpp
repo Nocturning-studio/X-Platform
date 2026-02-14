@@ -217,7 +217,7 @@ void CScriptEntity::vfUpdateSounds()
 	CScriptSoundAction& l_tSoundAction = GetCurrentAction()->m_tSoundAction;
 	if (xr_strlen(l_tSoundAction.m_caBoneName) && m_current_sound && m_current_sound->_feedback())
 		m_current_sound->_feedback()->set_position(
-			GetUpdatedMatrix(l_tSoundAction.m_caBoneName, l_tSoundAction.m_tSoundPosition, Fvector().set(0, 0, 0)).c);
+			GetUpdatedMatrix(l_tSoundAction.m_caBoneName, l_tSoundAction.m_tSoundPosition, float3().set(0, 0, 0)).c);
 }
 
 void CScriptEntity::vfFinishAction(CScriptEntityAction* tpEntityAction)
@@ -355,10 +355,10 @@ bool CScriptEntity::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
 	return (true);
 }
 
-const Fmatrix CScriptEntity::GetUpdatedMatrix(shared_str caBoneName, const Fvector& tPositionOffset,
-											  const Fvector& tAngleOffset)
+const float4x4 CScriptEntity::GetUpdatedMatrix(shared_str caBoneName, const float3& tPositionOffset,
+											  const float3& tAngleOffset)
 {
-	Fmatrix l_tMatrix;
+	float4x4 l_tMatrix;
 
 	l_tMatrix.setHPB(VPUSH(tAngleOffset));
 	l_tMatrix.c = tPositionOffset;
@@ -390,7 +390,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction* tpEntityAction)
 //				Msg									("%6d Starting sound
 //%s",Engine.TimeManager.GetGlobalTimeMs(),*l_tSoundAction.m_caSoundToPlay);
 #endif
-				const Fmatrix& l_tMatrix = GetUpdatedMatrix(
+				const float4x4& l_tMatrix = GetUpdatedMatrix(
 					l_tSoundAction.m_caBoneName, l_tSoundAction.m_tSoundPosition, l_tSoundAction.m_tSoundAngles);
 				m_current_sound->play_at_pos(m_object, l_tMatrix.c, l_tSoundAction.m_bLooped ? sm_Looped : 0);
 				l_tSoundAction.m_bStartedToPlay = true;
@@ -423,10 +423,10 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
 		if (true /** !l_tParticleAction.m_tpParticleSystem/**/)
 			if (!l_tParticleAction.m_bStartedToPlay)
 			{
-				const Fmatrix& l_tMatrix =
+				const float4x4& l_tMatrix =
 					GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition,
 									 l_tParticleAction.m_tParticleAngles);
-				Fvector zero_vel = {0.f, 0.f, 0.f};
+				float3 zero_vel = {0.f, 0.f, 0.f};
 				l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, zero_vel);
 				l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
 				l_tParticleAction.m_bStartedToPlay = true;
@@ -675,7 +675,7 @@ const CScriptEntityAction* CScriptEntity::GetActionByIndex(u32 action_index) con
 	return (m_tpActionQueue[action_index]);
 }
 
-void CScriptEntity::sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power)
+void CScriptEntity::sound_callback(const CObject* object, int sound_type, const float3& position, float sound_power)
 {
 	if (!smart_cast<const CGameObject*>(object))
 		return;

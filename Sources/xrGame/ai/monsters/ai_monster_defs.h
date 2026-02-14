@@ -304,13 +304,13 @@ typedef struct
 	TTime time_from; // диапазон времени когда можно наносить hit (от)
 	TTime time_to;	 // диапазон времени когда можно наносить hit (до)
 
-	Fvector trace_from; // направление трассировки (относительно центра)
-	Fvector trace_to;
+	float3 trace_from; // направление трассировки (относительно центра)
+	float3 trace_to;
 
 	u32 flags; // специальные флаги
 
 	float damage;	 // урон при данной атаке
-	Fvector hit_dir; // угол направления приложения силы к объекту
+	float3 hit_dir; // угол направления приложения силы к объекту
 
 	//-----------------------------------------
 	// temp
@@ -328,7 +328,7 @@ struct SAAParam
 	float time;
 	float hit_power; // damage
 	float impulse;
-	Fvector impulse_dir;
+	float3 impulse_dir;
 
 	// field of hit
 	struct
@@ -473,7 +473,7 @@ enum EAccelValue
 
 struct SMonsterEnemy
 {
-	Fvector position;
+	float3 position;
 	u32 vertex;
 	TTime time;
 	float danger;
@@ -485,7 +485,7 @@ DEFINE_MAP(const CEntityAlive*, SMonsterEnemy, ENEMIES_MAP, ENEMIES_MAP_IT);
 
 struct SMonsterCorpse
 {
-	Fvector position;
+	float3 position;
 	u32 vertex;
 	TTime time;
 };
@@ -497,7 +497,7 @@ struct SMonsterHit
 	CObject* object;
 	TTime time;
 	EHitSide side;
-	Fvector position;
+	float3 position;
 
 	bool operator==(const CObject* obj)
 	{

@@ -375,7 +375,7 @@ void CUILines::Draw(float x, float y)
 
 	if (!uFlags.is(flComplexMode))
 	{
-		Fvector2 text_pos;
+		float2 text_pos;
 		text_pos.set(0, 0);
 
 		text_pos.x = x + GetIndentByAlign();
@@ -402,7 +402,7 @@ void CUILines::Draw(float x, float y)
 		// if (uFlags.test(flNeedReparse))
 		ParseText();
 
-		Fvector2 pos;
+		float2 pos;
 		// get vertical indent
 		pos.y = y + GetVIndentByAlign();
 		float height = m_pFont->CurrentHeight_();
@@ -424,7 +424,7 @@ void CUILines::Draw(float x, float y)
 
 void CUILines::Draw()
 {
-	Fvector2 p = GetWndPos();
+	float2 p = GetWndPos();
 	Draw(p.x, p.y);
 }
 
@@ -594,7 +594,7 @@ void CUILines::CutFirstColoredTextEntry(xr_string& entry, u32& color, xr_string&
 	}
 }
 
-void CUILines::SetWndSize_inline(const Fvector2& wnd_size)
+void CUILines::SetWndSize_inline(const float2& wnd_size)
 {
 	m_wndSize = wnd_size;
 }

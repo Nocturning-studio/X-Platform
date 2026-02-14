@@ -404,8 +404,8 @@ template <class T> struct _matrix33
 	}
 };
 
-typedef _matrix33<float> Fmatrix33;
-typedef _matrix33<double> Dmatrix33;
+typedef _matrix33<float> float3x3;
+typedef _matrix33<double> double3x3;
 
 template <class T> BOOL _valid(const _matrix33<T>& m)
 {

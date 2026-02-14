@@ -22,12 +22,12 @@ int CRender::translateSector(IRender_Sector* pSector)
 #endif // #ifdef DEBUG
 }
 
-IRender_Sector* CRender::detectSector(const Fvector& P)
+IRender_Sector* CRender::detectSector(const float3& P)
 {
 	////OPTICK_EVENT("CRender::detectSector");
 
 	IRender_Sector* S = NULL;
-	Fvector dir;
+	float3 dir;
 	Sectors_xrc.ray_options(CDB::OPT_ONLYNEAREST);
 
 	dir.set(0, -1, 0);
@@ -40,7 +40,7 @@ IRender_Sector* CRender::detectSector(const Fvector& P)
 	return S;
 }
 
-IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
+IRender_Sector* CRender::detectSector(const float3& P, float3& dir)
 {
 	////OPTICK_EVENT("CRender::detectSector");
 

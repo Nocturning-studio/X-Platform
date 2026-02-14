@@ -196,7 +196,7 @@ void CControllerAnimation::select_velocity()
 // and according to point it has to look at
 void CControllerAnimation::set_path_direction()
 {
-	float cur_yaw = Fvector().sub(m_controller->custom_dir().get_head_look_point(), m_object->Position()).getH();
+	float cur_yaw = float3().sub(m_controller->custom_dir().get_head_look_point(), m_object->Position()).getH();
 	cur_yaw = angle_normalize(-cur_yaw);
 
 	float target_yaw = m_man->path_builder().detail().direction().getH();
@@ -342,8 +342,8 @@ void CControllerAnimation::set_path_params()
 
 		bool looking_fwd = true;
 
-		Fvector target_pos = m_object->path().get_target_set();
-		Fvector dir = Fvector().sub(target_pos, m_object->Position());
+		float3 target_pos = m_object->path().get_target_set();
+		float3 dir = float3().sub(target_pos, m_object->Position());
 		if (!fis_zero(dir.square_magnitude()))
 		{
 

@@ -292,7 +292,7 @@ void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 		   g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags);
 }
 
-void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest,
+void CCameraManager::Update(const float3& P, const float3& D, const float3& N, float fFOV_Dest, float fASPECT_Dest,
 							float fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
@@ -501,8 +501,8 @@ void CCameraManager::ResetPP()
 
 void CCameraManager::Dump()
 {
-	Fmatrix mInvCamera;
-	Fvector _R, _U, _T, _P;
+	float4x4 mInvCamera;
+	float3 _R, _U, _T, _P;
 
 	mInvCamera.invert(Engine.RenderView.View);
 	_R.set(mInvCamera._11, mInvCamera._12, mInvCamera._13);

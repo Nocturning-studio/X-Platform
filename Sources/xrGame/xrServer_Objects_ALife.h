@@ -146,7 +146,7 @@ virtual u32 ef_detector_type() const;
 virtual void spawn_supplies(LPCSTR);
 virtual void spawn_supplies();
 CALifeSimulator& alife() const;
-virtual Fvector draw_level_position() const;
+virtual float3 draw_level_position() const;
 virtual bool keep_saved_data_anyway() const;
 #endif
 SERVER_ENTITY_DECLARE_END
@@ -355,8 +355,8 @@ add_to_type_list(CSE_ALifeSpaceRestrictor)
 
 	SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger, CSE_ALifeSpaceRestrictor) GameGraph::_GRAPH_ID m_tNextGraphID;
 u32 m_dwNextNodeID;
-Fvector m_tNextPosition;
-Fvector m_tAngles;
+float3 m_tNextPosition;
+float3 m_tAngles;
 shared_str m_caLevelToChange;
 shared_str m_caLevelPointToChange;
 BOOL m_bSilentMode;
@@ -482,7 +482,7 @@ virtual void load(NET_Packet& tNetPacket);
 virtual bool used_ai_locations() const;
 virtual bool match_configuration() const;
 virtual bool __stdcall validate();
-virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,
+virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const float4x4& parent,
 								 int priority, bool strictB2F);
 virtual CSE_Abstract* cast_abstract()
 {
@@ -577,7 +577,7 @@ add_to_type_list(CSE_ALifeMountedWeapon)
 #define script_type_list save_type_list(CSE_ALifeMountedWeapon)
 
 	SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeStationaryMgun, CSE_ALifeDynamicObjectVisual) bool m_bWorking;
-Fvector m_destEnemyDir;
+float3 m_destEnemyDir;
 
 CSE_ALifeStationaryMgun(LPCSTR caSection);
 virtual ~CSE_ALifeStationaryMgun();

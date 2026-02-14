@@ -139,7 +139,7 @@ void CControlPathBuilder::on_build_path()
 //////////////////////////////////////////////////////////////////////////
 // Special Build Path
 //////////////////////////////////////////////////////////////////////////
-bool CControlPathBuilder::build_special(const Fvector& target, u32 node, u32 vel_mask)
+bool CControlPathBuilder::build_special(const float3& target, u32 node, u32 vel_mask)
 {
 	if (!accessible(target))
 		return false;
@@ -215,22 +215,22 @@ bool CControlPathBuilder::is_path_end(float dist_to_end)
 	return false;
 }
 
-bool CControlPathBuilder::valid_destination(const Fvector& pos, u32 node)
+bool CControlPathBuilder::valid_destination(const float3& pos, u32 node)
 {
 	return (ai().level_graph().valid_vertex_id(node) && ai().level_graph().valid_vertex_position(pos) &&
 			ai().level_graph().inside(node, pos));
 }
 
-bool CControlPathBuilder::valid_and_accessible(Fvector& pos, u32 node)
+bool CControlPathBuilder::valid_and_accessible(float3& pos, u32 node)
 {
 	if (!valid_destination(pos, node) || !accessible(node))
 		return false;
 
-	fix_position(Fvector().set(pos), node, pos);
+	fix_position(float3().set(pos), node, pos);
 	return true;
 }
 
-void CControlPathBuilder::fix_position(const Fvector& pos, u32 node, Fvector& res_pos)
+void CControlPathBuilder::fix_position(const float3& pos, u32 node, float3& res_pos)
 {
 	VERIFY(accessible(node));
 	VERIFY(ai().level_graph().inside(node, pos));
@@ -240,7 +240,7 @@ void CControlPathBuilder::fix_position(const Fvector& pos, u32 node, Fvector& re
 
 	if (!accessible(res_pos))
 	{
-		u32 level_vertex_id = restrictions().accessible_nearest(Fvector().set(res_pos), res_pos);
+		u32 level_vertex_id = restrictions().accessible_nearest(float3().set(res_pos), res_pos);
 
 #ifdef DEBUG
 		if (level_vertex_id != node)
@@ -262,15 +262,15 @@ bool CControlPathBuilder::is_moving_on_path()
 bool CControlPathBuilder::get_node_in_radius(u32 src_node, float min_radius, float max_radius, u32 attempts,
 											 u32& dest_node)
 {
-	Fvector vertex_position = ai().level_graph().vertex_position(src_node);
+	float3 vertex_position = ai().level_graph().vertex_position(src_node);
 
 	for (u32 i = 0; i < attempts; i++)
 	{
-		Fvector dir;
+		float3 dir;
 		dir.random_dir();
 		dir.normalize();
 
-		Fvector new_pos;
+		float3 new_pos;
 		new_pos.mad(vertex_position, dir, Random.randF(min_radius, max_radius));
 
 		restrictions().add_border(vertex_position, new_pos);
@@ -302,7 +302,7 @@ bool CControlPathBuilder::can_use_distributed_compuations(u32 option) const
 	return inherited::can_use_distributed_compuations(option);
 }
 
-u32 CControlPathBuilder::find_nearest_vertex(const u32& level_vertex_id, const Fvector& target_position,
+u32 CControlPathBuilder::find_nearest_vertex(const u32& level_vertex_id, const float3& target_position,
 											 const float& range)
 {
 	xr_vector<u32> temp;

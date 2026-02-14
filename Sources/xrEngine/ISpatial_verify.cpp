@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ISpatial.h"
 
-extern Fvector c_spatial_offset[8];
+extern float3 c_spatial_offset[8];
 
 class CWalkerVerify
 {
@@ -15,7 +15,7 @@ class CWalkerVerify
 		o_count = 0;
 		n_count = 0;
 	}
-	void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void walk(ISpatial_NODE* N, float3& n_C, float n_R)
 	{
 		// test items
 		n_count += 1;
@@ -27,7 +27,7 @@ class CWalkerVerify
 		{
 			if (0 == N->children[octant])
 				continue;
-			Fvector c_C;
+			float3 c_C;
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);
 			walk(N->children[octant], c_C, c_R);
 		}

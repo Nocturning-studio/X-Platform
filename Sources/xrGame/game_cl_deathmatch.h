@@ -118,7 +118,7 @@ class game_cl_Deathmatch : public game_cl_mp
 	virtual void ConvertTime2String(string64* str, u32 Time);
 	virtual int GetPlayersPlace(game_PlayerState* ps);
 
-	virtual void PlayParticleEffect(LPCSTR EffName, Fvector& pos);
+	virtual void PlayParticleEffect(LPCSTR EffName, float3& pos);
 
 	virtual void ShowBuyMenu();
 	virtual void HideBuyMenu();

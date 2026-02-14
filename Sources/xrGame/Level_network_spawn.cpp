@@ -42,7 +42,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 	//*/
 };
 
-void CLevel::g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos)
+void CLevel::g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, float3 pos)
 {
 	// Create
 	CSE_Abstract* E = F_entity_Create(name);
@@ -163,7 +163,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
 #endif // DEBUG_MEMORY_MANAGER
 }
 
-CSE_Abstract* CLevel::spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id,
+CSE_Abstract* CLevel::spawn_item(LPCSTR section, const float3& position, u32 level_vertex_id, u16 parent_id,
 								 bool return_item)
 {
 	CSE_Abstract* abstract = F_entity_Create(section);

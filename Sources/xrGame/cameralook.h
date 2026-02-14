@@ -6,7 +6,7 @@ class CCameraLook : public CCameraBase
 {
 	typedef CCameraBase inherited;
 
-	Fvector2 lim_zoom;
+	float2 lim_zoom;
 	float dist, prev_d;
 
   public:
@@ -16,7 +16,7 @@ class CCameraLook : public CCameraBase
 	virtual void Move(int cmd, float val = 0, float factor = 1.0f);
 
 	virtual void OnActivate(CCameraBase* old_cam);
-	virtual void Update(Fvector& point, Fvector& noise_dangle);
+	virtual void Update(float3& point, float3& noise_dangle);
 
 	virtual float GetWorldYaw()
 	{
@@ -31,12 +31,12 @@ class CCameraLook : public CCameraBase
 class CCameraLook2 : public CCameraLook
 {
   public:
-	static Fvector m_cam_offset;
+	static float3 m_cam_offset;
 
   protected:
 	CObject* m_locked_enemy;
-	Fvector2 m_autoaim_inertion_yaw;
-	Fvector2 m_autoaim_inertion_pitch;
+	float2 m_autoaim_inertion_yaw;
+	float2 m_autoaim_inertion_pitch;
 	void UpdateAutoAim();
 
   public:
@@ -48,6 +48,6 @@ class CCameraLook2 : public CCameraLook
 	{
 	}
 	virtual void OnActivate(CCameraBase* old_cam);
-	virtual void Update(Fvector& point, Fvector& noise_dangle);
+	virtual void Update(float3& point, float3& noise_dangle);
 	virtual void Load(LPCSTR section);
 };

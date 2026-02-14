@@ -28,13 +28,13 @@ void CUICDkey::Draw()
 {
 	Frect rect;
 	GetAbsoluteRect(rect);
-	Fvector2 outXY;
+	float2 outXY;
 
 	outXY.y = (m_wndSize.y - m_lines.m_pFont->CurrentHeight_()) / 2.0f;
 	outXY.x = 0;
 	m_lines.m_pFont->SetColor(m_lines.GetTextColor());
 
-	Fvector2 pos;
+	float2 pos;
 	pos.set(rect.left + outXY.x, rect.top + outXY.y);
 	UI()->ClientToScreenScaled(pos);
 

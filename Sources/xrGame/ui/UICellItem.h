@@ -23,7 +23,7 @@ class CUICellItem : public CUIStatic
 	xr_vector<CUICellItem*> m_childs;
 
 	CUIDragDropListEx* m_pParentList;
-	Ivector2 m_grid_size;
+	int2 m_grid_size;
 	ICustomDrawCell* m_custom_draw;
 	int m_accelerator;
 	virtual void UpdateItemText();
@@ -52,7 +52,7 @@ class CUICellItem : public CUIStatic
 	};
 	bool HasChild(CUICellItem* item);
 	virtual bool EqualTo(CUICellItem* itm);
-	IC const Ivector2& GetGridSize()
+	IC const int2& GetGridSize()
 	{
 		return m_grid_size;
 	}; // size in grid
@@ -85,7 +85,7 @@ class CUIDragItem : public CUIWindow, public pureRender, public pureFrame
 	typedef CUIWindow inherited;
 	CUIStatic m_static;
 	CUICellItem* m_pParent;
-	Fvector2 m_pos_offset;
+	float2 m_pos_offset;
 	CUIDragDropListEx* m_back_list;
 
   public:
@@ -109,5 +109,5 @@ class CUIDragItem : public CUIWindow, public pureRender, public pureFrame
 	{
 		return m_back_list;
 	}
-	Fvector2 GetPosition();
+	float2 GetPosition();
 };

@@ -707,7 +707,7 @@ void CUIMpTradeWnd::DumpPreset(ETradePreset idx)
 #include "../HUDManager.h"
 void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 {
-	Fvector2 pos;
+	float2 pos;
 	cell->GetAbsolutePos(pos);
 	UI()->ClientToScreenScaled(pos, pos.x, pos.y);
 

@@ -188,7 +188,7 @@ CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(
 	return (client_restriction);
 }
 
-u32 CSpaceRestrictionManager::accessible_nearest(ALife::_OBJECT_ID id, const Fvector& position, Fvector& result)
+u32 CSpaceRestrictionManager::accessible_nearest(ALife::_OBJECT_ID id, const float3& position, float3& result)
 {
 	CRestrictionPtr client_restriction = restriction(id);
 	VERIFY(client_restriction);

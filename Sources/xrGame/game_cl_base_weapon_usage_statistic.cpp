@@ -302,7 +302,7 @@ void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& car
 	//	Msg("! OnBullet Fire ID[%d]", pBullet->m_dwID);
 }
 
-void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation)
+void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, float3 HitLocation)
 {
 	if (!pBullet || !pBullet->flags.allow_sendhit)
 		return;

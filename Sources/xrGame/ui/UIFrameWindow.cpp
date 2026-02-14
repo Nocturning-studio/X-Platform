@@ -42,7 +42,7 @@ void CUIFrameWindow::Draw()
 	{
 		Frect rect;
 		GetAbsoluteRect(rect);
-		Fvector2 v = rect.lt;
+		float2 v = rect.lt;
 		m_UIWndFrame.SetWndPos(v);
 		m_UIWndFrame.Draw();
 	}
@@ -85,7 +85,7 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	Frect ourAbsR;
 	GetAbsoluteRect(ourAbsR);
 	CTexture* T;
-	Fvector2 ts;
+	float2 ts;
 	int tile_x, tile_y;
 	float rem_x, rem_y;
 	float size_x, size_y;

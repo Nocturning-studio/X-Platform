@@ -9,11 +9,11 @@ struct weapon_hud_value : public shared_value
 
   public:
 	int m_fire_bone;
-	Fvector m_fp_offset;
-	Fvector m_fp2_offset;
-	Fvector m_sp_offset;
+	float3 m_fp_offset;
+	float3 m_fp2_offset;
+	float3 m_sp_offset;
 
-	Fmatrix m_offset;
+	float4x4 m_offset;
 
   public:
 	virtual ~weapon_hud_value();
@@ -60,7 +60,7 @@ class CWeaponHUD
 	bool m_bHidden;
 	bool m_bVisible;
 
-	Fmatrix m_Transform;
+	float4x4 m_Transform;
 
 	// shared HUD data
 	shared_weapon_hud m_shared_data;
@@ -79,7 +79,7 @@ class CWeaponHUD
 	// поворот и смещение для режима приближения
 	float m_fZoomRotateX;
 	float m_fZoomRotateY;
-	Fvector m_fZoomOffset;
+	float3 m_fZoomOffset;
 
   public:
 	CWeaponHUD(CHudItem* pHudItem);
@@ -94,7 +94,7 @@ class CWeaponHUD
 	{
 		return m_shared_data.animations();
 	}
-	IC Fmatrix& Transform()
+	IC float4x4& Transform()
 	{
 		return m_Transform;
 	}
@@ -103,20 +103,20 @@ class CWeaponHUD
 	{
 		return m_shared_data.get_value()->m_fire_bone;
 	}
-	const Fvector& FirePoint()
+	const float3& FirePoint()
 	{
 		return m_shared_data.get_value()->m_fp_offset;
 	}
-	const Fvector& FirePoint2()
+	const float3& FirePoint2()
 	{
 		return m_shared_data.get_value()->m_fp2_offset;
 	}
-	const Fvector& ShellPoint()
+	const float3& ShellPoint()
 	{
 		return m_shared_data.get_value()->m_sp_offset;
 	}
 
-	const Fvector& ZoomOffset() const
+	const float3& ZoomOffset() const
 	{
 		return m_fZoomOffset;
 	}
@@ -128,7 +128,7 @@ class CWeaponHUD
 	{
 		return m_fZoomRotateY;
 	}
-	void SetZoomOffset(const Fvector& zoom_offset)
+	void SetZoomOffset(const float3& zoom_offset)
 	{
 		m_fZoomOffset = zoom_offset;
 	}
@@ -146,7 +146,7 @@ class CWeaponHUD
 	void animDisplay(MotionID M, BOOL bMixIn);
 	MotionID animGet(LPCSTR name);
 
-	void UpdatePosition(const Fmatrix& transform);
+	void UpdatePosition(const float4x4& transform);
 
 	bool IsHidden()
 	{
@@ -177,15 +177,15 @@ class CWeaponHUD
 	static void CleanSharedContainer();
 #ifdef DEBUG
   public:
-	void dbg_SetFirePoint(const Fvector& fp)
+	void dbg_SetFirePoint(const float3& fp)
 	{
 		((weapon_hud_value*)m_shared_data.get_value())->m_fp_offset.set(fp);
 	}
-	void dbg_SetFirePoint2(const Fvector& fp)
+	void dbg_SetFirePoint2(const float3& fp)
 	{
 		((weapon_hud_value*)m_shared_data.get_value())->m_fp2_offset.set(fp);
 	}
-	void dbg_SetShellPoint(const Fvector& sp)
+	void dbg_SetShellPoint(const float3& sp)
 	{
 		((weapon_hud_value*)m_shared_data.get_value())->m_sp_offset.set(sp);
 	}

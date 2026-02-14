@@ -60,12 +60,12 @@ class CCarLights
 	LIGHTS_STORAGE m_lights;
 	CCar* m_pcar;
 	/*
-		Ivector2		m_head_near_lights						;
-		Ivector2		m_head_far_lights						;
-		Ivector2		m_left_turns							;
-		Ivector2		m_stops									;
-		Ivector2		m_gabarites								;
-		Ivector2		m_door_gabarites						;
+		int2		m_head_near_lights						;
+		int2		m_head_far_lights						;
+		int2		m_left_turns							;
+		int2		m_stops									;
+		int2		m_gabarites								;
+		int2		m_door_gabarites						;
 	*/
   private:
 };

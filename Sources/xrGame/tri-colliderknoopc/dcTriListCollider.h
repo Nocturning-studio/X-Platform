@@ -36,7 +36,7 @@ class dcTriListCollider
 	IC void SideToGlClTriState(u32 v0, u32 v1, CDB::TRI* T_array);
 	template <class T>
 	IC int dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip,
-									const Fvector& AABB);
+									const float3& AABB);
 	IC dReal PointSphereTest(const dReal* center, const dReal radius, const dReal* pt, dReal* norm);
 	IC dReal FragmentonSphereTest(const dReal* center, const dReal radius, const dReal* pt1, const dReal* pt2,
 								  dReal* norm);

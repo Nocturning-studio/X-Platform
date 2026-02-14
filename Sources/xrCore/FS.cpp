@@ -263,9 +263,9 @@ void IWriter::w_chunk(u32 type, void* data, u32 size)
 		w(data, size);
 	close_chunk();
 }
-void IWriter::w_sdir(const Fvector& D)
+void IWriter::w_sdir(const float3& D)
 {
-	Fvector C;
+	float3 C;
 	float mag = D.magnitude();
 	if (mag > EPS_S)
 	{

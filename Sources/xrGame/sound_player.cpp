@@ -234,9 +234,9 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
 		m_playing_sounds.back().play_at_pos(m_object, compute_sound_point(m_playing_sounds.back()));
 }
 
-IC Fvector CSoundPlayer::compute_sound_point(const CSoundSingle& sound)
+IC float3 CSoundPlayer::compute_sound_point(const CSoundSingle& sound)
 {
-	Fmatrix l_tMatrix;
+	float4x4 l_tMatrix;
 	l_tMatrix.mul_43(m_object->Transform(),
 					 smart_cast<CKinematics*>(m_object->Visual())->LL_GetBoneInstance(sound.m_bone_id).mTransform);
 	return (l_tMatrix.c);

@@ -67,7 +67,7 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy)
 	}
 }
 
-void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy, const Fvector& pos, u32 vertex, u32 time)
+void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy, const float3& pos, u32 vertex, u32 time)
 {
 	SMonsterEnemy enemy_info;
 	enemy_info.position = pos;

@@ -23,7 +23,7 @@ CSpaceRestrictor::~CSpaceRestrictor()
 {
 }
 
-void CSpaceRestrictor::Center(Fvector& C) const
+void CSpaceRestrictor::Center(float3& C) const
 {
 	Transform().transform_tiny(C, CFORM()->getSphere().P);
 }
@@ -144,12 +144,12 @@ void CSpaceRestrictor::prepare() const
 			break;
 		}
 		case 1: { // box
-			Fmatrix sphere;
-			const Fmatrix& box = (*I).data.box;
+			float4x4 sphere;
+			const float4x4& box = (*I).data.box;
 			sphere.mul_43(Transform(), box);
 
 			// Build points
-			Fvector A, B[8];
+			float3 A, B[8];
 			CPlanes temp;
 			A.set(-.5f, -.5f, -.5f);
 			sphere.transform_tiny(B[0], A);
@@ -231,9 +231,9 @@ void CSpaceRestrictor::OnRender()
 	if (!(dbg_net_Draw_Flags.is_any((1 << 2))))
 		return;
 	RenderBackend.OnFrameEnd();
-	Fvector l_half;
+	float3 l_half;
 	l_half.set(.5f, .5f, .5f);
-	Fmatrix l_ball, l_box;
+	float4x4 l_ball, l_box;
 	xr_vector<CCF_Shape::shape_def>& l_shapes = ((CCF_Shape*)CFORM())->Shapes();
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 
@@ -252,7 +252,7 @@ void CSpaceRestrictor::OnRender()
 			Fsphere& l_sphere = l_pShape->data.sphere;
 			l_ball.scale(l_sphere.R, l_sphere.R, l_sphere.R);
 			// l_ball.scale(1.f, 1.f, 1.f);
-			Fvector l_p;
+			float3 l_p;
 			Transform().transform(l_p, l_sphere.P);
 			l_ball.translate_add(l_p);
 			// l_ball.mul(Transform(), l_ball);
@@ -272,15 +272,15 @@ void CSpaceRestrictor::OnRender()
 
 		// DRAW name
 
-		Fmatrix res;
+		float4x4 res;
 		res.mul(Engine.RenderView.ViewProjection, Transform());
 
-		Fvector4 v_res;
+		float4 v_res;
 
 		float delta_height = 0.f;
 
 		// get up on 2 meters
-		Fvector shift;
+		float3 shift;
 		static float gx = 0.0f;
 		static float gy = 2.0f;
 		static float gz = 0.0f;

@@ -12,8 +12,8 @@ class CPHSynchronize
 	virtual void net_Import(NET_Packet& P){};
 	virtual void get_State(SPHNetState& state) = 0;
 	virtual void set_State(const SPHNetState& state) = 0;
-	virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform) = 0;
-	virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform) = 0;
+	virtual void cv2obj_Xfrom(const Fquaternion& q, const float3& pos, float4x4& transform) = 0;
+	virtual void cv2bone_Xfrom(const Fquaternion& q, const float3& pos, float4x4& transform) = 0;
 
   protected:
   private:

@@ -59,7 +59,7 @@ void CMovementManager::process_game_path()
 		{
 			Msg("! Cannot build GAME path! (object %s)", *object().cName());
 			Msg("! CURRENT LEVEL : %s", *Level().name());
-			Fvector temp = ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_point();
+			float3 temp = ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_point();
 			Msg("! CURRENT game point position : [%f][%f][%f]", VPUSH(temp));
 			const GameGraph::CVertex* vertex = ai().game_graph().vertex(game_dest_vertex_id());
 			Msg("! TARGET LEVEL : %s", *ai().game_graph().header().level(vertex->level_id()).name());
@@ -109,7 +109,7 @@ void CMovementManager::process_game_path()
 
 		if (!accessible(dest_level_vertex_id))
 		{
-			Fvector dest_pos;
+			float3 dest_pos;
 			dest_level_vertex_id =
 				restrictions().accessible_nearest(ai().level_graph().vertex_position(dest_level_vertex_id), dest_pos);
 		}
@@ -146,7 +146,7 @@ void CMovementManager::process_game_path()
 	case ePathStateBuildDetailPath: {
 		detail().set_state_patrol_path(true);
 		detail().set_start_position(object().Position());
-		detail().set_start_direction(Fvector().setHP(-m_body.current.yaw, 0));
+		detail().set_start_direction(float3().setHP(-m_body.current.yaw, 0));
 		detail().set_dest_position(ai().level_graph().vertex_position(level_path().intermediate_vertex_id()));
 
 		if (can_use_distributed_compuations(mtDetailPath))

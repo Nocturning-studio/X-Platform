@@ -40,8 +40,8 @@ class ENGINE_API IRender_Light : public xr_resource
 	virtual bool get_active() = 0;
 	virtual void set_shadow(bool) = 0;
 	virtual void set_indirect(bool){};
-	virtual void set_position(const Fvector& P) = 0;
-	virtual void set_rotation(const Fvector& D, const Fvector& R) = 0;
+	virtual void set_position(const float3& P) = 0;
+	virtual void set_rotation(const float3& D, const float3& R) = 0;
 	virtual void set_cone(float angle) = 0;
 	virtual void set_range(float R) = 0;
 	virtual void set_virtual_size(float R) = 0;
@@ -66,8 +66,8 @@ class ENGINE_API IRender_Glow : public xr_resource
   public:
 	virtual void set_active(bool) = 0;
 	virtual bool get_active() = 0;
-	virtual void set_position(const Fvector& P) = 0;
-	virtual void set_direction(const Fvector& P) = 0;
+	virtual void set_position(const float3& P) = 0;
+	virtual void set_direction(const float3& P) = 0;
 	virtual void set_radius(float R) = 0;
 	virtual void set_texture(LPCSTR name) = 0;
 	virtual void set_color(const Fcolor& C) = 0;
@@ -208,7 +208,7 @@ class ENGINE_API IRender_interface
 	virtual ref_shader getShader(int id) = 0;
 	virtual IRender_Sector* getSector(int id) = 0;
 	virtual IRender_Visual* getVisual(int id) = 0;
-	virtual IRender_Sector* detectSector(const Fvector& P) = 0;
+	virtual IRender_Sector* detectSector(const float3& P) = 0;
 	virtual IRender_Target* getTarget() = 0;
 	virtual IEffectorsManager* getEffectorsManager() = 0;
 
@@ -218,7 +218,7 @@ class ENGINE_API IRender_interface
 		VERIFY(O);
 		View = O;
 	}
-	virtual void set_Transform(Fmatrix* M) = 0;
+	virtual void set_Transform(float4x4* M) = 0;
 	virtual void set_HUD(BOOL V) = 0;
 	virtual BOOL get_HUD() = 0;
 	virtual void set_Invisible(BOOL V) = 0;
@@ -226,11 +226,11 @@ class ENGINE_API IRender_interface
 	virtual void add_Occluder(Fbox2& bb_screenspace) = 0; // mask screen region as oclluded (-1..1, -1..1)
 	virtual void add_Visual(IRender_Visual* V) = 0;		  // add visual leaf	(no culling performed at all)
 	virtual void add_Geometry(IRender_Visual* V) = 0;	  // add visual(s)	(all culling performed)
-	virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
+	virtual void add_StaticWallmark(ref_shader& S, const float3& P, float s, CDB::TRI* T, float3* V) = 0;
 	virtual void clear_static_wallmarks() = 0;
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0;
-	virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start,
-									  const Fvector& dir, float size) = 0;
+	virtual void add_SkeletonWallmark(const float4x4* xf, CKinematics* obj, ref_shader& sh, const float3& start,
+									  const float3& dir, float size) = 0;
 
 	virtual IBlender* blender_create(CLASS_ID cls) = 0;
 	virtual void blender_destroy(IBlender*&) = 0;

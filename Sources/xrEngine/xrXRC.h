@@ -17,7 +17,7 @@ class ENGINE_API xrXRC
 	{
 		CL.ray_options(f);
 	}
-	IC void ray_query(const CDB::MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f)
+	IC void ray_query(const CDB::MODEL* m_def, const float3& r_start, const float3& r_dir, float r_range = 10000.f)
 	{
 #ifdef DEBUG
 		Engine.Statistic->clRAY.Begin();
@@ -32,7 +32,7 @@ class ENGINE_API xrXRC
 	{
 		CL.box_options(f);
 	}
-	IC void box_query(const CDB::MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
+	IC void box_query(const CDB::MODEL* m_def, const float3& b_center, const float3& b_dim)
 	{
 #ifdef DEBUG
 		Engine.Statistic->clBOX.Begin();

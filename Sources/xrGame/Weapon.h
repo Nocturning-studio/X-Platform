@@ -299,8 +299,8 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	float m_fZoomRotationFactor;
 	bool m_bHideCrosshairInZoom;
 	// dof
-	Fvector m_ZoomDof;
-	Fvector4 m_ReloadDof;
+	float3 m_ZoomDof;
+	float4 m_ReloadDof;
 
   public:
 	IC bool IsZoomEnabled() const
@@ -367,28 +367,28 @@ class CWeapon : public CHudItemObject, public CShootingObject
   protected:
 	LPCSTR m_strap_bone0;
 	LPCSTR m_strap_bone1;
-	Fmatrix m_StrapOffset;
+	float4x4 m_StrapOffset;
 	bool m_strapped_mode;
 	bool m_can_be_strapped;
 
-	Fmatrix m_Offset;
+	float4x4 m_Offset;
 	// 0-используется без участия рук, 1-одна рука, 2-две руки
 	EHandDependence eHandDependence;
 	bool m_bIsSingleHanded;
 
   public:
 	// загружаемые параметры
-	Fvector vLoadedFirePoint;
-	Fvector vLoadedFirePoint2;
+	float3 vLoadedFirePoint;
+	float3 vLoadedFirePoint2;
 
   private:
 	// текущее положение и напрвление для партиклов
 	struct _firedeps
 	{
-		Fmatrix m_FireParticlesTransform; // направление для партиклов огня и дыма
-		Fvector vLastFP, vLastFP2;	  // огня
-		Fvector vLastFD;			  // direction
-		Fvector vLastSP;			  // гильз
+		float4x4 m_FireParticlesTransform; // направление для партиклов огня и дыма
+		float3 vLastFP, vLastFP2;	  // огня
+		float3 vLastFD;			  // direction
+		float3 vLastSP;			  // гильз
 
 		_firedeps()
 		{
@@ -402,9 +402,9 @@ class CWeapon : public CHudItemObject, public CShootingObject
 
   protected:
 	virtual void UpdateFireDependencies_internal();
-	virtual void UpdatePosition(const Fmatrix& transform); //.
+	virtual void UpdatePosition(const float4x4& transform); //.
 	virtual void UpdateTransform();
-	virtual void UpdateHudAdditonal(Fmatrix&);
+	virtual void UpdateHudAdditonal(float4x4&);
 	IC void UpdateFireDependencies()
 	{
 		if (dwFP_Frame == Engine.TimeManager.GetFrameCount())
@@ -415,36 +415,36 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	virtual void LoadFireParams(LPCSTR section, LPCSTR prefix);
 
   public:
-	IC const Fvector& get_LastFP()
+	IC const float3& get_LastFP()
 	{
 		UpdateFireDependencies();
 		return m_firedeps.vLastFP;
 	}
-	IC const Fvector& get_LastFP2()
+	IC const float3& get_LastFP2()
 	{
 		UpdateFireDependencies();
 		return m_firedeps.vLastFP2;
 	}
-	IC const Fvector& get_LastFD()
+	IC const float3& get_LastFD()
 	{
 		UpdateFireDependencies();
 		return m_firedeps.vLastFD;
 	}
-	IC const Fvector& get_LastSP()
+	IC const float3& get_LastSP()
 	{
 		UpdateFireDependencies();
 		return m_firedeps.vLastSP;
 	}
 
-	virtual const Fvector& get_CurrentFirePoint()
+	virtual const float3& get_CurrentFirePoint()
 	{
 		return get_LastFP();
 	}
-	virtual const Fvector& get_CurrentFirePoint2()
+	virtual const float3& get_CurrentFirePoint2()
 	{
 		return get_LastFP2();
 	}
-	virtual const Fmatrix& get_ParticlesTransform()
+	virtual const float4x4& get_ParticlesTransform()
 	{
 		UpdateFireDependencies();
 		return m_firedeps.m_FireParticlesTransform;
@@ -460,7 +460,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	virtual void OnStateSwitch(u32 S);
 
 	// трассирование полета пули
-	void FireTrace(const Fvector& P, const Fvector& D);
+	void FireTrace(const float3& P, const float3& D);
 	virtual float GetWeaponDeterioration();
 
 	virtual void FireStart()
@@ -484,7 +484,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	// текущая дисперсия (в радианах) оружия с учетом используемого патрона
 	float GetFireDispersion(bool with_cartridge);
 	float GetFireDispersion(float cartridge_k);
-	//	const Fvector&			GetRecoilDeltaAngle	();
+	//	const float3&			GetRecoilDeltaAngle	();
 	virtual int ShotsFired()
 	{
 		return 0;
@@ -535,7 +535,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
 
   protected:
 	// для отдачи оружия
-	Fvector m_vRecoilDeltaAngle;
+	float3 m_vRecoilDeltaAngle;
 
 	// для сталкеров, чтоб они знали эффективные границы использования
 	// оружия

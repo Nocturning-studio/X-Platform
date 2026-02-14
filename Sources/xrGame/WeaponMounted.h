@@ -23,9 +23,9 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 	u16 rotate_y_bone;
 	u16 camera_bone;
 
-	Fvector fire_pos, fire_dir;
-	Fmatrix fire_bone_transform;
-	Fvector2 m_dAngle;
+	float3 fire_pos, fire_dir;
+	float4x4 fire_bone_transform;
+	float2 m_dAngle;
 	static void BoneCallbackX(CBoneInstance* B);
 	static void BoneCallbackY(CBoneInstance* B);
 
@@ -34,11 +34,11 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 	virtual ~CWeaponMounted();
 
 	// for shooting object
-	virtual const Fvector& get_CurrentFirePoint()
+	virtual const float3& get_CurrentFirePoint()
 	{
 		return fire_pos;
 	}
-	virtual const Fmatrix& get_ParticlesTransform();
+	virtual const float4x4& get_ParticlesTransform();
 
 	//////////////////////////////////////////////////
 	// непосредственно обработка стрельбы
@@ -100,10 +100,10 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 
 	virtual void cam_Update(float dt, float fov = 90.0f);
 
-	virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos);
+	virtual bool Use(const float3& pos, const float3& dir, const float3& foot_pos);
 	virtual bool attach_Actor(CGameObject* actor);
 	virtual void detach_Actor();
-	virtual Fvector ExitPosition();
+	virtual float3 ExitPosition();
 	virtual bool allowWeapon() const
 	{
 		return false;

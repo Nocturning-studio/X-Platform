@@ -632,7 +632,7 @@ class CCC_tf_Aniso : public CCC_Integer
 extern INT g_bDR_LM_UsePointsBBox;
 extern INT g_bDR_LM_4Steps;
 extern INT g_iDR_LM_Step;
-extern Fvector g_DR_LM_Min, g_DR_LM_Max;
+extern float3 g_DR_LM_Min, g_DR_LM_Max;
 
 class CCC_DR_ClearPoint : public IConsole_Command
 {
@@ -662,7 +662,7 @@ class CCC_DR_TakePoint : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		Fvector CamPos = Engine.RenderView.Position;
+		float3 CamPos = Engine.RenderView.Position;
 
 		if (g_DR_LM_Min.x > CamPos.x)
 			g_DR_LM_Min.x = CamPos.x;

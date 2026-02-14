@@ -30,10 +30,10 @@ class CGlow : public IRender_Glow
 	{
 		return bActive;
 	}
-	virtual void set_position(const Fvector& P)
+	virtual void set_position(const float3& P)
 	{
 	}
-	virtual void set_direction(const Fvector& D)
+	virtual void set_direction(const float3& D)
 	{
 	}
 	virtual void set_radius(float R)
@@ -65,7 +65,7 @@ static class cl_sun_dir : public R_constant_setup
 	{
 		light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
 
-		Fvector L_dir;
+		float3 L_dir;
 		Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
 		L_dir.normalize();
 
@@ -563,7 +563,7 @@ void CRender::add_Geometry(IRender_Visual* V)
 	}
 }
 
-void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
+void CRender::add_StaticWallmark(ref_shader& S, const float3& P, float s, CDB::TRI* T, float3* verts)
 {
 	if (g_dedicated_server)
 		return;
@@ -584,8 +584,8 @@ void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 	Wallmarks->AddSkeletonWallmark(wm);
 }
 
-void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start,
-								   const Fvector& dir, float size)
+void CRender::add_SkeletonWallmark(const float4x4* xf, CKinematics* obj, ref_shader& sh, const float3& start,
+								   const float3& dir, float size)
 {
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
@@ -666,7 +666,7 @@ void CRender::enable_dbt_bounds(light* L)
 
 	// transform BB
 	Fbox BB;
-	Fvector rr;
+	float3 rr;
 	rr.set(L->spatial.sphere.R, L->spatial.sphere.R, L->spatial.sphere.R);
 	BB.setb(L->spatial.sphere.P, rr);
 
@@ -674,7 +674,7 @@ void CRender::enable_dbt_bounds(light* L)
 	bbp.invalidate();
 	for (u32 i = 0; i < 8; i++)
 	{
-		Fvector pt;
+		float3 pt;
 		BB.getpoint(i, pt);
 		Engine.RenderView.ViewProjection.transform(pt);
 		bbp.modify(pt);

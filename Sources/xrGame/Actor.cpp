@@ -77,8 +77,8 @@ static float ICoincidenced = 0;
 
 static Fbox bbStandBox;
 static Fbox bbCrouchBox;
-static Fvector vFootCenter;
-static Fvector vFootExt;
+static float3 vFootCenter;
+static float3 vFootExt;
 
 Flags32 psActorFlags = {0};
 
@@ -276,7 +276,7 @@ void CActor::Load(LPCSTR section)
 	// m_PhysicMovementControl: General
 	// m_PhysicMovementControl->SetParent		(this);
 	Fbox bb;
-	Fvector vBOX_center, vBOX_size;
+	float3 vBOX_center, vBOX_size;
 	// m_PhysicMovementControl: BOX
 	vBOX_center = pSettings->r_fvector3(section, "ph_box2_center");
 	vBOX_size = pSettings->r_fvector3(section, "ph_box2_size");
@@ -299,8 +299,8 @@ void CActor::Load(LPCSTR section)
 	character_physics_support()->movement()->SetBox(0, bb);
 
 	//// m_PhysicMovementControl: Foots
-	// Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-	// Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
+	// float3	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
+	// float3	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
 	// bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
 	////m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
 
@@ -411,9 +411,9 @@ void CActor::Load(LPCSTR section)
 	invincibility_fire_shield_3rd = READ_IF_EXISTS(pSettings, r_string, section, "Invincibility_Shield_3rd", 0);
 	//-----------------------------------------
 	m_AutoPickUp_AABB =
-		READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB", Fvector().set(0.02f, 0.02f, 0.02f));
+		READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB", float3().set(0.02f, 0.02f, 0.02f));
 	m_AutoPickUp_AABB_Offset =
-		READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB_offs", Fvector().set(0, 0, 0));
+		READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB_offs", float3().set(0, 0, 0));
 
 	CStringTable string_table;
 	m_sCharacterUseAction = "character_use";
@@ -426,7 +426,7 @@ void CActor::Load(LPCSTR section)
 	m_sHeadShotParticle = READ_IF_EXISTS(pSettings, r_string, section, "HeadShotParticle", 0);
 }
 
-void CActor::PHHit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space, float impulse,
+void CActor::PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
 				   ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
 {
 	m_pPhysics_support->in_Hit(P, dir, who, element, p_in_object_space, impulse, hit_type, !g_Alive());
@@ -455,8 +455,8 @@ void CActor::Hit(SHit* pHDS)
 	if (ph_dbg_draw_mask.test(phDbgCharacterControl))
 	{
 		DBG_OpenCashedDraw();
-		Fvector to;
-		to.add(Position(), Fvector().mul(HDS.dir, HDS.phys_impulse()));
+		float3 to;
+		to.add(Position(), float3().mul(HDS.dir, HDS.phys_impulse()));
 		DBG_DrawLine(Position(), to, D3DCOLOR_XRGB(124, 124, 0));
 		DBG_ClosedCashedDraw(500);
 	}
@@ -475,7 +475,7 @@ void CActor::Hit(SHit* pHDS)
 			if (Engine.TimeManager.GetFrameCount() != last_hit_frame && HDS.bone() != BI_NONE)
 			{
 				// вычислить позицию и направленность партикла
-				Fmatrix pos;
+				float4x4 pos;
 
 				CParticlesPlayer::MakeTransform(this, HDS.bone(), HDS.dir, HDS.p_in_bone_space, pos);
 
@@ -487,7 +487,7 @@ void CActor::Hit(SHit* pHDS)
 				else
 					ps = CParticlesObject::Create(invincibility_fire_shield_3rd, TRUE);
 
-				ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
+				ps->UpdateParent(pos, float3().set(0.f, 0.f, 0.f));
 				GamePersistent().ps_needtoplay.push_back(ps);
 			};
 		};
@@ -517,7 +517,7 @@ void CActor::Hit(SHit* pHDS)
 		}
 		if (bPlaySound && !b_snd_hit_playing)
 		{
-			Fvector point = Position();
+			float3 point = Position();
 			point.y += CameraHeight();
 			S.play_at_pos(this, point);
 		};
@@ -575,13 +575,13 @@ void CActor::Hit(SHit* pHDS)
 		if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
 		{
 			// convert impulse into local coordinate system
-			Fmatrix mInvTransform;
+			float4x4 mInvTransform;
 			mInvTransform.invert(Transform());
-			Fvector vLocalDir;
+			float3 vLocalDir;
 			mInvTransform.transform_dir(vLocalDir, HDS.dir);
 			vLocalDir.invert();
 
-			Fvector a = {0, 0, 1};
+			float3 a = {0, 0, 1};
 			float res = a.dotproduct(vLocalDir);
 			if (res < -0.707)
 			{
@@ -611,7 +611,7 @@ void CActor::Hit(SHit* pHDS)
 	}
 }
 
-void CActor::HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector position_in_bone_space, float impulse,
+void CActor::HitMark(float P, float3 dir, CObject* who, s16 element, float3 position_in_bone_space, float impulse,
 					 ALife::EHitType hit_type)
 {
 	// hit marker
@@ -625,17 +625,17 @@ void CActor::HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector po
 			if (!ce)
 			{
 				int id = -1;
-				Fvector cam_pos, cam_dir, cam_norm;
+				float3 cam_pos, cam_dir, cam_norm;
 				cam_Active()->Get(cam_pos, cam_dir, cam_norm);
 				cam_dir.normalize_safe();
 				dir.normalize_safe();
 
 				float ang_diff = angle_difference(cam_dir.getH(), dir.getH());
-				Fvector cp;
+				float3 cp;
 				cp.crossproduct(cam_dir, dir);
 				bool bUp = (cp.y > 0.0f);
 
-				Fvector cross;
+				float3 cross;
 				cross.crossproduct(cam_dir, dir);
 				VERIFY(ang_diff >= 0.0f && ang_diff <= PI);
 
@@ -677,7 +677,7 @@ void CActor::HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector po
 	}
 }
 
-void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element)
+void CActor::HitSignal(float perc, float3& vLocalDir, CObject* who, s16 element)
 {
 	if (g_Alive())
 	{
@@ -685,13 +685,13 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 		if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
 			character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
 		{
-			Fvector zeroV;
+			float3 zeroV;
 			zeroV.set(0, 0, 0);
 			character_physics_support()->movement()->SetVelocity(zeroV);
 		}
 
 		// check damage bone
-		Fvector D;
+		float3 D;
 		Transform().transform_dir(D, vLocalDir);
 
 		float yaw, pitch;
@@ -818,10 +818,10 @@ void CActor::SwitchOutBorder(bool new_border_state)
 	m_bOutBorder = new_border_state;
 }
 
-void CActor::g_Physics(Fvector& _accel, float jump, float dt)
+void CActor::g_Physics(float3& _accel, float jump, float dt)
 {
 	// Correct accel
-	Fvector accel;
+	float3 accel;
 	accel.set(_accel);
 	hit_slowmo -= dt;
 	if (hit_slowmo < 0)
@@ -850,9 +850,9 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))
 		{
 			const ICollisionDamageInfo* di = character_physics_support()->movement()->CollisionDamageInfo();
-			Fvector hdir;
+			float3 hdir;
 			di->HitDir(hdir);
-			SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
+			SetHitInfo(this, NULL, 0, float3().set(0, 0, 0), hdir);
 			//				Hit
 			//(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6
 			//+ 2*::Random.randI(0,2))
@@ -1066,7 +1066,7 @@ void CActor::shedule_Update(u32 DT)
 		g_SetAnimation(mstate_real);
 
 		// Check for game-contacts
-		Fvector C;
+		float3 C;
 		float R;
 		// m_PhysicMovementControl->GetBoundingSphere	(C,R);
 
@@ -1189,11 +1189,11 @@ void CActor::shedule_Update(u32 DT)
 		{
 			if (!m_HeavyBreathSnd._feedback())
 			{
-				m_HeavyBreathSnd.play_at_pos(this, Fvector().set(0, ACTOR_HEIGHT, 0), sm_Looped | sm_2D);
+				m_HeavyBreathSnd.play_at_pos(this, float3().set(0, ACTOR_HEIGHT, 0), sm_Looped | sm_2D);
 			}
 			else
 			{
-				m_HeavyBreathSnd.set_position(Fvector().set(0, ACTOR_HEIGHT, 0));
+				m_HeavyBreathSnd.set_position(float3().set(0, ACTOR_HEIGHT, 0));
 			}
 		}
 		else if (m_HeavyBreathSnd._feedback())
@@ -1204,7 +1204,7 @@ void CActor::shedule_Update(u32 DT)
 		float bs = conditions().BleedingSpeed();
 		if (bs > 0.2f)
 		{
-			Fvector snd_pos;
+			float3 snd_pos;
 			snd_pos.set(0, ACTOR_HEIGHT, 0);
 			if (!m_BloodSnd._feedback())
 				m_BloodSnd.play_at_pos(this, snd_pos, sm_Looped | sm_2D);
@@ -1393,7 +1393,7 @@ void CActor::OnHUDDraw(CCustomHUD* /**hud/**/)
 #endif
 }
 
-void CActor::RenderIndicator(Fvector dpos, float r1, float r2, ref_shader IndShader)
+void CActor::RenderIndicator(float3 dpos, float r1, float r2, ref_shader IndShader)
 {
 	if (!g_Alive())
 		return;
@@ -1404,15 +1404,15 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, ref_shader IndSha
 	// base rect
 
 	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
-	Fmatrix M;
+	float4x4 M;
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
 	M.mul(Transform(), BI.mTransform);
 
-	Fvector pos = M.c;
+	float3 pos = M.c;
 	pos.add(dpos);
-	const Fvector& T = Engine.RenderView.Top;
-	const Fvector& R = Engine.RenderView.Right;
-	Fvector Vr, Vt;
+	const float3& T = Engine.RenderView.Top;
+	const float3& R = Engine.RenderView.Right;
+	float3 Vr, Vt;
 	Vr.x = R.x * r1;
 	Vr.y = R.y * r1;
 	Vr.z = R.z * r1;
@@ -1420,7 +1420,7 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, ref_shader IndSha
 	Vt.y = T.y * r2;
 	Vt.z = T.z * r2;
 
-	Fvector a, b, c, d;
+	float3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -1446,23 +1446,23 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, ref_shader IndSha
 static float mid_size = 0.097f;
 static float fontsize = 15.0f;
 static float upsize = 0.33f;
-void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
+void CActor::RenderText(LPCSTR Text, float3 dpos, float* pdup, u32 color)
 {
 	if (!g_Alive())
 		return;
 
 	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
-	Fmatrix M;
+	float4x4 M;
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
 	M.mul(Transform(), BI.mTransform);
 	//------------------------------------------------
-	Fvector v0, v1;
+	float3 v0, v1;
 	v0.set(M.c);
 	v1.set(M.c);
-	Fvector T = Engine.RenderView.Top;
+	float3 T = Engine.RenderView.Top;
 	v1.add(T);
 
-	Fvector v0r, v1r;
+	float3 v0r, v1r;
 	Engine.RenderView.ViewProjection.transform(v0r, v0);
 	Engine.RenderView.ViewProjection.transform(v1r, v1);
 	float size = v1r.distance_to(v0r);
@@ -1482,7 +1482,7 @@ void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	//------------------------------------------------
 	M.c.y += dpos.y;
 
-	Fvector4 v_res;
+	float4 v_res;
 	Engine.RenderView.ViewProjection.transform(v_res, M.c);
 
 	if (v_res.z < 0 || v_res.w < 0)
@@ -1502,7 +1502,7 @@ void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	*pdup = delta_up;
 };
 
-void CActor::SetPhPosition(const Fmatrix& transform)
+void CActor::SetPhPosition(const float4x4& transform)
 {
 	if (!m_pPhysicsShell)
 	{
@@ -1511,7 +1511,7 @@ void CActor::SetPhPosition(const Fmatrix& transform)
 	// else m_phSkeleton->S
 }
 
-void CActor::ForceTransform(const Fmatrix& m)
+void CActor::ForceTransform(const float4x4& m)
 {
 	if (!g_Alive())
 		return;
@@ -1694,12 +1694,12 @@ void CActor::SetShotRndSeed(s32 Seed)
 		m_ShotRndSeed = s32(Level().timeServer_Async());
 };
 
-Fvector CActor::GetMissileOffset() const
+float3 CActor::GetMissileOffset() const
 {
 	return m_vMissileOffset;
 }
 
-void CActor::SetMissileOffset(const Fvector& vNewOffset)
+void CActor::SetMissileOffset(const float3& vNewOffset)
 {
 	m_vMissileOffset.set(vNewOffset);
 }

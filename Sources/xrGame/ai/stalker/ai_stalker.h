@@ -210,12 +210,12 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	virtual void UpdateCL();
 	virtual void shedule_Update(u32 dt);
 	virtual void Think();
-	virtual void SelectAnimation(const Fvector& _view, const Fvector& _move, float speed);
+	virtual void SelectAnimation(const float3& _view, const float3& _move, float speed);
 	virtual BOOL UsedAI_Locations();
 
 	virtual void g_WeaponBones(int& L, int& R1, int& R2);
-	virtual void g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D);
-	virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
+	virtual void g_fireParams(const CHudItem* pHudItem, float3& P, float3& D);
+	virtual void HitSignal(float P, float3& vLocalDir, CObject* who, s16 element);
 	virtual void Die(CObject* who);
 
 	virtual void OnEvent(NET_Packet& P, u16 type);
@@ -225,7 +225,7 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	virtual void renderable_Render();
 	virtual void Exec_Look(float dt);
 	virtual void Hit(SHit* pHDS);
-	virtual void PHHit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space, float impulse,
+	virtual void PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
 					   ALife::EHitType hit_type = ALife::eHitTypeWound);
 	virtual BOOL feel_vision_isRelevant(CObject* who);
 	virtual float Radius() const;
@@ -320,9 +320,9 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	collide::rq_results rq_storage;
 
   private:
-	void can_kill_entity(const Fvector& position, const Fvector& direction, float distance,
+	void can_kill_entity(const float3& position, const float3& direction, float distance,
 						 collide::rq_results& rq_storage);
-	void can_kill_entity_from(const Fvector& position, Fvector direction, float distance);
+	void can_kill_entity_from(const float3& position, float3 direction, float distance);
 	void update_can_kill_info();
 
   public:
@@ -444,7 +444,7 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	virtual void on_weapon_shot_stop(CWeapon* weapon);
 	virtual void on_weapon_hide(CWeapon* weapon);
 	IC CWeaponShotEffector& weapon_shot_effector() const;
-	IC Fvector weapon_shot_effector_direction(const Fvector& current) const;
+	IC float3 weapon_shot_effector_direction(const float3& current) const;
 	virtual void UpdateCamera();
 	virtual bool can_attach(const CInventoryItem* inventory_item) const;
 	virtual bool use_simplified_visual() const
@@ -502,14 +502,14 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	const CCoverPoint* m_best_cover_advance_cover;
 
   private:
-	float best_cover_value(const Fvector& position_to_cover_from);
-	const CCoverPoint* find_best_cover(const Fvector& position_to_cover_from);
-	void update_best_cover_actuality(const Fvector& position_to_cover_from);
+	float best_cover_value(const float3& position_to_cover_from);
+	const CCoverPoint* find_best_cover(const float3& position_to_cover_from);
+	void update_best_cover_actuality(const float3& position_to_cover_from);
 	void on_best_cover_changed(const CCoverPoint* new_cover, const CCoverPoint* old_cover);
 
   public:
 	void best_cover_can_try_advance();
-	const CCoverPoint* best_cover(const Fvector& position_to_cover_from);
+	const CCoverPoint* best_cover(const float3& position_to_cover_from);
 
   public:
 	void subscribe_on_best_cover_changed(const on_best_cover_changed_delegate& delegate);
@@ -531,20 +531,20 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
   private:
 	// actuality parameters
 	bool m_throw_actual;
-	Fvector m_computed_object_position;
-	Fvector m_computed_object_direction;
+	float3 m_computed_object_position;
+	float3 m_computed_object_direction;
 	// target parameters
-	Fvector m_throw_target;
+	float3 m_throw_target;
 	// computed
 	float m_throw_force;
-	Fvector m_throw_position;
-	Fvector m_throw_direction;
+	float3 m_throw_position;
+	float3 m_throw_direction;
 
   public:
 	virtual bool use_default_throw_force();
 	virtual float missile_throw_force();
 	virtual bool use_throw_randomness();
-	void throw_target(const Fvector& position);
+	void throw_target(const float3& position);
 	void update_throw_params();
 
 #ifdef DEBUG

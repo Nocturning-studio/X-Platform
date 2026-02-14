@@ -95,8 +95,8 @@ void CPHCapture::PullingUpdate()
 		return;
 	}
 
-	Fvector dir;
-	Fvector capture_bone_position;
+	float3 dir;
+	float3 capture_bone_position;
 	CObject* object = smart_cast<CObject*>(m_character->PhysicsRefObject());
 	capture_bone_position.set(m_capture_bone->mTransform.c);
 	object->Transform().transform_tiny(capture_bone_position);
@@ -247,7 +247,7 @@ void CPHCapture::CapturedUpdate()
 		m_character->ApplyForce(m_joint_feedback.f1[0] / f, m_joint_feedback.f1[1] / f, m_joint_feedback.f1[2] / f);
 	}
 
-	Fvector capture_bone_position;
+	float3 capture_bone_position;
 	CObject* object = smart_cast<CObject*>(m_character->PhysicsRefObject());
 	capture_bone_position.set(m_capture_bone->mTransform.c);
 	object->Transform().transform_tiny(capture_bone_position);

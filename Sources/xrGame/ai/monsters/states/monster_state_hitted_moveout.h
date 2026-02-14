@@ -9,7 +9,7 @@ template <typename _Object> class CStateMonsterHittedMoveOut : public CState<_Ob
 
 	struct
 	{
-		Fvector position;
+		float3 position;
 		u32 node;
 	} target;
 

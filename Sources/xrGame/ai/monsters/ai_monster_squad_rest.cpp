@@ -28,9 +28,9 @@ void CMonsterSquad::ProcessIdle()
 
 struct CPredicateSideSort
 {
-	Fvector target;
+	float3 target;
 
-	CPredicateSideSort(Fvector pos)
+	CPredicateSideSort(float3 pos)
 	{
 		target = pos;
 	}
@@ -69,12 +69,12 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 			right.push_back(*IT);
 		}
 
-		Fvector front_pos;
-		Fvector back_pos;
-		Fvector left_pos;
-		Fvector right_pos;
+		float3 front_pos;
+		float3 back_pos;
+		float3 left_pos;
+		float3 right_pos;
 
-		Fvector dir = leader->Direction();
+		float3 dir = leader->Direction();
 		front_pos.mad(leader->Position(), dir, CENTER_CIRCLE_DIST);
 		std::sort(front.begin(), front.end(), CPredicateSideSort(front_pos));
 
@@ -99,7 +99,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 		while (!front.empty())
 		{
 			float random_r;
-			Fvector random_dir;
+			float3 random_dir;
 
 			random_dir.random_dir();
 			random_r = Random.randF(CIRCLE_RADIUS_MIN, CIRCLE_RADIUS_MAX);

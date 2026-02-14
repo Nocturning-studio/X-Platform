@@ -24,7 +24,7 @@ class CAI_Flesh : public CBaseMonster, public CControlledEntity<CAI_Flesh>
 	}
 
   private:
-	bool ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter,
+	bool ConeSphereIntersection(float3 ConeVertex, float ConeAngle, float3 ConeDir, float3 SphereCenter,
 								float SphereRadius);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

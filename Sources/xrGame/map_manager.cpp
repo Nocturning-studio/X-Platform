@@ -178,7 +178,7 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 }
 
 /*
-CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const shared_str& level_name, Fvector position)
+CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const shared_str& level_name, float3 position)
 {
 	u16 _id	= Level().Server->PerformIDgen(0xffff);
 	CUserDefinedMapLocation* l = xr_new<CUserDefinedMapLocation>(*spot_type, _id);

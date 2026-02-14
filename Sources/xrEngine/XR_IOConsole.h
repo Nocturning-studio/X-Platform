@@ -137,8 +137,8 @@ class ENGINE_API CConsole : public pureRender, public pureFrame
 	LPCSTR GetString(LPCSTR cmd) const;
 	LPCSTR GetToken(LPCSTR cmd) const;
 	xr_token* GetXRToken(LPCSTR cmd) const;
-	Fvector GetFVector(LPCSTR cmd) const;
-	Fvector* GetFVectorPtr(LPCSTR cmd) const;
+	float3 GetFVector(LPCSTR cmd) const;
+	float3* GetFVectorPtr(LPCSTR cmd) const;
 	IConsole_Command* GetCommand(LPCSTR cmd) const;
 
   protected:

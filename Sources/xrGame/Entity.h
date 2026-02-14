@@ -129,8 +129,8 @@ class CEntity : public CPhysicsShellHolder, public CDamageManager
 
 	// Health calculations
 	virtual void Hit(SHit* pHDS);
-	virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) = 0;
-	virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) = 0;
+	virtual void HitSignal(float P, float3& local_dir, CObject* who, s16 element) = 0;
+	virtual void HitImpulse(float P, float3& vWorldDir, float3& vLocalDir) = 0;
 
 	virtual void Die(CObject* who);
 	//			void			KillEntity			(CObject* who);
@@ -143,7 +143,7 @@ class CEntity : public CPhysicsShellHolder, public CDamageManager
 	{
 		return g_Alive();
 	}
-	virtual void g_fireParams(const CHudItem*, Fvector&, Fvector&){};
+	virtual void g_fireParams(const CHudItem*, float3&, float3&){};
 
 	// time of entity death
 	u32 m_level_death_time;

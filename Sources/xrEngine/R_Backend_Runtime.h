@@ -43,27 +43,27 @@ IC void R_transforms::set_c_WorldViewProject(R_constant* C)
 	c_WorldViewProject = C;
 	RenderBackend.set_Constant(C, m_WorldViewProject);
 };
-IC void CBackend::set_transform_world(const Fmatrix& Matrix)
+IC void CBackend::set_transform_world(const float4x4& Matrix)
 {
 	transforms.set_World(Matrix);
 }
-IC void CBackend::set_transform_view(const Fmatrix& Matrix)
+IC void CBackend::set_transform_view(const float4x4& Matrix)
 {
 	transforms.set_View(Matrix);
 }
-IC void CBackend::set_transform_project(const Fmatrix& Matrix)
+IC void CBackend::set_transform_project(const float4x4& Matrix)
 {
 	transforms.set_Project(Matrix);
 }
-IC const Fmatrix& CBackend::get_transform_world()
+IC const float4x4& CBackend::get_transform_world()
 {
 	return transforms.get_World();
 }
-IC const Fmatrix& CBackend::get_transform_view()
+IC const float4x4& CBackend::get_transform_view()
 {
 	return transforms.get_View();
 }
-IC const Fmatrix& CBackend::get_transform_project()
+IC const float4x4& CBackend::get_transform_project()
 {
 	return transforms.get_Project();
 }

@@ -46,7 +46,7 @@ template <class T, u32 limit> class R_constant_cache
 class ENGINE_API R_constant_array
 {
   public:
-	typedef R_constant_cache<Fvector4, 256> t_f;
+	typedef R_constant_cache<float4, 256> t_f;
 
   public:
 	ALIGN(16) t_f c_f;
@@ -102,10 +102,10 @@ class ENGINE_API R_constant_array
 	}
 
 	// ÌÎÄÈÔÈÖÈÐÓÅÌ ñóùåñòâóþùèå ìåòîäû - äîáàâëÿåì mark_dirty()
-	void set(R_constant* C, R_constant_load& L, const Fmatrix& A)
+	void set(R_constant* C, R_constant_load& L, const float4x4& A)
 	{
 		VERIFY(RC_float == C->type);
-		Fvector4* it = c_f.access(L.index);
+		float4* it = c_f.access(L.index);
 		switch (L.cls)
 		{
 		case RC_2x4:
@@ -136,7 +136,7 @@ class ENGINE_API R_constant_array
 		mark_dirty();
 	}
 
-	void set(R_constant* C, R_constant_load& L, const Fvector4& A)
+	void set(R_constant* C, R_constant_load& L, const float4& A)
 	{
 		VERIFY(RC_float == C->type);
 		VERIFY(RC_1x4 == L.cls);
@@ -145,11 +145,11 @@ class ENGINE_API R_constant_array
 		mark_dirty();
 	}
 
-	void seta(R_constant* C, R_constant_load& L, u32 e, const Fmatrix& A)
+	void seta(R_constant* C, R_constant_load& L, u32 e, const float4x4& A)
 	{
 		VERIFY(RC_float == C->type);
 		u32 base;
-		Fvector4* it;
+		float4* it;
 		switch (L.cls)
 		{
 		case RC_2x4:
@@ -186,7 +186,7 @@ class ENGINE_API R_constant_array
 		mark_dirty();
 	}
 
-	void seta(R_constant* C, R_constant_load& L, u32 e, const Fvector4& A)
+	void seta(R_constant* C, R_constant_load& L, u32 e, const float4& A)
 	{
 		VERIFY(RC_float == C->type);
 		VERIFY(RC_1x4 == L.cls);
@@ -212,7 +212,7 @@ class ENGINE_API R_constants
 
   public:
 	// ÂÐÅÌÅÍÍÎ ÂÎÇÂÐÀÙÀÅÌ ñòàðóþ ëîãèêó äëÿ îòëàäêè
-	ICF void set(R_constant* C, const Fmatrix& A)
+	ICF void set(R_constant* C, const float4x4& A)
 	{
 		if (C->destination & 1)
 		{
@@ -226,7 +226,7 @@ class ENGINE_API R_constants
 		}
 	}
 
-	ICF void set(R_constant* C, const Fvector4& A)
+	ICF void set(R_constant* C, const float4& A)
 	{
 		if (C->destination & 1)
 		{
@@ -242,12 +242,12 @@ class ENGINE_API R_constants
 
 	ICF void set(R_constant* C, float x, float y, float z, float w)
 	{
-		Fvector4 data;
+		float4 data;
 		data.set(x, y, z, w);
 		set(C, data);
 	}
 
-	ICF void seta(R_constant* C, u32 e, const Fmatrix& A)
+	ICF void seta(R_constant* C, u32 e, const float4x4& A)
 	{
 		if (C->destination & 1)
 		{
@@ -261,7 +261,7 @@ class ENGINE_API R_constants
 		}
 	}
 
-	ICF void seta(R_constant* C, u32 e, const Fvector4& A)
+	ICF void seta(R_constant* C, u32 e, const float4& A)
 	{
 		if (C->destination & 1)
 		{
@@ -277,7 +277,7 @@ class ENGINE_API R_constants
 
 	ICF void seta(R_constant* C, u32 e, float x, float y, float z, float w)
 	{
-		Fvector4 data;
+		float4 data;
 		data.set(x, y, z, w);
 		seta(C, e, data);
 	}

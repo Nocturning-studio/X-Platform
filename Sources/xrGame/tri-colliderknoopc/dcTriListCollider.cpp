@@ -27,7 +27,7 @@ int dCollideBP(const dxGeom* o1, const dxGeom* o2, int flags, dContactGeom* cont
 
 int dcTriListCollider::CollideBox(dxGeom* Box, int Flags, dContactGeom* Contacts, int Stride)
 {
-	Fvector AABB;
+	float3 AABB;
 	dVector3 BoxSides;
 	dGeomBoxGetLengths(Box, BoxSides);
 	dReal* R = const_cast<dReal*>(dGeomGetRotation(Box));
@@ -50,7 +50,7 @@ int dcTriListCollider::CollideBox(dxGeom* Box, int Flags, dContactGeom* Contacts
 int dcTriListCollider::CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom* Contacts, int Stride)
 {
 
-	Fvector AABB;
+	float3 AABB;
 	dReal CylinderRadius, CylinderLength;
 
 	dGeomCylinderGetParams(Cylinder, &CylinderRadius, &CylinderLength);
@@ -79,7 +79,7 @@ int dcTriListCollider::CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Co
 {
 
 	const float SphereRadius = dGeomSphereGetRadius(Sphere);
-	Fvector AABB;
+	float3 AABB;
 
 	// Make AABB
 	AABB.x = SphereRadius;

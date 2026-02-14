@@ -50,15 +50,15 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
   private:
 	u16 m_rotate_x_bone, m_rotate_y_bone, m_fire_bone, m_camera_bone;
 	float m_tgt_x_rot, m_tgt_y_rot, m_cur_x_rot, m_cur_y_rot, m_bind_x_rot, m_bind_y_rot;
-	Fvector m_bind_x, m_bind_y;
-	Fvector m_fire_dir, m_fire_pos;
+	float3 m_bind_x, m_bind_y;
+	float3 m_fire_dir, m_fire_pos;
 
-	Fmatrix m_i_bind_x_transform, m_i_bind_y_transform, m_fire_bone_transform;
-	Fvector2 m_lim_x_rot, m_lim_y_rot; // in bone space
+	float4x4 m_i_bind_x_transform, m_i_bind_y_transform, m_fire_bone_transform;
+	float2 m_lim_x_rot, m_lim_y_rot; // in bone space
 	CCartridge* m_Ammo;
 	float m_barrel_speed;
-	Fvector2 m_dAngle;
-	Fvector m_destEnemyDir;
+	float2 m_dAngle;
+	float3 m_destEnemyDir;
 	bool m_allow_fire;
 	HUD_SOUND sndShot;
 	float camRelaxSpeed;
@@ -66,8 +66,8 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
 
   protected:
 	void UpdateBarrelDir();
-	virtual const Fvector& get_CurrentFirePoint();
-	virtual const Fmatrix& get_ParticlesTransform();
+	virtual const float3& get_CurrentFirePoint();
+	virtual const float4x4& get_ParticlesTransform();
 
 	virtual void FireStart();
 	virtual void FireEnd();
@@ -78,7 +78,7 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
 	void SetDesiredDir(float h, float p);
 	// HolderCustom
   public:
-	virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
+	virtual bool Use(const float3& pos, const float3& dir, const float3& foot_pos)
 	{
 		return !Owner();
 	};
@@ -104,9 +104,9 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
 	{
 		return true;
 	};
-	virtual Fvector ExitPosition()
+	virtual float3 ExitPosition()
 	{
-		return Fvector().set(0.0f, 0.0f, 0.0f);
+		return float3().set(0.0f, 0.0f, 0.0f);
 	};
 
 	virtual CCameraBase* Camera()
@@ -115,5 +115,5 @@ class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public
 	};
 
 	virtual void Action(int id, u32 flags);
-	virtual void SetParam(int id, Fvector2 val);
+	virtual void SetParam(int id, float2 val);
 };

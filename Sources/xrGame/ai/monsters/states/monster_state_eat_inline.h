@@ -146,7 +146,7 @@ void CStateMonsterEatAbstract::setup_substates()
 	{
 
 		// Определить позицию ближайшей боны у трупа
-		Fvector nearest_bone_pos;
+		float3 nearest_bone_pos;
 		const CEntityAlive* corpse = object->CorpseMan.get_corpse();
 		if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
 		{
@@ -157,7 +157,7 @@ void CStateMonsterEatAbstract::setup_substates()
 
 #ifdef _DEBUG
 		DBG().level_info(this).clear();
-		Fvector pos1;
+		float3 pos1;
 		pos1.set(nearest_bone_pos);
 		pos1.y += 20.f;
 
@@ -230,7 +230,7 @@ void CStateMonsterEatAbstract::setup_substates()
 	{
 
 		// Определить позицию ближайшей боны у трупа
-		Fvector nearest_bone_pos;
+		float3 nearest_bone_pos;
 		const CEntityAlive* corpse = object->CorpseMan.get_corpse();
 		if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
 		{

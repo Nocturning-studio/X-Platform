@@ -142,7 +142,7 @@ class CVelocityLimiter : public CPHUpdateObject
 		if (dV_valid(linear_velocity))
 		{
 			dReal mag;
-			Fvector vlinear_velocity;
+			float3 vlinear_velocity;
 			vlinear_velocity.set(cast_fv(linear_velocity));
 			mag = _sqrt(linear_velocity[0] * linear_velocity[0] + linear_velocity[2] * linear_velocity[2]); //
 			if (mag > l_limit)
@@ -319,7 +319,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	bool character_exist = CharacterExist();
 	if (character_exist && trying_times[id] != u32(-1))
 	{
-		Fvector dif;
+		float3 dif;
 		dif.sub(trying_poses[id], cast_fv(dBodyGetPosition(m_character->get_body())));
 		if (Engine.TimeManager.GetGlobalTimeMs() - trying_times[id] < 500 && dif.magnitude() < 0.05f)
 			return false;
@@ -363,8 +363,8 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	float fnum_steps = float(num_steps);
 	float fnum_steps_r = 1.f / fnum_steps;
 
-	Fvector vel;
-	Fvector pos;
+	float3 vel;
+	float3 pos;
 	GetCharacterVelocity(vel);
 	GetCharacterPosition(pos);
 	// const Fbox& box =Box();
@@ -373,7 +373,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	float max_a_vel = M_PI / 8.f / fnum_it / fnum_steps / fixed_step;
 	dBodySetForce(GetBody(), 0.f, 0.f, 0.f);
 	dBodySetLinearVel(GetBody(), 0.f, 0.f, 0.f);
-	Calculate(Fvector().set(0, 0, 0), Fvector().set(1, 0, 0), 0, 0, 0, 0);
+	Calculate(float3().set(0, 0, 0), float3().set(1, 0, 0), 0, 0, 0, 0);
 	CVelocityLimiter vl(GetBody(), max_vel, max_vel);
 	max_vel = 1.f / fnum_it / fnum_steps / fixed_step;
 
@@ -385,7 +385,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	////////////////////////////////////
 	for (int m = 0; 30 > m; ++m)
 	{
-		Calculate(Fvector().set(0, 0, 0), Fvector().set(1, 0, 0), 0, 0, 0, 0);
+		Calculate(float3().set(0, 0, 0), float3().set(1, 0, 0), 0, 0, 0, 0);
 		EnableCharacter();
 		m_character->ApplyForce(0, ph_world->Gravity() * m_character->Mass(), 0);
 		max_depth_dynamic_activate = 0.f;
@@ -408,7 +408,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 		for (int i = 0; num_it > i; ++i)
 		{
 			max_depth_dynamic_activate = 0.f;
-			Calculate(Fvector().set(0, 0, 0), Fvector().set(1, 0, 0), 0, 0, 0, 0);
+			Calculate(float3().set(0, 0, 0), float3().set(1, 0, 0), 0, 0, 0, 0);
 			EnableCharacter();
 			m_character->ApplyForce(0, ph_world->Gravity() * m_character->Mass(), 0);
 			ph_world->Step();

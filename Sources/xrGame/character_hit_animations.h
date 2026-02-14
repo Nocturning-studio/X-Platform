@@ -6,8 +6,8 @@ class character_hit_animation_controller
 {
   public:
 	void SetupHitMotions(CKinematicsAnimated& ca);
-	void PlayHitMotion(const Fvector& dir, const Fvector& bone_pos, u16 bi, CEntityAlive& ea) const;
-	void GetBaseMatrix(Fmatrix& m, CEntityAlive& ea) const;
+	void PlayHitMotion(const float3& dir, const float3& bone_pos, u16 bi, CEntityAlive& ea) const;
+	void GetBaseMatrix(float4x4& m, CEntityAlive& ea) const;
 
   private:
 	bool IsEffected(u16 bi, CKinematics& ca) const;

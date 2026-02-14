@@ -34,9 +34,9 @@ struct MainSceneWorkItem
 
 	// Сохраняем матрицы, актуальные на момент сбора,
 	// чтобы Draw-поток мог их использовать, даже если Device уже ушел вперед
-	Fmatrix view;
-	Fmatrix projection;
-	Fmatrix view_projection;
+	float4x4 view;
+	float4x4 projection;
+	float4x4 view_projection;
 
 	void Init()
 	{
@@ -140,7 +140,7 @@ class CRender : public IRender_interface, public pureFrame
   public:
 	// Sector detection and visibility
 	CSector* pLastSector;
-	Fvector vLastCameraPos;
+	float3 vLastCameraPos;
 	u32 uLastLTRACK;
 	xr_vector<IRender_Portal*> Portals;
 	xr_vector<IRender_Sector*> Sectors;
@@ -242,8 +242,8 @@ class CRender : public IRender_interface, public pureFrame
 	}
 
 	//Motion blur
-	Fmatrix m_saved_viewproj;
-	Fmatrix m_saved_invview;
+	float4x4 m_saved_viewproj;
+	float4x4 m_saved_invview;
 
   private:
 	xrCriticalSection resource_lock;
@@ -270,7 +270,7 @@ class CRender : public IRender_interface, public pureFrame
 	IRender_Portal* getPortal(int id);
 	IRender_Sector* getSectorActive();
 	IRender_Visual* model_CreatePE(LPCSTR name);
-	IRender_Sector* detectSector(const Fvector& P, Fvector& D);
+	IRender_Sector* detectSector(const float3& P, float3& D);
 	int translateSector(IRender_Sector* pSector);
 
 	// HW-occlusion culling
@@ -344,7 +344,7 @@ class CRender : public IRender_interface, public pureFrame
 	virtual ref_shader getShader(int id);
 	virtual IRender_Sector* getSector(int id);
 	virtual IRender_Visual* getVisual(int id);
-	virtual IRender_Sector* detectSector(const Fvector& P);
+	virtual IRender_Sector* detectSector(const float3& P);
 	virtual IRender_Target* getTarget();
 
 	virtual IEffectorsManager* getEffectorsManager();
@@ -358,7 +358,7 @@ class CRender : public IRender_interface, public pureFrame
 	SceneTraversalContext m_TraversalContext;
 
 	// Обновленные виртуальные методы интерфейса IRender_interface
-	virtual void set_Transform(Fmatrix* M)
+	virtual void set_Transform(float4x4* M)
 	{
 		// Если активен TLS контекст (мы внутри render_subspace или render_main) - пишем туда
 		if (CurrentRenderContext::context)
@@ -409,11 +409,11 @@ class CRender : public IRender_interface, public pureFrame
 	}
 
 	// wallmarks
-	virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
+	virtual void add_StaticWallmark(ref_shader& S, const float3& P, float s, CDB::TRI* T, float3* V);
 	virtual void clear_static_wallmarks();
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
-	virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start,
-									  const Fvector& dir, float size);
+	virtual void add_SkeletonWallmark(const float4x4* xf, CKinematics* obj, ref_shader& sh, const float3& start,
+									  const float3& dir, float size);
 
 	//
 	virtual IBlender* blender_create(CLASS_ID cls);
@@ -464,8 +464,8 @@ class CRender : public IRender_interface, public pureFrame
 	void u_DBT_disable();
 	float hclip(float v, float dim);
 	void draw_volume(light* L);
-	void accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transform_prev, float fBias); //, float fSize);
-	void accumulate_volumetric_sun(u32 sub_phase, Fmatrix m_shadow, Fvector L_dir);
+	void accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& transform_prev, float fBias); //, float fSize);
+	void accumulate_volumetric_sun(u32 sub_phase, float4x4 m_shadow, float3 L_dir);
 	void accumulate_point_lights(light* L);
 	void accumulate_spot_lights(light* L);
 	void clear_bloom();
@@ -502,7 +502,7 @@ class CRender : public IRender_interface, public pureFrame
 	void render_effectors_pass_resolve_gamma();
 	void output_frame_to_screen();
 	bool need_render_sun();
-	void render_main(Fmatrix& mCombined, SceneGraphPacket& dest);
+	void render_main(float4x4& mCombined, SceneGraphPacket& dest);
 	void CalculateSceneVisibility();
 	void query_wait();
 	void render_lights(light_Package& LP);

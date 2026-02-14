@@ -27,9 +27,9 @@ BOOL CEffectorFall::ProcessCam(SCamEffectorInfo& info)
 	return TRUE;
 }
 
-CEffectorDOF::CEffectorDOF(const Fvector4& dof) : CEffectorCam(eCEDOF, 100000)
+CEffectorDOF::CEffectorDOF(const float4& dof) : CEffectorCam(eCEDOF, 100000)
 {
-	GamePersistent().SetEffectorDOF(Fvector().set(dof.x, dof.y, dof.z));
+	GamePersistent().SetEffectorDOF(float3().set(dof.x, dof.y, dof.z));
 	m_fPhase = Engine.TimeManager.GetGlobalTime() + dof.w;
 }
 

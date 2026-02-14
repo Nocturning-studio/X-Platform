@@ -43,13 +43,13 @@ void CPHCharacter::UnFreezeContent()
 	dBodyEnable(m_body);
 	CPHObject::UnFreezeContent();
 }
-void CPHCharacter::getForce(Fvector& force)
+void CPHCharacter::getForce(float3& force)
 {
 	if (!b_exist)
 		return;
-	force.set(*(Fvector*)dBodyGetForce(m_body));
+	force.set(*(float3*)dBodyGetForce(m_body));
 }
-void CPHCharacter::setForce(const Fvector& force)
+void CPHCharacter::setForce(const float3& force)
 {
 	if (!b_exist)
 		return;
@@ -121,7 +121,7 @@ void CarHitCallback(bool& /**do_colide/**/, dContact& /**c/**/)
 {
 }
 
-void CPHCharacter::GetSavedVelocity(Fvector& vvel)
+void CPHCharacter::GetSavedVelocity(float3& vvel)
 {
 
 	if (IsEnabled())

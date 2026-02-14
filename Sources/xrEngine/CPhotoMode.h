@@ -15,31 +15,31 @@ class ENGINE_API CPhotoMode : public CEffectorCam, public IInputReceiver
 	static struct force_position
 	{
 		bool set_position;
-		Fvector p;
+		float3 p;
 	} g_position;
 
-	static Fvector cmNorm[6];
-	static Fvector cmDir[6];
+	static float3 cmNorm[6];
+	static float3 cmDir[6];
 
 	static Flags32 s_hud_flag;
 	static Flags32 s_dev_flags;
 
-	Fvector m_HPB;
-	Fvector m_Position;
-	Fmatrix m_Camera;
+	float3 m_HPB;
+	float3 m_Position;
+	float4x4 m_Camera;
 	u32 m_Stage;
 
-	Fvector m_ActorPosition;
+	float3 m_ActorPosition;
 
-	Fvector m_vT;
-	Fvector m_vR;
-	Fvector m_vVelocity;
-	Fvector m_vAngularVelocity;
+	float3 m_vT;
+	float3 m_vR;
+	float3 m_vVelocity;
+	float3 m_vAngularVelocity;
 	float m_fFov;
 	float m_fGlobalFov;
 	float m_fFovNeeded;
-	Fvector3 m_fDOF;
-	Fvector m_vGlobalDepthOfFieldParameters;
+	float3 m_fDOF;
+	float3 m_vGlobalDepthOfFieldParameters;
 	float m_fGlobalTimeFactor;
 
 	bool m_bAutofocusEnabled;
@@ -65,7 +65,7 @@ class ENGINE_API CPhotoMode : public CEffectorCam, public IInputReceiver
 	float m_fAngSpeed2;
 	float m_fAngSpeed3;
 
-	void MakeCubeMapFace(Fvector& D, Fvector& N);
+	void MakeCubeMapFace(float3& D, float3& N);
 	void MakeScreenshotFace();
 	void MakeCubemap();
 	void MakeScreenshot();
@@ -74,7 +74,7 @@ class ENGINE_API CPhotoMode : public CEffectorCam, public IInputReceiver
 	ref_sound music;
 
   public:
-	void update_whith_timescale(Fvector& v, const Fvector& v_delta);
+	void update_whith_timescale(float3& v, const float3& v_delta);
 	CPhotoMode(float life_time = 60 * 60 * 1000);
 	virtual ~CPhotoMode();
 
@@ -101,12 +101,12 @@ class ENGINE_API CPhotoMode : public CEffectorCam, public IInputReceiver
 
 	virtual BOOL ProcessCam(SCamEffectorInfo& info);
 
-	static void SetGlobalPosition(const Fvector& p)
+	static void SetGlobalPosition(const float3& p)
 	{
 		g_position.p.set(p), g_position.set_position = true;
 	}
 
-	static void GetGlobalPosition(Fvector& p)
+	static void GetGlobalPosition(float3& p)
 	{
 		p.set(g_position.p);
 	}

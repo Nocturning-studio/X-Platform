@@ -64,9 +64,9 @@ CEnvironment::CEnvironment() : CurrentEnv(0), m_ambients_config(0)
 	wind_blast_strength_stop_value = 0.f;
 
 	// fill clouds hemi verts & faces
-	const Fvector* verts;
+	const float3* verts;
 	CloudsVerts.resize(xrHemisphereVertices(2, verts));
-	CopyMemory(&CloudsVerts.front(), verts, CloudsVerts.size() * sizeof(Fvector));
+	CopyMemory(&CloudsVerts.front(), verts, CloudsVerts.size() * sizeof(float3));
 	const u16* indices;
 	CloudsIndices.resize(xrHemisphereIndices(2, indices));
 	CopyMemory(&CloudsIndices.front(), indices, CloudsIndices.size() * sizeof(u16));
@@ -453,7 +453,7 @@ void CEnvironment::lerp(float& current_weight)
 	EM.hemi_color.set(0, 0, 0);
 	EM.use_flags.zero();
 
-	Fvector view = Engine.RenderView.Position;
+	float3 view = Engine.RenderView.Position;
 	float mpower = 0;
 	for (xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
 		mpower += EM.sum(*mit, view);
@@ -604,7 +604,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 	clamp(cosAZ, -1.0f, 1.0f);
 	float AZ = acosf(cosAZ);
 
-	const Fvector2 minAngle = Fvector2().set(deg2rad(1.0f), deg2rad(3.0f));
+	const float2 minAngle = float2().set(deg2rad(1.0f), deg2rad(3.0f));
 
 	if (SEA < minAngle.x)
 		SEA = minAngle.x;
@@ -613,7 +613,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 	clamp(fSunBlend, 0.0f, 1.0f);
 
 #ifdef PROCEDURAL_WEATHER
-	const Fvector2 minAngle1 = Fvector2().set(deg2rad(1.0f), deg2rad(20.0f));
+	const float2 minAngle1 = float2().set(deg2rad(1.0f), deg2rad(20.0f));
 
 	if (SEA < minAngle1.x)
 		SEA = minAngle1.x;

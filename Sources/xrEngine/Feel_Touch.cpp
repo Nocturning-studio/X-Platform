@@ -25,7 +25,7 @@ void Touch::feel_touch_deny(CObject* O, DWORD T)
 	feel_touch_disable.push_back(D);
 }
 
-void Touch::feel_touch_update(Fvector& C, float R)
+void Touch::feel_touch_update(float3& C, float R)
 {
 	//OPTICK_EVENT("Touch::feel_touch_update");
 

@@ -19,11 +19,11 @@ enum EDetailPathType
 
 struct STravelPathPoint
 {
-	Fvector position;
+	float3 position;
 	u32 vertex_id;
 	u32 velocity;
 
-	IC void set_position(const Fvector& pos)
+	IC void set_position(const float3& pos)
 	{
 		position = pos;
 	}
@@ -33,7 +33,7 @@ struct STravelPathPoint
 		vertex_id = _vertex_id;
 	}
 
-	IC Fvector& get_position()
+	IC float3& get_position()
 	{
 		return (position);
 	}

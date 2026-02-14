@@ -13,7 +13,7 @@ IC bool CDetailPathManager::failed() const
 	return (m_failed);
 }
 
-IC bool CDetailPathManager::completed(const Fvector& position, bool bRealCompleted) const
+IC bool CDetailPathManager::completed(const float3& position, bool bRealCompleted) const
 {
 	return (m_path.empty() ||
 			((bRealCompleted || !m_state_patrol_path) ? (curr_travel_point_index() == m_path.size() - 1)
@@ -36,17 +36,17 @@ IC u32 CDetailPathManager::curr_travel_point_index() const
 	return (m_current_travel_point);
 }
 
-IC void CDetailPathManager::set_start_position(const Fvector& start_position)
+IC void CDetailPathManager::set_start_position(const float3& start_position)
 {
 	m_start_position = start_position;
 }
 
-IC void CDetailPathManager::set_start_direction(const Fvector& start_direction)
+IC void CDetailPathManager::set_start_direction(const float3& start_direction)
 {
 	m_start_direction = start_direction;
 }
 
-IC void CDetailPathManager::set_dest_position(const Fvector& dest_position)
+IC void CDetailPathManager::set_dest_position(const float3& dest_position)
 {
 #ifdef DEBUG
 	if (!(!m_restricted_object || m_restricted_object->accessible(dest_position)))
@@ -65,28 +65,28 @@ IC void CDetailPathManager::set_dest_position(const Fvector& dest_position)
 	m_dest_position = dest_position;
 }
 
-IC void CDetailPathManager::set_dest_direction(const Fvector& dest_direction)
+IC void CDetailPathManager::set_dest_direction(const float3& dest_direction)
 {
 	m_actuality = m_actuality && m_dest_direction.similar(dest_direction);
 	m_dest_direction = dest_direction;
 }
 
-IC const Fvector& CDetailPathManager::start_position() const
+IC const float3& CDetailPathManager::start_position() const
 {
 	return (m_start_position);
 }
 
-IC const Fvector& CDetailPathManager::start_direction() const
+IC const float3& CDetailPathManager::start_direction() const
 {
 	return (m_start_direction);
 }
 
-IC const Fvector& CDetailPathManager::dest_position() const
+IC const float3& CDetailPathManager::dest_position() const
 {
 	return (m_dest_position);
 }
 
-IC const Fvector& CDetailPathManager::dest_direction() const
+IC const float3& CDetailPathManager::dest_direction() const
 {
 	return (m_dest_direction);
 }
@@ -97,7 +97,7 @@ IC void CDetailPathManager::set_path_type(const EDetailPathType path_type)
 	m_path_type = path_type;
 }
 
-IC void CDetailPathManager::adjust_point(const Fvector2& source, float yaw, float magnitude, Fvector2& dest) const
+IC void CDetailPathManager::adjust_point(const float2& source, float yaw, float magnitude, float2& dest) const
 {
 	dest.x = -_sin(yaw);
 	dest.y = _cos(yaw);

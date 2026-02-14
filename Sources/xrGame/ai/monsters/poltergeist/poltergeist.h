@@ -63,13 +63,13 @@ class CPoltergeist : public CBaseMonster, public CTelekinesis, public CEnergyHol
 	}
 
 	// Poltergeist ability
-	void PhysicalImpulse(const Fvector& position);
-	void StrangeSounds(const Fvector& position);
+	void PhysicalImpulse(const float3& position);
+	void StrangeSounds(const float3& position);
 
 	ref_sound m_strange_sound;
 
 	// Movement
-	Fvector m_current_position; // Позиция на ноде
+	float3 m_current_position; // Позиция на ноде
 
 	// Dynamic Height
 	u32 time_height_updated;
@@ -197,8 +197,8 @@ class CPolterFlame : public CPolterSpecialAbility
 	struct SFlameElement
 	{
 		const CObject* target_object;
-		Fvector position;
-		Fvector target_dir;
+		float3 position;
+		float3 target_dir;
 		u32 time_started;
 		ref_sound sound;
 		CParticlesObject* particles_object;
@@ -221,7 +221,7 @@ class CPolterFlame : public CPolterSpecialAbility
 
   private:
 	void select_state(SFlameElement* elem, EFlameState state);
-	bool get_valid_flame_position(const CObject* target_object, Fvector& res_pos);
+	bool get_valid_flame_position(const CObject* target_object, float3& res_pos);
 	void create_flame(const CObject* target_object);
 };
 
@@ -271,9 +271,9 @@ class CPolterTele : public CPolterSpecialAbility
 	virtual void update_schedule();
 
   private:
-	void tele_find_objects(xr_vector<CObject*>& objects, const Fvector& pos);
+	void tele_find_objects(xr_vector<CObject*>& objects, const float3& pos);
 	bool tele_raise_objects();
 	void tele_fire_objects();
 
-	bool trace_object(CObject* obj, const Fvector& target);
+	bool trace_object(CObject* obj, const float3& target);
 };

@@ -243,7 +243,7 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 			itm->m_text3->SetTextST("");
 		}
 
-		Fvector2 sz = itm->GetWndSize();
+		float2 sz = itm->GetWndSize();
 		float _height;
 		_height = _max(sz.y, itm->m_text1->GetWndPos().y + itm->m_text1->GetWndSize().y + 3);
 		sz.y = _height;

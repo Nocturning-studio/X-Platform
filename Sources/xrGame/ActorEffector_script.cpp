@@ -8,7 +8,7 @@ void CAnimatorCamEffectorScriptCB::ProcessIfInvalid(SCamEffectorInfo& info)
 {
 	if (m_bAbsolutePositioning)
 	{
-		const Fmatrix& m = m_objectAnimator->Transform();
+		const float4x4& m = m_objectAnimator->Transform();
 		info.d = m.k;
 		info.n = m.j;
 		info.p = m.c;

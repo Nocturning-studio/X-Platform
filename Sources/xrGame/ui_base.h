@@ -25,8 +25,8 @@ class CDeviceResetNotifier : public pureDeviceReset
 //---------------------------------------------------------------------------------------
 struct S2DVert
 {
-	Fvector2 pt;
-	Fvector2 uv;
+	float2 pt;
+	float2 uv;
 	S2DVert()
 	{
 	}
@@ -40,12 +40,12 @@ struct S2DVert
 		pt.set(pt_x, pt_y);
 		uv.set(uv_x, uv_y);
 	}
-	void set(const Fvector2& _pt, const Fvector2& _uv)
+	void set(const float2& _pt, const float2& _uv)
 	{
 		pt.set(_pt);
 		uv.set(_uv);
 	}
-	void rotate_pt(const Fvector2& pivot, float cosA, float sinA, float kx);
+	void rotate_pt(const float2& pivot, float cosA, float sinA, float kx);
 };
 #define UI_FRUSTUM_MAXPLANES 12
 #define UI_FRUSTUM_SAFE (UI_FRUSTUM_MAXPLANES * 4)
@@ -70,9 +70,9 @@ class ui_core : public CDeviceResetNotifier
 	CFontManager* m_pFontManager;
 	CUICursor* m_pUICursor;
 
-	Fvector2 m_pp_scale_;
-	Fvector2 m_scale_;
-	Fvector2* m_current_scale;
+	float2 m_pp_scale_;
+	float2 m_scale_;
+	float2* m_current_scale;
 
 	IC float ClientToScreenScaledX(float left)
 	{
@@ -97,8 +97,8 @@ class ui_core : public CDeviceResetNotifier
 		return m_pUICursor;
 	}
 
-	void ClientToScreenScaled(Fvector2& dest, float left, float top);
-	void ClientToScreenScaled(Fvector2& src_and_dest);
+	void ClientToScreenScaled(float2& dest, float left, float top);
+	void ClientToScreenScaled(float2& src_and_dest);
 	void ClientToScreenScaledWidth(float& src_and_dest);
 	void ClientToScreenScaledHeight(float& src_and_dest);
 

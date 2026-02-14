@@ -40,7 +40,7 @@ void CLight_DB::Load(IReader* fs)
 			F->r(&Ldata, sizeof(Flight));
 			if (Ldata.type == D3DLIGHT_DIRECTIONAL)
 			{
-				Fvector tmp_R;
+				float3 tmp_R;
 				tmp_R.set(1, 0, 0);
 
 				// directional (base)
@@ -58,7 +58,7 @@ void CLight_DB::Load(IReader* fs)
 			}
 			else
 			{
-				Fvector tmp_D, tmp_R;
+				float3 tmp_D, tmp_R;
 				tmp_D.set(0, 0, -1); // forward
 				tmp_R.set(1, 0, 0);	 // right
 
@@ -136,7 +136,7 @@ void CLight_DB::Update()
 //		}
 //#endif
 		VERIFY2(E->sun_dir.y < 0, "Invalid sun direction settings in evironment-config");
-		Fvector OD, OP, AD, AP;
+		float3 OD, OP, AD, AP;
 		OD.set(E->sun_dir).normalize();
 		OP.mad(Engine.RenderView.Position, OD, -500.f);
 		AD.set(0, -.75f, 0).add(E->sun_dir);

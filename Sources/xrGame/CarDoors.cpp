@@ -40,25 +40,25 @@ void CCar::SDoor::Init()
 			  "Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other "
 			  "axes are zerro limited !!!");
 	joint->SetBackRef(&joint);
-	Fvector door_position, door_axis;
+	float3 door_position, door_axis;
 	dJointGetHingeAnchor(joint->GetDJoint(), (float*)&door_position);
 	dJointGetHingeAxis(joint->GetDJoint(), (float*)&door_axis);
 	door_position.sub(pcar->Transform().c);
 
-	Fmatrix door_transform;
+	float4x4 door_transform;
 	joint->PSecond_element()->InterpolateGlobalTransform(&door_transform);
 	closed_door_form_in_object.set(joint->PSecond_element()->mTransform);
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
-	Fvector jaxis, janchor;
+	float3 jaxis, janchor;
 	float lo_ext, hi_ext, ext;
 	joint->GetAxisDirDynamic(0, jaxis);
 	joint->GetAnchorDynamic(janchor);
 	joint->PSecond_element()->get_Extensions(jaxis, janchor.dotproduct(jaxis), lo_ext, hi_ext);
 	door_plane_ext.x = hi_ext - lo_ext;
-	Fvector jaxis_in_door;
-	Fmatrix inv_door_transform;
+	float3 jaxis_in_door;
+	float4x4 inv_door_transform;
 	inv_door_transform.set(door_transform);
 	inv_door_transform.invert();
 	inv_door_transform.transform_dir(jaxis_in_door, jaxis);
@@ -160,7 +160,7 @@ void CCar::SDoor::Init()
 	///////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
 	///////////////////////////define positive open///////////////////////////////////
-	Fvector door_dir, door_test;
+	float3 door_dir, door_test;
 	door_transform.transform_dir(door_dir, door_dir_in_door);
 	// cr_dr_pos.crossproduct(door_dir,door_position);
 	door_test.crossproduct(door_dir, door_axis);
@@ -187,7 +187,7 @@ void CCar::SDoor::Init()
 		opened_angle += 2.f * M_PI / 180.f;
 		closed_angle -= 2.f * M_PI / 180.f;
 	}
-	Fvector shoulder;
+	float3 shoulder;
 
 	shoulder.sub(door_transform.c, joint->PSecond_element()->mass_Center());
 	torque = shoulder.magnitude() * joint->PSecond_element()->getMass() * pcar->m_doors_torque_factor * 10.f;
@@ -361,7 +361,7 @@ void CCar::SDoor::ClosedToOpening()
 		return;
 	if (joint->bActive)
 		return;
-	Fmatrix door_form, root_form;
+	float4x4 door_form, root_form;
 	CKinematics* pKinematics = smart_cast<CKinematics*>(pcar->Visual());
 	//	CBoneData& bone_data= pKinematics->LL_GetData(u16(bone_id));
 	CBoneInstance& bone_instance = pKinematics->LL_GetBoneInstance(u16(bone_id));
@@ -384,7 +384,7 @@ void CCar::SDoor::ClosingToClosed()
 		return;
 	smart_cast<CKinematics*>(pcar->Visual())->CalculateBones();
 
-	//	Fmatrix door_form;
+	//	float4x4 door_form;
 	CKinematics* pKinematics = smart_cast<CKinematics*>(pcar->Visual());
 	//	CBoneData& bone_data= pKinematics->LL_GetData(u16(bone_id));
 	CBoneInstance& bone_instance = pKinematics->LL_GetBoneInstance(u16(bone_id));
@@ -406,31 +406,31 @@ float CCar::SDoor::GetAngle()
 	return dJointGetHingeAngle(joint->GetDJoint());
 }
 
-static xr_vector<Fmatrix> bones_bind_forms;
-bool CCar::SDoor::IsFront(const Fvector& pos, const Fvector& dir)
+static xr_vector<float4x4> bones_bind_forms;
+bool CCar::SDoor::IsFront(const float3& pos, const float3& dir)
 {
 	CKinematics* K = PKinematics(pcar->Visual());
 	// CBoneInstance bi=K->LL_GetBoneInstance(bone_id);
 	// CBoneData& bd=K->LL_GetData(bone_id);
 	K->LL_GetBindTransform(bones_bind_forms);
 	//		Fobb bb=bd.obb;
-	Fvector tdir;
+	float3 tdir;
 	tdir.set(pcar->Transform().i);
 	if (tdir.dotproduct(dir) < 0.f)
 		tdir.invert();
-	Fmatrix pf;
+	float4x4 pf;
 	pf.mul(pcar->Transform(), bones_bind_forms[bone_id]);
-	Fvector dif, dif1;
+	float3 dif, dif1;
 	dif.sub(pf.c, pos);
 	pcar->Center(dif1);
-	Fvector c_to_d;
+	float3 c_to_d;
 	c_to_d.sub(pf.c, dif1);
 
 	dif1.sub(pos);
 	// dif.normalize_safe();
 	return (dif1.dotproduct(tdir) > dif.dotproduct(tdir) && abs(c_to_d.dotproduct(tdir)) < dif1.dotproduct(tdir));
 }
-bool CCar::SDoor::IsInArea(const Fvector& pos, const Fvector& dir)
+bool CCar::SDoor::IsInArea(const float3& pos, const float3& dir)
 {
 	if (!joint)
 	{
@@ -442,22 +442,22 @@ bool CCar::SDoor::IsInArea(const Fvector& pos, const Fvector& dir)
 		// CBoneData& bd=K->LL_GetData(bone_id);
 		K->LL_GetBindTransform(bones_bind_forms);
 		//		Fobb bb=bd.obb;
-		Fvector tdir;
+		float3 tdir;
 		tdir.set(pcar->Transform().i);
 		if (tdir.dotproduct(dir) < 0.f)
 			tdir.invert();
-		Fmatrix pf;
+		float4x4 pf;
 		pf.mul(pcar->Transform(), bones_bind_forms[bone_id]);
-		Fvector dif, dif1;
+		float3 dif, dif1;
 		dif.sub(pf.c, pos);
 		pcar->Center(dif1);
-		Fvector c_to_d;
+		float3 c_to_d;
 		c_to_d.sub(pf.c, dif1);
 		dif1.sub(pos);
 		return 2.f * abs(c_to_d.dotproduct(pcar->Transform().i)) > abs(dif1.dotproduct(pcar->Transform().i));
 	}
-	Fmatrix closed_door_form, door_form;
-	Fvector closed_door_dir, door_dir, anchor_to_pos, door_axis;
+	float4x4 closed_door_form, door_form;
+	float3 closed_door_dir, door_dir, anchor_to_pos, door_axis;
 	joint->GetAxisDirDynamic(0, door_axis);
 	joint->PSecond_element()->InterpolateGlobalTransform(&door_form);
 
@@ -474,7 +474,7 @@ bool CCar::SDoor::IsInArea(const Fvector& pos, const Fvector& dir)
 	joint->PSecond_element()->get_Extensions(door_dir, cprg, loe, hie);
 	float signum = (hie > -loe) ? 1.f : -1.f;
 
-	Fvector closed_door_norm, door_norm;
+	float3 closed_door_norm, door_norm;
 	closed_door_norm.crossproduct(door_axis, closed_door_dir);
 	door_norm.crossproduct(door_axis, door_dir);
 	anchor_to_pos.sub(pos, closed_door_form.c);
@@ -489,7 +489,7 @@ bool CCar::SDoor::IsInArea(const Fvector& pos, const Fvector& dir)
 		return false;
 }
 
-bool CCar::SDoor::CanExit(const Fvector& pos, const Fvector& dir)
+bool CCar::SDoor::CanExit(const float3& pos, const float3& dir)
 {
 	// if(state==opened) return true;
 	// return false;
@@ -499,7 +499,7 @@ bool CCar::SDoor::CanExit(const Fvector& pos, const Fvector& dir)
 	return TestPass(pos, dir);
 }
 
-void CCar::SDoor::GetExitPosition(Fvector& pos)
+void CCar::SDoor::GetExitPosition(float3& pos)
 {
 	if (!joint)
 	{
@@ -509,12 +509,12 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 		K->LL_GetBindTransform(bones_bind_forms);
 		Fobb bb; //=bd.obb;
 
-		Fmatrix pf;
+		float4x4 pf;
 		pf.mul(pcar->Transform(), bones_bind_forms[bone_id]);
 		bb.transform(bd.obb, pf);
 		bb.transform_get(pf);
 		pos.set(pf.c);
-		Fvector add, add1;
+		float3 add, add1;
 		MAX_OF(abs(pf.i.y), add.set(pf.i); add.mul(bb.m_halfsize.x * fsignum(pf.i.y)), abs(pf.j.y), add.set(pf.j);
 			   add.mul(bb.m_halfsize.y * fsignum(pf.j.y)), abs(pf.k.y), add.set(pf.k);
 			   add.mul(bb.m_halfsize.z * fsignum(pf.k.y)));
@@ -522,7 +522,7 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 
 		MIN_OF(bb.m_halfsize.x, add1.set(pf.i); add1.mul(bb.m_halfsize.x), bb.m_halfsize.y, add1.set(pf.j);
 			   add1.mul(bb.m_halfsize.y), bb.m_halfsize.z, add1.set(pf.k); add1.mul(bb.m_halfsize.z))
-		Fvector dir_from_car;
+		float3 dir_from_car;
 		dir_from_car.sub(pf.c, pcar->Position());
 		dir_from_car.y = 0.f;
 		if (add1.dotproduct(dir_from_car) < 0.f)
@@ -532,11 +532,11 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 		return;
 	}
 	float lo_ext, hi_ext;
-	Fvector door_axis, door_pos, door_dir, closed_door_dir, add;
+	float3 door_axis, door_pos, door_dir, closed_door_dir, add;
 	joint->GetAxisDirDynamic(0, door_axis);
 	joint->GetAnchorDynamic(door_pos);
 
-	Fmatrix door_form, root_form;
+	float4x4 door_form, root_form;
 	root_form.mul(pcar->m_root_transform, pcar->Transform());
 	joint->PSecond_element()->InterpolateGlobalTransform(&door_form);
 	door_form.transform_dir(door_dir, door_dir_in_door);
@@ -568,7 +568,7 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 	pos.add(add);
 }
 
-bool CCar::SDoor::TestPass(const Fvector& pos, const Fvector& dir)
+bool CCar::SDoor::TestPass(const float3& pos, const float3& dir)
 {
 	if (!joint)
 	{
@@ -577,20 +577,20 @@ bool CCar::SDoor::TestPass(const Fvector& pos, const Fvector& dir)
 		// CBoneData& bd=K->LL_GetData(bone_id);
 		K->LL_GetBindTransform(bones_bind_forms);
 		//		Fobb bb=bd.obb;
-		Fmatrix pf;
+		float4x4 pf;
 		pf.mul(pcar->Transform(), bones_bind_forms[bone_id]);
-		Fvector dif;
+		float3 dif;
 		dif.sub(pf.c, pos);
 		// dif.normalize_safe();
 		return (dif.dotproduct(dir) > 0.f);
 	}
 	float lo_ext, hi_ext;
-	Fvector door_axis, door_pos, door_dir, closed_door_dir;
+	float3 door_axis, door_pos, door_dir, closed_door_dir;
 
 	joint->GetAxisDirDynamic(0, door_axis);
 	joint->GetAnchorDynamic(door_pos);
 
-	Fmatrix door_form, root_form;
+	float4x4 door_form, root_form;
 	root_form.mul(pcar->m_root_transform, pcar->Transform());
 	joint->PSecond_element()->InterpolateGlobalTransform(&door_form);
 	door_form.transform_dir(door_dir, door_dir_in_door);
@@ -602,11 +602,11 @@ bool CCar::SDoor::TestPass(const Fvector& pos, const Fvector& dir)
 	door_dir.normalize();
 	closed_door_dir.normalize();
 
-	Fvector closed_door_norm;
+	float3 closed_door_norm;
 
 	closed_door_norm.crossproduct(door_axis, closed_door_dir);
 
-	Fvector point_on_door, add, sub;
+	float3 point_on_door, add, sub;
 	add.set(dir);
 	sub.sub(pos, door_pos);
 	add.mul(-sub.dotproduct(closed_door_norm) / (dir.dotproduct(closed_door_norm)));
@@ -634,7 +634,7 @@ bool CCar::SDoor::TestPass(const Fvector& pos, const Fvector& dir)
 	return true;
 }
 
-bool CCar::SDoor::CanEnter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
+bool CCar::SDoor::CanEnter(const float3& pos, const float3& dir, const float3& foot_pos)
 {
 	// if(!joint) return true;//temp for fake doors
 	return (state == opened || state == broken || !joint) && TestPass(foot_pos, dir) && IsInArea(pos, dir); //
@@ -724,16 +724,16 @@ CCar::SDoor::SDoorway::SDoorway()
 void CCar::SDoor::SDoorway::Init(SDoor* adoor)
 {
 	door = adoor;
-	Fmatrix door_transform;
+	float4x4 door_transform;
 	door->joint->PSecond_element()->InterpolateGlobalTransform(&door_transform);
 	door->closed_door_form_in_object.set(door->joint->PSecond_element()->mTransform);
-	Fvector jaxis, janchor;
+	float3 jaxis, janchor;
 	door->joint->GetAxisDirDynamic(0, jaxis);
 	door->joint->GetAnchorDynamic(janchor);
-	Fmatrix inv_door_transform;
+	float4x4 inv_door_transform;
 	inv_door_transform.set(door_transform);
 	inv_door_transform.invert();
-	Fvector door_axis_in_door;
+	float3 door_axis_in_door;
 	inv_door_transform.transform_dir(door_axis_in_door, jaxis);
 	float lo_ext, hi_ext, ext;
 
@@ -836,6 +836,6 @@ void CCar::SDoor::SDoorway::Init(SDoor* adoor)
 	}
 	*/
 }
-void CCar::SDoor::SDoorway::Trace(const Fvector& point, const Fvector& dir)
+void CCar::SDoor::SDoorway::Trace(const float3& point, const float3& dir)
 {
 }

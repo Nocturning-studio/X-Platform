@@ -179,7 +179,7 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
 {
 	if (dik == MOUSE_1 && (last_hold_time + 100) < Engine.TimeManager.GetContinualTimeMs())
 	{
-		Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+		float2 cursor_pos = GetUICursor()->GetCursorPosition();
 		Frect dec_rect;
 		Frect inc_rect;
 

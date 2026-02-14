@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "../xrCDB/cl_intersect.h"
 
-extern Fvector du_cone_vertices[DU_CONE_NUMVERTEX];
+extern float3 du_cone_vertices[DU_CONE_NUMVERTEX];
 
-BOOL tri_vs_sphere_intersect(Fvector& SC, float R, Fvector& v0, Fvector& v1, Fvector& v2)
+BOOL tri_vs_sphere_intersect(float3& SC, float R, float3& v0, float3& v1, float3& v2)
 {
-	Fvector e0, e1;
+	float3 e0, e1;
 	return CDB::TestSphereTri(SC, R, v0, e0.sub(v1, v0), e1.sub(v2, v0));
 }
 
@@ -14,8 +14,8 @@ BOOL CRender::enable_scissor(light* L) // true if intersects near plane
 	// Near plane intersection
 	BOOL near_intersect = FALSE;
 	{
-		Fmatrix& M = Engine.RenderView.ViewProjection;
-		Fvector4 plane;
+		float4x4& M = Engine.RenderView.ViewProjection;
+		float4 plane;
 		plane.x = -(M._14 + M._13);
 		plane.y = -(M._24 + M._23);
 		plane.z = -(M._34 + M._33);

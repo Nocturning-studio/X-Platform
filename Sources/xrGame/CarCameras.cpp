@@ -24,7 +24,7 @@ bool CCar::HUDView() const
 void CCar::cam_Update(float dt, float fov)
 {
 	VERIFY(!ph_world->Processing());
-	Fvector P, Da;
+	float3 P, Da;
 	Da.set(0, 0, 0);
 	// bool							owner = !!Owner();
 
@@ -68,7 +68,7 @@ void CCar::OnCameraChange(int type)
 		active_camera = camera[type];
 		if (ectFree == type)
 		{
-			Fvector xyz;
+			float3 xyz;
 			Transform().getXYZi(xyz);
 			active_camera->yaw = xyz.y;
 		}

@@ -148,7 +148,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			return result;
 
 		// Конвертация векторов
-		Fvector xStart, xDir;
+		float3 xStart, xDir;
 		xStart.set(start.x, start.y, start.z);
 		xDir.set(dir.x, dir.y, dir.z);
 
@@ -178,9 +178,9 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 
 			// Получение треугольника для нормали и материала
 			CDB::TRI* tri = g_pGameLevel->ObjectSpace.GetStaticTris() + rq.element;
-			Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			float3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 
-			Fvector xNorm;
+			float3 xNorm;
 			xNorm.mknormal(verts[tri->verts[0]], verts[tri->verts[1]], verts[tri->verts[2]]);
 			result.normal = Presence::float3(xNorm.x, xNorm.y, xNorm.z);
 

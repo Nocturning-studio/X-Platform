@@ -11,11 +11,11 @@
 template <typename _dist_type, typename _index_type, typename _iteration_type>
 struct SStraightLineParams : public SBaseParameters<_dist_type, _index_type, _iteration_type>
 {
-	Fvector m_start_point;
-	Fvector m_dest_point;
+	float3 m_start_point;
+	float3 m_dest_point;
 	_dist_type m_distance;
 
-	IC SStraightLineParams(const Fvector& start_point, const Fvector& dest_point,
+	IC SStraightLineParams(const float3& start_point, const float3& dest_point,
 						   _dist_type max_range = _dist_type(6000),
 						   _iteration_type max_iteration_count = _iteration_type(-1),
 						   u32 max_visited_node_count = u32(-1))

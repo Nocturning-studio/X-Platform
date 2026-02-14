@@ -357,7 +357,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIListWnd::DrawActiveBackFrame(const Frect& rect, CUIListItem* itm)
 {
-	Fvector2 _pos;
+	float2 _pos;
 	_pos.set(rect.left, rect.top + (itm->GetIndex() - m_iFirstShownIndex) * GetItemHeight());
 	float _d = GetItemHeight() - m_ActiveBackgroundFrame->GetHeight();
 	if (_d > 0)

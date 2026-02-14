@@ -13,7 +13,7 @@
 
 using namespace luabind;
 
-Fvector CALifeMonsterPatrolPathManager__target_position(CALifeMonsterPatrolPathManager* self)
+float3 CALifeMonsterPatrolPathManager__target_position(CALifeMonsterPatrolPathManager* self)
 {
 	THROW(self);
 	return (self->target_position());

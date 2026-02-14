@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC CDangerObject::CDangerObject(const CEntityAlive* object, const Fvector& position, u32 time, const EDangerType& type,
+IC CDangerObject::CDangerObject(const CEntityAlive* object, const float3& position, u32 time, const EDangerType& type,
 								const EDangerPerceiveType& perceive_type, const CObject* dependent_object)
 {
 	m_object = object;
@@ -24,7 +24,7 @@ IC const CEntityAlive* CDangerObject::object() const
 	return (m_object);
 }
 
-IC const Fvector& CDangerObject::position() const
+IC const float3& CDangerObject::position() const
 {
 	return (m_position);
 }

@@ -125,7 +125,7 @@ struct CSightParams
 {
 	SightManager::ESightType m_sight_type;
 	CScriptGameObject* m_object;
-	Fvector m_vector;
+	float3 m_vector;
 };
 
 class CScriptGameObject
@@ -143,9 +143,9 @@ class CScriptGameObject
 	int clsid() const;
 	void play_cycle(LPCSTR anim, bool mix_in);
 	void play_cycle(LPCSTR anim);
-	Fvector Center();
-	_DECLARE_FUNCTION10(Position, Fvector);
-	_DECLARE_FUNCTION10(Direction, Fvector);
+	float3 Center();
+	_DECLARE_FUNCTION10(Position, float3);
+	_DECLARE_FUNCTION10(Direction, float3);
 	_DECLARE_FUNCTION10(Mass, float);
 	_DECLARE_FUNCTION10(ID, u32);
 	_DECLARE_FUNCTION10(getVisible, BOOL);
@@ -205,7 +205,7 @@ class CScriptGameObject
 	void AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority = false);
 	void ResetActionQueue();
 	// Actor only
-	void SetActorPosition(Fvector pos);
+	void SetActorPosition(float3 pos);
 	void SetActorDirection(float dir);
 	// CCustomMonster
 	bool CheckObjectVisibility(const CScriptGameObject* tpLuaGameObject);
@@ -249,7 +249,7 @@ class CScriptGameObject
 	template <typename T> IC T* action_planner();
 
 	// CProjector
-	Fvector GetCurrentDirection();
+	float3 GetCurrentDirection();
 	bool IsInvBoxEmpty();
 	// передача порции информации InventoryOwner
 	bool GiveInfoPortion(LPCSTR info_id);
@@ -282,7 +282,7 @@ class CScriptGameObject
 	void UnloadMagazine();
 
 	void DropItem(CScriptGameObject* pItem);
-	void DropItemAndTeleport(CScriptGameObject* pItem, Fvector position);
+	void DropItemAndTeleport(CScriptGameObject* pItem, float3 position);
 	void ForEachInventoryItems(const luabind::functor<void>& functor);
 	void TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho);
 	void TransferMoney(int money, CScriptGameObject* pForWho);
@@ -347,7 +347,7 @@ class CScriptGameObject
 	void SetNonscriptUsable(bool nonscript_usable);
 	///////////////////////////////////////////////////////////////////////////////////////////
 	void set_fastcall(const luabind::functor<bool>& functor, const luabind::object& object);
-	void set_const_force(const Fvector& dir, float value, u32 time_interval);
+	void set_const_force(const float3& dir, float value, u32 time_interval);
 	//////////////////////////////////////////////////////////////////////////
 
 	LPCSTR GetPatrolPathName();
@@ -374,7 +374,7 @@ class CScriptGameObject
 
 	//////////////////////////////////////////////////////////////////////////
 	u32 memory_time(const CScriptGameObject& lua_game_object);
-	Fvector memory_position(const CScriptGameObject& lua_game_object);
+	float3 memory_position(const CScriptGameObject& lua_game_object);
 	CScriptGameObject* best_weapon();
 	void explode(u32 level_time);
 	CScriptGameObject* GetEnemy() const;
@@ -409,10 +409,10 @@ class CScriptGameObject
 				  LPCSTR bone_name, LPCSTR head_anim);
 	void remove_sound(u32 internal_type);
 	void set_sound_mask(u32 sound_mask);
-	void set_sight(SightManager::ESightType sight_type, const Fvector* vector3d, u32 dwLookOverDelay);
+	void set_sight(SightManager::ESightType sight_type, const float3* vector3d, u32 dwLookOverDelay);
 	void set_sight(SightManager::ESightType sight_type, bool torso_look, bool path);
-	void set_sight(SightManager::ESightType sight_type, const Fvector& vector3d, bool torso_look);
-	void set_sight(SightManager::ESightType sight_type, const Fvector* vector3d);
+	void set_sight(SightManager::ESightType sight_type, const float3& vector3d, bool torso_look);
+	void set_sight(SightManager::ESightType sight_type, const float3* vector3d);
 	void set_sight(CScriptGameObject* object_to_look);
 	void set_sight(CScriptGameObject* object_to_look, bool torso_look);
 	void set_sight(CScriptGameObject* object_to_look, bool torso_look, bool fire_object);
@@ -433,9 +433,9 @@ class CScriptGameObject
 	void set_item(MonsterSpace::EObjectAction object_action, CScriptGameObject* game_object, u32 queue_size,
 				  u32 queue_interval);
 	void set_desired_position();
-	void set_desired_position(const Fvector* desired_position);
+	void set_desired_position(const float3* desired_position);
 	void set_desired_direction();
-	void set_desired_direction(const Fvector* desired_direction);
+	void set_desired_direction(const float3* desired_direction);
 	void set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type,
 						 const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random);
 	void set_dest_level_vertex_id(u32 level_vertex_id);
@@ -457,9 +457,9 @@ class CScriptGameObject
 	void enable_memory_object(CScriptGameObject* object, bool enable);
 	int active_sound_count();
 	int active_sound_count(bool only_playing);
-	const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, float radius,
+	const CCoverPoint* best_cover(const float3& position, const float3& enemy_position, float radius,
 								  float min_enemy_distance, float max_enemy_distance);
-	const CCoverPoint* safe_cover(const Fvector& position, float radius, float min_distance);
+	const CCoverPoint* safe_cover(const float3& position, float radius, float min_distance);
 	CScriptIniFile* spawn_ini() const;
 	bool active_zone_contact(u16 id);
 
@@ -471,9 +471,9 @@ class CScriptGameObject
 	LPCSTR out_restrictions();
 	LPCSTR base_in_restrictions();
 	LPCSTR base_out_restrictions();
-	bool accessible_position(const Fvector& position);
+	bool accessible_position(const float3& position);
 	bool accessible_vertex_id(u32 level_vertex_id);
-	u32 accessible_nearest(const Fvector& position, Fvector& result);
+	u32 accessible_nearest(const float3& position, float3& result);
 
 	const xr_vector<MemorySpace::CVisibleObject>& memory_visible_objects() const;
 	const xr_vector<MemorySpace::CSoundObject>& memory_sound_objects() const;
@@ -502,23 +502,23 @@ class CScriptGameObject
 	CHolderCustom* get_custom_holder();
 	CHolderCustom* get_current_holder(); // actor only
 
-	Fvector bone_position(LPCSTR bone_name) const;
+	float3 bone_position(LPCSTR bone_name) const;
 	bool is_body_turning() const;
 	CPhysicsShell* get_physics_shell() const;
 	bool weapon_strapped() const;
 	bool weapon_unstrapped() const;
 	void eat(CScriptGameObject* item);
-	bool inside(const Fvector& position, float epsilon) const;
-	bool inside(const Fvector& position) const;
+	bool inside(const float3& position, float epsilon) const;
+	bool inside(const float3& position) const;
 
-	Fvector head_orientation() const;
-	u32 vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance) const;
+	float3 head_orientation() const;
+	u32 vertex_in_direction(u32 level_vertex_id, float3 direction, float max_distance) const;
 
 	void info_add(LPCSTR text);
 	void info_clear();
 
 	// Monster Jumper
-	void jump(const Fvector& position, float factor);
+	void jump(const float3& position, float factor);
 
 	void set_ignore_monster_threshold(float ignore_monster_threshold);
 	void restore_ignore_monster_threshold();
@@ -547,7 +547,7 @@ class CScriptGameObject
 	LPCSTR sound_prefix() const;
 	void sound_prefix(LPCSTR sound_prefix);
 
-	u32 location_on_path(float distance, Fvector* location);
+	u32 location_on_path(float distance, float3* location);
 
 	bool wounded() const;
 	void wounded(bool value);

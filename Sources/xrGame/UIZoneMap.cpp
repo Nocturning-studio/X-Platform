@@ -75,7 +75,7 @@ void CUIZoneMap::SetHeading(float angle)
 	m_compass.SetHeading(angle);
 };
 
-void CUIZoneMap::UpdateRadar(Fvector pos)
+void CUIZoneMap::UpdateRadar(float3 pos)
 {
 	m_clipFrame.Update();
 	m_background.Update();
@@ -119,7 +119,7 @@ void CUIZoneMap::SetupCurrentMap()
 	m_clipFrame.GetAbsoluteRect(r);
 	m_activeMap->SetClipRect(r);
 
-	Fvector2 wnd_size;
+	float2 wnd_size;
 	float zoom_factor = float(m_clipFrame.GetWndRect().width()) / 100.0f;
 
 	LPCSTR ln = Level().name().c_str();

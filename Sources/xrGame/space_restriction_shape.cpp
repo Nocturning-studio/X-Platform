@@ -60,26 +60,26 @@ struct CShapeTestPredicate
 
 void CSpaceRestrictionShape::fill_shape(const CCF_Shape::shape_def& shape)
 {
-	Fvector start, dest;
+	float3 start, dest;
 	switch (shape.type)
 	{
 	case 0: {
-		start.sub(Fvector().set(shape.data.sphere.P), Fvector().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
-		dest.add(Fvector().set(shape.data.sphere.P), Fvector().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
+		start.sub(float3().set(shape.data.sphere.P), float3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
+		dest.add(float3().set(shape.data.sphere.P), float3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
 		start.add(m_restrictor->Position());
 		dest.add(m_restrictor->Position());
 		break;
 	}
 	case 1: {
-		Fvector points[8] = {Fvector().set(-.5f, -.5f, -.5f), Fvector().set(-.5f, -.5f, +.5f),
-							 Fvector().set(-.5f, +.5f, -.5f), Fvector().set(-.5f, +.5f, +.5f),
-							 Fvector().set(+.5f, -.5f, -.5f), Fvector().set(+.5f, -.5f, +.5f),
-							 Fvector().set(+.5f, +.5f, -.5f), Fvector().set(+.5f, +.5f, +.5f)};
-		start = Fvector().set(flt_max, flt_max, flt_max);
-		dest = Fvector().set(flt_min, flt_min, flt_min);
-		Fmatrix Q;
+		float3 points[8] = {float3().set(-.5f, -.5f, -.5f), float3().set(-.5f, -.5f, +.5f),
+							 float3().set(-.5f, +.5f, -.5f), float3().set(-.5f, +.5f, +.5f),
+							 float3().set(+.5f, -.5f, -.5f), float3().set(+.5f, -.5f, +.5f),
+							 float3().set(+.5f, +.5f, -.5f), float3().set(+.5f, +.5f, +.5f)};
+		start = float3().set(flt_max, flt_max, flt_max);
+		dest = float3().set(flt_min, flt_min, flt_min);
+		float4x4 Q;
 		Q.mul_43(m_restrictor->Transform(), shape.data.box);
-		Fvector temp;
+		float3 temp;
 		for (int i = 0; i < 8; ++i)
 		{
 			Q.transform_tiny(temp, points[i]);

@@ -51,13 +51,13 @@ void CPhysicsShellAnimator::OnFrame()
 
 	for (xr_vector<CPhysicsShellAnimatorBoneData>::iterator i = m_bones_data.begin(); i != m_bones_data.end(); i++)
 	{
-		Fmatrix target_obj_posFmatrixS;
+		float4x4 target_obj_posFmatrixS;
 		CBoneInstance& B = m_pPhysicsShell->PKinematics()->LL_GetBoneInstance(i->m_element->m_SelfID);
 
 		target_obj_posFmatrixS.mul_43((*(m_pPhysicsShell->Elements().begin()))->PhysicsRefObject()->Transform(),
 									  B.mTransform);
 
-		Fmatrix parent;
+		float4x4 parent;
 		parent.invert(m_pPhysicsShell->mTransform);
 		B.mTransform.mul_43(parent, i->m_element->mTransform); // restore actual physic position for display
 
@@ -65,7 +65,7 @@ void CPhysicsShellAnimator::OnFrame()
 		dMatrix3 ph_mat;
 		PHDynamicData::FMXtoDMX(target_obj_posFmatrixS, ph_mat);
 		dQfromR(target_obj_quat_dQuaternionS, ph_mat);
-		Fvector mc;
+		float3 mc;
 		i->m_element->CPHGeometryOwner::get_mc_vs_transform(mc, target_obj_posFmatrixS);
 		dJointSetFixedQuaternionPos(i->m_anim_fixed_dJointID, target_obj_quat_dQuaternionS, &mc.x);
 	}

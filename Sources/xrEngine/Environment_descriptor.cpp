@@ -74,7 +74,7 @@ float CEnvDescriptor::GetFloatIfExist(LPCSTR line_name, float default_value, CIn
 		return default_value;
 }
 
-Fvector3 CEnvDescriptor::GetRGBColorIfExist(LPCSTR line_name, Fvector3 default_value, CInifile& config)
+float3 CEnvDescriptor::GetRGBColorIfExist(LPCSTR line_name, float3 default_value, CInifile& config)
 {
 	if (config.line_exist(m_identifier.c_str(), line_name))
 		return config.r_fvector3(m_identifier.c_str(), line_name);
@@ -82,7 +82,7 @@ Fvector3 CEnvDescriptor::GetRGBColorIfExist(LPCSTR line_name, Fvector3 default_v
 		return default_value;
 }
 
-Fvector4 CEnvDescriptor::GetRGBAColorIfExist(LPCSTR line_name, Fvector4 default_value, CInifile& config)
+float4 CEnvDescriptor::GetRGBAColorIfExist(LPCSTR line_name, float4 default_value, CInifile& config)
 {
 	if (config.line_exist(m_identifier.c_str(), line_name))
 		return config.r_fvector4(m_identifier.c_str(), line_name);
@@ -100,16 +100,16 @@ LPCSTR CEnvDescriptor::GetStringIfExist(LPCSTR line_name, LPCSTR default_value, 
 
 void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 {
-	Fvector3 NULL_COLOR;
+	float3 NULL_COLOR;
 	NULL_COLOR.set(NULL, NULL, NULL);
 
-	Fvector3 FULL_COLOR;
+	float3 FULL_COLOR;
 	FULL_COLOR.set(1.0f, 1.0f, 1.0f);
 
-	Fvector4 FULL_COLOR_RGBA;
+	float4 FULL_COLOR_RGBA;
 	FULL_COLOR_RGBA.set(1.0f, 1.0f, 1.0f, 1.0f);
 
-	Ivector3 tm = {0, 0, 0};
+	int3 tm = {0, 0, 0};
 	sscanf(m_identifier.c_str(), "%d:%d:%d", &tm.x, &tm.y, &tm.z);
 	R_ASSERT3(	(tm.x >= 0) && 
 				(tm.x < 24) && 

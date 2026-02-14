@@ -48,9 +48,9 @@ void CPolterSpecialAbility::on_hide()
 	if (!m_object->g_Alive())
 		return;
 	m_particles_object =
-		m_object->PlayParticles(m_particles_hidden, m_object->Position(), Fvector().set(0.0f, 0.1f, 0.0f), false);
+		m_object->PlayParticles(m_particles_hidden, m_object->Position(), float3().set(0.0f, 0.1f, 0.0f), false);
 	m_particles_object_electro =
-		m_object->PlayParticles(m_particles_idle, m_object->Position(), Fvector().set(0.0f, 0.1f, 0.0f), false);
+		m_object->PlayParticles(m_particles_idle, m_object->Position(), float3().set(0.0f, 0.1f, 0.0f), false);
 }
 
 void CPolterSpecialAbility::on_show()
@@ -71,10 +71,10 @@ void CPolterSpecialAbility::update_frame()
 
 void CPolterSpecialAbility::on_die()
 {
-	Fvector particles_position = m_object->m_current_position;
+	float3 particles_position = m_object->m_current_position;
 	particles_position.y += m_object->target_height;
 
-	m_object->PlayParticles(m_particles_death, particles_position, Fvector().set(0.0f, 1.0f, 0.0f), TRUE, FALSE);
+	m_object->PlayParticles(m_particles_death, particles_position, float3().set(0.0f, 1.0f, 0.0f), TRUE, FALSE);
 
 	CParticlesObject::Destroy(m_particles_object_electro);
 	CParticlesObject::Destroy(m_particles_object);
@@ -90,12 +90,12 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 			// вычислить координаты попадания
 			CKinematics* V = smart_cast<CKinematics*>(m_object->Visual());
 
-			Fvector start_pos = pHDS->bone_space_position();
-			Fmatrix& m_bone = V->LL_GetBoneInstance(pHDS->bone()).mTransform;
+			float3 start_pos = pHDS->bone_space_position();
+			float4x4& m_bone = V->LL_GetBoneInstance(pHDS->bone()).mTransform;
 			m_bone.transform_tiny(start_pos);
 			m_object->Transform().transform_tiny(start_pos);
 
-			m_object->PlayParticles(m_particles_damage, start_pos, Fvector().set(0.f, 1.f, 0.f));
+			m_object->PlayParticles(m_particles_damage, start_pos, float3().set(0.f, 1.f, 0.f));
 		}
 	}
 
@@ -111,7 +111,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 #define TRACE_DISTANCE 10.f
 #define TRACE_ATTEMPT_COUNT 3
 
-void CPoltergeist::PhysicalImpulse(const Fvector& position)
+void CPoltergeist::PhysicalImpulse(const float3& position)
 {
 	m_nearest.clear_not_free();
 	Level().ObjectSpace.GetNearest(m_nearest, position, IMPULSE_RADIUS, NULL);
@@ -125,7 +125,7 @@ void CPoltergeist::PhysicalImpulse(const Fvector& position)
 	if (!obj || !obj->m_pPhysicsShell)
 		return;
 
-	Fvector dir;
+	float3 dir;
 	dir.sub(obj->Position(), position);
 	dir.normalize();
 
@@ -135,14 +135,14 @@ void CPoltergeist::PhysicalImpulse(const Fvector& position)
 	E->applyImpulse(dir, IMPULSE * E->getMass());
 }
 
-void CPoltergeist::StrangeSounds(const Fvector& position)
+void CPoltergeist::StrangeSounds(const float3& position)
 {
 	if (m_strange_sound._feedback())
 		return;
 
 	for (u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++)
 	{
-		Fvector dir;
+		float3 dir;
 		dir.random_dir();
 
 		collide::rq_result l_rq;
@@ -161,7 +161,7 @@ void CPoltergeist::StrangeSounds(const Fvector& position)
 				if (!mtl_pair->CollideSounds.empty())
 				{
 					CLONE_MTL_SOUND(m_strange_sound, mtl_pair, CollideSounds);
-					Fvector pos;
+					float3 pos;
 					pos.mad(position, dir, ((l_rq.range - 0.1f > 0) ? l_rq.range - 0.1f : l_rq.range));
 					m_strange_sound.play_at_pos(this, pos);
 					return;

@@ -45,13 +45,13 @@ class CVertex : private NodeCompressed
 
 struct SSegment
 {
-	Fvector v1;
-	Fvector v2;
+	float3 v1;
+	float3 v2;
 };
 
 struct SContour : public SSegment
 {
-	Fvector v3;
-	Fvector v4;
+	float3 v3;
+	float3 v4;
 };
 }; // namespace LevelGraph

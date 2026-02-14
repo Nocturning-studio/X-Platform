@@ -10,7 +10,7 @@ class CMotionStats
 	struct elem
 	{
 		float speed;
-		Fvector position;
+		float3 position;
 		TTime time;
 	};
 

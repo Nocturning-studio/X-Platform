@@ -7,7 +7,7 @@
 #include "PHCollideValidator.h"
 void CPHStaticGeomShell::get_spatial_params()
 {
-	Fvector AABB;
+	float3 AABB;
 	spatialParsFromDGeom(dSpacedGeometry(), spatial.sphere.P, AABB, spatial.sphere.R);
 }
 
@@ -18,7 +18,7 @@ void CPHStaticGeomShell::PhDataUpdate(dReal step)
 	PhysicsRefObject()->enable_notificate();
 	CPHUpdateObject::Deactivate();
 }
-void CPHStaticGeomShell::Activate(const Fmatrix& form)
+void CPHStaticGeomShell::Activate(const float4x4& form)
 {
 	build();
 	setStaticForm(form);

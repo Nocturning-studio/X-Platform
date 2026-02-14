@@ -66,7 +66,7 @@ void CCar::DbgCreatePlots()
 
 	if (b_auto_switch_transmission && ph_dbg_draw_mask.test(phDbgDrawCarAllTrnsm))
 	{
-		xr_vector<Fvector>::iterator i = m_gear_ratious.begin() + 1, e = m_gear_ratious.end();
+		xr_vector<float3>::iterator i = m_gear_ratious.begin() + 1, e = m_gear_ratious.end();
 		for (; i < e; i++)
 		{
 			float r = 4 * m_dbg_torque_rpm.ResolutionX();
@@ -88,7 +88,7 @@ void CCar::DbgCreatePlots()
 	rpm_pow_max_ratio = m_max_rpm / m_max_power;
 	//--------------------------------------
 	m_dbg_dynamic_plot->AddMarker(CStatGraph::stHor, 0, D3DCOLOR_XRGB(255, 0, 0));
-	xr_vector<Fvector>::iterator i = m_gear_ratious.begin() + 1, e = m_gear_ratious.end();
+	xr_vector<float3>::iterator i = m_gear_ratious.begin() + 1, e = m_gear_ratious.end();
 	for (; i < e; i++)
 	{
 		m_dbg_dynamic_plot->AddMarker(CStatGraph::stHor, (*i)[1] / rpm_pow_max_ratio, D3DCOLOR_XRGB(127, 0, 0));
@@ -117,7 +117,7 @@ void CCar::DbgUbdateCl()
 	{
 		if (ph_dbg_draw_mask.test(phDbgDrawCarDynamics))
 		{
-			Fvector v;
+			float3 v;
 			m_pPhysicsShell->get_LinearVel(v);
 			string32 s;
 			sprintf_s(s, "speed, %f km/hour", v.magnitude() / 1000.f * 3600.f);

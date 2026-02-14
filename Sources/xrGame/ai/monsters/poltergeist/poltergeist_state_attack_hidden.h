@@ -10,7 +10,7 @@ template <typename _Object> class CStatePoltergeistAttackHidden : public CState<
 
 	struct
 	{
-		Fvector point;
+		float3 point;
 		u32 node;
 	} m_target;
 

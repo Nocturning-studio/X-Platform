@@ -21,14 +21,14 @@ class CUICustomMap : public CUIStatic, public CUIWndCallback
 	Frect m_prevRect;
 	CUICustomMap();
 	virtual ~CUICustomMap();
-	virtual void SetActivePoint(const Fvector& vNewPoint);
+	virtual void SetActivePoint(const float3& vNewPoint);
 
 	virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
-	virtual Fvector2 ConvertRealToLocal(const Fvector2& src); // meters->pixels (relatively own left-top pos)
-	Fvector2 ConvertLocalToReal(const Fvector2& src);
-	Fvector2 ConvertRealToLocalNoTransform(const Fvector2& src); // meters->pixels (relatively own left-top pos)
+	virtual float2 ConvertRealToLocal(const float2& src); // meters->pixels (relatively own left-top pos)
+	float2 ConvertLocalToReal(const float2& src);
+	float2 ConvertRealToLocalNoTransform(const float2& src); // meters->pixels (relatively own left-top pos)
 
-	bool GetPointerTo(const Fvector2& src, float item_radius, Fvector2& pos,
+	bool GetPointerTo(const float2& src, float item_radius, float2& pos,
 					  float& heading); // position and heading for drawing pointer to src pos
 
 	void FitToWidth(float width);
@@ -89,7 +89,7 @@ class CUIGlobalMap : public CUICustomMap
 	float m_max_zoom;
 
   public:
-	virtual Fvector2 ConvertRealToLocal(const Fvector2& src); // pixels->pixels (relatively own left-top pos)
+	virtual float2 ConvertRealToLocal(const float2& src); // pixels->pixels (relatively own left-top pos)
 
 	CUIGlobalMap(CUIMapWnd* pMapWnd);
 	virtual ~CUIGlobalMap();
@@ -118,9 +118,9 @@ class CUIGlobalMap : public CUICustomMap
 	{
 		return m_mapWnd;
 	}
-	void MoveWndDelta(const Fvector2& d);
+	void MoveWndDelta(const float2& d);
 
-	float CalcOpenRect(const Fvector2& center_point, Frect& map_desired_rect, float tgt_zoom);
+	float CalcOpenRect(const float2& center_point, Frect& map_desired_rect, float tgt_zoom);
 
 	void ClipByVisRect();
 	virtual void Update();

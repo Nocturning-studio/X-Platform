@@ -43,7 +43,7 @@ void CRender::Calculate()
 	if (rmPortals)
 	{
 		float eps = VIEWPORT_NEAR + EPS_L;
-		Fvector box_radius;
+		float3 box_radius;
 		box_radius.set(eps, eps, eps);
 		Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
 		Sectors_xrc.box_query(rmPortals, Engine.RenderView.Position, box_radius);

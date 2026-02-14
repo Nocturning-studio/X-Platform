@@ -4,7 +4,7 @@
 // Простая структура вершины. Для теней нам нужна только позиция.
 struct v_occluder
 {
-	Fvector P;
+	float3 P;
 };
 
 // Формат вершин: только позиция
@@ -39,7 +39,7 @@ void CSunOccluder::Load()
 	if (!F)
 		return;
 
-	xr_vector<Fvector> temp_verts;
+	xr_vector<float3> temp_verts;
 	xr_vector<u16> temp_inds;
 
 	string512 line;
@@ -54,7 +54,7 @@ void CSunOccluder::Load()
 		if (line[0] == 'v' && line[1] == ' ')
 		{
 			// Вершина (v x y z)
-			Fvector v;
+			float3 v;
 			float x, y, z;
 			sscanf(line + 2, "%f %f %f", &x, &y, &z);
 

@@ -10,9 +10,9 @@ void CRender::accumulate_point_lights(light* L)
 		shader = RenderTarget->s_accum_point;
 
 	// Common
-	Fvector L_pos;
+	float3 L_pos;
 	float L_R = L->get_range();
-	Fvector L_clr;
+	float3 L_clr;
 	L_clr.set(L->get_color().r, L->get_color().g, L->get_color().b);
 	Engine.RenderView.View.transform_tiny(L_pos, L->get_position());
 
@@ -53,7 +53,7 @@ void CRender::accumulate_point_lights(light* L)
 	*/
 
 	// 2D texgens
-	Fmatrix m_Texgen;
+	float4x4 m_Texgen;
 	RenderBackend.u_compute_texgen_screen(m_Texgen);
 
 	// Draw volume with projective texgen

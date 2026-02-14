@@ -267,7 +267,7 @@ template <class T> class _box3
 	}
 	IC SelfRef scale(float s) // 0.1 means make 110%, -0.1 means make 90%
 	{
-		Fvector bd;
+		float3 bd;
 		bd.sub(max, min).mul(s);
 		grow(bd);
 		return *this;

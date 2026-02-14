@@ -8,7 +8,7 @@ namespace FVF
 {
 struct L
 {
-	Fvector p;
+	float3 p;
 	u32 color;
 	IC void set(const L& src)
 	{
@@ -19,7 +19,7 @@ struct L
 		p.set(x, y, z);
 		color = C;
 	}
-	IC void set(const Fvector& _p, u32 C)
+	IC void set(const float3& _p, u32 C)
 	{
 		p.set(_p);
 		color = C;
@@ -29,8 +29,8 @@ const u32 F_L = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 
 struct V
 {
-	Fvector p;
-	Fvector2 t;
+	float3 p;
+	float2 t;
 	IC void set(const V& src)
 	{
 		*this = src;
@@ -40,7 +40,7 @@ struct V
 		p.set(x, y, z);
 		t.set(u, v);
 	}
-	IC void set(const Fvector& _p, float u, float v)
+	IC void set(const float3& _p, float u, float v)
 	{
 		p.set(_p);
 		t.set(u, v);
@@ -50,9 +50,9 @@ const u32 F_V = D3DFVF_XYZ | D3DFVF_TEX1;
 
 struct LIT
 {
-	Fvector p;
+	float3 p;
 	u32 color;
-	Fvector2 t;
+	float2 t;
 	IC void set(const LIT& src)
 	{
 		*this = src;
@@ -63,7 +63,7 @@ struct LIT
 		color = C;
 		t.set(u, v);
 	}
-	IC void set(const Fvector& _p, u32 C, float u, float v)
+	IC void set(const float3& _p, u32 C, float u, float v)
 	{
 		p.set(_p);
 		color = C;
@@ -74,7 +74,7 @@ const u32 F_LIT = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct TL0uv
 {
-	Fvector4 p;
+	float4 p;
 	u32 color;
 	IC void set(const TL0uv& src)
 	{
@@ -93,7 +93,7 @@ struct TL0uv
 		p.set(x, y, z, w);
 		color = c;
 	};
-	IC void transform(const Fvector& v, const Fmatrix& matSet)
+	IC void transform(const float3& v, const float4x4& matSet)
 	{
 		// Transform it through the matrix set. Takes in mean projection.
 		// Finally, scale the vertices to screen coords.
@@ -109,14 +109,14 @@ const u32 F_TL0uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
 
 struct TL
 {
-	Fvector4 p;
+	float4 p;
 	u32 color;
-	Fvector2 uv;
+	float2 uv;
 	IC void set(const TL& src)
 	{
 		*this = src;
 	};
-	IC void set(float x, float y, u32 c, Fvector2& t)
+	IC void set(float x, float y, u32 c, float2& t)
 	{
 		set(x, y, .0001f, .9999f, c, t.x, t.y);
 	};
@@ -148,7 +148,7 @@ struct TL
 		uv.x = u;
 		uv.y = v;
 	};
-	IC void transform(const Fvector& v, const Fmatrix& matSet)
+	IC void transform(const float3& v, const float4x4& matSet)
 	{
 		// Transform it through the matrix set. Takes in mean projection.
 		// Finally, scale the vertices to screen coords.
@@ -164,18 +164,18 @@ const u32 F_TL = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct TL2uv
 {
-	Fvector4 p;
+	float4 p;
 	u32 color;
-	Fvector2 uv[2];
+	float2 uv[2];
 	IC void set(const TL2uv& src)
 	{
 		*this = src;
 	};
-	IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1)
+	IC void set(float x, float y, u32 c, float2& t0, float2& t1)
 	{
 		set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y);
 	};
-	IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1)
+	IC void set(float x, float y, float z, float w, u32 c, float2& t0, float2& t1)
 	{
 		set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y);
 	};
@@ -196,7 +196,7 @@ struct TL2uv
 		uv[1].x = u2;
 		uv[1].y = v2;
 	};
-	IC void transform(const Fvector& v, const Fmatrix& matSet)
+	IC void transform(const float3& v, const float4x4& matSet)
 	{
 		// Transform it through the matrix set. Takes in mean projection.
 		// Finally, scale the vertices to screen coords.
@@ -212,18 +212,18 @@ const u32 F_TL2uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 
 struct TL4uv
 {
-	Fvector4 p;
+	float4 p;
 	u32 color;
-	Fvector2 uv[4];
+	float2 uv[4];
 	IC void set(const TL4uv& src)
 	{
 		*this = src;
 	};
-	IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1)
+	IC void set(float x, float y, u32 c, float2& t0, float2& t1)
 	{
 		set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y);
 	};
-	IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1)
+	IC void set(float x, float y, float z, float w, u32 c, float2& t0, float2& t1)
 	{
 		set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y);
 	};

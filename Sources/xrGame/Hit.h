@@ -2,7 +2,7 @@
 
 struct SHit
 {
-	SHit(float Power, Fvector& dir, CObject* who, u16 element, Fvector p_in_object_space, float impulse,
+	SHit(float Power, float3& dir, CObject* who, u16 element, float3 p_in_object_space, float impulse,
 		 ALife::EHitType hit_type, float ap = 0.0f, bool AimBullet = false);
 	SHit();
 	bool is_valide() const;
@@ -12,7 +12,7 @@ struct SHit
 		VERIFY(is_valide());
 		return power;
 	}
-	IC const Fvector& direction() const
+	IC const float3& direction() const
 	{
 		VERIFY(is_valide());
 		return dir;
@@ -27,7 +27,7 @@ struct SHit
 		VERIFY(is_valide());
 		return boneID;
 	}
-	IC const Fvector& bone_space_position() const
+	IC const float3& bone_space_position() const
 	{
 		VERIFY(is_valide());
 		return p_in_bone_space;
@@ -55,12 +55,12 @@ struct SHit
 	u16 DestID;
 
 	float power;
-	Fvector dir;
+	float3 dir;
 	CObject* who;
 	u16 whoID;
 	u16 weaponID;
 	u16 boneID;
-	Fvector p_in_bone_space;
+	float3 p_in_bone_space;
 	float impulse;
 	ALife::EHitType hit_type;
 	float ap;

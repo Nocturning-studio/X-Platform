@@ -91,7 +91,7 @@ void CDetailManager::hw_Load()
 
 			for (u32 v = 0; v < D.number_vertices; v++)
 			{
-				Fvector& vP = D.vertices[v].P;
+				float3& vP = D.vertices[v].P;
 				pV->x = vP.x;
 				pV->y = vP.y - fMinY;
 				pV->z = vP.z;
@@ -133,14 +133,14 @@ void CDetailManager::hw_Unload()
 	_RELEASE(hw_InstanceVB);
 }
 
-void CalculateCullAABB(const Fmatrix& viewProj, float& minX, float& maxX, float& minZ, float& maxZ)
+void CalculateCullAABB(const float4x4& viewProj, float& minX, float& maxX, float& minZ, float& maxZ)
 {
 	// Инвертируем матрицу ViewProj, чтобы перевести куб NDC (-1..1) в мировые координаты
-	Fmatrix inv;
+	float4x4 inv;
 	inv.invert(viewProj);
 
 	// 8 углов NDC куба
-	Fvector corners[8] = {{-1, -1, 0}, {-1, -1, 1}, {-1, 1, 0}, {-1, 1, 1},
+	float3 corners[8] = {{-1, -1, 0}, {-1, -1, 1}, {-1, 1, 0}, {-1, 1, 1},
 						  {1, -1, 0},  {1, -1, 1},	{1, 1, 0},	{1, 1, 1}};
 
 	minX = minZ = FLT_MAX;
@@ -149,7 +149,7 @@ void CalculateCullAABB(const Fmatrix& viewProj, float& minX, float& maxX, float&
 	for (int i = 0; i < 8; ++i)
 	{
 		// Трансформируем точку из NDC в World Space
-		Fvector& p = corners[i];
+		float3& p = corners[i];
 		inv.transform(p);
 
 		// Находим экстремумы
@@ -164,7 +164,7 @@ void CalculateCullAABB(const Fmatrix& viewProj, float& minX, float& maxX, float&
 	}
 }
 
-void CDetailManager::Render(DetailsRenderMode Mode, Fmatrix* pCullMatrix, const CFrustum* pExternalCull)
+void CDetailManager::Render(DetailsRenderMode Mode, float4x4* pCullMatrix, const CFrustum* pExternalCull)
 {
 	PROFILE_FUNCTION();
 
@@ -316,12 +316,12 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 			// Читаем из отдельного вектора positions, чтобы не грузить в кэш лишние данные
 			if (ctx.useAABB)
 			{
-				const Fvector& pos = batch->positions[0];
+				const float3& pos = batch->positions[0];
 				if (pos.x < ctx.minX || pos.x > ctx.maxX || pos.z < ctx.minZ || pos.z > ctx.maxZ)
 					continue;
 
 				// Точный Frustum тест (если передан внешний фрустум)
-				if (ctx.cullFrustum && !ctx.cullFrustum->testSphere_dirty(const_cast<Fvector&>(pos), 2.0f))
+				if (ctx.cullFrustum && !ctx.cullFrustum->testSphere_dirty(const_cast<float3&>(pos), 2.0f))
 					continue;
 			}
 

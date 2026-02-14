@@ -3,10 +3,10 @@
 
 struct SPHImpact
 {
-	Fvector force;
-	Fvector point;
+	float3 force;
+	float3 point;
 	u16 geom;
-	SPHImpact(const Fvector& aforce, const Fvector& apoint, u16 root_geom)
+	SPHImpact(const float3& aforce, const float3& apoint, u16 root_geom)
 	{
 		force.set(aforce);
 		point.set(apoint);

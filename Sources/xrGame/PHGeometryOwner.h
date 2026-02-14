@@ -15,7 +15,7 @@ class CPHGeometryOwner
 	// bl
 	bool b_builded;
 	dSpaceID m_group;								   // e					//bl
-	Fvector m_mass_center;							   // e ??				//bl
+	float3 m_mass_center;							   // e ??				//bl
 	CPhysicsShellHolder* m_phys_ref_object;			   //->to shell ??		//bl
 	float m_volume;									   // e ??				//bl
 	u16 ul_material;								   // e ??				//bl
@@ -27,7 +27,7 @@ class CPHGeometryOwner
 	void add_Box(const Fobb& V);									// aux
 	void add_Cylinder(const Fcylinder& V);							// aux
 	void add_Shape(const SBoneShape& shape);						// aux
-	void add_Shape(const SBoneShape& shape, const Fmatrix& offset); // aux
+	void add_Shape(const SBoneShape& shape, const float4x4& offset); // aux
 	CODEGeom* last_geom()
 	{
 		if (m_geoms.empty())
@@ -65,11 +65,11 @@ class CPHGeometryOwner
 	CODEGeom* GeomByBoneID(u16 bone_id);
 	u16 numberOfGeoms();	   // aux
 	dGeomID dSpacedGeometry(); // aux
-	Fvector get_mc_data();	   // aux
-	Fvector get_mc_geoms();	   // aux
-	void get_mc_kinematics(CKinematics* K, Fvector& mc, float& mass);
+	float3 get_mc_data();	   // aux
+	float3 get_mc_geoms();	   // aux
+	void get_mc_kinematics(CKinematics* K, float3& mc, float& mass);
 	void calc_volume_data(); // aux
-	const Fvector& local_mass_Center()
+	const float3& local_mass_Center()
 	{
 		return m_mass_center;
 	} // aux
@@ -78,13 +78,13 @@ class CPHGeometryOwner
 		calc_volume_data();
 		return m_volume;
 	};																						  // aux
-	void get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
-	void get_MaxAreaDir(Fvector& dir);
+	void get_Extensions(const float3& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
+	void get_MaxAreaDir(float3& dir);
 	float getRadius();
-	void setStaticForm(const Fmatrix& form);
-	void setPosition(const Fvector& pos);
+	void setStaticForm(const float4x4& form);
+	void setPosition(const float3& pos);
 	void clear_cashed_tries();
-	void get_mc_vs_transform(Fvector& mc, const Fmatrix& m);
+	void get_mc_vs_transform(float3& mc, const float4x4& m);
 
   protected:
 	void build();

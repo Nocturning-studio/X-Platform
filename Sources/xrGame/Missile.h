@@ -77,7 +77,7 @@ class CMissile : public CHudItemObject
   protected:
 	virtual void UpdateFireDependencies_internal();
 	virtual void UpdateTransform();
-	void UpdatePosition(const Fmatrix& trans);
+	void UpdatePosition(const float4x4& trans);
 	void spawn_fake_missile();
 
 	// инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
@@ -95,8 +95,8 @@ class CMissile : public CHudItemObject
 	u32 m_dwDestroyTime;
 	u32 m_dwDestroyTimeMax;
 
-	Fvector m_throw_direction;
-	Fmatrix m_throw_matrix;
+	float3 m_throw_direction;
+	float4x4 m_throw_matrix;
 
 	CMissile* m_fake_missile;
 
@@ -109,11 +109,11 @@ class CMissile : public CHudItemObject
 
   protected:
 	// относительная точка и направление вылета гранаты
-	Fvector m_vThrowPoint;
-	Fvector m_vThrowDir;
+	float3 m_vThrowPoint;
+	float3 m_vThrowDir;
 	// для HUD
-	Fvector m_vHudThrowPoint;
-	Fvector m_vHudThrowDir;
+	float3 m_vHudThrowPoint;
+	float3 m_vHudThrowDir;
 
 	// имена анимаций
 	shared_str m_sAnimShow;

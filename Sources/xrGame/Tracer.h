@@ -21,7 +21,7 @@ class CTracer
 	CTracer();
 	~CTracer();
 
-	void Render(FVF::LIT*& verts, const Fvector& pos, const Fvector& center, const Fvector& dir, float length,
+	void Render(FVF::LIT*& verts, const float3& pos, const float3& center, const float3& dir, float length,
 				float width, u8 colorID);
 };
 

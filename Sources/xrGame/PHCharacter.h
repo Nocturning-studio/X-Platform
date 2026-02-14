@@ -158,32 +158,32 @@ class CPHCharacter : public CPHObject,
 	virtual void SetJupmUpVelocity(dReal /**velocity/**/)
 	{
 	} //!!
-	virtual void IPosition(Fvector& /**pos/**/)
+	virtual void IPosition(float3& /**pos/**/)
 	{
 	}
 	virtual u16 ContactBone()
 	{
 		return 0;
 	}
-	virtual void DeathPosition(Fvector& /**deathPos/**/)
+	virtual void DeathPosition(float3& /**deathPos/**/)
 	{
 	}
-	virtual void ApplyImpulse(const Fvector& /**dir/**/, const dReal /**P/**/)
+	virtual void ApplyImpulse(const float3& /**dir/**/, const dReal /**P/**/)
 	{
 	}
-	virtual void ApplyForce(const Fvector& force) = 0;
-	virtual void ApplyForce(const Fvector& dir, float force) = 0;
+	virtual void ApplyForce(const float3& force) = 0;
+	virtual void ApplyForce(const float3& dir, float force) = 0;
 	virtual void ApplyForce(float x, float y, float z) = 0;
-	virtual void AddControlVel(const Fvector& vel) = 0;
-	virtual void Jump(const Fvector& jump_velocity) = 0;
+	virtual void AddControlVel(const float3& vel) = 0;
+	virtual void Jump(const float3& jump_velocity) = 0;
 	virtual bool JumpState() = 0;
 	virtual EEnvironment CheckInvironment() = 0;
 	virtual bool ContactWas() = 0;
-	virtual void GroundNormal(Fvector& norm) = 0;
+	virtual void GroundNormal(float3& norm) = 0;
 	virtual void Create(dVector3 /**sizes/**/) = 0;
 	virtual void Destroy(void) = 0;
 	virtual void SetBox(const dVector3& sizes) = 0;
-	virtual void SetAcceleration(Fvector accel) = 0;
+	virtual void SetAcceleration(float3 accel) = 0;
 	virtual void SetForcedPhysicsControl(bool v)
 	{
 	}
@@ -191,10 +191,10 @@ class CPHCharacter : public CPHObject,
 	{
 		return false;
 	}
-	virtual void SetCamDir(const Fvector& cam_dir) = 0;
-	virtual const Fvector& CamDir() const = 0;
-	virtual Fvector GetAcceleration() = 0;
-	virtual void SetPosition(Fvector pos) = 0;
+	virtual void SetCamDir(const float3& cam_dir) = 0;
+	virtual const float3& CamDir() const = 0;
+	virtual float3 GetAcceleration() = 0;
+	virtual void SetPosition(float3 pos) = 0;
 	virtual void SetApplyGravity(BOOL flag)
 	{
 		dBodySetGravityMode(m_body, flag);
@@ -205,15 +205,15 @@ class CPHCharacter : public CPHObject,
 	{
 		return NULL;
 	}
-	virtual void GetVelocity(Fvector& vvel) = 0;
-	virtual void GetSavedVelocity(Fvector& vvel);
-	virtual void GetSmothedVelocity(Fvector& vvel) = 0;
-	virtual void SetVelocity(Fvector vel) = 0;
+	virtual void GetVelocity(float3& vvel) = 0;
+	virtual void GetSavedVelocity(float3& vvel);
+	virtual void GetSmothedVelocity(float3& vvel) = 0;
+	virtual void SetVelocity(float3 vel) = 0;
 	virtual void SetAirControlFactor(float factor) = 0;
-	virtual void GetPosition(Fvector& vpos) = 0;
-	virtual void GetFootCenter(Fvector& vpos)
+	virtual void GetPosition(float3& vpos) = 0;
+	virtual void GetFootCenter(float3& vpos)
 	{
-		vpos.set(*(Fvector*)dBodyGetPosition(m_body));
+		vpos.set(*(float3*)dBodyGetPosition(m_body));
 	}
 	virtual void SetMas(dReal mass) = 0;
 	virtual void SetCollisionDamageFactor(float f) = 0;
@@ -225,16 +225,16 @@ class CPHCharacter : public CPHObject,
 	}
 
 	// AICharacter
-	virtual void GetDesiredPosition(Fvector& /**dpos/**/)
+	virtual void GetDesiredPosition(float3& /**dpos/**/)
 	{
 	}
-	virtual void SetDesiredPosition(const Fvector& /**pos/**/)
+	virtual void SetDesiredPosition(const float3& /**pos/**/)
 	{
 	}
 	virtual void BringToDesired(float /**time/**/, float /**velocity/**/, float force = 1.f)
 	{
 	}
-	virtual bool TryPosition(Fvector /**pos/**/, bool)
+	virtual bool TryPosition(float3 /**pos/**/, bool)
 	{
 		return false;
 	}
@@ -242,20 +242,20 @@ class CPHCharacter : public CPHObject,
 	{
 		return false;
 	}
-	virtual void getForce(Fvector& force);
-	virtual void setForce(const Fvector& force);
+	virtual void getForce(float3& force);
+	virtual void setForce(const float3& force);
 	virtual float FootRadius() = 0;
 	virtual void get_State(SPHNetState& state);
 	virtual void set_State(const SPHNetState& state);
-	virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform)
+	virtual void cv2obj_Xfrom(const Fquaternion& q, const float3& pos, float4x4& transform)
 	{
 		;
 	}
-	virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& transform)
+	virtual void cv2bone_Xfrom(const Fquaternion& q, const float3& pos, float4x4& transform)
 	{
 		;
 	}
-	virtual const Fvector& ControlAccel() const = 0;
+	virtual const float3& ControlAccel() const = 0;
 	virtual float& FrictionFactor() = 0;
 	virtual void CutVelocity(float l_limit, float a_limit);
 	virtual u16 get_elements_number()

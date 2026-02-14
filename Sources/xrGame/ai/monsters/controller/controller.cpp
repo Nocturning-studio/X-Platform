@@ -284,7 +284,7 @@ void CController::InitThink()
 
 void CController::play_control_sound_start()
 {
-	Fvector pos = EnemyMan.get_enemy()->Position();
+	float3 pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
 
 	if (control_start_sound._feedback())
@@ -294,7 +294,7 @@ void CController::play_control_sound_start()
 
 void CController::play_control_sound_hit()
 {
-	Fvector pos = EnemyMan.get_enemy()->Position();
+	float3 pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
 
 	if (control_hit_sound._feedback())
@@ -481,14 +481,14 @@ void CController::draw_fire_particles()
 		return;
 
 	// вычислить позицию и направленность партикла
-	Fvector my_head_pos;
+	float3 my_head_pos;
 	my_head_pos.set(get_head_position(this));
 
-	Fvector position;
+	float3 position;
 	position.set(get_head_position(enemy));
 	position.y -= 0.5f;
 
-	Fvector dir;
+	float3 dir;
 	dir.sub(position, my_head_pos);
 	dir.normalize();
 
@@ -531,7 +531,7 @@ bool CController::can_psy_fire()
 		return false;
 
 	float cur_yaw = custom_dir().get_head_orientation().current.yaw;
-	float dir_yaw = Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
+	float dir_yaw = float3().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
 	dir_yaw = angle_normalize(-dir_yaw);
 	if (angle_difference(cur_yaw, dir_yaw) > _pmt_psy_attack_min_angle)
 		return false;
@@ -675,17 +675,17 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 	// Draw Controlled Lines
 	DBG().level_info(this).clear();
 
-	Fvector my_pos = Position();
+	float3 my_pos = Position();
 	my_pos.y += 1.5f;
 
 	for (u32 i = 0; i < m_controlled_objects.size(); i++)
 	{
-		Fvector enemy_pos = m_controlled_objects[i]->Position();
+		float3 enemy_pos = m_controlled_objects[i]->Position();
 
-		Fvector dir;
+		float3 dir;
 		dir.sub(enemy_pos, Position());
 		dir.div(2.f);
-		Fvector new_pos;
+		float3 new_pos;
 		new_pos.add(Position(), dir);
 		new_pos.y += 10.f;
 
@@ -705,8 +705,8 @@ void CController::debug_on_key(int key)
 	switch (key)
 	{
 	case DIK_MINUS:
-		// m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		// m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
+		// m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), float3().set(-1.f, 0.f, 1.f), sm_2D);
+		// m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), float3().set(1.f, 0.f, 1.f), sm_2D);
 
 		if (m_psy_hit->check_start_conditions())
 		{
@@ -742,8 +742,8 @@ void CController::debug_on_key(int key)
 			}
 		}
 
-		// m_sound_aura_hit_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		// m_sound_aura_hit_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
+		// m_sound_aura_hit_left_channel.play_at_pos(Level().CurrentEntity(), float3().set(-1.f, 0.f, 1.f), sm_2D);
+		// m_sound_aura_hit_right_channel.play_at_pos(Level().CurrentEntity(), float3().set(1.f, 0.f, 1.f), sm_2D);
 		break;
 	}
 }

@@ -23,7 +23,7 @@ void CDetail::Unload()
 	shader.destroy();
 }
 
-void CDetail::transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
+void CDetail::transfer(float4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
 {
 	////OPTICK_EVENT("CDetail::transfer");
 
@@ -55,7 +55,7 @@ void CDetail::transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 	}
 }
 
-void CDetail::transfer(Fmatrix& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
+void CDetail::transfer(float4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
 {
 	////OPTICK_EVENT("CDetail::transfer");
 

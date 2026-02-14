@@ -32,7 +32,7 @@ class CUIPropertiesBox : public CUIFrameWindow
 	void RemoveItemByTAG(u32 tag_value);
 	void RemoveAll();
 
-	virtual void Show(const Frect& parent_rect, const Fvector2& point);
+	virtual void Show(const Frect& parent_rect, const float2& point);
 	virtual void Hide();
 
 	virtual void Update();

@@ -22,8 +22,8 @@ IC CScriptSoundAction::CScriptSoundAction()
 	m_tHeadAnimType = MonsterSpace::eHeadAnimNone;
 }
 
-IC CScriptSoundAction::CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneName, const Fvector& tPositionOffset,
-										  const Fvector& tAngleOffset, bool bLooped, ESoundTypes sound_type)
+IC CScriptSoundAction::CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneName, const float3& tPositionOffset,
+										  const float3& tAngleOffset, bool bLooped, ESoundTypes sound_type)
 {
 	m_bLooped = bLooped;
 	SetBone(caBoneName);
@@ -35,7 +35,7 @@ IC CScriptSoundAction::CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneNam
 	m_tHeadAnimType = MonsterSpace::eHeadAnimNone;
 }
 
-IC CScriptSoundAction::CScriptSoundAction(LPCSTR caSoundToPlay, const Fvector& tPosition, const Fvector& tAngleOffset,
+IC CScriptSoundAction::CScriptSoundAction(LPCSTR caSoundToPlay, const float3& tPosition, const float3& tAngleOffset,
 										  bool bLooped, ESoundTypes sound_type)
 {
 	m_bLooped = bLooped;
@@ -47,8 +47,8 @@ IC CScriptSoundAction::CScriptSoundAction(LPCSTR caSoundToPlay, const Fvector& t
 	m_tHeadAnimType = MonsterSpace::eHeadAnimNone;
 }
 
-IC CScriptSoundAction::CScriptSoundAction(CScriptSound& sound, LPCSTR caBoneName, const Fvector& tPositionOffset,
-										  const Fvector& tAngleOffset, bool bLooped, ESoundTypes sound_type)
+IC CScriptSoundAction::CScriptSoundAction(CScriptSound& sound, LPCSTR caBoneName, const float3& tPositionOffset,
+										  const float3& tAngleOffset, bool bLooped, ESoundTypes sound_type)
 {
 	m_bLooped = bLooped;
 	SetBone(caBoneName);
@@ -60,7 +60,7 @@ IC CScriptSoundAction::CScriptSoundAction(CScriptSound& sound, LPCSTR caBoneName
 	m_tHeadAnimType = MonsterSpace::eHeadAnimNone;
 }
 
-IC CScriptSoundAction::CScriptSoundAction(CScriptSound& sound, const Fvector& tPosition, const Fvector& tAngleOffset,
+IC CScriptSoundAction::CScriptSoundAction(CScriptSound& sound, const float3& tPosition, const float3& tAngleOffset,
 										  bool bLooped, ESoundTypes sound_type)
 {
 	m_bLooped = bLooped;
@@ -117,7 +117,7 @@ IC void CScriptSoundAction::SetSound(const CScriptSound& sound)
 	m_bCompleted = false;
 }
 
-IC void CScriptSoundAction::SetPosition(const Fvector& tPosition)
+IC void CScriptSoundAction::SetPosition(const float3& tPosition)
 {
 	m_tSoundPosition = tPosition;
 	m_tGoalType = eGoalTypeSoundPosition;
@@ -130,7 +130,7 @@ IC void CScriptSoundAction::SetBone(LPCSTR caBoneName)
 	m_bStartedToPlay = false;
 }
 
-IC void CScriptSoundAction::SetAngles(const Fvector& tAngles)
+IC void CScriptSoundAction::SetAngles(const float3& tAngles)
 {
 	m_tSoundAngles = tAngles;
 	m_bStartedToPlay = false;

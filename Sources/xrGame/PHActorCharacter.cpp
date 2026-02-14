@@ -175,9 +175,9 @@ void SPHCharacterRestrictor::SetMaterial(u16 material)
 {
 	dGeomGetUserData(m_restrictor)->material = material;
 }
-void CPHActorCharacter::SetAcceleration(Fvector accel)
+void CPHActorCharacter::SetAcceleration(float3 accel)
 {
-	Fvector cur_a, input_a;
+	float3 cur_a, input_a;
 	float cur_mug, input_mug;
 	cur_a.set(m_acceleration);
 	cur_mug = m_acceleration.magnitude();
@@ -191,7 +191,7 @@ void CPHActorCharacter::SetAcceleration(Fvector accel)
 		inherited::SetAcceleration(accel);
 }
 
-void CPHActorCharacter::Jump(const Fvector& accel)
+void CPHActorCharacter::Jump(const float3& accel)
 {
 	if (!b_exist)
 		return;

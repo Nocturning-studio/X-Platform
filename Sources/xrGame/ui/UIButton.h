@@ -94,15 +94,15 @@ class CUIButton : public CUIStatic
 		return m_ePressMode;
 	}
 
-	void SetPushOffset(const Fvector2& offset)
+	void SetPushOffset(const float2& offset)
 	{
 		m_PushOffset = offset;
 	}
-	Fvector2 GetPushOffset()
+	float2 GetPushOffset()
 	{
 		return m_PushOffset;
 	}
-	void SetShadowOffset(const Fvector2& offset)
+	void SetShadowOffset(const float2& offset)
 	{
 		m_ShadowOffset = offset;
 	}
@@ -113,9 +113,9 @@ class CUIButton : public CUIStatic
 	bool m_bIsSwitch;
 	bool m_bButtonClicked;
 	E_PRESS_MODE m_ePressMode;
-	Fvector2 m_PushOffset;
+	float2 m_PushOffset;
 	int m_uAccelerator[2];
-	Fvector2 m_ShadowOffset;
+	float2 m_ShadowOffset;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

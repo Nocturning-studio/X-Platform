@@ -37,7 +37,7 @@ class CHUDManager : public CCustomHUD
 		return pUI;
 	}
 
-	void Hit(int idx, float power, const Fvector& dir);
+	void Hit(int idx, float power, const float3& dir);
 	CFontManager& Font()
 	{
 		return *(UI()->Font());

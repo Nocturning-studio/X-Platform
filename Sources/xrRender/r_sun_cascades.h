@@ -10,8 +10,8 @@ struct ShadowCascadeWorkItem
 	SceneGraphPacket packet; // Локальный пакет для сбора
 
 	// Данные матриц и отсечения
-	Fmatrix cull_transform;
-	Fvector3 cull_COP;
+	float4x4 cull_transform;
+	float3 cull_COP;
 	CFrustum cull_frustum;
 	CSector* cull_sector;
 
@@ -73,13 +73,13 @@ namespace Sun
 
 struct Ray
 {
-	Fvector3 Direction;
-	Fvector3 Position;
+	float3 Direction;
+	float3 Position;
 
 	Ray()
 	{
 	}
-	Ray(Fvector3 const& _P, Fvector3 const& _D) : Position(_P), Direction(_D)
+	Ray(float3 const& _P, float3 const& _D) : Position(_P), Direction(_D)
 	{
 	}
 };
@@ -88,7 +88,7 @@ struct Cascade
 {
 	Cascade () : reset_chain( false )	{}
 
-	Fmatrix			transform;
+	float4x4			transform;
 	xr_vector<Ray>	rays;
 	float			size;
 	float			bias;

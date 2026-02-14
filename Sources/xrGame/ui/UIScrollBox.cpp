@@ -39,8 +39,8 @@ bool CUIScrollBox::OnMouse(float x, float y, EUIMessages mouse_action)
 	}
 	else if (im_capturer && mouse_action == WINDOW_MOUSE_MOVE && cursor_over)
 	{
-		Fvector2 pos = GetWndPos();
-		Fvector2 delta = GetUICursor()->GetCursorPositionDelta();
+		float2 pos = GetWndPos();
+		float2 delta = GetUICursor()->GetCursorPositionDelta();
 
 		if (m_bIsHorizontal)
 			pos.x += delta.x;

@@ -126,7 +126,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 		do
 		{
 			pick_needed = false;
-			Fvector dir;
+			float3 dir;
 			dir.sub(m.pos, m.posB);
 			float dist = dir.magnitude();
 			if (dist >= EPS)
@@ -148,7 +148,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 					else
 					{
 						CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + RQ.element;
-						Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+						float3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 						n.mknormal(verts[T->verts[0]], verts[T->verts[1]], verts[T->verts[2]]);
 					}
 #endif

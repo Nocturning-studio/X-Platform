@@ -12,15 +12,15 @@
 #include "../PHDebug.h"
 #endif
 const Matrix IKLocalJoint = {0, 0, 1, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 1}; //. in XGlobal
-const Fmatrix XLocalJoint = {0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+const float4x4 XLocalJoint = {0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
-const Fmatrix xm2im = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1};
+const float4x4 xm2im = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1};
 
-const Fvector xgproj_axis = {0, 1, 0};
-const Fvector xgpos_axis = {0, 0, 1};
+const float3 xgproj_axis = {0, 1, 0};
+const float3 xgpos_axis = {0, 0, 1};
 
-const Fvector xlproj_axis = {1, 0, 0};
-const Fvector xlpos_axis = {0, 0, 1};
+const float3 xlproj_axis = {1, 0, 0};
+const float3 xlpos_axis = {0, 0, 1};
 typedef float IVektor[3];
 
 const IVektor lproj_vector = {0, 0, 1};
@@ -45,41 +45,41 @@ void CIKLimb::Invalidate()
 	m_bones[2] = BI_NONE;
 	m_bones[3] = BI_NONE;
 }
-void XM_IM(const Fmatrix& XM, Fmatrix& IM)
+void XM_IM(const float4x4& XM, float4x4& IM)
 {
 	IM.mul_43(xm2im, XM);
 }
-void XM_IM(const Fmatrix& XM, Matrix& IM)
+void XM_IM(const float4x4& XM, Matrix& IM)
 {
-	//((Fmatrix*)(&IM))->mul_43(xm2im,XM);
-	XM_IM(XM, *((Fmatrix*)(&IM)));
+	//((float4x4*)(&IM))->mul_43(xm2im,XM);
+	XM_IM(XM, *((float4x4*)(&IM)));
 }
-void IM_XM(const Matrix& IM, Fmatrix& XM)
+void IM_XM(const Matrix& IM, float4x4& XM)
 {
-	XM.mul_43(xm2im, *((Fmatrix*)(&IM)));
+	XM.mul_43(xm2im, *((float4x4*)(&IM)));
 }
 
-void XM2IM(const Fmatrix& XM, Fmatrix& IM)
+void XM2IM(const float4x4& XM, float4x4& IM)
 {
 	// IM=xm2im*XM*xm2im^-1
-	Fmatrix tmp;
+	float4x4 tmp;
 	tmp.mul_43(xm2im, XM);
 	IM.mul_43(tmp, xm2im);
 }
-void XM2IM(const Fmatrix& XM, Matrix& IM)
+void XM2IM(const float4x4& XM, Matrix& IM)
 {
-	XM2IM(XM, *((Fmatrix*)(&IM)));
+	XM2IM(XM, *((float4x4*)(&IM)));
 }
-void IM2XM(const Matrix& IM, Fmatrix& XM)
+void IM2XM(const Matrix& IM, float4x4& XM)
 {
-	XM2IM(*((Fmatrix*)(&IM)), XM);
+	XM2IM(*((float4x4*)(&IM)), XM);
 }
-void XV2IV(const Fvector& XV, IVektor& IV)
+void XV2IV(const float3& XV, IVektor& IV)
 {
 	xm2im.transform_dir(cast_fv(IV), XV);
 }
 
-void IV2XV(const IVektor& IV, Fvector& XV)
+void IV2XV(const IVektor& IV, float3& XV)
 {
 	xm2im.transform_dir(XV), cast_fv(IV);
 }
@@ -92,17 +92,17 @@ void CIKLimb::Calculate(SCalculateData& cd)
 		Solve(cd);
 }
 
-float CIKLimb::SwivelAngle(const Fmatrix& ihip, const SCalculateData& cd)
+float CIKLimb::SwivelAngle(const float4x4& ihip, const SCalculateData& cd)
 {
-	Fvector foot;
+	float3 foot;
 	foot.set(cd.m_K->LL_GetTransform(m_bones[2]).c); // use "0" channal only?
 	ihip.transform_tiny(foot);
 	xm2im.transform_tiny(foot);
 
-	Fvector knee;
+	float3 knee;
 	knee.set(cd.m_K->LL_GetTransform(m_bones[1]).c);
 
-	Fmatrix ih;
+	float4x4 ih;
 	CBoneData& BD = cd.m_K->LL_GetData(m_bones[0]);
 	ih.mul_43(cd.m_K->LL_GetTransform(BD.GetParentID()), BD.bind_transform);
 	ih.invert();
@@ -113,23 +113,23 @@ float CIKLimb::SwivelAngle(const Fmatrix& ihip, const SCalculateData& cd)
 	return m_limb.KneeAngle(cast_fp(foot), cast_fp(knee));
 }
 
-IC Fmatrix& get_base(Fmatrix& base, const Fvector& p0, const Fvector& p1)
+IC float4x4& get_base(float4x4& base, const float3& p0, const float3& p1)
 {
 	base.c.set(0, 0, 0);
 	base.i.sub(p1, p0);
 	base.i.normalize(); // safe?
-	Fvector::generate_orthonormal_basis(base.i, base.j, base.k);
+	float3::generate_orthonormal_basis(base.i, base.j, base.k);
 	return base;
 }
 
-void CIKLimb::GetKnee(Fvector& knee, const SCalculateData& cd) const
+void CIKLimb::GetKnee(float3& knee, const SCalculateData& cd) const
 {
-	const Fvector hip = cd.m_K->LL_GetTransform(m_bones[0]).c;
+	const float3 hip = cd.m_K->LL_GetTransform(m_bones[0]).c;
 	knee = cd.m_K->LL_GetTransform(m_bones[1]).c;
-	const Fvector foot = cd.m_K->LL_GetTransform(m_bones[2]).c;
-	Fvector p0;
+	const float3 foot = cd.m_K->LL_GetTransform(m_bones[2]).c;
+	float3 p0;
 	p0.sub(foot, hip);
-	Fvector p1;
+	float3 p1;
 	p1.sub(cd.goal.c, hip);
 	float mp0 = p0.magnitude();
 	if (fis_zero(mp0))
@@ -137,11 +137,11 @@ void CIKLimb::GetKnee(Fvector& knee, const SCalculateData& cd) const
 	p0.mul(1.f / mp0);
 	knee.sub(hip);
 	float dot = p0.dotproduct(knee);
-	Fvector b1;
+	float3 b1;
 	b1.mul(p0, dot);
-	Fvector b2;
+	float3 b2;
 	b2.sub(knee, b1);
-	Fvector bb1;
+	float3 bb1;
 	bb1.mul(p1, 1.f / mp0 * dot); // mp1
 	knee.add(bb1, b2);
 	knee.add(hip);
@@ -161,18 +161,18 @@ void CIKLimb::Solve(SCalculateData& cd)
 	{
 		float x[7];
 
-		Fvector pos;
+		float3 pos;
 		GetKnee(pos, cd);
 
 #ifdef DEBUG
 		if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
 		{
-			Fvector dbg_pos;
+			float3 dbg_pos;
 			cd.m_obj.transform_tiny(dbg_pos, pos);
 			DBG_DrawPoint(dbg_pos, 0.02f, D3DCOLOR_XRGB(255, 255, 255));
 		}
 #endif
-		Fmatrix ihip;
+		float4x4 ihip;
 		GetHipInvert(ihip, cd);
 		ihip.transform_tiny(pos);
 		xm2im.transform_tiny(pos);
@@ -206,7 +206,7 @@ void CIKLimb::Solve(SCalculateData& cd)
 
 	if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
 	{
-		Fvector dbg_pos;
+		float3 dbg_pos;
 		cd.m_K->LL_GetBoneInstance(m_bones[2]).mTransform.transform_tiny(dbg_pos, m_toe_position);
 		cd.m_obj.transform_tiny(dbg_pos);
 		DBG_DrawPoint(dbg_pos, 0.02f, D3DCOLOR_XRGB(255, 255, 0));
@@ -232,7 +232,7 @@ IC void free_limits(float& min, float& max)
 	max = 2 * M_PI;
 }
 
-void CIKLimb::Create(u16 id, CKinematics* K, const u16 bones[4], const Fvector& toe_pos, bool collide_)
+void CIKLimb::Create(u16 id, CKinematics* K, const u16 bones[4], const float3& toe_pos, bool collide_)
 {
 	m_id = id;
 	m_collide = collide_;
@@ -242,9 +242,9 @@ void CIKLimb::Create(u16 id, CKinematics* K, const u16 bones[4], const Fvector& 
 	m_bones[3] = bones[3];
 	m_toe_position.set(toe_pos);
 	//////////////////////////////////////////////////////////////////////
-	xr_vector<Fmatrix> binds;
+	xr_vector<float4x4> binds;
 	K->LL_GetBindTransform(binds);
-	Fmatrix XT, XS;
+	float4x4 XT, XS;
 	XT.set(binds[bones[0]]);
 	XT.invert();
 	XT.mulB_43(binds[bones[1]]);
@@ -302,7 +302,7 @@ IC bool state_valide(const calculate_state& prev_state)
 	return (Engine.TimeManager.GetFrameCount() - prev_state.frame) == 1; // prev_state.state !=calculate_state::not_definite &&
 }
 
-IC void CIKLimb::GetPickDir(Fvector& v, const Fmatrix& gl_bone)
+IC void CIKLimb::GetPickDir(float3& v, const float4x4& gl_bone)
 {
 	v.set(0, -1, 0);
 	if (!state_valide(sv_state))
@@ -315,19 +315,19 @@ IC void CIKLimb::GetPickDir(Fvector& v, const Fmatrix& gl_bone)
 #endif
 		return;
 	}
-	const Fmatrix& anim_global = gl_bone; // anim_global.mul_43( cd.m_obj, cd.goal );
-	Fmatrix sv_anim_global;
+	const float4x4& anim_global = gl_bone; // anim_global.mul_43( cd.m_obj, cd.goal );
+	float4x4 sv_anim_global;
 	sv_anim_global.mul_43(sv_state.obj_pos, sv_state.anim_pos);
-	Fvector p0;
-	Fvector p1;
+	float3 p0;
+	float3 p1;
 	sv_anim_global.transform_tiny(p0, m_toe_position);
 	anim_global.transform_tiny(p1, m_toe_position);
-	Fvector dir;
+	float3 dir;
 	dir.sub(p1, p0);
 	if (dir.y > 0)
 		dir.y = -dir.y;
 	dir.mul(dir, 0.01f / Engine.TimeManager.GetDeltaTime());
-	dir.add(Fvector().set(0, -0.05f, 0));
+	dir.add(float3().set(0, -0.05f, 0));
 	dir.add(sv_state.pick);
 
 	float m = dir.magnitude();
@@ -339,9 +339,9 @@ IC void CIKLimb::GetPickDir(Fvector& v, const Fmatrix& gl_bone)
 	sv_state.pick = v;
 }
 
-float CIKLimb::CollideFoot(float angle, const Fmatrix& gl_anim, Fplane& p, Fvector& ax)
+float CIKLimb::CollideFoot(float angle, const float4x4& gl_anim, Fplane& p, float3& ax)
 {
-	Fvector nc_toe;
+	float3 nc_toe;
 	gl_anim.transform_tiny(nc_toe, m_toe_position); // non collided toe
 	float dfoot_plain =
 		m_toe_position
@@ -350,12 +350,12 @@ float CIKLimb::CollideFoot(float angle, const Fmatrix& gl_anim, Fplane& p, Fvect
 	VERIFY(dfoot_plain > 0.f);
 	if (dfoot_tri > dfoot_plain * gl_anim.i.dotproduct(p.n)) // foot under tri
 	{
-		Fvector axp;
+		float3 axp;
 		axp.sub(nc_toe, gl_anim.c); // normal from nc_toe to ax
-		axp.sub(Fvector().mul(ax, axp.dotproduct(ax)));
-		// Fvector( ).mul( ax, ax.dotproduct( nc_toe ) - ax.dotproduct( xm.c ) );
+		axp.sub(float3().mul(ax, axp.dotproduct(ax)));
+		// float3( ).mul( ax, ax.dotproduct( nc_toe ) - ax.dotproduct( xm.c ) );
 		float dtoe_ax = axp.magnitude();
-		axp.sub(Fvector().mul(gl_anim.i, axp.dotproduct(gl_anim.i)));
+		axp.sub(float3().mul(gl_anim.i, axp.dotproduct(gl_anim.i)));
 		float dfoot = axp.magnitude();
 		if (dtoe_ax > EPS_L && dfoot_tri < dtoe_ax && dfoot > EPS_L && dfoot < dtoe_ax)
 		{
@@ -371,7 +371,7 @@ float CIKLimb::CollideFoot(float angle, const Fmatrix& gl_anim, Fplane& p, Fvect
 
 IC void tri_plane(const CDB::TRI& tri, Fplane& p)
 {
-	Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
+	float3* pVerts = Level().ObjectSpace.GetStaticVerts();
 	p.n.mknormal(pVerts[tri.verts[0]], pVerts[tri.verts[1]], pVerts[tri.verts[2]]);
 	VERIFY(!fis_zero(p.n.magnitude()));
 	p.n.invert();
@@ -379,17 +379,17 @@ IC void tri_plane(const CDB::TRI& tri, Fplane& p)
 }
 
 const float min_dot = 0.9f; // M_SQRT1_2;//M_SQRT1_2;
-void CIKLimb::make_shift(Fmatrix& xm, const Fplane& p, const Fvector& pick_dir)
+void CIKLimb::make_shift(float4x4& xm, const Fplane& p, const float3& pick_dir)
 {
-	Fvector shift = pick_dir;
-	Fvector toe;
+	float3 shift = pick_dir;
+	float3 toe;
 	xm.transform_tiny(toe, m_toe_position);
 
 	float dot = p.n.dotproduct(shift);
 
 	if (_abs(dot) < min_dot)
 	{
-		shift.add(Fvector().mul(p.n, min_dot - _abs(dot)));
+		shift.add(float3().mul(p.n, min_dot - _abs(dot)));
 		dot = p.n.dotproduct(shift);
 		// shift.set( p.n );
 		// dot = 1.f;
@@ -400,7 +400,7 @@ void CIKLimb::make_shift(Fmatrix& xm, const Fplane& p, const Fvector& pick_dir)
 	xm.c.add(shift);
 }
 
-void CIKLimb::GetFootStepMatrix(Fmatrix& m, const Fmatrix& gl_anim, const SIKCollideData& cld, bool collide)
+void CIKLimb::GetFootStepMatrix(float4x4& m, const float4x4& gl_anim, const SIKCollideData& cld, bool collide)
 {
 	if (!cld.collided || (collide && cld.clamp_down))
 	{
@@ -408,9 +408,9 @@ void CIKLimb::GetFootStepMatrix(Fmatrix& m, const Fmatrix& gl_anim, const SIKCol
 		return;
 	}
 	Fplane p = cld.m_plane; //; tri_plane( *cld.m_tri, p );
-	Fmatrix xm;
+	float4x4 xm;
 	xm.set(gl_anim);
-	Fvector ax;
+	float3 ax;
 	ax.crossproduct(p.n, xm.i);
 	float s = ax.magnitude();
 	clamp(s, 0.f, 1.f);
@@ -421,8 +421,8 @@ void CIKLimb::GetFootStepMatrix(Fmatrix& m, const Fmatrix& gl_anim, const SIKCol
 		ax.mul(1.f / s);
 		if (collide)
 			angle = CollideFoot(angle, gl_anim, p, ax);
-		Fvector c = xm.c;
-		xm.mulA_43(Fmatrix().rotation(ax, angle));
+		float3 c = xm.c;
+		xm.mulA_43(float4x4().rotation(ax, angle));
 		xm.c = c;
 	}
 	make_shift(xm, p, cld.m_pick_dir);
@@ -430,7 +430,7 @@ void CIKLimb::GetFootStepMatrix(Fmatrix& m, const Fmatrix& gl_anim, const SIKCol
 	m.set(xm);
 }
 
-void CollideGoal(Fmatrix& g, const SIKCollideData& cld)
+void CollideGoal(float4x4& g, const SIKCollideData& cld)
 {
 
 	if (cld.collided && !cld.clamp_down)
@@ -441,14 +441,14 @@ void CollideGoal(Fmatrix& g, const SIKCollideData& cld)
 			DBG_DrawLine(cld.m_collide, cld.m_anime, D3DCOLOR_XRGB(0, 0, 255));
 		}
 #endif
-		g.c.add(Fvector().sub(cld.m_collide, cld.m_anime));
+		g.c.add(float3().sub(cld.m_collide, cld.m_anime));
 	}
 }
 
 IC float clamp_rotation(Fquaternion& q, float v)
 {
 	float angl;
-	Fvector ax;
+	float3 ax;
 	q.get_axis_angle(ax, angl);
 	float abs_angl = _abs(angl);
 	if (abs_angl > v)
@@ -461,28 +461,28 @@ IC float clamp_rotation(Fquaternion& q, float v)
 	return abs_angl;
 }
 
-IC float clamp_rotation(Fmatrix& m, float v)
+IC float clamp_rotation(float4x4& m, float v)
 {
 	Fquaternion q;
 	q.set(m);
 	float r = clamp_rotation(q, v);
-	Fvector c = m.c;
+	float3 c = m.c;
 	m.rotation(q);
 	m.c = c;
 	return r;
 }
 
-IC void get_axix_angle(const Fmatrix& m, Fvector& ax, float& angl)
+IC void get_axix_angle(const float4x4& m, float3& ax, float& angl)
 {
 	Fquaternion q;
 	q.set(m);
 	q.get_axis_angle(ax, angl);
 }
 
-IC bool clamp_change(Fmatrix& m, const Fmatrix& start, float ml, float ma, float tl, float ta)
+IC bool clamp_change(float4x4& m, const float4x4& start, float ml, float ma, float tl, float ta)
 {
-	Fmatrix diff;
-	diff.mul_43(Fmatrix().invert(start), m);
+	float4x4 diff;
+	diff.mul_43(float4x4().invert(start), m);
 	float linear_ch = diff.c.magnitude();
 	bool ret = linear_ch < tl;
 	if (linear_ch > ml)
@@ -494,20 +494,20 @@ IC bool clamp_change(Fmatrix& m, const Fmatrix& start, float ml, float ma, float
 	return ret;
 }
 
-void get_diff_avalue(const Fmatrix& m0, const Fmatrix& m1, float& l, float& a)
+void get_diff_avalue(const float4x4& m0, const float4x4& m1, float& l, float& a)
 {
-	Fmatrix diff;
-	diff.mul_43(Fmatrix().invert(m1), m0);
+	float4x4 diff;
+	diff.mul_43(float4x4().invert(m1), m0);
 	l = diff.c.magnitude();
-	Fvector ax;
+	float3 ax;
 	get_axix_angle(diff, ax, a);
 	a = _abs(a);
 }
 IC void get_blend_speed_limits(float& l, float& a, const SCalculateData& cd, const calculate_state& sv_state)
 {
-	Fmatrix anim_global;
+	float4x4 anim_global;
 	anim_global.mul_43(cd.m_obj, cd.goal);
-	Fmatrix sv_anim_global;
+	float4x4 sv_anim_global;
 	sv_anim_global.mul_43(sv_state.obj_pos, sv_state.anim_pos);
 	get_diff_avalue(sv_anim_global, anim_global, l, a);
 	l *= 1.5f; // a*=1.5;
@@ -516,18 +516,18 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 {
 	if (!cd.do_collide)
 		return;
-	const Fmatrix& obj = cd.m_obj;
-	const Fmatrix iobj = Fmatrix().invert(obj);
-	const Fmatrix anim_local = cd.goal;
+	const float4x4& obj = cd.m_obj;
+	const float4x4 iobj = float4x4().invert(obj);
+	const float4x4 anim_local = cd.goal;
 	float l, a;
 	get_blend_speed_limits(l, a, cd, sv_state);
 	// CollideGoal( cd.goal, cld );
-	GetFootStepMatrix(cd.goal, Fmatrix().mul_43(obj, cd.goal), cld, true);
+	GetFootStepMatrix(cd.goal, float4x4().mul_43(obj, cd.goal), cld, true);
 	cd.goal.mulA_43(iobj);
 
-	const Fmatrix gl_goal = Fmatrix().mul_43(obj, cd.goal);
-	Fmatrix blend_to = gl_goal;
-	Fmatrix blend_from = sv_state.goal;
+	const float4x4 gl_goal = float4x4().mul_43(obj, cd.goal);
+	float4x4 blend_to = gl_goal;
+	float4x4 blend_from = sv_state.goal;
 	bool blending = state_valide(sv_state) && (sv_state.blending || sv_state.foot_step != cd.foot_step);
 	if (!state_valide(sv_state))
 	{
@@ -538,7 +538,7 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 	{
 		if (!sv_state.foot_step)
 		{
-			Fmatrix cl = gl_goal;
+			float4x4 cl = gl_goal;
 			if (sv_state.blending)
 				cl = sv_state.goal;
 			GetFootStepMatrix(sv_state.collide_pos, cl, cld, false); // find where we can place the foot
@@ -578,18 +578,18 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 			int c = 55 + 200 / 50 * sv_state.count;
 			if (sv_state.count > 0)
 				DBG_OpenCashedDraw();
-			Fvector a0;
+			float3 a0;
 			sv_state.goal.transform_tiny(a0, m_toe_position);
-			Fvector a1;
+			float3 a1;
 			blend_from.transform_tiny(a1, m_toe_position);
 			DBG_DrawLine(a0, a1, D3DCOLOR_XRGB(c, 0, c));
-			Fvector a2;
+			float3 a2;
 			gl_goal.transform_tiny(a2, m_toe_position);
 			DBG_DrawLine(a1, a2, D3DCOLOR_XRGB(0, c, 0));
-			Fvector a3;
+			float3 a3;
 			sv_state_DBR.goal.transform_tiny(a3, m_toe_position);
 			DBG_DrawLine(a3, a0, D3DCOLOR_XRGB(c, c, 0));
-			if (Fvector().sub(a3, a0).magnitude() > 0.1f)
+			if (float3().sub(a3, a0).magnitude() > 0.1f)
 				DBG_DrawLine(a3, a0, D3DCOLOR_XRGB(c, 0, 0));
 			if (sv_state.count > -1)
 			{
@@ -627,7 +627,7 @@ void CIKLimb::ApplyContext(SCalculateData& cd)
 	SetNewGoal(cld, cd);
 }
 
-void CIKLimb::AnimGoal(Fmatrix& gl, CKinematicsAnimated& K)
+void CIKLimb::AnimGoal(float4x4& gl, CKinematicsAnimated& K)
 {
 	K.Bone_GetAnimPos(gl, m_bones[2], 1 << 0, false);
 }
@@ -642,7 +642,7 @@ void CIKLimb::Update(CGameObject* O, const CBlend* b, u16 interval)
 {
 	if (!m_collide)
 		return;
-	Fmatrix foot;
+	float4x4 foot;
 	CKinematicsAnimated* K = O->Visual()->dcast_PKinematicsAnimated();
 	AnimGoal(foot, *K);
 	anim_state.update(K, b, interval);
@@ -650,19 +650,19 @@ void CIKLimb::Update(CGameObject* O, const CBlend* b, u16 interval)
 }
 
 const float pick_dist = 1.f;
-void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const Fmatrix& foot, bool foot_step)
+void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const float4x4& foot, bool foot_step)
 {
 	cld.collided = false;
-	const Fmatrix& obj = O->Transform();
-	Fmatrix gl_bone;
+	const float4x4& obj = O->Transform();
+	float4x4 gl_bone;
 	gl_bone.mul_43(obj, foot);
-	Fvector pos;
+	float3 pos;
 	gl_bone.transform_tiny(pos, m_toe_position);
 	cld.m_anime.set(pos);
 	GetPickDir(cld.m_pick_dir, gl_bone);
-	const Fvector& pick_v = cld.m_pick_dir;
+	const float3& pick_v = cld.m_pick_dir;
 
-	pos.sub(Fvector().mul(pick_v, pick_dist));
+	pos.sub(float3().mul(pick_v, pick_dist));
 	float l_pick_dist = pick_dist;
 	if (foot_step)
 		l_pick_dist += 1.f;
@@ -676,7 +676,7 @@ void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const Fmatrix& foot, 
 			cld.collided = true;
 			CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
 			tri_plane(*tri, cld.m_plane);
-			cld.m_collide.add(pos, Fvector().mul(pick_v, R.range));
+			cld.m_collide.add(pos, float3().mul(pick_v, R.range));
 			cld.clamp_down = R.range > pick_dist + EPS_L;
 		}
 		else
@@ -692,8 +692,8 @@ void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const Fmatrix& foot, 
 					if (K->PickBone(R.O->Transform(), cld.m_plane.n, dist, pos, pick_v, (u16)R.element))
 					{
 						cld.collided = true;
-						Fvector point;
-						point.add(pos, Fvector().mul(pick_v, dist));
+						float3 point;
+						point.add(pos, float3().mul(pick_v, dist));
 						cld.m_plane.n.invert();
 						cld.m_plane.d = -cld.m_plane.n.dotproduct(point);
 					}
@@ -706,23 +706,23 @@ void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const Fmatrix& foot, 
 	if (ph_dbg_draw_mask.test(phDbgDrawIKGoal) && cld.collided && !R.O)
 	{
 		CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
-		Fvector p = pos;
-		p.add(Fvector().mul(pick_v, l_pick_dist));
+		float3 p = pos;
+		p.add(float3().mul(pick_v, l_pick_dist));
 		DBG_DrawLine(pos, p, D3DCOLOR_XRGB(255, 0, 0));
 		if (tri)
 		{
-			Fvector p = pos;
-			p.add(Fvector().mul(pick_v, l_pick_dist));
+			float3 p = pos;
+			p.add(float3().mul(pick_v, l_pick_dist));
 			DBG_DrawTri(tri, Level().ObjectSpace.GetStaticVerts(), D3DCOLOR_XRGB(255, 0, 0));
 		}
 	}
 #endif
 }
 
-Fmatrix& CIKLimb::GetHipInvert(Fmatrix& ihip, const SCalculateData& cd)
+float4x4& CIKLimb::GetHipInvert(float4x4& ihip, const SCalculateData& cd)
 {
 	CKinematics* K = cd.m_K;
-	Fmatrix H;
+	float4x4 H;
 	CBoneData& bd = K->LL_GetData(m_bones[0]);
 	H.set(bd.bind_transform);
 	H.mulA_43(K->LL_GetTransform(bd.GetParentID()));
@@ -731,13 +731,13 @@ Fmatrix& CIKLimb::GetHipInvert(Fmatrix& ihip, const SCalculateData& cd)
 	return ihip;
 }
 
-Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, SCalculateData& cd)
+Matrix& CIKLimb::Goal(Matrix& gl, const float4x4& xm, SCalculateData& cd)
 {
 #ifdef DEBUG
-	const Fmatrix& obj = cd.m_obj;
+	const float4x4& obj = cd.m_obj;
 	if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
 	{
-		Fmatrix DBGG;
+		float4x4 DBGG;
 		DBGG.mul_43(obj, xm);
 		DBG_DrawMatrix(DBGG, 0.2f);
 		if (cd.do_collide)
@@ -745,14 +745,14 @@ Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, SCalculateData& cd)
 			DBG_DrawLine(sv_state.goal.c, DBGG.c, D3DCOLOR_XRGB(255, 0, 255));
 			DBG_DrawPoint(sv_state.goal.c, 0.05, D3DCOLOR_XRGB(255, 255, 255));
 			DBG_DrawPoint(DBGG.c, 0.04, D3DCOLOR_XRGB(0, 255, 0));
-			Fvector ch;
+			float3 ch;
 			ch.sub(DBGG.c, sv_state.goal.c);
 			if (ch.magnitude() > 0.5f)
 			{
 				DBG_DrawMatrix(sv_state.goal, 3.5f);
 			}
 		}
-		Fmatrix DBH;
+		float4x4 DBH;
 		GetHipInvert(DBH, cd);
 		DBH.invert();
 		DBGG.mul_43(obj, DBH);
@@ -760,9 +760,9 @@ Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, SCalculateData& cd)
 	}
 #endif
 
-	Fmatrix H;
+	float4x4 H;
 	GetHipInvert(H, cd);
-	Fmatrix G;
+	float4x4 G;
 	G.mul_43(H, xm);
 	XM2IM(G, gl);
 	return gl;
@@ -789,7 +789,7 @@ void CIKLimb::CalculateBones(SCalculateData& cd)
 	K->LL_GetBoneInstance(m_bones[2]).Callback_overwrite = FALSE;
 }
 
-void DBG_DrawRotationLimitsY(const Fmatrix& start, float ang, float l, float h)
+void DBG_DrawRotationLimitsY(const float4x4& start, float ang, float l, float h)
 {
 #ifdef DEBUG
 	DBG_DrawRotationY(start, ang - EPS, ang + EPS, 0.15f, D3DCOLOR_XRGB(0, 255, 0), false, 1);
@@ -797,7 +797,7 @@ void DBG_DrawRotationLimitsY(const Fmatrix& start, float ang, float l, float h)
 #endif // DEBUG
 }
 
-void DBG_DrawRotationLimitsZ(const Fmatrix& start, float ang, float l, float h)
+void DBG_DrawRotationLimitsZ(const float4x4& start, float ang, float l, float h)
 {
 #ifdef DEBUG
 	DBG_DrawRotationZ(start, ang - EPS, ang + EPS, 0.15f, D3DCOLOR_XRGB(0, 0, 255), false, 1);
@@ -805,7 +805,7 @@ void DBG_DrawRotationLimitsZ(const Fmatrix& start, float ang, float l, float h)
 #endif // DEBUG
 }
 
-void DBG_DrawRotationLimitsX(const Fmatrix& start, float ang, float l, float h)
+void DBG_DrawRotationLimitsX(const float4x4& start, float ang, float l, float h)
 {
 #ifdef DEBUG
 	DBG_DrawRotationX(start, ang + EPS, ang - EPS, 0.15f, D3DCOLOR_XRGB(255, 0, 0), false, 1);
@@ -813,27 +813,27 @@ void DBG_DrawRotationLimitsX(const Fmatrix& start, float ang, float l, float h)
 #endif // DEBUG
 }
 
-void DBG_DrawRotation3(const Fmatrix& start, const float angs[7], const AngleInt limits[7], u16 y, u16 z, u16 x)
+void DBG_DrawRotation3(const float4x4& start, const float angs[7], const AngleInt limits[7], u16 y, u16 z, u16 x)
 {
-	Fmatrix DBGG = start;
+	float4x4 DBGG = start;
 	DBG_DrawRotationLimitsY(DBGG, -angs[y], -limits[y].Low(), -limits[y].High());
-	DBGG.mulB_43(Fmatrix().rotateY(-angs[y]));
+	DBGG.mulB_43(float4x4().rotateY(-angs[y]));
 	DBG_DrawRotationLimitsZ(DBGG, -angs[z], -limits[z].Low(), -limits[z].High());
-	DBGG.mulB_43(Fmatrix().rotateZ(-angs[z]));
+	DBGG.mulB_43(float4x4().rotateZ(-angs[z]));
 	DBG_DrawRotationLimitsX(DBGG, -angs[x], -limits[x].Low(), -limits[x].High());
 }
-IC void ang_evaluate(Fmatrix& M, const float ang[3])
+IC void ang_evaluate(float4x4& M, const float ang[3])
 {
-	Fmatrix ry;
+	float4x4 ry;
 	ry.rotateY(-ang[0]);
-	Fmatrix rz;
+	float4x4 rz;
 	rz.rotateZ(-ang[1]);
-	Fmatrix rx;
+	float4x4 rx;
 	rx.rotateX(-ang[2]);
-	M.mul_43(Fmatrix().mul_43(ry, rz), rx);
+	M.mul_43(float4x4().mul_43(ry, rz), rx);
 }
 
-IC void CIKLimb::get_start(Fmatrix& start, SCalculateData& D, u16 bone)
+IC void CIKLimb::get_start(float4x4& start, SCalculateData& D, u16 bone)
 {
 	CKinematics* K = D.m_K;
 	VERIFY(K);
@@ -848,9 +848,9 @@ void CIKLimb::BonesCallback0(CBoneInstance* B)
 	VERIFY(D);
 
 	float const* x = D->m_angles;
-	Fmatrix bm;
+	float4x4 bm;
 	ang_evaluate(bm, x);
-	Fmatrix start;
+	float4x4 start;
 	get_start(start, *D, 0);
 
 	B->mTransform.mul_43(start, bm);
@@ -858,11 +858,11 @@ void CIKLimb::BonesCallback0(CBoneInstance* B)
 #ifdef DEBUG
 	CIKLimb& L = D->m_limb;
 	if (ph_dbg_draw_mask1.test(phDbgDrawIKLimits))
-		DBG_DrawRotation3(Fmatrix().mul_43(D->m_obj, start), x, L.m_limb.jt_limits, 0, 1, 2);
+		DBG_DrawRotation3(float4x4().mul_43(D->m_obj, start), x, L.m_limb.jt_limits, 0, 1, 2);
 	if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
 	{
-		DBG_DrawMatrix(Fmatrix().mul_43(D->m_obj, start), 1.f);
-		DBG_DrawMatrix(Fmatrix().mul_43(D->m_obj, Fmatrix().mul_43(start, bm)), 0.75f);
+		DBG_DrawMatrix(float4x4().mul_43(D->m_obj, start), 1.f);
+		DBG_DrawMatrix(float4x4().mul_43(D->m_obj, float4x4().mul_43(start, bm)), 0.75f);
 	}
 #endif
 }
@@ -871,10 +871,10 @@ void CIKLimb::BonesCallback1(CBoneInstance* B)
 	SCalculateData* D = (SCalculateData*)B->Callback_Param;
 
 	float const* x = D->m_angles;
-	Fmatrix bm;
+	float4x4 bm;
 	bm.rotateY(x[3]);
 
-	Fmatrix start;
+	float4x4 start;
 	get_start(start, *D, 1);
 	B->mTransform.mul_43(start, bm);
 }
@@ -883,10 +883,10 @@ void CIKLimb::BonesCallback2(CBoneInstance* B)
 	SCalculateData* D = (SCalculateData*)B->Callback_Param;
 
 	float const* x = D->m_angles;
-	Fmatrix bm;
+	float4x4 bm;
 	ang_evaluate(bm, x + 4);
 
-	Fmatrix start;
+	float4x4 start;
 	get_start(start, *D, 2);
 	B->mTransform.mul_43(start, bm);
 
@@ -894,12 +894,12 @@ void CIKLimb::BonesCallback2(CBoneInstance* B)
 	CIKLimb& L = D->m_limb;
 	if (ph_dbg_draw_mask1.test(phDbgDrawIKLimits))
 	{
-		DBG_DrawRotation3(Fmatrix().mul_43(D->m_obj, start), x, L.m_limb.jt_limits, 4, 5, 6);
+		DBG_DrawRotation3(float4x4().mul_43(D->m_obj, start), x, L.m_limb.jt_limits, 4, 5, 6);
 	}
 	if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
 	{
-		DBG_DrawMatrix(Fmatrix().mul_43(D->m_obj, Fmatrix().mul_43(start, bm)), 0.3f);
-		DBG_DrawMatrix(Fmatrix().mul_43(D->m_obj, start), 0.3f);
+		DBG_DrawMatrix(float4x4().mul_43(D->m_obj, float4x4().mul_43(start, bm)), 0.3f);
+		DBG_DrawMatrix(float4x4().mul_43(D->m_obj, start), 0.3f);
 	}
 #endif
 }

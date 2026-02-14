@@ -158,7 +158,7 @@ void CDetailManager::UpdateVisibility()
 {
 	PROFILE_FUNCTION();
 
-	Fvector EYE = m_vCameraPos_calc;
+	float3 EYE = m_vCameraPos_calc;
 
 	CFrustum View;
 	View.CreateFromMatrix(m_mFullTransform_calc, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
@@ -290,7 +290,7 @@ void CDetailManager::UpdateVisibility()
 							InstanceData& inst = destBatch.instances.back();
 
 							float scale = Item.scale_calculated;
-							Fmatrix& M = Item.mRotY;
+							float4x4& M = Item.mRotY;
 
 							// === SSE OPTIMIZATION (оставляем твой код как есть, он хорош) ===
 							__m128 S = _mm_set_ps(1.0f, scale, scale, scale);
@@ -382,7 +382,7 @@ void __stdcall CDetailManager::MT_CALC()
 	MT.Enter();
 
 	// Используем ЗАХВАЧЕННУЮ позицию камеры
-	Fvector EYE = m_vCameraPos_calc;
+	float3 EYE = m_vCameraPos_calc;
 
 	int s_x = iFloor(EYE.x / dm_slot_size + .5f);
 	int s_z = iFloor(EYE.z / dm_slot_size + .5f);
@@ -487,7 +487,7 @@ BOOL CDetailManager::cache_Validate()
 	return TRUE;
 }
 
-void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
+void CDetailManager::cache_Update(int v_x, int v_z, float3& view, int limit)
 {
 	bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
 
@@ -700,7 +700,7 @@ IC float InterpolateOptimized(float c0, float c1, float ratio)
 // Структура для кеширования треугольников
 struct TriCache
 {
-	Fvector v0, v1, v2;
+	float3 v0, v1, v2;
 	float min_x, max_x, min_z, max_z;
 };
 
@@ -716,7 +716,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 
 	DetailSlot& DS = QueryDB(D.sx, D.sz);
 
-	Fvector bC, bD;
+	float3 bC, bD;
 	D.vis.box.get_CD(bC, bD);
 
 #ifdef _EDITOR
@@ -726,7 +726,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	local_xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), bC, bD);
 	u32 triCount = local_xrc.r_count();
 	CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+	float3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 #endif
 
 	if (0 == triCount)
@@ -821,11 +821,11 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			ZeroMemory(&Item, sizeof(Item));
 
 			float rx = fx * dm_slot_size + D.vis.box.min.x;
-			Fvector Item_P;
+			float3 Item_P;
 			Item_P.set(rx + r_Jitter.randFs(jitter), D.vis.box.max.y, rz_base + r_Jitter.randFs(jitter));
 
 			float y = D.vis.box.min.y - 5;
-			Fvector dir;
+			float3 dir;
 			dir.set(0, -1, 0);
 			float r_u, r_v, r_range;
 
@@ -834,7 +834,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 				TriCache& TC = t_cache[tid];
 				if (Item_P.x < TC.min_x || Item_P.x > TC.max_x || Item_P.z < TC.min_z || Item_P.z > TC.max_z)
 					continue;
-				Fvector Tv[3] = {TC.v0, TC.v1, TC.v2};
+				float3 Tv[3] = {TC.v0, TC.v1, TC.v2};
 				if (CDB::TestRayTri(Item_P, dir, Tv, r_u, r_v, r_range, TRUE))
 				{
 					if (r_range >= 0)
@@ -856,7 +856,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			Item.scale = base_scale * ps_r_Detail_scale; // Масштаб
 			// ============================
 
-			Fmatrix mScale, mTransform;
+			float4x4 mScale, mTransform;
 			Fbox ItemBB;
 			Item.mRotY.rotateY(r_yaw.randF(0, PI_MUL_2));
 			Item.mRotY.translate_over(Item_P);

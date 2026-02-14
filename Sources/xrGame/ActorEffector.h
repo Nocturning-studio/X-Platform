@@ -24,17 +24,17 @@ class CActorCameraManager : public CCameraManager
 	{
 	}
 
-	IC void hud_camera_Matrix(Fmatrix& M)
+	IC void hud_camera_Matrix(float4x4& M)
 	{
 		M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p);
 	}
 
-	IC Fvector hud_camera_dir()
+	IC float3 hud_camera_dir()
 	{
 		return m_cam_info_hud.d;
 	}
 
-	IC Fvector hud_camera_rotate()
+	IC float3 hud_camera_rotate()
 	{
 		return m_cam_info_hud.r;
 	}
@@ -219,14 +219,14 @@ class CControllerPsyHitCamEffector : public CEffectorCam
 
 	float m_time_total;
 	float m_time_current;
-	Fvector m_dangle_target;
-	Fvector m_dangle_current;
-	Fvector m_position_source;
-	Fvector m_direction;
+	float3 m_dangle_target;
+	float3 m_dangle_current;
+	float3 m_position_source;
+	float3 m_direction;
 	float m_distance;
 
   public:
-	CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector& src_pos, const Fvector& target_pos, float time);
+	CControllerPsyHitCamEffector(ECamEffectorType type, const float3& src_pos, const float3& target_pos, float time);
 	virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };
 //////////////////////////////////////////////////////////////////////////

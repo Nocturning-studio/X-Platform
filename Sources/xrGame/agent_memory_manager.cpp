@@ -68,7 +68,7 @@ void CAgentMemoryManager::update_memory_masks(const squad_mask_type& mask)
 	}
 }
 
-void CAgentMemoryManager::object_information(const CObject* object, u32& level_time, Fvector& position)
+void CAgentMemoryManager::object_information(const CObject* object, u32& level_time, float3& position)
 {
 	{
 		VISIBLES::const_iterator I = std::find(visibles().begin(), visibles().end(), object_id(object));

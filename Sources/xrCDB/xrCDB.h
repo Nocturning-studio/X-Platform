@@ -55,7 +55,7 @@ class XRCDB_API TRI //*** 16 bytes total (was 32 :)
 };
 
 // Build callback
-typedef void __stdcall build_callback(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
+typedef void __stdcall build_callback(float3* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
 // Model definition
 class XRCDB_API MODEL
@@ -77,14 +77,14 @@ class XRCDB_API MODEL
 	// tris
 	TRI* tris;
 	int tris_count;
-	Fvector* verts;
+	float3* verts;
 	int verts_count;
 
   public:
 	MODEL();
 	~MODEL();
 
-	IC Fvector* get_verts()
+	IC float3* get_verts()
 	{
 		return verts;
 	}
@@ -112,15 +112,15 @@ class XRCDB_API MODEL
 	}
 
 	static void build_thread(void*);
-	void build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = NULL, void* bcp = NULL);
-	void build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = NULL, void* bcp = NULL);
+	void build_internal(float3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = NULL, void* bcp = NULL);
+	void build(float3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = NULL, void* bcp = NULL);
 	u32 memory();
 };
 
 // Collider result
 struct XRCDB_API RESULT
 {
-	Fvector verts[3];
+	float3 verts[3];
 	union {
 		u32 dummy; // 4b
 		struct
@@ -164,13 +164,13 @@ class XRCDB_API COLLIDER
 	{
 		ray_mode = f;
 	}
-	void ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f);
+	void ray_query(const MODEL* m_def, const float3& r_start, const float3& r_dir, float r_range = 10000.f);
 
 	ICF void box_options(u32 f)
 	{
 		box_mode = f;
 	}
-	void box_query(const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim);
+	void box_query(const MODEL* m_def, const float3& b_center, const float3& b_dim);
 
 	ICF void frustum_options(u32 f)
 	{
@@ -205,21 +205,21 @@ class XRCDB_API COLLIDER
 //
 class XRCDB_API Collector
 {
-	xr_vector<Fvector> verts;
+	xr_vector<float3> verts;
 	xr_vector<TRI> faces;
 
-	u32 VPack(const Fvector& V, float eps);
+	u32 VPack(const float3& V, float eps);
 
   public:
-	void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
-	void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);
-	void add_face_packed(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector,
+	void add_face(const float3& v0, const float3& v1, const float3& v2, u16 material, u16 sector);
+	void add_face_D(const float3& v0, const float3& v1, const float3& v2, u32 dummy);
+	void add_face_packed(const float3& v0, const float3& v1, const float3& v2, u16 material, u16 sector,
 						 float eps = EPS);
-	void add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy, float eps = EPS);
+	void add_face_packed_D(const float3& v0, const float3& v1, const float3& v2, u32 dummy, float eps = EPS);
 	void remove_duplicate_T();
 	void calc_adjacency(xr_vector<u32>& dest);
 
-	Fvector* getV()
+	float3* getV()
 	{
 		return &*verts.begin();
 	}
@@ -265,14 +265,14 @@ class XRCDB_API CollectorPacked : public non_copyable
 	typedef xr_vector<u32> DWORDList;
 	typedef DWORDList::iterator DWORDIt;
 
-	xr_vector<Fvector> verts;
+	xr_vector<float3> verts;
 	xr_vector<TRI> faces;
 
-	Fvector VMmin, VMscale;
+	float3 VMmin, VMscale;
 	DWORDList VM[clpMX + 1][clpMY + 1][clpMZ + 1];
-	Fvector VMeps;
+	float3 VMeps;
 
-	u32 VPack(const Fvector& V);
+	u32 VPack(const float3& V);
 
   public:
 	CollectorPacked(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000);
@@ -282,13 +282,13 @@ class XRCDB_API CollectorPacked : public non_copyable
 	//			verts
 	//		}
 
-	void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
-	void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);
-	xr_vector<Fvector>& getV_Vec()
+	void add_face(const float3& v0, const float3& v1, const float3& v2, u16 material, u16 sector);
+	void add_face_D(const float3& v0, const float3& v1, const float3& v2, u32 dummy);
+	xr_vector<float3>& getV_Vec()
 	{
 		return verts;
 	}
-	Fvector* getV()
+	float3* getV()
 	{
 		return &*verts.begin();
 	}

@@ -151,7 +151,7 @@ void imotion_velocity::move_update(CPhysicsShell* s)
 {
 	if (!s->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit))
 		flags.set(fl_switch_dm_toragdoll, TRUE);
-	Fmatrix sv;
+	float4x4 sv;
 	sv.set(s->mTransform);
 	s->InterpolateGlobalTransform(&s->mTransform);
 	s->mTransform.set(sv);

@@ -22,12 +22,12 @@ bool CSpaceRestrictionBase::inside(u32 level_vertex_id, bool partially_inside)
 	return (inside(level_vertex_id, partially_inside, DEFAULT_RADIUS));
 }
 
-IC Fvector construct_position(u32 level_vertex_id, float x, float z)
+IC float3 construct_position(u32 level_vertex_id, float x, float z)
 {
-	return (Fvector().set(x, ai().level_graph().vertex_plane_y(level_vertex_id, x, z), z));
+	return (float3().set(x, ai().level_graph().vertex_plane_y(level_vertex_id, x, z), z));
 }
 
-IC bool CSpaceRestrictionBase_inside(CSpaceRestrictionBase* self, const Fvector& position, const float& radius)
+IC bool CSpaceRestrictionBase_inside(CSpaceRestrictionBase* self, const float3& position, const float& radius)
 {
 	Fsphere sphere;
 	sphere.P = position;
@@ -37,7 +37,7 @@ IC bool CSpaceRestrictionBase_inside(CSpaceRestrictionBase* self, const Fvector&
 
 bool CSpaceRestrictionBase::inside(u32 level_vertex_id, bool partially_inside, float radius)
 {
-	const Fvector& position = ai().level_graph().vertex_position(level_vertex_id);
+	const float3& position = ai().level_graph().vertex_position(level_vertex_id);
 	float offset = ai().level_graph().header().cell_size() * .5f - EPS_L;
 	if (partially_inside)
 		return (CSpaceRestrictionBase_inside(
@@ -48,7 +48,7 @@ bool CSpaceRestrictionBase::inside(u32 level_vertex_id, bool partially_inside, f
 					this, construct_position(level_vertex_id, position.x - offset, position.z + offset), radius) ||
 				CSpaceRestrictionBase_inside(
 					this, construct_position(level_vertex_id, position.x - offset, position.z - offset), radius) ||
-				CSpaceRestrictionBase_inside(this, Fvector().set(position.x, position.y, position.z), radius));
+				CSpaceRestrictionBase_inside(this, float3().set(position.x, position.y, position.z), radius));
 	else
 		return (CSpaceRestrictionBase_inside(
 					this, construct_position(level_vertex_id, position.x + offset, position.z + offset), radius) &&
@@ -58,7 +58,7 @@ bool CSpaceRestrictionBase::inside(u32 level_vertex_id, bool partially_inside, f
 					this, construct_position(level_vertex_id, position.x - offset, position.z + offset), radius) &&
 				CSpaceRestrictionBase_inside(
 					this, construct_position(level_vertex_id, position.x - offset, position.z - offset), radius) &&
-				CSpaceRestrictionBase_inside(this, Fvector().set(position.x, position.y, position.z), radius));
+				CSpaceRestrictionBase_inside(this, float3().set(position.x, position.y, position.z), radius));
 }
 
 struct SortByXZ_predicate

@@ -1083,8 +1083,8 @@ void game_sv_ArtefactHunt::MoveAllAlivePlayers()
 		if (!ps->testFlag(GAME_PLAYER_FLAG_ONBASE))
 			assign_RP(l_pC->owner, ps);
 		//-----------------------------------------------
-		Fvector Pos = pA->o_Position;
-		Fvector Angle = pA->o_Angle;
+		float3 Pos = pA->o_Position;
+		float3 Angle = pA->o_Angle;
 		//		pA->o_Position	= Pos;
 		//		pA->o_Angle		= Angle;
 		//------------------------------------------------
@@ -1304,9 +1304,9 @@ void game_sv_ArtefactHunt::OnRender()
 
 	if (dbg_net_Draw_Flags.test(1 << 9))
 	{
-		Fmatrix T;
+		float4x4 T;
 		T.identity();
-		Fvector V0, V1;
+		float3 V0, V1;
 		for (u32 i = 0; i < Artefact_rpoints.size(); i++)
 		{
 			RPoint rp = Artefact_rpoints[i];

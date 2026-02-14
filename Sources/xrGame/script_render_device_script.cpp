@@ -46,22 +46,22 @@ u32 get_frame(const CRenderDevice* self)
 // ѕринимаем CRenderDevice*, чтобы Luabind пон€л контекст "self",
 // но данные берем из Engine.RenderView
 
-const Fvector& get_cam_pos(const CRenderDevice* self)
+const float3& get_cam_pos(const CRenderDevice* self)
 {
 	return Engine.RenderView.Position;
 }
 
-const Fvector& get_cam_dir(const CRenderDevice* self)
+const float3& get_cam_dir(const CRenderDevice* self)
 {
 	return Engine.RenderView.Direction;
 }
 
-const Fvector& get_cam_top(const CRenderDevice* self)
+const float3& get_cam_top(const CRenderDevice* self)
 {
 	return Engine.RenderView.Top;
 }
 
-const Fvector& get_cam_right(const CRenderDevice* self)
+const float3& get_cam_right(const CRenderDevice* self)
 {
 	return Engine.RenderView.Right;
 }

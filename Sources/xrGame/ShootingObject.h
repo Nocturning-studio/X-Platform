@@ -14,7 +14,7 @@ class CCartridge;
 class CParticlesObject;
 class IRender_Sector;
 
-extern const Fvector zero_vel;
+extern const float3 zero_vel;
 
 #define WEAPON_MATERIAL_NAME "objects\\bullet"
 
@@ -28,8 +28,8 @@ class CShootingObject
 	void reload(LPCSTR section){};
 	void Load(LPCSTR section);
 
-	Fvector m_vCurrentShootDir;
-	Fvector m_vCurrentShootPos;
+	float3 m_vCurrentShootDir;
+	float3 m_vCurrentShootPos;
 	// ID персонажа который иницировал действие
 	u16 m_iCurrentParentID;
 
@@ -39,7 +39,7 @@ class CShootingObject
   protected:
 	virtual void LoadFireParams(LPCSTR section, LPCSTR prefix);
 	virtual bool SendHitAllowed(CObject* pUser);
-	virtual void FireBullet(const Fvector& pos, const Fvector& dir, float fire_disp, const CCartridge& cartridge,
+	virtual void FireBullet(const float3& pos, const float3& dir, float fire_disp, const CCartridge& cartridge,
 							u16 parent_id, u16 weapon_id, bool send_hit);
 
 	virtual void FireStart();
@@ -108,7 +108,7 @@ class CShootingObject
 	void Light_Destroy();
 
 	void Light_Start();
-	void Light_Render(const Fvector& P);
+	void Light_Render(const float3& P);
 
 	virtual void LoadLights(LPCSTR section, LPCSTR prefix);
 	virtual void RenderLight();
@@ -120,16 +120,16 @@ class CShootingObject
 	//////////////////////////////////////////////////////////////////////////
   protected:
 	// функции родительского объекта
-	virtual const Fvector& get_CurrentFirePoint() = 0;
-	virtual const Fmatrix& get_ParticlesTransform() = 0;
+	virtual const float3& get_CurrentFirePoint() = 0;
+	virtual const float4x4& get_ParticlesTransform() = 0;
 	virtual void ForceUpdateFireParticles(){};
 
 	////////////////////////////////////////////////
 	// общие функции для работы с партиклами оружия
-	virtual void StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos,
-								const Fvector& vel = zero_vel, bool auto_remove_flag = false);
+	virtual void StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const float3& pos,
+								const float3& vel = zero_vel, bool auto_remove_flag = false);
 	virtual void StopParticles(CParticlesObject*& pParticles);
-	virtual void UpdateParticles(CParticlesObject*& pParticles, const Fvector& pos, const Fvector& vel = zero_vel);
+	virtual void UpdateParticles(CParticlesObject*& pParticles, const float3& pos, const float3& vel = zero_vel);
 
 	virtual void LoadShellParticles(LPCSTR section, LPCSTR prefix);
 	virtual void LoadFlameParticles(LPCSTR section, LPCSTR prefix);
@@ -142,20 +142,20 @@ class CShootingObject
 	virtual void UpdateFlameParticles();
 
 	// партиклы дыма
-	virtual void StartSmokeParticles(const Fvector& play_pos, const Fvector& parent_vel);
+	virtual void StartSmokeParticles(const float3& play_pos, const float3& parent_vel);
 
 	// партиклы полосы от пули
 	virtual void StartShotParticles();
 
 	// партиклы гильз
-	virtual void OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel);
+	virtual void OnShellDrop(const float3& play_pos, const float3& parent_vel);
 
   protected:
 	// имя пратиклов для гильз
 	shared_str m_sShellParticles;
 
   public:
-	Fvector vLoadedShellPoint;
+	float3 vLoadedShellPoint;
 	float m_fPredBulletTime;
 	float m_fTimeToAim;
 	BOOL m_bUseAimBullet;

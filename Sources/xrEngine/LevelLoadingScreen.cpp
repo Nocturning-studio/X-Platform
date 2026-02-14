@@ -219,16 +219,16 @@ void CLevelLoadingScreen::DrawInternal()
 	// progress
 	float bw = 1024.0f;
 	float bh = 768.0f;
-	Fvector2 k;
+	float2 k;
 	k.set(float(_w) / bw, float(_h) / bh);
 
 	RenderBackend.set_Shader(sh_progress);
 	CTexture* T = RenderBackend.get_ActiveTexture(0);
-	Fvector2 tsz;
+	float2 tsz;
 	tsz.set((float)T->get_Width(), (float)T->get_Height());
 	Frect back_text_coords;
 	Frect back_coords;
-	Fvector2 back_size;
+	float2 back_size;
 
 	// progress background
 	static float offs = -0.5f;
@@ -313,7 +313,7 @@ void CLevelLoadingScreen::DrawInternal()
 		r.lt.set(257, 369);
 		r.lt.x += offs;
 		r.lt.y += offs;
-		r.rb.add(r.lt, Fvector2().set(512, 256));
+		r.rb.add(r.lt, float2().set(512, 256));
 		r.lt.mul(k);
 		r.rb.mul(k);
 		pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, ll_hGeom.stride(), Offset);

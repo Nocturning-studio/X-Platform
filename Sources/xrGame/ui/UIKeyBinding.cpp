@@ -118,16 +118,16 @@ void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 				if (first)
 				{
 					pItem = xr_new<CUIStatic>();
-					pItem->SetWndPos(Fvector2().set(0, 0));
-					pItem->SetWndSize(Fvector2().set(m_scroll_wnd->GetWndSize().x, 20.0f));
+					pItem->SetWndPos(float2().set(0, 0));
+					pItem->SetWndSize(float2().set(m_scroll_wnd->GetWndSize().x, 20.0f));
 					pItem->SetText("NEXT ITEMS NOT DESCRIBED IN COMMAND DESC LIST");
 					m_scroll_wnd->AttachChild(pItem);
 					first = false;
 				}
 
 				pItem = xr_new<CUIStatic>();
-				pItem->SetWndPos(Fvector2().set(0, 0));
-				pItem->SetWndSize(Fvector2().set(m_scroll_wnd->GetWndSize().x, 20.0f));
+				pItem->SetWndPos(float2().set(0, 0));
+				pItem->SetWndSize(float2().set(m_scroll_wnd->GetWndSize().x, 20.0f));
 				pItem->SetText(action_name);
 				m_scroll_wnd->AttachChild(pItem);
 			}

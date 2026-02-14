@@ -77,7 +77,7 @@ class CUILines : public IUITextControl, public CUISimpleWindow, public CDeviceRe
 	virtual void Draw();
 	virtual void Draw(float x, float y);
 	virtual void Update();
-	IC void SetWndSize_inline(const Fvector2& wnd_size);
+	IC void SetWndSize_inline(const float2& wnd_size);
 
 	// CDeviceResetNotifier methods
 	virtual void OnDeviceReset();
@@ -93,7 +93,7 @@ class CUILines : public IUITextControl, public CUISimpleWindow, public CDeviceRe
 	void DecCursorPos();
 
   protected:
-	Ivector2 m_cursor_pos;
+	int2 m_cursor_pos;
 	void UpdateCursor();
 	// %c[255,255,255,255]
 	u32 GetColorFromText(const xr_string& str) const;
@@ -187,6 +187,6 @@ class CUILinesOwner : public IUITextControl
 	}
 
   protected:
-	Fvector2 m_textPos;
+	float2 m_textPos;
 	CUILines m_lines;
 };

@@ -80,7 +80,7 @@ void COMotion::Clear()
 		xr_delete(envs[ch]);
 }
 
-void COMotion::_Evaluate(float t, Fvector& T, Fvector& R)
+void COMotion::_Evaluate(float t, float3& T, float3& R)
 {
 	T.x = envs[ctPositionX]->Evaluate(t);
 	T.y = envs[ctPositionY]->Evaluate(t);
@@ -160,7 +160,7 @@ bool COMotion::Load(IReader& F)
 }
 
 #ifdef _EDITOR
-void COMotion::CreateKey(float t, const Fvector& P, const Fvector& R)
+void COMotion::CreateKey(float t, const float3& P, const float3& R)
 {
 	envs[ctPositionX]->InsertKey(t, P.x);
 	envs[ctPositionY]->InsertKey(t, P.y);
@@ -222,7 +222,7 @@ BOOL COMotion::NormalizeKeys(float from_time, float to_time, float speed)
 			if ((*it)->time < to_time + EPS)
 			{
 				float dist = 0;
-				Fvector PT, T, R;
+				float3 PT, T, R;
 				_Evaluate(t0, PT, R);
 				for (float tm = t0 + 1.f / fFPS; tm <= (*it)->time; tm += EPS_L)
 				{
@@ -337,7 +337,7 @@ void CSMotion::CopyMotion(CSMotion* source)
 	}
 }
 
-void CSMotion::_Evaluate(int bone_idx, float t, Fvector& T, Fvector& R)
+void CSMotion::_Evaluate(int bone_idx, float t, float3& T, float3& R)
 {
 	VERIFY(bone_idx < (int)bone_mots.size());
 	CEnvelope** envs = bone_mots[bone_idx].envs;

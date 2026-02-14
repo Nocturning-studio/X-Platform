@@ -29,9 +29,9 @@ class CBurer : public CBaseMonster, public CTelekinesis, public CScanningAbility
 	struct GraviObject
 	{
 		bool active;
-		Fvector cur_pos;
-		Fvector target_pos;
-		Fvector from_pos;
+		float3 cur_pos;
+		float3 target_pos;
+		float3 from_pos;
 
 		u32 time_last_update;
 
@@ -43,7 +43,7 @@ class CBurer : public CBaseMonster, public CTelekinesis, public CScanningAbility
 			enemy = 0;
 		}
 
-		void activate(const CEntityAlive* e, const Fvector& cp, const Fvector& tp)
+		void activate(const CEntityAlive* e, const float3& cp, const float3& tp)
 		{
 			active = true;
 			from_pos = cp;

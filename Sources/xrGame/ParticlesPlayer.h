@@ -20,9 +20,9 @@ class CParticlesPlayer
 	struct SParticlesInfo
 	{
 		CParticlesObject* ps;
-		// Fvector				dir;
-		// Fmatrix				x_form;
-		Fvector angles;
+		// float3				dir;
+		// float4x4				x_form;
+		float3 angles;
 		u16 sender_id; // id - объекта, который запустил партиклы
 		u32 life_time; // время жизни партикла (-1) - бесконечно
 
@@ -35,12 +35,12 @@ class CParticlesPlayer
 	struct SBoneInfo
 	{
 		u16 index;
-		Fvector offset;
+		float3 offset;
 		ParticlesInfoList particles;
 		SParticlesInfo* FindParticles(const shared_str& ps_name);
 
 	  public:
-		SBoneInfo(u16 idx, const Fvector& offs) : index(idx), offset(offs)
+		SBoneInfo(u16 idx, const float3& offs) : index(idx), offset(offs)
 		{
 			;
 		}
@@ -70,7 +70,7 @@ class CParticlesPlayer
 		return 0;
 	}
 	SBoneInfo* get_nearest_bone_info(CKinematics* K, u16 bone_index);
-	Fvector parent_vel;
+	float3 parent_vel;
 
   public:
 	CParticlesPlayer(void);
@@ -82,22 +82,22 @@ class CParticlesPlayer
 
 	void UpdateParticles();
 
-	void StartParticles(const shared_str& ps_name, u16 bone_num, const Fvector& dir, u16 sender_id, int life_time = -1,
+	void StartParticles(const shared_str& ps_name, u16 bone_num, const float3& dir, u16 sender_id, int life_time = -1,
 						bool auto_stop = true);
-	void StartParticles(const shared_str& ps_name, const Fvector& dir, u16 sender_id, int life_time = -1,
+	void StartParticles(const shared_str& ps_name, const float3& dir, u16 sender_id, int life_time = -1,
 						bool auto_stop = true);
 
-	void StartParticles(const shared_str& ps_name, u16 bone_num, const Fmatrix& dir, u16 sender_id, int life_time = -1,
+	void StartParticles(const shared_str& ps_name, u16 bone_num, const float4x4& dir, u16 sender_id, int life_time = -1,
 						bool auto_stop = true);
-	void StartParticles(const shared_str& ps_name, const Fmatrix& dir, u16 sender_id, int life_time = -1,
+	void StartParticles(const shared_str& ps_name, const float4x4& dir, u16 sender_id, int life_time = -1,
 						bool auto_stop = true);
 
 	void StopParticles(u16 sender_ID, u16 bone_id, bool bDestroy);
 	void StopParticles(const shared_str& particles_name, u16 bone_id, bool bDestroy);
 	void AutoStopParticles(const shared_str& ps_name, u16 bone_id, u32 life_time);
 
-	static void MakeTransform(CObject* pObject, u16 bone_id, const Fvector& dir, const Fvector& offset, Fmatrix& result);
-	static void GetBonePos(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result);
+	static void MakeTransform(CObject* pObject, u16 bone_id, const float3& dir, const float3& offset, float4x4& result);
+	static void GetBonePos(CObject* pObject, u16 bone_id, const float3& offset, float3& result);
 	u16 GetNearestBone(CKinematics* K, u16 bone_id);
 	IC u16 GetRandomBone()
 	{
@@ -108,7 +108,7 @@ class CParticlesPlayer
 			return BI_NONE;
 	}
 
-	void SetParentVel(const Fvector& vel)
+	void SetParentVel(const float3& vel)
 	{
 		parent_vel = vel;
 	}

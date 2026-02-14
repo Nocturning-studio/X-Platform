@@ -43,7 +43,7 @@ class CUIPdaWnd : public CUIDialogWnd
 	// Текущий активный диалог
 	CUIWindow* m_pActiveDialog;
 	EPdaTabs m_pActiveSection;
-	xr_vector<Fvector2> m_sign_places_main;
+	xr_vector<float2> m_sign_places_main;
 
   public:
 	// Поддиалоги PDA

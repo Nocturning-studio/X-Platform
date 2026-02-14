@@ -40,11 +40,11 @@ void CActor::Spin0Callback(CBoneInstance* B)
 	CActor* A = static_cast<CActor*>(B->Callback_Param);
 	VERIFY(A);
 
-	Fmatrix spin;
+	float4x4 spin;
 	float bone_yaw = angle_normalize_signed(A->r_torso.yaw - A->r_model_yaw - A->r_model_yaw_delta) * y_spin0_factor;
 	float bone_pitch = angle_normalize_signed(A->r_torso.pitch) * p_spin0_factor;
 	float bone_roll = angle_normalize_signed(A->r_torso.roll) * r_spin0_factor;
-	Fvector c = B->mTransform.c;
+	float3 c = B->mTransform.c;
 	spin.setXYZ(-bone_pitch, bone_yaw, bone_roll);
 	B->mTransform.mulA_43(spin);
 	B->mTransform.c = c;
@@ -54,11 +54,11 @@ void CActor::Spin1Callback(CBoneInstance* B)
 	CActor* A = static_cast<CActor*>(B->Callback_Param);
 	VERIFY(A);
 
-	Fmatrix spin;
+	float4x4 spin;
 	float bone_yaw = angle_normalize_signed(A->r_torso.yaw - A->r_model_yaw - A->r_model_yaw_delta) * y_spin1_factor;
 	float bone_pitch = angle_normalize_signed(A->r_torso.pitch) * p_spin1_factor;
 	float bone_roll = angle_normalize_signed(A->r_torso.roll) * r_spin1_factor;
-	Fvector c = B->mTransform.c;
+	float3 c = B->mTransform.c;
 	spin.setXYZ(-bone_pitch, bone_yaw, bone_roll);
 	B->mTransform.mulA_43(spin);
 	B->mTransform.c = c;
@@ -67,11 +67,11 @@ void CActor::ShoulderCallback(CBoneInstance* B)
 {
 	CActor* A = static_cast<CActor*>(B->Callback_Param);
 	VERIFY(A);
-	Fmatrix spin;
+	float4x4 spin;
 	float bone_yaw = angle_normalize_signed(A->r_torso.yaw - A->r_model_yaw - A->r_model_yaw_delta) * y_shoulder_factor;
 	float bone_pitch = angle_normalize_signed(A->r_torso.pitch) * p_shoulder_factor;
 	float bone_roll = angle_normalize_signed(A->r_torso.roll) * r_shoulder_factor;
-	Fvector c = B->mTransform.c;
+	float3 c = B->mTransform.c;
 	spin.setXYZ(-bone_pitch, bone_yaw, bone_roll);
 	B->mTransform.mulA_43(spin);
 	B->mTransform.c = c;
@@ -80,11 +80,11 @@ void CActor::HeadCallback(CBoneInstance* B)
 {
 	CActor* A = static_cast<CActor*>(B->Callback_Param);
 	VERIFY(A);
-	Fmatrix spin;
+	float4x4 spin;
 	float bone_yaw = angle_normalize_signed(A->r_torso.yaw - A->r_model_yaw - A->r_model_yaw_delta) * y_head_factor;
 	float bone_pitch = angle_normalize_signed(A->r_torso.pitch) * p_head_factor;
 	float bone_roll = angle_normalize_signed(A->r_torso.roll) * r_head_factor;
-	Fvector c = B->mTransform.c;
+	float3 c = B->mTransform.c;
 	spin.setXYZ(-bone_pitch, bone_yaw, bone_roll);
 	B->mTransform.mulA_43(spin);
 	B->mTransform.c = c;
@@ -94,11 +94,11 @@ void CActor::VehicleHeadCallback(CBoneInstance* B)
 {
 	CActor* A = static_cast<CActor*>(B->Callback_Param);
 	VERIFY(A);
-	Fmatrix spin;
+	float4x4 spin;
 	float bone_yaw = angle_normalize_signed(A->r_torso.yaw) * 0.75f;
 	float bone_pitch = angle_normalize_signed(A->r_torso.pitch) * 0.75f;
 	float bone_roll = angle_normalize_signed(A->r_torso.roll) * r_head_factor;
-	Fvector c = B->mTransform.c;
+	float3 c = B->mTransform.c;
 	spin.setHPB(bone_yaw, bone_pitch, -bone_roll);
 	B->mTransform.mulA_43(spin);
 	B->mTransform.c = c;

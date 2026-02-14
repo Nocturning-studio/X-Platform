@@ -29,12 +29,12 @@ class ENGINE_API CCameraBase
 	Flags32 m_Flags;
 
 	ECameraStyle style;
-	Fvector2 lim_yaw, lim_pitch, lim_roll;
-	Fvector rot_speed;
+	float2 lim_yaw, lim_pitch, lim_roll;
+	float3 rot_speed;
 
-	Fvector vPosition;
-	Fvector vDirection;
-	Fvector vNormal;
+	float3 vPosition;
+	float3 vDirection;
+	float3 vNormal;
 	float f_fov;
 	float f_aspect;
 
@@ -65,17 +65,17 @@ class ENGINE_API CCameraBase
 	{
 		;
 	}
-	virtual void Update(Fvector& point, Fvector& noise_angle)
+	virtual void Update(float3& point, float3& noise_angle)
 	{
 		;
 	}
-	virtual void Get(Fvector& P, Fvector& D, Fvector& N)
+	virtual void Get(float3& P, float3& D, float3& N)
 	{
 		P.set(vPosition);
 		D.set(vDirection);
 		N.set(vNormal);
 	}
-	virtual void Set(const Fvector& P, const Fvector& D, const Fvector& N)
+	virtual void Set(const float3& P, const float3& D, const float3& N)
 	{
 		vPosition.set(P);
 		vDirection.set(D);

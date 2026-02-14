@@ -27,7 +27,7 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	struct SavedPosition
 	{
 		u32 dwTime;
-		Fvector vPosition;
+		float3 vPosition;
 	};
 	union ObjectProperties {
 		struct
@@ -141,13 +141,13 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	CObject* H_SetParent(CObject* O, bool just_before_destroy = false);
 
 	// Geometry transform
-	virtual void Center(Fvector& C) const;
-	IC const Fmatrix& Transform() const
+	virtual void Center(float3& C) const;
+	IC const float4x4& Transform() const
 	{
 		VERIFY(_valid(renderable.transform));
 		return renderable.transform;
 	}
-	ICF Fmatrix& Transform()
+	ICF float4x4& Transform()
 	{
 		return renderable.transform;
 	}
@@ -156,19 +156,19 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	virtual void spatial_move();
 	void spatial_update(float eps_P, float eps_R);
 
-	ICF Fvector& Direction()
+	ICF float3& Direction()
 	{
 		return renderable.transform.k;
 	}
-	ICF const Fvector& Direction() const
+	ICF const float3& Direction() const
 	{
 		return renderable.transform.k;
 	}
-	ICF Fvector& Position()
+	ICF float3& Position()
 	{
 		return renderable.transform.c;
 	}
-	ICF const Fvector& Position() const
+	ICF const float3& Position() const
 	{
 		return renderable.transform.c;
 	}
@@ -318,7 +318,7 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 		return PositionStack.size();
 	}
 	virtual SavedPosition ps_Element(u32 ID) const;
-	virtual void ForceTransform(const Fmatrix& m){};
+	virtual void ForceTransform(const float4x4& m){};
 
 	// HUD
 	virtual void OnHUDDraw(CCustomHUD* hud){};

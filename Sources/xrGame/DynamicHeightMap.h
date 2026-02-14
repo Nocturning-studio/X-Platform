@@ -42,7 +42,7 @@ class CHM_Static
 	};
 	struct Poly
 	{
-		Fvector v[3];
+		float3 v[3];
 	};
 
 	Slot pool[dhm_matrix * dhm_matrix]; // pool
@@ -75,7 +75,7 @@ class CHeightMap
 
   public:
 	float Query(float x, float z);			   // 2D query
-	Fvector Query(Fvector& pos, Fvector& dir); // 3D ray-query
+	float3 Query(float3& pos, float3& dir); // 3D ray-query
 };
 
 #endif // !defined(AFX_DYNAMICHEIGHTMAP_H__5A5BD0B8_1FC7_4067_A5A4_D40422E8B6D1__INCLUDED_)

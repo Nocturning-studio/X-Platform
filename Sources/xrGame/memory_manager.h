@@ -61,7 +61,7 @@ class CMemoryManager
 	void enable(const CObject* object, bool enable);
 	CMemoryInfo memory(const CObject* object) const;
 	u32 memory_time(const CObject* object) const;
-	Fvector memory_position(const CObject* object) const;
+	float3 memory_position(const CObject* object) const;
 	void make_object_visible_somewhen(const CEntityAlive* enemy);
 
   public:

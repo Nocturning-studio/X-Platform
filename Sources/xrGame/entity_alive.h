@@ -53,7 +53,7 @@ class CEntityAlive : public CEntity
 	virtual void create_anim_mov_ctrl(CBlend* b);
 	virtual void destroy_anim_mov_ctrl();
 
-	virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir);
+	virtual void HitImpulse(float amount, float3& vWorldDir, float3& vLocalDir);
 	virtual void Hit(SHit* pHDS);
 	virtual void Die(CObject* who);
 	virtual void g_WeaponBones(int& L, int& R1, int& R2) = 0;
@@ -87,7 +87,7 @@ class CEntityAlive : public CEntity
 	virtual void PHUnFreeze();
 	virtual void PHFreeze();
 
-	virtual void PHGetLinearVell(Fvector& velocity);
+	virtual void PHGetLinearVell(float3& velocity);
 	virtual CPHSoundPlayer* ph_sound_player();
 	virtual CIKLimbsController* character_ik_controller();
 	virtual SCollisionHitCallback* get_collision_hit_callback();
@@ -110,7 +110,7 @@ class CEntityAlive : public CEntity
 	static float m_fStartBurnWoundSize;
 	static float m_fStopBurnWoundSize;
 
-	virtual void BloodyWallmarks(float P, const Fvector& dir, s16 element, const Fvector& position_in_object_space);
+	virtual void BloodyWallmarks(float P, const float3& dir, s16 element, const float3& position_in_object_space);
 	static void LoadBloodyWallmarks(LPCSTR section);
 
   public:
@@ -122,7 +122,7 @@ class CEntityAlive : public CEntity
 	};
 
   protected:
-	virtual void PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size,
+	virtual void PlaceBloodWallmark(const float3& dir, const float3& start_pos, float trace_dist, float wallmark_size,
 									SHADER_VECTOR& wallmarks_vector);
 
 	// информация о кровавых отметках на стенах, общая для всех CEntityAlive

@@ -18,7 +18,7 @@ class ENGINE_API CDemoPlay : public CEffectorCam, public IInputReceiver
 	bool m_bGlobalHudDraw;
 	bool m_bGlobalCrosshairDraw;
 
-	Fmatrix m_OriginalViewMatrix;
+	float4x4 m_OriginalViewMatrix;
 
 	bool m_bBenchmarkMode;
 
@@ -34,7 +34,7 @@ class ENGINE_API CDemoPlay : public CEffectorCam, public IInputReceiver
 	u32 stat_StartFrame;
 	xr_vector<float> stat_table;
 
-	Fmatrix m_Camera;
+	float4x4 m_Camera;
 
 	bool m_bIsFirstFrame;
 
@@ -51,7 +51,7 @@ class ENGINE_API CDemoPlay : public CEffectorCam, public IInputReceiver
 	void EnableBenchmarkResultPrint();
 	void SaveBenchmarkResults();
 
-	Fmatrix GetFrameMatrix(int frame);
+	float4x4 GetFrameMatrix(int frame);
 	bool IsCut(int frame);
 
 	void Close();

@@ -46,7 +46,7 @@ CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
 	return (game_object ? game_object->lua_game_object() : 0);
 }
 
-Fvector CDangerObject__position(const CDangerObject* self)
+float3 CDangerObject__position(const CDangerObject* self)
 {
 	THROW(self);
 	return (self->position());

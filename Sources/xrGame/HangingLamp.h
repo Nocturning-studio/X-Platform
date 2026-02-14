@@ -74,7 +74,7 @@ class CHangingLamp : public CPhysicsShellHolder, public CPHSkeleton
 	virtual void net_Import(NET_Packet& P);
 	virtual BOOL UsedAI_Locations();
 
-	virtual void Center(Fvector& C) const;
+	virtual void Center(float3& C) const;
 	virtual float Radius() const;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

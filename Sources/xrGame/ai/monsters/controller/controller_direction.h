@@ -18,14 +18,14 @@ class CControllerDirection : public CControlDirectionBase
 
 	MonsterSpace::SBoneRotation m_head_orient;
 
-	Fvector m_head_look_point;
+	float3 m_head_look_point;
 
   public:
 	virtual void reinit();
 	virtual void update_schedule();
 
-	void head_look_point(const Fvector& look_point);
-	Fvector& get_head_look_point()
+	void head_look_point(const float3& look_point);
+	float3& get_head_look_point()
 	{
 		return m_head_look_point;
 	}

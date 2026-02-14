@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static Fvector3 corners[8] = 
+static float3 corners[8] = 
 {
 	{-1, -1, 0.7}, 
 	{-1, -1, +1},	
@@ -33,7 +33,7 @@ static u16 facetable[16][3] =
 	{2, 4, 1},
 };
 
-void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transform_prev, float fBias)
+void CRender::accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& transform_prev, float fBias)
 {
 	OPTICK_EVENT("accumulate_sun");
 
@@ -41,7 +41,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 	light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
 
 	// Common constants (light-related)
-	Fvector L_dir, L_clr;
+	float3 L_dir, L_clr;
 	float L_spec;
 	L_clr.set(sun->get_color().r, sun->get_color().g, sun->get_color().b);
 	Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
@@ -92,7 +92,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 		break;
 	}
 
-	Fmatrix m_TexelAdjust = {0.5f,
+	float4x4 m_TexelAdjust = {0.5f,
 							 0.0f,
 							 0.0f,
 							 0.0f,
@@ -110,19 +110,19 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 							 1.0f};
 
 	// Compute shadow matrix
-	Fmatrix xf_invview;
+	float4x4 xf_invview;
 	xf_invview.invert(Engine.RenderView.View);
 
-	Fmatrix m_shadow;
+	float4x4 m_shadow;
 	{
-		Fmatrix xf_project;
+		float4x4 xf_project;
 		xf_project.mul(m_TexelAdjust, sun->TransformContext.Sun.combine);
 		m_shadow.mul(xf_project, xf_invview);
 
 		// TSM bias
-		Fvector bias;
+		float3 bias;
 		bias.mul(L_dir, ps_r_sun_tsm_bias);
-		Fmatrix bias_t;
+		float4x4 bias_t;
 		bias_t.translate(bias);
 		m_shadow.mulB_44(bias_t);
 	}
@@ -147,7 +147,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 	}
 
 	// Setup texgen
-	Fmatrix m_Texgen;
+	float4x4 m_Texgen;
 	m_Texgen.identity();
 	RenderBackend.transforms.set_World(m_Texgen);
 	RenderBackend.transforms.set_View(Engine.RenderView.View);
@@ -163,10 +163,10 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 		RenderBackend.Index.Unlock(sizeof(facetable) / sizeof(u16));
 
 		// Lock vertices
-		u32 ver_count = sizeof(corners) / sizeof(Fvector3);
+		u32 ver_count = sizeof(corners) / sizeof(float3);
 		FVF::L* pv = (FVF::L*)RenderBackend.Vertex.Lock(ver_count, RenderTarget->g_cuboid.stride(), v_offset);
 
-		Fmatrix inv_XDcombine;
+		float4x4 inv_XDcombine;
 		if (sub_phase == SE_SUN_FAR)
 			inv_XDcombine.invert(transform_prev);
 		else
@@ -174,7 +174,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 
 		for (u32 i = 0; i < ver_count; ++i)
 		{
-			Fvector3 tmp_vec;
+			float3 tmp_vec;
 			inv_XDcombine.transform(tmp_vec, corners[i]);
 			pv->set(tmp_vec, color_rgba(255, 255, 255, 255));
 			pv++;
@@ -214,7 +214,7 @@ void CRender::accumulate_sun(u32 sub_phase, Fmatrix& transform, Fmatrix& transfo
 }
 
 bool bVolumetricSunTextureCleared = false;
-void CRender::accumulate_volumetric_sun(u32 sub_phase, Fmatrix m_shadow, Fvector L_dir)
+void CRender::accumulate_volumetric_sun(u32 sub_phase, float4x4 m_shadow, float3 L_dir)
 {
 	////OPTICK_EVENT("CRender::accumulate_volumetric_sun");
 

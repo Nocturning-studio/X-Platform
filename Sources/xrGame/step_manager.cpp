@@ -145,7 +145,7 @@ void CStepManager::update()
 			// Играть звук
 			if (!mtl_pair->StepSounds.empty() && is_on_ground())
 			{
-				Fvector sound_pos = m_object->Position();
+				float3 sound_pos = m_object->Position();
 				sound_pos.y += 0.5;
 				GET_RANDOM(mtl_pair->StepSounds)
 					.play_no_feedback(m_object, 0, 0, &sound_pos, &m_step_info.params.step[i].power);
@@ -160,16 +160,16 @@ void CStepManager::update()
 				CParticlesObject* ps = CParticlesObject::Create(ps_name, TRUE);
 
 				// вычислить позицию и направленность партикла
-				Fmatrix pos;
+				float4x4 pos;
 
 				// установить направление
-				pos.k.set(Fvector().set(0.0f, 1.0f, 0.0f));
-				Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
+				pos.k.set(float3().set(0.0f, 1.0f, 0.0f));
+				float3::generate_orthonormal_basis(pos.k, pos.j, pos.i);
 
 				// установить позицию
 				pos.c.set(get_foot_position(ELegType(i)));
 
-				ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
+				ps->UpdateParent(pos, float3().set(0.f, 0.f, 0.f));
 				GamePersistent().ps_needtoplay.push_back(ps);
 			}
 
@@ -206,14 +206,14 @@ void CStepManager::update()
 //////////////////////////////////////////////////////////////////////////
 // Function for foot processing
 //////////////////////////////////////////////////////////////////////////
-Fvector CStepManager::get_foot_position(ELegType leg_type)
+float3 CStepManager::get_foot_position(ELegType leg_type)
 {
 	R_ASSERT2(m_foot_bones[leg_type] != BI_NONE, "foot bone had not been set");
 
 	CKinematics* pK = smart_cast<CKinematics*>(m_object->Visual());
-	const Fmatrix& bone_transform = pK->LL_GetBoneInstance(m_foot_bones[leg_type]).mTransform;
+	const float4x4& bone_transform = pK->LL_GetBoneInstance(m_foot_bones[leg_type]).mTransform;
 
-	Fmatrix global_transform;
+	float4x4 global_transform;
 	global_transform.mul_43(m_object->Transform(), bone_transform);
 
 	return global_transform.c;

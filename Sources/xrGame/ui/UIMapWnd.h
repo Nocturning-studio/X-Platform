@@ -79,7 +79,7 @@ class CUIMapWnd : public CUIWindow, public CUIWndCallback
 
   public:
 	CUICustomMap* m_tgtMap;
-	Fvector2 m_tgtCenter;
+	float2 m_tgtCenter;
 
   public:
 	CUIMapWnd();
@@ -106,8 +106,8 @@ class CUIMapWnd : public CUIWindow, public CUIWndCallback
 	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
 	void SetTargetMap(CUICustomMap* m, bool bZoomIn = false);
-	void SetTargetMap(CUICustomMap* m, const Fvector2& pos, bool bZoomIn = false);
-	void SetTargetMap(const shared_str& name, const Fvector2& pos, bool bZoomIn = false);
+	void SetTargetMap(CUICustomMap* m, const float2& pos, bool bZoomIn = false);
+	void SetTargetMap(const shared_str& name, const float2& pos, bool bZoomIn = false);
 	void SetTargetMap(const shared_str& name, bool bZoomIn = false);
 	//.	void						AddUserSpot				(CUILevelMap*);
 	//.	void						Select					(CMapLocation* ml);

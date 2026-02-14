@@ -17,7 +17,7 @@ void CRender::render_lights(light_Package& LP)
 			return false;
 
 		// Проверка валидности позиции
-		Fvector zero = {0, -1000, 0};
+		float3 zero = {0, -1000, 0};
 		if (L->get_position().similar(zero, EPS_L))
 		{
 			Msg("! [Warning] Found light with uninitialized position in render_lights");

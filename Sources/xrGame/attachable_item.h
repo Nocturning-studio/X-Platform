@@ -16,7 +16,7 @@ class CAttachableItem
   private:
 	CInventoryItem* m_item;
 	shared_str m_bone_name;
-	Fmatrix m_offset;
+	float4x4 m_offset;
 	u16 m_bone_id;
 	bool m_enabled;
 //	bool						m_auto_attach;
@@ -44,66 +44,66 @@ class CAttachableItem
 	IC shared_str bone_name() const;
 	IC u16 bone_id() const;
 	IC void set_bone_id(u16 bone_id);
-	IC const Fmatrix& offset() const;
+	IC const float4x4& offset() const;
 	IC bool enabled() const;
 	void enable(bool value);
 
   public:
 #ifdef DEBUG
 	static CAttachableItem* m_dbgItem;
-	static Fvector get_angle_offset()
+	static float3 get_angle_offset()
 	{
 		VERIFY(m_dbgItem);
-		Fvector v;
+		float3 v;
 		m_dbgItem->m_offset.getHPB(v);
 		return v;
 	};
-	static Fvector get_pos_offset()
+	static float3 get_pos_offset()
 	{
 		VERIFY(m_dbgItem);
 		return m_dbgItem->m_offset.c;
 	};
-	static void set_angle_offset(Fvector val)
+	static void set_angle_offset(float3 val)
 	{
-		Fvector c = get_pos_offset();
+		float3 c = get_pos_offset();
 		m_dbgItem->m_offset.setHPB(VPUSH(val));
 		m_dbgItem->m_offset.c = c;
 	}
 
 	static void rot_dx(float val)
 	{
-		Fvector v = get_angle_offset();
+		float3 v = get_angle_offset();
 		v.x += val;
 		set_angle_offset(v);
 	}
 	static void rot_dy(float val)
 	{
-		Fvector v = get_angle_offset();
+		float3 v = get_angle_offset();
 		v.y += val;
 		set_angle_offset(v);
 	}
 	static void rot_dz(float val)
 	{
-		Fvector v = get_angle_offset();
+		float3 v = get_angle_offset();
 		v.z += val;
 		set_angle_offset(v);
 	}
 
 	static void mov_dx(float val)
 	{
-		Fvector c = get_pos_offset();
+		float3 c = get_pos_offset();
 		c.x += val;
 		m_dbgItem->m_offset.c = c;
 	}
 	static void mov_dy(float val)
 	{
-		Fvector c = get_pos_offset();
+		float3 c = get_pos_offset();
 		c.y += val;
 		m_dbgItem->m_offset.c = c;
 	}
 	static void mov_dz(float val)
 	{
-		Fvector c = get_pos_offset();
+		float3 c = get_pos_offset();
 		c.z += val;
 		m_dbgItem->m_offset.c = c;
 	}

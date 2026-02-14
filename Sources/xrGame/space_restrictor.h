@@ -56,7 +56,7 @@ class CSpaceRestrictor : public CGameObject
 	virtual BOOL net_Spawn(CSE_Abstract* data);
 	virtual void net_Destroy();
 	bool inside(const Fsphere& sphere) const;
-	virtual void Center(Fvector& C) const;
+	virtual void Center(float3& C) const;
 	virtual float Radius() const;
 	virtual BOOL UsedAI_Locations();
 	virtual void spatial_move();

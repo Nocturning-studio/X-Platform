@@ -48,20 +48,20 @@ class CDetailPathManager
 
 	struct STravelPoint
 	{
-		Fvector2 position;
+		float2 position;
 		u32 vertex_id;
 	};
 
 	struct SPathPoint : public STravelParams, public STravelPoint
 	{
-		Fvector2 direction;
+		float2 direction;
 	};
 
 	struct SCirclePoint
 	{
-		Fvector2 center;
+		float2 center;
 		float radius;
-		Fvector2 point;
+		float2 point;
 		float angle;
 	};
 
@@ -111,11 +111,11 @@ class CDetailPathManager
 	EDetailPathType m_path_type;
 
   private:
-	Fvector m_start_position;
-	Fvector m_start_direction;
-	Fvector m_dest_position;
-	Fvector m_corrected_dest_position;
-	Fvector m_dest_direction;
+	float3 m_start_position;
+	float3 m_start_direction;
+	float3 m_dest_position;
+	float3 m_corrected_dest_position;
+	float3 m_dest_direction;
 
   private:
 	xr_vector<STravelPathPoint> m_path;
@@ -144,7 +144,7 @@ class CDetailPathManager
 	IC bool better_key_point(const STravelPoint& point0, const STravelPoint& point2, const STravelPoint& point10,
 							 const STravelPoint& point11);
 	IC bool check_mask(u32 mask, u32 test) const;
-	IC void adjust_point(const Fvector2& source, float yaw, float magnitude, Fvector2& dest) const;
+	IC void adjust_point(const float2& source, float yaw, float magnitude, float2& dest) const;
 	IC void assign_angle(float& angle, const float start_yaw, const float dest_yaw, const bool positive,
 						 const EDirectionType direction_type, const bool start = true) const;
 	IC void compute_circles(STrajectoryPoint& point, SCirclePoint* circles);
@@ -201,20 +201,20 @@ class CDetailPathManager
 	virtual ~CDetailPathManager();
 	virtual void reinit();
 	bool valid() const;
-	Fvector direction() const;
+	float3 direction() const;
 	bool actual() const;
 	IC bool failed() const;
-	IC bool completed(const Fvector& position, bool bRealCompleted = true) const;
-	bool valid(const Fvector& position) const;
+	IC bool completed(const float3& position, bool bRealCompleted = true) const;
+	bool valid(const float3& position) const;
 	IC u32 curr_travel_point_index() const;
 
   public:
 	IC const xr_vector<STravelPathPoint>& path() const;
 	IC const STravelPathPoint& curr_travel_point() const;
-	IC const Fvector& start_position() const;
-	IC const Fvector& start_direction() const;
-	IC const Fvector& dest_position() const;
-	IC const Fvector& dest_direction() const;
+	IC const float3& start_position() const;
+	IC const float3& start_direction() const;
+	IC const float3& dest_position() const;
+	IC const float3& dest_direction() const;
 	IC const u32 velocity_mask() const;
 	IC const u32 desirable_mask() const;
 	IC const bool try_min_time() const;
@@ -223,10 +223,10 @@ class CDetailPathManager
 	IC const STravelParams& velocity(const u32& velocity_id) const;
 	IC const VELOCITIES& velocities() const;
 	IC void add_velocity(const u32& velocity_id, const STravelParams& params);
-	IC void set_start_position(const Fvector& start_position);
-	IC void set_start_direction(const Fvector& start_direction);
-	IC void set_dest_position(const Fvector& dest_position);
-	IC void set_dest_direction(const Fvector& dest_direction);
+	IC void set_start_position(const float3& start_position);
+	IC void set_start_direction(const float3& start_direction);
+	IC void set_dest_position(const float3& dest_position);
+	IC void set_dest_direction(const float3& dest_direction);
 	IC void set_path_type(const EDetailPathType path_type);
 	IC void set_velocity_mask(const u32 mask);
 	IC void set_desirable_mask(const u32 mask);
@@ -240,7 +240,7 @@ class CDetailPathManager
   public:
 	void on_travel_point_change(const u32& previous_travel_point_index);
 	IC const float& distance_to_target();
-	u32 location_on_path(const CGameObject* object, float distance, Fvector& result) const;
+	u32 location_on_path(const CGameObject* object, float distance, float3& result) const;
 };
 
 #include "detail_path_manager_inline.h"

@@ -419,7 +419,7 @@ struct b_portal
 {
 	u16 sector_front;
 	u16 sector_back;
-	svector<Fvector, 6> vertices;
+	svector<float3, 6> vertices;
 };
 
 void CRender::LoadSectors(IReader* fs)
@@ -467,7 +467,7 @@ void CRender::LoadSectors(IReader* fs)
 		}
 		if (CL.getTS() < 2)
 		{
-			Fvector v1, v2, v3;
+			float3 v1, v2, v3;
 			v1.set(-20000.f, -20000.f, -20000.f);
 			v2.set(-20001.f, -20001.f, -20001.f);
 			v3.set(-20002.f, -20002.f, -20002.f);

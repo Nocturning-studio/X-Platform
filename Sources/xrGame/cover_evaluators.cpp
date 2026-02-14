@@ -32,7 +32,7 @@ void CCoverEvaluatorCloseToEnemy::evaluate(const CCoverPoint* cover_point, float
 	if (enemy_distance >= m_current_distance + m_deviation)
 		return;
 
-	// Fvector					direction;
+	// float3					direction;
 	// float					y,p;
 	// direction.sub			(m_enemy_position,cover_point->position());
 	// direction.getHP			(y,p);
@@ -66,7 +66,7 @@ void CCoverEvaluatorFarFromEnemy::evaluate(const CCoverPoint* cover_point, float
 	if (enemy_distance <= m_current_distance - m_deviation)
 		return;
 
-	//	Fvector					direction;
+	//	float3					direction;
 	//	float					y,p;
 	//	direction.sub			(m_enemy_position,cover_point->position());
 	//	direction.getHP			(y,p);
@@ -95,7 +95,7 @@ void CCoverEvaluatorBest::evaluate(const CCoverPoint* cover_point, float weight)
 	if ((enemy_distance >= m_max_distance) && (m_current_distance < enemy_distance))
 		return;
 
-	Fvector direction;
+	float3 direction;
 	float y, p;
 	direction.sub(m_enemy_position, cover_point->position());
 	direction.getHP(y, p);
@@ -132,7 +132,7 @@ void CCoverEvaluatorBestByTime::evaluate(const CCoverPoint* cover_point, float w
 	if (enemy_distance >= m_max_distance)
 		value += 100.f + enemy_distance - m_max_distance;
 
-	Fvector direction;
+	float3 direction;
 	//	float					y,p;
 	direction.sub(m_enemy_position, cover_point->position());
 
@@ -152,7 +152,7 @@ void CCoverEvaluatorBestByTime::evaluate(const CCoverPoint* cover_point, float w
 // CCoverEvaluatorAngle
 //////////////////////////////////////////////////////////////////////////
 
-void CCoverEvaluatorAngle::initialize(const Fvector& start_position, bool fake_call)
+void CCoverEvaluatorAngle::initialize(const float3& start_position, bool fake_call)
 {
 	inherited::initialize(start_position, fake_call);
 	m_best_alpha = -1.f;
@@ -182,7 +182,7 @@ void CCoverEvaluatorAngle::evaluate(const CCoverPoint* cover_point, float weight
 	if ((enemy_distance >= m_max_distance) && (m_current_distance < enemy_distance))
 		return;
 
-	Fvector direction;
+	float3 direction;
 	direction.sub(cover_point->position(), m_enemy_position);
 	direction.normalize_safe();
 	float cos_a = direction.dotproduct(m_best_direction);
@@ -247,7 +247,7 @@ void CCoverEvaluatorRandomGame::finalize()
 // CCoverEvaluatorAmbush
 //////////////////////////////////////////////////////////////////////////
 
-void CCoverEvaluatorAmbush::setup(const Fvector& my_position, const Fvector& enemy_position, float min_enemy_distance)
+void CCoverEvaluatorAmbush::setup(const float3& my_position, const float3& enemy_position, float min_enemy_distance)
 {
 	inherited::setup();
 
@@ -269,7 +269,7 @@ void CCoverEvaluatorAmbush::evaluate(const CCoverPoint* cover_point, float weigh
 	if (my_distance <= m_min_enemy_distance)
 		return;
 
-	Fvector direction;
+	float3 direction;
 	float y, p;
 	float cover_from_enemy;
 	float cover_from_myself;

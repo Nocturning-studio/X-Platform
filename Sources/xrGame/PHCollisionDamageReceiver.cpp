@@ -71,16 +71,16 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dC
 	float dfs = (material_self->fBounceDamageFactor + damager_material_factor);
 	if (fis_zero(dfs))
 		return;
-	Fvector dir;
-	dir.set(*(Fvector*)c.geom.normal);
-	Fvector pos;
-	pos.sub(*(Fvector*)c.geom.pos,
-			*(Fvector*)dGeomGetPosition(bo1 ? c.geom.g1 : c.geom.g2)); // it is not true pos in bone space
+	float3 dir;
+	dir.set(*(float3*)c.geom.normal);
+	float3 pos;
+	pos.sub(*(float3*)c.geom.pos,
+			*(float3*)dGeomGetPosition(bo1 ? c.geom.g1 : c.geom.g2)); // it is not true pos in bone space
 	dr->Hit(source_id, ud_self->bone_id, E_NL(b1, b2, c.geom.normal) * damager_material_factor / dfs, dir, pos);
 }
 
 const static float hit_threthhold = 5.f;
-void CPHCollisionDamageReceiver::Hit(u16 source_id, u16 bone_id, float power, const Fvector& dir, Fvector& pos)
+void CPHCollisionDamageReceiver::Hit(u16 source_id, u16 bone_id, float power, const float3& dir, float3& pos)
 {
 
 	DAMAGE_BONES_I i = FindBone(bone_id);

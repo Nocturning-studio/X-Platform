@@ -100,7 +100,7 @@ void CActor::net_Export(NET_Packet& P) // export to server
 	P.w_float(GetfHealth());
 	P.w_u32(Level().timeServer());
 	P.w_u8(flags);
-	Fvector p = Position();
+	float3 p = Position();
 	P.w_vec3(p); // Position());
 
 	P.w_float /*w_angle8*/ (angle_normalize(r_model_yaw));				// Engine.RenderView.Direction.getH());//
@@ -120,7 +120,7 @@ void CActor::net_Export(NET_Packet& P) // export to server
 	u16 ms = (u16)(mstate_real & 0x0000ffff);
 	P.w_u16(u16(ms));
 	P.w_sdir(NET_SavedAccel);
-	Fvector v = character_physics_support()->movement()->GetVelocity();
+	float3 v = character_physics_support()->movement()->GetVelocity();
 	P.w_sdir(v); // m_PhysicMovementControl.GetVelocity());
 	//	P.w_float_q16		(fArmor,-500,1000);
 	P.w_float(g_Radiation());
@@ -169,13 +169,13 @@ void CActor::net_Export(NET_Packet& P) // export to server
 	};
 };
 
-static void w_vec_q8(NET_Packet& P, const Fvector& vec, const Fvector& min, const Fvector& max)
+static void w_vec_q8(NET_Packet& P, const float3& vec, const float3& min, const float3& max)
 {
 	P.w_float_q8(vec.x, min.x, max.x);
 	P.w_float_q8(vec.y, min.y, max.y);
 	P.w_float_q8(vec.z, min.z, max.z);
 }
-static void r_vec_q8(NET_Packet& P, Fvector& vec, const Fvector& min, const Fvector& max)
+static void r_vec_q8(NET_Packet& P, float3& vec, const float3& min, const float3& max)
 {
 	P.r_float_q8(vec.x, min.x, max.x);
 	P.r_float_q8(vec.y, min.y, max.y);
@@ -187,7 +187,7 @@ static void r_vec_q8(NET_Packet& P, Fvector& vec, const Fvector& min, const Fvec
 }
 static void w_qt_q8(NET_Packet& P, const Fquaternion& q)
 {
-	// Fvector Q;
+	// float3 Q;
 	// Q.set(q.x,q.y,q.z);
 	// if(q.w<0.f)	Q.invert();
 	// P.w_float_q8(Q.x,-1.f,1.f);
@@ -230,7 +230,7 @@ static void r_qt_q8(NET_Packet& P, Fquaternion& q)
 
 #define F_MAX 3.402823466e+38F
 
-static void UpdateLimits(Fvector& p, Fvector& min, Fvector& max)
+static void UpdateLimits(float3& p, float3& min, float3& max)
 {
 	if (p.x < min.x)
 		min.x = p.x;
@@ -258,7 +258,7 @@ static void UpdateLimits(Fvector& p, Fvector& min, Fvector& max)
 void CActor::net_ExportDeadBody(NET_Packet& P)
 {
 	/////////////////////////////
-	Fvector min, max;
+	float3 min, max;
 
 	min.set(F_MAX, F_MAX, F_MAX);
 	max.set(-F_MAX, -F_MAX, -F_MAX);
@@ -269,10 +269,10 @@ void CActor::net_ExportDeadBody(NET_Packet& P)
 		SPHNetState state;
 		PHGetSyncItem(i)->get_State(state);
 
-		Fvector& p = state.position;
+		float3& p = state.position;
 		UpdateLimits(p, min, max);
 
-		Fvector px = state.linear_vel;
+		float3 px = state.linear_vel;
 		px.div(10.0f);
 		px.add(state.position);
 		UpdateLimits(px, min, max);
@@ -291,7 +291,7 @@ void CActor::net_ExportDeadBody(NET_Packet& P)
 		w_qt_q8(P, state.quaternion);
 
 		//---------------------------------
-		Fvector px = state.linear_vel;
+		float3 px = state.linear_vel;
 		px.div(10.0f);
 		px.add(state.position);
 		w_vec_q8(P, px, min, max);
@@ -436,7 +436,7 @@ void CActor::net_Import_Physic(NET_Packet& P)
 	m_States.clear();
 	if (m_u16NumBones != 1)
 	{
-		Fvector min, max;
+		float3 min, max;
 
 		P.r_u8();
 		P.r_vec3(min);
@@ -1062,7 +1062,7 @@ extern float g_cl_lvInterp;
 
 void CActor::CalculateInterpolationParams()
 {
-	//	Fmatrix transformX0, transformX1;
+	//	float4x4 transformX0, transformX1;
 	CPHSynchronize* pSyncObj = NULL;
 	pSyncObj = PHGetSyncItem(0);
 	///////////////////////////////////////////////
@@ -1094,8 +1094,8 @@ void CActor::CalculateInterpolationParams()
 	/////////////////////////////////////////////////////////////////////
 	//	Msg("from %f, to %f", IStart.o_torso.yaw/PI*180.0f, IEnd.o_torso.yaw/PI*180.0f);
 	/////////////////////////////////////////////////////////////////////
-	Fvector SP0, SP1, SP2, SP3;
-	Fvector HP0, HP1, HP2, HP3;
+	float3 SP0, SP1, SP2, SP3;
+	float3 HP0, HP1, HP2, HP3;
 
 	SP0 = pIStart->Pos;
 	HP0 = pIStart->Pos;
@@ -1142,7 +1142,7 @@ void CActor::CalculateInterpolationParams()
 	HP3.set(PredictedState.position);
 	/*
 	{
-	Fvector d0, d1;
+	float3 d0, d1;
 	d0.sub(SP1, SP0);
 	d1.sub(SP3, SP0);
 	float res = d0.dotproduct(d1);
@@ -1155,7 +1155,7 @@ void CActor::CalculateInterpolationParams()
 	}
 	*/
 	/////////////////////////////////////////////////////////////////////////////
-	Fvector TotalPath;
+	float3 TotalPath;
 	TotalPath.sub(SP3, SP0);
 	float TotalLen = TotalPath.magnitude();
 
@@ -1178,7 +1178,7 @@ void CActor::CalculateInterpolationParams()
 	//	else
 	m_dwIEndTime = m_dwIStartTime + ConstTime;
 	/////////////////////////////////////////////////////////////////////////////
-	Fvector V0, V1;
+	float3 V0, V1;
 	//	V0.sub(SP1, SP0);
 	//	V1.sub(SP3, SP2);
 	V0.set(HP1);
@@ -1262,7 +1262,7 @@ void CActor::make_Interpolation()
 			if (m_dwIEndTime != m_dwIStartTime)
 				factor = float(CurTime - m_dwIStartTime) / (m_dwIEndTime - m_dwIStartTime);
 
-			Fvector NewPos;
+			float3 NewPos;
 			NewPos.lerp(IStart.Pos, IEnd.Pos, factor);
 
 			VERIFY2(_valid(renderable.transform), *cName());
@@ -1279,7 +1279,7 @@ void CActor::make_Interpolation()
 				IPosH[k] = factor * (factor * (factor * HCoeff[k][0] + HCoeff[k][1]) + HCoeff[k][2]) + HCoeff[k][3];
 			};
 
-			Fvector SpeedVector, ResPosition;
+			float3 SpeedVector, ResPosition;
 			switch (g_cl_InterpolationType)
 			{
 			case 0: {
@@ -1395,10 +1395,10 @@ void CActor::load(IReader& input_packet)
 #ifdef DEBUG
 
 extern Flags32 dbg_net_Draw_Flags;
-void dbg_draw_piramid(Fvector pos, Fvector dir, float size, float xdir, u32 color)
+void dbg_draw_piramid(float3 pos, float3 dir, float size, float xdir, u32 color)
 {
 
-	Fvector p0, p1, p2, p3, p4;
+	float3 p0, p1, p2, p3, p4;
 	p0.set(size, size, 0.0f);
 	p1.set(-size, size, 0.0f);
 	p2.set(-size, -size, 0.0f);
@@ -1406,12 +1406,12 @@ void dbg_draw_piramid(Fvector pos, Fvector dir, float size, float xdir, u32 colo
 	p4.set(0, 0, size * 4);
 
 	bool Double = false;
-	Fmatrix t;
+	float4x4 t;
 	t.identity();
 	if (_valid(dir) && dir.square_magnitude() > 0.01f)
 	{
 		t.k.normalize(dir);
-		Fvector::generate_orthonormal_basis(t.k, t.j, t.i);
+		float3::generate_orthonormal_basis(t.k, t.j, t.i);
 	}
 	else
 	{
@@ -1439,7 +1439,7 @@ void dbg_draw_piramid(Fvector pos, Fvector dir, float size, float xdir, u32 colo
 	}
 	else
 	{
-		//		Fmatrix scale;
+		//		float4x4 scale;
 		//		scale.scale(0.8f, 0.8f, 0.8f);
 		//		t.mulA_44(scale);
 		//		t.c.set(pos);
@@ -1472,9 +1472,9 @@ void CActor::OnRender_Network()
 	{
 		if (dbg_net_Draw_Flags.test(1 << 8))
 		{
-			Fvector bc;
+			float3 bc;
 			bc.add(Position(), m_AutoPickUp_AABB_Offset);
-			Fvector bd = m_AutoPickUp_AABB;
+			float3 bd = m_AutoPickUp_AABB;
 
 			Level().debug_renderer().draw_aabb(bc, bd.x, bd.y, bd.z, color_rgba(0, 255, 0, 255));
 		};
@@ -1489,8 +1489,8 @@ void CActor::OnRender_Network()
 				for (u16 i=0; i<BoneCount; i++)
 				{
 					Fobb BoneOBB = V->LL_GetBox(i);
-					Fmatrix BoneMatrix; BoneOBB.transform_get(BoneMatrix);
-					Fmatrix BoneMatrixRes; BoneMatrixRes.mul(V->LL_GetTransform(i), BoneMatrix);
+					float4x4 BoneMatrix; BoneOBB.transform_get(BoneMatrix);
+					float4x4 BoneMatrixRes; BoneMatrixRes.mul(V->LL_GetTransform(i), BoneMatrix);
 					BoneMatrix.mul(Transform(), BoneMatrixRes);
 					Level().debug_renderer().draw_obb(BoneMatrix, BoneOBB.m_halfsize, color_rgba(0, 255, 0, 255));
 				};
@@ -1508,24 +1508,24 @@ void CActor::OnRender_Network()
 						switch (I->type)
 						{
 						case SBoneShape::stBox: {
-							Fmatrix M;
+							float4x4 M;
 							M.invert(I->b_IM);
-							Fvector h_size = I->b_hsize;
+							float3 h_size = I->b_hsize;
 							Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 255, 0, 255));
 						}
 						break;
 						case SBoneShape::stCylinder: {
-							Fmatrix M;
+							float4x4 M;
 							M.c.set(I->c_cylinder.m_center);
 							M.k.set(I->c_cylinder.m_direction);
-							Fvector h_size;
+							float3 h_size;
 							h_size.set(I->c_cylinder.m_radius, I->c_cylinder.m_radius, I->c_cylinder.m_height * 0.5f);
-							Fvector::generate_orthonormal_basis(M.k, M.j, M.i);
+							float3::generate_orthonormal_basis(M.k, M.j, M.i);
 							Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 127, 255, 255));
 						}
 						break;
 						case SBoneShape::stSphere: {
-							Fmatrix l_ball;
+							float4x4 l_ball;
 							l_ball.scale(I->s_sphere.R, I->s_sphere.R, I->s_sphere.R);
 							l_ball.translate_add(I->s_sphere.P);
 							Level().debug_renderer().draw_ellipse(l_ball, color_rgba(0, 255, 0, 255));
@@ -1543,7 +1543,7 @@ void CActor::OnRender_Network()
 		dbg_draw_piramid(Position(), character_physics_support()->movement()->GetVelocity(), size, -r_model_yaw,
 						 color_rgba(128, 255, 128, 255));
 		dbg_draw_piramid(IStart.Pos, IStart.Vel, size, -IStart.o_model, color_rgba(255, 0, 0, 255));
-		//		Fvector tmp, tmp1; tmp1.set(0, .1f, 0);
+		//		float3 tmp, tmp1; tmp1.set(0, .1f, 0);
 		//		dbg_draw_piramid(tmp.add(IStartT.Pos, tmp1), IStartT.Vel, size, -IStartT.o_model, color_rgba(155, 0, 0,
 		//155));
 		dbg_draw_piramid(IRec.Pos, IRec.Vel, size, -IRec.o_model, color_rgba(0, 0, 255, 255));
@@ -1553,13 +1553,13 @@ void CActor::OnRender_Network()
 		dbg_draw_piramid(NET_Last.p_pos, NET_Last.p_velocity, size * 3 / 4, -NET_Last.o_model,
 						 color_rgba(255, 255, 255, 255));
 
-		Fmatrix MS, MH, ML, *pM = NULL;
+		float4x4 MS, MH, ML, *pM = NULL;
 		ML.translate(0, 0.2f, 0);
 		MS.translate(0, 0.2f, 0);
 		MH.translate(0, 0.2f, 0);
 
-		Fvector point0S, point1S, point0H, point1H, point0L, point1L, *ppoint0 = NULL, *ppoint1 = NULL;
-		Fvector tS, tH;
+		float3 point0S, point1S, point0H, point1H, point0L, point1L, *ppoint0 = NULL, *ppoint1 = NULL;
+		float3 tS, tH;
 		u32 cColor = 0, sColor = 0;
 		VIS_POSITION* pLastPos = NULL;
 
@@ -1637,7 +1637,7 @@ void CActor::OnRender_Network()
 		// draw interpolation history curve
 		if (!pLastPos->empty())
 		{
-			Fvector Pos1, Pos2;
+			float3 Pos1, Pos2;
 			VIS_POSITION_it It = pLastPos->begin();
 			Pos1 = *It;
 			for (; It != pLastPos->end(); It++)
@@ -1650,7 +1650,7 @@ void CActor::OnRender_Network()
 			};
 		};
 
-		Fvector PH, PS;
+		float3 PH, PS;
 		PH.set(IPosH);
 		PH.y += 1;
 		PS.set(IPosS);
@@ -1671,9 +1671,9 @@ void CActor::OnRender_Network()
 			for (u16 i = 0; i < BoneCount; i++)
 			{
 				Fobb BoneOBB = V->LL_GetBox(i);
-				Fmatrix BoneMatrix;
+				float4x4 BoneMatrix;
 				BoneOBB.transform_get(BoneMatrix);
-				Fmatrix BoneMatrixRes;
+				float4x4 BoneMatrixRes;
 				BoneMatrixRes.mul(V->LL_GetTransform(i), BoneMatrix);
 				BoneMatrix.mul(Transform(), BoneMatrixRes);
 				Level().debug_renderer().draw_obb(BoneMatrix, BoneOBB.m_halfsize, color_rgba(0, 255, 0, 255));
@@ -1687,14 +1687,14 @@ void CActor::OnRender_Network()
 			{
 				SPHNetState state = m_States[i];
 
-				Fvector half_dim;
+				float3 half_dim;
 				half_dim.x = 0.2f;
 				half_dim.y = 0.1f;
 				half_dim.z = 0.1f;
 
 				u32 Color = color_rgba(255, 0, 0, 255);
 
-				Fmatrix M;
+				float4x4 M;
 
 				M = Fidentity;
 				M.rotation(state.quaternion);
@@ -1722,12 +1722,12 @@ void CActor::OnRender_Network()
 					SPHNetState state; // = m_States[i];
 					PHGetSyncItem(i)->get_State(state);
 
-					Fmatrix M;
+					float4x4 M;
 					M = Fidentity;
 					M.rotation(state.quaternion);
 					M.translate_add(state.position);
 
-					Fvector half_dim;
+					float3 half_dim;
 					half_dim.x = 0.2f;
 					half_dim.y = 0.1f;
 					half_dim.z = 0.1f;
@@ -1736,7 +1736,7 @@ void CActor::OnRender_Network()
 					Level().debug_renderer().draw_obb(M, half_dim, Color);
 				};
 				//-----------------------------------------------------------------
-				Fvector min, max;
+				float3 min, max;
 
 				min.set(F_MAX, F_MAX, F_MAX);
 				max.set(-F_MAX, -F_MAX, -F_MAX);
@@ -1746,10 +1746,10 @@ void CActor::OnRender_Network()
 					SPHNetState state;
 					PHGetSyncItem(i)->get_State(state);
 
-					Fvector& p = state.position;
+					float3& p = state.position;
 					UpdateLimits(p, min, max);
 
-					Fvector px = state.linear_vel;
+					float3 px = state.linear_vel;
 					px.div(10.0f);
 					px.add(state.position);
 					UpdateLimits(px, min, max);
@@ -1771,12 +1771,12 @@ void CActor::OnRender_Network()
 					r_qt_q8(PX, state.quaternion);
 					//					r_vec_q8(PX,state.linear_vel,min,max);
 					//===============================================
-					Fmatrix M;
+					float4x4 M;
 					M = Fidentity;
 					M.rotation(state.quaternion);
 					M.translate_add(state.position);
 
-					Fvector half_dim;
+					float3 half_dim;
 					half_dim.x = 0.2f;
 					half_dim.y = 0.1f;
 					half_dim.z = 0.1f;
@@ -1784,7 +1784,7 @@ void CActor::OnRender_Network()
 					u32 Color = color_rgba(255, 0, 0, 255);
 					Level().debug_renderer().draw_obb(M, half_dim, Color);
 				};
-				Fvector LC, LS;
+				float3 LC, LS;
 				LC.add(min, max);
 				LC.div(2.0f);
 				LS.sub(max, min);
@@ -1836,10 +1836,10 @@ void CActor::Check_for_AutoPickUp()
 	if (!g_Alive())
 		return;
 
-	Fvector bc;
+	float3 bc;
 	bc.add(Position(), m_AutoPickUp_AABB_Offset);
 	Fbox APU_Box;
-	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
+	APU_Box.set(float3().sub(bc, m_AutoPickUp_AABB), float3().add(bc, m_AutoPickUp_AABB));
 
 	xr_vector<ISpatial*> ISpatialResult;
 	g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
@@ -1880,7 +1880,7 @@ void CActor::Check_for_AutoPickUp()
 	}
 }
 
-void CActor::SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)
+void CActor::SetHitInfo(CObject* who, CObject* weapon, s16 element, float3 Pos, float3 Dir)
 {
 	m_iLastHitterID = (who != NULL) ? who->ID() : u16(-1);
 	m_iLastHittingWeaponID = (weapon != NULL) ? weapon->ID() : u16(-1);
@@ -1998,7 +1998,7 @@ void CActor::OnCriticalHitHealthLoss()
 
 void CActor::OnPlayHeadShotParticle(NET_Packet P)
 {
-	Fvector HitDir, HitPos;
+	float3 HitDir, HitPos;
 	s16 element = P.r_s16();
 	P.r_dir(HitDir);
 	HitDir.invert();
@@ -2006,14 +2006,14 @@ void CActor::OnPlayHeadShotParticle(NET_Packet P)
 	//-----------------------------------
 	if (!m_sHeadShotParticle.size())
 		return;
-	Fmatrix pos;
+	float4x4 pos;
 	CParticlesPlayer::MakeTransform(this, element, HitDir, HitPos, pos);
 	// установить particles
 	CParticlesObject* ps = NULL;
 
 	ps = CParticlesObject::Create(m_sHeadShotParticle.c_str(), TRUE);
 
-	ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
+	ps->UpdateParent(pos, float3().set(0.f, 0.f, 0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);
 };
 

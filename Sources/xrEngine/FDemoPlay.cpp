@@ -107,7 +107,7 @@ CDemoPlay::~CDemoPlay()
 // -----------------------------------------------------------------------------------------
 // Вспомогательная функция для получения матрицы (предполагаем, что она у вас есть)
 // Если нет, используйте вашу MakeCameraMatrixFromFrameNumber
-Fmatrix CDemoPlay::GetFrameMatrix(int frame)
+float4x4 CDemoPlay::GetFrameMatrix(int frame)
 {
 	// Защита от выхода за границы
 	if (frame < 0)
@@ -127,7 +127,7 @@ bool CDemoPlay::IsCut(int frame)
 }
 
 
-void spline1(float t, Fvector* p, Fvector* ret)
+void spline1(float t, float3* p, float3* ret)
 {
 	float t2 = t * t;
 	float t3 = t2 * t;
@@ -151,14 +151,14 @@ void spline1(float t, Fvector* p, Fvector* ret)
 
 void CDemoPlay::MoveCameraSpline(float t, int i0, int i1, int i2, int i3)
 {
-	Fmatrix m0 = GetFrameMatrix(i0);
-	Fmatrix m1 = GetFrameMatrix(i1);
-	Fmatrix m2 = GetFrameMatrix(i2);
-	Fmatrix m3 = GetFrameMatrix(i3);
+	float4x4 m0 = GetFrameMatrix(i0);
+	float4x4 m1 = GetFrameMatrix(i1);
+	float4x4 m2 = GetFrameMatrix(i2);
+	float4x4 m3 = GetFrameMatrix(i3);
 
 	for (int i = 0; i < 4; i++)
 	{
-		Fvector v[4];
+		float3 v[4];
 		// Собираем векторы из строк матриц (Row-major в X-Ray?)
 		// Если камера ведет себя странно, попробуйте mX.c, mX.k и т.д.
 		// Но оставляю ваш метод доступа через массив для совместимости
@@ -167,11 +167,11 @@ void CDemoPlay::MoveCameraSpline(float t, int i0, int i1, int i2, int i3)
 		v[2].set(m2.m[i][0], m2.m[i][1], m2.m[i][2]);
 		v[3].set(m3.m[i][0], m3.m[i][1], m3.m[i][2]);
 
-		spline1(t, v, (Fvector*)&m_Camera.m[i][0]);
+		spline1(t, v, (float3*)&m_Camera.m[i][0]);
 	}
 }
 
-void linearInterpolate(float t, Fvector* p0, Fvector* p1, Fvector* ret)
+void linearInterpolate(float t, float3* p0, float3* p1, float3* ret)
 {
 	ret->x = (1 - t) * p0->x + t * p1->x;
 	ret->y = (1 - t) * p0->y + t * p1->y;
@@ -180,16 +180,16 @@ void linearInterpolate(float t, Fvector* p0, Fvector* p1, Fvector* ret)
 
 void CDemoPlay::MoveCameraLinear(float t, int i1, int i2)
 {
-	Fmatrix m1 = GetFrameMatrix(i1);
-	Fmatrix m2 = GetFrameMatrix(i2);
+	float4x4 m1 = GetFrameMatrix(i1);
+	float4x4 m2 = GetFrameMatrix(i2);
 
 	for (int i = 0; i < 4; i++)
 	{
-		Fvector p0, p1;
+		float3 p0, p1;
 		p0.set(m1.m[i][0], m1.m[i][1], m1.m[i][2]);
 		p1.set(m2.m[i][0], m2.m[i][1], m2.m[i][2]);
 
-		linearInterpolate(t, &p0, &p1, (Fvector*)&m_Camera.m[i][0]);
+		linearInterpolate(t, &p0, &p1, (float3*)&m_Camera.m[i][0]);
 	}
 }
 
@@ -250,7 +250,7 @@ void CDemoPlay::MoveCamera(u32 frame, float k, int interpolation_type)
 
 	// Нормализация матрицы (обязательно для устранения искажений)
 	m_Camera.k.normalize();
-	Fvector Y = m_Camera.j;
+	float3 Y = m_Camera.j;
 	m_Camera.i.crossproduct(Y, m_Camera.k);
 	m_Camera.i.normalize();
 	m_Camera.j.crossproduct(m_Camera.k, m_Camera.i);

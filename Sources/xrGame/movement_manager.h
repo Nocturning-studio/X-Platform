@@ -111,7 +111,7 @@ class CMovementManager
 	EPathState m_path_state;
 	EPathType m_path_type;
 	bool m_enabled;
-	Fvector m_on_disable_object_position;
+	float3 m_on_disable_object_position;
 	float m_old_desirable_speed;
 	bool m_extrapolate_path;
 	bool m_build_at_once;
@@ -151,7 +151,7 @@ class CMovementManager
 	virtual void reload(LPCSTR caSection);
 	virtual BOOL net_Spawn(CSE_Abstract* data);
 	virtual void net_Destroy();
-	virtual void on_frame(CPHMovementControl* movement_control, Fvector& dest_position);
+	virtual void on_frame(CPHMovementControl* movement_control, float3& dest_position);
 	IC bool actual() const;
 	bool actual_all() const;
 	IC void set_path_type(EPathType path_type);
@@ -170,7 +170,7 @@ class CMovementManager
 	IC void set_body_orientation(const MonsterSpace::SBoneRotation& orientation);
 	IC const CBoneRotation& body_orientation() const;
 	void update_path();
-	virtual void move_along_path(CPHMovementControl* movement_control, Fvector& dest_position, float time_delta);
+	virtual void move_along_path(CPHMovementControl* movement_control, float3& dest_position, float time_delta);
 
 	IC float speed() const;
 	float speed(CPHMovementControl* movement_control) const;

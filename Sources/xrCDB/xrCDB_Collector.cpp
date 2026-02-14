@@ -9,9 +9,9 @@
 
 namespace CDB
 {
-u32 Collector::VPack(const Fvector& V, float eps)
+u32 Collector::VPack(const float3& V, float eps)
 {
-	xr_vector<Fvector>::iterator I, E;
+	xr_vector<float3>::iterator I, E;
 	I = verts.begin();
 	E = verts.end();
 	for (; I != E; I++)
@@ -21,7 +21,7 @@ u32 Collector::VPack(const Fvector& V, float eps)
 	return verts.size() - 1;
 }
 
-void Collector::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+void Collector::add_face_D(const float3& v0, const float3& v1, const float3& v2, // vertices
 						   u32 dummy												// misc
 )
 {
@@ -37,7 +37,7 @@ void Collector::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& 
 	faces.push_back(T);
 }
 
-void Collector::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector)
+void Collector::add_face(const float3& v0, const float3& v1, const float3& v2, u16 material, u16 sector)
 {
 	TRI T;
 	T.verts[0] = verts.size();
@@ -52,7 +52,7 @@ void Collector::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2
 	faces.push_back(T);
 }
 
-void Collector::add_face_packed(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+void Collector::add_face_packed(const float3& v0, const float3& v1, const float3& v2, // vertices
 								u16 material, u16 sector,								 // misc
 								float eps)
 {
@@ -65,7 +65,7 @@ void Collector::add_face_packed(const Fvector& v0, const Fvector& v1, const Fvec
 	faces.push_back(T);
 }
 
-void Collector::add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+void Collector::add_face_packed_D(const float3& v0, const float3& v1, const float3& v2, // vertices
 								  u32 dummy, float eps)
 {
 	TRI T;
@@ -324,7 +324,7 @@ CollectorPacked::CollectorPacked(const Fbox& bb, int apx_vertices, int apx_faces
 				VM[ix][iy][iz].reserve(_average);
 }
 
-void CollectorPacked::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+void CollectorPacked::add_face(const float3& v0, const float3& v1, const float3& v2, // vertices
 							   u16 material, u16 sector									// misc
 )
 {
@@ -337,7 +337,7 @@ void CollectorPacked::add_face(const Fvector& v0, const Fvector& v1, const Fvect
 	faces.push_back(T);
 }
 
-void CollectorPacked::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+void CollectorPacked::add_face_D(const float3& v0, const float3& v1, const float3& v2, // vertices
 								 u32 dummy												  // misc
 )
 {
@@ -349,7 +349,7 @@ void CollectorPacked::add_face_D(const Fvector& v0, const Fvector& v1, const Fve
 	faces.push_back(T);
 }
 
-u32 CollectorPacked::VPack(const Fvector& V)
+u32 CollectorPacked::VPack(const float3& V)
 {
 	u32 P = 0xffffffff;
 

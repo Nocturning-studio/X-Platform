@@ -415,7 +415,7 @@ void CControlManagerCustom::jump(const SControlJumpData& ta)
 	m_man->activate(ControlCom::eControlJump);
 }
 
-void CControlManagerCustom::jump(const Fvector& position)
+void CControlManagerCustom::jump(const float3& position)
 {
 	if (!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
@@ -433,7 +433,7 @@ void CControlManagerCustom::jump(const Fvector& position)
 	m_man->activate(ControlCom::eControlJump);
 }
 
-void CControlManagerCustom::script_jump(const Fvector& position, float factor)
+void CControlManagerCustom::script_jump(const float3& position, float factor)
 {
 	if (!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
@@ -492,7 +492,7 @@ void CControlManagerCustom::check_jump_over_physics()
 	if (m_object->GetScriptControl())
 		return;
 
-	Fvector prev_pos = m_object->Position();
+	float3 prev_pos = m_object->Position();
 	float dist_sum = 0.f;
 
 	for (u32 i = m_man->path_builder().detail().curr_travel_point_index();
@@ -512,7 +512,7 @@ void CControlManagerCustom::check_jump_over_physics()
 			if (m_object->Position().distance_to(obj->Position()) < MAX_DIST_SUM / 2)
 				continue;
 
-			Fvector dir = Fvector().sub(travel_point.position, m_object->Position());
+			float3 dir = float3().sub(travel_point.position, m_object->Position());
 
 			// проверка на  Field-Of-View
 			float my_h = m_object->Direction().getH();
@@ -524,10 +524,10 @@ void CControlManagerCustom::check_jump_over_physics()
 			if (!is_angle_between(h, from, to))
 				continue;
 
-			dir = Fvector().sub(obj->Position(), m_object->Position());
+			dir = float3().sub(obj->Position(), m_object->Position());
 
 			// вычислить целевую позицию для прыжка
-			Fvector target;
+			float3 target;
 			obj->Center(target);
 			target.y += obj->Radius();
 			// --------------------------------------------------------

@@ -26,7 +26,7 @@ void CRender::render_depth_of_field()
 	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
 
 	// Params
-	Fvector3 DofParams;
+	float3 DofParams;
 	g_pGamePersistent->GetCurrentDof(DofParams);
 	float FocusDist = DofParams.x * FOCAL_DEPTH_MUL;
 	float FocalLen = (float)fov_to_length(Engine.RenderView.Fov);

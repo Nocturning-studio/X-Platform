@@ -6,7 +6,7 @@ template <typename _Object> class CBloodsuckerStateAttack : public CStateMonster
 	typedef CStateMonsterAttack<_Object> inherited_attack;
 
 	u32 m_time_stop_invis;
-	Fvector m_dir_point;
+	float3 m_dir_point;
 
   public:
 	CBloodsuckerStateAttack(_Object* obj);

@@ -44,9 +44,9 @@ class CPortalTraverser
   private:
 	// === Контекст текущего обхода ===
 	u32 m_options;
-	Fvector m_view_pos;
-	Fmatrix m_xform;
-	Fmatrix m_xform_proj; // View * Proj * ViewPort
+	float3 m_view_pos;
+	float4x4 m_xform;
+	float4x4 m_xform_proj; // View * Proj * ViewPort
 	CSector* m_start_sector;
 
 	// === Результаты и Кэш (State) ===
@@ -75,7 +75,7 @@ class CPortalTraverser
 	void Reset();
 
 	// Основной метод запуска обхода
-	void Traverse(CSector* start, CFrustum& frustum, Fvector& view_pos, Fmatrix& xform, u32 options);
+	void Traverse(CSector* start, CFrustum& frustum, float3& view_pos, float4x4& xform, u32 options);
 
 	// Доступ к результатам
 	const xr_vector<SectorVisibility>& GetVisibleSectors() const

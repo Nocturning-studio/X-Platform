@@ -66,14 +66,14 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	bool bFullScreen = (1 == xml->ReadAttribInt("video_wnd", 0, "fullscreen", 0));
 	if (!bFullScreen)
 	{
-		m_wnd->SetWndPos(Fvector2().set(512.0f, 384.0f));
+		m_wnd->SetWndPos(float2().set(512.0f, 384.0f));
 		m_wnd->SetAlignment(waCenter);
 		Frect texture_coords = m_wnd->GetUIStaticItem().GetOriginalRect();
 
 		bool is_16_9 = UI()->is_16_9_mode();
 		float kw_image = UI_BASE_WIDTH / texture_coords.width();
 
-		Fvector2 wnd_size;
+		float2 wnd_size;
 
 		wnd_size.x = UI_BASE_WIDTH;
 		wnd_size.y = texture_coords.height() * kw_image;
@@ -123,7 +123,7 @@ void CUISequenceVideoItem::Update()
 			// sync start
 			if (m_flags.test(etiNeedStart))
 			{
-				m_sound.play_at_pos(NULL, Fvector().set(0.f, 0.f, 0.f), sm_2D);
+				m_sound.play_at_pos(NULL, float3().set(0.f, 0.f, 0.f), sm_2D);
 				m_texture->video_Play(FALSE, m_sync_time);
 				m_flags.set(etiNeedStart, FALSE);
 				CUIWindow* w = m_owner->MainWnd()->FindChild("back");

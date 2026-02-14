@@ -114,9 +114,9 @@ class CPHActorCharacter : public CPHSimpleCharacter
 	virtual void Create(dVector3 sizes);
 	virtual void Destroy(void);
 	virtual void SetPhysicsRefObject(CPhysicsShellHolder* ref_object);
-	virtual void SetAcceleration(Fvector accel);
+	virtual void SetAcceleration(float3 accel);
 	virtual void Disable();
-	virtual void Jump(const Fvector& jump_velocity);
+	virtual void Jump(const float3& jump_velocity);
 	virtual void InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2);
 	void SetRestrictorRadius(CPHCharacter::ERestrictionType rtype, float r);
 	virtual void ChooseRestrictionType(ERestrictionType my_type, float my_depth, CPHCharacter* ch);

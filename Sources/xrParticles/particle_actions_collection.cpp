@@ -346,7 +346,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 	break;
 	}
 }
-void PAPI::PAAvoid::Transform(const Fmatrix& m)
+void PAPI::PAAvoid::Transform(const float4x4& m)
 {
 	position.transform(positionL, m);
 }
@@ -665,7 +665,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 	}
 	}
 }
-void PABounce::Transform(const Fmatrix& m)
+void PABounce::Transform(const float4x4& m)
 {
 	position.transform(positionL, m);
 }
@@ -695,7 +695,7 @@ void PACopyVertexB::Execute(ParticleEffect* effect, float dt)
 		}
 	*/
 }
-void PACopyVertexB::Transform(const Fmatrix&)
+void PACopyVertexB::Transform(const float4x4&)
 {
 	;
 }
@@ -721,7 +721,7 @@ void PADamping::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PADamping::Transform(const Fmatrix&)
+void PADamping::Transform(const float4x4&)
 {
 	;
 }
@@ -753,7 +753,7 @@ void PAExplosion::Execute(ParticleEffect* effect, float dt)
 
 	age += dt;
 }
-void PAExplosion::Transform(const Fmatrix& m)
+void PAExplosion::Transform(const float4x4& m)
 {
 	m.transform_tiny(center, centerL);
 }
@@ -797,7 +797,7 @@ void PAFollow::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAFollow::Transform(const Fmatrix&)
+void PAFollow::Transform(const float4x4&)
 {
 	;
 }
@@ -857,7 +857,7 @@ void PAGravitate::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAGravitate::Transform(const Fmatrix&)
+void PAGravitate::Transform(const float4x4&)
 {
 	;
 }
@@ -874,7 +874,7 @@ void PAGravity::Execute(ParticleEffect* effect, float dt)
 		effect->particles[i].vel += ddir;
 	}
 }
-void PAGravity::Transform(const Fmatrix&)
+void PAGravity::Transform(const float4x4&)
 {
 	;
 }
@@ -930,7 +930,7 @@ void PAJet::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAJet::Transform(const Fmatrix& m)
+void PAJet::Transform(const float4x4& m)
 {
 	m.transform_tiny(center, centerL);
 	acc.transform_dir(accL, m);
@@ -989,7 +989,7 @@ void PAScatter::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAScatter::Transform(const Fmatrix& m)
+void PAScatter::Transform(const float4x4& m)
 {
 	m.transform_tiny(center, centerL);
 }
@@ -1007,7 +1007,7 @@ void PAKillOld::Execute(ParticleEffect* effect, float dt)
 			effect->Remove(i);
 	}
 }
-void PAKillOld::Transform(const Fmatrix&)
+void PAKillOld::Transform(const float4x4&)
 {
 	;
 }
@@ -1067,7 +1067,7 @@ void PAMatchVelocity::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAMatchVelocity::Transform(const Fmatrix&)
+void PAMatchVelocity::Transform(const float4x4&)
 {
 	;
 }
@@ -1086,7 +1086,7 @@ void PAMove::Execute(ParticleEffect* effect, float dt)
 		m.pos += m.vel * dt;
 	}
 }
-void PAMove::Transform(const Fmatrix&)
+void PAMove::Transform(const float4x4&)
 {
 	;
 }
@@ -1145,7 +1145,7 @@ void PAOrbitLine::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAOrbitLine::Transform(const Fmatrix& m)
+void PAOrbitLine::Transform(const float4x4& m)
 {
 	m.transform_tiny(p, pL);
 	m.transform_dir(axis, axisL);
@@ -1195,7 +1195,7 @@ void PAOrbitPoint::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAOrbitPoint::Transform(const Fmatrix& m)
+void PAOrbitPoint::Transform(const float4x4& m)
 {
 	m.transform_tiny(center, centerL);
 }
@@ -1217,7 +1217,7 @@ void PARandomAccel::Execute(ParticleEffect* effect, float dt)
 		m.vel += acceleration * dt;
 	}
 }
-void PARandomAccel::Transform(const Fmatrix& m)
+void PARandomAccel::Transform(const float4x4& m)
 {
 	gen_acc.transform_dir(gen_accL, m);
 }
@@ -1239,7 +1239,7 @@ void PARandomDisplace::Execute(ParticleEffect* effect, float dt)
 		m.pos += displacement * dt;
 	}
 }
-void PARandomDisplace::Transform(const Fmatrix& m)
+void PARandomDisplace::Transform(const float4x4& m)
 {
 	gen_disp.transform_dir(gen_dispL, m);
 }
@@ -1260,7 +1260,7 @@ void PARandomVelocity::Execute(ParticleEffect* effect, float dt)
 		m.vel = velocity;
 	}
 }
-void PARandomVelocity::Transform(const Fmatrix& m)
+void PARandomVelocity::Transform(const float4x4& m)
 {
 	gen_vel.transform_dir(gen_velL, m);
 }
@@ -1358,7 +1358,7 @@ void PARestore::Execute(ParticleEffect* effect, float dt)
 
 	time_left -= dt;
 }
-void PARestore::Transform(const Fmatrix&)
+void PARestore::Transform(const float4x4&)
 {
 	;
 }
@@ -1377,7 +1377,7 @@ void PASink::Execute(ParticleEffect* effect, float dt)
 			effect->Remove(i);
 	}
 }
-void PASink::Transform(const Fmatrix& m)
+void PASink::Transform(const float4x4& m)
 {
 	position.transform(positionL, m);
 }
@@ -1396,7 +1396,7 @@ void PASinkVelocity::Execute(ParticleEffect* effect, float dt)
 			effect->Remove(i);
 	}
 }
-void PASinkVelocity::Transform(const Fmatrix& m)
+void PASinkVelocity::Transform(const float4x4& m)
 {
 	velocity.transform_dir(velocityL, m);
 }
@@ -1455,7 +1455,7 @@ void PASource::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PASource::Transform(const Fmatrix& m)
+void PASource::Transform(const float4x4& m)
 {
 	position.transform(positionL, m);
 	velocity.transform_dir(velocityL, m);
@@ -1483,7 +1483,7 @@ void PASpeedLimit::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PASpeedLimit::Transform(const Fmatrix&)
+void PASpeedLimit::Transform(const float4x4&)
 {
 	;
 }
@@ -1508,7 +1508,7 @@ void PATargetColor::Execute(ParticleEffect* effect, float dt)
 		//		m.alpha += (alpha - m.alpha) * scaleFac;
 	}
 }
-void PATargetColor::Transform(const Fmatrix&)
+void PATargetColor::Transform(const float4x4&)
 {
 	;
 }
@@ -1531,7 +1531,7 @@ void PATargetSize::Execute(ParticleEffect* effect, float dt)
 		m.size += dif;
 	}
 }
-void PATargetSize::Transform(const Fmatrix&)
+void PATargetSize::Transform(const float4x4&)
 {
 	;
 }
@@ -1554,7 +1554,7 @@ void PATargetRotate::Execute(ParticleEffect* effect, float dt)
 		m.rot += dif;
 	}
 }
-void PATargetRotate::Transform(const Fmatrix&)
+void PATargetRotate::Transform(const float4x4&)
 {
 	;
 }
@@ -1571,7 +1571,7 @@ void PATargetVelocity::Execute(ParticleEffect* effect, float dt)
 		m.vel += (velocity - m.vel) * scaleFac;
 	}
 }
-void PATargetVelocity::Transform(const Fmatrix& m)
+void PATargetVelocity::Transform(const float4x4& m)
 {
 	m.transform_dir(velocity, velocityL);
 }
@@ -1670,7 +1670,7 @@ void PAVortex::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 }
-void PAVortex::Transform(const Fmatrix& m)
+void PAVortex::Transform(const float4x4& m)
 {
 	m.transform_tiny(center, centerL);
 	m.transform_dir(axis, axisL);
@@ -1708,7 +1708,7 @@ void PATurbulence::Execute(ParticleEffect* effect, float dt)
 		m.vel.mul(valMagScale);
 	}
 }
-void PATurbulence::Transform(const Fmatrix& m)
+void PATurbulence::Transform(const float4x4& m)
 {
 }
 //-------------------------------------------------------------------------------------------------

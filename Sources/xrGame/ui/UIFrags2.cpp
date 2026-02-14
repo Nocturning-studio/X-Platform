@@ -22,7 +22,7 @@ void CUIFrags2::Init(CUIXml& xml_doc, LPCSTR path, LPCSTR backgrnd_path)
 
 	CUIWindow* pTeam1 = NULL;
 	CUIWindow* pTeam2 = NULL;
-	Fvector2 pos;
+	float2 pos;
 
 	pTeam1 = m_pStats->Init(xml_doc, path, 1);
 	AttachChild(pTeam1);
