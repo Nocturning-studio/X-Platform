@@ -544,7 +544,7 @@ CUILine* CUILines::ParseTextToColoredLine(const xr_string& str)
 	do
 	{
 		CutFirstColoredTextEntry(entry, color, tmp);
-		line->AddSubLine(entry, color_set_alpha(color, color_get_A(GetTextColor())));
+		line->AddSubLine(entry, subst_alpha(color, color_get_A(GetTextColor())));
 	} while (tmp.size() > 0);
 
 	return line;

@@ -573,7 +573,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	C.detail_texture = NULL;
 	C.detail_scaler = NULL;
 
-	//Msg("Debug Shader Compile: %s", s_shader);
+	Msg("Debug Shader Compile: %s", s_shader);
 
 	// Compile element	(LOD0 - HQ)
 	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_hq", LUA_TFUNCTION))

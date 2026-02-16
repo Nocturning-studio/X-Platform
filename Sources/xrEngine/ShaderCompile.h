@@ -747,15 +747,15 @@ static bool EnsureCacheDirectoryExists(const char* cachePath)
 	*lastSlash = 0; // Обрезаем до директории
 
 	// Проверяем существование и создаем если нужно
-	//if (!FS.path_exist(directory))
-	//{
-		//Msg("* Creating cache directory: %s", directory);
+	if (!FS.path_exist(directory))
+	{
+		Msg("* Creating cache directory: %s", directory);
 		// if (!FS.create_path("$app_data_root$", directory))
 		//{
 		//	Msg("! Failed to create cache directory: %s", directory);
 		//	return false;
 		//}
-	//}
+	}
 
 	return true;
 }

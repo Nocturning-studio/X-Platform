@@ -9,7 +9,7 @@ class ENGINE_API CGammaControl
 	float fGamma;
 	float fBrightness;
 	float fContrast;
-	fcolor cBalance;
+	Fcolor cBalance;
 
   public:
 	CGammaControl() : fGamma(1.f)
@@ -23,7 +23,7 @@ class ENGINE_API CGammaControl
 	{
 		cBalance.set(_r, _g, _b, 1);
 	}
-	IC void Balance(fcolor& C)
+	IC void Balance(Fcolor& C)
 	{
 		Balance(C.r, C.g, C.b);
 	}
@@ -41,7 +41,7 @@ class ENGINE_API CGammaControl
 		fContrast = C;
 	}
 
-	void GetIP(float& G, float& B, float& C, fcolor& Balance)
+	void GetIP(float& G, float& B, float& C, Fcolor& Balance)
 	{
 		G = fGamma;
 		B = fBrightness;

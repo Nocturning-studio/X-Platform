@@ -2196,12 +2196,6 @@
     <Image Include="ui_splash3.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xrCore\xrCore.vcxproj">
-      <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\xrMath\xrMath.vcxproj">
-      <Project>{0f804a48-bd8b-4d55-b5e6-1ccf0f4bda2a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\xrNetServer\xrNetServer.vcxproj">
       <Project>{435bac9a-b225-457d-ab40-c9bd0cc8838c}</Project>
     </ProjectReference>

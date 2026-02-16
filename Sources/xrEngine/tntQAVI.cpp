@@ -296,7 +296,7 @@ BOOL CAviPlayerCustom::DecompressFrame(DWORD dwFrameNum)
 			u32& d = *dst;
 			u32 s = *src;
 			u32 a = (color_get_R(s) + color_get_G(s) + color_get_B(s)) / 3;
-			d = color_set_alpha(d, a);
+			d = subst_alpha(d, a);
 		}
 	}
 

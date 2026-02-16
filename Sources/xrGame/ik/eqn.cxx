@@ -33,12 +33,12 @@
 #include "eqn.h"
 
 /*
- * Put angle in range 0 .. 2*PI. Bounds on range of Psi
+ * Put angle in range 0 .. 2*M_PI. Bounds on range of Psi
  */
 /*
 const double LowBound  = 0;
-const double HighBound = 2*PI;
-const double TwoPi = 2*PI;
+const double HighBound = 2*M_PI;
+const double TwoPi = 2*M_PI;
 
 
 static double angle_normalize(double theta)

@@ -76,7 +76,7 @@ void SHitMark::UpdateAnim()
 {
 	int frame;
 	u32 clr = m_lanim->CalculateRGB(Engine.TimeManager.GetGlobalTime() - m_StartTime, frame);
-	m_UIStaticItem->SetColor(color_set_alpha(m_UIStaticItem->GetColor(), color_get_A(clr)));
+	m_UIStaticItem->SetColor(subst_alpha(m_UIStaticItem->GetColor(), color_get_A(clr)));
 }
 
 SHitMark::~SHitMark()

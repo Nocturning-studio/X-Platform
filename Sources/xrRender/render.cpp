@@ -42,7 +42,7 @@ class CGlow : public IRender_Glow
 	virtual void set_texture(LPCSTR name)
 	{
 	}
-	virtual void set_color(const fcolor& C)
+	virtual void set_color(const Fcolor& C)
 	{
 	}
 	virtual void set_color(float r, float g, float b)

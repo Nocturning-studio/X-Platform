@@ -24,12 +24,12 @@ void CUICarPanel::Init(float x, float y, float width, float height)
 	/*
 		AttachChild(&UISpeedometer);
 		xml_init.InitStatic(uiXml, "speedometer", 0, &UISpeedometer);
-		UISpeedometer.InitPointer(POINTER_ARROW_TEX, 0, 0, PI*1.f/3.f, -PI*1.f/3.f);
+		UISpeedometer.InitPointer(POINTER_ARROW_TEX, 0, 0, M_PI*1.f/3.f, -M_PI*1.f/3.f);
 		SetSpeed(0.3f);
 
 		AttachChild(&UITachometer);
 		xml_init.InitStatic(uiXml, "tachometer", 0, &UITachometer);
-		UITachometer.InitPointer(POINTER_ARROW_TEX,  0, 0, PI*1.f/3.f, -PI*1.f/3.f);
+		UITachometer.InitPointer(POINTER_ARROW_TEX,  0, 0, M_PI*1.f/3.f, -M_PI*1.f/3.f);
 		SetSpeed(0.3f);
 	*/
 	Show(false);

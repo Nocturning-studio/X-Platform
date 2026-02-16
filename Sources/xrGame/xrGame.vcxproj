@@ -16271,11 +16271,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
   <ItemGroup>
     <None Include="cpp.hint" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\xrMath\xrMath.vcxproj">
-      <Project>{0f804a48-bd8b-4d55-b5e6-1ccf0f4bda2a}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -370,7 +370,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 		info.fFov = m_fFov;
 
 		double x = 43.266615300557;
-		m_fDOF.y = (x / (2 * tan(PI * m_fFov / 360.f)));
+		m_fDOF.y = (x / (2 * tan(M_PI * m_fFov / 360.f)));
 		g_pGamePersistent->SetBaseDof(m_fDOF);
 	}
 

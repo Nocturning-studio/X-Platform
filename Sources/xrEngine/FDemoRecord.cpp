@@ -451,7 +451,7 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 	info.fFov = g_fFov;
 
 	double x = 43.266615300557;
-	g_fDOF.y = (x / (2 * tan(PI * g_fFov / 360.f)));
+	g_fDOF.y = (x / (2 * tan(M_PI * g_fFov / 360.f)));
 	g_pGamePersistent->SetBaseDof(g_fDOF);
 }
 

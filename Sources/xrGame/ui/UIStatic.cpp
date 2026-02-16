@@ -277,13 +277,13 @@ void CUIStatic::Update()
 
 				if (m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
 					if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-						SetColor(color_set_alpha(GetColor(), color_get_A(clr)));
+						SetColor(subst_alpha(GetColor(), color_get_A(clr)));
 					else
 						SetColor(clr);
 
 				if (m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
 					if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-						SetTextColor(color_set_alpha(GetTextColor(), color_get_A(clr)));
+						SetTextColor(subst_alpha(GetTextColor(), color_get_A(clr)));
 					else
 						SetTextColor(clr);
 			}

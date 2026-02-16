@@ -16,7 +16,7 @@ double fov_to_length(double fov)
 	if (fov < 1.0 || fov > 179.0)
 		return 35.0;
 
-	return (SENSOR_DIAGONAL / (2.0 * tan(PI * fov / 360.0)));
+	return (SENSOR_DIAGONAL / (2.0 * tan(M_PI * fov / 360.0)));
 }
 
 void CRender::render_depth_of_field()

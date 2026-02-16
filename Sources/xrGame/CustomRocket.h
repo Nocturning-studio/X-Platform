@@ -144,7 +144,7 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 	bool m_bStopLightsWithEngine;
 	// подсветка во время полета и работы двигателя
 	ref_light m_pTrailLight;
-	fcolor m_TrailLightColor;
+	Fcolor m_TrailLightColor;
 	float m_fTrailLightRange;
 	ref_sound m_flyingSound;
 

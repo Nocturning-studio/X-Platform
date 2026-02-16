@@ -7,9 +7,9 @@ struct Flight
 {
   public:
 	u32 type;			/* Type of light source */
-	fcolor diffuse;		/* Diffuse color of light */
-	fcolor specular;	/* Specular color of light */
-	fcolor ambient;		/* Ambient color of light */
+	Fcolor diffuse;		/* Diffuse color of light */
+	Fcolor specular;	/* Specular color of light */
+	Fcolor ambient;		/* Ambient color of light */
 	float3 position;	/* Position in world space */
 	float3 direction;	/* Direction in world space */
 	float range;		/* Cutoff range */

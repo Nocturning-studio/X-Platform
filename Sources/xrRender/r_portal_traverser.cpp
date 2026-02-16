@@ -304,7 +304,7 @@ void CPortalTraverser::RenderFade()
 		clamp(alpha, 0, 255);
 
 		// Подмешиваем альфу в цвет эмбиента
-		u32 final_clr = color_set_alpha(ambient_clr, u32(alpha));
+		u32 final_clr = subst_alpha(ambient_clr, u32(alpha));
 
 		// Триангуляция многоугольника портала
 		const auto& verts = portal->GetVertices();

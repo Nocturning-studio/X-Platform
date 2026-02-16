@@ -399,8 +399,8 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 		return;
 	VERIFY(m_Current);
 
-	fcolor dwLight;
-	fcolor color;
+	Fcolor dwLight;
+	Fcolor color;
 	float3 vec, vecSx, vecSy;
 	float3 vecDx, vecDy;
 

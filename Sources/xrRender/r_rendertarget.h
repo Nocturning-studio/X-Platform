@@ -36,7 +36,7 @@ class CRenderTarget : public IRender_Target
 		float3 P0, P1;
 		u32 color;
 	};
-	xr_vector<std::pair<Fsphere, fcolor>> dbg_spheres;
+	xr_vector<std::pair<Fsphere, Fcolor>> dbg_spheres;
 	xr_vector<dbg_line_t> dbg_lines;
 	xr_vector<Fplane> dbg_planes;
 #endif

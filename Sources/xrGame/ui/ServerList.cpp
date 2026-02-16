@@ -88,13 +88,13 @@ void CServerList::Update()
 	{
 		m_pAnimation->Update();
 
-		m_frame[LST_SRV_PROP].SetColor(color_set_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
-		m_frame[LST_PLAYERS].SetColor(color_set_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
+		m_frame[LST_SRV_PROP].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
+		m_frame[LST_PLAYERS].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
 
 		for (int i = 0; i < 4; i++)
 		{
-			m_header2[i].SetColor(color_set_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
-			m_header2[i].SetTextColor(color_set_alpha(m_header2[i].GetTextColor(), color_get_A(m_pAnimation->GetColor())));
+			m_header2[i].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
+			m_header2[i].SetTextColor(subst_alpha(m_header2[i].GetTextColor(), color_get_A(m_pAnimation->GetColor())));
 		}
 
 		if (m_pAnimation->Done())

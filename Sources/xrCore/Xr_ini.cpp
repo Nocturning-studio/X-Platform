@@ -490,10 +490,10 @@ float CInifile::r_float(LPCSTR S, LPCSTR L)
 	LPCSTR C = r_string(S, L);
 	return float(atof(C));
 }
-fcolor CInifile::r_fcolor(LPCSTR S, LPCSTR L)
+Fcolor CInifile::r_fcolor(LPCSTR S, LPCSTR L)
 {
 	LPCSTR C = r_string(S, L);
-	fcolor V = {0, 0, 0, 0};
+	Fcolor V = {0, 0, 0, 0};
 	sscanf(C, "%f,%f,%f,%f", &V.r, &V.g, &V.b, &V.a);
 	return V;
 }
@@ -682,7 +682,7 @@ void CInifile::w_float(LPCSTR S, LPCSTR L, float V, LPCSTR comment)
 	sprintf_s(temp, sizeof(temp), "%f", V);
 	w_string(S, L, temp, comment);
 }
-void CInifile::w_fcolor(LPCSTR S, LPCSTR L, const fcolor& V, LPCSTR comment)
+void CInifile::w_fcolor(LPCSTR S, LPCSTR L, const Fcolor& V, LPCSTR comment)
 {
 	string128 temp;
 	sprintf_s(temp, sizeof(temp), "%f,%f,%f,%f", V.r, V.g, V.b, V.a);

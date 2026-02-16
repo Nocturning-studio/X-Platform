@@ -1196,9 +1196,6 @@
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\xrMath\xrMath.vcxproj">
-      <Project>{0f804a48-bd8b-4d55-b5e6-1ccf0f4bda2a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

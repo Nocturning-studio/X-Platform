@@ -53,7 +53,7 @@ void CEnvDescriptorMixer::lerp( CEnvironment* env,
 	// Разворачивается в: variable = (1-f)*A.variable + f*B.variable
 #define LERP(v) v = fi * A.v + f * B.v
 
-	// Макрос для интерполяции векторов (float3, float4, fcolor)
+	// Макрос для интерполяции векторов (float3, float4, Fcolor)
 	// Разворачивается в: variable.lerp(A.variable, B.variable, f)
 #define LERP_VEC(v) v.lerp(A.v, B.v, f)
 

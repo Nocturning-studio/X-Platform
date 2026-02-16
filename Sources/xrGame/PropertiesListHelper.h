@@ -75,7 +75,7 @@ class CPropHelper : public IPropHelper
 	virtual RListValue* __stdcall CreateRList(PropItemVec& items, shared_str key, shared_str* val, shared_str* lst,
 											  u32 cnt);
 	virtual U32Value* __stdcall CreateColor(PropItemVec& items, shared_str key, u32* val);
-	virtual ColorValue* __stdcall CreateFColor(PropItemVec& items, shared_str key, fcolor* val);
+	virtual ColorValue* __stdcall CreateFColor(PropItemVec& items, shared_str key, Fcolor* val);
 	virtual VectorValue* __stdcall CreateVColor(PropItemVec& items, shared_str key, float3* val);
 	virtual RTextValue* __stdcall CreateRText(PropItemVec& items, shared_str key, shared_str* val);
 	virtual STextValue* __stdcall CreateSText(PropItemVec& items, shared_str key, xr_string* val);

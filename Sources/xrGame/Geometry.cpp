@@ -530,7 +530,7 @@ void CSphereGeom::get_mass(dMass& m)
 
 float CSphereGeom::volume()
 {
-	return 4.f * PI * m_sphere.R * m_sphere.R * m_sphere.R / 3.f;
+	return 4.f * M_PI * m_sphere.R * m_sphere.R * m_sphere.R / 3.f;
 }
 
 float CSphereGeom::radius()
@@ -594,7 +594,7 @@ void CCylinderGeom::get_mass(dMass& m)
 
 float CCylinderGeom::volume()
 {
-	return PI * m_cylinder.m_radius * m_cylinder.m_radius * m_cylinder.m_height;
+	return M_PI * m_cylinder.m_radius * m_cylinder.m_radius * m_cylinder.m_height;
 }
 
 float CCylinderGeom::radius()

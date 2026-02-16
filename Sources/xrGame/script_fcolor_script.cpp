@@ -14,13 +14,13 @@ using namespace luabind;
 #pragma optimize("s", on)
 void CScriptFcolor::script_register(lua_State* L)
 {
-	module(L)[class_<fcolor>("fcolor")
-				  .def_readwrite("r", &fcolor::r)
-				  .def_readwrite("g", &fcolor::g)
-				  .def_readwrite("b", &fcolor::b)
-				  .def_readwrite("a", &fcolor::a)
+	module(L)[class_<Fcolor>("fcolor")
+				  .def_readwrite("r", &Fcolor::r)
+				  .def_readwrite("g", &Fcolor::g)
+				  .def_readwrite("b", &Fcolor::b)
+				  .def_readwrite("a", &Fcolor::a)
 				  .def(constructor<>())
-				  .def("set", (fcolor & (fcolor::*)(float, float, float, float))(&fcolor::set), return_reference_to(_1))
-				  .def("set", (fcolor & (fcolor::*)(const fcolor&))(&fcolor::set), return_reference_to(_1))
-				  .def("set", (fcolor & (fcolor::*)(u32))(&fcolor::set), return_reference_to(_1))];
+				  .def("set", (Fcolor & (Fcolor::*)(float, float, float, float))(&Fcolor::set), return_reference_to(_1))
+				  .def("set", (Fcolor & (Fcolor::*)(const Fcolor&))(&Fcolor::set), return_reference_to(_1))
+				  .def("set", (Fcolor & (Fcolor::*)(u32))(&Fcolor::set), return_reference_to(_1))];
 }

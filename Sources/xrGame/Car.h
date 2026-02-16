@@ -338,7 +338,7 @@ class CCar : public CEntity,
 			joint = NULL;
 			state = closed;
 			torque = 500.f;
-			a_vel = PI;
+			a_vel = M_PI;
 		}
 	};
 

@@ -197,9 +197,9 @@ void euler_extract2(const EulerTableEntry& E, const Matrix R, float f1[3], float
 		*t1[1] = angle_normalize(atan2f(y[0], x[0]));
 		*t1[2] = angle_normalize(atan2f(y[1], x[1]));
 
-		*t2[0] = angle_normalize(PI - *t1[0]);
-		*t2[1] = angle_normalize(*t1[1] + PI);
-		*t2[2] = angle_normalize(*t1[2] + PI);
+		*t2[0] = angle_normalize(M_PI - *t1[0]);
+		*t2[1] = angle_normalize(*t1[1] + M_PI);
+		*t2[2] = angle_normalize(*t1[2] + M_PI);
 	}
 	else
 		printf("CosType not yet implemented in euler_extract\n");

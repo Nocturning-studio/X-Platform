@@ -31,11 +31,11 @@ struct lanim_wrapper
 		VERIFY(item);
 		return item->Length_ms();
 	}
-	fcolor calculate(float T)
+	Fcolor calculate(float T)
 	{
 		int frame;
 		VERIFY(item);
-		return fcolor().set(item->CalculateRGB(T, frame));
+		return Fcolor().set(item->CalculateRGB(T, frame));
 	}
 };
 

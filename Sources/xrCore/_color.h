@@ -42,7 +42,7 @@ ICF u32 color_get_A(u32 rgba)
 {
 	return ((rgba) >> 24);
 }
-ICF u32 color_set_alpha(u32 rgba, u32 a)
+ICF u32 subst_alpha(u32 rgba, u32 a)
 {
 	return rgba & ~color_rgba(0, 0, 0, 0xff) | color_rgba(0, 0, 0, a);
 }
@@ -290,7 +290,7 @@ template <class T> struct _color
 	};
 };
 
-typedef _color<float> fcolor;
+typedef _color<float> Fcolor;
 typedef _color<double> Dcolor;
 
 template <class T> BOOL _valid(const _color<T>& c)

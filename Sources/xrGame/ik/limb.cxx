@@ -78,9 +78,9 @@ int Limb::check_r_joint(float& v)
 	{
 		// Put v in correct range
 		if (v < min[3])
-			v += 2 * PI;
+			v += 2 * M_PI;
 		if (v > max[3])
-			v -= 2 * PI;
+			v -= 2 * M_PI;
 		return 1;
 	}
 
@@ -130,7 +130,7 @@ void select_best_family(const AngleInt jt_limits[], const float f1[], const floa
 }
 
 //
-// If possible put v (0 < v < 2*PI) in the range low < v < high
+// If possible put v (0 < v < 2*M_PI) in the range low < v < high
 //
 
 inline float put_angle_in_range(float low, float high, float v)
@@ -142,7 +142,7 @@ inline float put_angle_in_range(float low, float high, float v)
 	else
 		d1 = std::min(_abs(v - low), _abs(v - high));
 
-	v2 = v - 2 * PI;
+	v2 = v - 2 * M_PI;
 
 	if (low <= v2 && v2 <= high)
 		return v2;
@@ -610,7 +610,7 @@ int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const Ang
 						 const AngleIntList* f21 = 0, const AngleIntList* f22 = 0)
 {
 	int i = 0;
-	float d = 2 * PI;
+	float d = 2 * M_PI;
 	float angle;
 
 	if (inspect_range(*f11, swivel_angle, 1, angle, i, d))
@@ -838,9 +838,9 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
 	int success;
 
 	if (swivel_angle < 0)
-		swivel_angle += 2 * PI;
-	if (swivel_angle > 2 * PI)
-		swivel_angle -= 2 * PI;
+		swivel_angle += 2 * M_PI;
+	if (swivel_angle > 2 * M_PI)
+		swivel_angle -= 2 * M_PI;
 
 	x[3] = x3;
 
@@ -923,7 +923,7 @@ int Limb::InLimits(const float x[7]) const
 float roundup(float x)
 {
 	if (x < 0)
-		x += 2 * PI;
+		x += 2 * M_PI;
 	return x;
 }
 void dump_file(char* file, int euler_type, float min[], float max[], Matrix c, Matrix s, Matrix o)

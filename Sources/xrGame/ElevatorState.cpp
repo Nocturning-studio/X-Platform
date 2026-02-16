@@ -160,7 +160,7 @@ void CElevatorState::UpdateStNearUp()
 	VERIFY(m_ladder && m_character);
 	float3 d;
 
-	if (m_ladder->InTouch(m_character) && m_character->CamDir().y < -PI / 20.f &&
+	if (m_ladder->InTouch(m_character) && m_character->CamDir().y < -M_PI / 20.f &&
 		// d.dotproduct(m_character->ControlAccel())<0.f&&
 		// ClimbDirection()<0.f&&
 		m_ladder->DDToPlain(m_character, d) > m_character->FootRadius() / 3.f &&

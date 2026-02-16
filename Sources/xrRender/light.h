@@ -12,7 +12,7 @@ class light : public IRender_Light, public ISpatial
 	float3 right;
 	float range;
 	float cone;
-	fcolor color;
+	Fcolor color;
 
 	vis_data hom;
 	u32 frame_render;
@@ -74,7 +74,7 @@ class light : public IRender_Light, public ISpatial
 	float3 get_right(){return right;}
 	float get_range(){return range;}
 	float get_cone(){return cone;}
-	fcolor get_color(){return color;}
+	Fcolor get_color(){return color;}
 	u32 get_frame_render(){return frame_render;}
 	ref_shader get_shader_spot(){return s_spot;}
 	ref_shader get_shader_point(){return s_point;}
@@ -99,7 +99,7 @@ class light : public IRender_Light, public ISpatial
 	virtual void set_cone(float angle);
 	virtual void set_range(float R);
 	virtual void set_virtual_size(float R){};
-	virtual void set_color(const fcolor& C)
+	virtual void set_color(const Fcolor& C)
 	{
 		color.set(C);
 	}

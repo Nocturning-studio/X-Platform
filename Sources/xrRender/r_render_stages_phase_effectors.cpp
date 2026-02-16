@@ -148,8 +148,8 @@ void CRender::render_effectors_pass_combine()
 
 	int gblend = clampr(iFloor((1 - RenderImplementation.EffectorsManager->get_gray()) * 255.f), 0, 255);
 	int nblend = clampr(iFloor((1 - RenderImplementation.EffectorsManager->get_noise()) * 255.f), 0, 255);
-	u32 p_color = color_set_alpha(RenderImplementation.EffectorsManager->get_color_base(), nblend);
-	u32 p_gray = color_set_alpha(RenderImplementation.EffectorsManager->get_color_gray(), gblend);
+	u32 p_color = subst_alpha(RenderImplementation.EffectorsManager->get_color_base(), nblend);
+	u32 p_gray = subst_alpha(RenderImplementation.EffectorsManager->get_color_gray(), gblend);
 	u32 p_brightness = RenderImplementation.EffectorsManager->get_color_add();
 
 	// Draw full-screen quad textured with our scene image

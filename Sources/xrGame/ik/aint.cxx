@@ -61,7 +61,7 @@ float AngleInt::Mid() const
 	if (High() > Low())
 		mid = ((High() + Low()) / 2.0f);
 	else
-		mid = angle_normalize(PI + (High() + Low()) / 2.0f);
+		mid = angle_normalize(M_PI + (High() + Low()) / 2.0f);
 
 	return mid;
 }
@@ -75,7 +75,7 @@ float AngleInt::Mid() const
 float AngleInt::Distance(float v) const
 {
 	const float eps = AINT_EPSILON;
-	const float TwoPi = 2 * PI;
+	const float TwoPi = 2 * M_PI;
 
 	float t1, t2;
 	v = angle_normalize(v);
@@ -84,7 +84,7 @@ float AngleInt::Distance(float v) const
 		return TwoPi;
 
 	if (IsFullRange(eps))
-		return -PI;
+		return -M_PI;
 
 	if (iszero(v) || istwopi(v))
 	{
@@ -115,7 +115,7 @@ float AngleInt::Distance(float v) const
 			t2 = Low() - v;
 		}
 
-		// High <= v < 2*PI
+		// High <= v < 2*M_PI
 		else
 		{
 			t1 = v - High();
@@ -138,7 +138,7 @@ float AngleInt::Distance(float v) const
 			t2 = Low() - v;
 		}
 
-		// Low <= v < 2*PI
+		// Low <= v < 2*M_PI
 		else
 		{
 			t1 = Low() - v;
@@ -195,10 +195,10 @@ int AngleInt::merge_aux(const AngleInt& a, AngleInt& b, float eps) const
 	{
 		float mid = (Low() + High()) / 2.0f;
 		if (Low() < High())
-			mid += PI;
+			mid += M_PI;
 
 		if (a.InRange(mid, eps))
-			b.Set(0, 2 * PI);
+			b.Set(0, 2 * M_PI);
 		else
 			b.Set(Low(), High());
 	}
@@ -227,7 +227,7 @@ int AngleInt::merge(const AngleInt& a, AngleInt& b, float eps) const
 //
 float AngleInt::Range() const
 {
-	return (low < high) ? (high - low) : high + (2 * PI - low);
+	return (low < high) ? (high - low) : high + (2 * M_PI - low);
 }
 
 void AngleIntList::add(float l, float h)
@@ -275,7 +275,7 @@ void AngleIntList::remove(AngleIntListNode* t)
 void swell(const AngleInt& a, const AngleInt& b, AngleInt& c)
 {
 	if (a.IsFullRange())
-		c.Set(0, 2 * PI);
+		c.Set(0, 2 * M_PI);
 	else
 	{
 		float l = a.Low();
@@ -321,14 +321,14 @@ void AngleIntList::Add(float l, float h, float eps)
 	AngleInt a(l, h);
 	AngleInt b;
 
-	// interval to add is either emtpy or close to full range 0..2*PI
+	// interval to add is either emtpy or close to full range 0..2*M_PI
 	if (a.IsEmpty())
 		return;
 
 	else if (a.IsFullRange())
 	{
 		Clear();
-		add(0.0f, 2 * PI - AINT_EPSILON);
+		add(0.0f, 2 * M_PI - AINT_EPSILON);
 	}
 
 	// Put a into the list taking into account it may merge with another entry
@@ -382,7 +382,7 @@ void AngleIntList::AddList(AngleIntList& dest, float eps) const
 
 float AngleIntList::Distance(float a) const
 {
-	float dist = 2 * PI;
+	float dist = 2 * M_PI;
 
 	for (AngleIntListNode* t = head; t; t = t->next)
 	{
@@ -651,7 +651,7 @@ void AngleIntList::wrap(float eps)
 				break;
 		}
 
-		if (_abs(temp->D.High() - 2 * PI) < eps)
+		if (_abs(temp->D.High() - 2 * M_PI) < eps)
 		{
 			t = temp;
 			if (s)

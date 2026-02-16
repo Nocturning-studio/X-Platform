@@ -768,7 +768,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 					J->SetJointSDfactors(joint_data.spring_factor, joint_data.damping_factor);
 					J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 0);
 					J->SetAxisSDfactors(joint_data.limits[0].spring_factor, joint_data.limits[0].damping_factor, 0);
-					if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < PI * 2.f)
+					if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < M_PI * 2.f)
 					{
 						J->SetLimits(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y, 1);
 						J->SetAxisSDfactors(joint_data.limits[1].spring_factor, joint_data.limits[1].damping_factor, 1);
@@ -794,7 +794,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 							J->SetAnchorVsSecondElement(0, 0, 0);
 							J->SetJointSDfactors(joint_data.spring_factor, joint_data.damping_factor);
 							J->SetAxisDirVsSecondElement(0.f, 0.f, 1.f, 0);
-							if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < PI * 2.f)
+							if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < M_PI * 2.f)
 							{
 								J->SetLimits(joint_data.limits[2].limit.x, joint_data.limits[2].limit.y, 0);
 								J->SetAxisSDfactors(joint_data.limits[2].spring_factor,
@@ -808,7 +808,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 							J->SetAnchorVsSecondElement(0, 0, 0);
 							J->SetJointSDfactors(joint_data.spring_factor, joint_data.damping_factor);
 							J->SetAxisDirVsSecondElement(0, 1, 0, 0);
-							if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < PI * 2.f)
+							if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < M_PI * 2.f)
 							{
 								J->SetLimits(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y, 0);
 								J->SetAxisSDfactors(joint_data.limits[1].spring_factor,
@@ -823,20 +823,20 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 						// 0-1
 						J->SetAxisDirVsSecondElement(0.f, 1.f, 0.f, 2); // 1-2
 
-						if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < PI * 2.f)
+						if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[2].limit.x, joint_data.limits[2].limit.y, 0);
 							J->SetAxisSDfactors(joint_data.limits[2].spring_factor, joint_data.limits[2].damping_factor,
 												0);
 						}
-						if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < PI * 2.f)
+						if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 1);
 							J->SetAxisSDfactors(joint_data.limits[0].spring_factor, joint_data.limits[0].damping_factor,
 												1);
 						}
 
-						if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < PI * 2.f)
+						if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y, 2);
 							J->SetAxisSDfactors(joint_data.limits[1].spring_factor, joint_data.limits[1].damping_factor,
@@ -854,7 +854,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 							J->SetAnchorVsSecondElement(0, 0, 0);
 							J->SetJointSDfactors(joint_data.spring_factor, joint_data.damping_factor);
 							J->SetAxisDirVsSecondElement(1, 0, 0, 0);
-							if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < PI * 2.f)
+							if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < M_PI * 2.f)
 							{
 								J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 0);
 								J->SetAxisSDfactors(joint_data.limits[0].spring_factor,
@@ -869,20 +869,20 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 						J->SetAxisDirVsSecondElement(0.f, 0.f, 1.f, 0); // 2-0
 						// 1-1
 						J->SetAxisDirVsSecondElement(1.f, 0.f, 0.f, 2); // 0-2
-						if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < PI * 2.f)
+						if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[2].limit.x, joint_data.limits[2].limit.y, 0);
 							J->SetAxisSDfactors(joint_data.limits[2].spring_factor, joint_data.limits[2].damping_factor,
 												0);
 						}
-						if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < PI * 2.f)
+						if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 2);
 							J->SetAxisSDfactors(joint_data.limits[0].spring_factor, joint_data.limits[0].damping_factor,
 												2);
 						}
 
-						if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < PI * 2.f)
+						if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y, 1);
 							J->SetAxisSDfactors(joint_data.limits[1].spring_factor, joint_data.limits[1].damping_factor,
@@ -899,20 +899,20 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 						J->SetAxisDirVsSecondElement(1.f, 0.f, 0.f, 0); // 0-0
 						// 2-1
 						J->SetAxisDirVsSecondElement(0.f, 1.f, 0.f, 2); // 1-2
-						if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < PI * 2.f)
+						if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[2].limit.x, joint_data.limits[2].limit.y, 1);
 							J->SetAxisSDfactors(joint_data.limits[2].spring_factor, joint_data.limits[2].damping_factor,
 												1);
 						}
-						if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < PI * 2.f)
+						if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 0);
 							J->SetAxisSDfactors(joint_data.limits[0].spring_factor, joint_data.limits[0].damping_factor,
 												0);
 						}
 
-						if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < PI * 2.f)
+						if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < M_PI * 2.f)
 						{
 							J->SetLimits(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y, 2);
 							J->SetAxisSDfactors(joint_data.limits[1].spring_factor, joint_data.limits[1].damping_factor,
@@ -926,18 +926,18 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 					J->SetAxisDirVsSecondElement(0.f, 0.f, 1.f, 0); // 2-0
 					// 0-1
 					J->SetAxisDirVsSecondElement(0.f, 1.f, 0.f, 2); // 1-2
-					if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < PI * 2.f)
+					if (joint_data.limits[2].limit.y - joint_data.limits[2].limit.x < M_PI * 2.f)
 					{
 						J->SetLimits(joint_data.limits[2].limit.x, joint_data.limits[2].limit.y, 0);
 						J->SetAxisSDfactors(joint_data.limits[2].spring_factor, joint_data.limits[2].damping_factor, 0);
 					}
-					if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < PI * 2.f)
+					if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < M_PI * 2.f)
 					{
 						J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 1);
 						J->SetAxisSDfactors(joint_data.limits[0].spring_factor, joint_data.limits[0].damping_factor, 1);
 					}
 
-					if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < PI * 2.f)
+					if (joint_data.limits[1].limit.y - joint_data.limits[1].limit.x < M_PI * 2.f)
 					{
 						J->SetLimits(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y, 2);
 						J->SetAxisSDfactors(joint_data.limits[1].spring_factor, joint_data.limits[1].damping_factor, 2);
@@ -951,7 +951,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, float4x4 glo
 					J->SetJointSDfactors(joint_data.spring_factor, joint_data.damping_factor);
 					J->SetAxisDirVsSecondElement(1, 0, 0, 0);
 					J->SetAxisDirVsSecondElement(0, 0, 1, 1);
-					if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < PI * 2.f)
+					if (joint_data.limits[0].limit.y - joint_data.limits[0].limit.x < M_PI * 2.f)
 					{
 						J->SetLimits(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y, 0);
 						J->SetAxisSDfactors(joint_data.limits[0].spring_factor, joint_data.limits[0].damping_factor, 0);

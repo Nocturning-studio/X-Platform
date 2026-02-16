@@ -40,8 +40,8 @@
 
 // static double angle_normalize_signed(double x)
 //{
-//     while (x > PI)  x -= 2*PI;
-//     while (x < -PI) x += 2*PI;
+//     while (x > M_PI)  x -= 2*M_PI;
+//     while (x < -M_PI) x += 2*M_PI;
 //
 //     return x;
 // }
@@ -65,7 +65,7 @@ float angle_distance(float x, float y)
     // or anticlockwise distances are closer 
     if (signx != signy)
     {
-        float temp = (2*PI) - dist;
+        float temp = (2*M_PI) - dist;
         if (temp < dist)
             dist = temp;
     }
@@ -157,9 +157,9 @@ int myasin(float x, float solns[2])
 		return 1;
 
 	if (solns[0] > 0)
-		solns[1] = PI - solns[0];
+		solns[1] = M_PI - solns[0];
 	else
-		solns[1] = -PI - solns[0];
+		solns[1] = -M_PI - solns[0];
 
 	return 2;
 }

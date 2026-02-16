@@ -128,7 +128,7 @@ class XR_EPROPS_API IPropHelper
 	virtual RListValue* __stdcall CreateRList(PropItemVec& items, shared_str key, shared_str* val, shared_str* lst,
 											  u32 cnt) = 0;
 	virtual U32Value* __stdcall CreateColor(PropItemVec& items, shared_str key, u32* val) = 0;
-	virtual ColorValue* __stdcall CreateFColor(PropItemVec& items, shared_str key, fcolor* val) = 0;
+	virtual ColorValue* __stdcall CreateFColor(PropItemVec& items, shared_str key, Fcolor* val) = 0;
 	virtual VectorValue* __stdcall CreateVColor(PropItemVec& items, shared_str key, float3* val) = 0;
 	virtual RTextValue* __stdcall CreateRText(PropItemVec& items, shared_str key, shared_str* val) = 0;
 	virtual STextValue* __stdcall CreateSText(PropItemVec& items, shared_str key, xr_string* val) = 0;

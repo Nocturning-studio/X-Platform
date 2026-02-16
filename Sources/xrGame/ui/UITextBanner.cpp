@@ -117,11 +117,11 @@ void CUITextBanner::EffectFade()
 
 	if (fade.iEffectStage)
 	{
-		m_Cl = color_set_alpha(GetTextColor(), u8(iFloor(255.f * (fade.fTimePassed / fade.fPeriod))));
+		m_Cl = subst_alpha(GetTextColor(), u8(iFloor(255.f * (fade.fTimePassed / fade.fPeriod))));
 	}
 	else
 	{
-		m_Cl = color_set_alpha(GetTextColor(), u8(iFloor(255.f * (1 - (fade.fTimePassed / fade.fPeriod)))));
+		m_Cl = subst_alpha(GetTextColor(), u8(iFloor(255.f * (1 - (fade.fTimePassed / fade.fPeriod)))));
 	}
 }
 
@@ -153,11 +153,11 @@ void CUITextBanner::EffectFlicker()
 
 	if (flicker.iEffectStage)
 	{
-		m_Cl = color_set_alpha(GetTextColor(), 0);
+		m_Cl = subst_alpha(GetTextColor(), 0);
 	}
 	else
 	{
-		m_Cl = color_set_alpha(GetTextColor(), 255);
+		m_Cl = subst_alpha(GetTextColor(), 255);
 	}
 }
 

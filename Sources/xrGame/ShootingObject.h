@@ -90,9 +90,9 @@ class CShootingObject
 	// Lights
 	//////////////////////////////////////////////////////////////////////////
   protected:
-	fcolor light_base_color;
+	Fcolor light_base_color;
 	float light_base_range;
-	fcolor light_build_color;
+	Fcolor light_build_color;
 	float light_build_range;
 	ref_light light_render;
 	float light_var_color;

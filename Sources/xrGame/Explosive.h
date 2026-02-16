@@ -173,7 +173,7 @@ class CExplosive : public IDamageSource
 
 	// подсветка взрыва
 	ref_light m_pLight;
-	fcolor m_LightColor;
+	Fcolor m_LightColor;
 	float m_fLightRange;
 	float m_fLightTime;
 

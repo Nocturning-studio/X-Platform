@@ -341,7 +341,7 @@ bool CUIActorStaticticHeader::OnMouseDown(int mouse_btn)
 void CUIActorStaticticHeader::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
-	m_text1->SetTextColor(color_set_alpha(m_text1->GetTextColor(), b ? 255 : m_stored_alpha));
+	m_text1->SetTextColor(subst_alpha(m_text1->GetTextColor(), b ? 255 : m_stored_alpha));
 	if (b)
 	{
 		m_actorInfoWnd->FillPointsDetail(m_id);
