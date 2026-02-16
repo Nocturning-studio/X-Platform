@@ -311,7 +311,7 @@ IC void axis_angleA(const float4x4& m, const float3& axis, float& angle)
 	angle = acosf(cosinus);
 	if (sinus < 0.f)
 		angle = -angle;
-	// if(angle>M_PI) angle=angle-2.f*M_PI;
-	// if(angle<-M_PI) angle=angle+2.f*M_PI;
+	// if(angle>PI) angle=angle-2.f*PI;
+	// if(angle<-PI) angle=angle+2.f*PI;
 }
 #endif

@@ -37,6 +37,9 @@ using BOOL = int;
 #define int_min type_min(int)
 #define int_zero type_zero(int)
 
+#undef FLT_MAX
+#undef FLT_MIN
+
 #define flt_max type_max(float)
 #define flt_min type_min(float)
 #define FLT_MAX flt_max

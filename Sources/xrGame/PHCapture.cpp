@@ -167,7 +167,7 @@ void CPHCapture::PullingUpdate()
 				dJointSetAMotorAxis(m_ajoint, 2, 2, 0.f, 0.f, 1.f);
 			}
 		}
-		// float hi=-M_PI/2.f,lo=-hi;
+		// float hi=-PI/2.f,lo=-hi;
 		// dJointSetAMotorParam(m_ajoint,dParamLoStop ,lo);
 		// dJointSetAMotorParam(m_ajoint,dParamHiStop ,hi);
 		// dJointSetAMotorParam(m_ajoint,dParamLoStop2 ,lo);

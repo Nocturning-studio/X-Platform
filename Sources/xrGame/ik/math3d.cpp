@@ -464,7 +464,7 @@ float angle_between_vectors(float u[3], float v[3], float n[3])
     if (mag*mag < 1e-8)
     {
 	if (DOT(up,vp) < 0)
-	    return M_PI;
+	    return PI;
 	else
 	    return 0;
     }
@@ -762,7 +762,7 @@ void rotation_principal_axis_to_matrix(char axis, float angle, Matrix m)
 //	axis = vector associated with skew symmetric matrix (R-R')/(2*sin(theta))
 //
 //
-// By our convention always return 0 <= angle < M_PI
+// By our convention always return 0 <= angle < PI
 //
 void rotation_matrix_to_axis(const Matrix R, float axis[], float& angle)
 {
@@ -771,7 +771,7 @@ void rotation_matrix_to_axis(const Matrix R, float axis[], float& angle)
 	angle = acosf((R[0][0] + R[1][1] + R[2][2] - 1) / 2.0f);
 
 	// Close to identity. Arbitrarily set solution to z axis rotation of 0
-	if (_abs(angle) < eps || _abs(angle - M_PI) < eps)
+	if (_abs(angle) < eps || _abs(angle - PI) < eps)
 	{
 		angle = 0.0;
 		axis[0] = axis[1] = 0.0;

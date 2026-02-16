@@ -1642,6 +1642,9 @@
     </CustomBuild>
     <ClInclude Include="log.h" />
     <ClInclude Include="lzhuf.h" />
+    <ClInclude Include="math_constants.h" />
+    <ClInclude Include="math_splines.h" />
+    <ClInclude Include="math_utils.h" />
     <ClInclude Include="memory_monitor.h" />
     <ClInclude Include="Noncopyable.hpp" />
     <ClInclude Include="os_clipboard.h" />

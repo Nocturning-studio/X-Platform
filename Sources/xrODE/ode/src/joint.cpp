@@ -41,10 +41,10 @@ transform is the identity.
 
 extern "C" void dBodyAddTorque (dBodyID, dReal fx, dReal fy, dReal fz);
 extern "C" void dBodyAddForce (dBodyID, dReal fx, dReal fy, dReal fz);
-const dReal min_stop_err				=					M_PI*0.03f;//0.1f;//
+const dReal min_stop_err				=					PI*0.03f;//0.1f;//
 const dReal min_ball_err				=					0.0f;//0.01f;
 const dReal hinge_min_err_exis_par		=					0.000f;//0.01f;
-const dReal stop_early_reaction			=					M_PI*0.00f;
+const dReal stop_early_reaction			=					PI*0.00f;
 //#define USE_STOPS_MIN_ERR									1
 
 static inline void add_min_err(dReal	&param,const dReal min_err)
@@ -362,7 +362,7 @@ static dReal getHingeAngleFromRelativeQuat (dQuaternion qrel, dVector3 axis)
 
   // the angle we get will be between 0..2*pi, but we want to return angles
   // between -pi..pi
-  if (theta > M_PI) theta -= 2*M_PI;
+  if (theta > PI) theta -= 2*PI;
 
   // the angle we've just extracted has the wrong sign
   theta = -theta;
@@ -760,7 +760,7 @@ static void hingeGetInfo1 (dxJointHinge *j, dxJoint::Info1 *info)
   else info->m = 5;
 
   // see if we're at a joint limit.
-  if ((j->limot.lostop >= -M_PI || j->limot.histop <= M_PI) &&
+  if ((j->limot.lostop >= -PI || j->limot.histop <= PI) &&
        j->limot.lostop <= j->limot.histop) {
     dReal angle = getHingeAngle (j->node[0].body,j->node[1].body,j->axis1,
 				 j->qrel);
@@ -1526,7 +1526,7 @@ static void hinge2GetInfo1 (dxJointHinge2 *j, dxJoint::Info1 *info)
 
   // see if we're powered or at a joint limit for axis 1
   int atlimit=0;
-  if ((j->limot1.lostop >= -M_PI || j->limot1.histop <= M_PI) &&
+  if ((j->limot1.lostop >= -PI || j->limot1.histop <= PI) &&
       j->limot1.lostop <= j->limot1.histop) {
     dReal angle = measureHinge2Angle (j);
     if (j->limot1.testRotationalLimit (angle)) atlimit = 1;
@@ -1965,9 +1965,9 @@ static void universalGetInfo1 (dxJointUniversal *j, dxJoint::Info1 *info)
   bool constraint1 = j->limot1.fmax > 0;
   bool constraint2 = j->limot2.fmax > 0;
 
-  bool limiting1 = (j->limot1.lostop >= -M_PI || j->limot1.histop <= M_PI) &&
+  bool limiting1 = (j->limot1.lostop >= -PI || j->limot1.histop <= PI) &&
        j->limot1.lostop <= j->limot1.histop;
-  bool limiting2 = (j->limot2.lostop >= -M_PI || j->limot2.histop <= M_PI) &&
+  bool limiting2 = (j->limot2.lostop >= -PI || j->limot2.histop <= PI) &&
        j->limot2.lostop <= j->limot2.histop;
 
   // We need to call testRotationLimit() even if we're motored, since it

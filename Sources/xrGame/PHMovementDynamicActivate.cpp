@@ -370,7 +370,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	// const Fbox& box =Box();
 	float pass = character_exist ? _abs(Box().getradius() - boxes[id].getradius()) : boxes[id].getradius();
 	float max_vel = pass / 2.f / fnum_it / fnum_steps / fixed_step;
-	float max_a_vel = M_PI / 8.f / fnum_it / fnum_steps / fixed_step;
+	float max_a_vel = PI / 8.f / fnum_it / fnum_steps / fixed_step;
 	dBodySetForce(GetBody(), 0.f, 0.f, 0.f);
 	dBodySetLinearVel(GetBody(), 0.f, 0.f, 0.f);
 	Calculate(float3().set(0, 0, 0), float3().set(1, 0, 0), 0, 0, 0, 0);

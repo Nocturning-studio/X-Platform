@@ -611,6 +611,15 @@
     <ClInclude Include="xrCPU.h">
       <Filter>CPUID</Filter>
     </ClInclude>
+    <ClInclude Include="math_constants.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math_utils.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math_splines.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc">

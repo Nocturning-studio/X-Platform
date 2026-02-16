@@ -1,122 +1,17 @@
 #ifndef _vector_included
 #define _vector_included
 
-// Undef some macros
-#ifdef M_PI
-#undef M_PI
-#endif
-
-#ifdef PI
-#undef PI
-#endif
-
-#ifdef FLT_MAX
-#undef FLT_MAX
-#undef FLT_MIN
-#endif
-
 // Select platform
 #ifdef _MSC_VER
 #define MSVC_COMPILER
 #endif
 
-// Constants
-#ifdef MSVC_COMPILER
-const float EPS_S = 0.0000001f;
-const float EPS = 0.0000100f;
-const float EPS_L = 0.0010000f;
-
-const float M_PI = 3.1415926535897932384626433832795f;
-const float PI = 3.1415926535897932384626433832795f;
-const float PI_MUL_2 = 6.2831853071795864769252867665590f;
-const float PI_MUL_3 = 9.4247779607693797153879301498385f;
-const float PI_MUL_4 = 12.566370614359172953850573533118f;
-const float PI_MUL_6 = 18.849555921538759430775860299677f;
-const float PI_MUL_8 = 25.132741228718345907701147066236f;
-const float PI_DIV_2 = 1.5707963267948966192313216916398f;
-const float PI_DIV_3 = 1.0471975511965977461542144610932f;
-const float PI_DIV_4 = 0.7853981633974483096156608458199f;
-const float PI_DIV_6 = 0.5235987755982988730771072305466f;
-const float PI_DIV_8 = 0.3926990816987241548078304229099f;
-#endif
-
 // Define types and namespaces (CPU & FPU)
 #include "math_types.h"
-#include "_math.h"
+#include "math_constants.h"
 #include "_bitwise.h"
 #include "_std_extensions.h"
-
-// comparisions
-IC BOOL fsimilar(float a, float b, float cmp = EPS)
-{
-	return _abs(a - b) < cmp;
-}
-IC BOOL dsimilar(double a, double b, double cmp = EPS)
-{
-	return _abs(a - b) < cmp;
-}
-
-IC BOOL fis_zero(float val, float cmp = EPS_S)
-{
-	return _abs(val) < cmp;
-}
-IC BOOL dis_zero(double val, double cmp = EPS_S)
-{
-	return _abs(val) < cmp;
-}
-
-// degree 2 radians and vice-versa
-namespace implement
-{
-template <class T> ICF T deg2rad(T val)
-{
-	return (val * T(M_PI) / T(180));
-};
-template <class T> ICF T rad2deg(T val)
-{
-	return (val * T(180) / T(M_PI));
-};
-}; // namespace implement
-ICF float deg2rad(float val)
-{
-	return implement::deg2rad(val);
-}
-ICF double deg2rad(double val)
-{
-	return implement::deg2rad(val);
-}
-ICF float rad2deg(float val)
-{
-	return implement::rad2deg(val);
-}
-ICF double rad2deg(double val)
-{
-	return implement::rad2deg(val);
-}
-
-// clamping/snapping
-template <class T> IC void clamp(T& val, const T& _low, const T& _high)
-{
-	if (val < _low)
-		val = _low;
-	else if (val > _high)
-		val = _high;
-};
-template <class T> IC T clampr(const T& val, const T& _low, const T& _high)
-{
-	if (val < _low)
-		return _low;
-	else if (val > _high)
-		return _high;
-	else
-		return val;
-};
-IC float snapto(float value, float snap)
-{
-	if (snap <= 0.f)
-		return value;
-	return float(iFloor((value + (snap * 0.5f)) / snap)) * snap;
-};
+#include "math_utils.h"
 
 // pre-definitions
 template <class T> struct _quaternion;
@@ -144,130 +39,9 @@ template <class T> struct _quaternion;
 #include "_plane.h"
 #include "_plane2.h"
 #include "_flags.h"
+#include "math_splines.h"
 
 #pragma pack(pop)
-
-// normalize angle (0..2PI)
-ICF float angle_normalize_always(float a)
-{
-	float div = a / PI_MUL_2;
-	int rnd = (div > 0) ? iFloor(div) : iCeil(div);
-	float frac = div - rnd;
-	if (frac < 0)
-		frac += 1.f;
-	return frac * PI_MUL_2;
-}
-
-// normalize angle (0..2PI)
-ICF float angle_normalize(float a)
-{
-	if (a >= 0 && a <= PI_MUL_2)
-		return a;
-	else
-		return angle_normalize_always(a);
-}
-
-// -PI .. +PI
-ICF float angle_normalize_signed(float a)
-{
-	if (a >= (-PI) && a <= PI)
-		return a;
-	float angle = angle_normalize_always(a);
-	if (angle > PI)
-		angle -= PI_MUL_2;
-	return angle;
-}
-
-// -PI..PI
-ICF float angle_difference_signed(float a, float b)
-{
-	float diff = angle_normalize_signed(a) - angle_normalize_signed(b);
-	if (diff > 0)
-	{
-		if (diff > PI)
-			diff -= PI_MUL_2;
-	}
-	else
-	{
-		if (diff < -PI)
-			diff += PI_MUL_2;
-	}
-	return diff;
-}
-
-// 0..PI
-ICF float angle_difference(float a, float b)
-{
-	return _abs(angle_difference_signed(a, b));
-}
-
-// c=current, t=target, s=speed, dt=dt
-IC bool angle_lerp(float& c, float t, float s, float dt)
-{
-	float diff = t - c;
-	if (diff > 0)
-	{
-		if (diff > PI)
-			diff -= PI_MUL_2;
-	}
-	else
-	{
-		if (diff < -PI)
-			diff += PI_MUL_2;
-	}
-	float diff_a = _abs(diff);
-
-	if (diff_a < EPS_S)
-		return true;
-
-	float mot = s * dt;
-	if (mot > diff_a)
-		mot = diff_a;
-	c += (diff / diff_a) * mot;
-
-	if (c < 0)
-		c += PI_MUL_2;
-	else if (c > PI_MUL_2)
-		c -= PI_MUL_2;
-
-	return false;
-}
-
-// Just lerp :)	expects normalized angles in range [0..2PI)
-ICF float angle_lerp(float A, float B, float f)
-{
-	float diff = B - A;
-	if (diff > PI)
-		diff -= PI_MUL_2;
-	else if (diff < -PI)
-		diff += PI_MUL_2;
-
-	return A + diff * f;
-}
-
-IC float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
-{
-	float a = angle_normalize_signed(tgt);
-	angle_lerp(src, a, speed, dt);
-	src = angle_normalize_signed(src);
-	float dH = angle_difference_signed(src, a);
-	float dCH = clampr(dH, -clmp, clmp);
-	src -= dH - dCH;
-	return src;
-}
-
-IC float angle_inertion_var(float src, float tgt, float min_speed, float max_speed, float clmp, float dt)
-{
-	tgt = angle_normalize_signed(tgt);
-	src = angle_normalize_signed(src);
-	float speed = _abs((max_speed - min_speed) * angle_difference(tgt, src) / clmp) + min_speed;
-	angle_lerp(src, tgt, speed, dt);
-	src = angle_normalize_signed(src);
-	float dH = angle_difference_signed(src, tgt);
-	float dCH = clampr(dH, -clmp, clmp);
-	src -= dH - dCH;
-	return src;
-}
 
 template <class T> IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 {

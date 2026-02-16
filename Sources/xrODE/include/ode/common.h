@@ -51,8 +51,8 @@ extern "C" {
  * defined in <math.h> on some platforms (like MS-Windows)
  */
 
-#ifndef M_PI
-#define M_PI REAL(3.1415926535897932384626433832795029)
+#ifndef PI
+#define PI REAL(3.1415926535897932384626433832795029)
 #endif
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 REAL(0.7071067811865475244008443621048490)

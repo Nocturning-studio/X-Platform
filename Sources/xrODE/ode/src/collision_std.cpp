@@ -666,13 +666,13 @@ void cullPoints (int n, dReal p[], int m, int i0, int iret[])
   iret[0] = i0;
   iret++;
   for (j=1; j<m; j++) {
-    a = dReal(j)*(2*M_PI/m) + A[i0];
-    if (a > M_PI) a -= 2*M_PI;
+    a = dReal(j)*(2*PI/m) + A[i0];
+    if (a > PI) a -= 2*PI;
     dReal maxdiff=1e9,diff;
     for (i=0; i<n; i++) {
       if (avail[i]) {
 	diff = dFabs (A[i]-a);
-	if (diff > M_PI) diff = 2*M_PI - diff;
+	if (diff > PI) diff = 2*PI - diff;
 	if (diff < maxdiff) {
 	  maxdiff = diff;
 	  *iret = i;

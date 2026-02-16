@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cpuid.h"
+
 namespace CPU
 {
 XRCORE_API extern u64 clk_per_second;

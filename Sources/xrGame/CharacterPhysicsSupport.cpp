@@ -339,7 +339,7 @@ string64 sdbg_stalker_death_anim = "none";
 LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
 BOOL b_death_anim_velocity = TRUE;
 #endif
-const float cmp_angle = M_PI / 10.f;
+const float cmp_angle = PI / 10.f;
 const float cmp_ldisp = 0.1f;
 IC bool cmp(const float4x4& f0, const float4x4& f1)
 {
@@ -368,7 +368,7 @@ bool is_similar(const float4x4& m0, const float4x4& m1, float param)
 	Fquaternion q;
 	q.set(tmp2);
 	q.get_axis_angle(ax, ang);
-	return _abs(ang) < M_PI / 2.f;
+	return _abs(ang) < PI / 2.f;
 	/*
 	return  fsimilar(tmp2._11,1.f,param)&&
 			fsimilar(tmp2._22,1.f,param)&&
@@ -623,7 +623,7 @@ void CCharacterPhysicsSupport::CollisionCorrectObjPos(const float3& start_from, 
 	{
 		CPHCollideValidator::SetCharacterClassNotCollide(activation_shape);
 	}
-	activation_shape.Activate(vbox, 1, 1.f, M_PI / 8.f);
+	activation_shape.Activate(vbox, 1, 1.f, PI / 8.f);
 	m_EntityAlife.Position().sub(activation_shape.Position(), shift);
 	activation_shape.Destroy();
 }

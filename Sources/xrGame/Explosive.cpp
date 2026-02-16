@@ -768,7 +768,7 @@ void CExplosive::ActivateExplosionBox(const float3& size, float3& in_out_pos)
 	CPHActivationShape activation_shape; // float3 start_box;m_PhysicMovementControl.Box().getsize(start_box);
 	activation_shape.Create(in_out_pos, size, self_obj);
 	dBodySetGravityMode(activation_shape.ODEBody(), 0);
-	activation_shape.Activate(size, 1, 1.f, M_PI / 8.f);
+	activation_shape.Activate(size, 1, 1.f, PI / 8.f);
 	in_out_pos.set(activation_shape.Position());
 	activation_shape.Size(m_vExplodeSize);
 	activation_shape.Destroy();
