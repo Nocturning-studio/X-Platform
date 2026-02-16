@@ -16,7 +16,7 @@ class CMemberEnemy
 {
   public:
 	typedef MemorySpace::squad_mask_type squad_mask_type;
-	typedef Flags<squad_mask_type> mask_type;
+	typedef _flags<squad_mask_type> mask_type;
 
   public:
 	const CEntityAlive* m_object;
