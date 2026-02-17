@@ -1,10 +1,4 @@
-#ifndef __V3D__
-#define __V3D__
-
-// Inline call
-#ifndef IC
-#define IC __forceinline
-#endif
+#pragma once
 
 template <class T> struct _vector3
 {
@@ -367,7 +361,6 @@ template <class T> struct _vector3
 	// Normalize
 	IC T normalize_magn(void)
 	{
-		VERIFY(square_magnitude() > std::numeric_limits<T>::min());
 		T len = magnitude();
 		T inv_len = T(1) / len;
 		x *= inv_len;
@@ -378,7 +371,6 @@ template <class T> struct _vector3
 
 	ICF SelfRef normalize(void)
 	{
-		VERIFY(square_magnitude() > std::numeric_limits<T>::min());
 		T mag = _sqrt(T(1) / (x * x + y * y + z * z));
 		x *= mag;
 		y *= mag;
@@ -403,7 +395,6 @@ template <class T> struct _vector3
 	// Normalize
 	ICF SelfRef normalize(const Self& v)
 	{
-		VERIFY((v.x * v.x + v.y * v.y + v.z * v.z) > flt_zero);
 		T mag = _sqrt(1 / (v.x * v.x + v.y * v.y + v.z * v.z));
 		x = v.x * mag;
 		y = v.y * mag;
@@ -427,7 +418,7 @@ template <class T> struct _vector3
 	IC SelfRef random_dir(CRandom& R = ::Random)
 	{
 		// z	= R.randF(-1,1);
-		z = _cos(R.randF(PI));
+		z = cos(R.randF(PI));
 		T a = R.randF(PI_MUL_2);
 		T r = _sqrt(1 - z * z);
 		T sa = _sin(a);
@@ -664,7 +655,6 @@ template <class T> struct _vector3
 	}
 };
 typedef _vector3<float> float3;
-typedef _vector3<double> double3;
 typedef _vector3<s32> int3;
 
 template <class T> BOOL _valid(const _vector3<T>& v)
@@ -677,7 +667,7 @@ template <class T> BOOL _valid(const _vector3<T>& v)
 #pragma warning(disable : 4244)
 ICF double rsqrt(double v)
 {
-	return 1.0 / _sqrt(v);
+	return 1.0 / std::sqrt(v);
 }
 IC BOOL exact_normalize(float* a)
 {
@@ -695,9 +685,9 @@ IC BOOL exact_normalize(float* a)
 	a0 = a[0];
 	a1 = a[1];
 	a2 = a[2];
-	aa0 = _abs(a0);
-	aa1 = _abs(a1);
-	aa2 = _abs(a2);
+	aa0 = std::abs(a0);
+	aa1 = std::abs(a1);
+	aa2 = std::abs(a2);
 	if (aa1 > aa0)
 	{
 		if (aa2 > aa1)
@@ -751,5 +741,3 @@ IC BOOL exact_normalize(float3& a)
 	return exact_normalize(&a.x);
 }
 #pragma warning(pop)
-
-#endif

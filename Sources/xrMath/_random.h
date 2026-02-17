@@ -1,46 +1,44 @@
-#ifndef _LOCAL_RAND
-#define _LOCAL_RAND
+#pragma once
 
 class CRandom
 {
   private:
-	volatile s64 holdrand;
+	volatile s32 holdrand;
 
   public:
 	CRandom() : holdrand(1){};
-	CRandom(s64 _seed) : holdrand(_seed){};
+	CRandom(s32 _seed) : holdrand(_seed){};
 
-	IC void seed(s64 val)
+	IC void seed(s32 val)
 	{
 		holdrand = val;
 	}
-	IC s64 maxI()
+	IC s32 maxI()
 	{
 		return 32767;
 	}
 
-	ICN s64 randI()
+	ICN s32 randI()
 	{
 		holdrand++;
 		return (((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff);
 	}
-	IC s64 randI(s64 max)
+	IC s32 randI(s32 max)
 	{
-		VERIFY(max);
 		holdrand++;
 		return randI() % max;
 	}
-	IC s64 randI(s64 min, s64 max)
+	IC s32 randI(s32 min, s32 max)
 	{
 		holdrand++;
 		return min + randI(max - min);
 	}
-	IC s64 randIs(s64 range)
+	IC s32 randIs(s32 range)
 	{
 		holdrand++;
 		return randI(-range, range);
 	}
-	IC s64 randIs(s64 range, s64 offs)
+	IC s32 randIs(s32 range, s32 offs)
 	{
 		holdrand++;
 		return offs + randIs(range);
@@ -77,6 +75,4 @@ class CRandom
 	}
 };
 
-XRCORE_API extern CRandom Random;
-
-#endif
+XRMATH_API extern CRandom Random;

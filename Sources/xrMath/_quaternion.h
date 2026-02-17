@@ -1,6 +1,3 @@
-#ifndef __Q__
-#define __Q__
-
 /***************************************************************************
 	The quatern module contains basic support for a quaternion object.
 
@@ -123,6 +120,7 @@
 	for my software renderer library...
 
 ***************************************************************************/
+#pragma once
 
 #define UNIT_TOLERANCE 0.001f
 // Quaternion magnitude must be closer than this tolerance to 1.0 to be
@@ -139,7 +137,7 @@
 #define AA_QZERO_TOLERANCE 0.0001f
 #define QEPSILON 0.00001f
 
-template <class T> struct /*XRCORE_API*/ _quaternion
+template <class T> struct /*XRMATH_API*/ _quaternion
 {
   public:
 	typedef T TYPE;
@@ -196,9 +194,6 @@ template <class T> struct /*XRCORE_API*/ _quaternion
 	*/
 	IC SelfRef mul(SelfCRef q1l, SelfCRef q2l)
 	{
-		VERIFY(q1l.isValid());
-		VERIFY(q2l.isValid());
-
 		w = ((q1l.w * q2l.w) - (q1l.x * q2l.x) - (q1l.y * q2l.y) - (q1l.z * q2l.z));
 
 		x = ((q1l.w * q2l.x) + (q1l.x * q2l.w) + (q1l.y * q2l.z) - (q1l.z * q2l.y));
@@ -476,5 +471,3 @@ template <class T> BOOL _valid(const _quaternion<T>& s)
 #undef TRACE_QZERO_TOLERANCE
 #undef AA_QZERO_TOLERANCE
 #undef QEPSILON
-
-#endif

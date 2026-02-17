@@ -1,5 +1,4 @@
-#ifndef __FLAGS_H__
-#define __FLAGS_H__
+#pragma once
 
 template <class T> struct _flags
 {
@@ -71,22 +70,22 @@ template <class T> struct _flags
 	{
 		return BOOL(flags & mask);
 	}
-	IC SelfRef or (const T mask)
+	IC SelfRef bit_or (const T mask)
 	{
 		flags |= mask;
 		return *this;
 	}
-	IC SelfRef or (const Self& f, const T mask)
+	IC SelfRef bit_or(const Self& f, const T mask)
 	{
 		flags = f.flags | mask;
 		return *this;
 	}
-	IC SelfRef and (const T mask)
+	IC SelfRef bit_and(const T mask)
 	{
 		flags &= mask;
 		return *this;
 	}
-	IC SelfRef and (const Self& f, const T mask)
+	IC SelfRef bit_and(const Self& f, const T mask)
 	{
 		flags = f.flags & mask;
 		return *this;
@@ -109,5 +108,3 @@ typedef _flags<u32> Flags32;
 typedef _flags<u32> flags32;
 typedef _flags<u64> Flags64;
 typedef _flags<u64> flags64;
-
-#endif //__FLAGS_H__

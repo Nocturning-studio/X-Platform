@@ -1,46 +1,37 @@
-#include "stdafx.h"
-#pragma hdrstop
+// A Unit Vector to 16-bit word conversion algorithm
+// based on work of Rafael Baptista (rafael@oroboro.com)
+// Accuracy improved by O.D. (punkfloyd@rocketmail.com)
+
+// a compressed unit vector3. reasonable fidelty for unit vectors in a 16 bit
+// package. Good enough for surface normals we hope.
+#pragma once
+
+#include "math_types.h"
+#include "_vector3d.h"
+#include "_bitwise.h"
+#include <cstdint> // для uint16_t
 
 // upper 3 bits
-#define pvSIGN_MASK 0xe000
-#define pvXSIGN_MASK 0x8000
-#define pvYSIGN_MASK 0x4000
-#define pvZSIGN_MASK 0x2000
+constexpr std::uint16_t pvSIGN_MASK = 0xe000;
+constexpr std::uint16_t pvXSIGN_MASK = 0x8000;
+constexpr std::uint16_t pvYSIGN_MASK = 0x4000;
+constexpr std::uint16_t pvZSIGN_MASK = 0x2000;
 
 // middle 6 bits - xbits
-#define pvTOP_MASK 0x1f80
+constexpr std::uint16_t pvTOP_MASK = 0x1f80;
 
 // lower 7 bits - ybits
-#define pvBOTTOM_MASK 0x007f
+constexpr std::uint16_t pvBOTTOM_MASK = 0x007f;
 
 // static lookup table for unit vector3 decompression
-float pvUVAdjustment[0x2000];
+// Declaration only - defined in compression_normal.cpp
+extern XRMATH_API float pvUVAdjustment[0x2000];
 
-void pvInitializeStatics(void)
-{
-	for (int idx = 0; idx < 0x2000; idx++)
-	{
-		long xbits = idx >> 7;
-		long ybits = idx & pvBOTTOM_MASK;
+// Function to initialize the lookup table. Must be called once before using compression/decompression.
+XRMATH_API void initialize_normal_compression_stats();
 
-		// map the numbers back to the triangle (0,0)-(0,127)-(127,0)
-		if ((xbits + ybits) >= 127)
-		{
-			xbits = 127 - xbits;
-			ybits = 127 - ybits;
-		}
-
-		// convert to 3D vectors
-		float x = float(xbits);
-		float y = float(ybits);
-		float z = float(126 - xbits - ybits);
-
-		// calculate the amount of normalization required
-		pvUVAdjustment[idx] = 1.0f / _sqrt(y * y + z * z + x * x);
-	}
-}
-
-u16 pvCompress(const float3& vec)
+// Compress a float3 vector into a 16-bit representation.
+inline u16 compress_normal(const float3& vec)
 {
 	// save copy
 	float3 tmp = vec;
@@ -76,13 +67,6 @@ u16 pvCompress(const float3& vec)
 	int xbits = iFloor(tmp.x * w);
 	int ybits = iFloor(tmp.y * w);
 
-	/*
-	VERIFY( xbits <  127 );
-	VERIFY( xbits >= 0   );
-	VERIFY( ybits <  127 );
-	VERIFY( ybits >= 0   );
-	*/
-
 	// Now we can be sure that 0<=xp<=126, 0<=yp<=126, 0<=xp+yp<=126
 
 	// however for the sampling we want to transform this triangle
@@ -101,7 +85,8 @@ u16 pvCompress(const float3& vec)
 	return mVec;
 }
 
-void pvDecompress(float3& vec, u16 mVec)
+// Decompress a 16-bit representation back into a float3 unit vector.
+inline void decompress_normal(float3& vec, u16 mVec)
 {
 	// if we do a straightforward backward transform
 	// we will get points on the plane X0,Y0,Z0

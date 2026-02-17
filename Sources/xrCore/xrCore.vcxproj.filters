@@ -111,15 +111,6 @@
     <ClCompile Include="xrCore.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="_compressed_normal.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="_math.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="_sphere.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="cpuid.cpp">
       <Filter>CPUID</Filter>
     </ClCompile>
@@ -319,72 +310,6 @@
     </ClInclude>
     <ClInclude Include="xrCore_platform.h">
       <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="_bitwise.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_color.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_compressed_normal.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_cylinder.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_fbox.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_fbox2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_flags.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_math.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_matrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_matrix33.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_obb.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_plane.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_plane2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_quaternion.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_random.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_rect.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_sphere.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="math_types.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_vector2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_vector3d.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="_vector4.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="vector.h">
-      <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="cpuid.h">
       <Filter>CPUID</Filter>
@@ -611,14 +536,8 @@
     <ClInclude Include="xrCPU.h">
       <Filter>CPUID</Filter>
     </ClInclude>
-    <ClInclude Include="math_constants.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="math_utils.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="math_splines.h">
-      <Filter>Math</Filter>
+    <ClInclude Include="xrCoreCommon.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

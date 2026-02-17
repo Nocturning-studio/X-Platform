@@ -1,5 +1,3 @@
-#ifndef __M__
-#define __M__
 /*
  *	DirectX-compliant, ie row-column order, ie m[Row][Col].
  *	Same as:
@@ -24,6 +22,8 @@
 // NOTE_2: mul(A,B) means transformation B, followed by A
 // NOTE_3: I,J,K,C equals to R,N,D,T
 // NOTE_4: The rotation sequence is ZXY
+
+#pragma once
 
 template <class T> struct _matrix
 {
@@ -122,7 +122,6 @@ template <class T> struct _matrix
 	// Multiply RES = A[4x4]*B[4x4] (WITH projection)
 	ICF SelfRef mul(const Self& A, const Self& B)
 	{
-		VERIFY((this != &A) && (this != &B));
 		m[0][0] = A.m[0][0] * B.m[0][0] + A.m[1][0] * B.m[0][1] + A.m[2][0] * B.m[0][2] + A.m[3][0] * B.m[0][3];
 		m[0][1] = A.m[0][1] * B.m[0][0] + A.m[1][1] * B.m[0][1] + A.m[2][1] * B.m[0][2] + A.m[3][1] * B.m[0][3];
 		m[0][2] = A.m[0][2] * B.m[0][0] + A.m[1][2] * B.m[0][1] + A.m[2][2] * B.m[0][2] + A.m[3][2] * B.m[0][3];
@@ -148,7 +147,6 @@ template <class T> struct _matrix
 	// Multiply RES = A[4x3]*B[4x3] (no projection), faster than ordinary multiply
 	ICF SelfRef mul_43(const Self& A, const Self& B)
 	{
-		VERIFY((this != &A) && (this != &B));
 		m[0][0] = A.m[0][0] * B.m[0][0] + A.m[1][0] * B.m[0][1] + A.m[2][0] * B.m[0][2];
 		m[0][1] = A.m[0][1] * B.m[0][0] + A.m[1][1] * B.m[0][1] + A.m[2][1] * B.m[0][2];
 		m[0][2] = A.m[0][2] * B.m[0][0] + A.m[1][2] * B.m[0][1] + A.m[2][2] * B.m[0][2];
@@ -205,7 +203,6 @@ template <class T> struct _matrix
 		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) +
 					 a._13 * (a._21 * a._32 - a._22 * a._31));
 
-		VERIFY(_abs(fDetInv) > flt_zero);
 		fDetInv = 1.0f / fDetInv;
 
 		_11 = fDetInv * (a._22 * a._33 - a._23 * a._32);
@@ -593,12 +590,10 @@ template <class T> struct _matrix
 	}
 	IC SelfRef div(const Self& A, T v)
 	{
-		VERIFY(_abs(v) > 0.000001f);
 		return mul(A, 1.0f / v);
 	}
 	IC SelfRef div(T v)
 	{
-		VERIFY(_abs(v) > 0.000001f);
 		return mul(1.0f / v);
 	}
 	// fov
@@ -609,9 +604,6 @@ template <class T> struct _matrix
 	// half_fov-angle-tangent
 	IC SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)
 	{
-		VERIFY(_abs(fFarPlane - fNearPlane) > EPS_S);
-		VERIFY(_abs(HAT) > EPS_S);
-
 		T cot = T(1) / HAT;
 		T w = fAspect * cot;
 		T h = T(1) * cot;
@@ -886,7 +878,6 @@ template <class T> struct _matrix
 };
 
 typedef _matrix<float> float4x4;
-typedef _matrix<double> double4x4;
 
 template <class T> BOOL _valid(const _matrix<T>& m)
 {
@@ -894,7 +885,4 @@ template <class T> BOOL _valid(const _matrix<T>& m)
 		   _valid(m.c) && _valid(m._44_);
 }
 
-extern XRCORE_API float4x4 Fidentity;
-extern XRCORE_API double4x4 Didentity;
-
-#endif
+extern XRMATH_API float4x4 Fidentity;

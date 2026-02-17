@@ -284,7 +284,7 @@ class CCar : public CEntity,
 		struct SDoorway
 		{
 			float2 door_plane_ext;
-			_vector2<int> door_plane_axes;
+			int2 door_plane_axes;
 			SDoor* door;
 			SDoorway();
 			void SPass();
@@ -292,7 +292,7 @@ class CCar : public CEntity,
 			void Trace(const float3& point, const float3& dir);
 		};
 		float2 door_plane_ext;
-		_vector2<int> door_plane_axes;
+		int2 door_plane_axes;
 		float3 door_dir_in_door;
 		float4x4 closed_door_form_in_object;
 		void Use();

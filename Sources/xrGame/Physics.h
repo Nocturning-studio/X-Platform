@@ -5,13 +5,11 @@
 #include "PhysicsShell.h"
 #include "PHObject.h"
 #include "PHInterpolation.h"
-#include "_cylinder.h"
 #include "BlockAllocator.h"
 #include "PhysicsCommon.h"
 #include "PHWorld.h"
 #include "PHContactBodyEffector.h"
 #include "phvalide.h"
-// #define ODE_SLOW_SOLVER
 ///////////////////////////////////////////////////////////////////////////////
 
 void BodyCutForce(dBodyID body, float l_limit, float w_limit);

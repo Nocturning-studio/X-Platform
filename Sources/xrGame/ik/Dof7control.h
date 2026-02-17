@@ -163,7 +163,7 @@ class SRS
 	// to R1Psi
 	//
 
-	int R1R2Psi(Matrix alpha, Matrix beta, Matrix xi, Matrix alpha2, Matrix beta2, Matrix xi2);
+	int R1R2Psi(Matrix alpha, Matrix beta, Matrix xi, Matrix alpha2, Matrix _beta2, Matrix xi2);
 
 	// Sets the goal pos. EE is a constant matrix that specifies
 	// the value of R2*E where E is a matrix that puts the base

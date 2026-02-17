@@ -1,5 +1,8 @@
-#ifndef _F_SPHERE_H_
-#define _F_SPHERE_H_
+#pragma once
+
+#include "xrMathCommon.h"
+#include "math_types.h"
+#include "_vector3d.h"
 
 template <class T> struct _sphere
 {
@@ -23,6 +26,22 @@ template <class T> struct _sphere
 		R = 1;
 	}
 
+	ICF BOOL intersect(const _vector3<T>& S, const _vector3<T>& D) const
+	{
+		_vector3<T> Q;
+		Q.sub(P, S);
+
+		T c = Q.magnitude();
+		T v = Q.dotproduct(D);
+		T d = R * R - (c * c - v * v);
+		return (d > 0);
+	}
+	ICF BOOL intersect(const _sphere<T>& S) const
+	{
+		T SumR = R + S.R;
+		return P.distance_to_sqr(S.P) < SumR * SumR;
+	}
+
 	enum ERP_Result
 	{
 		rpNone = 0,
@@ -30,6 +49,7 @@ template <class T> struct _sphere
 		rpOriginOutside = 2,
 		fcv_forcedword = u32(-1)
 	};
+
 	// Ray-sphere intersection
 	ICF ERP_Result intersect(const _vector3<T>& S, const _vector3<T>& D, T range, int& quantity, T afT[2]) const
 	{
@@ -80,20 +100,20 @@ template <class T> struct _sphere
 		return result;
 	}
 
-	ICF ERP_Result intersect_full(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+	ICF typename _sphere<T>::ERP_Result intersect_full(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
 	{
 		int quantity;
 		float afT[2];
-		Fsphere::ERP_Result result = intersect(start, dir, dist, quantity, afT);
+		typename _sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
 
-		if (result == Fsphere::rpOriginInside || ((result == Fsphere::rpOriginOutside) && (afT[0] < dist)))
+		if (result == _sphere<T>::rpOriginInside || ((result == _sphere<T>::rpOriginOutside) && (afT[0] < dist)))
 		{
 			switch (result)
 			{
-			case Fsphere::rpOriginInside:
+			case _sphere<T>::rpOriginInside:
 				dist = afT[0] < dist ? afT[0] : dist;
 				break;
-			case Fsphere::rpOriginOutside:
+			case _sphere<T>::rpOriginOutside:
 				dist = afT[0];
 				break;
 			}
@@ -101,14 +121,13 @@ template <class T> struct _sphere
 		return result;
 	}
 
-	ICF ERP_Result intersect(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+	ICF typename _sphere<T>::ERP_Result intersect(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
 	{
 		int quantity;
 		T afT[2];
-		ERP_Result result = intersect(start, dir, dist, quantity, afT);
+		typename _sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
 		if (rpNone != result)
 		{
-			VERIFY(quantity > 0);
 			if (afT[0] < dist)
 			{
 				dist = afT[0];
@@ -118,7 +137,7 @@ template <class T> struct _sphere
 		return rpNone;
 	}
 
-	IC ERP_Result intersect2(const _vector3<T>& S, const _vector3<T>& D, T& range) const
+	ICF typename _sphere<T>::ERP_Result intersect2(const _vector3<T>& S, const _vector3<T>& D, T& range) const
 	{
 		_vector3<T> Q;
 		Q.sub(P, S);
@@ -138,21 +157,6 @@ template <class T> struct _sphere
 			}
 		}
 		return rpNone;
-	}
-	ICF BOOL intersect(const _vector3<T>& S, const _vector3<T>& D) const
-	{
-		_vector3<T> Q;
-		Q.sub(P, S);
-
-		T c = Q.magnitude();
-		T v = Q.dotproduct(D);
-		T d = R * R - (c * c - v * v);
-		return (d > 0);
-	}
-	ICF BOOL intersect(const _sphere<T>& S) const
-	{
-		T SumR = R + S.R;
-		return P.distance_to_sqr(S.P) < SumR * SumR;
 	}
 	IC BOOL contains(const _vector3<T>& PT) const
 	{
@@ -185,6 +189,4 @@ template <class T> BOOL _valid(const _sphere<T>& s)
 	return _valid(s.P) && _valid(s.R);
 }
 
-void XRCORE_API Fsphere_compute(Fsphere& dest, const float3* verts, int count);
-
-#endif
+void XRMATH_API Fsphere_compute(Fsphere& dest, const float3* verts, int count);

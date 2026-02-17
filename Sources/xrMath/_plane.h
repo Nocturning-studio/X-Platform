@@ -1,5 +1,4 @@
-#ifndef _PLANE
-#define _PLANE
+#pragma once
 
 template <class T> class _plane
 {
@@ -46,7 +45,6 @@ template <class T> class _plane
 	}
 	ICF SelfRef build_unit_normal(const _vector3<T>& _p, const _vector3<T>& _n)
 	{
-		VERIFY(fsimilar(_n.magnitude(), 1, EPS));
 		d = -n.set(_n).dotproduct(_p);
 		return *this;
 	}
@@ -147,5 +145,3 @@ template <class T> BOOL _valid(const _plane<T>& s)
 {
 	return _valid(s.n) && _valid(s.d);
 }
-
-#endif

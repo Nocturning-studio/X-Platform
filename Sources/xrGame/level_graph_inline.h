@@ -215,7 +215,7 @@ IC float CLevelGraph::vertex_plane_y(const CLevelGraph::CVertex& vertex, const f
 	Fplane PL;
 
 	DUP.set(0, 1, 0);
-	pvDecompress(normal, vertex.plane());
+	decompress_normal(normal, vertex.plane());
 	vertex_position(P, vertex.position());
 	PL.build(P, normal);
 	v.set(inX, P.y, inZ);
@@ -561,7 +561,7 @@ template <typename T> IC void CLevelGraph::assign_y_values(xr_vector<T>& path)
 		if (prev_id != (*I).get_vertex_id())
 		{
 			_vertex = vertex((*I).get_vertex_id());
-			pvDecompress(normal, _vertex->plane());
+			decompress_normal(normal, _vertex->plane());
 			vertex_position(P, _vertex->position());
 			PL.build(P, normal);
 			prev_id = (*I).get_vertex_id();

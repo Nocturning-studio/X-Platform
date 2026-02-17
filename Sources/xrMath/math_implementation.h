@@ -1,47 +1,4 @@
-#ifndef _vector_included
-#define _vector_included
-
-// Select platform
-#ifdef _MSC_VER
-#define MSVC_COMPILER
-#endif
-
-// Define types and namespaces (CPU & FPU)
-#include "math_types.h"
-#include "math_constants.h"
-#include "_bitwise.h"
-#include "_std_extensions.h"
-#include "math_utils.h"
-
-// pre-definitions
-template <class T> struct _quaternion;
-
-#pragma pack(push)
-#pragma pack(1)
-
-#include "_random.h"
-
-#include "_color.h"
-#include "_vector3d.h"
-#include "_vector2.h"
-#include "_vector4.h"
-#include "_matrix.h"
-#include "_matrix33.h"
-#include "_quaternion.h"
-#include "_rect.h"
-#include "_fbox.h"
-#include "_fbox2.h"
-#include "_obb.h"
-#include "_sphere.h"
-#include "_cylinder.h"
-#include "_random.h"
-#include "_compressed_normal.h"
-#include "_plane.h"
-#include "_plane2.h"
-#include "_flags.h"
-#include "math_splines.h"
-
-#pragma pack(pop)
+#pragma once
 
 template <class T> IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 {
@@ -113,7 +70,7 @@ template <class T> IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
 	trace = M._11 + M._22 + M._33;
 	if (trace > 0.0f)
 	{
-		s = _sqrt(trace + 1.0f);
+		s = sqrt(trace + 1.0f);
 		w = s * 0.5f;
 		s = 0.5f / s;
 
@@ -254,4 +211,3 @@ template <class T> IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
 	}
 	return *this;
 }
-#endif

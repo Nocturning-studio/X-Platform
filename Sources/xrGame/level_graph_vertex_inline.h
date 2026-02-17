@@ -400,7 +400,7 @@ IC void CLevelGraph::contour(CLevelGraph::SContour& _contour, const CLevelGraph:
 
 	// decompress plane
 	Fplane plane;
-	pvDecompress(plane.n, vertex->plane());
+	decompress_normal(plane.n, vertex->plane());
 	plane.d = -plane.n.dotproduct(vertex_position);
 
 	// create vertices

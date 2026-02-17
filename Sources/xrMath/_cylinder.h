@@ -1,5 +1,4 @@
-#ifndef _CYLINDER_H
-#define _CYLINDER_H
+#pragma once
 
 template <class T> class _cylinder
 {
@@ -231,11 +230,8 @@ template <class T> class _cylinder
 };
 
 typedef _cylinder<float> Fcylinder;
-typedef _cylinder<double> Dcylinder;
 
 template <class T> BOOL _valid(const _cylinder<T>& c)
 {
 	return _valid(c.m_center) && _valid(c.m_direction) && _valid(c.m_height) && _valid(c.m_height);
 }
-
-#endif // _DEBUG

@@ -1589,9 +1589,6 @@
     <ClCompile Include="Xr_ini.cpp" />
     <ClCompile Include="xr_shared.cpp" />
     <ClCompile Include="xr_trims.cpp" />
-    <ClCompile Include="_compressed_normal.cpp" />
-    <ClCompile Include="_math.cpp" />
-    <ClCompile Include="_sphere.cpp" />
     <ClCompile Include="_std_extensions.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1642,9 +1639,6 @@
     </CustomBuild>
     <ClInclude Include="log.h" />
     <ClInclude Include="lzhuf.h" />
-    <ClInclude Include="math_constants.h" />
-    <ClInclude Include="math_splines.h" />
-    <ClInclude Include="math_utils.h" />
     <ClInclude Include="memory_monitor.h" />
     <ClInclude Include="Noncopyable.hpp" />
     <ClInclude Include="os_clipboard.h" />
@@ -1671,8 +1665,8 @@
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="trivial_encryptor.h" />
-    <ClInclude Include="vector.h" />
     <ClInclude Include="xrCore.h" />
+    <ClInclude Include="xrCoreCommon.h" />
     <ClInclude Include="xrCore_platform.h" />
     <ClInclude Include="xrCPU.h" />
     <ClInclude Include="xrDebug.h" />
@@ -1693,33 +1687,17 @@
     <ClInclude Include="xr_shared.h" />
     <ClInclude Include="xr_smart_pointers.h" />
     <ClInclude Include="xr_trims.h" />
-    <ClInclude Include="_bitwise.h" />
-    <ClInclude Include="_color.h" />
-    <ClInclude Include="_compressed_normal.h" />
-    <ClInclude Include="_cylinder.h" />
-    <ClInclude Include="_fbox.h" />
-    <ClInclude Include="_fbox2.h" />
-    <ClInclude Include="_flags.h" />
-    <ClInclude Include="_math.h" />
-    <ClInclude Include="_matrix.h" />
-    <ClInclude Include="_matrix33.h" />
-    <ClInclude Include="_obb.h" />
-    <ClInclude Include="_plane.h" />
-    <ClInclude Include="_plane2.h" />
-    <ClInclude Include="_quaternion.h" />
-    <ClInclude Include="_random.h" />
-    <ClInclude Include="_rect.h" />
-    <ClInclude Include="_sphere.h" />
     <ClInclude Include="_std_extensions.h" />
     <ClInclude Include="_stl_extensions.h" />
-    <ClInclude Include="math_types.h" />
     <ClInclude Include="_type_traits.h" />
-    <ClInclude Include="_vector2.h" />
-    <ClInclude Include="_vector3d.h" />
-    <ClInclude Include="_vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\xrMath\xrMath.vcxproj">
+      <Project>{1eb3e3c6-68dd-428f-a764-f6a4db0ecdbb}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

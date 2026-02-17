@@ -28,16 +28,8 @@
 #error Please enable multi-threaded library...
 #endif
 
+#include "xrCoreCommon.h"
 #include "xrCore_platform.h"
-
-/*
-// stl-config
-// *** disable exceptions for both STLport and VC7.1 STL
-// #define _STLP_NO_EXCEPTIONS	1
-// #if XRAY_EXCEPTIONS
-	#define _HAS_EXCEPTIONS		1	// force STL again
-// #endif
-*/
 
 // *** try to minimize code bloat of STLport
 #ifdef XRCORE_EXPORTS // no exceptions, export allocator and common stuff
@@ -47,9 +39,6 @@
 #define _STLP_USE_DECLSPEC 1 // no exceptions, import allocator and common stuff
 #endif
 
-// #include <exception>
-// using std::exception;
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -57,42 +46,6 @@
 #include <string.h>
 
 #include <typeinfo>
-// #include <typeinfo.h>
-
-// #include <process.h>
-
-#ifndef DEBUG
-#ifdef _DEBUG
-#define DEBUG
-#endif
-#ifdef MIXED
-#define DEBUG
-#endif
-#endif
-
-#ifdef XRCORE_STATIC
-#define NO_FS_SCAN
-#endif
-
-#ifdef _EDITOR
-#define NO_FS_SCAN
-#endif
-
-// inline control - redefine to use compiler's heuristics ONLY
-// it seems "IC" is misused in many places which cause code-bloat
-// ...and VC7.1 really don't miss opportunities for inline :)
-#ifdef _EDITOR
-#define __forceinline inline
-#endif
-#define _inline inline
-#define __inline inline
-#define IC inline
-#define ICF __forceinline // !!! this should be used only in critical places found by PROFILER
-#ifdef _EDITOR
-#define ICN
-#else
-#define ICN __declspec(noinline)
-#endif
 
 #ifndef DEBUG
 #pragma inline_depth(254)
@@ -135,21 +88,17 @@
 #pragma warning(pop)
 #pragma warning(disable : 4100) // unreferenced formal parameter
 
-// Our headers
-#ifdef XRCORE_EXPORTS
-#define XRCORE_API __declspec(dllexport)
-#else
-#define XRCORE_API __declspec(dllimport)
-#endif
+#include "../xrMath/xrMath.h"
 
 #include "xrDebug.h"
-#include "vector.h"
 
 #include "clsid.h"
 #include "xrSyncronize.h"
 #include "xrMemory.h"
 #include "xrDebug.h"
 
+#include "_type_traits.h"
+#include "_std_extensions.h"
 #include "_stl_extensions.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"

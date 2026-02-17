@@ -129,7 +129,7 @@ class NET_Packet
 	}
 	IC void w_dir(const float3& D)
 	{
-		w_u16(pvCompress(D));
+		w_u16(compress_normal(D));
 	}
 	IC void w_sdir(const float3& D)
 	{
@@ -405,7 +405,7 @@ class NET_Packet
 	{
 		u16 t;
 		r_u16(t);
-		pvDecompress(A, t);
+		decompress_normal(A, t);
 	}
 
 	IC void r_sdir(float3& A)
@@ -414,7 +414,7 @@ class NET_Packet
 		r_u16(t);
 		float s;
 		r_float(s);
-		pvDecompress(A, t);
+		decompress_normal(A, t);
 		A.mul(s);
 	}
 

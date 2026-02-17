@@ -157,7 +157,7 @@ class XRCORE_API IWriter
 	}
 	IC void w_dir(const float3& D)
 	{
-		w_u16(pvCompress(D));
+		w_u16(compress_normal(D));
 	}
 	void w_sdir(const float3& D);
 	void __cdecl w_printf(const char* format, ...);
@@ -380,13 +380,13 @@ template <typename implementation_type> class IReaderBase
 	IC void r_dir(float3& A)
 	{
 		u16 t = r_u16();
-		pvDecompress(A, t);
+		decompress_normal(A, t);
 	}
 	IC void r_sdir(float3& A)
 	{
 		u16 t = r_u16();
 		float s = r_float();
-		pvDecompress(A, t);
+		decompress_normal(A, t);
 		A.mul(s);
 	}
 	// Set file pointer to start of chunk data (0 for root chunk)

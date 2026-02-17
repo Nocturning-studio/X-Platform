@@ -1,5 +1,4 @@
-#ifndef __FBOX
-#define __FBOX
+#pragma once
 
 template <class T> class _box3
 {
@@ -549,12 +548,8 @@ template <class T> class _box3
 
 typedef _box3<float> Fbox;
 typedef _box3<float> Fbox3;
-typedef _box3<double> Dbox;
-typedef _box3<double> Dbox3;
 
 template <class T> BOOL _valid(const _box3<T>& c)
 {
-	return _valid(min) && _valid(max);
+	return _valid(c.min) && _valid(c.max);
 }
-
-#endif

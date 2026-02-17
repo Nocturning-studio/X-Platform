@@ -121,8 +121,7 @@ void Initialize()
 	Msg("* CPU features: %s", features);
 
 	Fidentity.identity();
-	Didentity.identity();
-	pvInitializeStatics();
+	initialize_normal_compression_stats();
 
 	// ¬ключаем Flush-to-Zero (FTZ) и Denormals-are-Zero (DAZ).
 	// Ёто предотвращает падение FPS, когда значени€ станов€тс€ очень близкими к нулю.

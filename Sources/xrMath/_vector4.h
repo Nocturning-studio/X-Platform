@@ -1,6 +1,6 @@
-#ifndef _VECTOR4_H
-#define _VECTOR4_H
 #pragma once
+
+#include "math_types.h"
 
 template <class T> struct _vector4
 {
@@ -224,4 +224,3 @@ template <class T> BOOL _valid(const _vector4<T>& v)
 	return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z) && _valid((T)v.w);
 }
 
-#endif

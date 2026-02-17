@@ -1,5 +1,4 @@
-#ifndef __C__
-#define __C__
+#pragma once
 
 // maps unsigned 8 bits/channel to D3DCOLOR
 ICF u32 color_argb(u32 a, u32 r, u32 g, u32 b)
@@ -252,12 +251,10 @@ template <class T> struct _color
 	// Normalize
 	IC SelfRef normalize_rgb(void)
 	{
-		VERIFY(magnitude_sqr_rgb() > EPS_S);
 		return mul_rgb(1.f / magnitude_rgb());
 	}
 	IC SelfRef normalize_rgb(SelfCRef c)
 	{
-		VERIFY(c.magnitude_sqr_rgb() > EPS_S);
 		return mul_rgb(c, 1.f / c.magnitude_rgb());
 	}
 	IC SelfRef lerp(SelfCRef c1, SelfCRef c2, T t)
@@ -297,5 +294,3 @@ template <class T> BOOL _valid(const _color<T>& c)
 {
 	return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a);
 }
-
-#endif

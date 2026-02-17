@@ -152,7 +152,7 @@ void CLevelGraph::draw_nodes()
 			// unpack plane
 			Fplane PL;
 			float3 vNorm;
-			pvDecompress(vNorm, N.plane());
+			decompress_normal(vNorm, N.plane());
 			PL.build(PC, vNorm);
 
 			// create vertices

@@ -1,4 +1,7 @@
-#include "stdafx.h"
+#include "pch.h"
+#include "_sphere.h"
+#include <list> 
+
 #pragma hdrstop
 
 class Miniball;
@@ -51,7 +54,7 @@ class Miniball
 {
   public:
 	// types
-	typedef xr_list<float3> VectorList;
+	typedef std::list<float3> VectorList;
 	typedef VectorList::iterator It;
 	typedef VectorList::const_iterator Cit;
 
@@ -346,5 +349,5 @@ void Fsphere_compute(Fsphere& dest, const float3* verts, int count)
 	mb.build();
 
 	dest.P.set(mb.center());
-	dest.R = (_sqrt(mb.squared_radius()));
+	dest.R = (sqrt(mb.squared_radius()));
 }

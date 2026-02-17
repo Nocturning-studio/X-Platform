@@ -1,5 +1,4 @@
-#ifndef __FBOX2
-#define __FBOX2
+#pragma once
 
 template <class T> class _box2
 {
@@ -387,5 +386,3 @@ template <class T> BOOL _valid(const _box2<T>& c)
 {
 	return _valid(c.min) && _valid(c.max);
 }
-
-#endif

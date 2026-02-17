@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "math_constants.h"
+#include "_bitwise.h"
 
 // comparisions
 inline bool fsimilar(float a, float b, float cmp = EPS)
@@ -79,7 +80,7 @@ inline float snapto(float value, float snap)
 };
 
 // normalize angle (0..2PI)
-ICF float angle_normalize_always(float a)
+inline float angle_normalize_always(float a)
 {
 	float div = a / PI_MUL_2;
 	int rnd = (div > 0) ? iFloor(div) : iCeil(div);
@@ -90,7 +91,7 @@ ICF float angle_normalize_always(float a)
 }
 
 // normalize angle (0..2PI)
-ICF float angle_normalize(float a)
+inline float angle_normalize(float a)
 {
 	if (a >= 0 && a <= PI_MUL_2)
 		return a;
@@ -99,7 +100,7 @@ ICF float angle_normalize(float a)
 }
 
 // -PI .. +PI
-ICF float angle_normalize_signed(float a)
+inline float angle_normalize_signed(float a)
 {
 	if (a >= (-PI) && a <= PI)
 		return a;
@@ -110,7 +111,7 @@ ICF float angle_normalize_signed(float a)
 }
 
 // -PI..PI
-ICF float angle_difference_signed(float a, float b)
+inline float angle_difference_signed(float a, float b)
 {
 	float diff = angle_normalize_signed(a) - angle_normalize_signed(b);
 	if (diff > 0)
@@ -127,13 +128,13 @@ ICF float angle_difference_signed(float a, float b)
 }
 
 // 0..PI
-ICF float angle_difference(float a, float b)
+inline float angle_difference(float a, float b)
 {
-	return _abs(angle_difference_signed(a, b));
+	return std::abs(angle_difference_signed(a, b));
 }
 
 // c=current, t=target, s=speed, dt=dt
-IC bool angle_lerp(float& c, float t, float s, float dt)
+inline bool angle_lerp(float& c, float t, float s, float dt)
 {
 	float diff = t - c;
 	if (diff > 0)
@@ -146,7 +147,7 @@ IC bool angle_lerp(float& c, float t, float s, float dt)
 		if (diff < -PI)
 			diff += PI_MUL_2;
 	}
-	float diff_a = _abs(diff);
+	float diff_a = std::abs(diff);
 
 	if (diff_a < EPS_S)
 		return true;
@@ -165,7 +166,7 @@ IC bool angle_lerp(float& c, float t, float s, float dt)
 }
 
 // Just lerp :)	expects normalized angles in range [0..2PI)
-ICF float angle_lerp(float A, float B, float f)
+inline float angle_lerp(float A, float B, float f)
 {
 	float diff = B - A;
 	if (diff > PI)
@@ -176,7 +177,7 @@ ICF float angle_lerp(float A, float B, float f)
 	return A + diff * f;
 }
 
-IC float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
+inline float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
 {
 	float a = angle_normalize_signed(tgt);
 	angle_lerp(src, a, speed, dt);
@@ -187,11 +188,11 @@ IC float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
 	return src;
 }
 
-IC float angle_inertion_var(float src, float tgt, float min_speed, float max_speed, float clmp, float dt)
+inline float angle_inertion_var(float src, float tgt, float min_speed, float max_speed, float clmp, float dt)
 {
 	tgt = angle_normalize_signed(tgt);
 	src = angle_normalize_signed(src);
-	float speed = _abs((max_speed - min_speed) * angle_difference(tgt, src) / clmp) + min_speed;
+	float speed = std::abs((max_speed - min_speed) * angle_difference(tgt, src) / clmp) + min_speed;
 	angle_lerp(src, tgt, speed, dt);
 	src = angle_normalize_signed(src);
 	float dH = angle_difference_signed(src, tgt);

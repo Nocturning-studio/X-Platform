@@ -2,6 +2,8 @@
 #define FixedVectorH
 #pragma once
 
+#include "xrDebug_macros.h"
+
 template <class T, const int dim> class svector
 {
   public:

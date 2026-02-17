@@ -17,7 +17,7 @@ typedef char* const cpstr;
 typedef const char* const cpcstr;
 
 // windoze stuff
-#ifndef _WINDOWS_
+#ifndef BOOL
 typedef pstr LPSTR;
 typedef pcstr LPCSTR;
 using BOOL = int;

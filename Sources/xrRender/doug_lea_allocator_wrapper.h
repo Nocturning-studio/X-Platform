@@ -18,7 +18,6 @@
 #include <immintrin.h>
 #define CPU_PAUSE() _mm_pause()
 #endif
-#include <math_types.h>
 
 // Глобальный атомарный флаг для синхронизации dlmalloc (Spinlock)
 // static гарантирует внутреннюю линковку, но для корректной работы с dlmalloc
