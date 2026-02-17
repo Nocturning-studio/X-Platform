@@ -2130,7 +2130,6 @@
     <ClCompile Include="tss_def.cpp" />
     <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="win_entry_point.cpp" />
-    <ClCompile Include="xrCPU_Pipe\3DNow!Lib.cpp" />
     <ClCompile Include="xrCPU_Pipe\xrCPU_Pipe.cpp" />
     <ClCompile Include="xrCPU_Pipe\xrM44mul.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyCode</AssemblerOutput>
@@ -2154,9 +2153,6 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyCode</AssemblerOutput>
     </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrM44mul_3DNow!.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrMemCopy8_3DNow!.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrMemFill32_3DNow!.cpp" />
     <ClCompile Include="xrCPU_Pipe\xrQuatSlerp.cpp" />
     <ClCompile Include="xrCPU_Pipe\xrSkin1W.cpp" />
     <ClCompile Include="xrCPU_Pipe\xrSkin2W.cpp" />

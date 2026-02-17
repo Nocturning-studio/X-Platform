@@ -151,9 +151,6 @@
     <Filter Include="CPU Pipe">
       <UniqueIdentifier>{9e9e5c50-5961-4cb8-a665-2b7c7524ad52}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CPU Pipe\3DNow!">
-      <UniqueIdentifier>{cfd46291-ffec-41b3-ab30-e9f565c91bb4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="CPU Pipe\Generic x86">
       <UniqueIdentifier>{a8867817-45f2-41a0-8ef6-2cf973739098}</UniqueIdentifier>
     </Filter>
@@ -1000,18 +997,6 @@
     </ClCompile>
     <ClCompile Include="debug_ui.cpp">
       <Filter>Interfaces\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\3DNow!Lib.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrM44mul_3DNow!.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrMemCopy8_3DNow!.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrMemFill32_3DNow!.cpp">
-      <Filter>CPU Pipe\3DNow!</Filter>
     </ClCompile>
     <ClCompile Include="xrCPU_Pipe\xrM44mul.cpp">
       <Filter>CPU Pipe\Generic x86</Filter>

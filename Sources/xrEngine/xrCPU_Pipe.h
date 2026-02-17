@@ -53,7 +53,6 @@ struct xrDispatchTable
 {
 	xrSkin1W* skin1W;
 	xrSkin2W* skin2W;
-	//	xrBoneLerp*			blerp;
 	xrM44_Mul* m44_mul;
 	xrTransfer* transfer;
 	xrMemCopy_8b* memCopy;
