@@ -1816,8 +1816,7 @@
     <ClInclude Include="vis_common.h" />
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="WindowManager.h" />
-    <ClInclude Include="xrCPU_Pipe.h" />
-    <ClInclude Include="xrCPU_Pipe\xrCPU_Pipe.h" />
+    <ClInclude Include="xrBind_PSGP.h" />
     <ClInclude Include="xrHemisphere.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrLevel.h" />
@@ -2130,36 +2129,12 @@
     <ClCompile Include="tss_def.cpp" />
     <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="win_entry_point.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrCPU_Pipe.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrM44mul.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Demo|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Benchmark|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Benchmark|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release profiling|x64'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release profiling|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyCode</AssemblerOutput>
-    </ClCompile>
-    <ClCompile Include="xrCPU_Pipe\xrQuatSlerp.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrSkin1W.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrSkin2W.cpp" />
-    <ClCompile Include="xrCPU_Pipe\xrTransfer.cpp" />
+    <ClCompile Include="xrBind_PSGP.cpp" />
     <ClCompile Include="xrHemisphere.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
     <ClCompile Include="xrSheduler.cpp" />
+    <ClCompile Include="xrSkin1W.cpp" />
+    <ClCompile Include="xrSkin2W.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
     <ClCompile Include="xrTheora_Surface_mmx.cpp" />

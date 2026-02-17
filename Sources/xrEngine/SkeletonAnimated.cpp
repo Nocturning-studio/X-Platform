@@ -1221,7 +1221,6 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 					BK[channel][b_count].T.set(M._initT);
 
 				++b_count;
-				///               PSGP.blerp				(D,&K1,&K2,delta);
 			}
 
 			// Blend them together
