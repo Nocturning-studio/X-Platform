@@ -294,6 +294,9 @@
     <ClCompile Include="xrCPU.cpp">
       <Filter>CPUID</Filter>
     </ClCompile>
+    <ClCompile Include="build_identificator.cpp">
+      <Filter>Build identification</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">

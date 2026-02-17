@@ -690,13 +690,13 @@ void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 	Hide_CTMS_Dialog();
 }
 
-XRCORE_API u32 build_id;
+#include "../xrCore/build_identificator.h"
 
 LPCSTR CMainMenu::GetGSVer()
 {
 	static string256 Version;
 
-	sprintf(Version, "X-Platform BuildID %d", build_id);
+	sprintf(Version, "X-Platform BuildID %d, %s, %s", GlobalBuildInfo.ID, GlobalBuildInfo.Date, GlobalBuildInfo.Type);
 
 	return Version;
 }

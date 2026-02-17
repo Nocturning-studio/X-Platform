@@ -95,8 +95,7 @@ bool CEngine::Initialize()
 	g_temporary_stuff = &DecodeGameResources;
 
 	// 4. Build Info
-	ComputeBuildIdentificator();
-	PrintBuildIdentificator();
+	InitializeGlobalBuildID();
 
 	// 5. Инициализация ядра (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");

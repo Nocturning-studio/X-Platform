@@ -1406,6 +1406,7 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
+    <ClCompile Include="build_identificator.cpp" />
     <ClCompile Include="clsid.cpp" />
     <ClCompile Include="cpuid.cpp" />
     <ClCompile Include="crc32.cpp" />

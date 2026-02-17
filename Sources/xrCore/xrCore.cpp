@@ -13,13 +13,6 @@
 #include "xrCPU.h"
 
 XRCORE_API xrCore Core;
-XRCORE_API u32 build_id;
-XRCORE_API LPCSTR build_date;
-
-namespace CPU
-{
-extern void Detect();
-};
 
 static u32 init_counter = 0;
 

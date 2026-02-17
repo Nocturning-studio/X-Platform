@@ -7,6 +7,7 @@
 #include <string>
 #include <set>
 #include <boost/crc.hpp>
+#include "../xrCore/build_identificator.h"
 
 // Вспомогательная функция для получения времени модификации файла
 static time_t GetFileModTime(const char* filename)
@@ -599,12 +600,12 @@ template <typename T> HRESULT CResourceManager::ReadShaderCache(string_path name
 
 #ifdef DEBUG_SHADER_COMPILATION
 		// Отладочная информация
-		Msg("* Cache check: buildId=%d (expected %d), modTime=%lld (expected %lld)", metadata.buildId, build_id,
+		Msg("* Cache check: buildId=%d (expected %d), modTime=%lld (expected %lld)", metadata.buildId, GlobalBuildInfo.ID,
 			(long long)metadata.sourceModTime, (long long)sourceModTime);
 #endif
 
 		// Проверяем актуальность кеша
-		if (metadata.buildId == build_id && metadata.sourceModTime == sourceModTime)
+		if (metadata.buildId == GlobalBuildInfo.ID && metadata.sourceModTime == sourceModTime)
 		{
 			// ВРЕМЕННО: Отключаем систему зависимостей для отладки
 			bool bEnableDependencySystem = false;
@@ -669,8 +670,8 @@ template <typename T> HRESULT CResourceManager::ReadShaderCache(string_path name
 		}
 		else
 		{
-			if (metadata.buildId != build_id)
-				Msg("! Shader cache build ID mismatch for: %s (expected: %d, got: %d)", name, build_id,
+			if (metadata.buildId != GlobalBuildInfo.ID)
+				Msg("! Shader cache build ID mismatch for: %s (expected: %d, got: %d)", name, GlobalBuildInfo.ID,
 					metadata.buildId);
 			else
 				Msg("! Shader source file modified for: %s", name);
@@ -731,7 +732,6 @@ template <typename T> HRESULT CResourceManager::ReflectShader(DWORD const* src, 
 }
 
 static CTimer shader_compilation_timer;
-extern XRCORE_API u32 build_id;
 
 // Функция для создания директорий
 static bool EnsureCacheDirectoryExists(const char* cachePath)
@@ -786,7 +786,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 	// ФОРМИРУЕМ ОТНОСИТЕЛЬНЫЙ путь к кешу (без FS.update_path)
 	string_path cache_dest;
 	sprintf_s(cache_dest, sizeof cache_dest, "shaders_cache\\%s%s.%s\\%s_%s_%d.xrcache", ::Render->getShaderPath(),
-			  name, ext, macros.get_name().c_str(), entry, build_id);
+			  name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
 
 	// Получаем время модификации исходного файла шейдера
 	string_path source_file_path;
@@ -917,7 +917,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 					ShaderCacheMetadata metadata;
 					metadata.crc = crc;
 					metadata.sourceModTime = sourceModTime;
-					metadata.buildId = build_id;
+					metadata.buildId = GlobalBuildInfo.ID;
 					metadata.dependencyCount = (u32)dependencies.size();
 
 #ifdef DEBUG_SHADER_COMPILATION
@@ -983,7 +983,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 				// Формируем путь для сохранения дизассемблированного шейдера
 				string_path disasm_path;
 				sprintf_s(disasm_path, sizeof disasm_path, "shaders_cache\\%s%s.%s\\%s_%s_%d.html",
-						  ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, build_id);
+						  ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
 
 				// Создаем директорию если нужно
 				EnsureCacheDirectoryExists(disasm_path);
