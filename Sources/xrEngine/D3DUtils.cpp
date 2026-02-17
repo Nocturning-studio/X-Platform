@@ -128,14 +128,14 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 	FLvertexVec verts(v_cnt);
 	for (u32 k = 0; k < v_cnt; ++k)
 		verts[k].set(((float3*)vertices)[k], 0xFFFFFFFF);
-	Memory.mem_copy(bytes, &*verts.begin(), v_cnt * stride);
+	std::memcpy(bytes, &*verts.begin(), v_cnt * stride);
 	R_CHK(pVB->Unlock());
 	if (i_cnt)
 	{
 		R_CHK(HW.pDevice->CreateIndexBuffer(i_cnt * sizeof(u16), D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT,
 											&pIB, NULL));
 		R_CHK(pIB->Lock(0, 0, (LPVOID*)&bytes, 0));
-		Memory.mem_copy(bytes, indices, i_cnt * sizeof(u16));
+		std::memcpy(bytes, indices, i_cnt * sizeof(u16));
 		R_CHK(pIB->Unlock());
 		OnRender.bind(this, &SPrimitiveBuffer::RenderDIP);
 	}

@@ -100,11 +100,11 @@
     <Filter Include="Memory\Memory manager">
       <UniqueIdentifier>{ae1bbcd8-70dc-45b2-a74b-cf52560c4964}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{e985f1eb-9eeb-4feb-af23-f79d65c65a06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FTimer.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
@@ -172,15 +172,6 @@
       <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_POOL.cpp">
-      <Filter>Memory\Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_pso_Copy.cpp">
-      <Filter>Memory\Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_pso_Fill.cpp">
-      <Filter>Memory\Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_pso_Fill32.cpp">
       <Filter>Memory\Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_subst.cpp">
@@ -297,11 +288,11 @@
     <ClCompile Include="build_identificator.cpp">
       <Filter>Build identification</Filter>
     </ClCompile>
+    <ClCompile Include="FTimer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FTimer.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -378,9 +369,6 @@
       <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMEMORY_POOL.h">
-      <Filter>Memory\Memory manager</Filter>
-    </ClInclude>
-    <ClInclude Include="xrMemory_pso.h">
       <Filter>Memory\Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMemory_pure.h">
@@ -541,6 +529,9 @@
     </ClInclude>
     <ClInclude Include="xrCoreCommon.h">
       <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="FTimer.h">
+      <Filter>Timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

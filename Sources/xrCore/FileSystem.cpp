@@ -110,7 +110,7 @@ bool EFS_Utils::GetOpenName(LPCSTR initial, string_path& buffer, int sz_buf, boo
 	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", P.m_DefExt);
 
 	OPENFILENAME ofn;
-	Memory.mem_fill(&ofn, 0, sizeof(ofn));
+	std::memset(&ofn, 0, sizeof(ofn));
 	if (xr_strlen(buffer))
 	{
 		string_path dr;
@@ -179,7 +179,7 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 	string1024 flt;
 	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", P.m_DefExt);
 	OPENFILENAME ofn;
-	Memory.mem_fill(&ofn, 0, sizeof(ofn));
+	std::memset(&ofn, 0, sizeof(ofn));
 	if (xr_strlen(buffer))
 	{
 		string_path dr;

@@ -62,12 +62,13 @@ occRasterizer::~occRasterizer()
 
 void occRasterizer::clear()
 {
-	//////OPTICK_EVENT("occRasterizer::clear");
+	u32 size = occ_dim * occ_dim; // количество элементов
 
-	u32 size = occ_dim * occ_dim;
-	float f = 1.f;
-	Memory.mem_fill32(bufFrame, 0, size);
-	Memory.mem_fill32(bufDepth, *LPDWORD(&f), size);
+	// Очистка массива указателей (bufFrame) — обнуляем память
+	std::memset(bufFrame, 0, size * sizeof(occTri*));
+
+	// Заполнение массива глубины (bufDepth) значением 1.0f
+	std::fill_n(&bufDepth[0][0], size, 1.0f);
 }
 
 IC BOOL shared(occTri* T1, occTri* T2)

@@ -77,7 +77,7 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
 	int offset_inside_window = int(m_current_pointer - m_start_pointer);
 	if (offset_inside_window + buffer_size < m_current_window_size)
 	{
-		Memory.mem_copy(_buffer, m_current_pointer, buffer_size);
+		std::memcpy(_buffer, m_current_pointer, buffer_size);
 		m_current_pointer += buffer_size;
 		return;
 	}
@@ -87,7 +87,7 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
 
 	do
 	{
-		Memory.mem_copy(buffer, m_current_pointer, elapsed_in_window);
+		std::memcpy(buffer, m_current_pointer, elapsed_in_window);
 		buffer += elapsed_in_window;
 		buffer_size -= elapsed_in_window;
 		advance(elapsed_in_window);
@@ -95,7 +95,7 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
 		elapsed_in_window = m_current_window_size;
 	} while (m_current_window_size < buffer_size);
 
-	Memory.mem_copy(buffer, m_current_pointer, buffer_size);
+	std::memcpy(buffer, m_current_pointer, buffer_size);
 	advance(buffer_size);
 }
 

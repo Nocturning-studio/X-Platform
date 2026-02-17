@@ -24,7 +24,7 @@ void CBackend::OnFrameEnd()
 void CBackend::OnFrameBegin()
 {
 #ifndef DEDICATED_SERVER
-	Memory.mem_fill(&stat, 0, sizeof(stat));
+	std::memset(&stat, 0, sizeof(stat));
 	Vertex.Flush();
 	Index.Flush();
 	set_Stencil(FALSE);

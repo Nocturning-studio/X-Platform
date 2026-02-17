@@ -1,9 +1,11 @@
 #ifndef xrMemoryH
 #define xrMemoryH
 #pragma once
-#pragma warning(disable: 4595)
+#pragma warning(disable : 4595)
 
 #include "memory_monitor.h"
+#include <cstring>	 // для memcpy, memset
+#include <algorithm> // для std::fill_n
 
 #ifdef USE_MEMORY_MONITOR
 #define DEBUG_MEMORY_NAME
@@ -21,19 +23,11 @@ XRCORE_API extern BOOL g_bMEMO;
 #define DEBUG_MEMORY_NAME
 #endif // DEBUG_MEMORY_NAME
 extern XRCORE_API void dump_phase();
-#define DUMP_PHASE                                                                                                     \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		dump_phase();                                                                                                  \
-	} while (0)
+#define DUMP_PHASE dump_phase()
 #else // DEBUG_MEMORY_MANAGER
-#define DUMP_PHASE                                                                                                     \
-	do                                                                                                                 \
-	{                                                                                                                  \
-	} while (0)
+#define DUMP_PHASE ((void)0)
 #endif // DEBUG_MEMORY_MANAGER
 
-#include "xrMemory_pso.h"
 #include "xrMemory_POOL.h"
 
 class XRCORE_API xrMemory
@@ -83,19 +77,15 @@ class XRCORE_API xrMemory
 #ifdef DEBUG_MEMORY_NAME
 	void mem_statistic(LPCSTR fn);
 	void* mem_realloc(void* p, size_t size, const char* _name);
-#else  // DEBUG_MEMORY_NAME
+#else
 	void* mem_realloc(void* p, size_t size);
-#endif // DEBUG_MEMORY_NAME
+#endif
 	void mem_free(void* p);
 	void* mem_alloc(size_t size, const char* _name);
 	void* mem_alloc(size_t size)
 	{
 		return mem_alloc(size, "");
 	}
-
-	pso_MemCopy* mem_copy;
-	pso_MemFill* mem_fill;
-	pso_MemFill32* mem_fill32;
 };
 
 extern XRCORE_API xrMemory Memory;
@@ -103,9 +93,9 @@ extern XRCORE_API xrMemory Memory;
 #undef ZeroMemory
 #undef CopyMemory
 #undef FillMemory
-#define ZeroMemory(a, b) Memory.mem_fill(a, 0, b)
-#define CopyMemory(a, b, c) memcpy(a, b, c) //. CopyMemory(a,b,c)
-#define FillMemory(a, b, c) Memory.mem_fill(a, c, b)
+#define ZeroMemory(a, b) std::memset((a), 0, (b))
+#define CopyMemory(a, b, c) std::memcpy((a), (b), (c))
+#define FillMemory(a, b, c) std::memset((a), (c), (b))
 
 // delete
 #include "xrMemory_subst.h"
@@ -132,7 +122,7 @@ IC void* xr_realloc(void* P, size_t size)
 {
 	return Memory.mem_realloc(P, size, "xr_realloc");
 }
-#else  // DEBUG_MEMORY_NAME
+#else
 template <class T> IC T* xr_alloc(u32 count)
 {
 	return (T*)Memory.mem_alloc(count * sizeof(T));

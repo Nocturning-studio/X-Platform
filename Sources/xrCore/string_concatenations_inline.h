@@ -83,12 +83,12 @@ class XRCORE_API string_tupples
 		VERIFY(m_count > 0);
 
 		char* i = const_cast<char*>(result);
-		Memory.mem_copy(i, m_strings[0].first, m_strings[0].second * sizeof(*m_strings[0].first));
+		std::memcpy(i, m_strings[0].first, m_strings[0].second * sizeof(*m_strings[0].first));
 		i += m_strings[0].second;
 
 		for (u32 j = 1; j < m_count; ++j)
 		{
-			Memory.mem_copy(i, m_strings[j].first, m_strings[j].second * sizeof(*m_strings[j].first));
+			std::memcpy(i, m_strings[j].first, m_strings[j].second * sizeof(*m_strings[j].first));
 			i += m_strings[j].second;
 		}
 

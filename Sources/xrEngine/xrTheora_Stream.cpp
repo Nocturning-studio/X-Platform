@@ -20,10 +20,10 @@ CTheoraStream::CTheoraStream()
 	theora_comment_init(&t_comment);
 	theora_info_init(&t_info);
 	// clear struct
-	Memory.mem_fill(&o_stream_state, 0, sizeof(o_stream_state));
-	Memory.mem_fill(&o_page, 0, sizeof(o_page));
-	Memory.mem_fill(&t_state, 0, sizeof(t_state));
-	Memory.mem_fill(&t_yuv_buffer, 0, sizeof(t_yuv_buffer));
+	std::memset(&o_stream_state, 0, sizeof(o_stream_state));
+	std::memset(&o_page, 0, sizeof(o_page));
+	std::memset(&t_state, 0, sizeof(t_state));
+	std::memset(&t_yuv_buffer, 0, sizeof(t_yuv_buffer));
 }
 
 CTheoraStream::~CTheoraStream()

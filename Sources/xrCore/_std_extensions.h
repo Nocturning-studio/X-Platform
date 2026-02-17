@@ -1,5 +1,4 @@
-#ifndef _STD_EXT_internal
-#define _STD_EXT_internal
+#pragma once
 
 #define BREAK_AT_STRCMP
 #ifndef DEBUG
@@ -7,57 +6,6 @@
 #endif
 #ifdef _EDITOR
 #undef BREAK_AT_STRCMP
-#endif
-
-#ifdef abs
-#undef abs
-#endif
-
-#ifdef _MIN
-#undef _MIN
-#endif
-
-#ifdef _MAX
-#undef _MAX
-#endif
-
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
-#ifdef _EDITOR
-IC void strcpy_s(char* strDestination, size_t sizeInBytes, const char* strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void strcpy_s(char* strDestination, const char* strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void _strlwr_s(char* strDestination, size_t sizeInBytes)
-{
-	strlwr(strDestination);
-}
-
-IC void strcat_s(char* strDestination, size_t sizeInBytes, const char* strSource)
-{
-	strcat(strDestination, strSource);
-}
-
-IC int sprintf_s(char* dest, size_t sizeOfBuffer, const char* format, ...)
-{
-	va_list mark;
-	va_start(mark, format);
-	int sz = _vsnprintf(dest, sizeOfBuffer, format, mark);
-	dest[sizeOfBuffer - 1] = 0;
-	va_end(mark);
-}
 #endif
 
 IC u32 xr_strlen(const char* S);
@@ -167,15 +115,10 @@ IC BOOL _valid(const float x)
 	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized,
 	// Positive denormalized
 	int cls = _fpclass(double(x));
+
 	if (cls & (_FPCLASS_SNAN + _FPCLASS_QNAN + _FPCLASS_NINF + _FPCLASS_PINF + _FPCLASS_ND + _FPCLASS_PD))
 		return false;
 
-	/*	*****other cases are*****
-	_FPCLASS_NN Negative normalized non-zero
-	_FPCLASS_NZ Negative zero ( – 0)
-	_FPCLASS_PZ Positive 0 (+0)
-	_FPCLASS_PN Positive normalized non-zero
-	*/
 	return true;
 }
 
@@ -201,15 +144,10 @@ IC BOOL _valid(const double x)
 	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized,
 	// Positive denormalized
 	int cls = _fpclass(x);
+
 	if (cls & (_FPCLASS_SNAN + _FPCLASS_QNAN + _FPCLASS_NINF + _FPCLASS_PINF + _FPCLASS_ND + _FPCLASS_PD))
 		return false;
 
-	/*	*****other cases are*****
-	_FPCLASS_NN Negative normalized non-zero
-	_FPCLASS_NZ Negative zero ( – 0)
-	_FPCLASS_PZ Positive 0 (+0)
-	_FPCLASS_PN Positive normalized non-zero
-	*/
 	return true;
 }
 
@@ -284,5 +222,3 @@ IC s64 _max(s64 x, s64 y)
 XRCORE_API char* timestamp(string64& dest);
 
 extern XRCORE_API u32 crc32(const void* P, u32 len);
-
-#endif

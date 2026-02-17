@@ -58,7 +58,7 @@ class ENGINE_API CRT : public xr_resource_named
 	// Альтернативная версия, возвращающая структуру D3DSURFACE_DESC
 	bool get_level_desc(u32 level, D3DSURFACE_DESC& desc)
 	{
-		Memory.mem_fill(&desc, 0, sizeof(desc));
+		std::memset(&desc, 0, sizeof(desc));
 
 		if (!pSurface)
 			return false;
@@ -150,7 +150,7 @@ class ENGINE_API CRTC : public xr_resource_named
 
 	bool get_level_desc(u32 level, D3DSURFACE_DESC& desc)
 	{
-		Memory.mem_fill(&desc, 0, sizeof(desc));
+		std::memset(&desc, 0, sizeof(desc));
 
 		if (!pSurface)
 			return false;

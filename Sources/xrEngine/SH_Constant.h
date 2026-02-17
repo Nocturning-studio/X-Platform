@@ -29,7 +29,7 @@ class ENGINE_API CConstant : public xr_resource_named
 
 	CConstant()
 	{
-		Memory.mem_fill(this, 0, sizeof(CConstant));
+		std::memset(this, 0, sizeof(CConstant));
 	}
 	IC void set_float(float r, float g, float b, float a)
 	{

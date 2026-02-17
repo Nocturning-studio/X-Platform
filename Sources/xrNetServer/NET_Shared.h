@@ -51,10 +51,17 @@ class XRNETSERVER_API IClientStatistic
 
   public:
 	IClientStatistic(CTimer* timer)
+    : device_timer(timer),
+      dwBaseTime(TimeGlobal(timer)),
+      mps_recive(0),
+      mps_receive_base(0),
+      mps_send(0),
+      mps_send_base(0),
+      dwTimesBlocked(0),
+      dwBytesSended(0),
+      dwBytesPerSec(0)
 	{
-		ZeroMemory(this, sizeof(*this));
-		device_timer = timer;
-		dwBaseTime = TimeGlobal(device_timer);
+		std::memset(&ci_last, 0, sizeof(ci_last));
 	}
 
 	void Update(DPN_CONNECTION_INFO& CI);
@@ -86,9 +93,16 @@ class XRNETSERVER_API IClientStatistic
 
 	IC void Clear()
 	{
-		CTimer* timer = device_timer;
-		ZeroMemory(this, sizeof(*this));
-		device_timer = timer;
+		CTimer* saved_timer = device_timer;
+		std::memset(&ci_last, 0, sizeof(ci_last));
+		mps_recive = 0;
+		mps_receive_base = 0;
+		mps_send = 0;
+		mps_send_base = 0;
+		dwTimesBlocked = 0;
+		dwBytesSended = 0;
+		dwBytesPerSec = 0;
+		device_timer = saved_timer;
 		dwBaseTime = TimeGlobal(device_timer);
 	}
 

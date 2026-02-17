@@ -41,7 +41,7 @@ class ENGINE_API CMatrix : public xr_resource_named
 
 	CMatrix()
 	{
-		Memory.mem_fill(this, 0, sizeof(CMatrix));
+		std::memset(this, 0, sizeof(CMatrix));
 	}
 
 	IC void tc_trans(float4x4& T, float u, float v)

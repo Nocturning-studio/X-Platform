@@ -154,7 +154,7 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 	{
 		u32 size = I->children.size();
 		ALife::_OBJECT_ID* test = (ALife::_OBJECT_ID*)_alloca(size * sizeof(ALife::_OBJECT_ID));
-		Memory.mem_copy(test, &*I->children.begin(), size * sizeof(ALife::_OBJECT_ID));
+		std::memcpy(test, &*I->children.begin(), size * sizeof(ALife::_OBJECT_ID));
 		concurrency::parallel_sort(test, test + size);
 		for (u32 i = 1; i < size; ++i)
 		{

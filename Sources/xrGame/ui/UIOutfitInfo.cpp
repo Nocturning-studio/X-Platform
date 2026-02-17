@@ -9,7 +9,7 @@
 
 CUIOutfitInfo::CUIOutfitInfo()
 {
-	Memory.mem_fill(m_items, 0, sizeof(m_items));
+	std::memset(m_items, 0, sizeof(m_items));
 }
 
 CUIOutfitInfo::~CUIOutfitInfo()
