@@ -15,7 +15,7 @@
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
 #include "fmesh.h"
-#include "xrCPU_Pipe.h"
+#include "xrBind_PSGP.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

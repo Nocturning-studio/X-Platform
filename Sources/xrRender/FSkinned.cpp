@@ -9,12 +9,10 @@
 #pragma warning(default : 4995)
 
 #include "../xrEngine/fmesh.h"
-#include "../xrEngine/xrCPU_Pipe.h"
+#include "../xrEngine/xrBind_PSGP.h"
 #include "FSkinned.h"
 
 #include "../xrEngine/EnnumerateVertices.h"
-
-#include "../xrEngine/xrCPU_Pipe.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

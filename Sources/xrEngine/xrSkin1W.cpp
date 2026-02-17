@@ -4,8 +4,8 @@
 #include <xmmintrin.h> // SSE
 #include <emmintrin.h> // SSE2 (для _mm_set_ps)
 
-#include "..\skeletonX.h"
-#include "..\skeletoncustom.h"
+#include "skeletonX.h"
+#include "skeletoncustom.h"
 
 void __stdcall xrSkin1W_SSE(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* Bones)
 {

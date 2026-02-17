@@ -4,8 +4,8 @@
 #include <xmmintrin.h> // SSE
 #include <emmintrin.h> // SSE2
 
-#include "..\skeletonX.h"
-#include "..\skeletoncustom.h"
+#include "skeletonX.h"
+#include "skeletoncustom.h"
 
 void __stdcall xrSkin2W_SSE(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInstance* Bones)
 {

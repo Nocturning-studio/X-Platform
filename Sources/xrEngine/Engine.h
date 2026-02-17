@@ -10,7 +10,7 @@ struct xrDispatchTable;
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "EventAPI.h"
-#include "xrCPU_Pipe.h"
+#include "xrBind_PSGP.h"
 #include "LevelManager.h"
 #include "FontManager.h"
 #include "debug_ui.h"
@@ -146,8 +146,6 @@ class ENGINE_API CEngine
 	void UpdateGameLogic(); // Ћогика мира (бывший OnFrame)
 	void Destroy(); // ќчистка ресурсов
 };
-////////////////////////////////////////////////////////////////////////////////
-extern xrDispatchTable PSGP;
 ////////////////////////////////////////////////////////////////////////////////
 // ќбъ€вл€ем глобальный указатель, чтобы его видели другие .cpp файлы
 extern ENGINE_API CEngine* g_Engine;
