@@ -589,7 +589,7 @@ void CKinematics::Visibility_Update()
 		{
 			// move into invisible list
 			children_invisible.push_back(children[c_it]);
-			swap(children[c_it], children.back());
+			std::swap(children[c_it], children.back());
 			children.pop_back();
 		}
 	}
@@ -603,7 +603,7 @@ void CKinematics::Visibility_Update()
 		{
 			// move into visible list
 			children.push_back(children_invisible[_it]);
-			swap(children_invisible[_it], children_invisible.back());
+			std::swap(children_invisible[_it], children_invisible.back());
 			children_invisible.pop_back();
 		}
 	}

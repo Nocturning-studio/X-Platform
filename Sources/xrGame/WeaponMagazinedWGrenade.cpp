@@ -220,10 +220,10 @@ void CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 	m_ammoTypes.swap(m_ammoTypes2);
 
-	swap(m_ammoType, m_ammoType2);
-	swap(m_ammoName, m_ammoName2);
+	std::swap(m_ammoType, m_ammoType2);
+	std::swap(m_ammoName, m_ammoName2);
 
-	swap(m_DefaultCartridge, m_DefaultCartridge2);
+	std::swap(m_DefaultCartridge, m_DefaultCartridge2);
 
 	xr_vector<CCartridge> l_magazine;
 	while (m_magazine.size())
