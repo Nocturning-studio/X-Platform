@@ -61,7 +61,7 @@ static D3DVERTEXELEMENT9 dwDecl_01W[] = // 24bytes
 	  0}, // : T						: 1	:  -1..+1
 	 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL,
 	  0}, // : B						: 1	:  -1..+1
-	 {0, 20, D3DDECLTYPE_SHORT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD,
+	 {0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD,
 	  0}, // : tc						: 1	: -16..+16
 	 D3DDECL_END()};
 struct vertHW_1W
@@ -70,7 +70,7 @@ struct vertHW_1W
 	u32 _N_I;
 	u32 _T;
 	u32 _B;
-	s16 _tc[2];
+	float _tc[2];
 	void set(float3& P, float3 N, float3 T, float3 B, float2& tc, int index)
 	{
 		N.normalize_safe();
@@ -83,8 +83,8 @@ struct vertHW_1W
 		_N_I = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(index));
 		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
 		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc[0] = q_tc(tc.x);
-		_tc[1] = q_tc(tc.y);
+		_tc[0] = tc.x;
+		_tc[1] = tc.y;
 	}
 	u16 get_bone()
 	{
@@ -99,29 +99,24 @@ struct vertHW_1W
 };
 
 static D3DVERTEXELEMENT9 dwDecl_2W[] = // 28bytes
-	{{0, 0, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION,
-	  0}, // : p					: 2	: -12..+12
-	 {0, 8, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL,
-	  0}, // : n.xyz, w = weight	: 1	:  -1..+1, w=0..1
-	 {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT,
-	  0}, // : T						: 1	:  -1..+1
-	 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL,
-	  0}, // : B						: 1	:  -1..+1
-	 {0, 20, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD,
-	  0}, // : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
+	{{0, 0, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},	 // позиция (short4)
+	 {0, 8, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},	 // n.xyz + weight (D3DCOLOR)
+	 {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},	 // T
+	 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0}, // B
+	 {0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},	 // UV (float2)
+	 {0, 28, D3DDECLTYPE_SHORT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},	 // индексы (short2) – используем второй набор текстурных координат
 	 D3DDECL_END()};
 struct vertHW_2W
 {
-	s16 _P[4];
-	u32 _N_w;
-	u32 _T;
-	u32 _B;
-	s16 _tc_i[4];
-	void set(float3& P, float3 N, float3 T, float3 B, float2& tc, int index0, int index1, float w)
+	s16 _P[4];		// позиция (short4)
+	u32 _N_w;		// нормаль + вес (в альфе)
+	u32 _T;			// тангент
+	u32 _B;			// бинормаль
+	float2 tc;		// текстурные координаты (float2)
+	s16 indices[2]; // индексы костей (умноженные на 3)
+
+	void set(const float3& P, const float3& N, const float3& T, const float3& B, const float2& _tc, int index0, int index1, float w)
 	{
-		N.normalize_safe();
-		T.normalize_safe();
-		B.normalize_safe();
 		_P[0] = q_P(P.x);
 		_P[1] = q_P(P.y);
 		_P[2] = q_P(P.z);
@@ -129,35 +124,26 @@ struct vertHW_2W
 		_N_w = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(w * 255.f + .5f), 0, 255)));
 		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
 		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc_i[0] = q_tc(tc.x);
-		_tc_i[1] = q_tc(tc.y);
-		_tc_i[2] = s16(index0);
-		_tc_i[3] = s16(index1);
+		tc = _tc;
+		indices[0] = s16(index0);
+		indices[1] = s16(index1);
 	}
-	float get_weight()
+
+	float get_weight() const
 	{
 		return float(color_get_A(_N_w)) / 255.f;
 	}
-	u16 get_bone(u16 w)
+
+	u16 get_bone(int idx) const // idx = 0 или 1
 	{
-		return (u16)_tc_i[w + 2] / 3;
+		return (u16)indices[idx] / 3;
 	}
-	void get_pos(float3& p)
+
+	void get_pos(float3& p) const
 	{
 		p.x = u_P(_P[0]);
 		p.y = u_P(_P[1]);
 		p.z = u_P(_P[2]);
-	}
-	void get_pos_bones(float3& p, CKinematics* Parent)
-	{
-		float3 P0, P1;
-		float4x4& transform0 = Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform;
-		float4x4& transform1 = Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
-		get_pos(P0);
-		transform0.transform_tiny(P0);
-		get_pos(P1);
-		transform1.transform_tiny(P1);
-		p.lerp(P0, P1, get_weight());
 	}
 };
 
@@ -239,52 +225,50 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 		V.rm_geom.create(vertRenderFVF, RenderBackend.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
-	case RM_SKINNING_1B:
-		// Msg					("skinning: hw, 1-weight");
+	case RM_SKINNING_1B: {
+		u32 vStride = D3DXGetDeclVertexSize(dwDecl_01W, 0);
+		VERIFY(vStride == sizeof(vertHW_1W));
+		BYTE* bytes = 0;
+		VERIFY(NULL == V.p_rm_Vertices);
+		R_CHK(HW.pDevice->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
+		R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
+
+		vertHW_1W* dst = (vertHW_1W*)bytes;
+		vertBoned1W* src = (vertBoned1W*)_verts_;
+		for (u32 it = 0; it < V.vCount; it++)
 		{
-			u32 vStride = D3DXGetDeclVertexSize(dwDecl_01W, 0);
-			VERIFY(vStride == sizeof(vertHW_1W));
-			BYTE* bytes = 0;
-			VERIFY(NULL == V.p_rm_Vertices);
-			R_CHK(HW.pDevice->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
-			R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
-			vertHW_1W* dst = (vertHW_1W*)bytes;
-			vertBoned1W* src = (vertBoned1W*)_verts_;
-			for (u32 it = 0; it < V.vCount; it++)
-			{
-				float2 uv;
-				uv.set(src->u, src->v);
-				dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * 3);
-				dst++;
-				src++;
-			}
-			V.p_rm_Vertices->Unlock();
-			V.rm_geom.create(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
+			float2 uv;
+			uv.set(src->u, src->v);
+			dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * 3);
+			dst++;
+			src++;
 		}
-		break;
-	case RM_SKINNING_2B:
-		// Msg					("skinning: hw, 2-weight");
+		V.p_rm_Vertices->Unlock();
+		V.rm_geom.create(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
+	}
+	break;
+	case RM_SKINNING_2B: {
+		u32 vStride = D3DXGetDeclVertexSize(dwDecl_2W, 0);
+		VERIFY(vStride == sizeof(vertHW_2W));
+		BYTE* bytes = 0;
+		VERIFY(NULL == V.p_rm_Vertices);
+		R_CHK(HW.pDevice->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
+		R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
+
+		vertHW_2W* dst = (vertHW_2W*)bytes;
+		vertBoned2W* src = (vertBoned2W*)_verts_;
+		for (u32 it = 0; it < V.vCount; it++)
 		{
-			u32 vStride = D3DXGetDeclVertexSize(dwDecl_2W, 0);
-			VERIFY(vStride == sizeof(vertHW_2W));
-			BYTE* bytes = 0;
-			VERIFY(NULL == V.p_rm_Vertices);
-			R_CHK(HW.pDevice->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
-			R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
-			vertHW_2W* dst = (vertHW_2W*)bytes;
-			vertBoned2W* src = (vertBoned2W*)_verts_;
-			for (u32 it = 0; it < V.vCount; it++)
-			{
-				float2 uv;
-				uv.set(src->u, src->v);
-				dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * 3, int(src->matrix1) * 3, src->w);
-				dst++;
-				src++;
-			}
-			V.p_rm_Vertices->Unlock();
-			V.rm_geom.create(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
+			float2 uv;
+			uv.set(src->u, src->v);
+			dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * 3, int(src->matrix1) * 3, src->w);
+			dst++;
+			src++;
 		}
-		break;
+		V.p_rm_Vertices->Unlock();
+		V.rm_geom.create(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
+	}
+	break;
 	}
 }
 
@@ -350,7 +334,7 @@ void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 			CBoneData& BD1 = Parent->LL_GetData(v.get_bone(1));
 			BD1.AppendFace(ChildIDX, (u16)(idx / 3));
 		}
-		R_CHK(V->p_rm_Vertices->Unlock());
+		V->p_rm_Vertices->Unlock();
 	}
 	break;
 	}
@@ -532,7 +516,7 @@ void CSkeletonX_ext::_FillVerticesHW2W(const float4x4& view, CSkeletonWallmark& 
 	CHK_DX(V->p_rm_Vertices->Lock(V->vBase, V->vCount, (void**)&vertices, D3DLOCK_READONLY));
 	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
 	{
-		float3 p[3];
+		float3 p[3]{};
 		u32 idx = (*it) * 3;
 		CSkeletonWallmark::WMFace F;
 		for (u32 k = 0; k < 3; k++)
@@ -610,63 +594,6 @@ void CSkeletonX_PM::FillVertices(const float4x4& view, CSkeletonWallmark& wm, co
 	FSlideWindow& SW = nSWI.sw[0];
 	inherited2::_FillVertices(view, wm, normal, size, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
 }
-
-/*
-template < typename _Pred >
-IC void EnumFaces( _Pred &pred, CBoneData::FacesVec& faces)
-{
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++)
-		pred(*it)
-}
-void CSkeletonX_ext::TEnumBoneVertices	( Vertices1W &verteses, u16 bone_id, u16* indices, CBoneData::FacesVec& faces,
-SEnumVerticesCallback &C ) const
-{
-		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		float3			p[3];
-		u32 idx			= (*it)*3;
-		for (u32 k=0; k<3; k++){
-			vertBoned1W& vert		= Vertices1W[indices[idx+k]];
-		}}
-
-}
-void CSkeletonX_ext::TEnumBoneVertices	( Vertices2W &verteses, u16 bone_id, u16* indices, CBoneData::FacesVec& faces,
-SEnumVerticesCallback &C ) const
-{
-		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		float3			p[3];
-		u32 idx			= (*it)*3;
-		for (u32 k=0; k<3; k++){
-			float3		P0,P1;
-			vertBoned2W& vert		= Vertices2W[indices[idx+k]];
-		}}
-
-}
-void CSkeletonX_ext::TEnumBoneVertices	( vertHW_1W &verteses, u16 bone_id, u16* indices, CBoneData::FacesVec& faces,
-SEnumVerticesCallback &C ) const
-{
-		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		float3			p[3];
-		u32 idx			= (*it)*3;
-		CSkeletonWallmark::WMFace F;
-		for (u32 k=0; k<3; k++){
-			vertHW_1W& vert			= vertices[indices[idx+k]];
-
-}
-void CSkeletonX_ext::TEnumBoneVertices	( vertHW_2W &verteses, u16 bone_id, u16* indices, CBoneData::FacesVec& faces,
-SEnumVerticesCallback &C ) const
-{
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		float3			p[3];
-		u32 idx			= (*it)*3;
-		CSkeletonWallmark::WMFace F;
-		for (u32 k=0; k<3; k++){
-			float3		P0,P1;
-			vertHW_2W& vert			= vertices[indices[idx+k]];
-
-		}}
-
-}
-*/
 
 template <typename vertex_buffer_type>
 IC void TEnumBoneVertices(vertex_buffer_type vertices, u16* indices, CBoneData::FacesVec& faces,
