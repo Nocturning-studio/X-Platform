@@ -19,24 +19,10 @@
 static shared_str sbones_array;
 
 #pragma pack(push, 1)
-float u_P(s16 v)
-{
-	return float(v) / (32767.f / 12.f);
-}
-s16 q_P(float v)
-{
-	int _v = clampr(iFloor(v * (32767.f / 12.f)), -32768, 32767);
-	return s16(_v);
-}
 u8 q_N(float v)
 {
 	int _v = clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
 	return u8(_v);
-}
-s16 q_tc(float v)
-{
-	int _v = clampr(iFloor(v * (32767.f / 16.f)), -32768, 32767);
-	return s16(_v);
 }
 #ifdef _DEBUG
 float errN(float3 v, u8* qv)
@@ -53,20 +39,16 @@ float errN(float3 v, u8* qv)
 }
 #endif
 
-static D3DVERTEXELEMENT9 dwDecl_01W[] = // 24bytes
-	{{0, 0, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION,
-	  0},																		  // : P						: 2	: -12..+12
-	 {0, 8, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0}, // : N, w=index(RC, 0..1)	: 1	: -1..+1
-	 {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT,
-	  0}, // : T						: 1	:  -1..+1
-	 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL,
-	  0}, // : B						: 1	:  -1..+1
-	 {0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD,
-	  0}, // : tc						: 1	: -16..+16
-	 D3DDECL_END()};
+static D3DVERTEXELEMENT9 dwDecl_01W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+										 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+										 {0, 20, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},
+										 {0, 24, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0},
+										 {0, 28, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+										 D3DDECL_END()};
+
 struct vertHW_1W
 {
-	s16 _P[4];
+	float _P[4]; // позиция + вес (в альфе)
 	u32 _N_I;
 	u32 _T;
 	u32 _B;
@@ -76,10 +58,10 @@ struct vertHW_1W
 		N.normalize_safe();
 		T.normalize_safe();
 		B.normalize_safe();
-		_P[0] = q_P(P.x);
-		_P[1] = q_P(P.y);
-		_P[2] = q_P(P.z);
-		_P[3] = q_P(1);
+		_P[0] = P.x;
+		_P[1] = P.y;
+		_P[2] = P.z;
+		_P[3] = 1;
 		_N_I = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(index));
 		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
 		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
@@ -92,38 +74,40 @@ struct vertHW_1W
 	}
 	void get_pos(float3& p)
 	{
-		p.x = u_P(_P[0]);
-		p.y = u_P(_P[1]);
-		p.z = u_P(_P[2]);
+		p.x = _P[0];
+		p.y = _P[1];
+		p.z = _P[2];
 	}
 };
 
-static D3DVERTEXELEMENT9 dwDecl_2W[] = // 28bytes
-	{{0, 0, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},	 // позиция (short4)
-	 {0, 8, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},	 // n.xyz + weight (D3DCOLOR)
-	 {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},	 // T
-	 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0}, // B
-	 {0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},	 // UV (float2)
-	 {0, 28, D3DDECLTYPE_SHORT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},	 // индексы (short2) – используем второй набор текстурных координат
-	 D3DDECL_END()};
+static D3DVERTEXELEMENT9 dwDecl_2W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+										{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+										{0, 20, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},
+										{0, 24, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0},
+										{0, 28, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+										{0, 36, D3DDECLTYPE_SHORT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
+										D3DDECL_END()};
 struct vertHW_2W
 {
-	s16 _P[4];		// позиция (short4)
-	u32 _N_w;		// нормаль + вес (в альфе)
+	float _P[4];	// позиция (xyz) + вес (w)
+	u32 _N;			// нормаль (RGB, альфа не используется)
 	u32 _T;			// тангент
 	u32 _B;			// бинормаль
-	float2 tc;		// текстурные координаты (float2)
-	s16 indices[2]; // индексы костей (умноженные на 3)
+	float2 tc;		// текстурные координаты
+	s16 indices[2]; // индексы костей
 
-	void set(const float3& P, const float3& N, const float3& T, const float3& B, const float2& _tc, int index0, int index1, float w)
+	void set(const float3& P, const float3& N, const float3& T, const float3& B, const float2& _tc, int index0,
+			 int index1, float w)
 	{
-		_P[0] = q_P(P.x);
-		_P[1] = q_P(P.y);
-		_P[2] = q_P(P.z);
-		_P[3] = 1;
-		_N_w = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(w * 255.f + .5f), 0, 255)));
+		_P[0] = P.x;
+		_P[1] = P.y;
+		_P[2] = P.z;
+		_P[3] = w; // вес теперь здесь
+
+		_N = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), 0); // альфа = 0
 		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
 		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
+
 		tc = _tc;
 		indices[0] = s16(index0);
 		indices[1] = s16(index1);
@@ -131,19 +115,19 @@ struct vertHW_2W
 
 	float get_weight() const
 	{
-		return float(color_get_A(_N_w)) / 255.f;
+		return _P[3]; // вес из позиции
 	}
 
-	u16 get_bone(int idx) const // idx = 0 или 1
+	u16 get_bone(int idx) const
 	{
 		return (u16)indices[idx] / 3;
 	}
 
 	void get_pos(float3& p) const
 	{
-		p.x = u_P(_P[0]);
-		p.y = u_P(_P[1]);
-		p.z = u_P(_P[2]);
+		p.x = _P[0];
+		p.y = _P[1];
+		p.z = _P[2];
 	}
 };
 
