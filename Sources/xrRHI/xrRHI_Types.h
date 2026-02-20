@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrCore/xrCore.h" // ƒл€ базовых типов u32, s32, float и т.д.
+#include "../xrMath/xrMath.h"
 
 namespace xrRHI
 {

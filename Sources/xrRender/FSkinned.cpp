@@ -18,116 +18,100 @@
 //////////////////////////////////////////////////////////////////////
 static shared_str sbones_array;
 
-#pragma pack(push, 1)
-u8 q_N(float v)
-{
-	int _v = clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
-	return u8(_v);
-}
-#ifdef _DEBUG
-float errN(float3 v, u8* qv)
-{
-	float3 uv;
-	uv.set(float(qv[0]), float(qv[1]), float(qv[2])).div(255.f).mul(2.f).sub(1.f);
-	uv.normalize();
-	return v.dotproduct(uv);
-}
-#else
-float errN(float3 v, u8* qv)
-{
-	return 0;
-}
-#endif
-
-static D3DVERTEXELEMENT9 dwDecl_01W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-										 {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
-										 {0, 20, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},
-										 {0, 24, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0},
-										 {0, 28, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-										 D3DDECL_END()};
+static D3DVERTEXELEMENT9 dwDecl_1W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+										{0, 16, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+										{0, 28, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},
+										{0, 40, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0},
+										{0, 52, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+										{0, 60, D3DDECLTYPE_UBYTE4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
+										D3DDECL_END()};
 
 struct vertHW_1W
 {
-	float _P[4]; // позиция + вес (в альфе)
-	u32 _N_I;
-	u32 _T;
-	u32 _B;
-	float _tc[2];
-	void set(float3& P, float3 N, float3 T, float3 B, float2& tc, int index)
+	float _P[4]; // позиция (x,y,z,1)
+	float _N[3]; // нормаль
+	float _T[3]; // тангент
+	float _B[3]; // бинормаль
+	float2 tc;	 // UV
+	u32 index;	 // индекс кости (умножен на 3)
+
+	void set(const float3& P, const float3& N, const float3& T, const float3& B, const float2& tc, int idx)
 	{
-		N.normalize_safe();
-		T.normalize_safe();
-		B.normalize_safe();
 		_P[0] = P.x;
 		_P[1] = P.y;
 		_P[2] = P.z;
-		_P[3] = 1;
-		_N_I = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(index));
-		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
-		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc[0] = tc.x;
-		_tc[1] = tc.y;
+		_P[3] = 1.0f;
+		_N[0] = N.x;
+		_N[1] = N.y;
+		_N[2] = N.z;
+		_T[0] = T.x;
+		_T[1] = T.y;
+		_T[2] = T.z;
+		_B[0] = B.x;
+		_B[1] = B.y;
+		_B[2] = B.z;
+		this->tc = tc;
+		index = idx;
 	}
-	u16 get_bone()
+
+	u16 get_bone() const
 	{
-		return (u16)color_get_A(_N_I) / 3;
+		return u16(index / 3);
 	}
-	void get_pos(float3& p)
+	void get_pos(float3& p) const
 	{
-		p.x = _P[0];
-		p.y = _P[1];
-		p.z = _P[2];
+		p.set(_P[0], _P[1], _P[2]);
 	}
 };
 
 static D3DVERTEXELEMENT9 dwDecl_2W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-										{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
-										{0, 20, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},
-										{0, 24, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0},
-										{0, 28, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-										{0, 36, D3DDECLTYPE_SHORT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
+										{0, 16, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+										{0, 28, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0},
+										{0, 40, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BINORMAL, 0},
+										{0, 52, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+										{0, 60, D3DDECLTYPE_SHORT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
 										D3DDECL_END()};
 struct vertHW_2W
 {
-	float _P[4];	// позиция (xyz) + вес (w)
-	u32 _N;			// нормаль (RGB, альфа не используется)
-	u32 _T;			// тангент
-	u32 _B;			// бинормаль
-	float2 tc;		// текстурные координаты
-	s16 indices[2]; // индексы костей
+	float _P[4];	// позиция (xyz, w=weight)
+	float _N[3];	// нормаль
+	float _T[3];	// тангент
+	float _B[3];	// бинормаль
+	float2 tc;		// UV
+	s16 indices[2]; // индексы костей (умножены на 3)
 
-	void set(const float3& P, const float3& N, const float3& T, const float3& B, const float2& _tc, int index0,
-			 int index1, float w)
+	void set(const float3& P, const float3& N, const float3& T, const float3& B, const float2& tc, int idx0, int idx1,
+			 float w)
 	{
 		_P[0] = P.x;
 		_P[1] = P.y;
 		_P[2] = P.z;
-		_P[3] = w; // вес теперь здесь
-
-		_N = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), 0); // альфа = 0
-		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
-		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-
-		tc = _tc;
-		indices[0] = s16(index0);
-		indices[1] = s16(index1);
+		_P[3] = w;
+		_N[0] = N.x;
+		_N[1] = N.y;
+		_N[2] = N.z;
+		_T[0] = T.x;
+		_T[1] = T.y;
+		_T[2] = T.z;
+		_B[0] = B.x;
+		_B[1] = B.y;
+		_B[2] = B.z;
+		this->tc = tc;
+		indices[0] = s16(idx0);
+		indices[1] = s16(idx1);
 	}
 
 	float get_weight() const
 	{
-		return _P[3]; // вес из позиции
+		return _P[3];
 	}
-
-	u16 get_bone(int idx) const
+	u16 get_bone(int i) const
 	{
-		return (u16)indices[idx] / 3;
+		return u16(indices[i] / 3);
 	}
-
 	void get_pos(float3& p) const
 	{
-		p.x = _P[0];
-		p.y = _P[1];
-		p.z = _P[2];
+		p.set(_P[0], _P[1], _P[2]);
 	}
 };
 
@@ -210,44 +194,42 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 		break;
 	case RM_SINGLE:
 	case RM_SKINNING_1B: {
-		u32 vStride = D3DXGetDeclVertexSize(dwDecl_01W, 0);
+		u32 vStride = D3DXGetDeclVertexSize(dwDecl_1W, 0);
 		VERIFY(vStride == sizeof(vertHW_1W));
-		BYTE* bytes = 0;
-		VERIFY(NULL == V.p_rm_Vertices);
+		BYTE* bytes = nullptr;
+		VERIFY(!V.p_rm_Vertices);
 		R_CHK(HW.pDevice->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
 		R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
 
 		vertHW_1W* dst = (vertHW_1W*)bytes;
 		vertBoned1W* src = (vertBoned1W*)_verts_;
-		for (u32 it = 0; it < V.vCount; it++)
+		for (u32 i = 0; i < V.vCount; ++i)
 		{
-			float2 uv;
-			uv.set(src->u, src->v);
+			float2 uv{src->u, src->v};
 			dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * 3);
-			dst++;
-			src++;
+			++dst;
+			++src;
 		}
 		V.p_rm_Vertices->Unlock();
-		V.rm_geom.create(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
+		V.rm_geom.create(dwDecl_1W, V.p_rm_Vertices, V.p_rm_Indices);
 	}
 	break;
 	case RM_SKINNING_2B: {
 		u32 vStride = D3DXGetDeclVertexSize(dwDecl_2W, 0);
 		VERIFY(vStride == sizeof(vertHW_2W));
-		BYTE* bytes = 0;
-		VERIFY(NULL == V.p_rm_Vertices);
+		BYTE* bytes = nullptr;
+		VERIFY(!V.p_rm_Vertices);
 		R_CHK(HW.pDevice->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
 		R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
 
 		vertHW_2W* dst = (vertHW_2W*)bytes;
 		vertBoned2W* src = (vertBoned2W*)_verts_;
-		for (u32 it = 0; it < V.vCount; it++)
+		for (u32 i = 0; i < V.vCount; ++i)
 		{
-			float2 uv;
-			uv.set(src->u, src->v);
+			float2 uv{src->u, src->v};
 			dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * 3, int(src->matrix1) * 3, src->w);
-			dst++;
-			src++;
+			++dst;
+			++src;
 		}
 		V.p_rm_Vertices->Unlock();
 		V.rm_geom.create(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);

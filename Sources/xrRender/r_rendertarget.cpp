@@ -87,6 +87,11 @@ void CRenderTarget::create_textures()
 
 	rt_ao.create(r_RT_ao, dwWidth, dwHeight, RHI_Format::R8_UNORM);
 
+	// autoexposure
+	rt_LUM_Mip_Chain.create(r_RT_autoexposure_mip_chain, dwWidth, dwWidth, RHI_Format::RGBA16_FLOAT, 9);
+	rt_SceneLuminance.create(r_RT_autoexposure_luminance, 1, 1, RHI_Format::RGBA16_FLOAT);
+	rt_SceneLuminancePrevious.create(r_RT_autoexposure_luminance_previous, 1, 1, RHI_Format::RGBA16_FLOAT);
+
 	t_irradiance_map_0.create(r_T_irradiance0);
 	t_irradiance_map_1.create(r_T_irradiance1);
 
@@ -100,11 +105,6 @@ void CRenderTarget::create_textures()
 	rt_Bloom[1].create(r_RT_bloom2, w, h, RHI_Format::RGBA16_FLOAT);
 	rt_Bloom_Blades[0].create(r_RT_bloom_blades1, w, h, RHI_Format::RGBA16_FLOAT);
 	rt_Bloom_Blades[1].create(r_RT_bloom_blades2, w, h, RHI_Format::RGBA16_FLOAT);
-
-	// autoexposure
-	rt_LUM_Mip_Chain.create(r_RT_autoexposure_mip_chain, dwWidth, dwWidth, RHI_Format::R16_FLOAT, 9);
-	rt_SceneLuminance.create(r_RT_autoexposure_luminance, 1, 1, RHI_Format::R16_FLOAT);
-	rt_SceneLuminancePrevious.create(r_RT_autoexposure_luminance_previous, 1, 1, RHI_Format::R16_FLOAT);
 }
 
 void CRenderTarget::create_blenders()
@@ -156,6 +156,70 @@ void CRenderTarget::CompileShaders()
 	s_frame_overlay.create(b_frame_overlay);
 	s_bent_normals.create(b_bent_normals);
 	s_hi_z.create(b_hi_z);
+}
+
+void CRenderTarget::delete_textures()
+{
+	if (g_dedicated_server)
+		return;
+
+	Msg("Destroying render target textures");
+
+	// ќсвобождение обычных COM-поверхностей и текстур
+	_RELEASE(surf_screenshot_normal);
+	_RELEASE(surf_screenshot_gamesave);
+	_RELEASE(tex_screenshot_gamesave);
+
+	// G-Buffer
+	for (int i = 0; i < 4; ++i)
+		rt_GBuffer[i].destroy();
+
+	rt_Hi_z.destroy();
+	rt_Bent_Normals.destroy();
+
+	// DOF
+	rt_dof_coc.destroy();
+	rt_dof_dilation.destroy();
+	rt_dof_near.destroy();
+	rt_dof_far.destroy();
+
+	rt_Volumetric_Sun.destroy();
+	rt_Light_Accumulator.destroy();
+	rt_Distortion_Mask.destroy();
+
+	for (int i = 0; i < 2; ++i)
+		rt_Generic[i].destroy();
+
+	rt_Motion_Blur_Previous_Frame_Depth.destroy();
+	rt_Motion_Blur_Dilation_Map_0.destroy();
+	rt_Motion_Blur_Dilation_Map_1.destroy();
+
+	rt_BackbufferMip.destroy();
+	rt_Reflections.destroy();
+
+	for (int i = 0; i < 3; ++i)
+		rt_Radiation_Noise[i].destroy();
+
+	rt_ao.destroy();
+
+	t_irradiance_map_0.destroy();
+	t_irradiance_map_1.destroy();
+
+	t_LUT_0.destroy();
+	t_LUT_1.destroy();
+
+	for (int i = 0; i < 2; ++i)
+		rt_Bloom[i].destroy();
+
+	for (int i = 0; i < 2; ++i)
+		rt_Bloom_Blades[i].destroy();
+
+	rt_LUM_Mip_Chain.destroy();
+	rt_SceneLuminance.destroy();
+	rt_SceneLuminancePrevious.destroy();
+
+	rt_smap_depth.destroy();
+	rt_smap_surf.destroy();
 }
 
 void CRenderTarget::delete_blenders()
@@ -223,6 +287,7 @@ CRenderTarget::CRenderTarget()
 
 	phase_timer.Start();
 	create_blenders();
+	CompileShaders();
 	Msg("- All blenders successfully created");
 	phase_timer.Dump();
 
@@ -239,7 +304,7 @@ CRenderTarget::~CRenderTarget()
 	if (g_dedicated_server)
 		return;
 
-	#ifdef DEBUG
+#ifdef DEBUG
 	_SHOW_REF("t_irradiance_map_0 - #small", t_irradiance_map_0->pSurface);
 	_SHOW_REF("t_irradiance_map_1 - #small", t_irradiance_map_1->pSurface);
 
@@ -247,21 +312,7 @@ CRenderTarget::~CRenderTarget()
 	_SHOW_REF("t_LUT_1", t_LUT_1->pSurface);
 #endif // DEBUG
 
-	t_irradiance_map_0->surface_set(NULL);
-	t_irradiance_map_1->surface_set(NULL);
-	t_irradiance_map_0.destroy();
-	t_irradiance_map_1.destroy();
-
-	t_LUT_0->surface_set(NULL);
-	t_LUT_1->surface_set(NULL);
-	t_LUT_0.destroy();
-	t_LUT_1.destroy();
-
-	_RELEASE(rt_smap_ZB);
-
-	_RELEASE(surf_screenshot_normal);
-	_RELEASE(surf_screenshot_gamesave);
-	_RELEASE(tex_screenshot_gamesave);
+	delete_textures();
 
 	delete_blenders();
 }

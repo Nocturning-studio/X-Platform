@@ -48,6 +48,9 @@ class CBlender_combine : public IBlender
 			C.set_Sampler("s_image", r_RT_backbuffer_mip, false, D3DTADDRESS_CLAMP, D3DTEXF_GAUSSIANQUAD, D3DTEXF_GAUSSIANQUAD, D3DTEXF_GAUSSIANQUAD, false);
 			C.set_Sampler_linear("s_reflections", r_RT_reflections);
 			C.set_Sampler_point("s_bent_normals", r_RT_Bent_Normals);
+			C.set_Sampler("s_luminance_previous", r_RT_autoexposure_luminance_previous);
+			C.set_Sampler("s_luminance", r_RT_autoexposure_luminance);
+			C.set_Sampler("s_luminance_mip_chain", r_RT_autoexposure_mip_chain);
 			gbuffer(C);
 			jitter(C);
 			C.end_Pass();

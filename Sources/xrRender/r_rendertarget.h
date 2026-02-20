@@ -167,7 +167,9 @@ class CRenderTarget : public IRender_Target
 	void create_textures();
 	void create_blenders();
 	void delete_blenders();
-	void CompileShaders(); 
+	void CompileShaders();
+	void delete_textures();
+ 
 
 	void accum_point_geom_create();
 	void accum_point_geom_destroy();

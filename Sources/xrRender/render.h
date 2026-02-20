@@ -474,7 +474,7 @@ class CRender : public IRender_interface, public pureFrame
 	void render_bloom();
 	void downsample_scene_luminance();
 	void prepare_scene_luminance();
-	void save_scene_luminance();
+	void swap_luminance();
 	void apply_exposure();
 	void render_autoexposure();
 	void combine_additional_postprocess();
