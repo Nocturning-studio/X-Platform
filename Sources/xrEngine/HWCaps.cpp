@@ -97,7 +97,7 @@ u32 GetGpuNum()
 void CHWCaps::Update()
 {
 	D3DCAPS9 caps;
-	HW.pDevice->GetDeviceCaps(&caps);
+	HW.GetDevice()->GetDeviceCaps(&caps);
 
 	// ***************** GEOMETRY
 	geometry_major = u16((u32(caps.VertexShaderVersion) & (0xf << 8ul)) >> 8);
@@ -131,7 +131,7 @@ void CHWCaps::Update()
 	// *******1********** Vertex cache
 	IDirect3DQuery9* q_vc;
 	D3DDEVINFO_VCACHE vc;
-	HRESULT _hr = HW.pDevice->CreateQuery(D3DQUERYTYPE_VCACHE, &q_vc);
+	HRESULT _hr = HW.GetDevice()->CreateQuery(D3DQUERYTYPE_VCACHE, &q_vc);
 	if (FAILED(_hr))
 	{
 		vc.OptMethod = 0;
@@ -164,7 +164,7 @@ void CHWCaps::Update()
 	bStencil = FALSE;
 	IDirect3DSurface9* surfZS = 0;
 	D3DSURFACE_DESC surfDESC;
-	CHK_DX(HW.pDevice->GetDepthStencilSurface(&surfZS));
+	CHK_DX(HW.GetDevice()->GetDepthStencilSurface(&surfZS));
 	R_ASSERT(surfZS);
 	CHK_DX(surfZS->GetDesc(&surfDESC));
 	_RELEASE(surfZS);
@@ -204,7 +204,7 @@ void CHWCaps::Update()
 		dwMaxStencilValue = (1 << 8) - 1;
 	}
 
-	HW.pD3D->CheckDeviceMultiSampleType(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, FALSE, D3DMULTISAMPLE_NONMASKABLE,	&max_coverage);
+	HW.GetD3D()->CheckDeviceMultiSampleType(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, FALSE, D3DMULTISAMPLE_NONMASKABLE,	&max_coverage);
 	max_coverage = max_coverage - 1; // get real max coverage
 
 	// DEV INFO

@@ -368,4 +368,6 @@ class CSymbolEngine
 	HANDLE m_hProcess;
 };
 
+#pragma warning(pop)
+
 #endif // _SYMBOLENGINE_H

@@ -25,8 +25,8 @@ IC char* xr_strlwr(char* S)
 {
 	if (S)
 	{
-		for (char* p = S; *p; ++p)
-			*p = tolower(static_cast<unsigned char>(*p));
+		for (unsigned char* p = reinterpret_cast<unsigned char*>(S); *p; ++p)
+			*p = static_cast<unsigned char>(tolower(*p));
 	}
 	return S;
 }
@@ -67,7 +67,7 @@ IC LPCSTR get_token_name(xr_token* tokens, int key)
 IC int get_token_id(xr_token* tokens, LPCSTR key)
 {
 	for (int k = 0; tokens[k].name; k++)
-		if (stricmp(tokens[k].name, key) == 0)
+		if (_stricmp(tokens[k].name, key) == 0)
 			return tokens[k].id;
 	return -1;
 }

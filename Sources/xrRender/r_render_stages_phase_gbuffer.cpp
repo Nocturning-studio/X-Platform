@@ -20,7 +20,7 @@ void CRender::clear_gbuffer()
 
 	RenderBackend.set_Depth_Buffer(HW.pBaseZB);
 
-	CHK_DX(HW.pDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+	CHK_DX(HW.GetDevice()->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 }
 
 void CRender::set_gbuffer()

@@ -33,7 +33,7 @@ void R_constants::flush_cache()
 				if (count)
 				{
 					count = (count > 31) ? 31 : count;
-					CHK_DX(HW.pDevice->SetPixelShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
+					CHK_DX(HW.GetDevice()->SetPixelShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
 					F.flush();
 				}
 			}
@@ -58,7 +58,7 @@ void R_constants::flush_cache()
 								HW.Caps.geometry.dwRegisters, F.r_hi());
 				}
 #endif
-				CHK_DX(HW.pDevice->SetVertexShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
+				CHK_DX(HW.GetDevice()->SetVertexShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
 				F.flush();
 			}
 		}

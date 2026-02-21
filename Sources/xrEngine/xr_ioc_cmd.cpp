@@ -607,7 +607,7 @@ class CCC_tf_Aniso : public CCC_Integer
   public:
 	void apply()
 	{
-		if (0 == HW.pDevice)
+		if (0 == HW.GetDevice())
 			return;
 		int val = *value;
 		clamp(val, 2, 16);

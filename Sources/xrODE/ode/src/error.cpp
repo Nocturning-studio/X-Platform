@@ -23,8 +23,6 @@
 #include <ode/config.h>
 #include <ode/error.h>
 
-#pragma warning(disable:4996)
-
 static dMessageFunction *error_function = 0;
 static dMessageFunction *debug_function = 0;
 static dMessageFunction *message_function = 0;

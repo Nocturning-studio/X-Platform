@@ -911,7 +911,7 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState* ps)
 	char tmp[5];
 	for (int i = 1; i <= ps->rank; i++)
 	{
-		strconcat(sizeof(RankStr), RankStr, "rank_", itoa(i, tmp, 10));
+		strconcat(sizeof(RankStr), RankStr, "rank_", _itoa(i, tmp, 10));
 		if (!pSettings->section_exist(RankStr))
 			continue;
 		for (u32 it = 0; it < ps->pItemList.size(); it++)

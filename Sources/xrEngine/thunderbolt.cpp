@@ -70,7 +70,7 @@ void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
 	F = FS.r_open("$game_meshes$", m_name);
 
 	if(!F)
-		Msg("Empty 'lightning_model' in section %s", sect);
+		Msg("Empty 'lightning_model' in section %s", sect.c_str());
 
 	l_model = ::Render->model_CreateDM(F);
 	FS.r_close(F);

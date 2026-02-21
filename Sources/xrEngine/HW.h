@@ -1,21 +1,14 @@
-// HW.h: interface for the CHW class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 #pragma once
-
 #include "hwcaps.h"
+#include "../xrRHI/xrRHI.h"
 
 class ENGINE_API CHW
 {
-	HINSTANCE hD3D9;
+  private:
+	IDirect3D9Ex* pD3D;
+	IDirect3DDevice9Ex* pDevice;
 
   public:
-	IDirect3D9Ex* pD3D;		   // D3D
-	IDirect3DDevice9Ex* pDevice; // render device
-
 	IDirect3DSurface9* pBaseRT;
 	IDirect3DSurface9* pBaseZB;
 
@@ -25,41 +18,40 @@ class ENGINE_API CHW
 	D3DDEVTYPE DevT;
 	D3DPRESENT_PARAMETERS DevPP;
 
-	CHW()
-	{
-		hD3D9 = NULL;
-		pD3D = NULL;
-		pDevice = NULL;
-		pBaseRT = NULL;
-		pBaseZB = NULL;
-	};
+	xrRHI::IRenderBackend* pBackend;
 
-	void CreateD3D();
-	void DestroyD3D();
+	CHW();
+	~CHW();
+
 	void CreateDevice(HWND hw);
 	void DestroyDevice();
-
 	void Reset(HWND hw);
 
 	void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
-	D3DFORMAT selectDepthStencil(D3DFORMAT);
 	u32 selectPresentInterval();
 	u32 selectGPU();
 	u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
 	void updateWindowProps(HWND hw);
 	BOOL support(D3DFORMAT fmt, DWORD type, DWORD usage);
 
-#ifdef DEBUG
-	void Validate(void)
+	DEPRECATED IDirect3D9Ex* GetD3D() const
 	{
-		VERIFY(pDevice);
-		VERIFY(pD3D);
-	};
-#else
-	void Validate(void){};
+		return pD3D;
+	}
+	DEPRECATED IDirect3DDevice9Ex* GetDevice() const
+	{
+		return pDevice;
+	}
+
+#ifdef DEBUG
+	void Validate()
+	{
+		VERIFY(pDevice && pD3D);
+	}
 #endif
+
+  private:
+	HINSTANCE m_hRHI_DLL;
 };
 
 extern ENGINE_API CHW HW;
-
-#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)

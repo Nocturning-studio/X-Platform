@@ -151,8 +151,8 @@ void CCF_Skeleton::BuildState()
 			{
 				Msg("! ERROR: invalid bone transform (Slipch?). Bone disabled.");
 				Msg("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]", I->elem_id, VPUSH(TW.c));
-				Msg("visual name %s", owner->cNameVisual());
-				Msg("object name %s", owner->cName());
+				Msg("visual name %s", owner->cNameVisual().c_str());
+				Msg("object name %s", owner->cName().c_str());
 				I->elem_id = u16(-1); //. hack - disable invalid bone
 			}
 		}

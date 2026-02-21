@@ -1064,7 +1064,7 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 		if (pUIDM)
 		{
 			string256 MoneyStr;
-			itoa(local_player->money_for_round, MoneyStr, 10);
+			_itoa(local_player->money_for_round, MoneyStr, 10);
 			pUIDM->ChangeTotalMoneyIndicator(MoneyStr);
 		}
 	}

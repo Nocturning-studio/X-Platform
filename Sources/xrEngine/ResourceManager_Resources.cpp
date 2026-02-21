@@ -115,7 +115,7 @@ SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 	// Create _new
 	SDeclaration* D = xr_new<SDeclaration>();
 	u32 dcl_size = D3DXGetDeclLength(dcl) + 1;
-	CHK_DX(HW.pDevice->CreateVertexDeclaration(dcl, &D->dcl));
+	CHK_DX(HW.GetDevice()->CreateVertexDeclaration(dcl, &D->dcl));
 	D->dcl_code.assign(dcl, dcl + dcl_size);
 	D->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	v_declarations.push_back(D);

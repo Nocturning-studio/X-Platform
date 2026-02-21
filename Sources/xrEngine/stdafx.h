@@ -9,6 +9,7 @@
 #include "..\editors\ECore\stdafx.h"
 #else
 
+#define USE_LOG_IMPL
 #include "../xrCore/xrCore.h"
 
 #ifdef _DEBUG

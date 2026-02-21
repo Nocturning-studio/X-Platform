@@ -277,7 +277,7 @@ void CDbgLuaHelper::DrawStackTrace()
 
 			char szTmp[6];
 
-			strcat(szDesc, itoa(ar.currentline, szTmp, 10));
+			strcat(szDesc, _itoa(ar.currentline, szTmp, 10));
 			strcat(szDesc, " ");
 
 			if (ar.short_src)

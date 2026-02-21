@@ -423,5 +423,5 @@ void CResourceManager::fix_texture_name(LPSTR fn)
 
 void CResourceManager::Evict()
 {
-	CHK_DX(HW.pDevice->EvictManagedResources());
+	CHK_DX(HW.GetDevice()->EvictManagedResources());
 }

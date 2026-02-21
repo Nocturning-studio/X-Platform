@@ -342,7 +342,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation />
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
@@ -433,7 +433,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation />
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -484,7 +484,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -536,7 +536,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -588,7 +588,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -640,7 +640,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

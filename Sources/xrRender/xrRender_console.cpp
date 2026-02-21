@@ -371,10 +371,10 @@ class CCC_tf_MipBias : public CCC_Float
   public:
 	void apply()
 	{
-		if (0 == HW.pDevice)
+		if (0 == HW.GetDevice())
 			return;
 		for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
-			CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
+			CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
 	}
 
 	CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -0.5f, +0.5f){};

@@ -17,9 +17,9 @@ void COptickCapture::Initialize()
 {
 	Msg("\n");
 	Msg("Initializing OptickCapture");
-	m_frames_to_capture = -1;
-	m_start_capture_frame = -1;
-	m_end_capture_frame = -1;
+	m_frames_to_capture = 1;
+	m_start_capture_frame = 1;
+	m_end_capture_frame = 1;
 	m_need_capture = false;
 	m_switched_to_capturing = false;
 };

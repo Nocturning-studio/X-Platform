@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 4201)
+
 template <class T> class _box2
 {
   public:
@@ -386,3 +389,5 @@ template <class T> BOOL _valid(const _box2<T>& c)
 {
 	return _valid(c.min) && _valid(c.max);
 }
+
+#pragma warning(pop)

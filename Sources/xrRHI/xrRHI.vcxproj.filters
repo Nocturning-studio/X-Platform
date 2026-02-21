@@ -8,6 +8,15 @@
     <Filter Include="Core">
       <UniqueIdentifier>{798aced2-22af-427e-96b3-796a82f0c115}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Implementation">
+      <UniqueIdentifier>{80cb4af7-79ac-41f6-98f4-3562fcb26472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Implementation\DirectX9">
+      <UniqueIdentifier>{c20eee90-4c4d-434d-a548-b7609b644ce4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fabric">
+      <UniqueIdentifier>{713c8ec5-1929-45ad-a05b-415002361e02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -22,6 +31,15 @@
     <ClInclude Include="..\..\Sources\xrRHI\xrRHI_Types.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="xrRHI_Internal.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrBackendDX9.h">
+      <Filter>Implementation\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_Debug.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -29,6 +47,15 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Fabric.cpp">
+      <Filter>Fabric</Filter>
+    </ClCompile>
+    <ClCompile Include="xrBackendDX9.cpp">
+      <Filter>Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="xrRHI_Debug.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

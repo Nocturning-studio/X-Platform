@@ -103,6 +103,12 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{e985f1eb-9eeb-4feb-af23-f79d65c65a06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{c83b1fb0-b442-463c-ac15-fa82e5967f85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ini">
+      <UniqueIdentifier>{42eca798-aadd-4f3b-beb3-183d90d4c842}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -142,12 +148,6 @@
       <Filter>FS</Filter>
     </ClCompile>
     <ClCompile Include="LocatorAPI_Notifications.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
-    <ClCompile Include="log.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
-    <ClCompile Include="Xr_ini.cpp">
       <Filter>FS</Filter>
     </ClCompile>
     <ClCompile Include="stream_reader.cpp">
@@ -291,6 +291,12 @@
     <ClCompile Include="FTimer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Xr_ini.cpp">
+      <Filter>Ini</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -345,12 +351,6 @@
       <Filter>FS</Filter>
     </ClInclude>
     <ClInclude Include="LocatorAPI_defs.h">
-      <Filter>FS</Filter>
-    </ClInclude>
-    <ClInclude Include="log.h">
-      <Filter>FS</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_ini.h">
       <Filter>FS</Filter>
     </ClInclude>
     <ClInclude Include="stream_reader.h">
@@ -532,6 +532,12 @@
     </ClInclude>
     <ClInclude Include="FTimer.h">
       <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="log.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_ini.h">
+      <Filter>Ini</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

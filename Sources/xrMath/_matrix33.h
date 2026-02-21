@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 4201)
+
 template <class T> struct _matrix33
 {
   public:
@@ -409,3 +412,5 @@ template <class T> BOOL _valid(const _matrix33<T>& m)
 {
 	return _valid(m.i) && _valid(m.j) && _valid(m.k);
 }
+
+#pragma warning(pop)

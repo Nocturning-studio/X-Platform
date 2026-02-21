@@ -5,7 +5,7 @@ void CRender::clear_shadow_map_spot()
 	/*
 	if (RenderImplementation.b_HW_smap)		set_Render_Target_Surface	(rt_smap_surf, NULL, NULL, NULL, rt_smap_d_depth->pRT);
 	else								set_Render_Target_Surface	(rt_smap_surf, NULL, NULL, NULL, rt_smap_d_ZB);
-	CHK_DX								(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
+	CHK_DX								(HW.GetDevice()->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 	*/
 }
 
@@ -16,7 +16,7 @@ void CRender::render_shadow_map_spot(light* L)
 	RenderBackend.set_Depth_Buffer(RenderTarget->rt_smap_depth->pRT);
 
 	D3DVIEWPORT9 VP = {L->TransformContext.ShadowContext.posX, L->TransformContext.ShadowContext.posY, L->TransformContext.ShadowContext.size, L->TransformContext.ShadowContext.size, 0, 1};
-	CHK_DX(HW.pDevice->SetViewport(&VP));
+	CHK_DX(HW.GetDevice()->SetViewport(&VP));
 
 	// Misc	- draw only front-faces
 	RenderBackend.set_CullMode(CULL_BACKFACE);
@@ -25,7 +25,7 @@ void CRender::render_shadow_map_spot(light* L)
 #pragma todo("can optimize for multi-lights covering more than say 50%...")
 
 	RenderBackend.set_ColorWriteEnable(FALSE);
-	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_ZBUFFER, 0xffffffff, 1.0f, 0L));
+	CHK_DX(HW.GetDevice()->Clear(0L, NULL, D3DCLEAR_ZBUFFER, 0xffffffff, 1.0f, 0L));
 }
 
 void CRender::render_shadow_map_spot_transluent(light* L)
@@ -35,7 +35,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 	if (IRender_Light::OMNIPART == L->LightFlags.type)
 	{
 		// omni-part
-		CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, 0xffffffff, 1.0f, 0L));
+		CHK_DX(HW.GetDevice()->Clear(0L, NULL, D3DCLEAR_TARGET, 0xffffffff, 1.0f, 0L));
 	}
 	else
 	{

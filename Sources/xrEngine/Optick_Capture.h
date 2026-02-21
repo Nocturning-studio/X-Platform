@@ -8,9 +8,9 @@
 class ENGINE_API COptickCapture
 {
   private:
-	int m_frames_to_capture;
-	int m_start_capture_frame;
-	int m_end_capture_frame;
+	u32 m_frames_to_capture;
+	u32 m_start_capture_frame;
+	u32 m_end_capture_frame;
 
 	bool m_need_capture;
 	bool m_switched_to_capturing;

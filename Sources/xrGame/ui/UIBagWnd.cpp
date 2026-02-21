@@ -309,7 +309,7 @@ void CUIBagWnd::FillUpGroup(const u32 group)
 			CUICellItem* itm = CreateItem(sect);
 
 			// Set custom draw
-			itoa(j + 1, tmp_str, 10);
+			_itoa(j + 1, tmp_str, 10);
 			CBuyItemCustomDrawCell* p = xr_new<CBuyItemCustomDrawCell>(tmp_str, UI()->Font()->pFontLetterica16Russian);
 			itm->SetCustomDraw(p);
 

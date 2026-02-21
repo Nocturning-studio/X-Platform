@@ -1,11 +1,9 @@
-#ifndef logH
-#define logH
+#pragma once
 
 #define VPUSH(a) a.x, a.y, a.z
 
 void XRCORE_API __cdecl Msg(LPCSTR format, ...);
 void XRCORE_API __cdecl DbgMsg(LPCSTR format, ...);
-void XRCORE_API Log(LPCSTR msg);
 void XRCORE_API Log(LPCSTR msg);
 void XRCORE_API Log(LPCSTR msg, LPCSTR dop);
 void XRCORE_API Log(LPCSTR msg, u32 dop);
@@ -15,6 +13,7 @@ void XRCORE_API Log(LPCSTR msg, const float3& dop);
 void XRCORE_API Log(LPCSTR msg, const float4x4& dop);
 void XRCORE_API LogWinErr(LPCSTR msg, long err_code);
 
+#ifndef PURE_LOG
 typedef void (*LogCallback)(LPCSTR string);
 void XRCORE_API SetLogCB(LogCallback cb);
 void CreateLog(BOOL no_log = FALSE);
@@ -23,6 +22,4 @@ void CloseLog();
 void XRCORE_API FlushLog();
 
 extern XRCORE_API xr_vector<shared_str>* LogFile;
-extern XRCORE_API BOOL LogExecCB;
-
 #endif

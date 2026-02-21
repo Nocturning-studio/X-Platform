@@ -114,7 +114,7 @@ void SaveAllFramesDataToIni(int FramesCount)
 
 	// Итерируемся по массиву, создавая секции с номерами ключевых кадров
 	// чтобы записать в них данные
-	for (int FramesIterator = 0; FramesIterator < TotalFramesCount; FramesIterator++)
+	for (int FramesIterator = 0; FramesIterator < (int)TotalFramesCount; FramesIterator++)
 	{
 		string_path section_name = "frame_";
 		strcat_s(section_name, std::to_string(FramesIterator).c_str());
@@ -143,7 +143,7 @@ void ReadAllFramesDataFromIni(const char* name)
 
 	// Итерируемся по числу ключевых кадров чтобы найти секции с соответствующими
 	// номерами и присвоить данные из строк в них к структуре из массива с таким же номером
-	for (int FramesIterator = 0; FramesIterator < TotalFramesCount; FramesIterator++)
+	for (int FramesIterator = 0; FramesIterator < (int)TotalFramesCount; FramesIterator++)
 	{
 		string_path section_name = "frame_";
 		strcat_s(section_name, std::to_string(FramesIterator).c_str());

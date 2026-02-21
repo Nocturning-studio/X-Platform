@@ -66,11 +66,11 @@ void CDetailManager::hw_Load()
 	Msg("* [DETAILS] Instancing enabled. V(%d), P(%d), BufferSize(%d items)", dwVerts, dwIndices / 3, hw_MaxInstances);
 
 	// Create VB/IB for Geometry
-	R_CHK(HW.pDevice->CreateVertexBuffer(dwVerts * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &hw_VB, 0));
-	R_CHK(HW.pDevice->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
+	R_CHK(HW.GetDevice()->CreateVertexBuffer(dwVerts * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &hw_VB, 0));
+	R_CHK(HW.GetDevice()->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
 
 	// Create Instance VB (DYNAMIC !!!)
-	R_CHK(HW.pDevice->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
+	R_CHK(HW.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
 										 0, D3DPOOL_DEFAULT, &hw_InstanceVB, 0));
 
 	// Заполнение геометрии (без изменений)
@@ -458,11 +458,11 @@ void CDetailManager::FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset
 	// hw_BatchOffset указывает на начало данных, которые мы только что скопировали для этого вызова.
 	u32 offsetInBytes = hw_BatchOffset * sizeof(InstanceData);
 
-	HW.pDevice->SetStreamSource(1, hw_InstanceVB, offsetInBytes, sizeof(InstanceData));
+	HW.GetDevice()->SetStreamSource(1, hw_InstanceVB, offsetInBytes, sizeof(InstanceData));
 
 	// Настройка Hardware Instancing для DX9
-	HW.pDevice->SetStreamSourceFreq(0, (D3DSTREAMSOURCE_INDEXEDDATA | instanceCount));
-	HW.pDevice->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
+	HW.GetDevice()->SetStreamSourceFreq(0, (D3DSTREAMSOURCE_INDEXEDDATA | instanceCount));
+	HW.GetDevice()->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
 
 	u32 primCount = Object.number_indices / 3;
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);

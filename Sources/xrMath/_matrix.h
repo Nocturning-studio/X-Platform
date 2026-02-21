@@ -25,6 +25,9 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 4201)
+
 template <class T> struct _matrix
 {
   public:
@@ -886,3 +889,5 @@ template <class T> BOOL _valid(const _matrix<T>& m)
 }
 
 extern XRMATH_API float4x4 Fidentity;
+
+#pragma warning(pop)

@@ -48,8 +48,8 @@ static void SetThreadName(const char* threadName)
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
 	info.szName = threadName;
-	info.dwThreadID = -1;
-	info.dwFlags = 0;
+	info.dwThreadID = (DWORD)-1;
+	info.dwFlags = (DWORD)0;
 
 	__try
 	{

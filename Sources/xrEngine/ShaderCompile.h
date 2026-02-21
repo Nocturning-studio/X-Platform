@@ -255,7 +255,7 @@ class CShaderDependencyManager
 			ShaderDependencyInfo dep;
 			u16 pathLen = file->r_u16();
 
-			if (file->elapsed() < pathLen + sizeof(u64) + sizeof(u32))
+			if ((u32)file->elapsed() < pathLen + sizeof(u64) + sizeof(u32))
 			{
 				Msg("! [DEPS] Not enough data for dependency %d (pathLen: %d, elapsed: %d)", i, pathLen,
 					file->elapsed());
@@ -501,7 +501,8 @@ template <typename T> T* CResourceManager::CreateShader(const char* _name, const
 {
 	// get shader macros
 	CShaderMacros macros;
-	macros.add(::Render->FetchShaderMacros());
+	CShaderMacros fetched = ::Render->FetchShaderMacros();
+	macros.add(fetched);
 	macros.add(_macros);
 	macros.add(TRUE, NULL, NULL);
 
@@ -717,7 +718,7 @@ template <typename T> HRESULT CResourceManager::ReflectShader(DWORD const* src, 
 #ifdef DEBUG_SHADER_COMPILATION
 		Msg("* [REFLECT] Parsing constants...");
 #endif
-		result->constants.parse((void*)pReflection, ShaderTypeTraits<T>::GetShaderDest());
+		result->constants.parse((void*)pReflection, (u16)ShaderTypeTraits<T>::GetShaderDest());
 #ifdef DEBUG_SHADER_COMPILATION
 		Msg("* [REFLECT] Constants parsed successfully");
 #endif

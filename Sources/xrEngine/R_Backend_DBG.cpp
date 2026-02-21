@@ -18,14 +18,14 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 	OnFrameEnd();
-	CHK_DX(HW.pDevice->SetFVF(FVF::F_L));
-	CHK_DX(HW.pDevice->DrawIndexedPrimitiveUP(T, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
+	CHK_DX(HW.GetDevice()->SetFVF(FVF::F_L));
+	CHK_DX(HW.GetDevice()->DrawIndexedPrimitiveUP(T, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
 }
 void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
 {
 	OnFrameEnd();
-	CHK_DX(HW.pDevice->SetFVF(FVF::F_L));
-	CHK_DX(HW.pDevice->DrawPrimitiveUP(T, pcnt, pVerts, sizeof(FVF::L)));
+	CHK_DX(HW.GetDevice()->SetFVF(FVF::F_L));
+	CHK_DX(HW.GetDevice()->DrawPrimitiveUP(T, pcnt, pVerts, sizeof(FVF::L)));
 }
 
 #define RGBA_GETALPHA(rgb) ((rgb) >> 24)

@@ -122,14 +122,14 @@ class ENGINE_API CEngine
 		return m_loading_events;
 	}
 
-	void AddLoadingEvent(LOADING_EVENT Event)
+	void AddLoadingEvent(LOADING_EVENT _Event)
 	{
-		m_loading_events.push_back(Event);
+		m_loading_events.push_back(_Event);
 	}
 
-	void AddLoadingEventFront(LOADING_EVENT Event)
+	void AddLoadingEventFront(LOADING_EVENT _Event)
 	{
-		m_loading_events.push_front(Event);
+		m_loading_events.push_front(_Event);
 	}
 
 	void PopLoadingEvent()

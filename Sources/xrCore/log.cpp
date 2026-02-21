@@ -5,9 +5,7 @@
 #include "resource.h"
 #include "log.h"
 
-extern BOOL LogExecCB = TRUE;
 static string_path logFName = "engine.log";
-static BOOL no_log = TRUE;
 #ifdef PROFILE_CRITICAL_SECTIONS
 static xrCriticalSection logCS(MUTEX_PROFILE_ID(log));
 #else  // PROFILE_CRITICAL_SECTIONS
@@ -18,9 +16,6 @@ static LogCallback LogCB = 0;
 
 void FlushLog(LPCSTR file_name)
 {
-	if (no_log)
-		return;
-
 	logCS.Enter();
 
 	IWriter* f = FS.w_open(file_name);
@@ -65,7 +60,7 @@ void AddOne(const char* split)
 	}
 
 	// exec CallBack
-	if (LogExecCB && LogCB)
+	if (LogCB)
 		LogCB(split);
 
 	logCS.Leave();
@@ -203,20 +198,19 @@ void InitLog()
 
 void CreateLog(BOOL nl)
 {
-	no_log = nl;
 	strconcat(sizeof(logFName), logFName, Core.ApplicationNameLog, ".log");
+
 	if (FS.path_exist("$logs$"))
 		FS.update_path(logFName, "$logs$", logFName);
-	if (!no_log)
+
+	IWriter* f = FS.w_open(logFName);
+	if (f == NULL)
 	{
-		IWriter* f = FS.w_open(logFName);
-		if (f == NULL)
-		{
-			MessageBox(NULL, "Can't create log file.", "Error", MB_ICONERROR);
-			abort();
-		}
-		FS.w_close(f);
+		MessageBox(NULL, "Can't create log file.", "Error", MB_ICONERROR);
+		abort();
 	}
+	FS.w_close(f);
+
 	LogFile->reserve(128);
 }
 

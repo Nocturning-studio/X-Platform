@@ -167,8 +167,6 @@ bool CEngine::Initialize()
 	}
 
 	{
-		Msg("Initializing Engine API...");
-
 		// Render
 		Msg("Initializing Renderer...");
 		LPCSTR render_name = "xrRender.dll";

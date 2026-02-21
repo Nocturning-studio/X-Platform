@@ -74,7 +74,7 @@ IC void CBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
 	{
 		stat.target_rt++;
 		pRT[ID] = RT;
-		CHK_DX(HW.pDevice->SetRenderTarget(ID, RT));
+		CHK_DX(HW.GetDevice()->SetRenderTarget(ID, RT));
 	}
 }
 
@@ -84,7 +84,7 @@ IC void CBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 	{
 		stat.target_zb++;
 		pZB = ZB;
-		CHK_DX(HW.pDevice->SetDepthStencilSurface(ZB));
+		CHK_DX(HW.GetDevice()->SetDepthStencilSurface(ZB));
 	}
 }
 
@@ -102,7 +102,7 @@ ICF void CBackend::set_States(IDirect3DStateBlock9* _state)
 
 ICF void CBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 {
-	CHK_DX(HW.pDevice->SetRenderState(State, Value));
+	CHK_DX(HW.GetDevice()->SetRenderState(State, Value));
 };
 
 #ifdef _EDITOR
@@ -173,7 +173,7 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 		stat.decl++;
 #endif
 		decl = _decl;
-		CHK_DX(HW.pDevice->SetVertexDeclaration(decl));
+		CHK_DX(HW.GetDevice()->SetVertexDeclaration(decl));
 	}
 }
 
@@ -183,7 +183,7 @@ ICF void CBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
 	{
 		stat.ps++;
 		ps = _ps;
-		CHK_DX(HW.pDevice->SetPixelShader(ps));
+		CHK_DX(HW.GetDevice()->SetPixelShader(ps));
 #ifdef DEBUG
 		ps_name = _n;
 #endif
@@ -196,7 +196,7 @@ ICF void CBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n)
 	{
 		stat.vs++;
 		vs = _vs;
-		CHK_DX(HW.pDevice->SetVertexShader(vs));
+		CHK_DX(HW.GetDevice()->SetVertexShader(vs));
 #ifdef DEBUG
 		vs_name = _n;
 #endif
@@ -212,7 +212,7 @@ ICF void CBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride)
 #endif
 		vb = _vb;
 		vb_stride = _vb_stride;
-		CHK_DX(HW.pDevice->SetStreamSource(0, vb, 0, vb_stride));
+		CHK_DX(HW.GetDevice()->SetStreamSource(0, vb, 0, vb_stride));
 	}
 }
 
@@ -224,7 +224,7 @@ ICF void CBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
 		stat.ib++;
 #endif
 		ib = _ib;
-		CHK_DX(HW.pDevice->SetIndices(ib));
+		CHK_DX(HW.GetDevice()->SetIndices(ib));
 	}
 }
 
@@ -242,7 +242,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV,
 {
 	Apply(countV, PC);
 
-	CHK_DX(HW.pDevice->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
+	CHK_DX(HW.GetDevice()->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
 }
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
@@ -251,7 +251,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
 	stat.verts += 3 * PC;
 	stat.polys += PC;
 	constants.flush();
-	CHK_DX(HW.pDevice->DrawPrimitive(PrimitiveType, startV, PC));
+	CHK_DX(HW.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
 }
 
 ICF void CBackend::set_Shader(Shader* S, u32 pass)
@@ -272,7 +272,7 @@ IC void CBackend::set_Scissor(Irect* R)
 	{
 		SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
 		RECT* clip = (RECT*)R;
-		CHK_DX(HW.pDevice->SetScissorRect(clip));
+		CHK_DX(HW.GetDevice()->SetScissorRect(clip));
 	}
 	else
 	{
@@ -358,7 +358,7 @@ ICF void CBackend::set_CullMode(u32 _mode)
 ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
 {
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
 
 ENGINE_API extern int psAnisotropic;
@@ -366,13 +366,13 @@ ENGINE_API extern int psAnisotropic;
 ICF void CBackend::enable_anisotropy_filtering()
 {
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
 ICF void CBackend::disable_anisotropy_filtering()
 {
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }
 
 #endif

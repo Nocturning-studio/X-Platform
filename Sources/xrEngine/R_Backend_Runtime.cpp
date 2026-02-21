@@ -12,11 +12,11 @@ void CBackend::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
 	for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
-		CHK_DX(HW.pDevice->SetTexture(0, 0));
-	CHK_DX(HW.pDevice->SetStreamSource(0, 0, 0, 0));
-	CHK_DX(HW.pDevice->SetIndices(0));
-	CHK_DX(HW.pDevice->SetVertexShader(0));
-	CHK_DX(HW.pDevice->SetPixelShader(0));
+		CHK_DX(HW.GetDevice()->SetTexture(0, 0));
+	CHK_DX(HW.GetDevice()->SetStreamSource(0, 0, 0, 0));
+	CHK_DX(HW.GetDevice()->SetIndices(0));
+	CHK_DX(HW.GetDevice()->SetVertexShader(0));
+	CHK_DX(HW.GetDevice()->SetPixelShader(0));
 	Invalidate();
 #endif
 }
@@ -74,9 +74,9 @@ void CBackend::Invalidate()
 void CBackend::SaveRenderState()
 {
 	for (int i = 0; i < 4; i++)
-		HW.pDevice->GetRenderTarget(i, &saved_state.rt[i]);
-	HW.pDevice->GetDepthStencilSurface(&saved_state.zb);
-	HW.pDevice->GetViewport(&saved_state.viewport);
+		HW.GetDevice()->GetRenderTarget(i, &saved_state.rt[i]);
+	HW.GetDevice()->GetDepthStencilSurface(&saved_state.zb);
+	HW.GetDevice()->GetViewport(&saved_state.viewport);
 }
 
 void CBackend::RestoreRenderState()
@@ -96,7 +96,7 @@ void CBackend::RestoreRenderState()
 		saved_state.zb->Release();
 	}
 
-	HW.pDevice->SetViewport(&saved_state.viewport);
+	HW.GetDevice()->SetViewport(&saved_state.viewport);
 }
 
 void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
@@ -123,7 +123,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 		D3DXPLANE planeWorld(-P.n.x, -P.n.y, -P.n.z, -P.d), planeClip;
 		D3DXPlaneNormalize(&planeWorld, &planeWorld);
 		D3DXPlaneTransform(&planeClip, &planeWorld, &worldToClipMatrixIT);
-		CHK_DX(HW.pDevice->SetClipPlane(it, planeClip));
+		CHK_DX(HW.GetDevice()->SetClipPlane(it, planeClip));
 	}
 
 	// Enable them
@@ -206,13 +206,13 @@ void CBackend::set_Textures(STextureList* _T)
 	for (++_last_ps; _last_ps < 16 && textures_ps[_last_ps]; _last_ps++)
 	{
 		textures_ps[_last_ps] = 0;
-		CHK_DX(HW.pDevice->SetTexture(_last_ps, NULL));
+		CHK_DX(HW.GetDevice()->SetTexture(_last_ps, NULL));
 	}
 	// clear remaining stages (VS)
 	for (++_last_vs; _last_vs < 5 && textures_vs[_last_vs]; _last_vs++)
 	{
 		textures_vs[_last_vs] = 0;
-		CHK_DX(HW.pDevice->SetTexture(_last_vs + 256, NULL));
+		CHK_DX(HW.GetDevice()->SetTexture(_last_vs + 256, NULL));
 	}
 }
 #else
@@ -281,7 +281,7 @@ void CBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
 void CBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
 {
 	RenderBackend.setDepthBuffer(zb);
-	CHK_DX(HW.pDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
+	CHK_DX(HW.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
 }
 
 void CBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
@@ -386,7 +386,7 @@ void CBackend::u_compute_texgen_screen(float4x4& m_Texgen)
 void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
 {
 	// Constants
-	u32 C = color_rgba(0, 0, 0, 255);
+	u32 Color = color_rgba(0, 0, 0, 255);
 
 	float d_Z = EPS_S;
 	float d_W = 1.f;
@@ -398,22 +398,22 @@ void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	// Fill vertex buffer
 	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, geometry->vb_stride, vOffset);
 	pv->set_position(0, (float)h, d_Z, d_W);
-	pv->set_color(C);
+	pv->set_color(Color);
 	pv->set_uv(p0.x, p1.y);
 	pv++;
 
 	pv->set_position(0, 0, d_Z, d_W);
-	pv->set_color(C);
+	pv->set_color(Color);
 	pv->set_uv(p0.x, p0.y);
 	pv++;
 
 	pv->set_position((float)w, (float)h, d_Z, d_W);
-	pv->set_color(C);
+	pv->set_color(Color);
 	pv->set_uv(p1.x, p1.y);
 	pv++;
 
 	pv->set_position((float)w, 0, d_Z, d_W);
-	pv->set_color(C);
+	pv->set_color(Color);
 	pv->set_uv(p1.x, p0.y);
 	pv++;
 	RenderBackend.Vertex.Unlock(4, geometry->vb_stride);
@@ -493,14 +493,14 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 {
 	 if (!target || !target->valid())
 	 {
-		 Msg("!CBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName, mip_level);
+		 Msg("!CBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
 		 return;
 	 }
 
 	 IDirect3DSurface9* mip_surface = target->get_surface_level(mip_level);
 	 if (!mip_surface)
 	 {
-		 Msg("!CBackend::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName, mip_level);
+		 Msg("!CBackend::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
 		 return;
 	 }
 
@@ -560,7 +560,7 @@ void CBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* 
 	{
 		RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 		RECT dst_rect = {0, 0, 64, 64};
-		HW.pDevice->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
+		HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
 		dst_level0->Release();
 	}
 
@@ -595,7 +595,7 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
 	// Выполняем копирование
-	HRESULT hr = HW.pDevice->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
+	HRESULT hr = HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
 
 	if (FAILED(hr))
 	{
@@ -618,7 +618,7 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTURE
 	RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
-	HW.pDevice->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+	HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
 // Версия с указанием конкретных областей
@@ -633,7 +633,7 @@ void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destinat
 	if (!src_surface || !dst_surface)
 		return;
 
-	HW.pDevice->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+	HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
 void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
@@ -660,7 +660,7 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
 	// Выполняем копирование
-	HRESULT hr = HW.pDevice->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
+	HRESULT hr = HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
 
 	if (FAILED(hr))
 	{
@@ -681,7 +681,7 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 	RECT src_rect = {0, 0, (LONG)src_desc.Width, (LONG)src_desc.Height};
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
-	HW.pDevice->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+	HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
 // Версия с указанием областей
@@ -690,12 +690,12 @@ void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSu
 	if (!source || !destination)
 		return;
 
-	HW.pDevice->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+	HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
 void CBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
 {
-	CHK_DX(HW.pDevice->Clear(Count, pRects, Flags, Color, Z, Stencil));
+	CHK_DX(HW.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
 }
 
 void CBackend::ClearTexture(const ref_rt& _1, u32 color)

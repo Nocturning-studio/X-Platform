@@ -310,12 +310,12 @@ class ENGINE_API CBackend
 	{
 		if (ctable)
 		{
-			ref_constant C = ctable->get(n);
-			if (C)
+			ref_constant Const = ctable->get(n);
+			if (Const)
 			{
 				for (u32 i = 0; i < count; ++i)
 				{
-					constants.seta(&*C, i, data[i].x, data[i].y, data[i].z, 0.0f);
+					constants.seta(&*Const, i, data[i].x, data[i].y, data[i].z, 0.0f);
 				}
 			}
 		}
@@ -326,12 +326,12 @@ class ENGINE_API CBackend
 	{
 		if (ctable)
 		{
-			ref_constant C = ctable->get(n);
-			if (C)
+			ref_constant Const = ctable->get(n);
+			if (Const)
 			{
 				for (u32 i = 0; i < count; ++i)
 				{
-					constants.seta(&*C, i, data[i]);
+					constants.seta(&*Const, i, data[i]);
 				}
 			}
 		}
@@ -441,11 +441,11 @@ class ENGINE_API CBackend
 	void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 	IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 	{
-		CHK_DX(HW.pDevice->SetRenderState(p1, p2));
+		CHK_DX(HW.GetDevice()->SetRenderState(p1, p2));
 	}
 	IC void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
 	{
-		CHK_DX(HW.pDevice->SetSamplerState(sampler, type, value));
+		CHK_DX(HW.GetDevice()->SetSamplerState(sampler, type, value));
 	}
 #ifdef DEBUG
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);

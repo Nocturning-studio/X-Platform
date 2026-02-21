@@ -246,8 +246,8 @@ void CRender::create()
 	HWOCC.occq_create(occq_size);
 
 	SceneGraph.m_traversal_marker = 0;
-	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
-	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
+	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
+	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 
 	xrRender_apply_tf();
 	SceneGraph.m_packet.portal_traverser.CreateResources();
@@ -306,8 +306,8 @@ void CRender::reset_begin()
 
 void CRender::reset_end()
 {
-	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
-	R_CHK(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
+	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
+	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 	HWOCC.occq_create(occq_size);
 
 	update_options();
@@ -618,7 +618,7 @@ void CRender::set_render_mode(int mode)
 
 	IRender_Target* T = getTarget();
 	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), ZMin, ZMax};
-	CHK_DX(HW.pDevice->SetViewport(&VP));
+	CHK_DX(HW.GetDevice()->SetViewport(&VP));
 }
 
 #include "..\xrEngine\GameFont.h"

@@ -350,7 +350,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <BrowseInformation />
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -408,7 +408,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -467,7 +467,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -526,7 +526,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>Default</LanguageStandard>
@@ -586,7 +586,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -1032,7 +1032,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <BrowseInformation />
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>

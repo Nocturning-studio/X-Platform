@@ -259,10 +259,10 @@ void CDemoRecord::MakeCubeMapFace(float3& D, float3& N)
 	case 5:
 		N.set(cmNorm[m_Stage]);
 		D.set(cmDir[m_Stage]);
-		Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, itoa(m_Stage, buf, 10));
+		Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
 		break;
 	case 6:
-		Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, itoa(m_Stage, buf, 10));
+		Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
 		N.set(m_Camera.j);
 		D.set(m_Camera.k);
 		psHUD_Flags.assign(s_hud_flag);
@@ -450,8 +450,8 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 
 	info.fFov = g_fFov;
 
-	double x = 43.266615300557;
-	g_fDOF.y = (x / (2 * tan(PI * g_fFov / 360.f)));
+	float x = 43.266615300557;
+	g_fDOF.y = (x / (2.0f * tan(PI * g_fFov / 360.f)));
 	g_pGamePersistent->SetBaseDof(g_fDOF);
 }
 

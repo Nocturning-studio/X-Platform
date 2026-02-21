@@ -341,7 +341,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation />
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -431,7 +431,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation />
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IncludeInUnityFile>true</IncludeInUnityFile>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -480,7 +480,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
       <SDLCheck>true</SDLCheck>
@@ -529,7 +529,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
       <SDLCheck>true</SDLCheck>
@@ -579,7 +579,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>Default</LanguageStandard>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
@@ -628,7 +628,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>
       </BrowseInformation>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MaxFilesInUnityFile>8</MaxFilesInUnityFile>
       <SDLCheck>true</SDLCheck>

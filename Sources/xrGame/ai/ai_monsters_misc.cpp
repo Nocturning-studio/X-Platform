@@ -213,7 +213,7 @@ void CAniVector::Load(CKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 	string256 S1, S2;
 	MotionID tpMotionDef;
 	for (int i = 0;; ++i)
-		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(strconcat(sizeof(S1), S1, caBaseName, itoa(i, S2, 10)))))
+		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(strconcat(sizeof(S1), S1, caBaseName, _itoa(i, S2, 10)))))
 		{
 			A.push_back(tpMotionDef);
 #ifdef DEBUG
@@ -221,7 +221,7 @@ void CAniVector::Load(CKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 				Msg("* Loaded animation %s", S1);
 #endif
 		}
-		else if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(strconcat(sizeof(S1), S1, caBaseName, itoa(i, S2, 10)))))
+		else if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(strconcat(sizeof(S1), S1, caBaseName, _itoa(i, S2, 10)))))
 		{
 			A.push_back(tpMotionDef);
 #ifdef DEBUG

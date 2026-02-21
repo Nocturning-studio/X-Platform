@@ -40,16 +40,13 @@ ref_light precache_light = 0;
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
-	//OPTICK_EVENT("CRenderDevice::Begin");
-
-	HW.Validate();
-	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
+	HRESULT _hr = HW.GetDevice()->TestCooperativeLevel();
 	if (FAILED(_hr) && D3DERR_DEVICENOTRESET == _hr)
 		Reset();
 
 	Engine.DebugUI.OnFrameBegin();
 
-	CHK_DX(HW.pDevice->BeginScene());
+	CHK_DX(HW.GetDevice()->BeginScene());
 
 	RenderBackend.OnFrameBegin();
 	RenderBackend.set_CullMode(CULL_BACKFACE);
@@ -64,7 +61,7 @@ BOOL CRenderDevice::Begin()
 
 void CRenderDevice::Clear()
 {
-	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | (psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) |
+	CHK_DX(HW.GetDevice()->Clear(0, 0, D3DCLEAR_ZBUFFER | (psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) |
 								 (HW.Caps.bStencil ? D3DCLEAR_STENCIL : 0),
 							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
@@ -75,7 +72,7 @@ void Present()
 
 	Engine.Statistic->RenderPresentation.Begin();
 
-	HRESULT _hr = HW.pDevice->PresentEx(NULL, NULL, NULL, NULL, NULL);
+	HRESULT _hr = HW.GetDevice()->PresentEx(NULL, NULL, NULL, NULL, NULL);
 
 	Engine.Statistic->RenderPresentation.End();
 }
@@ -85,7 +82,7 @@ void CRenderDevice::End(void)
 #ifndef DEDICATED_SERVER
 	PROFILE_FUNCTION();
 
-	VERIFY(HW.pDevice);
+	VERIFY(HW.GetDevice());
 
 	if (HW.Caps.SceneMode)
 		overdrawEnd();
@@ -114,7 +111,7 @@ void CRenderDevice::End(void)
 	// end scene
 	RenderBackend.OnFrameEnd();
 	Memory.dbg_check();
-	CHK_DX(HW.pDevice->EndScene());
+	CHK_DX(HW.GetDevice()->EndScene());
 
 	Engine.DebugUI.OnFrameEnd();
 
@@ -169,7 +166,7 @@ void CRenderDevice::PreCache()
 	dir.set(_sin(angle), 0, _cos(angle));
 	dir.normalize();
 	top.set(0, 1, 0);
-	// right.crossproduct(top, dir); // Если нужно
+	right.crossproduct(top, dir);
 
 	// Установка в RenderView (вместо mView.build_camera_dir)
 	// Позицию берем текущую, какая есть в RenderView
@@ -187,7 +184,7 @@ void ProcessLoading(RP_FUNC* f)
 void CRenderDevice::PrepareEventLoop()
 {
 	Engine.SetUnloaded();
-	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
+	CHK_DX(HW.GetDevice()->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
 void CRenderDevice::RenderFrame()
@@ -320,11 +317,11 @@ void CRenderDevice::_SetupStates()
 	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
 	{
 		float fBias = 1.0f;
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 4));
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&fBias))));
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
-		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 4));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&fBias))));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
+		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
 	}
 	RenderBackend.SetRenderState(D3DRS_DITHERENABLE, TRUE);
 	RenderBackend.SetRenderState(D3DRS_COLORVERTEX, TRUE);
@@ -417,7 +414,6 @@ void CRenderDevice::Destroy(void)
 	Log("\nDestroying Direct3D...");
 
 	ShowCursor(TRUE);
-	HW.Validate();
 
 	_Destroy(FALSE);
 
@@ -432,7 +428,7 @@ void CRenderDevice::Reset(bool precache)
 	Engine.DebugUI.OnResetBegin();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
+	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", HW.GetDevice());
 #endif // DEBUG
 	bool b_16_before = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 
@@ -471,7 +467,7 @@ void CRenderDevice::Reset(bool precache)
 	Engine.DebugUI.OnResetEnd();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
+	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", HW.GetDevice());
 #endif // DEBUG
 }
 
@@ -551,7 +547,7 @@ void CRenderDevice::overdrawEnd()
 
 	// Draw a rectangle wherever the count equal I
 	RenderBackend.OnFrameEnd();
-	CHK_DX(HW.pDevice->SetFVF(FVF::F_TL));
+	CHK_DX(HW.GetDevice()->SetFVF(FVF::F_TL));
 
 	// Render gradients
 	for (int I = 0; I < 12; I++)
@@ -566,7 +562,7 @@ void CRenderDevice::overdrawEnd()
 		pv[3].set(float(dwWidth), float(0), c, 0, 0);
 
 		RenderBackend.SetRenderState(D3DRS_STENCILREF, I);
-		CHK_DX(HW.pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
+		CHK_DX(HW.GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
 	}
 	RenderBackend.SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }

@@ -446,7 +446,7 @@ class ENGINE_API CCC_Integer : public IConsole_Command
 	}
 	virtual void Status(TStatus& S)
 	{
-		itoa(*value, S, 10);
+		_itoa(*value, S, 10);
 	}
 	virtual void Info(TInfo& I)
 	{

@@ -22,7 +22,7 @@ xrBuildInfo ComputeBuildIdentificator()
 
 	BuildID.Date = __DATE__;
 
-	int days, months, years = 0;
+	int days = 0, months = 0, years = 0;
 	string16 month;
 	string256 buffer;
 	strcpy_s(buffer, __DATE__);

@@ -26,7 +26,7 @@ void R_occlusion::occq_create(u32 limit)
 	{
 		_Q q;
 		q.order = it;
-		if (FAILED(HW.pDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, &q.Q)))
+		if (FAILED(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_OCCLUSION, &q.Q)))
 			break;
 		pool.push_back(q);
 	}

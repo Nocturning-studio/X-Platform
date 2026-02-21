@@ -1,5 +1,7 @@
-#ifndef __FRECT
-#define __FRECT
+#pragma once
+
+#pragma warning(push)
+#pragma warning(disable : 4201)
 
 template <class T> struct _rect
 {
@@ -212,4 +214,4 @@ template <class T> BOOL _valid(const _rect<T>& m)
 	return m.lt._valid() && m.rb._valid();
 }
 
-#endif
+#pragma warning(pop)

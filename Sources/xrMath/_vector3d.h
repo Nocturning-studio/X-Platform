@@ -1,4 +1,5 @@
 #pragma once
+#include "xrMathCommon.h"
 
 template <class T> struct _vector3
 {

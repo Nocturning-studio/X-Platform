@@ -102,7 +102,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	if (pSurface)
 		return;
 
-	R_ASSERT(HW.pDevice && Name && Name[0] && w && h);
+	R_ASSERT(HW.GetDevice() && Name && Name[0] && w && h);
 	_order = CPU::GetCLK();
 
 	HRESULT _hr;
@@ -116,7 +116,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 
 	// Get caps
 	D3DCAPS9 caps;
-	R_CHK(HW.pDevice->GetDeviceCaps(&caps));
+	R_CHK(HW.GetDevice()->GetDeviceCaps(&caps));
 
 	// Pow2 check
 	if (!btwIsPow2(w) || !btwIsPow2(h))
@@ -148,7 +148,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	}
 
 	// Validate render-target usage
-	_hr = HW.pD3D->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_TEXTURE, d3dfmt);
+	_hr = HW.GetD3D()->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_TEXTURE, d3dfmt);
 	if (FAILED(_hr))
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d (CheckDeviceFormat)!!!", Name, w, h, levels);
@@ -158,7 +158,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	// Try to create texture/surface
 	Engine.ResourceManager->Evict();
 
-	_hr = HW.pDevice->CreateTexture(w, h, levels, usage, d3dfmt, D3DPOOL_DEFAULT, &pSurface, NULL);
+	_hr = HW.GetDevice()->CreateTexture(w, h, levels, usage, d3dfmt, D3DPOOL_DEFAULT, &pSurface, NULL);
 
 	if (FAILED(_hr) || (0 == pSurface))
 	{
@@ -228,7 +228,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	if (pSurface)
 		return;
 
-	R_ASSERT(HW.pDevice && Name && Name[0] && size && btwIsPow2(size));
+	R_ASSERT(HW.GetDevice() && Name && Name[0] && size && btwIsPow2(size));
 	_order = CPU::GetCLK();
 
 	HRESULT _hr;
@@ -241,7 +241,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 
 	// Get caps
 	D3DCAPS9 caps;
-	R_CHK(HW.pDevice->GetDeviceCaps(&caps));
+	R_CHK(HW.GetDevice()->GetDeviceCaps(&caps));
 
 	// Check size (cubemaps are usually square power of 2)
 	if (size > caps.MaxTextureWidth || size > caps.MaxTextureHeight)
@@ -256,14 +256,14 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 
 	// Validate render-target usage
 	// Используем D3DRTYPE_CUBETEXTURE
-	_hr = HW.pD3D->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_CUBETEXTURE, d3dfmt);
+	_hr = HW.GetD3D()->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_CUBETEXTURE, d3dfmt);
 	if (FAILED(_hr))
 		return;
 
 	// Try to create texture/surface
 	Engine.ResourceManager->Evict();
 
-	_hr = HW.pDevice->CreateCubeTexture(size, levels, usage, d3dfmt, D3DPOOL_DEFAULT, &pSurface, NULL);
+	_hr = HW.GetDevice()->CreateCubeTexture(size, levels, usage, d3dfmt, D3DPOOL_DEFAULT, &pSurface, NULL);
 
 	if (FAILED(_hr) || (0 == pSurface))
 		return;
