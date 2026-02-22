@@ -470,12 +470,12 @@ void CHOM::OnRender()
 				line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
 			}
 
-			RenderBackend.set_transform_world(Fidentity);
+			RenderBackendLegacy.set_transform_world(Fidentity);
 
 			// draw solid
 			Device.SetNearer(TRUE);
-			RenderBackend.set_Shader(Device.m_SelectionShader);
-			RenderBackend.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), poly.size() / 3);
+			RenderBackendLegacy.set_Shader(Device.m_SelectionShader);
+			RenderBackendLegacy.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), poly.size() / 3);
 			Device.SetNearer(FALSE);
 
 			// draw wire
@@ -488,8 +488,8 @@ void CHOM::OnRender()
 				Device.SetNearer(TRUE);
 			}
 
-			RenderBackend.set_Shader(Device.m_SelectionShader);
-			RenderBackend.dbg_Draw(D3DPT_LINELIST, &*line.begin(), line.size() / 2);
+			RenderBackendLegacy.set_Shader(Device.m_SelectionShader);
+			RenderBackendLegacy.dbg_Draw(D3DPT_LINELIST, &*line.begin(), line.size() / 2);
 
 			if (bDebug)
 			{

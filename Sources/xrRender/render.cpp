@@ -55,7 +55,7 @@ static class cl_sun_far : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float fValue = ps_r_sun_far;
-		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
+		RenderBackendLegacy.set_Constant(C, fValue, fValue, fValue, 0);
 	}
 } binder_sun_far;
 //////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ static class cl_sun_dir : public R_constant_setup
 		Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
 		L_dir.normalize();
 
-		RenderBackend.set_Constant(C, L_dir.x, L_dir.y, L_dir.z, 0);
+		RenderBackendLegacy.set_Constant(C, L_dir.x, L_dir.y, L_dir.z, 0);
 	}
 } binder_sun_dir;
 //////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ static class cl_sun_normal_bias : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant(C, ps_r_sun_depth_normal_bias, 0, 0, 0);
+		RenderBackendLegacy.set_Constant(C, ps_r_sun_depth_normal_bias, 0, 0, 0);
 	}
 } binder_sun_normal_bias;
 //////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ static class cl_sun_directional_bias : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant(C, ps_r_sun_depth_directional_bias, 0, 0, 0);
+		RenderBackendLegacy.set_Constant(C, ps_r_sun_depth_directional_bias, 0, 0, 0);
 	}
 } binder_sun_directional_bias;
 //////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ static class cl_sun_color : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
-		RenderBackend.set_Constant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
+		RenderBackendLegacy.set_Constant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
 	}
 } binder_sun_color;
 //////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ static class cl_debug_reserved : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant("debug_reserved", ps_r_debug_reserved_0, ps_r_debug_reserved_1, ps_r_debug_reserved_2, ps_r_debug_reserved_3);
+		RenderBackendLegacy.set_Constant("debug_reserved", ps_r_debug_reserved_0, ps_r_debug_reserved_1, ps_r_debug_reserved_2, ps_r_debug_reserved_3);
 	}
 } binder_debug_reserved;
 //////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ static class cl_ao_brightness : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant("ao_brightness", ps_r_ao_brightness);
+		RenderBackendLegacy.set_Constant("ao_brightness", ps_r_ao_brightness);
 	}
 } binder_ao_brightness;
 //////////////////////////////////////////////////////////////////////////
@@ -123,22 +123,22 @@ static class cl_is_hud_render_phase : public R_constant_setup
 		if (RenderImplementation.active_phase() == CRender::PHASE_HUD)
 			is_hud_render_phase = 1;
 
-		RenderBackend.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0, 0, 0);
+		RenderBackendLegacy.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0, 0, 0);
 	}
 } binder_is_hud_render_phase;
 //////////////////////////////////////////////////////////////////////////
 void CRender::CheckHWRenderSupporting()
 {
-	R_ASSERT2(CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor) >= CAP_VERSION(3, 0),
+	R_ASSERT2(CAP_VERSION(HW.GetCaps().raster_major, HW.GetCaps().raster_minor) >= CAP_VERSION(3, 0),
 			  make_string("Your graphics accelerator don`t meet minimal mod system requirements (DX9.0c supporting)"));
 
-	R_ASSERT2(HW.Caps.raster.dwInstructions >= 512, 
+	R_ASSERT2(HW.GetCaps().raster.dwInstructions >= 512, 
 		make_string("Your graphics accelerator don`t meet minimal mod system requirements (Instructions count less than 512)"));
 
-	R_ASSERT2(HW.Caps.raster.dwMRT_count >= 3,
+	R_ASSERT2(HW.GetCaps().raster.dwMRT_count >= 3,
 		make_string("Your graphics accelerator don`t meet minimal mod system requirements (Multiple render targets)"));
 
-	R_ASSERT2(HW.Caps.raster.b_MRT_mixdepth, 
+	R_ASSERT2(HW.GetCaps().raster.b_MRT_mixdepth, 
 		make_string("Your graphics accelerator don`t meet minimal mod system requirements (Multiple render targets independent depths)"));
 
 	R_ASSERT2(HW.support(D3DFMT_D24X8, D3DRTYPE_TEXTURE, D3DUSAGE_DEPTHSTENCIL), 
@@ -691,9 +691,9 @@ BOOL CRender::u_DBT_enable(float zMin, float zMax)
 		return FALSE;
 
 	// enable cheat
-	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
-	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
-	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
+	RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
+	RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
+	RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
 
 	return TRUE;
 }
@@ -701,7 +701,7 @@ BOOL CRender::u_DBT_enable(float zMin, float zMax)
 void CRender::u_DBT_disable()
 {
 	if (RenderImplementation.o.nvdbt && ps_r_ls_flags.test(RFLAG_USE_NVDBT))
-		RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
+		RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
 }
 
 float CRender::hclip(float v, float dim)

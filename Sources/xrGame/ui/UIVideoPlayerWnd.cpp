@@ -72,8 +72,8 @@ void CUIVideoPlayerWnd::Draw()
 	inherited::Draw();
 	if (!m_texture && m_surface->GetShader())
 	{
-		RenderBackend.set_Shader(m_surface->GetShader());
-		m_texture = RenderBackend.get_ActiveTexture(0);
+		RenderBackendLegacy.set_Shader(m_surface->GetShader());
+		m_texture = RenderBackendLegacy.get_ActiveTexture(0);
 		m_texture->video_Stop();
 	}
 }

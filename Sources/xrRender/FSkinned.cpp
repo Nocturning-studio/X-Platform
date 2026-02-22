@@ -183,14 +183,14 @@ void CSkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
 void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 {
 	// Create HW VB in case this is possible
-	BOOL bSoft = HW.Caps.geometry.bSoftware;
+	BOOL bSoft = HW.GetCaps().geometry.bSoftware;
 	u32 dwUsage =
 		/*D3DUSAGE_WRITEONLY |*/ (bSoft ? D3DUSAGE_SOFTWAREPROCESSING : 0); // VB may be read by wallmarks code
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
 		// Msg					("skinning: software");
-		V.rm_geom.create(vertRenderFVF, RenderBackend.Vertex.Buffer(), V.p_rm_Indices);
+		V.rm_geom.create(vertRenderFVF, RenderBackendLegacy.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
 	case RM_SKINNING_1B: {

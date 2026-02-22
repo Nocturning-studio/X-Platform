@@ -64,13 +64,13 @@ void CUIProgressShape::Draw()
 
 	ref_shader sh = m_pTexture->GetShader();
 	ref_geom gm = GetUIGeom();
-	RenderBackend.set_Shader(sh);
-	CTexture* T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(sh);
+	CTexture* T = RenderBackendLegacy.get_ActiveTexture(0);
 	float2 tsize;
 	tsize.set(float(T->get_Width()), float(T->get_Height()));
 
 	u32 offset;
-	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(m_sectorCount * 3, gm.stride(), offset);
+	FVF::TL* pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(m_sectorCount * 3, gm.stride(), offset);
 
 	Frect pos_rect;
 	m_pTexture->GetAbsoluteRect(pos_rect);
@@ -148,14 +148,14 @@ void CUIProgressShape::Draw()
 			std::swap(*(pv - 1), *(pv - 2));
 	}
 
-	RenderBackend.Vertex.Unlock(m_sectorCount * 3, gm.stride());
-	RenderBackend.set_Geometry(gm);
+	RenderBackendLegacy.Vertex.Unlock(m_sectorCount * 3, gm.stride());
+	RenderBackendLegacy.set_Geometry(gm);
 
 	//	if(!m_bClockwise)
-	//		RenderBackend.set_CullMode			(CULL_DISABLE);
+	//		RenderBackendLegacy.set_CullMode			(CULL_DISABLE);
 
-	RenderBackend.Render(D3DPT_TRIANGLELIST, offset, m_sectorCount);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, offset, m_sectorCount);
 
 	//	if(!m_bClockwise)
-	//		RenderBackend.set_CullMode			(CULL_BACKFACE);
+	//		RenderBackendLegacy.set_CullMode			(CULL_BACKFACE);
 }

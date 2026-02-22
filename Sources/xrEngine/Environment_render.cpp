@@ -98,9 +98,9 @@ void CEnvironment::RenderSky()
 	if (bNeed_re_create_env)
 	{
 		sh_2sky.create(&m_b_skybox, "skybox_2t");
-		sh_2geom.create(v_skybox_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
+		sh_2geom.create(v_skybox_fvf, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 		clouds_sh.create("clouds", "null");
-		clouds_geom.create(v_clouds_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
+		clouds_geom.create(v_clouds_fvf, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 		bNeed_re_create_env = FALSE;
 	}
 
@@ -117,23 +117,23 @@ void CEnvironment::RenderSky()
 					   iFloor(CurrentEnv->sky_color.z * 255.f), iFloor(CurrentEnv->weight * 255.f));
 
 	// Заполняем индексный буфер
-	u16* pib = RenderBackend.Index.Lock(20 * 3, i_offset);
+	u16* pib = RenderBackendLegacy.Index.Lock(20 * 3, i_offset);
 	CopyMemory(pib, hbox_faces, 20 * 3 * 2);
-	RenderBackend.Index.Unlock(20 * 3);
+	RenderBackendLegacy.Index.Unlock(20 * 3);
 
 	// Заполняем вершинный буфер
-	v_skybox* pv = (v_skybox*)RenderBackend.Vertex.Lock(12, sh_2geom.stride(), v_offset);
+	v_skybox* pv = (v_skybox*)RenderBackendLegacy.Vertex.Lock(12, sh_2geom.stride(), v_offset);
 	for (u32 v = 0; v < 12; v++)
 		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
-	RenderBackend.Vertex.Unlock(12, sh_2geom.stride());
+	RenderBackendLegacy.Vertex.Unlock(12, sh_2geom.stride());
 
 	// Устанавливаем состояние рендера
-	RenderBackend.set_transform_world(mSky);
-	RenderBackend.set_Geometry(sh_2geom);
-	RenderBackend.set_Shader(sh_2sky);
+	RenderBackendLegacy.set_transform_world(mSky);
+	RenderBackendLegacy.set_Geometry(sh_2geom);
+	RenderBackendLegacy.set_Shader(sh_2sky);
 
 	// Рендерим скайбокс
-	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
 
 	// Сбрасываем режим рендера
 	::Render->set_render_mode(::Render->MODE_NORMAL);
@@ -190,9 +190,9 @@ void CEnvironment::OnDeviceCreate()
 {
 	// Создаем шейдеры и геометрию
 	sh_2sky.create(&m_b_skybox, "skybox_2t");
-	sh_2geom.create(v_skybox_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
+	sh_2geom.create(v_skybox_fvf, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 	clouds_sh.create("clouds", "null");
-	clouds_geom.create(v_clouds_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
+	clouds_geom.create(v_clouds_fvf, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 
 	// weathers
 	{

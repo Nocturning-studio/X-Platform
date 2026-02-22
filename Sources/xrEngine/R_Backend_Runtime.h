@@ -11,7 +11,7 @@
 IC void R_transforms::set_c_World(R_constant* C)
 {
 	c_World = C;
-	RenderBackend.set_Constant(C, m_World);
+	RenderBackendLegacy.set_Constant(C, m_World);
 };
 IC void R_transforms::set_c_InvWorld(R_constant* C)
 {
@@ -21,27 +21,27 @@ IC void R_transforms::set_c_InvWorld(R_constant* C)
 IC void R_transforms::set_c_View(R_constant* C)
 {
 	c_View = C;
-	RenderBackend.set_Constant(C, m_View);
+	RenderBackendLegacy.set_Constant(C, m_View);
 };
 IC void R_transforms::set_c_Project(R_constant* C)
 {
 	c_Project = C;
-	RenderBackend.set_Constant(C, m_Project);
+	RenderBackendLegacy.set_Constant(C, m_Project);
 };
 IC void R_transforms::set_c_WorldView(R_constant* C)
 {
 	c_WorldView = C;
-	RenderBackend.set_Constant(C, m_WorldView);
+	RenderBackendLegacy.set_Constant(C, m_WorldView);
 };
 IC void R_transforms::set_c_ViewProject(R_constant* C)
 {
 	c_ViewProject = C;
-	RenderBackend.set_Constant(C, m_ViewProject);
+	RenderBackendLegacy.set_Constant(C, m_ViewProject);
 };
 IC void R_transforms::set_c_WorldViewProject(R_constant* C)
 {
 	c_WorldViewProject = C;
-	RenderBackend.set_Constant(C, m_WorldViewProject);
+	RenderBackendLegacy.set_Constant(C, m_WorldViewProject);
 };
 IC void CBackend::set_transform_world(const float4x4& Matrix)
 {
@@ -357,7 +357,7 @@ ICF void CBackend::set_CullMode(u32 _mode)
 
 ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
 {
-	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
 
@@ -365,13 +365,13 @@ ENGINE_API extern int psAnisotropic;
 
 ICF void CBackend::enable_anisotropy_filtering()
 {
-	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
 ICF void CBackend::disable_anisotropy_filtering()
 {
-	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }
 

@@ -21,35 +21,35 @@ void R_tree::unmap()
 void R_tree::set_m_transform_v(float4x4& mat)
 {
 	if (c_m_transform_v)
-		RenderBackend.set_Constant(c_m_transform_v, mat);
+		RenderBackendLegacy.set_Constant(c_m_transform_v, mat);
 }
 
 void R_tree::set_m_transform(float4x4& mat)
 {
 	if (c_m_transform)
-		RenderBackend.set_Constant(c_m_transform, mat);
+		RenderBackendLegacy.set_Constant(c_m_transform, mat);
 }
 
 void R_tree::set_consts(float x, float y, float z, float w)
 {
 	if (c_consts)
-		RenderBackend.set_Constant(c_consts, x, y, z, w);
+		RenderBackendLegacy.set_Constant(c_consts, x, y, z, w);
 }
 
 void R_tree::set_c_scale(float x, float y, float z, float w)
 {
 	if (c_c_scale)
-		RenderBackend.set_Constant(c_c_scale, x, y, z, w);
+		RenderBackendLegacy.set_Constant(c_c_scale, x, y, z, w);
 }
 
 void R_tree::set_c_bias(float x, float y, float z, float w)
 {
 	if (c_c_bias)
-		RenderBackend.set_Constant(c_c_bias, x, y, z, w);
+		RenderBackendLegacy.set_Constant(c_c_bias, x, y, z, w);
 }
 
 void R_tree::set_c_sun(float x, float y, float z, float w)
 {
 	if (c_c_sun)
-		RenderBackend.set_Constant(c_c_sun, x, y, z, w);
+		RenderBackendLegacy.set_Constant(c_c_sun, x, y, z, w);
 }

@@ -57,7 +57,7 @@ void FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
 	}
 
 	// VS
-	geom.create(dwDecl_FLOD, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+	geom.create(dwDecl_FLOD, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
 
 	// lod correction
 	float3 S;
@@ -103,15 +103,15 @@ void FLOD::Render(float LOD)
 	// Fill VB
 	_face&		F					= facets[best_id];
 	u32			vOffset				= 0;
-	_hw*		V					= (_hw*) RenderBackend.Vertex.Lock(4,geom->vb_stride,vOffset);
+	_hw*		V					= (_hw*) RenderBackendLegacy.Vertex.Lock(4,geom->vb_stride,vOffset);
 	V[0].set	(F.v[0].v,F.N,F.v[0].c_rgb_hemi,F.v[0].t.x,F.v[0].t.y);
 	V[1].set	(F.v[1].v,F.N,F.v[1].c_rgb_hemi,F.v[1].t.x,F.v[1].t.y);
 	V[2].set	(F.v[2].v,F.N,F.v[2].c_rgb_hemi,F.v[2].t.x,F.v[2].t.y);
 	V[3].set	(F.v[3].v,F.N,F.v[3].c_rgb_hemi,F.v[3].t.x,F.v[3].t.y);
-	RenderBackend.Vertex.Unlock			(4,geom->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock			(4,geom->vb_stride);
 
 	// Draw IT
-	RenderBackend.set_Geometry		(geom);
-	RenderBackend.Render			(D3DPT_TRIANGLEFAN,vOffset,2);
+	RenderBackendLegacy.set_Geometry		(geom);
+	RenderBackendLegacy.Render			(D3DPT_TRIANGLEFAN,vOffset,2);
 	*/
 }

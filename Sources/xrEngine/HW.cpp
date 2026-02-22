@@ -350,13 +350,13 @@ void fill_vid_mode_list(CHW* _hw)
 	if (vid_mode_token != NULL)
 		return;
 	xr_vector<LPCSTR> _tmp;
-	u32 cnt = _hw->GetD3D()->GetAdapterModeCount(_hw->DevAdapter, _hw->Caps.fTarget);
+	u32 cnt = _hw->GetD3D()->GetAdapterModeCount(_hw->GetDevAdapter(), _hw->GetCaps().fTarget);
 
 	for (u32 i = 0; i < cnt; ++i)
 	{
 		D3DDISPLAYMODE Mode;
 		string32 str;
-		_hw->GetD3D()->EnumAdapterModes(_hw->DevAdapter, _hw->Caps.fTarget, i, &Mode);
+		_hw->GetD3D()->EnumAdapterModes(_hw->GetDevAdapter(), _hw->GetCaps().fTarget, i, &Mode);
 		sprintf_s(str, sizeof(str), "%dx%d", Mode.Width, Mode.Height);
 		if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
 			continue;

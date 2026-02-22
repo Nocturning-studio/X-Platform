@@ -95,9 +95,9 @@ void CLevelLoadingScreen::Show()
 		InitializeFont();
 
 		// Инициализация шейдеров и геометрии
-		ll_hGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+		ll_hGeom.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
 		sh_progress.create("hud\\default", "ui\\ui_load");
-		ll_hGeom2.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), NULL);
+		ll_hGeom2.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), NULL);
 
 		// Обновляем логотип уровня
 		UpdateLevelLogo();
@@ -206,7 +206,7 @@ void CLevelLoadingScreen::DrawInternal()
 
 	if (!sh_progress)
 	{
-		RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0);
+		RenderBackendLegacy.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0);
 		return;
 	}
 	// Draw logo
@@ -222,8 +222,8 @@ void CLevelLoadingScreen::DrawInternal()
 	float2 k;
 	k.set(float(_w) / bw, float(_h) / bh);
 
-	RenderBackend.set_Shader(sh_progress);
-	CTexture* T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(sh_progress);
+	CTexture* T = RenderBackendLegacy.get_ActiveTexture(0);
 	float2 tsz;
 	tsz.set((float)T->get_Width(), (float)T->get_Height());
 	Frect back_text_coords;
@@ -246,7 +246,7 @@ void CLevelLoadingScreen::DrawInternal()
 	back_text_coords.lt.y /= tsz.y;
 	back_text_coords.rb.x /= tsz.x;
 	back_text_coords.rb.y /= tsz.y;
-	pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, ll_hGeom.stride(), Offset);
+	pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4, ll_hGeom.stride(), Offset);
 	pv->set(back_coords.lt.x, back_coords.rb.y, C, back_text_coords.lt.x, back_text_coords.rb.y);
 	pv++;
 	pv->set(back_coords.lt.x, back_coords.lt.y, C, back_text_coords.lt.x, back_text_coords.lt.y);
@@ -255,10 +255,10 @@ void CLevelLoadingScreen::DrawInternal()
 	pv++;
 	pv->set(back_coords.rb.x, back_coords.lt.y, C, back_text_coords.rb.x, back_text_coords.lt.y);
 	pv++;
-	RenderBackend.Vertex.Unlock(4, ll_hGeom.stride());
+	RenderBackendLegacy.Vertex.Unlock(4, ll_hGeom.stride());
 
-	RenderBackend.set_Geometry(ll_hGeom);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RenderBackendLegacy.set_Geometry(ll_hGeom);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 	// progress bar
 	back_size.set(268, 37);
@@ -276,7 +276,7 @@ void CLevelLoadingScreen::DrawInternal()
 	back_text_coords.rb.y /= tsz.y;
 
 	u32 v_cnt = 40;
-	pv = (FVF::TL*)RenderBackend.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
+	pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
 	FVF::TL* _pv = pv;
 	float pos_delta = back_coords.width() / v_cnt;
 	float tc_delta = back_text_coords.width() / v_cnt;
@@ -293,10 +293,10 @@ void CLevelLoadingScreen::DrawInternal()
 		pv++;
 	}
 	VERIFY(u32(pv - _pv) == 2 * (v_cnt + 1));
-	RenderBackend.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
+	RenderBackendLegacy.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
 
-	RenderBackend.set_Geometry(ll_hGeom2);
-	RenderBackend.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
+	RenderBackendLegacy.set_Geometry(ll_hGeom2);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
 
 	// Draw title
 	VERIFY(pFontSystem);
@@ -316,7 +316,7 @@ void CLevelLoadingScreen::DrawInternal()
 		r.rb.add(r.lt, float2().set(512, 256));
 		r.lt.mul(k);
 		r.rb.mul(k);
-		pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, ll_hGeom.stride(), Offset);
+		pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4, ll_hGeom.stride(), Offset);
 		pv->set(r.lt.x, r.rb.y, C, 0, 1);
 		pv++;
 		pv->set(r.lt.x, r.lt.y, C, 0, 0);
@@ -325,10 +325,10 @@ void CLevelLoadingScreen::DrawInternal()
 		pv++;
 		pv->set(r.rb.x, r.lt.y, C, 1, 0);
 		pv++;
-		RenderBackend.Vertex.Unlock(4, ll_hGeom.stride());
+		RenderBackendLegacy.Vertex.Unlock(4, ll_hGeom.stride());
 
-		RenderBackend.set_Shader(hLevelLogo);
-		RenderBackend.set_Geometry(ll_hGeom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+		RenderBackendLegacy.set_Shader(hLevelLogo);
+		RenderBackendLegacy.set_Geometry(ll_hGeom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
 }

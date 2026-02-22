@@ -225,14 +225,14 @@ void CDetailManager::Render(DetailsRenderMode Mode, float4x4* pCullMatrix, const
 	// 2. Настройка глобального состояния рендера
 	Engine.Statistic->RenderDUMP_DT_Render.Begin();
 	{
-		RenderBackend.set_CullMode(CULL_DISABLE);
-		RenderBackend.set_transform_world(Fidentity);
-		RenderBackend.set_Geometry(hw_Geom);
+		RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+		RenderBackendLegacy.set_transform_world(Fidentity);
+		RenderBackendLegacy.set_Geometry(hw_Geom);
 
 		// 3. Запуск проходов
 		ExecuteRenderPasses(ctx);
 
-		RenderBackend.set_CullMode(CULL_BACKFACE);
+		RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
 	}
 	Engine.Statistic->RenderDUMP_DT_Render.End();
 }
@@ -297,7 +297,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		}
 
 		// Установка шейдера
-		RenderBackend.set_Element(SelectShader(Object, ctx.mode, shaderType));
+		RenderBackendLegacy.set_Element(SelectShader(Object, ctx.mode, shaderType));
 		RenderImplementation.apply_lmaterial();
 
 		// Переменные для батчинга внутри одного объекта
@@ -451,7 +451,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 
 void CDetailManager::FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset, u32& iOffset)
 {
-	RenderBackend.set_Geometry(hw_Geom);
+	RenderBackendLegacy.set_Geometry(hw_Geom);
 
 	// Устанавливаем стрим инстансинга.
 	// Stream 1 (Instance Data) стартует с байтового смещения hw_BatchOffset.
@@ -465,9 +465,9 @@ void CDetailManager::FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset
 	HW.GetDevice()->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
 
 	u32 primCount = Object.number_indices / 3;
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);
 
 	// Обновляем статистику
 	Engine.Statistic->RenderDUMP_DT_Count += instanceCount;
-	RenderBackend.stat.r.s_details.add(instanceCount * Object.number_vertices);
+	RenderBackendLegacy.stat.r.s_details.add(instanceCount * Object.number_vertices);
 }

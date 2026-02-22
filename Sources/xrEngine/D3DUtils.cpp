@@ -46,17 +46,17 @@ static float3 boxvert[boxvertcount];
 		Device.SetRS(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);                                                                 \
 	}
 #else
-#define DU_DRAW_RS RenderBackend.dbg_SetRS
+#define DU_DRAW_RS RenderBackendLegacy.dbg_SetRS
 #define DU_DRAW_SH_C(sh, c)                                                                                            \
 	{                                                                                                                  \
-		RenderBackend.set_Shader(sh);                                                                                         \
-		RenderBackend.set_Constant("tfactor", float(color_get_R(c)) / 255.f, float(color_get_G(c)) / 255.f,                          \
+		RenderBackendLegacy.set_Shader(sh);                                                                                         \
+		RenderBackendLegacy.set_Constant("tfactor", float(color_get_R(c)) / 255.f, float(color_get_G(c)) / 255.f,                          \
 					 float(color_get_B(c)) / 255.f, float(color_get_A(c)) / 255.f);                                    \
 	}
 #define DU_DRAW_SH(sh)                                                                                                 \
 	{                                                                                                                  \
-		RenderBackend.set_Shader(sh);                                                                                         \
-		RenderBackend.set_Constant("tfactor", 1, 1, 1, 1);                                                                           \
+		RenderBackendLegacy.set_Shader(sh);                                                                                         \
+		RenderBackendLegacy.set_Constant("tfactor", 1, 1, 1, 1);                                                                           \
 	}
 #endif
 
@@ -266,9 +266,9 @@ void CDrawUtilities::OnDeviceCreate()
 		boxvert[i * 6 + 5].set(p.x, p.y, p.z - S.z * 0.25f);
 	}
 	// create render stream
-	vs_L.create(FVF::F_L, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
-	vs_TL.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
-	vs_LIT.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
+	vs_L.create(FVF::F_L, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
+	vs_TL.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
+	vs_LIT.create(FVF::F_LIT, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 
 	m_Font = xr_new<CGameFont>("stat_font");
 }
@@ -305,7 +305,7 @@ void CDrawUtilities::DrawSpotLight(const float3& p, const float3& d, float range
 	d.getHP(H, P);
 	T.setHPB(H, P, 0);
 	T.translate_over(p);
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	FVF::L* pv = (FVF::L*)Stream->Lock(LINE_DIVISION * 2 + 2, vs_L->vb_stride, vBase);
 	for (float angle = 0; angle < PI_MUL_2; angle += da)
@@ -350,7 +350,7 @@ void CDrawUtilities::DrawDirectionalLight(const float3& p, const float3& d, floa
 	float sz = radius + range;
 
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	FVF::L* pv = (FVF::L*)Stream->Lock(6, vs_L->vb_stride, vBase);
 	pv->set(0, 0, r, c);
@@ -385,14 +385,14 @@ void CDrawUtilities::DrawDirectionalLight(const float3& p, const float3& d, floa
 
 void CDrawUtilities::DrawPointLight(const float3& p, float radius, u32 c)
 {
-	RenderBackend.set_transform_world(Fidentity);
+	RenderBackendLegacy.set_transform_world(Fidentity);
 	DrawCross(p, radius, radius, radius, radius, radius, radius, c, true);
 }
 
 void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	{
 		FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
@@ -439,7 +439,7 @@ void CDrawUtilities::DrawFlag(const float3& p, float heading, float height, floa
 							  BOOL bDrawEntity)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	{
 		FVF::L* pv = (FVF::L*)Stream->Lock(2, vs_L->vb_stride, vBase);
@@ -514,8 +514,8 @@ void CDrawUtilities::DrawRomboid(const float3& p, float r, u32 c)
 	int k;
 	FVF::L* pv;
 	WORD* i;
-	VertexStream* Stream = &RenderBackend.Vertex;
-	IndexStream* StreamI = &RenderBackend.Index;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
+	IndexStream* StreamI = &RenderBackendLegacy.Index;
 
 	// fill VB
 	pv = (FVF::L*)Stream->Lock(6, vs_L->vb_stride, vBase);
@@ -649,7 +649,7 @@ void CDrawUtilities::DrawIdentBox(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
 void CDrawUtilities::DrawLineSphere(const float3& p, float radius, u32 c, BOOL bCross)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	int i;
 	FVF::L* pv;
@@ -727,7 +727,7 @@ void CDrawUtilities::dbgDrawPlacement(const float3& p, int sz, u32 clr, LPCSTR c
 	c.x = (float)iFloor(_x2real(c.x));
 	c.y = (float)iFloor(_y2real(-c.y));
 
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	FVF::TL* pv = (FVF::TL*)Stream->Lock(5, vs_TL->vb_stride, vBase);
 	pv->p.set(c.x - s, c.y - s, 0, 1);
@@ -785,7 +785,7 @@ void CDrawUtilities::dbgDrawFace(const float3& p0, const float3& p1, const float
 void CDrawUtilities::DrawLine(const float3& p0, const float3& p1, u32 c)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	FVF::L* pv = (FVF::L*)Stream->Lock(2, vs_L->vb_stride, vBase);
 	pv->set(p0, c);
@@ -803,7 +803,7 @@ void CDrawUtilities::DrawSelectionBox(const float3& C, const float3& S, u32* c)
 	u32 cc = (c) ? *c : boxcolor;
 
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	FVF::L* pv = (FVF::L*)Stream->Lock(boxvertcount, vs_L->vb_stride, vBase);
 	for (int i = 0; i < boxvertcount; i++, pv++)
@@ -822,7 +822,7 @@ void CDrawUtilities::DrawSelectionBox(const float3& C, const float3& S, u32* c)
 
 void CDrawUtilities::DrawBox(const float3& offs, const float3& Size, BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
 {
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	if (bWire)
 	{
 		u32 vBase;
@@ -863,7 +863,7 @@ void CDrawUtilities::DrawOBB(const float4x4& parent, const Fobb& box, u32 clr_s,
 	S.scale(box.m_halfsize.x * 2.f, box.m_halfsize.y * 2.f, box.m_halfsize.z * 2.f);
 	X.mul_43(R, S);
 	R.mul_43(parent, X);
-	RenderBackend.set_transform_world(R);
+	RenderBackendLegacy.set_transform_world(R);
 	DrawIdentBox(true, true, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -875,7 +875,7 @@ void CDrawUtilities::DrawAABB(const float4x4& parent, const float3& center, cons
 	S.scale(size.x * 2.f, size.y * 2.f, size.z * 2.f);
 	S.translate_over(center);
 	R.mul_43(parent, S);
-	RenderBackend.set_transform_world(R);
+	RenderBackendLegacy.set_transform_world(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
 }
 
@@ -886,7 +886,7 @@ void CDrawUtilities::DrawAABB(const float3& p0, const float3& p1, u32 clr_s, u32
 	C.set((p1.x + p0.x) * 0.5f, (p1.y + p0.y) * 0.5f, (p1.z + p0.z) * 0.5f);
 	R.scale(_abs(p1.x - p0.x), _abs(p1.y - p0.y), _abs(p1.z - p0.z));
 	R.translate_over(C);
-	RenderBackend.set_transform_world(R);
+	RenderBackendLegacy.set_transform_world(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
 }
 
@@ -897,7 +897,7 @@ void CDrawUtilities::DrawSphere(const float4x4& parent, const float3& center, fl
 	B.scale(radius, radius, radius);
 	B.translate_over(center);
 	B.mulA_43(parent);
-	RenderBackend.set_transform_world(B);
+	RenderBackendLegacy.set_transform_world(B);
 	DrawIdentSphere(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -905,7 +905,7 @@ void CDrawUtilities::DrawSphere(const float4x4& parent, const float3& center, fl
 void CDrawUtilities::DrawFace(const float3& p0, const float3& p1, const float3& p2, u32 clr_s, u32 clr_w,
 							  BOOL bSolid, BOOL bWire)
 {
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 
 	u32 vBase;
 	if (bSolid)
@@ -942,12 +942,12 @@ void CDrawUtilities::DD_DrawFace_begin(BOOL bWire)
 {
 	VERIFY(m_DD_pv_start == 0);
 	m_DD_wire = bWire;
-	m_DD_pv_start = (FVF::L*)RenderBackend.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
+	m_DD_pv_start = (FVF::L*)RenderBackendLegacy.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
 	m_DD_pv = m_DD_pv_start;
 }
 void CDrawUtilities::DD_DrawFace_flush(BOOL try_again)
 {
-	RenderBackend.Vertex.Unlock((u32)(m_DD_pv - m_DD_pv_start), vs_L->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock((u32)(m_DD_pv - m_DD_pv_start), vs_L->vb_stride);
 	if (m_DD_wire)
 		DU_DRAW_RS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	DU_DRAW_DP(D3DPT_TRIANGLELIST, vs_L, m_DD_base, u32(m_DD_pv - m_DD_pv_start) / 3);
@@ -955,7 +955,7 @@ void CDrawUtilities::DD_DrawFace_flush(BOOL try_again)
 		DU_DRAW_RS(D3DRS_FILLMODE, FILL_MODE);
 	if (try_again)
 	{
-		m_DD_pv_start = (FVF::L*)RenderBackend.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
+		m_DD_pv_start = (FVF::L*)RenderBackendLegacy.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
 		m_DD_pv = m_DD_pv_start;
 	}
 }
@@ -1009,7 +1009,7 @@ void CDrawUtilities::DrawCylinder(const float4x4& parent, const float3& center, 
 	float4x4 xf;
 	xf.mul(mR, mScale);
 	xf.mulA_43(parent);
-	RenderBackend.set_transform_world(xf);
+	RenderBackendLegacy.set_transform_world(xf);
 	DrawIdentCylinder(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1046,7 +1046,7 @@ void CDrawUtilities::DrawCone(const float4x4& parent, const float3& apex, const 
 	float4x4 xf;
 	xf.mul(mR, mScale);
 	xf.mulA_43(parent);
-	RenderBackend.set_transform_world(xf);
+	RenderBackendLegacy.set_transform_world(xf);
 	DrawIdentCone(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1077,7 +1077,7 @@ void CDrawUtilities::DrawPlane(const float3& p, const float3& n, const float2& s
 	mR._44 = 1;
 
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 
 	if (bSolid)
@@ -1135,7 +1135,7 @@ void CDrawUtilities::DrawPlane(const float3& center, const float2& scale, const 
 	M.setHPB(rotate.y, rotate.x, rotate.z);
 	M.translate_over(center);
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 
 	if (bSolid)
@@ -1189,7 +1189,7 @@ void CDrawUtilities::DrawPlane(const float3& center, const float2& scale, const 
 void CDrawUtilities::DrawRectangle(const float3& o, const float3& u, const float3& v, u32 clr_s, u32 clr_w,
 								   BOOL bSolid, BOOL bWire)
 {
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 
 	u32 vBase;
 	if (bSolid)
@@ -1234,7 +1234,7 @@ void CDrawUtilities::DrawRectangle(const float3& o, const float3& u, const float
 void CDrawUtilities::DrawCross(const float3& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2,
 							   u32 clr, BOOL bRot45)
 {
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	// actual rendering
 	u32 vBase;
 	FVF::L* pv = (FVF::L*)Stream->Lock(bRot45 ? 12 : 6, vs_L->vb_stride, vBase);
@@ -1275,7 +1275,7 @@ void CDrawUtilities::DrawPivot(const float3& pos, float sz)
 
 void CDrawUtilities::DrawAxis(const float4x4& T)
 {
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	float3 p[6];
 	u32 c[6];
 
@@ -1330,7 +1330,7 @@ void CDrawUtilities::DrawAxis(const float4x4& T)
 void CDrawUtilities::DrawObjectAxis(const float4x4& T, float sz, BOOL sel)
 {
 	VERIFY(Device.b_is_Ready);
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	float3 c, r, n, d;
 	float w = T.c.x * Engine.RenderView.ViewProjection._14 + T.c.y * Engine.RenderView.ViewProjection._24 +
 			  T.c.z * Engine.RenderView.ViewProjection._34 + Engine.RenderView.ViewProjection._44;
@@ -1391,7 +1391,7 @@ void CDrawUtilities::DrawObjectAxis(const float4x4& T, float sz, BOOL sel)
 void CDrawUtilities::DrawGrid()
 {
 	VERIFY(Device.b_is_Ready);
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	// fill VB
 	FVF::L* pv = (FVF::L*)Stream->Lock(m_GridPoints.size(), vs_L->vb_stride, vBase);
@@ -1401,7 +1401,7 @@ void CDrawUtilities::DrawGrid()
 	// Render it as triangle list
 	float4x4 ddd;
 	ddd.identity();
-	RenderBackend.set_transform_world(ddd);
+	RenderBackendLegacy.set_transform_world(ddd);
 	DU_DRAW_SH(Device.m_WireShader);
 	DU_DRAW_DP(D3DPT_LINELIST, vs_L, vBase, m_GridPoints.size() / 2);
 }
@@ -1410,7 +1410,7 @@ void CDrawUtilities::DrawSelectionRect(const int2& m_SelStart, const int2& m_Sel
 {
 	VERIFY(Device.b_is_Ready);
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase;
 	FVF::TL* pv = (FVF::TL*)Stream->Lock(4, vs_TL->vb_stride, vBase);
 	pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f);
@@ -1433,7 +1433,7 @@ void CDrawUtilities::DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, float3* vertice
 									BOOL bCycle)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase, dwNeed = (bCycle) ? vc + 1 : vc;
 	FVF::L* pv = (FVF::L*)Stream->Lock(dwNeed, vs_L->vb_stride, vBase);
 	for (int k = 0; k < vc; k++, pv++)
@@ -1452,7 +1452,7 @@ void CDrawUtilities::DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, float3* vertice
 void CDrawUtilities::DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase, dwNeed = (bCycle) ? vc + 1 : vc;
 	FVF::TL* pv = (FVF::TL*)Stream->Lock(dwNeed, vs_TL->vb_stride, vBase);
 	for (int k = 0; k < vc; k++, pv++)
@@ -1471,7 +1471,7 @@ void CDrawUtilities::DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* verti
 void CDrawUtilities::DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle)
 {
 	// fill VB
-	VertexStream* Stream = &RenderBackend.Vertex;
+	VertexStream* Stream = &RenderBackendLegacy.Vertex;
 	u32 vBase, dwNeed = (bCycle) ? vc + 1 : vc;
 	FVF::LIT* pv = (FVF::LIT*)Stream->Lock(dwNeed, vs_LIT->vb_stride, vBase);
 	for (int k = 0; k < vc; k++, pv++)

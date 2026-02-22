@@ -211,7 +211,7 @@ void CParticleEffect::OnDeviceCreate()
 	{
 		if (m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
-			geom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+			geom.create(FVF::F_LIT, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
 			if (m_Def)
 				shader = m_Def->m_CachedShader;
 		}
@@ -300,7 +300,7 @@ void CParticleEffect::Render(float)
 	{
 		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
-			FVF::LIT* pv_start = (FVF::LIT*)RenderBackend.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
+			FVF::LIT* pv_start = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			FVF::LIT* pv = pv_start;
 
 			for (u32 i = 0; i < p_cnt; i++)
@@ -399,18 +399,18 @@ void CParticleEffect::Render(float)
 				}
 			}
 			dwCount = u32(pv - pv_start);
-			RenderBackend.Vertex.Unlock(dwCount, geom->vb_stride);
+			RenderBackendLegacy.Vertex.Unlock(dwCount, geom->vb_stride);
 			if (dwCount)
 			{
-				RenderBackend.set_transform_world(Fidentity);
-				RenderBackend.set_Geometry(geom);
+				RenderBackendLegacy.set_transform_world(Fidentity);
+				RenderBackendLegacy.set_Geometry(geom);
 
-				//              u32 cm					= RenderBackend.get_CullMode();
-				RenderBackend.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling)
+				//              u32 cm					= RenderBackendLegacy.get_CullMode();
+				RenderBackendLegacy.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling)
 										? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_BACKFACE : CULL_FRONTFACE)
 										: CULL_DISABLE);
-				RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-				RenderBackend.set_CullMode(CULL_BACKFACE);
+				RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
+				RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
 			}
 		}
 	}

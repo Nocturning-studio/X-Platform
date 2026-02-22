@@ -48,7 +48,7 @@ void light::vis_prepare()
 	// testing
 	VisibilityData.pending = true;
 	transform_calc();
-	RenderBackend.set_transform_world(m_transform);
+	RenderBackendLegacy.set_transform_world(m_transform);
 	VisibilityData.query_order = RenderImplementation.occq_begin(VisibilityData.query_id);
 	RenderImplementation.draw_volume(this);
 	RenderImplementation.occq_end(VisibilityData.query_id);

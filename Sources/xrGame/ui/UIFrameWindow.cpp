@@ -127,8 +127,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmRT].SetTile(1, 1, 0, 0);
 
 	// fmR
-	RenderBackend.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmR].GetShader());
-	T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmR].GetShader());
+	T = RenderBackendLegacy.get_ActiveTexture(0);
 	ts.set((int)T->get_Width(), (int)T->get_Height());
 	size_y = min(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.bottom) -
 			 max(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosY(), parentAbsR.top);
@@ -166,8 +166,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmRB].SetTile(1, 1, 0, 0);
 
 	// fmB
-	RenderBackend.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmB].GetShader());
-	T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmB].GetShader());
+	T = RenderBackendLegacy.get_ActiveTexture(0);
 	ts.set((int)T->get_Width(), (int)T->get_Height());
 	size_x = min(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosX(), parentAbsR.right) -
 			 max(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.left);
@@ -206,8 +206,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmLB].SetTile(1, 1, 0, 0);
 
 	// fmL
-	RenderBackend.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmL].GetShader());
-	T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmL].GetShader());
+	T = RenderBackendLegacy.get_ActiveTexture(0);
 	ts.set((int)T->get_Width(), (int)T->get_Height());
 	size_y = min(m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosY(), parentAbsR.bottom) -
 			 max(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosY(), parentAbsR.top);
@@ -245,8 +245,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmLT].SetTile(1, 1, 0, 0);
 
 	// fmT
-	RenderBackend.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmT].GetShader());
-	T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmT].GetShader());
+	T = RenderBackendLegacy.get_ActiveTexture(0);
 	ts.set((int)T->get_Width(), (int)T->get_Height());
 	size_x = min(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosX(), parentAbsR.right) -
 			 max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosX(), parentAbsR.left);
@@ -269,8 +269,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 												 max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosY(), parentAbsR.top));
 
 	// back
-	RenderBackend.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetShader());
-	T = RenderBackend.get_ActiveTexture(0);
+	RenderBackendLegacy.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetShader());
+	T = RenderBackendLegacy.get_ActiveTexture(0);
 	ts.set((int)T->get_Width(), (int)T->get_Height());
 	size_x = min(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosX(), parentAbsR.right) -
 			 max(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosX(), parentAbsR.left);

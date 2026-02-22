@@ -3,14 +3,14 @@
 
 void CBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
-	RenderBackend.set_Geometry(geom);
-	RenderBackend.Render(pt, vBase, pc);
+	RenderBackendLegacy.set_Geometry(geom);
+	RenderBackendLegacy.Render(pt, vBase, pc);
 }
 
 void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	RenderBackend.set_Geometry(geom);
-	RenderBackend.Render(pt, baseV, startV, countV, startI, PC);
+	RenderBackendLegacy.set_Geometry(geom);
+	RenderBackendLegacy.Render(pt, baseV, startV, countV, startI, PC);
 }
 
 #ifdef DEBUG
@@ -152,9 +152,9 @@ void CBackend::dbg_DrawEllipse(float4x4& T, u32 C)
 	}
 
 	set_transform_world(T);
-	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces, 224);
-	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
 
 #endif

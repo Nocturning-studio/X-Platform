@@ -373,7 +373,7 @@ class CCC_tf_MipBias : public CCC_Float
 	{
 		if (0 == HW.GetDevice())
 			return;
-		for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+		for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
 			CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
 	}
 
@@ -769,8 +769,8 @@ void xrRender_console_apply_conditions()
 {
 #if 0
 	CCC_ConditionsToken* r1_aa_type = dynamic_cast<CCC_ConditionsToken*>(Console->GetCommand("r1_aa_type"));
-	r1_aa_type->SetCondition(CSAA_4X, HW.Caps.max_coverage >= 2);
-	r1_aa_type->SetCondition(CSAA_8X, HW.Caps.max_coverage >= 4);
+	r1_aa_type->SetCondition(CSAA_4X, HW.GetCaps().max_coverage >= 2);
+	r1_aa_type->SetCondition(CSAA_8X, HW.GetCaps().max_coverage >= 4);
 	r1_aa_type->ApplyConditions();
 
 	CCC_ConditionsToken* r1_aa_transluency = dynamic_cast<CCC_ConditionsToken*>(Console->GetCommand("r1_aa_transluency"));

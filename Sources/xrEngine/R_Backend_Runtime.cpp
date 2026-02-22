@@ -11,7 +11,7 @@
 void CBackend::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
-	for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
+	for (u32 stage = 0; stage < HW.GetCaps().raster.dwStages; stage++)
 		CHK_DX(HW.GetDevice()->SetTexture(0, 0));
 	CHK_DX(HW.GetDevice()->SetStreamSource(0, 0, 0, 0));
 	CHK_DX(HW.GetDevice()->SetIndices(0));
@@ -101,7 +101,7 @@ void CBackend::RestoreRenderState()
 
 void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
 {
-	if (0 == HW.Caps.geometry.dwClipPlanes)
+	if (0 == HW.GetCaps().geometry.dwClipPlanes)
 		return;
 	if (!_enable)
 	{
@@ -111,8 +111,8 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 
 	// Enable and setup planes
 	VERIFY(_planes && count);
-	if (count > HW.Caps.geometry.dwClipPlanes)
-		count = HW.Caps.geometry.dwClipPlanes;
+	if (count > HW.GetCaps().geometry.dwClipPlanes)
+		count = HW.GetCaps().geometry.dwClipPlanes;
 
 	D3DXMATRIX worldToClipMatrixIT;
 	D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIX*)&Engine.RenderView.ViewProjection);
@@ -134,7 +134,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 #ifndef DEDICATED_SREVER
 void CBackend::set_ClipPlanes(u32 _enable, float4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
 {
-	if (0 == HW.Caps.geometry.dwClipPlanes)
+	if (0 == HW.GetCaps().geometry.dwClipPlanes)
 		return;
 	if (!_enable)
 	{
@@ -230,22 +230,22 @@ void CBackend::set_Render_Target_Surface(const ref_rt& _1, const ref_rt& _2, con
 {
 	R_ASSERT2(_1, "Rendertarget must have minimum one target surface (ref_rt& _1)");
 
-	RenderBackend.setRenderTarget(_1->pRT, 0);
+	RenderBackendLegacy.setRenderTarget(_1->pRT, 0);
 
 	if (_2)
-		RenderBackend.setRenderTarget(_2->pRT, 1);
+		RenderBackendLegacy.setRenderTarget(_2->pRT, 1);
 	else
-		RenderBackend.setRenderTarget(NULL, 1);
+		RenderBackendLegacy.setRenderTarget(NULL, 1);
 
 	if (_3)
-		RenderBackend.setRenderTarget(_3->pRT, 2);
+		RenderBackendLegacy.setRenderTarget(_3->pRT, 2);
 	else
-		RenderBackend.setRenderTarget(NULL, 2);
+		RenderBackendLegacy.setRenderTarget(NULL, 2);
 
 	if (_4)
-		RenderBackend.setRenderTarget(_4->pRT, 3);
+		RenderBackendLegacy.setRenderTarget(_4->pRT, 3);
 	else
-		RenderBackend.setRenderTarget(NULL, 3);
+		RenderBackendLegacy.setRenderTarget(NULL, 3);
 }
 
 void CBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IDirect3DSurface9* _4)
@@ -255,32 +255,32 @@ void CBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* _1, ID
 	//dwWidth = W;
 	//dwHeight = H;
 
-	RenderBackend.setRenderTarget(_1, 0);
+	RenderBackendLegacy.setRenderTarget(_1, 0);
 
 	if (_2)
-		RenderBackend.setRenderTarget(_2, 1);
+		RenderBackendLegacy.setRenderTarget(_2, 1);
 	else
-		RenderBackend.setRenderTarget(NULL, 1);
+		RenderBackendLegacy.setRenderTarget(NULL, 1);
 
 	if (_3)
-		RenderBackend.setRenderTarget(_3, 2);
+		RenderBackendLegacy.setRenderTarget(_3, 2);
 	else
-		RenderBackend.setRenderTarget(NULL, 2);
+		RenderBackendLegacy.setRenderTarget(NULL, 2);
 
 	if (_4)
-		RenderBackend.setRenderTarget(_4, 3);
+		RenderBackendLegacy.setRenderTarget(_4, 3);
 	else
-		RenderBackend.setRenderTarget(NULL, 3);
+		RenderBackendLegacy.setRenderTarget(NULL, 3);
 }
 
 void CBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
 {
-	RenderBackend.setDepthBuffer(zb);
+	RenderBackendLegacy.setDepthBuffer(zb);
 }
 
 void CBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
 {
-	RenderBackend.setDepthBuffer(zb);
+	RenderBackendLegacy.setDepthBuffer(zb);
 	CHK_DX(HW.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
 }
 
@@ -380,7 +380,7 @@ void CBackend::u_compute_texgen_screen(float4x4& m_Texgen)
 							 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 
 							 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
-	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
+	m_Texgen.mul(m_TexelAdjust, RenderBackendLegacy.transforms.m_WorldViewProject);
 }
 
 void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
@@ -396,7 +396,7 @@ void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	p1.set((w + 0.5f) / w, (h + 0.5f) / h);
 
 	// Fill vertex buffer
-	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, geometry->vb_stride, vOffset);
+	FVF::TL* pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4, geometry->vb_stride, vOffset);
 	pv->set_position(0, (float)h, d_Z, d_W);
 	pv->set_color(Color);
 	pv->set_uv(p0.x, p1.y);
@@ -416,10 +416,10 @@ void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	pv->set_color(Color);
 	pv->set_uv(p1.x, p0.y);
 	pv++;
-	RenderBackend.Vertex.Unlock(4, geometry->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock(4, geometry->vb_stride);
 
 	// Set geometry
-	RenderBackend.set_Geometry(geometry);
+	RenderBackendLegacy.set_Geometry(geometry);
 }
 
 void CBackend::set_viewport_geometry(u32 w, u32 h, u32& vOffset)
@@ -445,14 +445,14 @@ void CBackend::render_viewport_geometry(u32 w, u32 h)
 {
 	u32 vOffset;
 	set_viewport_geometry(w, h, g_viewport, vOffset);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
 }
 
 void CBackend::RenderViewportSurface()
 {
 	u32 Offset = 0;
 	set_viewport_geometry(Offset);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
 void CBackend::RenderViewportSurface(const ref_rt& _1, IDirect3DSurface9* zb)

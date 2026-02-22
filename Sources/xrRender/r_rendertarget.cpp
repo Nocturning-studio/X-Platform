@@ -31,7 +31,7 @@ void CRenderTarget::create_textures()
 	Msg("Creating render target textures");
 
 	// SCREENSHOT
-	R_CHK(HW.GetDevice()->CreateOffscreenPlainSurface(dwWidth, dwHeight, HW.Caps.fTarget, D3DPOOL_SYSTEMMEM, &surf_screenshot_normal, NULL));
+	R_CHK(HW.GetDevice()->CreateOffscreenPlainSurface(dwWidth, dwHeight, HW.GetCaps().fTarget, D3DPOOL_SYSTEMMEM, &surf_screenshot_normal, NULL));
 	R_CHK(HW.GetDevice()->CreateTexture(128, 128, 1, NULL, D3DFMT_DXT5, D3DPOOL_SYSTEMMEM, &tex_screenshot_gamesave, NULL));
 	R_CHK(tex_screenshot_gamesave->GetSurfaceLevel(0, &surf_screenshot_gamesave));
 
@@ -267,9 +267,9 @@ CRenderTarget::CRenderTarget()
 	g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
 
 	// PP
-	g_effectors.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+	g_effectors.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
 
-	g_cuboid.create(FVF::F_L, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
+	g_cuboid.create(FVF::F_L, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 
 	if (g_dedicated_server)
 		return;

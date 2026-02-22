@@ -37,7 +37,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	if (!Device.b_is_Ready)
 		return;
 
-	R_CHK(HW.GetDevice()->GetRenderTargetData(HW.pBaseRT, RenderTarget->surf_screenshot_normal));
+	R_CHK(HW.GetDevice()->GetRenderTargetData(HW.GetBaseRT(), RenderTarget->surf_screenshot_normal));
 
 	D3DLOCKED_RECT rect;
 	R_CHK(RenderTarget->surf_screenshot_normal->LockRect(&rect, 0, D3DLOCK_NOSYSLOCK));

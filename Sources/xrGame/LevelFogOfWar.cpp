@@ -60,7 +60,7 @@ CLevelFogOfWar::CLevelFogOfWar()
 	: m_rowNum(0), m_colNum(0){
 					   //	m_levelRect.set	(0.0f,0.0f,0.0f,0.0f);
 					   //	hShader.create	("hud\\default","ui\\ui_fog_of_war");
-					   //	hGeom.create	(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
+					   //	hGeom.create	(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), 0);
 				   };
 
 void CLevelFogOfWar::Init(const shared_str& level)
@@ -84,7 +84,7 @@ void CLevelFogOfWar::Init(const shared_str& level)
 	m_cells.resize(m_rowNum * m_colNum, false);
 
 	hShader.create("hud\\fog_of_war", "ui\\ui_fog_of_war");
-	hGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
+	hGeom.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), 0);
 }
 
 #define FOG_OPEN_RADIUS (FOG_CELL_SZ / 4)
@@ -219,7 +219,7 @@ void CLevelFogOfWar::Draw()
 
 	// fill cell buffer
 	u32 vOffset = 0;
-	FVF::TL* start_pv = (FVF::TL*)RenderBackend.Vertex.Lock(cells.width() * cells.height() * 6, hGeom.stride(), vOffset);
+	FVF::TL* start_pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(cells.width() * cells.height() * 6, hGeom.stride(), vOffset);
 	FVF::TL* pv = start_pv;
 	for (int x = 0; x < cells.width(); ++x)
 	{
@@ -237,16 +237,16 @@ void CLevelFogOfWar::Draw()
 		}
 	}
 	std::ptrdiff_t p_cnt = (pv - start_pv) / 3;
-	RenderBackend.Vertex.Unlock(u32(pv - start_pv), hGeom.stride());
+	RenderBackendLegacy.Vertex.Unlock(u32(pv - start_pv), hGeom.stride());
 
 	// set scissor
 	UI()->PushScissor(clip_rect);
 	if (p_cnt != 0)
 	{
 		// draw
-		RenderBackend.set_Shader(hShader);
-		RenderBackend.set_Geometry(hGeom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
+		RenderBackendLegacy.set_Shader(hShader);
+		RenderBackendLegacy.set_Geometry(hGeom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
 	}
 	UI()->PopScissor();
 }

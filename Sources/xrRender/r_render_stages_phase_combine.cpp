@@ -8,63 +8,63 @@ void CRender::combine_additional_postprocess()
 {
 	////OPTICK_EVENT("CRender::combine_additional_postprocess");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+	RenderBackendLegacy.set_Stencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
-	RenderBackend.set_Constant("cas_params", ps_cas_contrast, ps_cas_sharpening, 0, 0);
-	RenderBackend.set_Constant("bloom_parameters",  ps_r_bloom_threshold, 
+	RenderBackendLegacy.set_Element(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
+	RenderBackendLegacy.set_Constant("cas_params", ps_cas_contrast, ps_cas_sharpening, 0, 0);
+	RenderBackendLegacy.set_Constant("bloom_parameters",  ps_r_bloom_threshold, 
 												ps_r_bloom_brightness, 
 												ps_r_bloom_blades_threshold, 
 												ps_r_bloom_blades_brightness);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_sun_shafts()
 {
 	////OPTICK_EVENT("CRender::combine_sun_shafts");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+	RenderBackendLegacy.set_Stencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
+	RenderBackendLegacy.set_Element(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
 	float sun_shafts_intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity;
-	RenderBackend.set_Constant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackendLegacy.set_Constant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_skybox()
 {
 	////OPTICK_EVENT("CRender::render_skybox");
 
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
-	RenderBackend.set_Depth_Buffer(NULL);
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
+	RenderBackendLegacy.set_Depth_Buffer(NULL);
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+	RenderBackendLegacy.set_Stencil(FALSE);
+	RenderBackendLegacy.set_ColorWriteEnable();
 
 	// Draw full-screen quad textured with our scene image draw skybox
-	RenderBackend.SetRenderState(D3DRS_ZENABLE, FALSE);
+	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, FALSE);
 	g_pGamePersistent->Environment().RenderSky();
-	RenderBackend.SetRenderState(D3DRS_ZENABLE, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::precombine_scene()
 {
 	////OPTICK_EVENT("CRender::combine_additional_postprocess");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+	RenderBackendLegacy.set_Stencil(FALSE);
+	RenderBackendLegacy.set_ColorWriteEnable();
 
 	float additional_ambient = 0.0f;
 
 	if (g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
 		additional_ambient = 0.5f;
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
-	RenderBackend.set_Constant("additional_ambient", additional_ambient);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
+	RenderBackendLegacy.set_Element(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
+	RenderBackendLegacy.set_Constant("additional_ambient", additional_ambient);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_scene_lighting()
@@ -107,18 +107,18 @@ void CRender::combine_scene_lighting()
 		_RELEASE(e1);
 	}
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_SCENE]);
-	RenderBackend.set_Constant("additional_ambient", additional_ambient);
-	RenderBackend.set_Constant("debug_mode", ps_r_debug_render);
-	RenderBackend.set_Constant("ambient_color", ambclr);
-	RenderBackend.set_Constant("env_color", envclr);
-	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackendLegacy.set_Element(RenderTarget->s_combine->E[SE_COMBINE_SCENE]);
+	RenderBackendLegacy.set_Constant("additional_ambient", additional_ambient);
+	RenderBackendLegacy.set_Constant("debug_mode", ps_r_debug_render);
+	RenderBackendLegacy.set_Constant("ambient_color", ambclr);
+	RenderBackendLegacy.set_Constant("env_color", envclr);
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
 	// stencil should be >= 1, we don't touch sky pixels
-	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], HW.pBaseZB);
-//
+	RenderBackendLegacy.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1], HW.GetBaseZB());
+	//
 //#ifdef DEBUG
-//	RenderBackend.set_CullMode(CULL_BACKFACE);
+//	RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
 //	static xr_vector<Fplane> saved_dbg_planes;
 //	if (bDebug)
 //		saved_dbg_planes = dbg_planes;
@@ -146,8 +146,8 @@ void CRender::combine_scene_lighting()
 //			p1.mad(zero, L_right, sz).mad(L_dir, -sz);
 //			p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
 //			p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
-//			RenderBackend.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
-//			RenderBackend.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
+//			RenderBackendLegacy.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
+//			RenderBackendLegacy.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
 //		}
 //
 //	static xr_vector<dbg_line_t> saved_dbg_lines;
@@ -158,7 +158,7 @@ void CRender::combine_scene_lighting()
 //	if (1)
 //		for (u32 it = 0; it < dbg_lines.size(); it++)
 //		{
-//			RenderBackend.dbg_DrawLINE(Fidentity, dbg_lines[it].P0, dbg_lines[it].P1, dbg_lines[it].color);
+//			RenderBackendLegacy.dbg_DrawLINE(Fidentity, dbg_lines[it].P0, dbg_lines[it].P1, dbg_lines[it].color);
 //		}
 //
 //	dbg_spheres.clear();

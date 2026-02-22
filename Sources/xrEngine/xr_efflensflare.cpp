@@ -408,7 +408,7 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 	svector<ref_shader, MAX_Flares> _2render;
 
 	u32 VS_Offset;
-	FVF::LIT* pv = (FVF::LIT*)RenderBackend.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
+	FVF::LIT* pv = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
 
 	float fDistance = FAR_DIST * 0.75f;
 
@@ -499,17 +499,17 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 			}
 		}
 	}
-	RenderBackend.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
+	RenderBackendLegacy.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
 
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_Geometry(hGeom);
+	RenderBackendLegacy.set_transform_world(Fidentity);
+	RenderBackendLegacy.set_Geometry(hGeom);
 	for (u32 i = 0; i < _2render.size(); i++)
 	{
 		if (_2render[i])
 		{
 			u32 vBase = i * 4 + VS_Offset;
-			RenderBackend.set_Shader(_2render[i]);
-			RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, 4, 0, 2);
+			RenderBackendLegacy.set_Shader(_2render[i]);
+			RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vBase, 0, 4, 0, 2);
 		}
 	}
 }
@@ -529,7 +529,7 @@ shared_str CLensFlare::AppendDef(CEnvironment& environment, CInifile* pIni, LPCS
 void CLensFlare::OnDeviceCreate()
 {
 	// VS
-	hGeom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+	hGeom.create(FVF::F_LIT, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
 
 	// palette
 	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)

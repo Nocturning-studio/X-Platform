@@ -140,7 +140,7 @@ void CDetail::Optimize()
 	////OPTICK_EVENT("CDetail::Optimize");
 
 	xr_vector<u16> vec_indices, vec_permute;
-	const int cache = HW.Caps.geometry.dwVertexCache;
+	const int cache = HW.GetCaps().geometry.dwVertexCache;
 
 	// Stripify
 	vec_indices.assign(indices, indices + number_indices);

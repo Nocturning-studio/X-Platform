@@ -6,7 +6,7 @@ ref_geom hGeom_fan = NULL;
 
 void CreateUIGeom()
 {
-	hGeom_fan.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
+	hGeom_fan.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), 0);
 }
 
 void DestroyUIGeom()
@@ -68,9 +68,9 @@ void CUIStaticItem::Render()
 	VERIFY(g_bRendering);
 	// установить обязательно перед вызовом CustomItem::Render() !!!
 	VERIFY(hShader);
-	RenderBackend.set_Shader(hShader);
+	RenderBackendLegacy.set_Shader(hShader);
 	if (alpha_ref != -1)
-		RenderBackend.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
+		RenderBackendLegacy.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
 	float2 bp;
 	UI()->ClientToScreenScaled(bp, float(iPos.x), float(iPos.y));
@@ -89,7 +89,7 @@ void CUIStaticItem::Render()
 	if (!(tile_x && tile_y))
 		return;
 	// render
-	FVF::TL* start_pv = (FVF::TL*)RenderBackend.Vertex.Lock(8 * tile_x * tile_y, hGeom_fan.stride(), vOffset);
+	FVF::TL* start_pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(8 * tile_x * tile_y, hGeom_fan.stride(), vOffset);
 	FVF::TL* pv = start_pv;
 	for (x = 0; x < tile_x; ++x)
 	{
@@ -101,16 +101,16 @@ void CUIStaticItem::Render()
 	}
 	std::ptrdiff_t p_cnt = (pv - start_pv) / 3;
 	VERIFY((pv - start_pv) <= 8 * tile_x * tile_y);
-	RenderBackend.Vertex.Unlock(u32(pv - start_pv), hGeom_fan.stride());
+	RenderBackendLegacy.Vertex.Unlock(u32(pv - start_pv), hGeom_fan.stride());
 	// set scissor
 	Frect clip_rect = {iPos.x, iPos.y, iPos.x + iVisRect.x2 * iTileX + iRemX, iPos.y + iVisRect.y2 * iTileY + iRemY};
 	UI()->PushScissor(clip_rect);
 	// set geom
-	RenderBackend.set_Geometry(hGeom_fan);
+	RenderBackendLegacy.set_Geometry(hGeom_fan);
 	if (p_cnt != 0)
-		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
 	if (alpha_ref != -1)
-		RenderBackend.SetRenderState(D3DRS_ALPHAREF, 0);
+		RenderBackendLegacy.SetRenderState(D3DRS_ALPHAREF, 0);
 	UI()->PopScissor();
 }
 
@@ -121,24 +121,24 @@ void CUIStaticItem::Render(float angle)
 	VERIFY(g_bRendering);
 	// установить обязательно перед вызовом CustomItem::Render() !!!
 	VERIFY(hShader);
-	RenderBackend.set_Shader(hShader);
+	RenderBackendLegacy.set_Shader(hShader);
 	if (alpha_ref != -1)
-		RenderBackend.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
+		RenderBackendLegacy.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
 	float2 bp_ns;
 	bp_ns.set(iPos);
 
 	// actual rendering
 	u32 vOffset;
-	FVF::TL* start_pv = (FVF::TL*)RenderBackend.Vertex.Lock(32, hGeom_fan.stride(), vOffset);
+	FVF::TL* start_pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(32, hGeom_fan.stride(), vOffset);
 	FVF::TL* pv = start_pv;
 	inherited::Render(pv, bp_ns, dwColor, angle);
 	// unlock VB and Render it as triangle LIST
 	std::ptrdiff_t p_cnt = pv - start_pv;
-	RenderBackend.Vertex.Unlock(u32(p_cnt), hGeom_fan.stride());
-	RenderBackend.set_Geometry(hGeom_fan);
+	RenderBackendLegacy.Vertex.Unlock(u32(p_cnt), hGeom_fan.stride());
+	RenderBackendLegacy.set_Geometry(hGeom_fan);
 	if (p_cnt > 2)
-		RenderBackend.Render(D3DPT_TRIANGLEFAN, vOffset, u32(p_cnt - 2));
+		RenderBackendLegacy.Render(D3DPT_TRIANGLEFAN, vOffset, u32(p_cnt - 2));
 	if (alpha_ref != -1)
-		RenderBackend.SetRenderState(D3DRS_ALPHAREF, 0);
+		RenderBackendLegacy.SetRenderState(D3DRS_ALPHAREF, 0);
 }

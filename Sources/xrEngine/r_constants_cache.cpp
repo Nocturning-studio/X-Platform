@@ -52,10 +52,10 @@ void R_constants::flush_cache()
 			if (count)
 			{
 #ifdef DEBUG
-				if (F.r_hi() > HW.Caps.geometry.dwRegisters)
+				if (F.r_hi() > HW.GetCaps().geometry.dwRegisters)
 				{
 					Debug.fatal(DEBUG_INFO, "Internal error setting VS-constants: overflow\nregs[%d],hi[%d]",
-								HW.Caps.geometry.dwRegisters, F.r_hi());
+								HW.GetCaps().geometry.dwRegisters, F.r_hi());
 				}
 #endif
 				CHK_DX(HW.GetDevice()->SetVertexShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));

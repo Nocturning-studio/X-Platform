@@ -182,7 +182,7 @@ void CObjectAnimator::DrawPath()
 		}
 
 		Device.SetShader(Device.m_WireShader);
-		RenderBackend.set_transform_world(Fidentity);
+		RenderBackendLegacy.set_transform_world(Fidentity);
 		if (!path_points.empty())
 			DU.DrawPrimitiveL(D3DPT_LINESTRIP, path_points.size() - 1, path_points.begin(), path_points.size(), clr,
 							  true, false);

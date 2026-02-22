@@ -48,10 +48,10 @@ BOOL CRenderDevice::Begin()
 
 	CHK_DX(HW.GetDevice()->BeginScene());
 
-	RenderBackend.OnFrameBegin();
-	RenderBackend.set_CullMode(CULL_BACKFACE);
+	RenderBackendLegacy.OnFrameBegin();
+	RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
 
-	if (HW.Caps.SceneMode)
+	if (HW.GetCaps().SceneMode)
 		overdrawBegin();
 
 	g_bRendering = TRUE;
@@ -62,7 +62,7 @@ BOOL CRenderDevice::Begin()
 void CRenderDevice::Clear()
 {
 	CHK_DX(HW.GetDevice()->Clear(0, 0, D3DCLEAR_ZBUFFER | (psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) |
-								 (HW.Caps.bStencil ? D3DCLEAR_STENCIL : 0),
+								 (HW.GetCaps().bStencil ? D3DCLEAR_STENCIL : 0),
 							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
@@ -84,7 +84,7 @@ void CRenderDevice::End(void)
 
 	VERIFY(HW.GetDevice());
 
-	if (HW.Caps.SceneMode)
+	if (HW.GetCaps().SceneMode)
 		overdrawEnd();
 
 	if (dwPrecacheFrame)
@@ -109,7 +109,7 @@ void CRenderDevice::End(void)
 
 	g_bRendering = FALSE;
 	// end scene
-	RenderBackend.OnFrameEnd();
+	RenderBackendLegacy.OnFrameEnd();
 	Memory.dbg_check();
 	CHK_DX(HW.GetDevice()->EndScene());
 
@@ -137,7 +137,7 @@ void CRenderDevice::End(void)
 
 void CRenderDevice::PreCache(u32 amount)
 {
-	if (HW.Caps.bForceGPU_REF)
+	if (HW.GetCaps().bForceGPU_REF)
 		amount = 0;
 #ifdef DEDICATED_SERVER
 	amount = 0;
@@ -313,8 +313,8 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 void CRenderDevice::_SetupStates()
 {
 	// General Render States
-	HW.Caps.Update();
-	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+	HW.GetCaps().Update();
+	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
 	{
 		float fBias = 1.0f;
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 4));
@@ -323,18 +323,18 @@ void CRenderDevice::_SetupStates()
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
 	}
-	RenderBackend.SetRenderState(D3DRS_DITHERENABLE, TRUE);
-	RenderBackend.SetRenderState(D3DRS_COLORVERTEX, TRUE);
-	RenderBackend.SetRenderState(D3DRS_ZENABLE, TRUE);
-	RenderBackend.SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-	RenderBackend.SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	RenderBackend.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	RenderBackend.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_DITHERENABLE, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_COLORVERTEX, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
+	RenderBackendLegacy.SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	RenderBackendLegacy.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	RenderBackendLegacy.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
 
-	RenderBackend.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
-	RenderBackend.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+	RenderBackendLegacy.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
-	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
 
 void CRenderDevice::_Create(LPCSTR shName)
@@ -346,7 +346,7 @@ void CRenderDevice::_Create(LPCSTR shName)
 	_SetupStates();
 
 	// Signal everyone - device created
-	RenderBackend.OnDeviceCreate();
+	RenderBackendLegacy.OnDeviceCreate();
 	Gamma.Update();
 	Engine.ResourceManager->OnDeviceCreate(shName);
 	::Render->create();
@@ -374,8 +374,8 @@ void CRenderDevice::Create()
 #endif
 
 	HW.CreateDevice(Engine.WindowManager.GetHandle());
-	dwWidth = HW.DevPP.BackBufferWidth;
-	dwHeight = HW.DevPP.BackBufferHeight;
+	dwWidth = HW.GetDevPP().BackBufferWidth;
+	dwHeight = HW.GetDevPP().BackBufferHeight;
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
@@ -399,9 +399,9 @@ void CRenderDevice::_Destroy(BOOL bKeepTextures)
 	b_is_Ready = FALSE;
 	Engine.Statistic->OnDeviceDestroy();
 	::Render->destroy();
-	RenderBackend.DeleteResources();
+	RenderBackendLegacy.DeleteResources();
 	Engine.ResourceManager->OnDeviceDestroy(bKeepTextures);
-	RenderBackend.OnDeviceDestroy();
+	RenderBackendLegacy.OnDeviceDestroy();
 
 	Memory.mem_compact();
 }
@@ -434,13 +434,13 @@ void CRenderDevice::Reset(bool precache)
 
 	ShowCursor(TRUE);
 
-	RenderBackend.reset_begin();
+	RenderBackendLegacy.reset_begin();
 
 	Engine.ResourceManager->reset_begin();
 	Memory.mem_compact();
 	HW.Reset(Engine.WindowManager.GetHandle());
-	dwWidth = HW.DevPP.BackBufferWidth;
-	dwHeight = HW.DevPP.BackBufferHeight;
+	dwWidth = HW.GetDevPP().BackBufferWidth;
+	dwHeight = HW.GetDevPP().BackBufferHeight;
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
@@ -458,7 +458,7 @@ void CRenderDevice::Reset(bool precache)
 
 	Engine.Events.DeviceReset.Process(rp_DeviceReset);
 
-	RenderBackend.reset_end();
+	RenderBackendLegacy.reset_end();
 
 	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 	if (b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
@@ -480,9 +480,9 @@ void CRenderDevice::Initialize()
 	GetWindowRect(Engine.WindowManager.GetHandle(), &m_rcWindowBounds);
 	GetClientRect(Engine.WindowManager.GetHandle(), &m_rcWindowClient);
 
-		HW.Caps.bForceGPU_SW = FALSE;
-		HW.Caps.bForceGPU_NonPure = FALSE;
-		HW.Caps.bForceGPU_REF = FALSE;
+		//HW.GetCaps().bForceGPU_SW = FALSE;
+		//HW.GetCaps().bForceGPU_NonPure = FALSE;
+		//HW.GetCaps().bForceGPU_REF = FALSE;
 }
 
 // *****************************************************************************************
@@ -513,40 +513,40 @@ void CRenderDevice::DumpFlags()
 void CRenderDevice::overdrawBegin()
 {
 	// Turn stenciling
-	RenderBackend.SetRenderState(D3DRS_STENCILENABLE, TRUE);
-	RenderBackend.SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
-	RenderBackend.SetRenderState(D3DRS_STENCILREF, 0);
-	RenderBackend.SetRenderState(D3DRS_STENCILMASK, 0x00000000);
-	RenderBackend.SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILENABLE, TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILREF, 0);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILMASK, 0x00000000);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
 
 	// Increment the stencil buffer for each pixel drawn
-	RenderBackend.SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
-	RenderBackend.SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT);
 
-	if (1 == HW.Caps.SceneMode)
+	if (1 == HW.GetCaps().SceneMode)
 	{
-		RenderBackend.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+		RenderBackendLegacy.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
 	} // Overdraw
 	else
 	{
-		RenderBackend.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT);
+		RenderBackendLegacy.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT);
 	} // ZB access
 }
 
 void CRenderDevice::overdrawEnd()
 {
 	// Set up the stencil states
-	RenderBackend.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
-	RenderBackend.SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
-	RenderBackend.SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
-	RenderBackend.SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
-	RenderBackend.SetRenderState(D3DRS_STENCILMASK, 0xff);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILMASK, 0xff);
 
 	// Set the background to black
-	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_XRGB(255, 0, 0), 0, 0);
+	RenderBackendLegacy.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_XRGB(255, 0, 0), 0, 0);
 
 	// Draw a rectangle wherever the count equal I
-	RenderBackend.OnFrameEnd();
+	RenderBackendLegacy.OnFrameEnd();
 	CHK_DX(HW.GetDevice()->SetFVF(FVF::F_TL));
 
 	// Render gradients
@@ -561,10 +561,10 @@ void CRenderDevice::overdrawEnd()
 		pv[2].set(float(dwWidth), float(dwHeight), c, 0, 0);
 		pv[3].set(float(dwWidth), float(0), c, 0, 0);
 
-		RenderBackend.SetRenderState(D3DRS_STENCILREF, I);
+		RenderBackendLegacy.SetRenderState(D3DRS_STENCILREF, I);
 		CHK_DX(HW.GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pv, sizeof(FVF::TL)));
 	}
-	RenderBackend.SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	RenderBackendLegacy.SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }
 
 void CRenderDevice::SetNearer(BOOL enabled)
@@ -579,5 +579,5 @@ void CRenderDevice::SetNearer(BOOL enabled)
 		m_bNearer = FALSE;
 		Engine.RenderView.Project._43 += EPS_L;
 	}
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackendLegacy.set_transform_project(Engine.RenderView.Project);
 }

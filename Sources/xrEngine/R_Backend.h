@@ -539,7 +539,7 @@ class ENGINE_API CBackend
 	void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
 };
 
-extern ENGINE_API CBackend RenderBackend;
+extern ENGINE_API CBackend RenderBackendLegacy;
 
 #ifndef _EDITOR
 #include "D3DUtils.h"

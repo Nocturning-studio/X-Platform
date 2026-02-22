@@ -8,7 +8,6 @@ class ENGINE_API CHW
 	IDirect3D9Ex* pD3D;
 	IDirect3DDevice9Ex* pDevice;
 
-  public:
 	IDirect3DSurface9* pBaseRT;
 	IDirect3DSurface9* pBaseZB;
 
@@ -20,6 +19,9 @@ class ENGINE_API CHW
 
 	xrRHI::IRenderBackend* pBackend;
 
+	HINSTANCE m_hRHI_DLL;
+
+  public:
 	CHW();
 	~CHW();
 
@@ -42,16 +44,30 @@ class ENGINE_API CHW
 	{
 		return pDevice;
 	}
-
-#ifdef DEBUG
-	void Validate()
+	DEPRECATED IDirect3DSurface9* GetBaseRT() const
 	{
-		VERIFY(pDevice && pD3D);
+		return pBaseRT;
 	}
-#endif
-
-  private:
-	HINSTANCE m_hRHI_DLL;
+	DEPRECATED IDirect3DSurface9* GetBaseZB() const
+	{
+		return pBaseZB;
+	}
+	DEPRECATED CHWCaps GetCaps()
+	{
+		return Caps;
+	}
+	DEPRECATED UINT GetDevAdapter()
+	{
+		return DevAdapter;
+	}	
+	DEPRECATED D3DDEVTYPE GetDevT()
+	{
+		return DevT;
+	}	
+	DEPRECATED D3DPRESENT_PARAMETERS GetDevPP()
+	{
+		return DevPP;
+	}
 };
 
 extern ENGINE_API CHW HW;

@@ -83,8 +83,8 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 	{
 		if (solid)
 		{
-			RenderBackend.dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
-			RenderBackend.dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
+			RenderBackendLegacy.dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
+			RenderBackendLegacy.dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
 		}
 		else
 		{
@@ -506,7 +506,7 @@ void PH_DBG_Clear()
 void PH_DBG_Render()
 {
 	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
-		RenderBackend.SetRenderState(D3DRS_ZENABLE, 0);
+		RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, 0);
 	HUD().Font().pFontStat->OutSet(550, 250);
 
 	if (ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
@@ -565,7 +565,7 @@ void PH_DBG_Render()
 #endif
 
 	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
-		RenderBackend.SetRenderState(D3DRS_ZENABLE, 1);
+		RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, 1);
 }
 
 void DBG_DrawStatBeforeFrameStep()

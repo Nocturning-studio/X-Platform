@@ -426,7 +426,7 @@ void CDemoPlay::SaveBenchmarkResults()
 	// Инфо о системе
 	W->w_string("[ System Information ]");
 	// GPU
-	sprintf(tmp, " GPU: %s", HW.Caps.id_description);
+	sprintf(tmp, " GPU: %s", HW.GetCaps().id_description);
 	W->w_string(tmp);
 	// CPU - В движке X-Ray обычно доступно через CPU::ID.cpu_name или аналог,
 	// но если его нет под рукой, оставим GPU.
@@ -515,7 +515,7 @@ void CDemoPlay::PrintSummaryBenchmarkStatistic()
 	Engine.FontManager.GetSystemFont()->OutNext("FPS Minimal: %f", fFPS_min);
 
 	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 255, 255, 255));
-	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.Caps.id_description);
+	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.GetCaps().id_description);
 
 	if (Engine.TimeManager.GetGlobalTimeMs() > uTimeToScreenShot)
 		Engine.FontManager.GetSystemFont()->OutNext("Results saved to screenshots and log folder");
@@ -607,6 +607,6 @@ void CDemoPlay::ShowPerFrameStatistic()
 	Engine.FontManager.GetSystemFont()->OutNext("FPS Minimal: %.2f", fFPS_min);
 
 	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(200, 200, 200, 255));
-	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.Caps.id_description);
+	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", HW.GetCaps().id_description);
 }
 //////////////////////////////////////////////////////////////////////

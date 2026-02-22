@@ -137,7 +137,7 @@ BOOL CTheoraSurface::Load(const char* fname)
 	}
 	if (res)
 	{
-		u32 v_dev = CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
+		u32 v_dev = CAP_VERSION(HW.GetCaps().raster_major, HW.GetCaps().raster_minor);
 		u32 v_need = CAP_VERSION(2, 0);
 		bShaderYUV2RGB = (v_dev >= v_need);
 	}

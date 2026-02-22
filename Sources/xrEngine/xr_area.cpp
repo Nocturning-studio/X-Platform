@@ -198,16 +198,16 @@ void CObjectSpace::dbgRender()
 {
 	R_ASSERT(bDebug);
 
-	RenderBackend.set_Shader(sh_debug);
+	RenderBackendLegacy.set_Shader(sh_debug);
 	for (u32 i = 0; i < q_debug.boxes.size(); i++)
 	{
 		Fobb& obb = q_debug.boxes[i];
 		float4x4 X, S, R;
 		obb.transform_get(X);
-		RenderBackend.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
+		RenderBackendLegacy.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
 		S.scale(obb.m_halfsize);
 		R.mul(X, S);
-		RenderBackend.dbg_DrawEllipse(R, D3DCOLOR_XRGB(0, 0, 255));
+		RenderBackendLegacy.dbg_DrawEllipse(R, D3DCOLOR_XRGB(0, 0, 255));
 	}
 	q_debug.boxes.clear();
 
@@ -218,7 +218,7 @@ void CObjectSpace::dbgRender()
 		float4x4 M;
 		M.scale(S.R, S.R, S.R);
 		M.translate_over(S.P);
-		RenderBackend.dbg_DrawEllipse(M, P.second);
+		RenderBackendLegacy.dbg_DrawEllipse(M, P.second);
 	}
 	dbg_S.clear();
 }

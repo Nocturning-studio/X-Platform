@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "RenderView.h"
-#include "R_Backend.h" // Для RenderBackend
+#include "R_Backend.h" // Для RenderBackendLegacy
 #include <d3dx9.h>
 
 CRenderView::CRenderView()
@@ -45,8 +45,8 @@ void CRenderView::UpdateViewProjection()
 	D3DXMatrixInverse((D3DXMATRIX*)&InvViewProjection, 0, (D3DXMATRIX*)&ViewProjection);
 
 	// Сразу отправляем в бекенд (так как это данные рендера)
-	RenderBackend.set_transform_view(View);
-	RenderBackend.set_transform_project(Project);
+	RenderBackendLegacy.set_transform_view(View);
+	RenderBackendLegacy.set_transform_project(Project);
 }
 
 void CRenderView::SaveState()

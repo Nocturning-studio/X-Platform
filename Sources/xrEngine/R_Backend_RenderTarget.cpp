@@ -121,7 +121,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	// Pow2 check
 	if (!btwIsPow2(w) || !btwIsPow2(h))
 	{
-		if (!HW.Caps.raster.bNonPow2)
+		if (!HW.GetCaps().raster.bNonPow2)
 		{
 			Msg("!Resolution of RT(%s), %dx%d, %d is not can be devided by 2!!!", Name, w, h, levels);
 			return;
@@ -148,7 +148,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	}
 
 	// Validate render-target usage
-	_hr = HW.GetD3D()->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_TEXTURE, d3dfmt);
+	_hr = HW.GetD3D()->CheckDeviceFormat(HW.GetDevAdapter(), HW.GetDevT(), HW.GetCaps().fTarget, usage, D3DRTYPE_TEXTURE, d3dfmt);
 	if (FAILED(_hr))
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d (CheckDeviceFormat)!!!", Name, w, h, levels);
@@ -256,7 +256,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 
 	// Validate render-target usage
 	// Используем D3DRTYPE_CUBETEXTURE
-	_hr = HW.GetD3D()->CheckDeviceFormat(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, usage, D3DRTYPE_CUBETEXTURE, d3dfmt);
+	_hr = HW.GetD3D()->CheckDeviceFormat(HW.GetDevAdapter(), HW.GetDevT(), HW.GetCaps().fTarget, usage, D3DRTYPE_CUBETEXTURE, d3dfmt);
 	if (FAILED(_hr))
 		return;
 

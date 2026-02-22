@@ -874,9 +874,9 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		// Устанавливаем Render Target (Shadow Map)
 		render_shadow_map_sun(sun, cascade_ind);
 
-		RenderBackend.set_transform_world(Fidentity);
-		RenderBackend.set_transform_view(Fidentity);
-		RenderBackend.set_transform_project(sun->TransformContext.Sun.combine);
+		RenderBackendLegacy.set_transform_world(Fidentity);
+		RenderBackendLegacy.set_transform_view(Fidentity);
+		RenderBackendLegacy.set_transform_project(sun->TransformContext.Sun.combine);
 
 		// Рисуем Sun Details (траву), если нужно
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
@@ -954,7 +954,7 @@ void CRender::render_sun_cascades()
 	}
 
 	// Восстановление глобальных матриц
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_transform_view(Engine.RenderView.View);
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackendLegacy.set_transform_world(Fidentity);
+	RenderBackendLegacy.set_transform_view(Engine.RenderView.View);
+	RenderBackendLegacy.set_transform_project(Engine.RenderView.Project);
 }

@@ -11,13 +11,13 @@ void CRender::render_antialiasing()
 {
 	////OPTICK_EVENT("CRender::render_antialiasing");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+	RenderBackendLegacy.set_Stencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_antialiasing->E[SE_PASS_FXAA], 0);
-	RenderBackend.set_Constant("fxaa_params", ps_r_fxaa_subpix, ps_r_fxaa_edge_treshold, ps_r_fxaa_edge_treshold_min);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackendLegacy.set_Element(RenderTarget->s_antialiasing->E[SE_PASS_FXAA], 0);
+	RenderBackendLegacy.set_Constant("fxaa_params", ps_r_fxaa_subpix, ps_r_fxaa_edge_treshold, ps_r_fxaa_edge_treshold_min);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 
-	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
+	RenderBackendLegacy.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////

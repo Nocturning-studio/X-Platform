@@ -134,9 +134,9 @@ void CLevelGraph::draw_edge(const int& vertex_id0, const int& vertex_id1)
 	render.draw_aabb(position0, radius, radius, radius, vertex_color);
 	render.draw_aabb(position1, radius, radius, radius, vertex_color);
 	render.draw_line(Fidentity, position0, position1, edge_color);
-	//	RenderBackend.dbg_DrawAABB		(position0,radius,radius,radius,vertex_color);
-	//	RenderBackend.dbg_DrawAABB		(position1,radius,radius,radius,vertex_color);
-	//	RenderBackend.dbg_DrawLINE		(Fidentity,position0,position1,edge_color);
+	//	RenderBackendLegacy.dbg_DrawAABB		(position0,radius,radius,radius,vertex_color);
+	//	RenderBackendLegacy.dbg_DrawAABB		(position1,radius,radius,radius,vertex_color);
+	//	RenderBackendLegacy.dbg_DrawLINE		(Fidentity,position0,position1,edge_color);
 }
 
 void CLevelGraph::draw_vertex(const int& vertex_id)
@@ -482,8 +482,8 @@ void CLevelGraph::draw_game_graph()
 	transform.transform_tiny(vertices[3], float3().set(center.x + bounds.x, center.y - bounds.y, center.z - bounds.z));
 
 	//	u32						back_color = D3DCOLOR_XRGB(0,0,0);
-	//	RenderBackend.dbg_DrawTRI		(Fidentity,vertices[0],vertices[2],vertices[1],back_color);
-	//	RenderBackend.dbg_DrawTRI		(Fidentity,vertices[1],vertices[2],vertices[3],back_color);
+	//	RenderBackendLegacy.dbg_DrawTRI		(Fidentity,vertices[0],vertices[2],vertices[1],back_color);
+	//	RenderBackendLegacy.dbg_DrawTRI		(Fidentity,vertices[1],vertices[2],vertices[3],back_color);
 
 	// draw vertices
 	CGameGraph& graph = ai().game_graph();

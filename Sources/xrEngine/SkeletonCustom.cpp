@@ -130,12 +130,12 @@ void CKinematics::DebugRender(float4x4& Transform)
 		float3 P1, P2;
 		M1.transform_tiny(P1, Z);
 		M2.transform_tiny(P2, Z);
-		RenderBackend.dbg_DrawLINE(Transform, P1, P2, D3DCOLOR_XRGB(0, 255, 0));
+		RenderBackendLegacy.dbg_DrawLINE(Transform, P1, P2, D3DCOLOR_XRGB(0, 255, 0));
 
 		float4x4 M;
 		M.mul_43(Transform, M2);
-		RenderBackend.dbg_DrawOBB(M, H1, D3DCOLOR_XRGB(255, 255, 255));
-		RenderBackend.dbg_DrawOBB(M, H2, D3DCOLOR_XRGB(255, 255, 255));
+		RenderBackendLegacy.dbg_DrawOBB(M, H1, D3DCOLOR_XRGB(255, 255, 255));
+		RenderBackendLegacy.dbg_DrawOBB(M, H2, D3DCOLOR_XRGB(255, 255, 255));
 	}
 
 	for (u32 b = 0; b < bones->size(); b++)
@@ -148,7 +148,7 @@ void CKinematics::DebugRender(float4x4& Transform)
 		X.mul(Mbone, Mbox);
 		float4x4 W;
 		W.mul(Transform, X);
-		RenderBackend.dbg_DrawOBB(W, obb.m_halfsize, D3DCOLOR_XRGB(0, 0, 255));
+		RenderBackendLegacy.dbg_DrawOBB(W, obb.m_halfsize, D3DCOLOR_XRGB(0, 0, 255));
 	}
 }
 #endif
