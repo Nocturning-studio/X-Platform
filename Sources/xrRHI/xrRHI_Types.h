@@ -187,4 +187,36 @@ struct RHI_Rect
 	s32 right;
 	s32 bottom;
 };
+
+struct TextureDesc
+{
+	u32 width;
+	u32 height;
+	u32 depth;
+	u32 mipLevels;
+	RHI_Format format;
+	bool isRenderTarget;
+	bool isDepthStencil;
+	bool isCubeMap;
+};
+
+struct RHITextureImpl;
+typedef RHITextureImpl* RHITexture;
+
+struct SamplerDesc
+{
+	RHI_Filter minFilter;
+	RHI_Filter magFilter;
+	RHI_Filter mipFilter;
+	RHI_TextureAddress addressU;
+	RHI_TextureAddress addressV;
+	RHI_TextureAddress addressW;
+	float mipLODBias;
+	u32 maxAnisotropy;
+	float4 borderColor;
+};
+
+struct RHISamplerImpl;
+typedef RHISamplerImpl* RHISampler;
+
 RHI_END

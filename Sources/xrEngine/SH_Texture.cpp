@@ -10,10 +10,6 @@
 #include "tntQAVI.h"
 #include "xrTheora_Surface.h"
 
-#define PRIORITY_HIGH 12
-#define PRIORITY_NORMAL 8
-#define PRIORITY_LOW 4
-
 void resptrcode_texture::create(LPCSTR _name)
 {
 	_set(Engine.ResourceManager->_CreateTexture(_name));
@@ -129,7 +125,7 @@ void CTexture::apply_avi(u32 dwStage)
 void CTexture::apply_seq(u32 dwStage)
 {
 	// SEQ
-	u32 frame = Engine.TimeManager.GetContinualTimeMs() / seqMSPF; // Engine.TimeManager.GetGlobalTimeMs()
+	u32 frame = Engine.TimeManager.GetContinualTimeMs() / seqMSPF;
 	u32 frame_data = seqDATA.size();
 	if (flags.seqCycles)
 	{
@@ -273,7 +269,6 @@ void CTexture::Load()
 				pSurface = ::Render->texture_load(buffer, mem);
 				if (pSurface)
 				{
-					// pSurface->SetPriority	(PRIORITY_LOW);
 					seqDATA.push_back(pSurface);
 					flags.MemoryUsage += mem;
 				}
@@ -291,7 +286,6 @@ void CTexture::Load()
 		// Calc memory usage and preload into vid-mem
 		if (pSurface)
 		{
-			// pSurface->SetPriority	(PRIORITY_NORMAL);
 			flags.MemoryUsage = mem;
 		}
 	}
@@ -305,8 +299,6 @@ void CTexture::Unload()
 	string_path msg_buff;
 	sprintf_s(msg_buff, sizeof(msg_buff), "* Unloading texture [%s] pSurface RefCount=", cName.c_str());
 #endif // DEBUG
-
-	//.	if (flags.bLoaded)		Msg		("* Unloaded: %s",cName.c_str());
 
 	flags.bLoaded = FALSE;
 	if (!seqDATA.empty())

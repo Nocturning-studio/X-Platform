@@ -68,6 +68,15 @@ class ENGINE_API CHW
 	{
 		return DevPP;
 	}
+	inline xrRHI::IRenderBackend* GetRHI()
+	{
+		return pBackend;
+	}
 };
 
 extern ENGINE_API CHW HW;
+
+inline xrRHI::IRenderBackend* RHI()
+{
+	return HW.GetRHI();
+}

@@ -27,7 +27,14 @@ class XRRHI_API IRenderBackend
 
 	virtual void GetDeviceCaps(void* pCaps) = 0;
 
-	virtual void Clear(u32 clearFlags, const float color[4], float depth, u8 stencil) = 0;
+	virtual void Clear(u32 clearFlags, const float4 color, float depth, u8 stencil) = 0;
+
+	virtual RHITexture CreateTexture(const TextureDesc& desc, const void* initialData = nullptr) = 0;
+	virtual void DestroyTexture(RHITexture texture) = 0;
+	virtual void SetTexture(u32 slot, RHITexture texture, RHISampler sampler = nullptr) = 0;
+
+	virtual RHISampler CreateSampler(const SamplerDesc& desc) = 0;
+	virtual void DestroySampler(RHISampler sampler) = 0;
 };
 
 RHI_END

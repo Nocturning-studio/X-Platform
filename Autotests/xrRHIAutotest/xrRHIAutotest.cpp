@@ -7,15 +7,13 @@
 #include <xrRHI/xrRHI.h>
 #include <xrMath/xrMath.h>
 
+// Для простоты определим макрос проверки
 #define TEST_ASSERT(cond, msg)                                                                                         \
 	if (!(cond))                                                                                                       \
 	{                                                                                                                  \
 		printf("FAILED: %s\n", msg);                                                                                   \
 		return 1;                                                                                                      \
 	}
-
-// Прототип функции создания бекенда
-typedef xrRHI::IRenderBackend* (*CreateBackendFunc)(xrRHI::BackendType);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -24,9 +22,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int main()
 {
-	printf("Starting RHI functional test...\n");
+	xrRHI::Print("Starting RHI test with samplers...\n");
 
-	// 1. Создаём простое окно (необходимо для создания устройства)
+	// 1. Создаём окно
 	HINSTANCE hInstance = GetModuleHandle(NULL);
 	WNDCLASSEX wc = {};
 	wc.cbSize = sizeof(WNDCLASSEX);
@@ -45,89 +43,85 @@ int main()
 	// 2. Загружаем xrRHI.dll
 	HMODULE hDLL = LoadLibrary(L"xrRHI.dll");
 	TEST_ASSERT(hDLL, "Failed to load xrRHI.dll");
-	printf("xrRHI.dll loaded.\n");
+	xrRHI::Print("xrRHI.dll loaded.\n");
 
-	// 3. Получаем адрес фабричной функции
+	// 3. Получаем фабричную функцию
+	typedef xrRHI::IRenderBackend* (*CreateBackendFunc)(xrRHI::BackendType);
 	CreateBackendFunc createBackend = (CreateBackendFunc)GetProcAddress(hDLL, "CreateRenderBackend");
-	TEST_ASSERT(createBackend, "Failed to find CreateRenderBackend export");
-	printf("CreateRenderBackend found.\n");
+	TEST_ASSERT(createBackend, "Failed to get CreateRenderBackend");
 
-	// 4. Создаём бекенд Direct3D9
+	// 4. Создаём бекенд DirectX9
 	xrRHI::IRenderBackend* backend = createBackend(xrRHI::BackendType::DirectX9);
 	TEST_ASSERT(backend, "Failed to create backend");
-	printf("Backend created.\n");
+	xrRHI::Print("Backend created.\n");
 
-	// 5. Создаём устройство (оконный режим, 800x600)
-	bool created = backend->CreateDevice(hWnd, true, 800, 600, D3DPRESENT_INTERVAL_DEFAULT);
+	// 5. Создаём устройство
+	bool created = backend->CreateDevice(hWnd, true, 800, 600, 0); // 0 = immediate
 	TEST_ASSERT(created, "CreateDevice failed");
-	printf("Device created successfully.\n");
+	xrRHI::Print("Device created.\n");
 
-	// 6. Получаем сырые указатели D3D для прямых вызовов
-	IDirect3D9Ex* pD3D = (IDirect3D9Ex*)backend->GetD3DHandle();
-	IDirect3DDevice9Ex* pDevice = (IDirect3DDevice9Ex*)backend->GetDeviceHandle();
-	TEST_ASSERT(pD3D && pDevice, "Failed to get D3D handles");
+	// 6. Создаём простую текстуру 2x2 RGBA8
+	xrRHI::TextureDesc texDesc;
+	texDesc.width = 2;
+	texDesc.height = 2;
+	texDesc.depth = 1;
+	texDesc.mipLevels = 1;
+	texDesc.format = xrRHI::RHI_Format::RGBA8_UNORM;
+	texDesc.isRenderTarget = false;
+	texDesc.isDepthStencil = false;
+	texDesc.isCubeMap = false;
 
-	// 7. Получаем caps через бекенд
-	D3DCAPS9 caps;
-	backend->GetDeviceCaps(&caps);
-	printf("Caps obtained.\n");
+	// Данные текстуры: 4 пикселя (красный, зелёный, синий, белый)
+	uint32_t pixelData[4] = {
+		0xFF0000FF, // красный (ABGR? в D3D9 обычно A8R8G8B8, значит порядок: 0xAARRGGBB)
+		0xFF00FF00, // зелёный
+		0xFFFF0000, // синий
+		0xFFFFFFFF	// белый
+	};
+	// В D3D9 формат A8R8G8B8, поэтому данные должны быть в порядке A,R,G,B (как в DWORD).
+	// Для простоты используем тот же порядок, который ожидается.
 
-	// 8. Проверки, аналогичные X-Ray Engine
-	// 8.1 Версия пиксельных шейдеров (минимально 3.0)
-	int raster_major = (caps.PixelShaderVersion >> 8) & 0xFF;
-	int raster_minor = caps.PixelShaderVersion & 0xFF;
-	int raster_version = raster_major * 10 + raster_minor;
-	TEST_ASSERT(raster_version >= 30, "Pixel shader version < 3.0");
-	printf("Pixel shader version: %d.%d OK\n", raster_major, raster_minor);
+	xrRHI::RHITexture texture = backend->CreateTexture(texDesc, pixelData);
+	TEST_ASSERT(texture, "CreateTexture failed");
+	xrRHI::Print("Texture created.\n");
 
-	// 8.2 Количество инструкций пиксельного шейдера
-	TEST_ASSERT(caps.PS20Caps.NumInstructionSlots >= 512, "Pixel shader instruction slots < 512");
-	printf("PS instruction slots: %d OK\n", caps.PS20Caps.NumInstructionSlots);
+	// 7. Создаём сэмплер с линейной фильтрацией
+	xrRHI::SamplerDesc sampDesc;
+	sampDesc.minFilter = xrRHI::RHI_Filter::Linear;
+	sampDesc.magFilter = xrRHI::RHI_Filter::Linear;
+	sampDesc.mipFilter = xrRHI::RHI_Filter::Linear;
+	sampDesc.addressU = xrRHI::RHI_TextureAddress::Wrap;
+	sampDesc.addressV = xrRHI::RHI_TextureAddress::Wrap;
+	sampDesc.addressW = xrRHI::RHI_TextureAddress::Wrap;
+	sampDesc.mipLODBias = 0.0f;
+	sampDesc.maxAnisotropy = 1;
+	sampDesc.borderColor = float4{0, 0, 0, 0};
 
-	// 8.3 Количество одновременных рендер-таргетов
-	TEST_ASSERT(caps.NumSimultaneousRTs >= 3, "NumSimultaneousRTs < 3");
-	printf("NumSimultaneousRTs: %d OK\n", caps.NumSimultaneousRTs);
+	xrRHI::RHISampler sampler = backend->CreateSampler(sampDesc);
+	TEST_ASSERT(sampler, "CreateSampler failed");
+	xrRHI::Print("Sampler created.\n");
 
-	// 8.4 Поддержка независимых битовых глубин для MRT
-	TEST_ASSERT(caps.PrimitiveMiscCaps & D3DPMISCCAPS_MRTINDEPENDENTBITDEPTHS,
-				"MRT independent bit depths not supported");
-	printf("MRT independent bit depths supported.\n");
+	// 8. Устанавливаем текстуру и сэмплер на стадию 0
+	backend->SetTexture(0, texture, sampler);
+	xrRHI::Print("Texture and sampler set.\n");
 
-	// 8.5 Проверка поддержки форматов через CheckDeviceFormat
-	// Для этого используем pD3D напрямую
-	UINT adapter = D3DADAPTER_DEFAULT;
-	D3DDEVTYPE devType = D3DDEVTYPE_HAL;
-	D3DFORMAT targetFmt = D3DFMT_X8R8G8B8;
-
-	// D3DFMT_D24X8 как текстура с использованием D3DUSAGE_DEPTHSTENCIL
-	HRESULT hr =
-		pD3D->CheckDeviceFormat(adapter, devType, targetFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_TEXTURE, D3DFMT_D24X8);
-	TEST_ASSERT(SUCCEEDED(hr), "D3DFMT_D24X8 not supported as depth-stencil texture");
-	printf("D3DFMT_D24X8 supported.\n");
-
-	// D3DFMT_A16B16G16R16F с флагами фильтрации и пост-пиксельного шейдерного блендинга
-	hr = pD3D->CheckDeviceFormat(adapter, devType, targetFmt, D3DUSAGE_QUERY_FILTER, D3DRTYPE_TEXTURE,
-								 D3DFMT_A16B16G16R16F);
-	TEST_ASSERT(SUCCEEDED(hr), "D3DFMT_A16B16G16R16F not supported for filtering");
-	printf("D3DFMT_A16B16G16R16F (filter) supported.\n");
-
-	hr = pD3D->CheckDeviceFormat(adapter, devType, targetFmt, D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING, D3DRTYPE_TEXTURE,
-								 D3DFMT_A16B16G16R16F);
-	TEST_ASSERT(SUCCEEDED(hr), "D3DFMT_A16B16G16R16F not supported for post-pixel shader blending");
-	printf("D3DFMT_A16B16G16R16F (post-blending) supported.\n");
-
-	// 9. Дополнительная проверка: очистка и презентация (чтобы убедиться, что устройство рабочее)
-	float clearColor[4] = {0.2f, 0.2f, 0.8f, 1.0f};
+	// 9. Очищаем экран и делаем Present
+	float4 clearColor{0.2f, 0.2f, 0.8f, 1.0f};
 	backend->Clear(xrRHI::RHI_CLEAR_TARGET | xrRHI::RHI_CLEAR_ZBUFFER, clearColor, 1.0f, 0);
 	backend->Present();
-	printf("Clear and Present done.\n");
+	xrRHI::Print("Clear and Present done.\n");
 
-	// 10. Очистка
+	// 10. Очистка ресурсов
+	backend->DestroySampler(sampler);
+	backend->DestroyTexture(texture);
 	backend->DestroyDevice();
 	delete backend;
 	FreeLibrary(hDLL);
 	DestroyWindow(hWnd);
 
-	printf("All tests passed successfully!\n");
+	xrRHI::Print("All tests passed!\n");
+
+	Sleep(1000000);
+
 	return 0;
 }

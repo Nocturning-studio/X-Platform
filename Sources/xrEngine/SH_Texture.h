@@ -1,5 +1,3 @@
-#ifndef SH_TEXTURE_H
-#define SH_TEXTURE_H
 #pragma once
 
 #include "xr_resource.h"
@@ -59,7 +57,6 @@ class ENGINE_API CTexture : public xr_resource_named
 	void Load();
 	void PostLoad();
 	void Unload(void);
-	//	void								Apply			(u32 dwStage);
 
 	void surface_set(IDirect3DBaseTexture9* surf);
 	IDirect3DBaseTexture9* surface_get();
@@ -108,5 +105,3 @@ struct ENGINE_API resptrcode_texture : public resptr_base<CTexture>
 	}
 };
 typedef resptr_core<CTexture, resptrcode_texture> ref_texture;
-
-#endif

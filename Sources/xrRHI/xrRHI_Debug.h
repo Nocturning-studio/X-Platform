@@ -2,5 +2,6 @@
 #include "xrRHI_Internal.h"
 
 RHI_BEGIN
-void __cdecl Print(const char* format, ...);
+XRRHI_API std::string WinErrorToString(long code);
+XRRHI_API void __cdecl Print(const char* format, ...);
 RHI_END

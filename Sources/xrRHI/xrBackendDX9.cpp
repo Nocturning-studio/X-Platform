@@ -78,13 +78,13 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, bool windowed, int width, int he
 	HRESULT hr = Direct3DCreate9Ex(D3D_SDK_VERSION, &m_pD3D);
 	if (FAILED(hr) || !m_pD3D)
 	{
-		Msg("! [DX9] Direct3DCreate9Ex failed (0x%08x)", hr);
+		Print("! [DX9] Direct3DCreate9Ex failed (0x%08x)", hr);
 		return false;
 	}
 
 	D3DADAPTER_IDENTIFIER9 adapterID;
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &adapterID);
-	Msg("* [DX9] GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
+	Print("* [DX9] GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
 
 	D3DDISPLAYMODE d3ddm;
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
@@ -93,7 +93,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, bool windowed, int width, int he
 	D3DFORMAT depthStencilFormat = SelectDepthStencilFormat(m_BackBufferFmt);
 	if (depthStencilFormat == D3DFMT_UNKNOWN)
 	{
-		Msg("! [DX9] No suitable depth-stencil format found");
+		Print("! [DX9] No suitable depth-stencil format found");
 		return false;
 	}
 
@@ -155,18 +155,18 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, bool windowed, int width, int he
 
 	if (FAILED(hr))
 	{
-		Msg("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
+		Print("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
 		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx,
 									&m_pDevice);
 		if (FAILED(hr))
 		{
-			Msg("! [DX9] Second attempt failed (0x%08x)", hr);
+			Print("! [DX9] Second attempt failed (0x%08x)", hr);
 			return false;
 		}
 	}
 
 	m_pDevice->GetDeviceCaps(&m_Caps);
-	Msg("* [DX9] Device created successfully: %dx%d %s, interval=%d", width, height,
+	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", width, height,
 		windowed ? "windowed" : "fullscreen", presentInterval);
 	return true;
 }
@@ -204,7 +204,7 @@ void CRenderBackendDX9::GetDeviceCaps(void* pCaps)
 		*(D3DCAPS9*)pCaps = m_Caps;
 }
 
-void CRenderBackendDX9::Clear(u32 clearFlags, const float color[4], float depth, u8 stencil)
+void CRenderBackendDX9::Clear(u32 clearFlags, const float4 color, float depth, u8 stencil)
 {
 	if (!m_pDevice)
 		return;
@@ -217,8 +217,253 @@ void CRenderBackendDX9::Clear(u32 clearFlags, const float color[4], float depth,
 	if (clearFlags & RHI_CLEAR_STENCIL)
 		d3dFlags |= D3DCLEAR_STENCIL;
 
-	D3DCOLOR d3dColor = D3DCOLOR_COLORVALUE(color[0], color[1], color[2], color[3]);
+	D3DCOLOR d3dColor = D3DCOLOR_COLORVALUE(color.x, color.y, color.z, color.w);
 	m_pDevice->Clear(0, nullptr, d3dFlags, d3dColor, depth, stencil);
+}
+
+static size_t GetPixelSize(RHI_Format fmt)
+{
+    switch (fmt)
+    {
+    case RHI_Format::RGBA8_UNORM:   return 4;
+    case RHI_Format::A8_UNORM:      return 1;
+    case RHI_Format::R8_UNORM:      return 1;
+    case RHI_Format::RGBA16_FLOAT:  return 8;  // 4 канала * 2 байта
+    case RHI_Format::RG16_FLOAT:    return 4;  // 2 канала * 2 байта
+    case RHI_Format::R16_FLOAT:     return 2;
+    // Для глубинных форматов размер не нужен, т.к. initialData не передаётся
+    default: return 0;
+    }
+}
+
+RHITexture CRenderBackendDX9::CreateTexture(const TextureDesc& desc, const void* initialData)
+{
+	// Проверка корректности параметров
+	if (desc.width == 0 || desc.height == 0)
+	{
+		Print("! [DX9] CreateTexture: invalid dimensions (%ux%u)", desc.width, desc.height);
+		return nullptr;
+	}
+
+	D3DFORMAT d3dFmt = RHIToD3DFormat(desc.format);
+	if (d3dFmt == D3DFMT_UNKNOWN)
+	{
+		Print("! [DX9] CreateTexture: unsupported format %d", (int)desc.format);
+		return nullptr;
+	}
+
+	DWORD usage = 0;
+	if (desc.isRenderTarget)
+		usage |= D3DUSAGE_RENDERTARGET;
+	if (desc.isDepthStencil)
+		usage |= D3DUSAGE_DEPTHSTENCIL;
+
+	// Всегда используем DEFAULT пул для всех текстур (рекомендуется для D3D9Ex)
+	D3DPOOL pool = D3DPOOL_DEFAULT;
+
+	IDirect3DTexture9* tex = nullptr;
+	HRESULT hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels, usage, d3dFmt, pool, &tex, nullptr);
+	if (FAILED(hr))
+	{
+		Print("! [DX9] CreateTexture failed (%s) for format %d", WinErrorToString(hr).c_str(), (int)desc.format);
+		return nullptr;
+	}
+
+	RHITextureImpl* impl = new RHITextureImpl;
+	impl->tex2D = tex;
+	impl->texCube = nullptr;
+	impl->surface = nullptr;
+	impl->format = desc.format;
+	impl->width = desc.width;
+	impl->height = desc.height;
+	impl->isRenderTarget = desc.isRenderTarget;
+	impl->isDepthStencil = desc.isDepthStencil;
+
+	// Загрузка начальных данных для обычных текстур (не рендер-таргет и не depth-stencil)
+	if (initialData && !desc.isRenderTarget && !desc.isDepthStencil)
+	{
+		size_t pixelSize = GetPixelSize(desc.format);
+		if (pixelSize > 0)
+		{
+			// Создаём временную текстуру в SYSTEMMEM пуле для загрузки данных
+			IDirect3DTexture9* sysMemTex = nullptr;
+			hr =
+				m_pDevice->CreateTexture(desc.width, desc.height, 1, 0, d3dFmt, D3DPOOL_SYSTEMMEM, &sysMemTex, nullptr);
+			if (FAILED(hr))
+			{
+				Print("! [DX9] Failed to create system memory texture for initial data");
+			}
+			else
+			{
+				// Заполняем системную текстуру
+				D3DLOCKED_RECT locked;
+				if (SUCCEEDED(sysMemTex->LockRect(0, &locked, nullptr, 0)))
+				{
+					const BYTE* src = (const BYTE*)initialData;
+					BYTE* dst = (BYTE*)locked.pBits;
+					size_t rowSize = desc.width * pixelSize;
+					for (u32 y = 0; y < desc.height; ++y)
+					{
+						memcpy(dst, src, rowSize);
+						src += rowSize;
+						dst += locked.Pitch;
+					}
+					sysMemTex->UnlockRect(0);
+
+					// Копируем из системной памяти в видеопамять (DEFAULT)
+					hr = m_pDevice->UpdateTexture(sysMemTex, tex);
+					if (FAILED(hr))
+					{
+						Print("! [DX9] UpdateTexture failed (0x%08x)", hr);
+					}
+				}
+				else
+				{
+					Print("! [DX9] Failed to lock system memory texture");
+				}
+				sysMemTex->Release();
+			}
+		}
+		else
+		{
+			Print("! [DX9] Cannot determine pixel size for format %d", (int)desc.format);
+		}
+	}
+
+	return impl;
+}
+
+void CRenderBackendDX9::DestroyTexture(RHITexture texture)
+{
+	if (!texture)
+		return;
+	RHITextureImpl* impl = (RHITextureImpl*)texture;
+	if (impl->tex2D)
+		impl->tex2D->Release();
+	if (impl->texCube)
+		impl->texCube->Release();
+	if (impl->surface)
+		impl->surface->Release();
+	delete impl;
+}
+
+RHISampler CRenderBackendDX9::CreateSampler(const SamplerDesc& desc)
+{
+	RHISamplerImpl* impl = new RHISamplerImpl;
+	impl->desc = desc;
+	return impl;
+}
+
+void CRenderBackendDX9::DestroySampler(RHISampler sampler)
+{
+	if (!sampler)
+		return;
+	RHISamplerImpl* impl = (RHISamplerImpl*)sampler;
+	delete impl;
+}
+
+void CRenderBackendDX9::ApplySampler(u32 slot, RHISampler sampler)
+{
+	if (!sampler)
+		return;
+
+	RHISamplerImpl* impl = (RHISamplerImpl*)sampler;
+	const SamplerDesc& d = impl->desc;
+
+	// Фильтры
+	D3DTEXTUREFILTERTYPE minFilter = D3DTEXF_POINT;
+	D3DTEXTUREFILTERTYPE magFilter = D3DTEXF_POINT;
+	D3DTEXTUREFILTERTYPE mipFilter = D3DTEXF_POINT;
+
+	auto convertFilter = [](RHI_Filter f) -> D3DTEXTUREFILTERTYPE {
+		switch (f)
+		{
+		case RHI_Filter::Point:
+			return D3DTEXF_POINT;
+		case RHI_Filter::Linear:
+			return D3DTEXF_LINEAR;
+		case RHI_Filter::Anisotropic:
+			return D3DTEXF_ANISOTROPIC;
+		default:
+			return D3DTEXF_POINT;
+		}
+	};
+
+	minFilter = convertFilter(d.minFilter);
+	magFilter = convertFilter(d.magFilter);
+	mipFilter = (d.mipFilter == RHI_Filter::None) ? D3DTEXF_NONE : convertFilter(d.mipFilter);
+
+	m_pDevice->SetSamplerState(slot, D3DSAMP_MINFILTER, minFilter);
+	m_pDevice->SetSamplerState(slot, D3DSAMP_MAGFILTER, magFilter);
+	m_pDevice->SetSamplerState(slot, D3DSAMP_MIPFILTER, mipFilter);
+
+	// Адресация
+	auto convertAddress = [](RHI_TextureAddress addr) -> D3DTEXTUREADDRESS {
+		switch (addr)
+		{
+		case RHI_TextureAddress::Wrap:
+			return D3DTADDRESS_WRAP;
+		case RHI_TextureAddress::Mirror:
+			return D3DTADDRESS_MIRROR;
+		case RHI_TextureAddress::Clamp:
+			return D3DTADDRESS_CLAMP;
+		case RHI_TextureAddress::Border:
+			return D3DTADDRESS_BORDER;
+		case RHI_TextureAddress::MirrorOnce:
+			return D3DTADDRESS_MIRRORONCE;
+		default:
+			return D3DTADDRESS_WRAP;
+		}
+	};
+
+	m_pDevice->SetSamplerState(slot, D3DSAMP_ADDRESSU, convertAddress(d.addressU));
+	m_pDevice->SetSamplerState(slot, D3DSAMP_ADDRESSV, convertAddress(d.addressV));
+	m_pDevice->SetSamplerState(slot, D3DSAMP_ADDRESSW, convertAddress(d.addressW));
+
+	// Анизотропия
+	m_pDevice->SetSamplerState(slot, D3DSAMP_MAXANISOTROPY, d.maxAnisotropy);
+
+	// MIP LOD bias
+	m_pDevice->SetSamplerState(slot, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&d.mipLODBias)));
+
+	// Border color
+	if (d.addressU == RHI_TextureAddress::Border || d.addressV == RHI_TextureAddress::Border ||
+		d.addressW == RHI_TextureAddress::Border)
+	{
+		D3DCOLOR borderColor = D3DCOLOR_COLORVALUE(d.borderColor.x, d.borderColor.y, d.borderColor.z, d.borderColor.w);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_BORDERCOLOR, borderColor);
+	}
+}
+
+void CRenderBackendDX9::SetTexture(u32 slot, RHITexture texture, RHISampler sampler)
+{
+	if (!m_pDevice)
+		return;
+
+	// Применяем семплер (если есть)
+	if (sampler)
+		ApplySampler(slot, sampler);
+	else
+	{
+		// Сброс на дефолтные значения (можно установить трилинейную фильтрацию)
+		m_pDevice->SetSamplerState(slot, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_MAXANISOTROPY, 1);
+		m_pDevice->SetSamplerState(slot, D3DSAMP_MIPMAPLODBIAS, 0);
+	}
+
+	// Устанавливаем текстуру
+	IDirect3DBaseTexture9* d3dTex = nullptr;
+	if (texture)
+	{
+		RHITextureImpl* impl = (RHITextureImpl*)texture;
+		d3dTex = impl->tex2D; // пока только 2D
+	}
+	m_pDevice->SetTexture(slot, d3dTex);
 }
 
 RHI_END

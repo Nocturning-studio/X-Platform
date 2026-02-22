@@ -58,4 +58,9 @@
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint">
+      <Filter>Kernel</Filter>
+    </None>
+  </ItemGroup>
 </Project>
