@@ -878,15 +878,15 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		RenderBackendLegacy.set_transform_view(Fidentity);
 		RenderBackendLegacy.set_transform_project(sun->TransformContext.Sun.combine);
 
+		// РЕНДЕР ИЗ ПАКЕТА!
+		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
+
 		// Рисуем Sun Details (траву), если нужно
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 		{
 			// Трава рисуется отдельно, так как она не в графе
 			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
 		}
-
-		// РЕНДЕР ИЗ ПАКЕТА!
-		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
 
 		// Рисуем Occluder (если есть)
 		if (m_SunOccluder)

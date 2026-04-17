@@ -1497,20 +1497,20 @@ void PATargetColor::Execute(ParticleEffect* effect, float dt)
 
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
+		Particle& partcle = effect->particles[i];
 
-		c_p.set(m.color);
-		c_t.set(c_p.r + (color.x - c_p.r) * scaleFac, c_p.g + (color.y - c_p.g) * scaleFac,
-				c_p.b + (color.z - c_p.b) * scaleFac, c_p.a + (alpha - c_p.a) * scaleFac);
-		m.color = c_t.get();
+		c_p.set(partcle.color);
 
-		//		m.color += (color - m.color) * scaleFac;
-		//		m.alpha += (alpha - m.alpha) * scaleFac;
+		c_t.set(c_p.r + (color.x - c_p.r) * scaleFac, 
+				c_p.g + (color.y - c_p.g) * scaleFac,
+				c_p.b + (color.z - c_p.b) * scaleFac, 
+				c_p.a + (alpha - c_p.a) * scaleFac);
+
+		partcle.color = c_t.get();
 	}
 }
 void PATargetColor::Transform(const float4x4&)
 {
-	;
 }
 //-------------------------------------------------------------------------------------------------
 
