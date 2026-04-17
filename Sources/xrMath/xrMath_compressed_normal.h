@@ -6,9 +6,9 @@
 // package. Good enough for surface normals we hope.
 #pragma once
 
-#include "math_types.h"
-#include "_vector3d.h"
-#include "_bitwise.h"
+#include "xrMath_types.h"
+#include "xrMath_vector3d.h"
+#include "xrMath_bitwise.h"
 #include <cstdint> // для uint16_t
 
 // upper 3 bits

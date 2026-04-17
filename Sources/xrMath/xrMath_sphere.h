@@ -1,8 +1,8 @@
 #pragma once
 
-#include "xrMathCommon.h"
-#include "math_types.h"
-#include "_vector3d.h"
+#include "xrMath_common.h"
+#include "xrMath_types.h"
+#include "xrMath_vector3d.h"
 
 template <class T> struct _sphere
 {

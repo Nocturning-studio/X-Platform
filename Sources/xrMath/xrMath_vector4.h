@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math_types.h"
+#include "xrMath_types.h"
 
 template <class T> struct _vector4
 {

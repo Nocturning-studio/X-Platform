@@ -459,7 +459,6 @@ template <class T> struct /*XRMATH_API*/ _quaternion
 };
 
 typedef _quaternion<float> Fquaternion;
-typedef _quaternion<double> Dquaternion;
 
 template <class T> BOOL _valid(const _quaternion<T>& s)
 {

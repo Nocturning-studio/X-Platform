@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-#include "math_constants.h"
-#include "_bitwise.h"
+#include "xrMath_constants.h"
+#include "xrMath_bitwise.h"
 
 // comparisions
 inline bool fsimilar(float a, float b, float cmp = EPS)

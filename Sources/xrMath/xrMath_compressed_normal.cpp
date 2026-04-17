@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "_compressed_normal.h"
+#include "xrMath_compressed_normal.h"
 #include <cmath>
 
 // Definition of the lookup table
