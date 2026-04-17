@@ -62,6 +62,20 @@ void CRender::apply_exposure()
 	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
+void CRender::dummy_exposure()
+{
+	// Параметры автоэкспозиции
+	float3 none, full, result;
+	none.set(1, 0, 1);
+	full.set(ps_r_autoexposure_middlegray, 1.f, ps_r_autoexposure_low_lum);
+	result.lerp(none, full, ps_r_autoexposure_amount);
+
+	// Применяем экспозицию
+	RenderBackendLegacy.set_Element(RenderTarget->s_autoexposure->E[SE_PASS_AUTOEXPOSURE_APPLY_EXPOSURE], 1);
+	RenderBackendLegacy.set_Constant("autoexposure_params", result.x, result.z);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+}
+///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_autoexposure()
 {
 	swap_luminance();

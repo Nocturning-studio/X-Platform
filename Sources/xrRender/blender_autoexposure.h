@@ -63,6 +63,19 @@ class CBlender_autoexposure : public IBlender
 			C.set_Sampler("s_luminance_previous", r_RT_autoexposure_luminance_previous);
 			C.set_Sampler("s_luminance", r_RT_autoexposure_luminance);
 			C.end_Pass();
+
+			PassDescription.VertexShader = "screen_quad";
+			PassDescription.VertexShaderEntry = "main";
+			PassDescription.PixelShader = sh_name;
+			PassDescription.PixelShaderEntry = "ApplyPassDummy";
+			PassDescription.EnableAlphaBlend = true;
+			PassDescription.BlendSRC = D3DBLEND_ZERO;
+			PassDescription.BlendDST = D3DBLEND_SRCCOLOR;
+
+			C.begin_Pass(PassDescription);
+			C.set_Sampler("s_luminance_previous", r_RT_autoexposure_luminance_previous);
+			C.set_Sampler("s_luminance", r_RT_autoexposure_luminance);
+			C.end_Pass();
 			break;
 		}
 	}

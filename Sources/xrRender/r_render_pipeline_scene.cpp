@@ -15,7 +15,6 @@ void CRender::RenderScene()
 		m_saved_viewproj.set(Engine.RenderView.ViewProjection);
 		m_saved_invview.invert(Engine.RenderView.View);
 		m_bFirstFrameAfterReset = false;
-		return;
 	}
 
 	// Configure
@@ -63,7 +62,8 @@ void CRender::RenderScene()
 	if (g_pGamePersistent)
 		g_pGamePersistent->OnRenderPPUI_main();
 
-	output_frame_to_screen();
+	if(!m_bFirstFrameAfterReset)
+		output_frame_to_screen();
 
 	m_saved_viewproj.set(Engine.RenderView.ViewProjection);
 	m_saved_invview.invert(Engine.RenderView.View);
