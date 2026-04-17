@@ -99,10 +99,8 @@ void CHW::Reset(HWND hwnd)
 		}
 		else
 		{
-			// После сброса нужно обновить базовые поверхности (если бекенд их предоставляет)
-			// Пока не реализовано – оставляем NULL
-			pBaseRT = nullptr;
-			pBaseZB = nullptr;
+			R_CHK(pDevice->GetRenderTarget(0, &pBaseRT));
+			R_CHK(pDevice->GetDepthStencilSurface(&pBaseZB));
 		}
 
 #ifdef DEBUG

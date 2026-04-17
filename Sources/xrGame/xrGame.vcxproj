@@ -344,7 +344,7 @@
     <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -364,7 +364,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -382,7 +382,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -392,7 +392,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -402,7 +402,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -412,7 +412,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -422,7 +422,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(ProjectDir);$(IncludePath);$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -474,7 +474,7 @@
     <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -493,7 +493,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -510,7 +510,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\;$(SolutionDir)\Sources\xrLua\src\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\DXSDK\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)Third-party\lib\x86\;$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)Third-party\include\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>

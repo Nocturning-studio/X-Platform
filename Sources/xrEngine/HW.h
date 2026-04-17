@@ -1,6 +1,6 @@
 #pragma once
 #include "hwcaps.h"
-#include "../xrRHI/xrRHI.h"
+#include <xrRHI/xrRHI.h>
 
 class ENGINE_API CHW
 {

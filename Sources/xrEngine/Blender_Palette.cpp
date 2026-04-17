@@ -61,8 +61,6 @@ void IBlender::CreatePalette(xr_vector<IBlender*>& palette)
 	concurrency::parallel_sort(palette.begin(), palette.end(), p_sort);
 }
 
-#ifndef _EDITOR
-// Engine
 #include "render.h"
 IBlender* IBlender::Create(CLASS_ID cls)
 {
@@ -72,72 +70,3 @@ void IBlender::Destroy(IBlender*& B)
 {
 	::Render->blender_destroy(B);
 }
-#else
-
-// Editor
-#include "blender_screen_set.h"
-#include "blender_editor_wire.h"
-#include "blender_editor_selection.h"
-#include "blender_light.h"
-#include "blender_Lm(EbB).h"
-#include "blender_BmmD.h"
-#include "blender_B.h"
-#include "blender_shadow_texture.h"
-#include "blender_model_ebb.h"
-#include "blender_detail_still.h"
-#include "blender_tree.h"
-#include "blender_particle.h"
-
-IBlender* IBlender::Create(CLASS_ID cls)
-{
-	switch (cls)
-	{
-	case B_STATIC_MESH:
-		return xr_new<CBlender_default>();
-	case B_STATIC_MESH_TRANSLUENT:
-		return xr_new<CBlender_default_aref>();
-	case B_VERT:
-		return xr_new<CBlender_Vertex>();
-	case B_VERT_AREF:
-		return xr_new<CBlender_Vertex_aref>();
-	case B_SCREEN_SET:
-		return xr_new<CBlender_Screen_SET>();
-	case B_SCREEN_GRAY:
-		return xr_new<CBlender_Screen_GRAY>();
-	case B_EDITOR_WIRE:
-		return xr_new<CBlender_Editor_Wire>();
-	case B_EDITOR_SEL:
-		return xr_new<CBlender_Editor_Selection>();
-	case B_LIGHT:
-		return xr_new<CBlender_LIGHT>();
-	case B_LaEmB:
-		return xr_new<CBlender_LaEmB>();
-	case B_LmEbB:
-		return xr_new<CBlender_LmEbB>();
-	case B_B:
-		return xr_new<CBlender_B>();
-	case B_TERRAIN:
-		return xr_new<CBlender_terrain>();
-	case B_SHADOW_WORLD:
-		return xr_new<CBlender_ShWorld>();
-	case B_BLUR:
-		return xr_new<CBlender_Blur>();
-	case B_SKINNED_MESH:
-		return xr_new<CBlender_Model>();
-	case B_MODEL_EbB:
-		return xr_new<CBlender_Model_EbB>();
-	case B_DETAIL_OBJECT:
-		return xr_new<CBlender_detail_object>();
-	case B_MULTIPLE_USAGE:
-		return xr_new<CBlender_multiple_usage>();
-	case B_PARTICLE:
-		return xr_new<CBlender_Particle>();
-	}
-	return 0;
-}
-
-void IBlender::Destroy(IBlender*& B)
-{
-	xr_delete(B);
-}
-#endif

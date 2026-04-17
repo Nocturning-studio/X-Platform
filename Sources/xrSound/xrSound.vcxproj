@@ -227,7 +227,7 @@
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)..\Build\libraries\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -242,35 +242,35 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Benchmark|Win32'">
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release profiling|Win32'">
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Demo|Win32'">
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|Win32'">
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -312,7 +312,7 @@
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sources/;$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Third-party\lib\x86\;$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\;$(SolutionDir)..\Build\libraries\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
