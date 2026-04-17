@@ -710,7 +710,8 @@ void CEnvironment::load_level_specific_ambients()
 
 void CEnvironment::mods_unload()
 {
-	Modifiers.clear_and_free();
+	if(!Modifiers.empty())
+		Modifiers.clear_and_free();
 }
 
 void CEnvironment::load_weathers()
