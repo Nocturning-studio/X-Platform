@@ -329,6 +329,7 @@ void CModelPool::DeleteInternal(IRender_Visual*& V, BOOL bDiscard)
 		{
 			// Registry entry not-found - just special type of visual / particles / etc.
 			xr_delete(V);
+			V = nullptr;
 		}
 	}
 	V = NULL;
@@ -338,6 +339,16 @@ void CModelPool::Delete(IRender_Visual*& V, BOOL bDiscard)
 {
 	if (NULL == V)
 		return;
+
+	// ƒл€ эффектов частиц и групп частиц удал€ем немедленно
+	if (V->Type == MT_PARTICLE_EFFECT || V->Type == MT_PARTICLE_GROUP)
+	{
+		DeleteInternal(V, bDiscard);
+		V = NULL;
+		return;
+	}
+
+	// ƒл€ всех остальных типов Ц стандартное поведение
 	if (g_bRendering)
 	{
 		VERIFY(!bDiscard);
@@ -353,7 +364,13 @@ void CModelPool::Delete(IRender_Visual*& V, BOOL bDiscard)
 void CModelPool::DeleteQueue()
 {
 	for (u32 it = 0; it < ModelsToDelete.size(); it++)
-		DeleteInternal(ModelsToDelete[it]);
+	{
+		IRender_Visual* V = ModelsToDelete[it];
+		if (V && V->Type != MT_PARTICLE_EFFECT && V->Type != MT_PARTICLE_GROUP)
+		{
+			DeleteInternal(V, FALSE);
+		}
+	}
 	ModelsToDelete.clear();
 }
 

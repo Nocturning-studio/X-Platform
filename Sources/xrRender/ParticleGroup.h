@@ -85,6 +85,7 @@ class ECORE_API CParticleGroup : public IParticleCustom
 		IRender_Visual* _effect;
 		VisualVec _children_related;
 		VisualVec _children_free;
+		VisualVec _children_free_pending;
 
 	  public:
 		void Set(IRender_Visual* e);

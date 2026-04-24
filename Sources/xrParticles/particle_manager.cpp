@@ -146,6 +146,10 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
 {
 	ParticleEffect* pe = GetEffectPtr(effect_id);
 	ParticleActions* pa = GetActionListPtr(alist_id);
+
+	if (pe == nullptr || pa == nullptr)
+		return;
+
 	// Step through all the actions in the action list.
 	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
 		(*it)->Execute(pe, dt);

@@ -1492,6 +1492,9 @@ void PASpeedLimit::Transform(const float4x4&)
 // Change color of all particles toward the specified color
 void PATargetColor::Execute(ParticleEffect* effect, float dt)
 {
+	if (effect == nullptr || effect->p_count > effect->max_particles || effect->p_count == 0)
+		return;
+
 	float scaleFac = scale * dt;
 	Fcolor c_p, c_t;
 

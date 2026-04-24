@@ -191,7 +191,7 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 	VERIFY(idx < _children_related.size());
 	IRender_Visual*& V = _children_related[idx];
 	((CParticleEffect*)V)->Stop(TRUE);
-	_children_free.push_back(V);
+	_children_free_pending.push_back(V);   // вместо прямого push_back
 	_children_related[idx] = _children_related.back();
 	_children_related.pop_back();
 }
@@ -215,7 +215,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
 		M.c.set(p);
 		C->Play();
 		C->UpdateParent(M, vel, FALSE);
-		_children_free.push_back(C);
+		_children_free_pending.push_back(C);
 	}
 	else
 	{
@@ -365,32 +365,48 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 	}
 	if (!_children_free.empty())
 	{
-		u32 rem_cnt = 0;
-		for (it = _children_free.begin(); it != _children_free.end(); it++)
+		// 1. Делаем копию и очищаем оригинал
+		VisualVec local_free = std::move(_children_free);
+		_children_free.clear();
+
+		std::vector<IRender_Visual*> to_delete;
+
+		for (IRender_Visual* vis : local_free)
 		{
-			CParticleEffect* PEChildrenFree = static_cast<CParticleEffect*>(*it);
+			CParticleEffect* PEChildrenFree = static_cast<CParticleEffect*>(vis);
 			if (PEChildrenFree)
 			{
 				PEChildrenFree->OnFrame(u_dt);
+
 				if (PEChildrenFree->IsPlaying())
 				{
 					bPlaying = true;
 					if (PEChildrenFree->vis.box.is_valid())
 						box.merge(PEChildrenFree->vis.box);
+					_children_free.push_back(vis);
 				}
 				else
 				{
-					rem_cnt++;
-					::Render->model_Delete(*it);
+					to_delete.push_back(vis);
 				}
 			}
 		}
-		// remove if stopped
-		if (rem_cnt)
+
+		// Удаляем дубликаты (на случай, если один эффект был добавлен дважды)
+		std::sort(to_delete.begin(), to_delete.end());
+		to_delete.erase(std::unique(to_delete.begin(), to_delete.end()), to_delete.end());
+
+		// Удаляем остановившиеся эффекты
+		for (IRender_Visual* vis : to_delete)
 		{
-			VisualVecIt new_end = std::remove_if(_children_free.begin(), _children_free.end(), zero_vis_pred());
-			_children_free.erase(new_end, _children_free.end());
+			if (vis)
+				::Render->model_Delete(vis);
 		}
+	}
+	if (!_children_free_pending.empty())
+	{
+		_children_free.insert(_children_free.end(), _children_free_pending.begin(), _children_free_pending.end());
+		_children_free_pending.clear();
 	}
 	//	Msg("C: %d CS: %d",_children.size(),_children_stopped.size());
 }
