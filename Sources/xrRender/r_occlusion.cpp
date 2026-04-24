@@ -71,38 +71,23 @@ void R_occlusion::occq_destroy()
 
 u32 R_occlusion::occq_begin(u32& ID)
 {
-	////OPTICK_EVENT("R_occlusion::occq_begin");
-
-	if (!enabled)
-		return 0;
-
+	if (!enabled) return 0;
 	RenderImplementation.stats.o_queries++;
 
 	if (pool.empty())
 	{
 		Msg("! R_occlusion::occq_begin: No available queries in pool");
-		ID = 0xffffffff; // Используем специальное значение для невалидного ID
+		ID = 0xffffffff;
 		return 0;
 	}
 
-	// Безопасное получение ID
 	if (!fids.empty())
 	{
 		ID = fids.back();
 		fids.pop_back();
-
-		// Проверка границ
 		if (ID >= used.size())
-		{
-			// Расширяем used vector если нужно
 			used.resize(ID + 1);
-		}
-
-		if (used[ID].Q != nullptr)
-		{
-			// Освобождаем существующий query
-			_RELEASE(used[ID].Q);
-		}
+		_RELEASE(used[ID].Q);
 	}
 	else
 	{
@@ -110,20 +95,20 @@ u32 R_occlusion::occq_begin(u32& ID)
 		used.push_back(pool.back());
 	}
 
-	// Проверка валидности query
-	if (pool.back().Q == nullptr)
-	{
-		Msg("! R_occlusion::occq_begin: Null query in pool");
-		return 0;
-	}
-
 	used[ID] = pool.back();
 	pool.pop_back();
+
+	used[ID].frame_issued = Engine.TimeManager.GetFrameCount(); // сохраняем кадр выдачи
 
 	HRESULT hr = used[ID].Q->Issue(D3DISSUE_BEGIN);
 	if (FAILED(hr))
 	{
 		Msg("! R_occlusion::occq_begin: Failed to issue query [HR:0x%08X]", hr);
+		// Возвращаем запрос обратно в пул при ошибке
+		pool.push_back(used[ID]);
+		used[ID].Q = nullptr;
+		fids.push_back(ID);
+		ID = 0xffffffff;
 		return 0;
 	}
 
@@ -144,10 +129,8 @@ void R_occlusion::occq_end(u32& ID)
 	}
 }
 
-u32 R_occlusion::occq_get(u32& ID)
+u32 R_occlusion::occq_get(u32& ID, bool bWait)
 {
-	////OPTICK_EVENT("R_occlusion::occq_get");
-
 	if (!enabled)
 		return 0xffffffff;
 
@@ -159,40 +142,64 @@ u32 R_occlusion::occq_get(u32& ID)
 
 	DWORD fragments = 0;
 	HRESULT hr;
-	CTimer T;
-	T.Start();
-	Engine.Statistic->RenderDUMP_Wait.Begin();
-	while ((hr = used[ID].Q->GetData(&fragments, sizeof(fragments), D3DGETDATA_FLUSH)) == S_FALSE)
+	const u32 current_frame = Engine.TimeManager.GetFrameCount();
+	const u32 frames_pending = current_frame - used[ID].frame_issued;
+
+	if (bWait)
 	{
-		if (!SwitchToThread())
-			Sleep(ps_r_thread_wait_sleep);
-		if (T.GetElapsed_ms() > 500)
+		// Блокирующий режим (как раньше)
+		CTimer T; T.Start();
+		Engine.Statistic->RenderDUMP_Wait.Begin();
+		while ((hr = used[ID].Q->GetData(&fragments, sizeof(fragments), D3DGETDATA_FLUSH)) == S_FALSE)
 		{
-			fragments = 0xffffffff;
-			break;
+			if (!SwitchToThread()) Sleep(ps_r_thread_wait_sleep);
+			if (T.GetElapsed_ms() > 500)
+			{
+				fragments = 0xffffffff;
+				break;
+			}
+		}
+		Engine.Statistic->RenderDUMP_Wait.End();
+	}
+	else
+	{
+		// Неблокирующая проверка
+		hr = used[ID].Q->GetData(&fragments, sizeof(fragments), 0);
+		if (hr == S_FALSE)
+		{
+			// Запрос ещё выполняется. Если висит слишком долго – принудительно сбрасываем.
+			if (frames_pending > 3) // более 3 кадров
+			{
+				Msg("! R_occlusion::occq_get: Query stuck for %d frames, forcing release", frames_pending);
+				hr = D3DERR_DEVICELOST; // имитируем потерю устройства, чтобы освободить
+				fragments = 0xffffffff;
+			}
+			else
+			{
+				return 0xfffffffe; // данные не готовы, запрос остаётся в used
+			}
 		}
 	}
-	Engine.Statistic->RenderDUMP_Wait.End();
+
+	// Если мы здесь, значит данные получены или произошла ошибка/таймаут.
+	// Возвращаем запрос в пул в любом случае.
 	if (hr == D3DERR_DEVICELOST)
 		fragments = 0xffffffff;
 
-	if (0 == fragments)
+	if (fragments == 0)
 		RenderImplementation.stats.o_culled++;
 
-	// insert into pool (sorting in decreasing order)
 	_Q& Q = used[ID];
 	if (pool.empty())
 		pool.push_back(Q);
 	else
 	{
 		int it = int(pool.size()) - 1;
-		while ((it >= 0) && (pool[it].order < Q.order))
-			it--;
+		while ((it >= 0) && (pool[it].order < Q.order)) it--;
 		pool.insert(pool.begin() + it + 1, Q);
 	}
 
-	// remove from used and shrink as nescessary
-	used[ID].Q = 0;
+	used[ID].Q = nullptr;
 	fids.push_back(ID);
 	ID = 0;
 	return fragments;

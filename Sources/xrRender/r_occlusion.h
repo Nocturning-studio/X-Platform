@@ -17,8 +17,9 @@ class R_occlusion
   private:
 	struct _Q
 	{
-		u32 order;
 		IDirect3DQuery9* Q;
+		u32 order;
+		u32 frame_issued;   // кадр, в котором был вызван Issue(BEGIN)
 	};
 
 	BOOL enabled;		 //
@@ -43,5 +44,5 @@ class R_occlusion
 	void occq_destroy();
 	u32 occq_begin(u32& ID); // returns 'order'
 	void occq_end(u32& ID);
-	u32 occq_get(u32& ID);
+	u32 occq_get(u32& ID, bool bWait = true);
 };

@@ -9,262 +9,245 @@ IC bool pred_area(light* _1, light* _2)
 
 void CRender::render_lights(light_Package& LP)
 {
-	OPTICK_EVENT("render_lights");
+    OPTICK_EVENT("render_lights");
 
-	// Фильтрация нулевых указателей и невалидных источников
-	auto is_valid_light = [](light* L) {
-		if (L == nullptr)
-			return false;
+    // ------------------------------------------------------------------------
+    // 0. Базовая фильтрация нулевых указателей (как было)
+    auto is_valid_light = [](light* L) {
+        if (L == nullptr)
+            return false;
+        float3 zero = { 0, -1000, 0 };
+        if (L->get_position().similar(zero, EPS_L))
+            return false;
+        return true;
+    };
 
-		// Проверка валидности позиции
-		float3 zero = {0, -1000, 0};
-		if (L->get_position().similar(zero, EPS_L))
-		{
-			Msg("! [Warning] Found light with uninitialized position in render_lights");
-			return false;
-		}
+    LP.v_shadowed.erase(std::remove_if(LP.v_shadowed.begin(), LP.v_shadowed.end(),
+        [&](light* L) { return !is_valid_light(L); }), LP.v_shadowed.end());
+    LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(),
+        [&](light* L) { return !is_valid_light(L); }), LP.v_point.end());
+    LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(),
+        [&](light* L) { return !is_valid_light(L); }), LP.v_spot.end());
 
-		return true;
-	};
+    // ------------------------------------------------------------------------
+    // 1. ОБНОВЛЕНИЕ ВИДИМОСТИ И МАТРИЦ (без удаления)
+    {
+        OPTICK_EVENT("Update visibility and compute matrices");
 
-	// Фильтрация для всех типов источников
-	LP.v_shadowed.erase(
-		std::remove_if(LP.v_shadowed.begin(), LP.v_shadowed.end(), [&](light* L) { return !is_valid_light(L); }),
-		LP.v_shadowed.end());
+        xr_vector<light*>& source = LP.v_shadowed;
 
-	LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(), [&](light* L) { return !is_valid_light(L); }),
-					 LP.v_point.end());
+        // Последовательное обновление видимости (occlusion queries не параллелятся)
+        for (light* L : source)
+        {
+            L->vis_update(); // теперь неблокирующий!
+        }
 
-	LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(), [&](light* L) { return !is_valid_light(L); }),
-					LP.v_spot.end());
+        // Параллельное вычисление матриц для ВИДИМЫХ источников (compute_xf_spot потокобезопасен)
+        // Включайте только если уверены, что внутри нет глобального состояния.
+        // Если сомневаетесь – оставьте последовательный цикл.
+#if 1 // переключите на 0 для отключения параллелизма
+        if (source.size() > 16)
+        {
+            concurrency::parallel_for_each(source.begin(), source.end(),
+                [this](light* L) {
+                    if (L->VisibilityData.visible)
+                        LR.compute_xf_spot(L);
+                });
+        }
+        else
+#endif
+        {
+            for (light* L : source)
+            {
+                if (L->VisibilityData.visible)
+                    LR.compute_xf_spot(L);
+            }
+        }
+    }
 
-	//////////////////////////////////////////////////////////////////////////
-	// 1. Оптимизированная фильтрация и подготовка теневых источников
-	{
-		OPTICK_EVENT("Refactor order based");
+    // ------------------------------------------------------------------------
+    // 2. УДАЛЕНИЕ НЕВИДИМЫХ ИСТОЧНИКОВ (быстро, без вызовов vis_update)
+    {
+        OPTICK_EVENT("Remove invisible");
 
-		xr_vector<light*>& source = LP.v_shadowed;
+        LP.v_shadowed.erase(
+            std::remove_if(LP.v_shadowed.begin(), LP.v_shadowed.end(),
+                [](light* L) { return !L->VisibilityData.visible; }),
+            LP.v_shadowed.end());
+    }
 
-		// Более эффективное удаление невидимых источников
-		source.erase(std::remove_if(source.begin(), source.end(),
-									[this](light* L) {
-										L->vis_update();
-										if (!L->VisibilityData.visible)
-											return true;
+    // ------------------------------------------------------------------------
+    // 3. УПАКОВКА SHADOW MAPS (без изменений, кроме оптимизации сортировки)
+    {
+        OPTICK_EVENT("Pack shadow maps");
 
-										LR.compute_xf_spot(L);
-										return false;
-									}),
-					 source.end());
-	}
+        xr_vector<light*>& source = LP.v_shadowed;
+        if (source.empty())
+            return;
 
-	// 2. Оптимизированная упаковка shadow maps
-	{
-		OPTICK_EVENT("refactor");
+        xr_vector<light*> refactored;
+        refactored.reserve(source.size());
 
-		xr_vector<light*>& source = LP.v_shadowed;
-		if (source.empty())
-			return;
+        // Сортировка по убыванию размера
+        if (source.size() > 8)
+            concurrency::parallel_sort(source.begin(), source.end(), pred_area);
+        else
+            std::sort(source.begin(), source.end(), pred_area);
 
-		xr_vector<light*> refactored;
-		refactored.reserve(source.size());
+        for (u16 smap_ID = 0; !source.empty(); smap_ID++)
+        {
+            LP_smap_pool.initialize(RenderImplementation.o.smapsize);
 
-		// Сортируем только один раз в начале
-		if (source.size() > 8)
-		{
-			concurrency::parallel_sort(source.begin(), source.end(), pred_area);
-		}
-		else
-		{
-			std::sort(source.begin(), source.end(), pred_area);
-		}
+            for (auto it = source.begin(); it != source.end();)
+            {
+                light* L = *it;
+                SMAP_Rect R;
+                if (LP_smap_pool.push(R, L->TransformContext.ShadowContext.size))
+                {
+                    L->TransformContext.ShadowContext.posX = R.min.x;
+                    L->TransformContext.ShadowContext.posY = R.min.y;
+                    L->VisibilityData.smap_ID = smap_ID;
+                    refactored.push_back(L);
+                    it = source.erase(it);
+                }
+                else
+                {
+                    if (it == source.begin())
+                        break;
+                    ++it;
+                }
+            }
+        }
 
-		for (u16 smap_ID = 0; !source.empty(); smap_ID++)
-		{
-			LP_smap_pool.initialize(RenderImplementation.o.smapsize);
+        std::reverse(refactored.begin(), refactored.end());
+        LP.v_shadowed = std::move(refactored);
+    }
 
-			// Более эффективный алгоритм упаковки
-			for (auto it = source.begin(); it != source.end();)
-			{
-				light* L = *it;
-				SMAP_Rect R;
-				if (LP_smap_pool.push(R, L->TransformContext.ShadowContext.size))
-				{
-					L->TransformContext.ShadowContext.posX = R.min.x;
-					L->TransformContext.ShadowContext.posY = R.min.y;
-					L->VisibilityData.smap_ID = smap_ID;
-					refactored.push_back(L);
-					it = source.erase(it);
-				}
-				else
-				{
-					// Если не можем упаковать текущий (самый большой), переходим к следующему smap_ID
-					if (it == source.begin())
-						break;
-					++it;
-				}
-			}
-		}
+    // ------------------------------------------------------------------------
+    // 4. РЕНДЕР ТЕНЕЙ (без изменений)
+    HOM.Disable();
 
-		// save (lights are popped from back)
-		std::reverse(refactored.begin(), refactored.end());
-		LP.v_shadowed = std::move(refactored); // Используем move для эффективности
-	}
+    while (!LP.v_shadowed.empty())
+    {
+        OPTICK_EVENT("Shadow map rendering");
 
-	//////////////////////////////////////////////////////////////////////////
-	// 3. Оптимизированный рендер теней
-	HOM.Disable();
+        SceneGraphFetchConfig ShadowPassFetchConfig;
+        ShadowPassFetchConfig.fetch_priority_0 = true;
+        ShadowPassFetchConfig.fetch_priority_1 = false;
+        ShadowPassFetchConfig.fetch_wallmarks = false;
+        SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
 
-	while (!LP.v_shadowed.empty())
-	{
-		OPTICK_EVENT("Shadow map rendering");
+        stats.s_used++;
+        clear_shadow_map_spot();
 
-		SceneGraphFetchConfig ShadowPassFetchConfig;
+        xr_vector<light*> current_batch;
+        xr_vector<light*>& source = LP.v_shadowed;
+        u16 current_sid = source.back()->VisibilityData.smap_ID;
 
-		ShadowPassFetchConfig.fetch_priority_0 = true;
-		ShadowPassFetchConfig.fetch_priority_1 = false;
-		ShadowPassFetchConfig.fetch_wallmarks = false;
+        while (!source.empty() && source.back()->VisibilityData.smap_ID == current_sid)
+        {
+            current_batch.push_back(source.back());
+            source.pop_back();
+        }
+        Lights_LastFrame.insert(Lights_LastFrame.end(), current_batch.begin(), current_batch.end());
 
-		SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
+        set_active_phase(PHASE_SHADOW_DEPTH);
+        for (light* L : current_batch)
+        {
+            L->get_smapvis().begin();
+            SceneGraph.render_subspace(L->spatial.sector, L->TransformContext.ShadowContext.combine,
+                L->get_position(), TRUE, FALSE, SceneGraph.m_packet);
 
-		stats.s_used++;
-		clear_shadow_map_spot();
+            bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
+            bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
+                SceneGraph.m_packet.queue_transparent.size();
 
-		// Группировка источников по smap_ID для batch обработки
-		xr_vector<light*> current_batch;
-		xr_vector<light*>& source = LP.v_shadowed;
-		u16 current_sid = source.back()->VisibilityData.smap_ID;
+            if (bNormal || bSpecial)
+            {
+                stats.s_merged++;
+                render_shadow_map_spot(L);
+                RenderBackendLegacy.set_transform_world(Fidentity);
+                RenderBackendLegacy.set_transform_view(L->TransformContext.ShadowContext.view);
+                RenderBackendLegacy.set_transform_project(L->TransformContext.ShadowContext.project);
 
-		// Извлекаем всю группу с одинаковым smap_ID
-		while (!source.empty() && source.back()->VisibilityData.smap_ID == current_sid)
-		{
-			current_batch.push_back(source.back());
-			source.pop_back();
-		}
-		Lights_LastFrame.insert(Lights_LastFrame.end(), current_batch.begin(), current_batch.end());
+                if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
+                    Details->Render(DetailsRenderMode::DepthOnly, &L->TransformContext.ShadowContext.combine);
 
-		// Batch рендер shadow maps для всей группы
-		set_active_phase(PHASE_SHADOW_DEPTH);
+                SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
+                L->TransformContext.ShadowContext.transluent = FALSE;
 
-		for (light* L : current_batch)
-		{
-			L->get_smapvis().begin();
+                if (bSpecial)
+                {
+                    L->TransformContext.ShadowContext.transluent = TRUE;
+                    render_shadow_map_spot_transluent(L);
+                    SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
+                    SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
+                }
+            }
+            else
+            {
+                stats.s_finalclip++;
+            }
+            L->get_smapvis().end();
+        }
 
-			// render_subspace принимает dest. Для теней используем глобальный пакет (пока однопоточно)
-			// Если будет параллельный рендер теней, здесь нужно будет создавать Thread-Local пакет
-			SceneGraph.render_subspace(L->spatial.sector, L->TransformContext.ShadowContext.combine, L->get_position(), TRUE, FALSE,
-									   SceneGraph.m_packet);
+        // --------------------------------------------------------------------
+        // 5. АККУМУЛЯЦИЯ СВЕТА (без изменений)
+        {
+            OPTICK_EVENT("Accumulation");
+            set_light_accumulator();
+            HOM.Disable();
 
-			// Проверяем очереди через m_packet
-			bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
-			bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
-							SceneGraph.m_packet.queue_transparent.size();
+            if (!LP.v_point.empty())
+            {
+                OPTICK_EVENT("Point");
+                for (size_t i = 0; i < LP.v_point.size();)
+                {
+                    light* L = LP.v_point[i];
+                    L->vis_update();
+                    if (L->VisibilityData.visible)
+                    {
+                        accumulate_point_lights(L);
+                        LP.v_point[i] = LP.v_point.back();
+                        LP.v_point.pop_back();
+                    }
+                    else
+                        i++;
+                }
+            }
 
-			if (bNormal || bSpecial)
-			{
-				stats.s_merged++;
-				render_shadow_map_spot(L);
-				RenderBackendLegacy.set_transform_world(Fidentity);
-				RenderBackendLegacy.set_transform_view(L->TransformContext.ShadowContext.view);
-				RenderBackendLegacy.set_transform_project(L->TransformContext.ShadowContext.project);
+            if (!LP.v_spot.empty())
+            {
+                OPTICK_EVENT("Spot");
+                for (size_t i = 0; i < LP.v_spot.size();)
+                {
+                    light* L = LP.v_spot[i];
+                    L->vis_update();
+                    if (L->VisibilityData.visible)
+                    {
+                        LR.compute_xf_spot(L);
+                        accumulate_spot_lights(L);
+                        LP.v_spot[i] = LP.v_spot.back();
+                        LP.v_spot.pop_back();
+                    }
+                    else
+                        i++;
+                }
+            }
 
-				if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-					Details->Render(DetailsRenderMode::DepthOnly, &L->TransformContext.ShadowContext.combine);
+            if (!current_batch.empty())
+            {
+                OPTICK_EVENT("spot shadowed");
+                for (light* L : current_batch)
+                    accumulate_spot_lights(L);
+                current_batch.clear();
+            }
+        }
+    }
 
-				// Передаем пакет в Render
-				SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
-				L->TransformContext.ShadowContext.transluent = FALSE;
-
-				if (bSpecial)
-				{
-					L->TransformContext.ShadowContext.transluent = TRUE;
-					render_shadow_map_spot_transluent(L);
-					// Передаем пакет в Render
-					SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 1);
-					SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Transparent);
-				}
-			}
-			else
-			{
-				stats.s_finalclip++;
-			}
-
-			L->get_smapvis().end();
-		}
-
-		// 4. Оптимизированное накопление света
-		{
-			OPTICK_EVENT("Accumulation");
-
-			set_light_accumulator();
-			HOM.Disable();
-
-			// Быстрое накопление point lights
-			if (!LP.v_point.empty())
-			{
-				OPTICK_EVENT("Point");
-
-				// Обрабатываем несколько источников за проход
-				for (size_t i = 0; i < LP.v_point.size();)
-				{
-					light* L = LP.v_point[i];
-					L->vis_update();
-
-					if (L->VisibilityData.visible)
-					{
-						accumulate_point_lights(L);
-						// Эффективное удаление
-						LP.v_point[i] = LP.v_point.back();
-						LP.v_point.pop_back();
-					}
-					else
-					{
-						i++;
-					}
-				}
-			}
-
-			// Быстрое накопление spot lights
-			if (!LP.v_spot.empty())
-			{
-				OPTICK_EVENT("Spot");
-
-				for (size_t i = 0; i < LP.v_spot.size();)
-				{
-					light* L = LP.v_spot[i];
-					L->vis_update();
-
-					if (L->VisibilityData.visible)
-					{
-						LR.compute_xf_spot(L);
-						accumulate_spot_lights(L);
-						LP.v_spot[i] = LP.v_spot.back();
-						LP.v_spot.pop_back();
-					}
-					else
-					{
-						i++;
-					}
-				}
-			}
-
-			// Накопление теневых источников из текущей группы
-			if (!current_batch.empty())
-			{
-				OPTICK_EVENT("spot shadowed");
-
-				for (light* L : current_batch)
-				{
-					accumulate_spot_lights(L);
-				}
-
-				current_batch.clear();
-			}
-		}
-	}
-
-	// 5. Оптимизированная обработка оставшихся нетеевых источников
-	ProcessRemainingLightsOptimized(LP);
+    // ------------------------------------------------------------------------
+    // 6. ОСТАВШИЕСЯ ИСТОЧНИКИ
+    ProcessRemainingLightsOptimized(LP);
 }
 
 // Вспомогательная функция для обработки оставшихся источников

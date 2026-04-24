@@ -436,64 +436,206 @@ void CRender::render_hom()
 
 void CRender::render_stage_occlusion_culling()
 {
+	OPTICK_EVENT("render_stage_occlusion_culling");
 	PROFILE_FUNCTION();
 
-	phase_occq();
+	float safe_area = 20;
+	float ps_r_light_distance_cull = 40;
 
-	LP_normal.clear();
-	LP_pending.clear();
-
+	// --------------------------------------------------------------------
+	// 0. Подготовка и сброс предыдущих результатов occlusion
+	// --------------------------------------------------------------------
 	{
-		////OPTICK_EVENT("CRender::OcclusionCulling-Tests");
-
-		light_Package& LP = Lights.package;
-
-		// Быстрая статистика
-		stats.l_shadowed = LP.v_shadowed.size();
-		stats.l_unshadowed = LP.v_point.size() + LP.v_spot.size();
-		stats.l_total = stats.l_shadowed + stats.l_unshadowed;
-
-		// ВОССТАНАВЛИВАЕМ ПОСЛЕДОВАТЕЛЬНУЮ ОБРАБОТКУ для vis_prepare
-		// т.к. vis_prepare работает с occlusion queries и не является потокобезопасной
-		auto process_lights_safe = [&](auto& light_array, auto& pending_array, auto& normal_array) {
-			const size_t count = light_array.size();
-
-			// ТОЛЬКО последовательная обработка для vis_prepare
-			for (size_t it = 0; it < count; it++)
-			{
-				light* L = light_array[it];
-				L->vis_prepare(); // Эта операция должна быть последовательной!
-				if (L->VisibilityData.pending)
-					pending_array.push_back(L);
-				else
-					normal_array.push_back(L);
-			}
-		};
-
-		// Обработка всех типов источников света (последовательно для безопасности)
-		process_lights_safe(LP.v_point, LP_pending.v_point, LP_normal.v_point);
-		process_lights_safe(LP.v_spot, LP_pending.v_spot, LP_normal.v_spot);
-		process_lights_safe(LP.v_shadowed, LP_pending.v_shadowed, LP_normal.v_shadowed);
+		OPTICK_EVENT("phase_occq");
+		phase_occq();
 	}
 
-	// Оптимизированная сортировка (может остаться параллельной)
-	auto parallel_sort_if_large = [](auto& container) {
-		if (container.size() > 20)
+	{
+		OPTICK_EVENT("clear_packages");
+		LP_normal.clear();
+		LP_pending.clear();
+	}
+
+	light_Package& LP = Lights.package;
+
+	stats.l_shadowed = LP.v_shadowed.size();
+	stats.l_unshadowed = LP.v_point.size() + LP.v_spot.size();
+	stats.l_total = stats.l_shadowed + stats.l_unshadowed;
+
+	const u32 frame = Engine.TimeManager.GetFrameCount();
+	const float3& cam_pos = Engine.RenderView.Position;
+
+	// --------------------------------------------------------------------
+	// Расчёт safe_area с использованием консольной переменной
+	// --------------------------------------------------------------------
+	{
+		float a0 = deg2rad(Engine.RenderView.Fov * Engine.RenderView.Aspect / 2.f);
+		float a1 = deg2rad(Engine.RenderView.Fov / 2.f);
+		float x0 = safe_area / _cos(a0);
+		float x1 = safe_area / _cos(a1);
+		float c = _sqrt(x0 * x0 + x1 * x1);
+		safe_area = _max(_max(safe_area, _max(x0, x1)), c);
+	}
+
+	// --------------------------------------------------------------------
+	// Фильтр по расстоянию
+	// --------------------------------------------------------------------
+	const float max_dist_sq = ps_r_light_distance_cull * ps_r_light_distance_cull;
+
+	// Вспомогательная структура для результата подготовки
+	struct LightPrepareResult
+	{
+		light* L;
+		bool needs_query;   // нужен occlusion query
+		bool pending;       // если true, будет ждать результата
+	};
+
+	xr_vector<LightPrepareResult> prepared_point;
+	xr_vector<LightPrepareResult> prepared_spot;
+	xr_vector<LightPrepareResult> prepared_shadowed;
+
+	prepared_point.reserve(LP.v_point.size());
+	prepared_spot.reserve(LP.v_spot.size());
+	prepared_shadowed.reserve(LP.v_shadowed.size());
+
+	const size_t total_lights = LP.v_point.size() + LP.v_spot.size() + LP.v_shadowed.size();
+
+	// Лямбда подготовки одного источника (с проверкой дистанции и safe_area)
+	auto prepare_one = [&](light* L) -> LightPrepareResult
+	{
+		// Проверка расстояния
+		float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
+		if (dist_sq > max_dist_sq)
 		{
-			concurrency::parallel_sort(container.begin(), container.end());
+			L->VisibilityData.visible = false;
+			L->VisibilityData.pending = false;
+			L->VisibilityData.frame2test = frame + ::Random.randI(10, 20); // delay_large
+			return { L, false, false };
+		}
+
+		// Стандартная подготовка (теперь с переданным safe_area)
+		bool needs_q = L->vis_prepare_async(frame);
+		return { L, needs_q, L->VisibilityData.pending };
+	};
+
+	// --------------------------------------------------------------------
+	// ЭТАП 1: Параллельная / последовательная подготовка
+	// --------------------------------------------------------------------
+	{
+		OPTICK_EVENT("Prepare lights (parallel/sequential)");
+
+		if (total_lights > 64)
+		{
+			concurrency::parallel_invoke(
+				[&]() {
+					OPTICK_EVENT("prepare_point");
+					for (light* L : LP.v_point)
+						prepared_point.push_back(prepare_one(L));
+				},
+				[&]() {
+					OPTICK_EVENT("prepare_spot");
+					for (light* L : LP.v_spot)
+						prepared_spot.push_back(prepare_one(L));
+				},
+					[&]() {
+					OPTICK_EVENT("prepare_shadowed");
+					for (light* L : LP.v_shadowed)
+						prepared_shadowed.push_back(prepare_one(L));
+				}
+				);
 		}
 		else
 		{
-			std::sort(container.begin(), container.end());
+			OPTICK_EVENT("prepare_sequential");
+			for (light* L : LP.v_point)    prepared_point.push_back(prepare_one(L));
+			for (light* L : LP.v_spot)     prepared_spot.push_back(prepare_one(L));
+			for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L));
 		}
-	};
+	}
 
-	parallel_sort_if_large(LP_normal.v_point);
-	parallel_sort_if_large(LP_normal.v_spot);
-	parallel_sort_if_large(LP_normal.v_shadowed);
-	parallel_sort_if_large(LP_pending.v_point);
-	parallel_sort_if_large(LP_pending.v_spot);
-	parallel_sort_if_large(LP_pending.v_shadowed);
+	// --------------------------------------------------------------------
+	// ЭТАП 2: Последовательная выдача occlusion queries (главный поток)
+	// --------------------------------------------------------------------
+	{
+		OPTICK_EVENT("Issue occlusion queries");
+
+		auto issue_queries = [frame](xr_vector<LightPrepareResult>& prepared_list, const char* name)
+		{
+			OPTICK_EVENT(name);
+			for (auto& item : prepared_list)
+			{
+				if (!item.needs_query)
+					continue;
+
+				light* L = item.L;
+				RenderBackendLegacy.set_transform_world(L->get_transform());
+
+				const u32 order = RenderImplementation.occq_begin(L->VisibilityData.query_id);
+				if (order == 0 || L->VisibilityData.query_id == 0xffffffff)
+				{
+					// Пул пуст – считаем видимым и сбрасываем pending
+					L->VisibilityData.visible = true;
+					L->VisibilityData.pending = false;
+					L->VisibilityData.frame2test = frame + ::Random.randI(1, 3); // delay_small
+					continue;
+				}
+
+				L->VisibilityData.query_order = order;
+				RenderImplementation.draw_volume(L);
+				RenderImplementation.occq_end(L->VisibilityData.query_id);
+			}
+		};
+
+		issue_queries(prepared_point, "issue_point");
+		issue_queries(prepared_spot, "issue_spot");
+		issue_queries(prepared_shadowed, "issue_shadowed");
+	}
+
+	// --------------------------------------------------------------------
+	// ЭТАП 3: Распределение по LP_normal / LP_pending
+	// --------------------------------------------------------------------
+	{
+		OPTICK_EVENT("Distribute to normal/pending");
+
+		auto distribute = [](auto& prepared_list, auto& normal_list, auto& pending_list)
+		{
+			for (auto& item : prepared_list)
+			{
+				if (item.pending)
+					pending_list.push_back(item.L);
+				else
+					normal_list.push_back(item.L);
+			}
+		};
+
+		distribute(prepared_point, LP_normal.v_point, LP_pending.v_point);
+		distribute(prepared_spot, LP_normal.v_spot, LP_pending.v_spot);
+		distribute(prepared_shadowed, LP_normal.v_shadowed, LP_pending.v_shadowed);
+	}
+
+	// --------------------------------------------------------------------
+	// ЭТАП 4: Сортировка (опционально параллельная)
+	// --------------------------------------------------------------------
+	{
+		OPTICK_EVENT("Sorting light arrays");
+
+		auto parallel_sort_if_large = [](auto& container, const char* name)
+		{
+			OPTICK_EVENT(name);
+			if (container.size() > 20)
+				concurrency::parallel_sort(container.begin(), container.end());
+			else if (!container.empty())
+				std::sort(container.begin(), container.end());
+		};
+
+		parallel_sort_if_large(LP_normal.v_point, "sort_normal_point");
+		parallel_sort_if_large(LP_normal.v_spot, "sort_normal_spot");
+		parallel_sort_if_large(LP_normal.v_shadowed, "sort_normal_shadowed");
+
+		parallel_sort_if_large(LP_pending.v_point, "sort_pending_point");
+		parallel_sort_if_large(LP_pending.v_spot, "sort_pending_spot");
+		parallel_sort_if_large(LP_pending.v_shadowed, "sort_pending_shadowed");
+	}
 }
 
 void CRender::render_sun()

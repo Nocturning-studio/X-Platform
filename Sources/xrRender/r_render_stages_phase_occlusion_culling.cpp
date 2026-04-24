@@ -2,7 +2,7 @@
 
 void CRender::phase_occq()
 {
-	////OPTICK_EVENT("CRenderTarget::phase_occq");
+	PROFILE_FUNCTION();
 
 	RenderBackendLegacy.set_Render_Target_Surface(Device.dwWidth, Device.dwHeight, HW.GetBaseRT());
 	RenderBackendLegacy.set_Depth_Buffer(HW.GetBaseZB());

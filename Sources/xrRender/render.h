@@ -282,9 +282,9 @@ class CRender : public IRender_interface, public pureFrame
 	{
 		HWOCC.occq_end(ID);
 	}
-	IC u32 occq_get(u32& ID)
+	IC u32 occq_get(u32& ID, bool wait = true)
 	{
-		return HWOCC.occq_get(ID);
+		return HWOCC.occq_get(ID, wait);
 	}
 
 	ICF void apply_object(IRenderable* O)
@@ -517,7 +517,6 @@ class CRender : public IRender_interface, public pureFrame
 	void combine_scene();
 	void render_gbuffer_primary();
 	void render_gbuffer_secondary();
-	void render_forward_lights(xr_vector<light*>& lights, int phase);
 	void render_stage_occlusion_culling();
 	void render_stage_forward();
 	void update_shadow_map_visibility();

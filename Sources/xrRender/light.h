@@ -124,6 +124,7 @@ class light : public IRender_Light, public ISpatial
 
 	void transform_calc();
 	void vis_prepare();
+	bool vis_prepare_async(u32 frame);
 	void vis_update();
 	void _export(light_Package& dest);
 
