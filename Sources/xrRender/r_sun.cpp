@@ -5,15 +5,20 @@
 const float tweak_COP_initial_offs = 1200.f;
 
 extern float ps_r_sun_far;
-
-const float MAP_SIZE_START = 6.f;
-const float MAP_GROW_FACTOR = 4.f;
-
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static float3 corners[8] = {{-1, -1, 0},	{-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0},
-							  {+1, +1, +1}, {+1, +1, 0},  {+1, -1, +1}, {+1, -1, 0}};
+static float3 corners[8] = {
+	{-1, -1, 0},	
+	{-1, -1, +1}, 
+	{-1, +1, +1}, 
+	{-1, +1, 0},
+	{+1, +1, +1}, 
+	{+1, +1, 0},  
+	{+1, -1, +1}, 
+	{+1, -1, 0}
+};
+
 static int facetable[6][4] = {
 	{6, 7, 5, 4},
 	{1, 0, 7, 6},
@@ -587,7 +592,6 @@ float3 wform(float4x4& m, float3 const& v)
 void CRender::init_cacades()
 {
 	float fBias = -0.0000025f;
-	float size = MAP_SIZE_START;
 	u32 cascade_count = 3;
 
 	m_sun_cascades.resize(cascade_count);
@@ -840,8 +844,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	// В SceneGraph::render_subspace сейчас хардкод опций (0) в traverse.
 	// Это можно улучшить, но пока работает и так.
 
-	SceneGraph.render_subspace(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE,
-							   item.packet);
+	SceneGraph.render_subspace(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet);
 }
 
 // -------------------------------------------------------------------------
@@ -935,9 +938,12 @@ void CRender::render_sun_cascades()
 	// -------------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Gather Cascades");
-		concurrency::parallel_invoke([&] { gather_sun_cascade(0, *writeBuffer.items[0]); },
-									 [&] { gather_sun_cascade(1, *writeBuffer.items[1]); },
-									 [&] { gather_sun_cascade(2, *writeBuffer.items[2]); });
+		//concurrency::parallel_invoke([&] { gather_sun_cascade(0, *writeBuffer.items[0]); },
+		//							 [&] { gather_sun_cascade(1, *writeBuffer.items[1]); },
+		//							 [&] { gather_sun_cascade(2, *writeBuffer.items[2]); });
+		gather_sun_cascade(0, *writeBuffer.items[0]);
+		gather_sun_cascade(1, *writeBuffer.items[1]);
+		gather_sun_cascade(2, *writeBuffer.items[2]);
 	}
 
 	// Здесь происходит неявная синхронизация, так как parallel_invoke блокирующий.
