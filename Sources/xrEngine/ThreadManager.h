@@ -88,13 +88,17 @@ class ENGINE_API CThreadManager
 	std::atomic<u32> m_threadsCompleted{0};
 
 	// Фиксированное количество воркеров
-	static constexpr u32 MAX_WORKERS = 64; // Максимальное количество потоков
+	static constexpr u32 MAX_WORKERS = 4; // Максимальное количество потоков
 	WorkerContext m_workers[MAX_WORKERS];
 	u32 m_workerCount;
 
 	// Состояние
 	std::atomic<bool> m_shouldExit{false};
 	std::atomic<bool> m_isInitialized{false};
+
+	std::array<std::thread::id, MAX_WORKERS> m_workerThreadIds;
+
+	bool IsWorkerThread() const;
 
 	static void WorkerThreadProc(void* context);
 

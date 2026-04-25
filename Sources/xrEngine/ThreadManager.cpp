@@ -103,31 +103,21 @@ void CThreadManager::Initialize()
 		// Создание потока с лямбдой
 		ctx.Thread = std::thread([&ctx, totalWorkers]() {
 			// Устанавливаем имя для профилировщика
-			char optickThreadName[64];
+			char ThreadName[64];
 			if (ctx.ThreadID == 0)
-				sprintf_s(optickThreadName, "X-RAY Worker #0 (Audio/Gen)");
+				sprintf_s(ThreadName, "X-RAY Worker #0 (Audio/Gen)");
 			else if (ctx.ThreadID == 1)
-				sprintf_s(optickThreadName, "X-RAY Worker #1 (AI/Gen)");
+				sprintf_s(ThreadName, "X-RAY Worker #1 (AI/Gen)");
 			else
-				sprintf_s(optickThreadName, "X-RAY Worker #%d (Gen)", ctx.ThreadID);
+				sprintf_s(ThreadName, "X-RAY Worker #%d (Gen)", ctx.ThreadID);
 
-			OPTICK_THREAD(optickThreadName);
+			OPTICK_THREAD(ThreadName);
+			SetThreadName(ThreadName);
 			InitializeThread();
 			WorkerThreadProc(&ctx);
 		});
 
-		// Установка имени потока (Windows)
-#ifdef WINDOWS
-		char threadName[64];
-		if (i == 0)
-			sprintf_s(threadName, "X-RAY Worker #0 (Audio/Gen)");
-		else if (i == 1)
-			sprintf_s(threadName, "X-RAY Worker #1 (AI/Gen)");
-		else
-			sprintf_s(threadName, "X-RAY Worker #%d (Gen)", i);
-
-		SetThreadName(threadName);
-#endif
+		m_workerThreadIds[i] = ctx.Thread.get_id();
 	}
 
 	OPTICK_THREAD("X-RAY Primary Thread");
@@ -173,6 +163,17 @@ void CThreadManager::Destroy()
 
 	m_isInitialized = false;
 	m_workerCount = 0;
+}
+
+bool CThreadManager::IsWorkerThread() const
+{
+	auto currentId = std::this_thread::get_id();
+	for (u32 i = 0; i < m_workerCount; ++i)
+	{
+		if (m_workerThreadIds[i] == currentId)
+			return true;
+	}
+	return false;
 }
 
 void CThreadManager::WorkerThreadProc(void* context)
@@ -300,6 +301,12 @@ void CThreadManager::SignalFrameStart()
 
 void CThreadManager::WaitForFrameEnd()
 {
+	if (IsWorkerThread())
+	{
+		Msg("! ERROR: CThreadManager::WaitForFrameEnd() called from worker thread %d. Deadlock imminent.", std::this_thread::get_id());
+		return;  // В релизе хотя бы не зависнем, но корректность не гарантирована
+	}
+
 	// Ждем сигнала о завершении кадра
 	{
 		std::unique_lock<std::mutex> lock(m_eventFrameCompleteMutex);
