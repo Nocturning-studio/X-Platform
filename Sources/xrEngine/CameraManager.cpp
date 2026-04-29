@@ -303,7 +303,9 @@ void CCameraManager::Update(const float3& P, const float3& D, const float3& N, f
 	}
 #endif // DEBUG
 	// camera
-	float inertion = psCamInert * 0.7f;
+#ifdef ENABLE_CAM_INERTION
+	float inertion = psCamInert;
+	clamp(inertion, 0.0f, 0.7f);
 
 	if (flags & CCameraBase::flPositionRigid)
 		m_cam_info.p.set(P);
@@ -320,6 +322,11 @@ void CCameraManager::Update(const float3& P, const float3& D, const float3& N, f
 		m_cam_info.d.inertion(D, inertion);
 		m_cam_info.n.inertion(N, inertion);
 	}
+#else
+		m_cam_info.p.set(P);
+		m_cam_info.d.set(D);
+		m_cam_info.n.set(N);
+#endif
 
 	// Normalize
 	m_cam_info.d.normalize();
