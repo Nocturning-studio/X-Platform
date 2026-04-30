@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "pure.h"
 #include <mutex>
@@ -54,11 +54,11 @@ class ENGINE_API CThreadManager
 		{
 		}
 
-		// Запрещаем копирование
+		// Р—Р°РїСЂРµС‰Р°РµРј РєРѕРїРёСЂРѕРІР°РЅРёРµ
 		WorkerContext(const WorkerContext&) = delete;
 		WorkerContext& operator=(const WorkerContext&) = delete;
 
-		// Разрешаем перемещение
+		// Р Р°Р·СЂРµС€Р°РµРј РїРµСЂРµРјРµС‰РµРЅРёРµ
 		WorkerContext(WorkerContext&& other) noexcept
 			: Manager(other.Manager), ThreadID(other.ThreadID), ShouldWake(other.ShouldWake),
 			  FrameCompleted(other.FrameCompleted), Thread(std::move(other.Thread))
@@ -68,31 +68,31 @@ class ENGINE_API CThreadManager
 	};
 
   private:
-	// Очереди задач
+	// РћС‡РµСЂРµРґРё Р·Р°РґР°С‡
 	xr_vector<TaskItem> m_tasksGeneral;
 	xr_vector<TaskItem> m_tasksAI;
 
-	// Атомарные курсоры
+	// РђС‚РѕРјР°СЂРЅС‹Рµ РєСѓСЂСЃРѕСЂС‹
 	std::atomic<u32> m_cursorGeneral{0};
 	std::atomic<u32> m_cursorAI{0};
 
-	// Синхронизация
+	// РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ
 	mutable std::recursive_mutex m_mutexGeneral;
 	mutable std::recursive_mutex m_mutexAI;
 
-	// Синхронизация завершения кадра
+	// РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ Р·Р°РІРµСЂС€РµРЅРёСЏ РєР°РґСЂР°
 	std::condition_variable m_eventFrameComplete;
 	std::mutex m_eventFrameCompleteMutex;
 
-	// Счетчик завершивших потоки для текущего кадра
+	// РЎС‡РµС‚С‡РёРє Р·Р°РІРµСЂС€РёРІС€РёС… РїРѕС‚РѕРєРё РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РєР°РґСЂР°
 	std::atomic<u32> m_threadsCompleted{0};
 
-	// Фиксированное количество воркеров
-	static constexpr u32 MAX_WORKERS = 4; // Максимальное количество потоков
+	// Р¤РёРєСЃРёСЂРѕРІР°РЅРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РІРѕСЂРєРµСЂРѕРІ
+	static constexpr u32 MAX_WORKERS = 4; // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕС‚РѕРєРѕРІ
 	WorkerContext m_workers[MAX_WORKERS];
 	u32 m_workerCount;
 
-	// Состояние
+	// РЎРѕСЃС‚РѕСЏРЅРёРµ
 	std::atomic<bool> m_shouldExit{false};
 	std::atomic<bool> m_isInitialized{false};
 
