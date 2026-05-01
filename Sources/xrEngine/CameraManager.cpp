@@ -18,7 +18,7 @@
 
 #include "../xrGame/ActorEffector.h"
 
-float psCamInert = 1.0f;
+//float psCamInert = 1.0f;
 float psCamSlideInert = 0.25f;
 
 SPPInfo pp_identity;
@@ -288,12 +288,22 @@ void CCameraManager::OnEffectorReleased(SBaseEffector* e)
 
 void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 {
-	Update(C->vPosition, C->vDirection, C->vNormal, C->f_fov, C->f_aspect,
-		   g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags);
+	Update(C->vPosition, 
+		   C->vDirection, 
+		   C->vNormal, 
+		   C->f_fov, 
+		   C->f_aspect,
+		   g_pGamePersistent->Environment().CurrentEnv->far_plane, 
+		   C->m_Flags.flags);
 }
 
-void CCameraManager::Update(const float3& P, const float3& D, const float3& N, float fFOV_Dest, float fASPECT_Dest,
-							float fFAR_Dest, u32 flags)
+void CCameraManager::Update(const float3& P, 
+							const float3& D, 
+							const float3& N, 
+							float fFOV_Dest, 
+							float fASPECT_Dest,
+							float fFAR_Dest, 
+							u32 flags)
 {
 #ifdef DEBUG
 	if (!Device.Paused())
@@ -302,30 +312,25 @@ void CCameraManager::Update(const float3& P, const float3& D, const float3& N, f
 		dbg_upd_frame = Engine.TimeManager.GetFrameCount();
 	}
 #endif // DEBUG
-	// camera
-	float inertion = psCamInert;
-	clamp(inertion, 0.0f, 0.7f);
+
+	float dt = Engine.TimeManager.GetDeltaTime();
+	float adapt_inert = clampr(dt * 10.0f, 0.0f, 1.0f);
 
 	if (flags & CCameraBase::flPositionRigid)
 		m_cam_info.p.set(P);
 	else
-		m_cam_info.p.inertion(P, inertion);
+		m_cam_info.p.inertion(P, adapt_inert);
 
-#ifdef ENABLE_CAM_INERTION
-	if (flags & CCameraBase::flDirectionRigid)
+	if (flags & CCameraBase::flDirectionRigid) 
 	{
 		m_cam_info.d.set(D);
 		m_cam_info.n.set(N);
 	}
-	else
+	else 
 	{
-		m_cam_info.d.inertion(D, inertion);
-		m_cam_info.n.inertion(N, inertion);
+		m_cam_info.d.inertion(D, adapt_inert);
+		m_cam_info.n.inertion(N, adapt_inert);
 	}
-#else
-	m_cam_info.d.set(D);
-	m_cam_info.n.set(N);
-#endif
 
 	// Normalize
 	m_cam_info.d.normalize();
@@ -334,12 +339,10 @@ void CCameraManager::Update(const float3& P, const float3& D, const float3& N, f
 	m_cam_info.n.crossproduct(m_cam_info.d, m_cam_info.r);
 
 	float aspect = Device.fHeight_2 / Device.fWidth_2;
-	float src = 10 * Engine.TimeManager.GetDeltaTime();
-	clamp(src, 0.f, 1.f);
-	float dst = 1 - src;
-	m_cam_info.fFov = m_cam_info.fFov * dst + fFOV_Dest * src;
-	m_cam_info.fFar = m_cam_info.fFar * dst + fFAR_Dest * src;
-	m_cam_info.fAspect = m_cam_info.fAspect * dst + (fASPECT_Dest * aspect) * src;
+	float inv_adapt_inert = 1 - adapt_inert;
+	m_cam_info.fFov = m_cam_info.fFov * inv_adapt_inert + fFOV_Dest * adapt_inert;
+	m_cam_info.fFar = m_cam_info.fFar * inv_adapt_inert + fFAR_Dest * adapt_inert;
+	m_cam_info.fAspect = m_cam_info.fAspect * inv_adapt_inert + (fASPECT_Dest * aspect) * adapt_inert;
 	m_cam_info.dont_apply = false;
 
 	fFovSecond = 0;

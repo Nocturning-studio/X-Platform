@@ -851,7 +851,7 @@ void CCC_Register()
 	CMD3(CCC_Token, "wpn_zoom_button_mode", &psWpnZoomButtonMode, wpn_zoom_button_mode);
 
 	// Camera
-	CMD2(CCC_Float, "cam_inert", &psCamInert);
+	//CMD2(CCC_Float, "cam_inert", &psCamInert);
 	CMD2(CCC_Float, "cam_slide_inert", &psCamSlideInert);
 	CMD3(CCC_Mask, "view_bobbing_enable", &ps_effectors_ls_flags, VIEW_BOBBING_ENABLED);
 	CMD3(CCC_Mask, "dynamic_fov_enable", &ps_effectors_ls_flags, DYNAMIC_FOV_ENABLED);
