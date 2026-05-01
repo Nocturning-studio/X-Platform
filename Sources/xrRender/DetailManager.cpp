@@ -333,6 +333,8 @@ void CDetailManager::PrepareToCalc()
 {
 	PROFILE_FUNCTION();
 
+	MT.Enter();
+
 	// 1. Своп индексов.
 	// То, что рисовали (render_id), теперь становится буфером для нового расчета.
 	std::swap(m_vis_render_id, m_vis_calc_id);
@@ -364,6 +366,8 @@ void CDetailManager::PrepareToCalc()
 	// 3. Захват состояния камеры для потока
 	m_vCameraPos_calc = Engine.RenderView.Position;
 	m_mFullTransform_calc = Engine.RenderView.ViewProjection;
+
+	MT.Leave();
 }
 
 void __stdcall CDetailManager::MT_CALC()
