@@ -10,6 +10,7 @@
 #include "xrLevel.h"
 #include "CameraManager.h"
 #include "../xrEngine/xr_ioconsole.h"
+#include "../xrEngine/LevelLoadingScreen.h"
 
 ENGINE_API IGame_Level* g_pGameLevel = NULL;
 
@@ -86,6 +87,8 @@ BOOL IGame_Level::Load(u32 dwNum)
 	hdrLEVEL H;
 	fs.r_chunk_safe(fsL_HEADER, &H, sizeof(H));
 	R_ASSERT2(XRCL_PRODUCTION_VERSION == H.XRLC_version, "Incompatible level version.");
+
+	Engine.LoadingScreen->UpdateLevelLogo();
 
 	// CForms
 	g_pGamePersistent->LoadTitle("st_loading_cform");
