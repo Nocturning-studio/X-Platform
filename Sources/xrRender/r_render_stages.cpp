@@ -688,27 +688,32 @@ void CRender::update_shadow_map_visibility()
 	if (Lights_LastFrame.empty())
 		return;
 
-	// Ѕезопасна€ обработка с проверкой валидности
-	for (auto it = Lights_LastFrame.begin(); it != Lights_LastFrame.end();)
+	// 1. —нимаем копию, чтобы не зависеть от изменений оригинала во врем€ работы
+	xr_vector<light*> lights_copy = Lights_LastFrame;
+
+	// 2. —троим новый список только с живыми источниками
+	xr_vector<light*> valid_lights;
+	valid_lights.reserve(lights_copy.size());
+
+	for (light* L : lights_copy)
 	{
-		light* L = *it;
 		if (L == nullptr)
-		{
-			it = Lights_LastFrame.erase(it);
 			continue;
-		}
 
 		try
 		{
 			L->get_smapvis().flushoccq();
-			++it;
+			valid_lights.push_back(L);
 		}
 		catch (...)
 		{
 			Msg("! Failed to flush-OCCq on light %p", L);
-			it = Lights_LastFrame.erase(it);
+			// просто пропускаем этот источник
 		}
 	}
+
+	// 3. Ѕыстро замен€ем оригинальный вектор (swap дешЄвый)
+	Lights_LastFrame.swap(valid_lights);
 }
 
 void CRender::render_lights()

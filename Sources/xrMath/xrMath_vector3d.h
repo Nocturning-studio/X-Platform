@@ -174,6 +174,22 @@ template <class T> struct _vector3
 		return *this;
 	};
 
+	ICF SelfRef operator+=(const Self& v) { return add(v); }
+	ICF SelfRef operator+=(T s) { return add(s); }
+	ICF SelfRef operator-=(const Self& v) { return sub(v); }
+	ICF SelfRef operator-=(T s) { return sub(s); }
+	ICF SelfRef operator*=(const Self& v) { return mul(v); }
+	ICF SelfRef operator*=(T s) { return mul(s); }
+	ICF SelfRef operator/=(const Self& v) { return div(v); }
+	ICF SelfRef operator/=(T s) { return div(s); }
+
+	// ”нарный минус
+	IC Self operator-() const {
+		Self r;
+		r.invert(*this);
+		return r;
+	}
+
 	IC SelfRef invert()
 	{
 		x = -x;
@@ -655,6 +671,61 @@ template <class T> struct _vector3
 		}
 	}
 };
+
+template <class T>
+IC _vector3<T> operator+(const _vector3<T>& a, const _vector3<T>& b) {
+	_vector3<T> r(a); r += b; return r;
+}
+template <class T>
+IC _vector3<T> operator+(const _vector3<T>& a, T s) {
+	_vector3<T> r(a); r += s; return r;
+}
+template <class T>
+IC _vector3<T> operator+(T s, const _vector3<T>& a) {
+	_vector3<T> r(a); r += s; return r;
+}
+
+template <class T>
+IC _vector3<T> operator-(const _vector3<T>& a, const _vector3<T>& b) {
+	_vector3<T> r(a); r -= b; return r;
+}
+template <class T>
+IC _vector3<T> operator-(const _vector3<T>& a, T s) {
+	_vector3<T> r(a); r -= s; return r;
+}
+template <class T>
+IC _vector3<T> operator-(T s, const _vector3<T>& a) {
+	_vector3<T> r; r.sub(a, s); return r;   // эквивалентно: s - a = -(a - s)
+}
+
+template <class T>
+IC _vector3<T> operator*(const _vector3<T>& a, const _vector3<T>& b) {
+	_vector3<T> r(a); r *= b; return r;
+}
+template <class T>
+IC _vector3<T> operator*(const _vector3<T>& a, T s) {
+	_vector3<T> r(a); r *= s; return r;
+}
+template <class T>
+IC _vector3<T> operator*(T s, const _vector3<T>& a) {
+	_vector3<T> r(a); r *= s; return r;
+}
+
+template <class T>
+IC _vector3<T> operator/(const _vector3<T>& a, const _vector3<T>& b) {
+	_vector3<T> r(a); r /= b; return r;
+}
+template <class T>
+IC _vector3<T> operator/(const _vector3<T>& a, T s) {
+	_vector3<T> r(a); r /= s; return r;
+}
+// ќбратите внимание: s / a Ч покомпонентное деление скал€ра на вектор
+template <class T>
+IC _vector3<T> operator/(T s, const _vector3<T>& a) {
+	_vector3<T> r; r.x = s / a.x; r.y = s / a.y; r.z = s / a.z;
+	return r;
+}
+
 typedef _vector3<float> float3;
 typedef _vector3<s32> int3;
 

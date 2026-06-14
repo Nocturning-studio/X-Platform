@@ -88,10 +88,9 @@ struct Cascade
 {
 	Cascade () : reset_chain( false )	{}
 
-	float4x4			transform;
+	float4x4		transform;
 	xr_vector<Ray>	rays;
 	float			size;
-	float			bias;
 	bool			reset_chain;
 };
 

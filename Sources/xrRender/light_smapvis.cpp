@@ -83,6 +83,8 @@ void smapvis::end()
 
 void smapvis::flushoccq()
 {
+	PROFILE_FUNCTION();
+
 	if (testQ_frame != Engine.TimeManager.GetFrameCount())
 		return;
 

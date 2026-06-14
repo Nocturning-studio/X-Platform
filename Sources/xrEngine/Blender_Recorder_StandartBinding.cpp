@@ -504,8 +504,8 @@ class cl_wind_turbulence : public R_constant_setup
 		// Для идеальной плавности время нужно накапливать в CEnvironment::OnFrame:
 		// fWindTime += Engine.TimeManager.GetDeltaTime() * current_velocity;
 		// Но для простоты пока умножим, при плавном переходе погоды скачок будет сглажен интерполяцией.
-		clamp(velocity, 0.0f, 1.0f);
-		float anim_time = Engine.TimeManager.GetGlobalTime() * velocity * 1.2f;
+		clamp(velocity, 0.0f, 0.5f);
+		float anim_time = Engine.TimeManager.GetGlobalTime() * velocity;
 
 		RenderBackendLegacy.set_Constant(C, intensity, desc->wind_turbulence, anim_time, desc->wind_strength);
 	}

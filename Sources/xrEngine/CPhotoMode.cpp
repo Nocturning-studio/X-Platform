@@ -294,10 +294,11 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 	}
 	else
 	{
-		ShowInfo();
-
 		if (m_bShowInputInfo == true)
+		{
+			ShowInfo();
 			ShowInputInfo();
+		}
 
 		m_vVelocity.lerp(m_vVelocity, m_vT, 0.3f);
 		m_vAngularVelocity.lerp(m_vAngularVelocity, m_vR, 0.3f);

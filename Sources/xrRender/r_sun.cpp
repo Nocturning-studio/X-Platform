@@ -20,112 +20,13 @@ static float3 corners[8] = {
 };
 
 static int facetable[6][4] = {
-	{6, 7, 5, 4},
-	{1, 0, 7, 6},
-	{1, 2, 3, 0},
-	{3, 2, 4, 5},
-	// near and far planes
-	{0, 3, 5, 7},
-	{1, 6, 4, 2},
+	{6, 7, 5, 4},   // right
+	{1, 0, 7, 6},   // bottom
+	{1, 2, 3, 0},   // left
+	{3, 2, 4, 5},   // top
+	{0, 3, 5, 7},   // near
+	{1, 2, 4, 6}    // far
 };
-//////////////////////////////////////////////////////////////////////////
-#define DW_AS_FLT(DW) (*(FLOAT*)&(DW))
-#define FLT_AS_DW(F) (*(DWORD*)&(F))
-#define FLT_SIGN(F) ((FLT_AS_DW(F) & 0x80000000L))
-#define ALMOST_ZERO(F) ((FLT_AS_DW(F) & 0x7f800000L) == 0)
-#define IS_SPECIAL(F) ((FLT_AS_DW(F) & 0x7f800000L) == 0x7f800000L)
-
-//////////////////////////////////////////////////////////////////////////
-struct Frustum
-{
-	Frustum();
-	Frustum(const D3DXMATRIX* matrix);
-
-	D3DXPLANE camPlanes[6];
-	int nVertexLUT[6];
-	D3DXVECTOR3 pntList[8];
-};
-
-///////////////////////////////////////////////////////////////////////////
-//  PlaneIntersection
-//    computes the point where three planes intersect
-//    returns whether or not the point exists.
-static inline BOOL PlaneIntersection(D3DXVECTOR3* intersectPt, const D3DXPLANE* p0, const D3DXPLANE* p1,
-									 const D3DXPLANE* p2)
-{
-	D3DXVECTOR3 n0(p0->a, p0->b, p0->c);
-	D3DXVECTOR3 n1(p1->a, p1->b, p1->c);
-	D3DXVECTOR3 n2(p2->a, p2->b, p2->c);
-
-	D3DXVECTOR3 n1_n2, n2_n0, n0_n1;
-
-	D3DXVec3Cross(&n1_n2, &n1, &n2);
-	D3DXVec3Cross(&n2_n0, &n2, &n0);
-	D3DXVec3Cross(&n0_n1, &n0, &n1);
-
-	float cosTheta = D3DXVec3Dot(&n0, &n1_n2);
-
-	if (ALMOST_ZERO(cosTheta) || IS_SPECIAL(cosTheta))
-		return FALSE;
-
-	float secTheta = 1.f / cosTheta;
-
-	n1_n2 = n1_n2 * p0->d;
-	n2_n0 = n2_n0 * p1->d;
-	n0_n1 = n0_n1 * p2->d;
-
-	*intersectPt = -(n1_n2 + n2_n0 + n0_n1) * secTheta;
-	return TRUE;
-}
-
-Frustum::Frustum()
-{
-	for (int i = 0; i < 6; i++)
-		camPlanes[i] = D3DXPLANE(0.f, 0.f, 0.f, 0.f);
-}
-
-//  build a frustum from a camera (projection, or viewProjection) matrix
-Frustum::Frustum(const D3DXMATRIX* matrix)
-{
-	//  build a view frustum based on the current view & projection matrices...
-	D3DXVECTOR4 column4(matrix->_14, matrix->_24, matrix->_34, matrix->_44);
-	D3DXVECTOR4 column1(matrix->_11, matrix->_21, matrix->_31, matrix->_41);
-	D3DXVECTOR4 column2(matrix->_12, matrix->_22, matrix->_32, matrix->_42);
-	D3DXVECTOR4 column3(matrix->_13, matrix->_23, matrix->_33, matrix->_43);
-
-	D3DXVECTOR4 planes[6];
-	planes[0] = column4 - column1; // left
-	planes[1] = column4 + column1; // right
-	planes[2] = column4 - column2; // bottom
-	planes[3] = column4 + column2; // top
-	planes[4] = column4 - column3; // near
-	planes[5] = column4 + column3; // far
-	// ignore near & far plane
-
-	int p;
-
-	for (p = 0; p < 6; p++) // normalize the planes
-	{
-		float dot = planes[p].x * planes[p].x + planes[p].y * planes[p].y + planes[p].z * planes[p].z;
-		dot = 1.f / _sqrt(dot);
-		planes[p] = planes[p] * dot;
-	}
-
-	for (p = 0; p < 6; p++)
-		camPlanes[p] = D3DXPLANE(planes[p].x, planes[p].y, planes[p].z, planes[p].w);
-
-	//  build a bit-field that will tell us the indices for the nearest and farthest vertices from each plane...
-	for (int i = 0; i < 6; i++)
-		nVertexLUT[i] = ((planes[i].x < 0.f) ? 1 : 0) | ((planes[i].y < 0.f) ? 2 : 0) | ((planes[i].z < 0.f) ? 4 : 0);
-
-	for (int i = 0; i < 8; i++) // compute extrema
-	{
-		const D3DXPLANE& p0 = (i & 1) ? camPlanes[4] : camPlanes[5];
-		const D3DXPLANE& p1 = (i & 2) ? camPlanes[3] : camPlanes[2];
-		const D3DXPLANE& p2 = (i & 4) ? camPlanes[0] : camPlanes[1];
-		PlaneIntersection(&pntList[i], &p0, &p1, &p2);
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////
 // OLES: naive builder of infinite volume expanded from base frustum towards
@@ -181,7 +82,9 @@ template <bool _debug> class FixedConvexVolume
 		}
 	}
 
-	void compute_caster_model_fixed(xr_vector<Fplane>& dest, float3& translation, float map_size,
+	void compute_caster_model_fixed(xr_vector<Fplane>& dest, 
+									float3& translation, 
+									float map_size,
 									bool clip_by_view_near)
 	{
 		translation.set(0.f, 0.f, 0.f);
@@ -591,20 +494,13 @@ float3 wform(float4x4& m, float3 const& v)
 
 void CRender::init_cacades()
 {
-	float fBias = -0.0000025f;
 	u32 cascade_count = 3;
-
 	m_sun_cascades.resize(cascade_count);
 
-	m_sun_cascades[0].reset_chain = true;
-	m_sun_cascades[0].size = ps_r_sun_near;
-	m_sun_cascades[0].bias = m_sun_cascades[0].size * fBias;
-
-	m_sun_cascades[1].size = ps_r_sun_near * 3;
-	m_sun_cascades[1].bias = m_sun_cascades[1].size * fBias;
-
-	m_sun_cascades[2].size = ps_r_sun_far;
-	m_sun_cascades[2].bias = m_sun_cascades[2].size * fBias;
+	m_sun_cascades[SE_SUN_NEAR].reset_chain = true;
+	m_sun_cascades[SE_SUN_NEAR].size = ps_r_sun_near;
+	m_sun_cascades[SE_SUN_MIDDLE].size = ps_r_sun_near * 3;
+	m_sun_cascades[SE_SUN_FAR].size = ps_r_sun_far;
 
 	// Инициализируем ОБА буфера
 	m_sun_cascades_buffer[0].Init();
@@ -719,13 +615,20 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		float dist = light_top_plane.classify(Engine.RenderView.Position);
 
 		float map_size = m_sun_cascades[cascade_ind].size;
-		D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project, -map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f,
-								   map_size * 0.5f, 0.1, dist + map_size);
+		D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project, 
+									-map_size * 0.5f, 
+									map_size * 0.5f, 
+									-map_size * 0.5f,
+									map_size * 0.5f, 
+									0.1, 
+									dist + map_size);
 
 		// build viewport transform
 		float view_dim = float(RenderImplementation.o.smapsize);
-		float4x4 m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
-							  0.0f,			  0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f,	 0.0f, 1.0f};
+		float4x4 m_viewport = { view_dim / 2.f, 0.0f,			 0.0f, 0.0f, 
+								0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
+								0.0f,			0.0f,			 1.0f, 0.0f, 
+								view_dim / 2.f, view_dim / 2.f,	 0.0f, 1.0f };
 		float4x4 m_viewport_inv;
 		D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
 
@@ -748,8 +651,11 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 			}
 
 		float3 lightXZshift;
-		light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size,
+		light_cuboid.compute_caster_model_fixed(cull_planes, 
+												lightXZshift, 
+												m_sun_cascades[cascade_ind].size,
 												m_sun_cascades[cascade_ind].reset_chain);
+
 		float3 proj_view = Engine.RenderView.Direction;
 		proj_view.y = 0;
 		proj_view.normalize();
@@ -901,8 +807,9 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	// 4. Аккумуляция (наложение тени на экран)
 	set_light_accumulator();
 
-	accumulate_sun(cascade_ind, m_sun_cascades[cascade_ind].transform, m_sun_cascades[cascade_ind].transform,
-				   m_sun_cascades[cascade_ind].bias);
+	accumulate_sun(	cascade_ind, 
+					m_sun_cascades[cascade_ind].transform, 
+					m_sun_cascades[cascade_ind].transform );
 }
 
 // -------------------------------------------------------------------------
@@ -938,12 +845,12 @@ void CRender::render_sun_cascades()
 	// -------------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Gather Cascades");
-		//concurrency::parallel_invoke([&] { gather_sun_cascade(0, *writeBuffer.items[0]); },
-		//							 [&] { gather_sun_cascade(1, *writeBuffer.items[1]); },
-		//							 [&] { gather_sun_cascade(2, *writeBuffer.items[2]); });
-		gather_sun_cascade(0, *writeBuffer.items[0]);
-		gather_sun_cascade(1, *writeBuffer.items[1]);
-		gather_sun_cascade(2, *writeBuffer.items[2]);
+		//concurrency::parallel_invoke([&] { gather_sun_cascade(SE_SUN_NEAR,   *writeBuffer.items[SE_SUN_NEAR]); },
+		//							   [&] { gather_sun_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]); },
+		//							   [&] { gather_sun_cascade(SE_SUN_FAR,    *writeBuffer.items[SE_SUN_FAR]); });
+		gather_sun_cascade(SE_SUN_NEAR,	  *writeBuffer.items[SE_SUN_NEAR]);
+		gather_sun_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]);
+		gather_sun_cascade(SE_SUN_FAR,	  *writeBuffer.items[SE_SUN_FAR]);
 	}
 
 	// Здесь происходит неявная синхронизация, так как parallel_invoke блокирующий.
@@ -954,9 +861,9 @@ void CRender::render_sun_cascades()
 	// -------------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Draw Cascades Sequence");
-		draw_sun_cascade(0, *readBuffer.items[0]);
-		draw_sun_cascade(1, *readBuffer.items[1]);
-		draw_sun_cascade(2, *readBuffer.items[2]);
+		draw_sun_cascade(SE_SUN_NEAR,	*readBuffer.items[SE_SUN_NEAR]);
+		draw_sun_cascade(SE_SUN_MIDDLE, *readBuffer.items[SE_SUN_MIDDLE]);
+		draw_sun_cascade(SE_SUN_FAR,	*readBuffer.items[SE_SUN_FAR]);
 	}
 
 	// Восстановление глобальных матриц

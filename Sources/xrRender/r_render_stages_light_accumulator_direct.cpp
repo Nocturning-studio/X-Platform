@@ -33,7 +33,7 @@ static u16 facetable[16][3] =
 	{2, 4, 1},
 };
 
-void CRender::accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& transform_prev, float fBias)
+void CRender::accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& transform_prev)
 {
 	OPTICK_EVENT("accumulate_sun");
 
@@ -75,6 +75,7 @@ void CRender::accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& trans
 	// Texture adjustment matrix
 	float fTexelOffs = (0.5f / float(RenderImplementation.o.smapsize));
 	float fRange = 0.0f;
+	float fBias = 0.0f;
 
 	switch (sub_phase)
 	{
@@ -92,22 +93,10 @@ void CRender::accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& trans
 		break;
 	}
 
-	float4x4 m_TexelAdjust = {0.5f,
-							 0.0f,
-							 0.0f,
-							 0.0f,
-							 0.0f,
-							 -0.5f,
-							 0.0f,
-							 0.0f,
-							 0.0f,
-							 0.0f,
-							 fRange,
-							 0.0f,
-							 0.5f + fTexelOffs,
-							 0.5f + fTexelOffs,
-							 fBias,
-							 1.0f};
+	float4x4 m_TexelAdjust = {0.5f,              0.0f,              0.0f,   0.0f,
+							  0.0f,             -0.5f,              0.0f,   0.0f,
+							  0.0f,              0.0f,              fRange, 0.0f,
+							  0.5f + fTexelOffs, 0.5f + fTexelOffs, fBias,  1.0f};
 
 	// Compute shadow matrix
 	float4x4 xf_invview;

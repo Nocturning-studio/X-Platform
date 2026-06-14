@@ -1,0 +1,41 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.Cpp.Unity.targets(189,5): warning : Не удалось найти часть пути "H:\Indev\NSPX\Build\intermediate\Debug-Win32\xrSound\unity_FXTPNYUZW285OT0Y.cpp".
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.Cpp.Unity.targets(189,5): warning : Не удалось найти часть пути "H:\Indev\NSPX\Build\intermediate\Debug-Win32\xrSound\unity_CJD3TEZPYSZHIIPV.cpp".
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.Cpp.Unity.targets(189,5): warning : Не удалось найти часть пути "H:\Indev\NSPX\Build\intermediate\Debug-Win32\xrSound\unity_6YHCLYC6NC257SXN.cpp".
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.Cpp.Unity.targets(189,5): warning : Не удалось найти часть пути "H:\Indev\NSPX\Build\intermediate\Debug-Win32\xrSound\unity_KSF0CL13WO5UCZ5W.cpp".
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.Cpp.Unity.targets(189,5): warning : Не удалось найти часть пути "H:\Indev\NSPX\Build\intermediate\Debug-Win32\xrSound\unity_8IOHF2TJQQ99H6QR.cpp".
+  stdafx.cpp
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(444,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(448,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(453,31): warning C4458: объявление "T" скрывает член класса
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(113,16): message : см. объявление "CBackend::T"
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(453,68): warning C4458: объявление "C" скрывает член класса
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(115,17): message : см. объявление "CBackend::C"
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(462,32): warning C4458: объявление "T" скрывает член класса
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(113,16): message : см. объявление "CBackend::T"
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(462,50): warning C4458: объявление "C" скрывает член класса
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend.h(115,17): message : см. объявление "CBackend::C"
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(77,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(87,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(105,2): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(176,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(186,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(199,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(215,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(227,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(245,2): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(254,2): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(275,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(360,24): warning C4996: 'CHW::GetCaps': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(361,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(368,24): warning C4996: 'CHW::GetCaps': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(369,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(374,24): warning C4996: 'CHW::GetCaps': This function/field is deprecated. Use new backend instead.
+H:\Indev\X-Platform\Engine\Sources\xrEngine\R_Backend_Runtime.h(375,3): warning C4996: 'CHW::GetDevice': This function/field is deprecated. Use new backend instead.
+  unity_QZVQ238QEH6EUZ8T.cpp
+  unity_MYZ8ENDE13HNE9NU.cpp
+  unity_NP3OG1G77CNJ4DZ1.cpp
+  unity_W68VUWZPOJQGY7U9.cpp
+  unity_1EG1KIIDX0U5DKRK.cpp
+  H:\Indev\X-Platform\Engine\Sources\xrSound\OpenALDeviceList.cpp(89) :  TODO :   "NSDeathman to All: Починить выбор аудиоустройства"
+  H:\Indev\X-Platform\Engine\Sources\xrSound\SoundRender_Source_loader.cpp(165) :  TODO :   NSDeathman to NSDeathman - кастыль
+LINK : fatal error LNK1104: не удается открыть файл "xrCore.lib"

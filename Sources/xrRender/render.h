@@ -464,7 +464,7 @@ class CRender : public IRender_interface, public pureFrame
 	void u_DBT_disable();
 	float hclip(float v, float dim);
 	void draw_volume(light* L);
-	void accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& transform_prev, float fBias); //, float fSize);
+	void accumulate_sun(u32 sub_phase, float4x4& transform, float4x4& transform_prev);// , float fBias); //, float fSize);
 	void accumulate_volumetric_sun(u32 sub_phase, float4x4 m_shadow, float3 L_dir);
 	void accumulate_point_lights(light* L);
 	void accumulate_spot_lights(light* L);
