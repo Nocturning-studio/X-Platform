@@ -168,14 +168,14 @@ void CAI_Stalker::reinit()
 	m_best_cover_value = flt_max;
 
 	m_throw_actual = false;
-	m_computed_object_position = float3().set(flt_max, flt_max, flt_max);
-	m_computed_object_direction = float3().set(flt_max, flt_max, flt_max);
+	m_computed_object_position = fvec3().set(flt_max, flt_max, flt_max);
+	m_computed_object_direction = fvec3().set(flt_max, flt_max, flt_max);
 
-	m_throw_target = float3().set(flt_max, flt_max, flt_max);
+	m_throw_target = fvec3().set(flt_max, flt_max, flt_max);
 
 	m_throw_force = flt_max;
-	m_throw_position = float3().set(flt_max, flt_max, flt_max);
-	m_throw_direction = float3().set(flt_max, flt_max, flt_max);
+	m_throw_position = fvec3().set(flt_max, flt_max, flt_max);
+	m_throw_direction = fvec3().set(flt_max, flt_max, flt_max);
 
 	brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, false);
 
@@ -782,7 +782,7 @@ void CAI_Stalker::UpdateCL()
 	STOP_PROFILE
 }
 
-void CAI_Stalker ::PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
+void CAI_Stalker ::PHHit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 						 ALife::EHitType hit_type /*ALife::eHitTypeWound*/)
 {
 	m_pPhysics_support->in_Hit(P, dir, who, element, p_in_object_space, impulse, hit_type, !g_Alive());
@@ -850,7 +850,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	while ((NET.size() > 2) && (NET[1].dwTimeStamp < dwTimeCL))
 		NET.pop_front();
 
-	float3 vNewPosition = Position();
+	fvec3 vNewPosition = Position();
 	VERIFY(_valid(Position()));
 	// *** general stuff
 	float dt = float(DT) / 1000.f;
@@ -878,9 +878,9 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			CTorch* torch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
 			if (torch && torch->IsSwitchedOn())
 			{
-				float3 actor_pos = pActor->Position();
-				float3 actor_dir = pActor->Direction();
-				float3 to_stalker = Position();
+				fvec3 actor_pos = pActor->Position();
+				fvec3 actor_dir = pActor->Direction();
+				fvec3 to_stalker = Position();
 				to_stalker.sub(actor_pos);
 				float dist = to_stalker.magnitude();
 
@@ -944,7 +944,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		if (temp > 0)
 		{
 			START_PROFILE("stalker/schedule_update/feel_touch")
-			float3 C;
+			fvec3 C;
 			float R;
 			Center(C);
 			R = Radius();
@@ -1076,7 +1076,7 @@ void CAI_Stalker::Think()
 	STOP_PROFILE
 }
 
-void CAI_Stalker::SelectAnimation(const float3& view, const float3& move, float speed)
+void CAI_Stalker::SelectAnimation(const fvec3& view, const fvec3& move, float speed)
 {
 	//OPTICK_EVENT("CAI_Stalker::SelectAnimation");
 
@@ -1157,7 +1157,7 @@ bool CAI_Stalker::use_center_to_aim() const
 void CAI_Stalker::UpdateCamera()
 {
 	float new_range = eye_range, new_fov = eye_fov;
-	float3 temp = eye_matrix.k;
+	fvec3 temp = eye_matrix.k;
 	if (g_Alive())
 	{
 		update_range_fov(new_range, new_fov, memory().visual().current_state().m_max_view_distance * eye_range,

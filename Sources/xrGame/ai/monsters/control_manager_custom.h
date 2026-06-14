@@ -71,11 +71,11 @@ class CControlManagerCustom : public CControl_ComBase
 	// Jump
 	void jump(CObject* obj, const SControlJumpData& ta);
 	void jump(const SControlJumpData& ta);
-	void jump(const float3& position);
+	void jump(const fvec3& position);
 	void load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCSTR s4, u32 vel_mask_prepare, u32 vel_mask_ground,
 						u32 flags);
 
-	void script_jump(const float3& position, float factor);
+	void script_jump(const fvec3& position, float factor);
 
 	//-------------------------------------------------------------------------------
 	// Rotation Jump

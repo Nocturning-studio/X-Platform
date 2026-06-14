@@ -82,8 +82,8 @@ class ECORE_API CModelPool
 	void dump();
 #ifdef _EDITOR
 	void OnDeviceDestroy();
-	void Render(IRender_Visual* m_pVisual, const float4x4& mTransform, int priority, bool strictB2F, float m_fLOD);
-	void RenderSingle(IRender_Visual* m_pVisual, const float4x4& mTransform, float m_fLOD);
+	void Render(IRender_Visual* m_pVisual, const fmat4x4& mTransform, int priority, bool strictB2F, float m_fLOD);
+	void RenderSingle(IRender_Visual* m_pVisual, const fmat4x4& mTransform, float m_fLOD);
 #endif
 };
 #endif // ModelPoolH

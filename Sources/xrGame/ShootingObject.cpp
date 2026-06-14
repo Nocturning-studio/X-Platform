@@ -159,7 +159,7 @@ void CShootingObject::LoadLights(LPCSTR section, LPCSTR prefix)
 	// light
 	if (m_bLightShotEnabled)
 	{
-		float3 clr = pSettings->r_fvector3(section, strconcat(sizeof(full_name), full_name, prefix, "light_color"));
+		fvec3 clr = pSettings->r_fvector3(section, strconcat(sizeof(full_name), full_name, prefix, "light_color"));
 		light_base_color.set(clr.x, clr.y, clr.z, 1);
 		light_base_range = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "light_range"));
 		light_var_color =
@@ -188,7 +188,7 @@ void CShootingObject::Light_Start()
 	}
 }
 
-void CShootingObject::Light_Render(const float3& P)
+void CShootingObject::Light_Render(const fvec3& P)
 {
 	float light_scale = light_time / light_lifetime;
 	R_ASSERT(light_render);
@@ -208,8 +208,8 @@ void CShootingObject::Light_Render(const float3& P)
 // Particles
 //////////////////////////////////////////////////////////////////////////
 
-void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const float3& pos,
-									 const float3& vel, bool auto_remove_flag)
+void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const fvec3& pos,
+									 const fvec3& vel, bool auto_remove_flag)
 {
 	if (!particles_name)
 		return;
@@ -234,12 +234,12 @@ void CShootingObject::StopParticles(CParticlesObject*& pParticles)
 	CParticlesObject::Destroy(pParticles);
 }
 
-void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const float3& pos, const float3& vel)
+void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const fvec3& pos, const fvec3& vel)
 {
 	if (!pParticles)
 		return;
 
-	float4x4 particles_pos;
+	fmat4x4 particles_pos;
 	particles_pos.set(get_ParticlesTransform());
 	particles_pos.c.set(pos);
 
@@ -287,7 +287,7 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
 	m_sSmokeParticlesCurrent = m_sSmokeParticles;
 }
 
-void CShootingObject::OnShellDrop(const float3& play_pos, const float3& parent_vel)
+void CShootingObject::OnShellDrop(const fvec3& play_pos, const fvec3& parent_vel)
 {
 	if (!m_sShellParticles)
 		return;
@@ -296,7 +296,7 @@ void CShootingObject::OnShellDrop(const float3& play_pos, const float3& parent_v
 
 	CParticlesObject* pShellParticles = CParticlesObject::Create(*m_sShellParticles, TRUE);
 
-	float4x4 particles_pos;
+	fmat4x4 particles_pos;
 	particles_pos.set(get_ParticlesTransform());
 	particles_pos.c.set(play_pos);
 
@@ -305,7 +305,7 @@ void CShootingObject::OnShellDrop(const float3& play_pos, const float3& parent_v
 }
 
 // партиклы дыма
-void CShootingObject::StartSmokeParticles(const float3& play_pos, const float3& parent_vel)
+void CShootingObject::StartSmokeParticles(const fvec3& play_pos, const fvec3& parent_vel)
 {
 	CParticlesObject* pSmokeParticles = NULL;
 	StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, parent_vel, true);
@@ -347,7 +347,7 @@ void CShootingObject::UpdateFlameParticles()
 	if (!m_pFlameParticles)
 		return;
 
-	float4x4 pos;
+	fmat4x4 pos;
 	pos.set(get_ParticlesTransform());
 	pos.c.set(get_CurrentFirePoint());
 
@@ -416,12 +416,12 @@ bool CShootingObject::SendHitAllowed(CObject* pUser)
 	}
 };
 
-extern void random_dir(float3& tgt_dir, const float3& src_dir, float dispersion);
+extern void random_dir(fvec3& tgt_dir, const fvec3& src_dir, float dispersion);
 
-void CShootingObject::FireBullet(const float3& pos, const float3& shot_dir, float fire_disp,
+void CShootingObject::FireBullet(const fvec3& pos, const fvec3& shot_dir, float fire_disp,
 								 const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit)
 {
-	float3 dir;
+	fvec3 dir;
 	random_dir(dir, shot_dir, fire_disp);
 
 	m_vCurrentShootDir = dir;

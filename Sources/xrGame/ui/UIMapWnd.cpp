@@ -319,7 +319,7 @@ void CUIMapWnd::RemoveMapToRender(CUICustomMap* m)
 		m_UILevelFrame->DetachChild(smart_cast<CUIWindow*>(m));
 }
 
-void CUIMapWnd::SetTargetMap(const shared_str& name, const float2& pos, bool bZoomIn)
+void CUIMapWnd::SetTargetMap(const shared_str& name, const fvec2& pos, bool bZoomIn)
 {
 	u16 idx = GetIdxByName(name);
 	if (idx != u16(-1))
@@ -342,13 +342,13 @@ void CUIMapWnd::SetTargetMap(const shared_str& name, bool bZoomIn)
 void CUIMapWnd::SetTargetMap(CUICustomMap* m, bool bZoomIn)
 {
 	m_tgtMap = m;
-	float2 pos;
+	fvec2 pos;
 	Frect r = m->BoundRect();
 	r.getcenter(pos);
 	SetTargetMap(m, pos, bZoomIn);
 }
 
-void CUIMapWnd::SetTargetMap(CUICustomMap* m, const float2& pos, bool bZoomIn)
+void CUIMapWnd::SetTargetMap(CUICustomMap* m, const fvec2& pos, bool bZoomIn)
 {
 	m_tgtMap = m;
 
@@ -358,7 +358,7 @@ void CUIMapWnd::SetTargetMap(CUICustomMap* m, const float2& pos, bool bZoomIn)
 		SetZoom(gm->GetMinZoom());
 		Frect vis_rect = ActiveMapRect();
 		vis_rect.getcenter(m_tgtCenter);
-		float2 _p;
+		fvec2 _p;
 		gm->GetAbsolutePos(_p);
 		m_tgtCenter.sub(_p);
 		m_tgtCenter.div(gm->GetCurrentZoom());
@@ -391,7 +391,7 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 	case DIK_DOWN:
 	case DIK_LEFT:
 	case DIK_RIGHT: {
-		float2 pos_delta;
+		fvec2 pos_delta;
 		pos_delta.set(0.0f, 0.0f);
 
 		if (dik == DIK_UP)
@@ -437,7 +437,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	if (inherited::OnMouse(x, y, mouse_action))
 		return true;
-	float2 cursor_pos = GetUICursor()->GetCursorPosition();
+	fvec2 cursor_pos = GetUICursor()->GetCursorPosition();
 
 	if (GlobalMap() && !GlobalMap()->Locked() && ActiveMapRect().in(cursor_pos))
 	{
@@ -463,7 +463,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 							if(m_flags.test(lmZoomIn))		SetZoom(GetZoom()*1.5f);
 							else							SetZoom(GetZoom()/1.5f);
 							m_tgtCenter						= cursor_pos;
-							float2 _p;					gm->GetAbsolutePos(_p);
+							fvec2 _p;					gm->GetAbsolutePos(_p);
 							m_tgtCenter.sub					(_p);
 							m_tgtCenter.div					(gm->GetCurrentZoom());
 							ResetActionPlanner				();
@@ -511,7 +511,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 		if (!fsimilar(_prev_zoom, GetZoom()))
 		{
 			m_tgtCenter = cursor_pos;
-			float2 _p;
+			fvec2 _p;
 			gm->GetAbsolutePos(_p);
 			m_tgtCenter.sub(_p);
 			m_tgtCenter.div(gm->GetCurrentZoom());
@@ -550,7 +550,7 @@ u16 CUIMapWnd::GetIdxByName(const shared_str& map_name)
 
 void CUIMapWnd::UpdateScroll()
 {
-	float2 w_pos = GlobalMap()->GetWndPos();
+	fvec2 w_pos = GlobalMap()->GetWndPos();
 	m_UIMainScrollV->SetRange(0, iFloor(GlobalMap()->GetHeight()));
 	m_UIMainScrollH->SetRange(0, iFloor(GlobalMap()->GetWidth()));
 
@@ -563,7 +563,7 @@ void CUIMapWnd::OnScrollV(CUIWindow*, void*)
 	if (GlobalMap())
 	{
 		int s_pos = m_UIMainScrollV->GetScrollPos();
-		float2 w_pos = GlobalMap()->GetWndPos();
+		fvec2 w_pos = GlobalMap()->GetWndPos();
 		GlobalMap()->SetWndPos(w_pos.x, float(-s_pos));
 	}
 }
@@ -573,7 +573,7 @@ void CUIMapWnd::OnScrollH(CUIWindow*, void*)
 	if (GlobalMap())
 	{
 		int s_pos = m_UIMainScrollH->GetScrollPos();
-		float2 w_pos = GlobalMap()->GetWndPos();
+		fvec2 w_pos = GlobalMap()->GetWndPos();
 		GlobalMap()->SetWndPos(float(-s_pos), w_pos.y);
 	}
 }
@@ -728,8 +728,8 @@ void CUIMapWnd::OnToolActorClicked(CUIWindow*, void*)
 	if (GlobalMap()->Locked())
 		return;
 
-	float3 v = Level().CurrentEntity()->Position();
-	float2 v2;
+	fvec3 v = Level().CurrentEntity()->Position();
+	fvec2 v2;
 	v2.set(v.x, v.z);
 
 	CUICustomMap* lm = NULL;
@@ -748,11 +748,11 @@ void CUIMapWnd::AddUserSpot			(CUILevelMap* lm)
 {
 	VERIFY(m_flags.test(lmUserSpotAdd) );
 
-	float2 cursor_pos = GetUICursor()->GetPos();
-	float2 _p;lm->GetAbsolutePos(_p);
+	fvec2 cursor_pos = GetUICursor()->GetPos();
+	fvec2 _p;lm->GetAbsolutePos(_p);
 	cursor_pos.sub					(_p);
-	float2 p =					lm->ConvertLocalToReal(cursor_pos);
-	float3 pos;
+	fvec2 p =					lm->ConvertLocalToReal(cursor_pos);
+	fvec3 pos;
 	pos.set							(p.x, 0.0f, p.y);
 	shared_str spot					= "user";
 	CMapLocation* ml				= Level().MapManager().AddUserLocation(spot, lm->MapName(), pos);
@@ -777,7 +777,7 @@ void CUIMapWnd::ShowHint(CUIWindow* parent, LPCSTR text)
 		return;
 	if (!text)
 		return;
-	float2 c_pos = GetUICursor()->GetCursorPosition();
+	fvec2 c_pos = GetUICursor()->GetCursorPosition();
 	Frect vis_rect = ActiveMapRect();
 	if (FALSE == vis_rect.in(c_pos))
 		return;

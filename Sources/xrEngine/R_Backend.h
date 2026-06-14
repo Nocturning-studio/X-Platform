@@ -168,12 +168,12 @@ class ENGINE_API CBackend
 	}
 
 	// API
-	IC void set_transform_world(const float4x4& M);
-	IC void set_transform_view(const float4x4& M);
-	IC void set_transform_project(const float4x4& M);
-	IC const float4x4& get_transform_world();
-	IC const float4x4& get_transform_view();
-	IC const float4x4& get_transform_project();
+	IC void set_transform_world(const fmat4x4& M);
+	IC void set_transform_view(const fmat4x4& M);
+	IC void set_transform_project(const fmat4x4& M);
+	IC const fmat4x4& get_transform_world();
+	IC const fmat4x4& get_transform_view();
+	IC const fmat4x4& get_transform_project();
 
 	IC void setRenderTarget(IDirect3DSurface9* RT, u32 ID = 0);
 	IC void setDepthBuffer(IDirect3DSurface9* ZB);
@@ -251,7 +251,7 @@ class ENGINE_API CBackend
 		return cull_mode;
 	}
 	void set_ClipPlanes(u32 _enable, Fplane* _planes = NULL, u32 count = 0);
-	void set_ClipPlanes(u32 _enable, float4x4* _transform = NULL, u32 fmask = 0xff);
+	void set_ClipPlanes(u32 _enable, fmat4x4* _transform = NULL, u32 fmask = 0xff);
 	IC void set_Scissor(Irect* rect = NULL);
 
 	void enable_anisotropy_filtering();
@@ -275,12 +275,12 @@ class ENGINE_API CBackend
 	}
 
 	// constants - direct (fast)
-	ICF void set_Constant(R_constant* Const, const float4x4& A)
+	ICF void set_Constant(R_constant* Const, const fmat4x4& A)
 	{
 		if (Const)
 			constants.set(Const, A);
 	}
-	ICF void set_Constant(R_constant* Const, const float4& A)
+	ICF void set_Constant(R_constant* Const, const fvec4& A)
 	{
 		if (Const)
 			constants.set(Const, A);
@@ -290,12 +290,12 @@ class ENGINE_API CBackend
 		if (Const)
 			constants.set(Const, x, y, z, w);
 	}
-	ICF void set_Array_Constant(R_constant* Const, u32 e, const float4x4& A)
+	ICF void set_Array_Constant(R_constant* Const, u32 e, const fmat4x4& A)
 	{
 		if (Const)
 			constants.seta(Const, e, A);
 	}
-	ICF void set_Array_Constant(R_constant* Const, u32 e, const float4& A)
+	ICF void set_Array_Constant(R_constant* Const, u32 e, const fvec4& A)
 	{
 		if (Const)
 			constants.seta(Const, e, A);
@@ -306,7 +306,7 @@ class ENGINE_API CBackend
 			constants.seta(Const, e, x, y, z, w);
 	}
 
-	void set_Array_Constant(LPCSTR n, u32 count, const float3* data)
+	void set_Array_Constant(LPCSTR n, u32 count, const fvec3* data)
 	{
 		if (ctable)
 		{
@@ -321,8 +321,8 @@ class ENGINE_API CBackend
 		}
 	}
 
-	// Передача массива float4 (float4)
-	void set_Array_Constant(LPCSTR n, u32 count, const float4* data)
+	// Передача массива fvec4 (fvec4)
+	void set_Array_Constant(LPCSTR n, u32 count, const fvec4* data)
 	{
 		if (ctable)
 		{
@@ -338,12 +338,12 @@ class ENGINE_API CBackend
 	}
 
 	// constants - LPCSTR (slow)
-	ICF void set_Constant(LPCSTR n, const float4x4& A)
+	ICF void set_Constant(LPCSTR n, const fmat4x4& A)
 	{
 		if (ctable)
 			set_Constant(&*ctable->get(n), A);
 	}
-	ICF void set_Constant(LPCSTR n, const float4& A)
+	ICF void set_Constant(LPCSTR n, const fvec4& A)
 	{
 		if (ctable)
 			set_Constant(&*ctable->get(n), A);
@@ -368,12 +368,12 @@ class ENGINE_API CBackend
 		if (ctable)
 			set_Constant(&*ctable->get(n), x, y, z, w);
 	}
-	ICF void set_Array_Constant(LPCSTR n, u32 e, const float4x4& A)
+	ICF void set_Array_Constant(LPCSTR n, u32 e, const fmat4x4& A)
 	{
 		if (ctable)
 			set_Array_Constant(&*ctable->get(n), e, A);
 	}
-	ICF void set_Array_Constant(LPCSTR n, u32 e, const float4& A)
+	ICF void set_Array_Constant(LPCSTR n, u32 e, const fvec4& A)
 	{
 		if (ctable)
 			set_Array_Constant(&*ctable->get(n), e, A);
@@ -385,32 +385,32 @@ class ENGINE_API CBackend
 	}
 
 	// constants - shared_str (average)
-	ICF void set_Constant(shared_str& n, const float4x4& A)
+	ICF void set_Constant(shared_str& n, const fmat4x4& A)
 	{
 		if (ctable)
 			set_Constant(&*ctable->get(n), A);
 	}
-	ICF void set_Constant(shared_str& n, const float4& A)
+	ICF void set_Constant(shared_str& n, const fvec4& A)
 	{
 		if (ctable)
 			set_Constant(&*ctable->get(n), A);
 	}	
-	ICF void set_Constant(shared_str& n, const float3& A)
+	ICF void set_Constant(shared_str& n, const fvec3& A)
 	{
 		if (ctable)
-			set_Constant(&*ctable->get(n), float4().set(A.x, A.y, A.z, 0.0f));
+			set_Constant(&*ctable->get(n), fvec4().set(A.x, A.y, A.z, 0.0f));
 	}
 	ICF void set_Constant(shared_str& n, float x, float y, float z, float w)
 	{
 		if (ctable)
 			set_Constant(&*ctable->get(n), x, y, z, w);
 	}
-	ICF void set_Array_Constant(shared_str& n, u32 e, const float4x4& A)
+	ICF void set_Array_Constant(shared_str& n, u32 e, const fmat4x4& A)
 	{
 		if (ctable)
 			set_Array_Constant(&*ctable->get(n), e, A);
 	}
-	ICF void set_Array_Constant(shared_str& n, u32 e, const float4& A)
+	ICF void set_Array_Constant(shared_str& n, u32 e, const fvec4& A)
 	{
 		if (ctable)
 			set_Array_Constant(&*ctable->get(n), e, A);
@@ -450,22 +450,22 @@ class ENGINE_API CBackend
 #ifdef DEBUG
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
-	IC void dbg_DrawAABB(float3& T, float sx, float sy, float sz, u32 C)
+	IC void dbg_DrawAABB(fvec3& T, float sx, float sy, float sz, u32 C)
 	{
-		float3 half_dim;
+		fvec3 half_dim;
 		half_dim.set(sx, sy, sz);
-		float4x4 TM;
+		fmat4x4 TM;
 		TM.translate(T);
 		dbg_DrawOBB(TM, half_dim, C);
 	}
-	void dbg_DrawOBB(float4x4& T, float3& half_dim, u32 C);
-	IC void dbg_DrawTRI(float4x4& T, float3* p, u32 C)
+	void dbg_DrawOBB(fmat4x4& T, fvec3& half_dim, u32 C);
+	IC void dbg_DrawTRI(fmat4x4& T, fvec3* p, u32 C)
 	{
 		dbg_DrawTRI(T, p[0], p[1], p[2], C);
 	}
-	void dbg_DrawTRI(float4x4& T, float3& p1, float3& p2, float3& p3, u32 C);
-	void dbg_DrawLINE(float4x4& T, float3& p1, float3& p2, u32 C);
-	void dbg_DrawEllipse(float4x4& T, u32 C);
+	void dbg_DrawTRI(fmat4x4& T, fvec3& p1, fvec3& p2, fvec3& p3, u32 C);
+	void dbg_DrawLINE(fmat4x4& T, fvec3& p1, fvec3& p2, u32 C);
+	void dbg_DrawEllipse(fmat4x4& T, u32 C);
 #endif
 
 	CBackend()
@@ -497,7 +497,7 @@ class ENGINE_API CBackend
 		return dstBlend;
 	}
 
-	void u_compute_texgen_screen(float4x4& dest);
+	void u_compute_texgen_screen(fmat4x4& dest);
 	void set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset);
 
 	void set_Render_Target_Surface(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL);

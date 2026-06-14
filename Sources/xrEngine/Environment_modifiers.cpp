@@ -22,7 +22,7 @@ bool CEnvModifier::load(IReader* fs)
 	return true;
 }
 
-float CEnvModifier::sum(CEnvModifier& M, float3& view)
+float CEnvModifier::sum(CEnvModifier& M, fvec3& view)
 {
 	float _dist_sq = view.distance_to_sqr(M.position);
 	if (_dist_sq >= (M.radius * M.radius))

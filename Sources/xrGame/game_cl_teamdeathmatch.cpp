@@ -521,7 +521,7 @@ void game_cl_TeamDeathmatch::OnRender()
 				VERIFY(pObject);
 				CActor* pActor = smart_cast<CActor*>(pObject);
 				VERIFY(pActor);
-				float3 IPos = pTS->IndicatorPos;
+				fvec3 IPos = pTS->IndicatorPos;
 				IPos.y -= pTS->Indicator_r2;
 				pActor->RenderText(ps->getName(), IPos, &dup, PLAYER_NAME_COLOR);
 			}
@@ -530,7 +530,7 @@ void game_cl_TeamDeathmatch::OnRender()
 				VERIFY(pObject);
 				CActor* pActor = smart_cast<CActor*>(pObject);
 				VERIFY(pActor);
-				float3 IPos = pTS->IndicatorPos;
+				fvec3 IPos = pTS->IndicatorPos;
 				IPos.y += dup;
 				pActor->RenderIndicator(IPos, pTS->Indicator_r1, pTS->Indicator_r2, pTS->IndicatorShader);
 			};

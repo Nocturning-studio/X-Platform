@@ -67,7 +67,7 @@ class CUIMMShniaga : public CUIWindow, public CDeviceResetNotifier
 	int m_page;
 	CUIWindow* m_selected;
 	CMMSound* m_sound;
-	float2 m_wheel_size[2];
+	fvec2 m_wheel_size[2];
 	enum
 	{
 		fl_SoundFinalized = 1,

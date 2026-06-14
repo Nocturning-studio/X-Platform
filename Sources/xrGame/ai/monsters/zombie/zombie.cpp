@@ -148,7 +148,7 @@ BOOL CZombie::net_Spawn(CSE_Abstract* DC)
 #define TIME_FAKE_DEATH 5000
 #define TIME_RESURRECT_RESTORE 2000
 
-// void CZombie::Hit(float P,float3 &dir,CObject*who,s16 element,float3 p_in_object_space,float impulse,
+// void CZombie::Hit(float P,fvec3 &dir,CObject*who,s16 element,fvec3 p_in_object_space,float impulse,
 // ALife::EHitType hit_type)
 void CZombie::Hit(SHit* pHDS)
 {

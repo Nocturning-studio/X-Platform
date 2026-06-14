@@ -10,6 +10,6 @@ void CHolderCustom::script_register(lua_State* L)
 		L)[class_<CHolderCustom>("holder")
 			   .def("engaged", &CHolderCustom::Engaged)
 			   .def("Action", &CHolderCustom::Action)
-			   //			.def("SetParam",		(void (CHolderCustom::*)(int,float2)) &CHolderCustom::SetParam)
-			   .def("SetParam", (void(CHolderCustom::*)(int, float3)) & CHolderCustom::SetParam)];
+			   //			.def("SetParam",		(void (CHolderCustom::*)(int,fvec2)) &CHolderCustom::SetParam)
+			   .def("SetParam", (void(CHolderCustom::*)(int, fvec3)) & CHolderCustom::SetParam)];
 }

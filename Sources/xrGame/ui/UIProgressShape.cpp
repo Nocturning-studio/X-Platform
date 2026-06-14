@@ -39,7 +39,7 @@ void CUIProgressShape::SetTextVisible(bool b)
 	m_bText = b;
 }
 
-void _make_rot(float2& pt, const float2& src, float sin_a, float cos_a, float angle)
+void _make_rot(fvec2& pt, const fvec2& src, float sin_a, float cos_a, float angle)
 {
 	pt.x = src.x * cos_a + src.y * sin_a;
 	pt.y = src.y * cos_a - src.x * sin_a;
@@ -66,7 +66,7 @@ void CUIProgressShape::Draw()
 	ref_geom gm = GetUIGeom();
 	RenderBackendLegacy.set_Shader(sh);
 	CTexture* T = RenderBackendLegacy.get_ActiveTexture(0);
-	float2 tsize;
+	fvec2 tsize;
 	tsize.set(float(T->get_Width()), float(T->get_Height()));
 
 	u32 offset;
@@ -77,7 +77,7 @@ void CUIProgressShape::Draw()
 	UI()->ClientToScreenScaled(pos_rect.lt, pos_rect.x1, pos_rect.y1);
 	UI()->ClientToScreenScaled(pos_rect.rb, pos_rect.x2, pos_rect.y2);
 
-	float2 center_pos;
+	fvec2 center_pos;
 	pos_rect.getcenter(center_pos);
 
 	Frect tex_rect = m_pTexture->GetUIStaticItem().GetOriginalRect();
@@ -87,7 +87,7 @@ void CUIProgressShape::Draw()
 	tex_rect.rb.x /= tsize.x;
 	tex_rect.rb.y /= tsize.y;
 
-	float2 center_tex;
+	fvec2 center_tex;
 	tex_rect.getcenter(center_tex);
 
 	float radius_pos = pos_rect.width() / 2.0f;
@@ -96,8 +96,8 @@ void CUIProgressShape::Draw()
 	float curr_angle = 0.0f;
 	float sin_a = _sin(curr_angle);
 	float cos_a = _cos(curr_angle);
-	float2 start_pos_pt, prev_pos_pt;
-	float2 start_tex_pt, prev_tex_pt;
+	fvec2 start_pos_pt, prev_pos_pt;
+	fvec2 start_tex_pt, prev_tex_pt;
 
 	start_pos_pt.set(0.0f, -radius_pos);
 	prev_pos_pt = start_pos_pt;
@@ -113,11 +113,11 @@ void CUIProgressShape::Draw()
 		pv->set(center_pos.x, center_pos.y, color, center_tex.x, center_tex.y);
 		++pv;
 
-		float2 tp;
+		fvec2 tp;
 		tp.set(prev_pos_pt);
 		tp.add(center_pos);
 
-		float2 tx;
+		fvec2 tx;
 		tx.set(prev_tex_pt);
 		tx.add(center_tex);
 

@@ -29,7 +29,7 @@ class CControlDirectionBase : public CControl_ComBase
 
 	void use_path_direction(bool reversed = false);
 
-	virtual void face_target(const float3& position, u32 delay = 0, float add_yaw = 0.f);
+	virtual void face_target(const fvec3& position, u32 delay = 0, float add_yaw = 0.f);
 	virtual void face_target(const CObject* obj, u32 delay = 0, float add_yaw = 0.f);
 	IC void set_delay(u32 delay)
 	{

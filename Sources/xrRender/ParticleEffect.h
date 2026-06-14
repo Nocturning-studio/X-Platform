@@ -21,10 +21,10 @@ class ECORE_API CParticleEffect : public IParticleCustom
 
 	s32 m_MemDT;
 
-	float3 m_InitialPosition;
+	fvec3 m_InitialPosition;
 
   public:
-	float4x4 m_Transform;
+	fmat4x4 m_Transform;
 
   protected:
 	DestroyCallback m_DestroyCallback;
@@ -58,7 +58,7 @@ class ECORE_API CParticleEffect : public IParticleCustom
 	virtual void OnDeviceCreate();
 	virtual void OnDeviceDestroy();
 
-	virtual void UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform);
+	virtual void UpdateParent(const fmat4x4& m, const fvec3& velocity, BOOL bTransform);
 
 	BOOL Compile(CPEDef* def);
 

@@ -31,15 +31,15 @@ class CSpaceRestrictionBridge : public RestrictionSpace::CTimeIntrusiveBase
 	bool inside(u32 level_vertex_id, bool partially_inside);
 	bool inside(u32 level_vertex_id, bool partially_inside, float radius);
 	shared_str name() const;
-	u32 accessible_nearest(const float3& position, float3& result, bool out_restriction);
+	u32 accessible_nearest(const fvec3& position, fvec3& result, bool out_restriction);
 	bool shape() const;
 	bool default_restrictor() const;
-	bool on_border(const float3& position) const;
-	bool out_of_border(const float3& position);
+	bool on_border(const fvec3& position) const;
+	bool out_of_border(const fvec3& position);
 	Fsphere sphere() const;
 
 	template <typename T>
-	IC u32 accessible_nearest(T& restriction, const float3& position, float3& result, bool out_restriction);
+	IC u32 accessible_nearest(T& restriction, const fvec3& position, fvec3& result, bool out_restriction);
 	template <typename T> IC const xr_vector<u32>& accessible_neighbour_border(T& restriction, bool out_restriction);
 };
 

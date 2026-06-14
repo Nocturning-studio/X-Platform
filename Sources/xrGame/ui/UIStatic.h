@@ -86,7 +86,7 @@ class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUIText
 	{
 		m_UIStaticItem.SetOriginalRect(x, y, width, height);
 	}
-	void SetHeadingPivot(const float2& p)
+	void SetHeadingPivot(const fvec2& p)
 	{
 		m_UIStaticItem.SetHeadingPivot(p);
 	}
@@ -95,7 +95,7 @@ class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUIText
 	{
 		m_TextureOffset.set(x, y);
 	}
-	float2 GetTextureOffeset() const
+	fvec2 GetTextureOffeset() const
 	{
 		return m_TextureOffset;
 	}
@@ -290,14 +290,14 @@ class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUIText
 	bool m_bTextureEnable;
 	CUIStaticItem m_UIStaticItem;
 
-	float2 m_TextOffset;
+	fvec2 m_TextOffset;
 
 	bool m_bHeading;
 	float m_fHeading;
 
 	// Для вывода текстуры с обрезанием по маске используем CUIFrameWindow
 	CUIFrameWindow* m_pMask;
-	float2 m_TextureOffset;
+	fvec2 m_TextureOffset;
 
 	// Обрезка надписи
 	EElipsisPosition m_ElipsisPos;

@@ -65,7 +65,7 @@ class CALifeUpdateManager : public CALifeSwitchManager,
 	void set_interactive(ALife::_OBJECT_ID id, bool value);
 	void jump_to_level(LPCSTR level_name) const;
 	void teleport_object(ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id,
-						 const float3& position);
+						 const fvec3& position);
 	void add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_ID restriction_id,
 						 const RestrictionSpace::ERestrictorTypes& restriction_type);
 	void remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_ID restriction_id,

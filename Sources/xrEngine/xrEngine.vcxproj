@@ -2167,6 +2167,9 @@
     <Image Include="ui_splash3.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-party\include\optick\OptickCore.vcxproj">
+      <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\xrMath\xrMath.vcxproj">
       <Project>{1eb3e3c6-68dd-428f-a764-f6a4db0ecdbb}</Project>
     </ProjectReference>

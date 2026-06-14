@@ -65,7 +65,7 @@ void CStalkerActionDangerInDirectionTakeCover::execute()
 	if (!object().memory().danger().selected())
 		return;
 
-	float3 position = object().memory().danger().selected()->position();
+	fvec3 position = object().memory().danger().selected()->position();
 
 	object().sight().setup(CSightAction(SightManager::eSightTypePosition, position, true));
 
@@ -150,7 +150,7 @@ void CStalkerActionDangerInDirectionLookOut::execute()
 	//
 	//	if (!mem_object.m_object)
 	//		return;
-	float3 position = object().memory().danger().selected()->position();
+	fvec3 position = object().memory().danger().selected()->position();
 
 	object().sight().setup(CSightAction(SightManager::eSightTypePosition, position, true));
 
@@ -161,7 +161,7 @@ void CStalkerActionDangerInDirectionLookOut::execute()
 		return;
 	}
 
-	//	float3								position = mem_object.m_object_params.m_position;
+	//	fvec3								position = mem_object.m_object_params.m_position;
 	object().m_ce_close->setup(position, 10.f, 170.f, 10.f);
 	const CCoverPoint* point = ai().cover_manager().best_cover(object().Position(), 10.f, *object().m_ce_close,
 															   CStalkerMovementRestrictor(m_object, true, false));
@@ -235,7 +235,7 @@ void CStalkerActionDangerInDirectionHoldPosition::execute()
 	//	if (!mem_object.m_object)
 	//		return;
 
-	float3 position = object().memory().danger().selected()->position();
+	fvec3 position = object().memory().danger().selected()->position();
 
 	if (current_cover(m_object) < 3.f)
 		m_storage->set_property(eWorldPropertyLookedOut, false);
@@ -300,7 +300,7 @@ void CStalkerActionDangerInDirectionDetour::execute()
 	if (!mem_object.m_object)
 		return;
 
-	float3 position = object().memory().danger().selected()->position();
+	fvec3 position = object().memory().danger().selected()->position();
 
 	if (object().movement().path_completed())
 	{
@@ -376,7 +376,7 @@ void CStalkerActionDangerInDirectionSearch::execute()
 	if (!mem_object.m_object)
 		return;
 
-	float3 position = object().memory().danger().selected()->position();
+	fvec3 position = object().memory().danger().selected()->position();
 
 	if (object().movement().path_completed())
 	{

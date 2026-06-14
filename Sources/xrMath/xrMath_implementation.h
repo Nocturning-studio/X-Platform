@@ -1,6 +1,6 @@
 #pragma once
 
-template <class T> IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
+template <class T> IC _matrix4x4<T>& _matrix4x4<T>::rotation(const _quaternion<T>& Q)
 {
 	T xx = Q.x * Q.x;
 	T yy = Q.y * Q.y;
@@ -31,7 +31,7 @@ template <class T> IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 	return *this;
 }
 
-template <class T> IC _matrix<T>& _matrix<T>::mk_transform(const _quaternion<T>& Q, const Tvector& V)
+template <class T> IC _matrix4x4<T>& _matrix4x4<T>::mk_transform(const _quaternion<T>& Q, const Tvector& V)
 {
 	T xx = Q.x * Q.x;
 	T yy = Q.y * Q.y;
@@ -63,7 +63,7 @@ template <class T> IC _matrix<T>& _matrix<T>::mk_transform(const _quaternion<T>&
 }
 
 #define TRACE_QZERO_TOLERANCE 0.1f
-template <class T> IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
+template <class T> IC _quaternion<T>& _quaternion<T>::set(const _matrix4x4<T>& M)
 {
 	float trace, s;
 

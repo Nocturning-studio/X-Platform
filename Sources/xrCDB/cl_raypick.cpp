@@ -35,7 +35,7 @@ IC DWORD& IR(float& x)
 {
 	return (DWORD&)x;
 }
-IC BOOL TestAABB(const float3& bMax, const float3& rP, const float3& rD, float3& coord)
+IC BOOL TestAABB(const fvec3& bMax, const fvec3& rP, const fvec3& rD, fvec3& coord)
 {
 #ifdef _EDITOR
 	Fbox BB;
@@ -43,7 +43,7 @@ IC BOOL TestAABB(const float3& bMax, const float3& rP, const float3& rD, float3&
 	return BB.Pick2(rP, rD, coord);
 #else
 	BOOL Inside = TRUE;
-	float3 MaxT, bMin;
+	fvec3 MaxT, bMin;
 	MaxT.set(-1.f, -1.f, -1.f);
 	bMin.set(-bMax.x, -bMax.y, -bMax.z);
 
@@ -141,14 +141,14 @@ IC BOOL TestAABB(const float3& bMax, const float3& rP, const float3& rD, float3&
 #endif
 }
 
-void XRCollide::raypick_fast(const box* B, const float3& rC, const float3& rD)
+void XRCollide::raypick_fast(const box* B, const fvec3& rC, const fvec3& rD)
 {
 	if ((ray_flags & RAY_ONLYFIRST) && (RayContact.size() > 1))
 		return;
 	//		if (!B) return;
 
 	// 1. Transform ray from parent to local space
-	float3 C, D, P;
+	fvec3 C, D, P;
 	B->pR.MTxV(D, rD);
 	P.sub(rC, B->pT);
 	B->pR.MTxV(C, P);
@@ -197,10 +197,10 @@ void XRCollide::raypick_fast(const box* B, const float3& rC, const float3& rD)
 		}
 	}
 }
-void XRCollide::raypick_fast_nearest(const box* B, const float3& rC, const float3& rD)
+void XRCollide::raypick_fast_nearest(const box* B, const fvec3& rC, const fvec3& rD)
 {
 	// 1. Transform ray from parent to local space
-	float3 C, D, P;
+	fvec3 C, D, P;
 	B->pR.MTxV(D, rD);
 	P.sub(rC, B->pT);
 	B->pR.MTxV(C, P);
@@ -256,12 +256,12 @@ void XRCollide::raypick_fast_nearest(const box* B, const float3& rC, const float
 	}
 }
 
-void XRCollide::RayPick(const float4x4* parent, const Model* o1, const float3& C, const float3& D, float max_range)
+void XRCollide::RayPick(const fmat4x4* parent, const Model* o1, const fvec3& C, const fvec3& D, float max_range)
 {
 	R_BEGIN;
 	if (parent)
 	{
-		float4x4 rTransform;
+		fmat4x4 rTransform;
 		rTransform.invert(*parent);			   // create W2L transform
 		rTransform.transform_dir(rmodel_D, D); // convert ray W2L
 		rTransform.transform_tiny(rmodel_C, C);
@@ -273,7 +273,7 @@ void XRCollide::RayPick(const float4x4* parent, const Model* o1, const float3& C
 	}
 	rmodel_range = max_range;
 	rmodel_range_sq = max_range * max_range;
-	rmodel_L2W = (float4x4*)parent;
+	rmodel_L2W = (fmat4x4*)parent;
 
 	// reset the report fields
 	min_raypick_id = -1;

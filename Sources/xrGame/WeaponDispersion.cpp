@@ -87,7 +87,7 @@ void CWeapon::ClearShotEffector()
 };
 
 /**
-const float3& CWeapon::GetRecoilDeltaAngle()
+const fvec3& CWeapon::GetRecoilDeltaAngle()
 {
 	CActor* pActor		= smart_cast<CActor*>(H_Parent());
 

@@ -1188,6 +1188,9 @@
     <ClCompile Include="xrRender.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-party\include\optick\OptickCore.vcxproj">
+      <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

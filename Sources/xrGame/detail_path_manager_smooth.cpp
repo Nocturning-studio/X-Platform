@@ -35,20 +35,20 @@ IC bool is_negative(float a)
 	return (!fis_zero(a) && (a < 0.f));
 }
 
-IC bool coincide_directions(const float2& start_circle_center, const float2& start_tangent_point,
-							float start_cross_product, const float2& dest_circle_center,
-							const float2& dest_tangent_point, float dest_cross_product)
+IC bool coincide_directions(const fvec2& start_circle_center, const fvec2& start_tangent_point,
+							float start_cross_product, const fvec2& dest_circle_center,
+							const fvec2& dest_tangent_point, float dest_cross_product)
 {
 	if (fis_zero(start_cross_product))
 	{
-		float2 circle_tangent_point_direction = float2().sub(dest_tangent_point, dest_circle_center);
-		float2 start_tangent_dest_tangent_direction = float2().sub(dest_tangent_point, start_tangent_point);
+		fvec2 circle_tangent_point_direction = fvec2().sub(dest_tangent_point, dest_circle_center);
+		fvec2 start_tangent_dest_tangent_direction = fvec2().sub(dest_tangent_point, start_tangent_point);
 		float cp1 = start_tangent_dest_tangent_direction.crossproduct(circle_tangent_point_direction);
 		return (dest_cross_product * cp1 >= 0.f);
 	}
 
-	float2 circle_tangent_point_direction = float2().sub(start_tangent_point, start_circle_center);
-	float2 start_tangent_dest_tangent_direction = float2().sub(dest_tangent_point, start_tangent_point);
+	fvec2 circle_tangent_point_direction = fvec2().sub(start_tangent_point, start_circle_center);
+	fvec2 start_tangent_dest_tangent_direction = fvec2().sub(dest_tangent_point, start_tangent_point);
 	float cp1 = start_tangent_dest_tangent_direction.crossproduct(circle_tangent_point_direction);
 	return (start_cross_product * cp1 >= 0.f);
 }
@@ -58,7 +58,7 @@ bool CDetailPathManager::compute_tangent(const STrajectoryPoint& start, const SC
 										 SCirclePoint* tangents, const EDirectionType direction_type)
 {
 	float start_cp, dest_cp, distance, alpha, start_yaw, dest_yaw, yaw1, yaw2;
-	float2 direction;
+	fvec2 direction;
 
 	// computing 2D cross product for start point
 	direction.sub(start.position, start_circle.center);
@@ -191,8 +191,8 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
 		}
 		return (true);
 	}
-	float2 direction;
-	float3 curr_pos;
+	fvec2 direction;
+	fvec3 curr_pos;
 	u32 curr_vertex_id;
 	direction.sub(position.position, position.center);
 	curr_pos.set(position.position.x, 0.f, position.position.y);
@@ -448,7 +448,7 @@ void CDetailPathManager::validate_vertex_position(STrajectoryPoint& point) const
 		return;
 
 	CLevelGraph::SContour contour;
-	float3 position, center;
+	fvec3 position, center;
 	ai().level_graph().contour(contour, point.vertex_id);
 	ai().level_graph().nearest(position, ai().level_graph().v3d(point.position), contour);
 	center.add(contour.v1, contour.v3);
@@ -602,8 +602,8 @@ IC CDetailPathManager::STravelPoint CDetailPathManager::compute_better_key_point
 	CDetailPathManager::STravelPoint result = point1;
 	float dist02 = point2.position.distance_to(point0.position);
 	float dist12 = point2.position.distance_to(point1.position);
-	float2 direction21 = float2().sub(point1.position, point2.position);
-	float2 direction20 = float2().sub(point0.position, point2.position);
+	fvec2 direction21 = fvec2().sub(point1.position, point2.position);
+	fvec2 direction20 = fvec2().sub(point0.position, point2.position);
 	direction21.normalize();
 	direction20.normalize();
 	float cos_alpha = direction21.dot(direction20);
@@ -658,10 +658,10 @@ IC CDetailPathManager::STravelPoint CDetailPathManager::compute_better_key_point
 IC bool CDetailPathManager::better_key_point(const STravelPoint& point0, const STravelPoint& point2,
 											 const STravelPoint& point10, const STravelPoint& point11)
 {
-	float2 direction100 = float2().sub(point0.position, point10.position);
-	float2 direction120 = float2().sub(point2.position, point10.position);
-	float2 direction101 = float2().sub(point0.position, point11.position);
-	float2 direction121 = float2().sub(point2.position, point11.position);
+	fvec2 direction100 = fvec2().sub(point0.position, point10.position);
+	fvec2 direction120 = fvec2().sub(point2.position, point10.position);
+	fvec2 direction101 = fvec2().sub(point0.position, point11.position);
+	fvec2 direction121 = fvec2().sub(point2.position, point11.position);
 	direction100.normalize();
 	direction120.normalize();
 	direction101.normalize();
@@ -808,7 +808,7 @@ void CDetailPathManager::add_patrol_point()
 	if ((m_path.size() > 1) && m_state_patrol_path && !fis_zero(extrapolate_length()))
 	{
 		STravelPathPoint t;
-		float3 v;
+		fvec3 v;
 		v.sub(m_path.back().position, m_path[m_last_patrol_point - 1].position);
 		v.y = 0.f;
 		if (v.magnitude() > EPS_S)
@@ -844,7 +844,7 @@ void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32
 	if (m_restricted_object)
 	{
 #ifdef DEBUG
-		float3 start_pos = ai().level_graph().v3d(start.position);
+		fvec3 start_pos = ai().level_graph().v3d(start.position);
 		start_pos.y = ai().level_graph().vertex_plane_y(start.vertex_id, start_pos.x, start_pos.z);
 		bool alvi = m_restricted_object->accessible(start.vertex_id);
 		bool asp = m_restricted_object->accessible(start_pos);

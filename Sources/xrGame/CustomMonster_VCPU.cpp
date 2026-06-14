@@ -10,10 +10,10 @@ IC void conv_angle(float& c)
 		c -= PI_MUL_2;
 }
 
-void CCustomMonster::mk_rotation(float3& dir, SRotation& R)
+void CCustomMonster::mk_rotation(fvec3& dir, SRotation& R)
 {
 	// parse yaw
-	float3 DYaw;
+	fvec3 DYaw;
 	DYaw.set(dir.x, 0.f, dir.z);
 	DYaw.normalize_safe();
 	clamp(DYaw.x, -0.9999999f, 0.9999999f);
@@ -43,7 +43,7 @@ void CCustomMonster::Exec_Look(float dt)
 	angle_lerp_bounds(movement().m_body.current.yaw, movement().m_body.target.yaw, movement().m_body.speed, dt);
 	angle_lerp_bounds(movement().m_body.current.pitch, movement().m_body.target.pitch, pitch_speed, dt);
 
-	float3 P = Position();
+	fvec3 P = Position();
 	Transform().setHPB(-NET_Last.o_model, -NET_Last.o_torso.pitch, 0);
 	Position() = P;
 }

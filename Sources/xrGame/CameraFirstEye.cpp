@@ -23,10 +23,10 @@ void CCameraFirstEye::Load(LPCSTR section)
 	style = csFirstEye;
 }
 
-void CCameraFirstEye::Update(float3& point, float3& noise_dangle)
+void CCameraFirstEye::Update(fvec3& point, fvec3& noise_dangle)
 {
-	float4x4 mR, R;
-	float4x4 rX, rY, rZ;
+	fmat4x4 mR, R;
+	fmat4x4 rX, rY, rZ;
 	rX.rotateX(noise_dangle.x);
 	rY.rotateY(-noise_dangle.y);
 	rZ.rotateZ(noise_dangle.z);

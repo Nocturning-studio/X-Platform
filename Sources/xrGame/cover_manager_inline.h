@@ -53,7 +53,7 @@ IC bool CCoverManager::inertia(float radius, _evaluator_type& evaluator, const _
 }
 
 template <typename _evaluator_type, typename _restrictor_type>
-IC const CCoverPoint* CCoverManager::best_cover(const float3& position, float radius, _evaluator_type& evaluator,
+IC const CCoverPoint* CCoverManager::best_cover(const fvec3& position, float radius, _evaluator_type& evaluator,
 												const _restrictor_type& restrictor) const
 {
 	//OPTICK_EVENT("CCoverManager::best_cover");
@@ -110,7 +110,7 @@ IC const CCoverPoint* CCoverManager::best_cover(const float3& position, float ra
 }
 
 template <typename _evaluator_type>
-IC const CCoverPoint* CCoverManager::best_cover(const float3& position, float radius, _evaluator_type& evaluator) const
+IC const CCoverPoint* CCoverManager::best_cover(const fvec3& position, float radius, _evaluator_type& evaluator) const
 {
 	return (best_cover<_evaluator_type, CCoverManager>(position, radius, evaluator, *this));
 }

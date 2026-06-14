@@ -7,7 +7,7 @@
 #pragma once
 
 #include "xrMath_types.h"
-#include "xrMath_vector3d.h"
+#include "xrMath_vector3.h"
 #include "xrMath_bitwise.h"
 #include <cstdint> // для uint16_t
 
@@ -30,11 +30,11 @@ extern XRMATH_API float pvUVAdjustment[0x2000];
 // Function to initialize the lookup table. Must be called once before using compression/decompression.
 XRMATH_API void initialize_normal_compression_stats();
 
-// Compress a float3 vector into a 16-bit representation.
-inline u16 compress_normal(const float3& vec)
+// Compress a fvec3 vector into a 16-bit representation.
+inline u16 compress_normal(const fvec3& vec)
 {
 	// save copy
-	float3 tmp = vec;
+	fvec3 tmp = vec;
 
 	// input vector3 does not have to be unit length
 	u16 mVec = 0;
@@ -85,8 +85,8 @@ inline u16 compress_normal(const float3& vec)
 	return mVec;
 }
 
-// Decompress a 16-bit representation back into a float3 unit vector.
-inline void decompress_normal(float3& vec, u16 mVec)
+// Decompress a 16-bit representation back into a fvec3 unit vector.
+inline void decompress_normal(fvec3& vec, u16 mVec)
 {
 	// if we do a straightforward backward transform
 	// we will get points on the plane X0,Y0,Z0

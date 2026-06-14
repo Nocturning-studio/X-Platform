@@ -10,7 +10,7 @@
 #define _MM_ALIGN16 __declspec(align(16))
 #endif // _MM_ALIGN16
 
-struct _MM_ALIGN16 vec_t : public float3
+struct _MM_ALIGN16 vec_t : public fvec3
 {
 	float pad;
 };
@@ -43,9 +43,9 @@ ICF u32& uf(float& x)
 {
 	return (u32&)x;
 }
-ICF BOOL isect_fpu(const float3& min, const float3& max, const ray_t& ray, float3& coord)
+ICF BOOL isect_fpu(const fvec3& min, const fvec3& max, const ray_t& ray, fvec3& coord)
 {
-	float3 MaxT;
+	fvec3 MaxT;
 	MaxT.x = MaxT.y = MaxT.z = -1.0f;
 	BOOL Inside = TRUE;
 
@@ -205,7 +205,7 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 	return ret;
 }
 
-extern float3 c_spatial_offset[8];
+extern fvec3 c_spatial_offset[8];
 
 template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalkerQRay
 {
@@ -217,7 +217,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 	ISpatial_DB* space;
 
   public:
-	CWalkerQRay(ISpatial_DB* _space, u32 _mask, const float3& _start, const float3& _dir, float _range)
+	CWalkerQRay(ISpatial_DB* _space, u32 _mask, const fvec3& _start, const fvec3& _dir, float _range)
 	{
 		mask = _mask;
 		ray.pos.set(_start);
@@ -247,7 +247,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		space = _space;
 	}
 	// fpu
-	ICF BOOL _box_fpu(const float3& n_C, const float n_R, float3& coord)
+	ICF BOOL _box_fpu(const fvec3& n_C, const float n_R, fvec3& coord)
 	{
 		// box
 		float n_vR = 2 * n_R;
@@ -256,7 +256,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		return isect_fpu(BB.min, BB.max, ray, coord);
 	}
 	// sse
-	ICF BOOL _box_sse(const float3& n_C, const float n_R, float& dist)
+	ICF BOOL _box_sse(const fvec3& n_C, const float n_R, float& dist)
 	{
 		aabb_t box;
 		float n_vR = 2 * n_R;
@@ -266,7 +266,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		box.max.pad = 0;
 		return isect_sse(box, ray, dist);
 	}
-	void walk(ISpatial_NODE* N, float3& n_C, float n_R)
+	void walk(ISpatial_NODE* N, fvec3& n_C, float n_R)
 	{
 		// Actual ray/aabb test
 		if (b_use_sse)
@@ -281,7 +281,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		else
 		{
 			// use FPU
-			float3 P;
+			fvec3 P;
 			if (!_box_fpu(n_C, n_R, P))
 				return;
 			if (P.distance_to_sqr(ray.pos) > range2)
@@ -328,7 +328,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		{
 			if (0 == N->children[octant])
 				continue;
-			float3 c_C;
+			fvec3 c_C;
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);
 			walk(N->children[octant], c_C, c_R);
 			if (b_first && !space->q_result->empty())
@@ -337,7 +337,7 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 	}
 };
 
-void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const float3& _start, const float3& _dir,
+void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const fvec3& _start, const fvec3& _dir,
 						float _range)
 {
 	cs.Enter();

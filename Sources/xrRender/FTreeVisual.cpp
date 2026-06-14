@@ -95,8 +95,8 @@ struct FTreeVisual_setup
 {
 	u32 dwFrame;
 	float scale;
-	float4 wave;
-	float4 wind;
+	fvec4 wave;
+	fvec4 wind;
 
 	FTreeVisual_setup()
 	{
@@ -129,7 +129,7 @@ void FTreeVisual::Render(float LOD)
 	if (tvs.dwFrame != Engine.TimeManager.GetFrameCount())
 		tvs.calculate();
 	// setup constants
-	float4x4 transform_v;
+	fmat4x4 transform_v;
 	transform_v.mul_43(RenderBackendLegacy.get_transform_view(), transform);
 	RenderBackendLegacy.set_Constant(m_transform_v, transform_v); // matrix
 	float s = ps_r_Tree_SBC;

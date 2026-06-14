@@ -383,8 +383,8 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	ENGINE_API extern float psHUD_FOV;
 
 	// Backup Projection
-	float4x4 ProjectOld = Engine.RenderView.Project;
-	float4x4 ViewProjectOld = Engine.RenderView.ViewProjection;
+	fmat4x4 ProjectOld = Engine.RenderView.Project;
+	fmat4x4 ViewProjectOld = Engine.RenderView.ViewProjection;
 
 	// Create Custom HUD Projection
 	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), Engine.RenderView.Aspect,
@@ -475,7 +475,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	// Захват переменных для PPL
 	const float ssa_limit_b = r_ssaLOD_B;
-	const float3 camera_pos = Engine.RenderView.Position;
+	const fvec3 camera_pos = Engine.RenderView.Position;
 
 	// *** 2. ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
 	// Используем packet.lstLODs
@@ -491,7 +491,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		u32 alpha_final = u32(clampr(alpha_int, 0, 255));
 
 		// 2. Вычисление направления
-		float3 dir_to_camera, shift;
+		fvec3 dir_to_camera, shift;
 		dir_to_camera.sub(lod_visual->vis.sphere.P, camera_pos).normalize();
 		shift.mul(dir_to_camera, -.5f * lod_visual->vis.sphere.R);
 
@@ -606,7 +606,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 // ===============================================================================================
 
 // 1. Shortcut (создание фрустума из матрицы)
-void CSceneGraph::render_subspace(IRender_Sector* _sector, float4x4& mCombined, float3& _cop, BOOL _dynamic,
+void CSceneGraph::render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
 								  BOOL _precise_portals, SceneGraphPacket& dest)
 {
 	OPTICK_EVENT("render_subspace - shortcut");
@@ -617,8 +617,8 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, float4x4& mCombined, 
 }
 
 // 2. Main Implementation (Основная логика)
-void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_frustum, float4x4& mCombined,
-								  float3& camera_pos, BOOL render_dynamic, BOOL precise_portals,
+void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_frustum, fmat4x4& mCombined,
+								  fvec3& camera_pos, BOOL render_dynamic, BOOL precise_portals,
 								  SceneGraphPacket& dest)
 {
 	OPTICK_EVENT("render_subspace - main");
@@ -655,7 +655,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	/*
 	if (precise_portals && RenderImplementation.rmPortals)
 	{
-		float3 box_radius;
+		fvec3 box_radius;
 		box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
 		RenderImplementation.Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
 		RenderImplementation.Sectors_xrc.box_query(RenderImplementation.rmPortals, camera_pos, box_radius);

@@ -42,14 +42,14 @@ class CPatrolPathManager
 	u32 m_curr_point_index;
 	u32 m_prev_point_index;
 	u32 m_start_point_index;
-	float3 m_dest_position;
+	fvec3 m_dest_position;
 	CExtrapolateCallback m_extrapolate_callback;
 	CRestrictedObject* m_object;
 	CGameObject* m_game_object;
 
   protected:
 	IC bool random() const;
-	IC bool accessible(const float3& position) const;
+	IC bool accessible(const fvec3& position) const;
 	IC bool accessible(u32 vertex_id) const;
 	IC bool accessible(const CPatrolPath::CVertex* vertex) const;
 
@@ -73,8 +73,8 @@ class CPatrolPathManager
 	void set_start_point(int point_index);
 	IC bool completed() const;
 	IC bool failed() const;
-	void select_point(const float3& position, u32& dest_vertex_id);
-	IC const float3& destination_position() const;
+	void select_point(const fvec3& position, u32& dest_vertex_id);
+	IC const fvec3& destination_position() const;
 	IC u32 get_current_point_index() const;
 	IC CRestrictedObject& object() const;
 	bool extrapolate_path();

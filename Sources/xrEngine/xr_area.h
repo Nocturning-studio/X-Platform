@@ -49,9 +49,9 @@ class ENGINE_API CObjectSpace
 
   private:
 
-	BOOL _RayTest(const float3& start, const float3& dir, float range, collide::rq_target tgt,
+	BOOL _RayTest(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt,
 				  collide::ray_cache* cache, CObject* ignore_object);
-	BOOL _RayPick(const float3& start, const float3& dir, float range, collide::rq_target tgt, collide::rq_result& R,
+	BOOL _RayPick(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt, collide::rq_result& R,
 				  CObject* ignore_object);
 	BOOL _RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data,
 				   collide::test_callback* tb, CObject* ignore_object);
@@ -67,28 +67,28 @@ class ENGINE_API CObjectSpace
 	void Load();
 
 	// Occluded/No
-	BOOL RayTest(const float3& start, const float3& dir, float range, collide::rq_target tgt,
+	BOOL RayTest(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt,
 				 collide::ray_cache* cache, CObject* ignore_object);
 
 	// Game raypick (nearest) - returns object and addititional params
-	BOOL RayPick(const float3& start, const float3& dir, float range, collide::rq_target tgt, collide::rq_result& R,
+	BOOL RayPick(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt, collide::rq_result& R,
 				 CObject* ignore_object);
 
 	// General collision query
 	BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data,
 				  collide::test_callback* tb, CObject* ignore_object);
 	BOOL RayQuery(collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
-	// void								BoxQuery			( collide::rq_results& dest, const Fbox& B, const float4x4&
+	// void								BoxQuery			( collide::rq_results& dest, const Fbox& B, const fmat4x4&
 	// M, u32 flags=clGET_TRIS|clGET_BOXES|clQUERY_STATIC|clQUERY_DYNAMIC);
 
 	int GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range);
-	int GetNearest(xr_vector<CObject*>& q_nearest, const float3& point, float range, CObject* ignore_object);
+	int GetNearest(xr_vector<CObject*>& q_nearest, const fvec3& point, float range, CObject* ignore_object);
 
 	CDB::TRI* GetStaticTris()
 	{
 		return Static.get_tris();
 	}
-	float3* GetStaticVerts()
+	fvec3* GetStaticVerts()
 	{
 		return Static.get_verts();
 	}

@@ -86,7 +86,7 @@ void CALifeSimulatorBase::reload(LPCSTR section)
 	m_initialized = true;
 }
 
-CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const float3& position, u32 level_vertex_id,
+CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const fvec3& position, u32 level_vertex_id,
 											  GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration)
 {
 	CSE_Abstract* abstract = F_entity_Create(section);

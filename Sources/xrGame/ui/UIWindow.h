@@ -220,7 +220,7 @@ class CUIWindow : public CUISimpleWindow
 
 	// абсолютные координаты
 	IC void GetAbsoluteRect(Frect& r);
-	IC void GetAbsolutePos(float2& p)
+	IC void GetAbsolutePos(fvec2& p)
 	{
 		Frect abs;
 		GetAbsoluteRect(abs);
@@ -334,7 +334,7 @@ class CUIWindow : public CUISimpleWindow
 	CGameFont* m_pFont;
 
 	// Последняя позиция мышки
-	float2 cursor_pos;
+	fvec2 cursor_pos;
 
 	// время прошлого клика мышки
 	// для определения DoubleClick

@@ -24,11 +24,11 @@ void CStateMonsterFindEnemyRunAbstract::initialize()
 	target_point = object->EnemyMan.get_enemy_position();
 	target_vertex = object->EnemyMan.get_enemy_vertex();
 
-	float3 dir;
+	fvec3 dir;
 	dir.sub(target_point, object->Position());
 	dir.normalize();
 
-	float3 test_position;
+	fvec3 test_position;
 	test_position.mad(target_point, dir, 10.f);
 
 	// провериь возможность пробежать дальше

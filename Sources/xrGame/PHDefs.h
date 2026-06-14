@@ -60,7 +60,7 @@ class CPHFracture : public CShellSplitInfo
 	// add_torque_z - additional torque z
 	float m_break_force;
 	float m_break_torque;
-	float3 m_pos_in_element;
+	fvec3 m_pos_in_element;
 	float m_add_torque_z;
 	CPHFracture();
 

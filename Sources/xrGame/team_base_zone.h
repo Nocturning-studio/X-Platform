@@ -25,7 +25,7 @@ class CTeamBaseZone : public CGameObject, public Feel::Touch
 	virtual BOOL net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
 
-	virtual void Center(float3& C) const;
+	virtual void Center(fvec3& C) const;
 	virtual float Radius() const;
 
 	virtual void shedule_Update(u32 dt);

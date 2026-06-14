@@ -5,13 +5,13 @@
 class ENGINE_API R_transforms
 {
   public:
-	float4x4 m_World;	// Basic	- world
-	float4x4 m_InvWorld; // derived	- world2local, cached
-	float4x4 m_View;	// Basic	- view
-	float4x4 m_Project;	// Basic	- projection
-	float4x4 m_WorldView;	// Derived	- world2view
-	float4x4 m_ViewProject;	// Derived	- view2projection
-	float4x4 m_WorldViewProject;	// Derived	- world2view2projection
+	fmat4x4 m_World;	// Basic	- world
+	fmat4x4 m_InvWorld; // derived	- world2local, cached
+	fmat4x4 m_View;	// Basic	- view
+	fmat4x4 m_Project;	// Basic	- projection
+	fmat4x4 m_WorldView;	// Derived	- world2view
+	fmat4x4 m_ViewProject;	// Derived	- view2projection
+	fmat4x4 m_WorldViewProject;	// Derived	- world2view2projection
 
 	R_constant* c_World;
 	R_constant* c_InvWorld;
@@ -27,18 +27,18 @@ class ENGINE_API R_transforms
   public:
 	R_transforms();
 	void unmap();
-	void set_World(const float4x4& m);
-	void set_View(const float4x4& m);
-	void set_Project(const float4x4& m);
-	IC const float4x4& get_World()
+	void set_World(const fmat4x4& m);
+	void set_View(const fmat4x4& m);
+	void set_Project(const fmat4x4& m);
+	IC const fmat4x4& get_World()
 	{
 		return m_World;
 	}
-	IC const float4x4& get_View()
+	IC const fmat4x4& get_View()
 	{
 		return m_View;
 	}
-	IC const float4x4& get_Project()
+	IC const fmat4x4& get_Project()
 	{
 		return m_Project;
 	}

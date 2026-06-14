@@ -21,7 +21,7 @@ class CCoverEvaluator : public CCoverEvaluatorBase
 {
 	typedef CCoverEvaluatorBase inherited;
 
-	float3 m_dest_position;
+	fvec3 m_dest_position;
 	float m_min_distance;
 	float m_max_distance;
 	float m_current_distance;
@@ -34,10 +34,10 @@ class CCoverEvaluator : public CCoverEvaluatorBase
 	CCoverEvaluator(CRestrictedObject* object);
 
 	// setup by cover_manager
-	void initialize(const float3& start_position);
+	void initialize(const fvec3& start_position);
 
 	// manual setup
-	void setup(CBaseMonster* object, const float3& position, float min_pos_distance, float max_pos_distance,
+	void setup(CBaseMonster* object, const fvec3& position, float min_pos_distance, float max_pos_distance,
 			   float deviation = 0.f);
 
 	void evaluate(const CCoverPoint* cover_point, float weight);
@@ -80,7 +80,7 @@ CCoverEvaluator::CCoverEvaluator(CRestrictedObject* object) : inherited(object)
 	m_current_distance = flt_max;
 }
 
-void CCoverEvaluator::setup(CBaseMonster* object, const float3& position, float min_pos_distance,
+void CCoverEvaluator::setup(CBaseMonster* object, const fvec3& position, float min_pos_distance,
 							float max_pos_distance, float deviation)
 {
 	inherited::setup();
@@ -99,7 +99,7 @@ void CCoverEvaluator::setup(CBaseMonster* object, const float3& position, float 
 	m_max_distance = max_pos_distance;
 }
 
-void CCoverEvaluator::initialize(const float3& start_position)
+void CCoverEvaluator::initialize(const fvec3& start_position)
 {
 	inherited::initialize(start_position);
 	m_current_distance = m_start_position.distance_to(m_dest_position);
@@ -128,7 +128,7 @@ void CCoverEvaluator::evaluate(const CCoverPoint* cover_point, float weight)
 	if ((dest_distance >= m_max_distance) && (m_current_distance < dest_distance))
 		return;
 
-	float3 direction;
+	fvec3 direction;
 	float y, p;
 	direction.sub(m_dest_position, cover_point->position());
 	direction.getHP(y, p);
@@ -165,7 +165,7 @@ void CMonsterCoverManager::load()
 	m_ce_best = xr_new<CCoverEvaluator>(&(m_object->control().path_builder().restrictions()));
 }
 
-const CCoverPoint* CMonsterCoverManager::find_cover(const float3& position, float min_pos_distance,
+const CCoverPoint* CMonsterCoverManager::find_cover(const fvec3& position, float min_pos_distance,
 													float max_pos_distance, float deviation)
 {
 	m_ce_best->setup(m_object, position, min_pos_distance, max_pos_distance, deviation);
@@ -175,7 +175,7 @@ const CCoverPoint* CMonsterCoverManager::find_cover(const float3& position, floa
 }
 
 // найти лучший ковер относительно "position"
-const CCoverPoint* CMonsterCoverManager::find_cover(const float3& src_pos, const float3& dest_pos,
+const CCoverPoint* CMonsterCoverManager::find_cover(const fvec3& src_pos, const fvec3& dest_pos,
 													float min_pos_distance, float max_pos_distance, float deviation)
 {
 	m_ce_best->setup(m_object, dest_pos, min_pos_distance, max_pos_distance, deviation);
@@ -191,7 +191,7 @@ const CCoverPoint* CMonsterCoverManager::find_cover(const float3& src_pos, const
 #define ANGLE_DISP_STEP deg(10)
 #define TRACE_STATIC_DIST 3.f
 
-void CMonsterCoverManager::less_cover_direction(float3& dir)
+void CMonsterCoverManager::less_cover_direction(fvec3& dir)
 {
 	float angle = ai().level_graph().vertex_cover_angle(m_object->ai_location().level_vertex_id(), deg(10),
 														::std::greater<float>());
@@ -201,9 +201,9 @@ void CMonsterCoverManager::less_cover_direction(float3& dir)
 	float angle_from = angle_normalize(angle - ANGLE_DISP);
 	float angle_to = angle_normalize(angle + ANGLE_DISP);
 
-	float3 trace_from;
+	fvec3 trace_from;
 	m_object->Center(trace_from);
-	float3 direction;
+	fvec3 direction;
 
 	// trace discretely left
 	for (float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang - ANGLE_DISP_STEP))

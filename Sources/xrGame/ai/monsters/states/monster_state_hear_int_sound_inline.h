@@ -58,7 +58,7 @@ void CStateMonsterHearInterestingSoundAbstract::setup_substates()
 		data.sound_type = MonsterSound::eMonsterSoundIdle;
 		data.sound_delay = object->db().m_dwIdleSndDelay;
 
-		float3 dir;
+		fvec3 dir;
 		object->CoverMan->less_cover_direction(dir);
 		data.point.mad(object->Position(), dir, 10.f);
 
@@ -69,9 +69,9 @@ void CStateMonsterHearInterestingSoundAbstract::setup_substates()
 }
 
 TEMPLATE_SPECIALIZATION
-float3 CStateMonsterHearInterestingSoundAbstract::get_target_position()
+fvec3 CStateMonsterHearInterestingSoundAbstract::get_target_position()
 {
-	float3 snd_pos = object->SoundMemory.GetSound().position;
+	fvec3 snd_pos = object->SoundMemory.GetSound().position;
 	if (!object->Home->has_home() || object->Home->at_home(snd_pos))
 		return snd_pos;
 

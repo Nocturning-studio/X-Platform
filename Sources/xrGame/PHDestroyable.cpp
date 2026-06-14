@@ -225,7 +225,7 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate* dn)
 	CInifile* own_ini = own_K->LL_UserData();
 	CInifile* new_ini = new_K->LL_UserData();
 	//////////////////////////////////////////////////////////////////////////////////
-	float4x4 own_transform;
+	fmat4x4 own_transform;
 	own_shell->GetGlobalTransformDynamic(&own_transform);
 	new_shell->SetGlTransformDynamic(own_transform);
 	////////////////////////////////////////////////////////////
@@ -287,25 +287,25 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate* dn)
 		float random_hit = random_min * e->getMass();
 		if (m_fatal_hit.is_valide() && m_fatal_hit.bone() != BI_NONE)
 		{
-			float3 pos;
-			float4x4 m;
+			fvec3 pos;
+			fmat4x4 m;
 			m.set(own_K->LL_GetTransform(m_fatal_hit.bone()));
 			m.mulA_43(PPhysicsShellHolder()->Transform());
 			m.transform_tiny(pos, m_fatal_hit.bone_space_position());
 			e->applyImpulseVsGF(pos, m_fatal_hit.direction(), m_fatal_hit.phys_impulse() * imp_transition_factor);
 			random_hit += random_hit_imp * m_fatal_hit.phys_impulse();
 		}
-		float3 rnd_dir;
+		fvec3 rnd_dir;
 		rnd_dir.random_dir();
 		e->applyImpulse(rnd_dir, random_hit);
-		float3 mc;
+		fvec3 mc;
 		mc.set(e->mass_Center());
 		dVector3 res_lvell;
 		dBodyGetPointVel(own_body, mc.x, mc.y, mc.z, res_lvell);
 		cast_fv(res_lvell).mul(lv_transition_factor);
 		e->set_LinearVel(cast_fv(res_lvell));
 
-		float3 res_avell;
+		fvec3 res_avell;
 		res_avell.set(cast_fv(dBodyGetAngularVel(own_body)));
 		res_avell.mul(av_transition_factor);
 		e->set_AngularVel(res_avell);

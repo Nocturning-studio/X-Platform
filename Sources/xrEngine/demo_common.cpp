@@ -15,8 +15,8 @@ u32 TotalFramesCount;
 /////////////////////////////////////////////////////////////////
 float g_fGlobalFov = 67.5f;
 float g_fFov = 67.5f;
-float3 g_vGlobalDepthOfFieldParameters;
-float3 g_fDOF;
+fvec3 g_vGlobalDepthOfFieldParameters;
+fvec3 g_fDOF;
 bool g_bAutofocusEnabled = false;
 bool g_bGridEnabled = false;
 bool g_bBordersEnabled = false;
@@ -162,10 +162,10 @@ void ReadAllFramesDataFromIni(const char* name)
 	}
 }
 /////////////////////////////////////////////////////////////////
-float4x4 MakeCameraMatrixFromFrameNumber(int Frame)
+fmat4x4 MakeCameraMatrixFromFrameNumber(int Frame)
 {
-	float3 HPB, Position;
-	float4x4 Camera;
+	fvec3 HPB, Position;
+	fmat4x4 Camera;
 
 	HPB.set(FramesArray[Frame].HPB);
 	Position.set(FramesArray[Frame].Position);

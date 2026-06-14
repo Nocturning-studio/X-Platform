@@ -46,11 +46,11 @@ void CHUDCrosshair::Load()
 // выставляет radius от min_radius до max_radius
 void CHUDCrosshair::SetDispersion(float disp)
 {
-	float4 r;
-	float3 R = {VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
+	fvec4 r;
+	fvec3 R = {VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
 	Engine.RenderView.Project.transform(r, R);
 
-	float2 scr_size;
+	fvec2 scr_size;
 	scr_size.set(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
 	float radius_pixels = _abs(r.x) * scr_size.x / 2.0f;
 	//	clamp(radius_pixels, min_radius, max_radius);
@@ -63,8 +63,8 @@ void CHUDCrosshair::OnRender()
 	//OPTICK_EVENT("CHUDCrosshair::OnRender");
 
 	VERIFY(g_bRendering);
-	float2 center;
-	float2 scr_size;
+	fvec2 center;
+	fvec2 scr_size;
 	scr_size.set(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
 	center.set(scr_size.x / 2.0f, scr_size.y / 2.0f);
 

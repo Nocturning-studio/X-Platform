@@ -28,7 +28,7 @@ static const float s_fJumpTime = 0.3f;
 static const float s_fJumpGroundTime = 0.1f; // для снятия флажка Jump если на земле
 const float s_fFallTime = 0.2f;
 
-IC static void generate_orthonormal_basis1(const float3& dir, float3& updir, float3& right)
+IC static void generate_orthonormal_basis1(const fvec3& dir, fvec3& updir, fvec3& right)
 {
 
 	right.crossproduct(dir, updir); //. <->
@@ -154,7 +154,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	};
 };
 
-void CActor::g_cl_CheckControls(u32 mstate_wf, float3& vControlAccel, float& Jump, float dt)
+void CActor::g_cl_CheckControls(u32 mstate_wf, fvec3& vControlAccel, float& Jump, float dt)
 {
 	float cam_eff_factor = 0.0f;
 	mstate_old = mstate_real;
@@ -376,7 +376,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, float3& vControlAccel, float& Jum
 		}
 	}
 	// transform local dir to world dir
-	float4x4 mOrient;
+	fmat4x4 mOrient;
 	mOrient.rotateY(-r_model_yaw);
 	mOrient.transform_dir(vControlAccel);
 }
@@ -427,7 +427,7 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
 	angle_lerp(r_model_yaw_delta, calc_yaw, PI_MUL_4, dt);
 
 	// build matrix
-	float4x4 mTransform;
+	fmat4x4 mTransform;
 	mTransform.rotateY(-(r_model_yaw + r_model_yaw_delta));
 	mTransform.c.set(Position());
 	Transform().set(mTransform);
@@ -450,7 +450,7 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
 }
 bool CActor::g_LadderOrient()
 {
-	float3 leader_norm;
+	fvec3 leader_norm;
 	character_physics_support()->movement()->GroundNormal(leader_norm);
 	if (_abs(leader_norm.y) > M_SQRT1_2)
 		return false;
@@ -460,7 +460,7 @@ bool CActor::g_LadderOrient()
 		return false;
 	leader_norm.div(mag);
 	leader_norm.invert();
-	float4x4 M;
+	fmat4x4 M;
 	M.set(Fidentity);
 	M.k.set(leader_norm);
 	M.j.set(0.f, 1.f, 0.f);
@@ -472,7 +472,7 @@ bool CActor::g_LadderOrient()
 	// q1.set(Transform());
 	// q2.set(M);
 	// q3.slerp(q1,q2,dt);
-	// float3 angles1,angles2,angles3;
+	// fvec3 angles1,angles2,angles3;
 	// Transform().getHPB(angles1.x,angles1.y,angles1.z);
 	// M.getHPB(angles2.x,angles2.y,angles2.z);
 	////angle_lerp(angles3.x,angles1.x,angles2.x,dt);
@@ -484,7 +484,7 @@ bool CActor::g_LadderOrient()
 	////angle_lerp(angles3.z,angles1.z,angles2.z,dt);
 	// angle_lerp(angles3.x,angles1.x,angles2.x,dt);
 	// Transform().setHPB(angles3.x,angles3.y,angles3.z);
-	float3 position;
+	fvec3 position;
 	position.set(Position());
 	// Transform().rotation(q3);
 	VERIFY2(_valid(M), "Invalide matrix in g_LadderOrient");
@@ -519,7 +519,7 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
 			: NULL);
 	if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
 	{
-		float3 dangle = weapon_recoil_last_delta();
+		fvec3 dangle = weapon_recoil_last_delta();
 		r_torso.yaw = unaffected_r_torso.yaw + dangle.y;
 		r_torso.pitch = unaffected_r_torso.pitch + dangle.x;
 	}
@@ -571,7 +571,7 @@ void CActor::g_sv_Orientate(u32 /**mstate_rl/**/, float /**dt/**/)
 			: NULL);
 	if (pWM && pWM->GetCurrentFireMode() == 1 /* && eacFirstEye != cam_active*/)
 	{
-		float3 dangle = weapon_recoil_last_delta();
+		fvec3 dangle = weapon_recoil_last_delta();
 		r_torso.yaw += dangle.y;
 		r_torso.pitch += dangle.x;
 		r_torso.roll += dangle.z;

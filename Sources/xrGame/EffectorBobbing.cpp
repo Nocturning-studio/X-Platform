@@ -81,7 +81,7 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 
 	if (!fsimilar(fReminderFactor, 0))
 	{
-		float4x4 M;
+		fmat4x4 M;
 		M.identity();
 		M.j.set(info.n);
 		M.k.set(info.d);
@@ -148,15 +148,15 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 		float _sinA = _abs(_sin(ST * Intencity) * A) * fReminderFactor;
 		float _cosA = _cos(ST * Intencity) * A * fReminderFactor;
 
-		float3 dangle;
+		fvec3 dangle;
 		dangle.x = _cosA;
 		dangle.y = _sinA;
 		dangle.z = _cosA;
 
-		float4x4 R;
+		fmat4x4 R;
 		R.setHPB(dangle.x, dangle.y, dangle.z);
 
-		float4x4 mR;
+		fmat4x4 mR;
 		mR.mul(M, R);
 
 		info.d.set(mR.k);

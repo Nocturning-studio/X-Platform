@@ -11,7 +11,7 @@ template <typename _Object> class CStateMonsterLookToUnprotectedArea : public CS
 
 	SStateDataAction data;
 
-	float3 target_point;
+	fvec3 target_point;
 
   public:
 	CStateMonsterLookToUnprotectedArea(_Object* obj);

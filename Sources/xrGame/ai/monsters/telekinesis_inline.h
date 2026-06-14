@@ -66,7 +66,7 @@ template <typename _Object> void CTelekinesis<_Object>::Deactivate()
 	CPHUpdateObject::Deactivate();
 }
 
-template <typename _Object> void CTelekinesis<_Object>::Throw(const float3& target)
+template <typename _Object> void CTelekinesis<_Object>::Throw(const fvec3& target)
 {
 	if (!active)
 		return;

@@ -39,12 +39,12 @@ const float BAD_PATH_DISTANCE_CHECK = 2.f;
 // Функция расчета точки на сплайне Катмулла-Рома
 // p0, p1, p2, p3 - 4 последовательные точки пути
 // t - параметр от 0.0 до 1.0 (прогресс между p1 и p2)
-float3 SplineCatmullRom(const float3& p0, const float3& p1, const float3& p2, const float3& p3, float t)
+fvec3 SplineCatmullRom(const fvec3& p0, const fvec3& p1, const fvec3& p2, const fvec3& p3, float t)
 {
 	float t2 = t * t;
 	float t3 = t2 * t;
 
-	float3 res;
+	fvec3 res;
 	res.x = 0.5f * ((2.0f * p1.x) + (-p0.x + p2.x) * t + (2.0f * p0.x - 5.0f * p1.x + 4.0f * p2.x - p3.x) * t2 +
 					(-p0.x + 3.0f * p1.x - 3.0f * p2.x + p3.x) * t3);
 
@@ -69,7 +69,7 @@ void CStalkerMovementManager::predict_smooth_direction()
 	if (idx + 2 >= count)
 		return;
 
-	float3 p0, p1, p2, p3;
+	fvec3 p0, p1, p2, p3;
 
 	// P1 - текущая позиция
 	p1 = object().Position();
@@ -93,10 +93,10 @@ void CStalkerMovementManager::predict_smooth_direction()
 	// Для бега смотрим дальше (0.4), для ходьбы чуть ближе (0.3), чтобы точнее входить в повороты
 	float look_ahead_t = (movement_type() == eMovementTypeWalk) ? 0.3f : 0.45f;
 
-	float3 smooth_target = SplineCatmullRom(p0, p1, p2, p3, look_ahead_t);
+	fvec3 smooth_target = SplineCatmullRom(p0, p1, p2, p3, look_ahead_t);
 
 	// Вычисляем направление к этой "мягкой" точке
-	float3 dir;
+	fvec3 dir;
 	dir.sub(smooth_target, object().Position());
 
 	// Защита от нулевого вектора (если мы стоим точно в точке)
@@ -135,7 +135,7 @@ IC float CStalkerMovementManager::path_direction_angle()
 {
 	if (!path().empty() && (path().size() > detail().curr_travel_point_index() + 1))
 	{
-		float3 t;
+		fvec3 t;
 		t.sub(path()[detail().curr_travel_point_index() + 1].position,
 			  path()[detail().curr_travel_point_index()].position);
 		float y, p;
@@ -162,7 +162,7 @@ void CStalkerMovementManager::initialize()
 	set_nearest_accessible_position();
 }
 
-void CStalkerMovementManager::set_desired_position(const float3* desired_position)
+void CStalkerMovementManager::set_desired_position(const fvec3* desired_position)
 {
 	if (desired_position)
 	{
@@ -175,7 +175,7 @@ void CStalkerMovementManager::set_desired_position(const float3* desired_positio
 	{
 		m_target.m_use_desired_position = false;
 #ifdef DEBUG
-		m_target.m_desired_position = float3().set(flt_max, flt_max, flt_max);
+		m_target.m_desired_position = fvec3().set(flt_max, flt_max, flt_max);
 #endif
 	}
 }
@@ -188,7 +188,7 @@ IC void CStalkerMovementManager::setup_body_orientation()
 	if (path().size() <= detail().curr_travel_point_index() + 1)
 		return;
 
-	float3 temp;
+	fvec3 temp;
 	temp.sub(path()[detail().curr_travel_point_index() + 1].position,
 			 path()[detail().curr_travel_point_index()].position);
 	float y, p;
@@ -206,8 +206,8 @@ CStalkerMovementManager::CStalkerMovementManager(CAI_Stalker* object) : inherite
 	m_object = object;
 	m_velocities = 0;
 	m_last_query_object = 0;
-	m_last_query_position = float3().set(flt_max, flt_max, flt_max);
-	m_last_query_object_position = float3().set(flt_max, flt_max, flt_max);
+	m_last_query_position = fvec3().set(flt_max, flt_max, flt_max);
+	m_last_query_object_position = fvec3().set(flt_max, flt_max, flt_max);
 	m_last_query_result = false;
 	m_last_query_distance = flt_max;
 	m_force_update = false;
@@ -302,8 +302,8 @@ void CStalkerMovementManager::reinit()
 
 	m_current.m_use_desired_position = false;
 	m_current.m_use_desired_direction = false;
-	m_current.m_desired_position = float3().set(flt_max, flt_max, flt_max);
-	m_current.m_desired_direction = float3().set(flt_max, flt_max, flt_max);
+	m_current.m_desired_position = fvec3().set(flt_max, flt_max, flt_max);
+	m_current.m_desired_direction = fvec3().set(flt_max, flt_max, flt_max);
 	m_current.m_body_state = eBodyStateStand;
 	m_current.m_movement_type = eMovementTypeStand;
 	m_current.m_mental_state = eMentalStateDanger;
@@ -351,7 +351,7 @@ void CStalkerMovementManager::setup_movement_params()
 		VERIFY(_valid(desired_position()));
 		if (!restrictions().accessible(desired_position()))
 		{
-			float3 temp;
+			fvec3 temp;
 			level_path().set_dest_vertex(restrictions().accessible_nearest(desired_position(), temp));
 			detail().set_dest_position(temp);
 		}
@@ -365,7 +365,7 @@ void CStalkerMovementManager::setup_movement_params()
 		{
 			if (!restrictions().accessible(level_path().dest_vertex_id()))
 			{
-				float3 temp;
+				fvec3 temp;
 				level_path().set_dest_vertex(restrictions().accessible_nearest(
 					ai().level_graph().vertex_position(level_path().dest_vertex_id()), temp));
 				detail().set_dest_position(temp);
@@ -373,7 +373,7 @@ void CStalkerMovementManager::setup_movement_params()
 			else
 			{
 				u32 vertex_id = level_path().dest_vertex_id();
-				float3 vertex_position = ai().level_graph().vertex_position(level_path().dest_vertex_id());
+				fvec3 vertex_position = ai().level_graph().vertex_position(level_path().dest_vertex_id());
 				VERIFY2(restrictions().accessible(vertex_position) || show_restrictions(&restrictions()),
 						make_string("vertex_id[%d],position[%f][%f][%f],object[%s]", vertex_id, VPUSH(vertex_position),
 									*object().cName()));
@@ -650,7 +650,7 @@ void CStalkerMovementManager::set_nearest_accessible_position()
 	set_nearest_accessible_position(object().Position(), object().ai_location().level_vertex_id());
 }
 
-void CStalkerMovementManager::set_nearest_accessible_position(float3 desired_position, u32 level_vertex_id)
+void CStalkerMovementManager::set_nearest_accessible_position(fvec3 desired_position, u32 level_vertex_id)
 {
 	if (!ai().level_graph().inside(level_vertex_id, desired_position))
 		desired_position = ai().level_graph().vertex_position(level_vertex_id);
@@ -659,7 +659,7 @@ void CStalkerMovementManager::set_nearest_accessible_position(float3 desired_pos
 
 	if (!restrictions().accessible(desired_position))
 	{
-		level_vertex_id = restrictions().accessible_nearest(float3().set(desired_position), desired_position);
+		level_vertex_id = restrictions().accessible_nearest(fvec3().set(desired_position), desired_position);
 		VERIFY(restrictions().accessible(level_vertex_id));
 		VERIFY(restrictions().accessible(desired_position));
 	}
@@ -739,8 +739,8 @@ void CStalkerMovementManager::setup_speed_from_animation(const float& speed)
 void CStalkerMovementManager::on_build_path()
 {
 	m_last_query_object = 0;
-	m_last_query_position = float3().set(flt_max, flt_max, flt_max);
-	m_last_query_object_position = float3().set(flt_max, flt_max, flt_max);
+	m_last_query_position = fvec3().set(flt_max, flt_max, flt_max);
+	m_last_query_object_position = fvec3().set(flt_max, flt_max, flt_max);
 	m_last_query_result = false;
 	m_last_query_distance = flt_max;
 }
@@ -776,7 +776,7 @@ bool CStalkerMovementManager::is_object_on_the_way(const CGameObject* object, co
 	return (m_last_query_result);
 }
 
-IC float distance_to_line(const float3& p0, const float3& p1, const float3& p2)
+IC float distance_to_line(const fvec3& p0, const fvec3& p1, const fvec3& p2)
 {
 	if (p0.similar(p2))
 		return (0.f);
@@ -784,22 +784,22 @@ IC float distance_to_line(const float3& p0, const float3& p1, const float3& p2)
 	if (p1.similar(p2))
 		return (0.f);
 
-	float3 p0p2 = float3().sub(p2, p0);
+	fvec3 p0p2 = fvec3().sub(p2, p0);
 	float p0p2_magnitude = p0p2.magnitude();
 	if (p0.similar(p1))
 		return (p0p2_magnitude);
 
 	p0p2.normalize();
 
-	float3 p0p1 = float3().sub(p1, p0);
+	fvec3 p0p1 = fvec3().sub(p1, p0);
 	p0p1.normalize();
 
 	float cos_alpha = p0p2.dotproduct(p0p1);
 	if (cos_alpha < 0.f)
 		return (p0p2_magnitude);
 
-	float3 p1p2 = float3().sub(p2, p1);
-	float3 p1p0 = float3(p0p1).invert();
+	fvec3 p1p2 = fvec3().sub(p2, p1);
+	fvec3 p1p0 = fvec3(p0p1).invert();
 	if (p1p2.dotproduct(p1p0) < 0.f)
 		return (p1p2.magnitude());
 
@@ -824,7 +824,7 @@ void CStalkerMovementManager::update_object_on_the_way(const CGameObject* object
 	m_last_query_result = false;
 	m_last_query_distance = distance;
 
-	float3 position = object->Position();
+	fvec3 position = object->Position();
 	float current_distance = 0.f;
 	xr_vector<STravelPathPoint>::const_iterator I = detail().path().begin() + detail().curr_travel_point_index() + 1;
 	xr_vector<STravelPathPoint>::const_iterator E = detail().path().end();
@@ -867,8 +867,8 @@ void CStalkerMovementManager::check_for_bad_path()
 		return;
 
 	float distance = path[point_index + 1].position.distance_to(object().Position());
-	float3 current_direction = float3().sub(path[point_index + 1].position, path[point_index].position);
-	float3 next_direction;
+	fvec3 current_direction = fvec3().sub(path[point_index + 1].position, path[point_index].position);
+	fvec3 next_direction;
 	if (current_direction.magnitude() >= EPS_L)
 		current_direction.normalize();
 	else
@@ -881,7 +881,7 @@ void CStalkerMovementManager::check_for_bad_path()
 	VERIFY(J != E);
 	for (; J != E; ++I, ++J)
 	{
-		next_direction = float3().sub((*J).position, (*I).position);
+		next_direction = fvec3().sub((*J).position, (*I).position);
 		float magnitude = next_direction.magnitude();
 		distance += magnitude;
 		//. how can it be?
@@ -921,12 +921,12 @@ void CStalkerMovementManager::process_smart_turns()
 	if (point_index + 2 >= path.size())
 		return;
 
-	float3 current_dir = float3().sub(path[point_index + 1].position, path[point_index].position);
+	fvec3 current_dir = fvec3().sub(path[point_index + 1].position, path[point_index].position);
 	if (current_dir.magnitude() < EPS_L)
 		return;
 	current_dir.normalize();
 
-	float3 next_dir = float3().sub(path[point_index + 2].position, path[point_index + 1].position);
+	fvec3 next_dir = fvec3().sub(path[point_index + 2].position, path[point_index + 1].position);
 	if (next_dir.magnitude() < EPS_L)
 		return;
 	next_dir.normalize();

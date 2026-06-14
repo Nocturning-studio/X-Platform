@@ -26,7 +26,7 @@ class CPHFracturesHolder // stored in CPHElement
 	~CPHFracturesHolder();
 	void DistributeAdditionalMass(u16 geom_num, const dMass& m); //
 	void SubFractureMass(u16 fracture_num);
-	void AddImpact(const float3& force, const float3& point, u16 id);
+	void AddImpact(const fvec3& force, const fvec3& point, u16 id);
 	PH_IMPACT_STORAGE& Impacts()
 	{
 		return m_impacts;
@@ -42,7 +42,7 @@ class CPHFracturesHolder // stored in CPHElement
 	u16 CheckFractured(); // returns first breaked fracture
 
 	element_fracture SplitFromEnd(CPHElement* element, u16 geom_num);
-	void InitNewElement(CPHElement* element, const float4x4& shift_pivot, float density);
+	void InitNewElement(CPHElement* element, const fmat4x4& shift_pivot, float density);
 	void PassEndFractures(u16 from, CPHElement* dest);
 
   public:

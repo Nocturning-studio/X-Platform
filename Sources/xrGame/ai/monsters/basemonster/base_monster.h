@@ -106,11 +106,11 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 		return TRUE;
 	}
 	virtual void Die(CObject* who);
-	virtual void HitSignal(float amount, float3& vLocalDir, CObject* who, s16 element);
+	virtual void HitSignal(float amount, fvec3& vLocalDir, CObject* who, s16 element);
 	virtual void Hit(SHit* pHDS);
-	virtual void PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
+	virtual void PHHit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 					   ALife::EHitType hit_type = ALife::eHitTypeWound);
-	virtual void SelectAnimation(const float3& _view, const float3& _move, float speed);
+	virtual void SelectAnimation(const fvec3& _view, const fvec3& _move, float speed);
 
 	virtual void Load(LPCSTR section);
 	virtual DLL_Pure* _construct();
@@ -147,7 +147,7 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 	{
 	}
 
-	virtual void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const float3& Position,
+	virtual void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const fvec3& Position,
 								float power);
 	virtual BOOL feel_vision_isRelevant(CObject* O);
 	virtual BOOL feel_touch_on_contact(CObject* O);
@@ -205,7 +205,7 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 		return false;
 	}
 
-	virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, float3& dir);
+	virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, fvec3& dir);
 	virtual void HitEntityInJump(const CEntity* pEntity)
 	{
 	}
@@ -242,7 +242,7 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 	bool m_script_processing_active;
 	bool m_script_state_must_execute;
 
-	virtual void jump(const float3& position, float factor)
+	virtual void jump(const fvec3& position, float factor)
 	{
 	}
 
@@ -268,7 +268,7 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 	virtual void ForceFinalAnimation()
 	{
 	}
-	virtual void LookPosition(float3 to_point,
+	virtual void LookPosition(fvec3 to_point,
 							  float angular_speed = PI_DIV_3); // каждый монстр может по-разному реализвать эту функ
 															   // (e.g. кровосос с поворотом головы и т.п.)
 
@@ -331,12 +331,12 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 	void UpdateMemory();
 
 	// Cover
-	bool GetCorpseCover(float3& position, u32& vertex_id);
-	bool GetCoverFromEnemy(const float3& enemy_pos, float3& position, u32& vertex_id);
-	bool GetCoverFromPoint(const float3& pos, float3& position, u32& vertex_id, float min_dist, float max_dist,
+	bool GetCorpseCover(fvec3& position, u32& vertex_id);
+	bool GetCoverFromEnemy(const fvec3& enemy_pos, fvec3& position, u32& vertex_id);
+	bool GetCoverFromPoint(const fvec3& pos, fvec3& position, u32& vertex_id, float min_dist, float max_dist,
 						   float radius);
-	bool GetCoverCloseToPoint(const float3& dest_pos, float min_dist, float max_dist, float deviation, float radius,
-							  float3& position, u32& vertex_id);
+	bool GetCoverCloseToPoint(const fvec3& dest_pos, float min_dist, float max_dist, float deviation, float radius,
+							  fvec3& position, u32& vertex_id);
 
 	// Movement Manager
   protected:
@@ -455,8 +455,8 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 
 	void on_kill_enemy(const CEntity* obj);
 	void Hit_Psy(CObject* object, float value);
-	void Hit_Wound(CObject* object, float value, const float3& dir, float impulse);
-	CParticlesObject* PlayParticles(const shared_str& name, const float3& position, const float3& dir,
+	void Hit_Wound(CObject* object, float value, const fvec3& dir, float impulse);
+	CParticlesObject* PlayParticles(const shared_str& name, const fvec3& position, const fvec3& dir,
 									BOOL auto_remove = TRUE, BOOL transformed = TRUE);
 	void load_effector(LPCSTR section, LPCSTR line, SAttackEffector& effector);
 

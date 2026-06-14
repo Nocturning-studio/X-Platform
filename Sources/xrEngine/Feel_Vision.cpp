@@ -39,7 +39,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 	if (NULL == result.O && fis_zero(vis))
 	{
 		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-		float3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+		fvec3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
 		fp->item->Cache.verts[0].set(V[T->verts[0]]);
 		fp->item->Cache.verts[1].set(V[T->verts[1]]);
 		fp->item->Cache.verts[2].set(V[T->verts[2]]);
@@ -98,7 +98,7 @@ void Vision::feel_vision_relcase(CObject* object)
 		}
 }
 
-void Vision::feel_vision_query(float4x4& mFull, float3& P)
+void Vision::feel_vision_query(fmat4x4& mFull, fvec3& P)
 {
 	CFrustum Frustum;
 	Frustum.CreateFromMatrix(mFull, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
@@ -125,7 +125,7 @@ void Vision::feel_vision_query(float4x4& mFull, float3& P)
 	}
 }
 
-void Vision::feel_vision_update(CObject* parent, float3& P, float dt, float vis_threshold)
+void Vision::feel_vision_update(CObject* parent, fvec3& P, float dt, float vis_threshold)
 {
 	// B-A = objects, that become visible
 	if (!seen.empty())
@@ -157,7 +157,7 @@ void Vision::feel_vision_update(CObject* parent, float3& P, float dt, float vis_
 	query = seen;
 	o_trace(P, dt, vis_threshold);
 }
-void Vision::o_trace(float3& P, float dt, float vis_threshold)
+void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 {
 	RQR.r_clear();
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
@@ -178,14 +178,14 @@ void Vision::o_trace(float3& P, float dt, float vis_threshold)
 		I->cp_LR_src = P;
 
 		// Fetch data
-		float3 OP;
-		float4x4 mE;
+		fvec3 OP;
+		fmat4x4 mE;
 		const Fbox& B = I->O->CFORM()->getBBox();
-		const float4x4& M = I->O->Transform();
+		const fmat4x4& M = I->O->Transform();
 
 		// Build OBB + Ellipse and X-form point
-		float3 c, r;
-		float4x4 T, mR, mS;
+		fvec3 c, r;
+		fmat4x4 T, mR, mS;
 		B.getcenter(c);
 		B.getradius(r);
 		T.translate(c);
@@ -196,7 +196,7 @@ void Vision::o_trace(float3& P, float dt, float vis_threshold)
 		I->cp_LAST = OP;
 
 		//
-		float3 D;
+		fvec3 D;
 		D.sub(OP, P);
 		float f = D.magnitude();
 		if (f > fuzzy_guaranteed)

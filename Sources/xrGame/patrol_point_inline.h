@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC const float3& CPatrolPoint::position() const
+IC const fvec3& CPatrolPoint::position() const
 {
 	VERIFY(m_initialized);
 	return (m_position);

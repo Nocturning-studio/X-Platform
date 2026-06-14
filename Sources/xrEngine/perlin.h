@@ -63,7 +63,7 @@ class ENGINE_API CPerlinNoise1D : public CPerlinNoiseCustom
 class ENGINE_API CPerlinNoise2D : public CPerlinNoiseCustom
 {
   private:
-	float noise(const float2& vec);
+	float noise(const fvec2& vec);
 	void normalize(float v[2]);
 
 	float g2[SAMPLE_SIZE + SAMPLE_SIZE + 2][2];
@@ -80,7 +80,7 @@ class ENGINE_API CPerlinNoise2D : public CPerlinNoiseCustom
 class ENGINE_API CPerlinNoise3D : public CPerlinNoiseCustom
 {
   private:
-	float noise(const float3& vec);
+	float noise(const fvec3& vec);
 	void normalize(float v[3]);
 
 	float g3[SAMPLE_SIZE + SAMPLE_SIZE + 2][3];

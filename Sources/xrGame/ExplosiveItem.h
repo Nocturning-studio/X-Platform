@@ -45,8 +45,8 @@ class CExplosiveItem : public CInventoryItemObject, public CDelayedActionFuse, p
 	{
 		return CExplosive::cast_IDamageSource();
 	}
-	virtual void GetRayExplosionSourcePos(float3& pos);
-	virtual void ActivateExplosionBox(const float3& size, float3& in_out_pos);
+	virtual void GetRayExplosionSourcePos(fvec3& pos);
+	virtual void ActivateExplosionBox(const fvec3& size, fvec3& in_out_pos);
 	virtual void OnEvent(NET_Packet& P, u16 type);
 	virtual void Hit(SHit* pHDS);
 	virtual void shedule_Update(u32 dt);

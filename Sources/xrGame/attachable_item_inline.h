@@ -26,7 +26,7 @@ IC shared_str CAttachableItem::bone_name() const
 	return (m_bone_name);
 }
 
-IC const float4x4& CAttachableItem::offset() const
+IC const fmat4x4& CAttachableItem::offset() const
 {
 	VERIFY(m_valid);
 	return (m_offset);

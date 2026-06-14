@@ -141,10 +141,10 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 	case GE_HIT_STATISTIC: {
 		/*
 					u16				id,weapon_id;
-					float3			dir;
+					fvec3			dir;
 					float			power, impulse;
 					s16				element;
-					float3			position_in_bone_space;
+					fvec3			position_in_bone_space;
 					u16				hit_type;
 					float			ap = 0.0f;
 
@@ -570,7 +570,7 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 
 	//	CTimer							timer;
 	//	timer.Start						();
-	float3 center;
+	fvec3 center;
 	Center(center);
 	center.x = Position().x;
 	center.z = Position().z;
@@ -584,7 +584,7 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 
 #if 0
 	if (decrement_reference && (ai_location().level_vertex_id() != l_dwNewLevelVertexID)) {
-		float3						new_position = ai().level_graph().vertex_position(l_dwNewLevelVertexID);
+		fvec3						new_position = ai().level_graph().vertex_position(l_dwNewLevelVertexID);
 		if (Position().y - new_position.y >= 1.5f) {
 			u32						new_vertex_id = ai().level_graph().vertex(ai_location().level_vertex_id(),center);
 			new_vertex_id			= new_vertex_id;
@@ -630,24 +630,24 @@ void CGameObject::dbg_DrawSkeleton()
 		switch (I->type)
 		{
 		case SBoneShape::stBox: {
-			float4x4 M;
+			fmat4x4 M;
 			M.invert(I->b_IM);
-			float3 h_size = I->b_hsize;
+			fvec3 h_size = I->b_hsize;
 			Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 255, 0, 255));
 		}
 		break;
 		case SBoneShape::stCylinder: {
-			float4x4 M;
+			fmat4x4 M;
 			M.c.set(I->c_cylinder.m_center);
 			M.k.set(I->c_cylinder.m_direction);
-			float3 h_size;
+			fvec3 h_size;
 			h_size.set(I->c_cylinder.m_radius, I->c_cylinder.m_radius, I->c_cylinder.m_height * 0.5f);
-			float3::generate_orthonormal_basis(M.k, M.j, M.i);
+			fvec3::generate_orthonormal_basis(M.k, M.j, M.i);
 			Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 127, 255, 255));
 		}
 		break;
 		case SBoneShape::stSphere: {
-			float4x4 l_ball;
+			fmat4x4 l_ball;
 			l_ball.scale(I->s_sphere.R, I->s_sphere.R, I->s_sphere.R);
 			l_ball.translate_add(I->s_sphere.P);
 			Level().debug_renderer().draw_ellipse(l_ball, color_rgba(0, 255, 0, 255));
@@ -719,9 +719,9 @@ void CGameObject::OnRender()
 {
 	if (bDebug && Visual())
 	{
-		float3 bc, bd;
+		fvec3 bc, bd;
 		Visual()->vis.box.get_CD(bc, bd);
-		float4x4 M = Transform();
+		fmat4x4 M = Transform();
 		M.c.add(bc);
 		Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
 	}

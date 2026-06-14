@@ -215,7 +215,7 @@ void CMovementManager::update_path()
 			m_path_state = ePathStateBuildLevelPath;
 			if (!restrictions().accessible(level_path().dest_vertex_id()))
 			{
-				float3 temp;
+				fvec3 temp;
 				level_path().set_dest_vertex(restrictions().accessible_nearest(
 					ai().level_graph().vertex_position(level_path().dest_vertex_id()), temp));
 				detail().set_dest_position(temp);
@@ -301,7 +301,7 @@ void CMovementManager::teleport(u32 game_vertex_id)
 	NET_Packet net_packet;
 	GameGraph::_GRAPH_ID _game_vertex_id = (GameGraph::_GRAPH_ID)game_vertex_id;
 	u32 _level_vertex_id = ai().game_graph().vertex(_game_vertex_id)->level_vertex_id();
-	float3 position = ai().game_graph().vertex(_game_vertex_id)->level_point();
+	fvec3 position = ai().game_graph().vertex(_game_vertex_id)->level_point();
 	object().u_EventGen(net_packet, GE_TELEPORT_OBJECT, object().ID());
 	net_packet.w(&_game_vertex_id, sizeof(_game_vertex_id));
 	net_packet.w(&_level_vertex_id, sizeof(_level_vertex_id));
@@ -373,7 +373,7 @@ bool CMovementManager::can_use_distributed_compuations(u32 option) const
 	return (!m_build_at_once && g_mt_config.test(option) && !object().getDestroy());
 }
 
-void CMovementManager::on_frame(CPHMovementControl* movement_control, float3& dest_position)
+void CMovementManager::on_frame(CPHMovementControl* movement_control, fvec3& dest_position)
 {
 	//OPTICK_EVENT("CMovementManager::on_frame");
 

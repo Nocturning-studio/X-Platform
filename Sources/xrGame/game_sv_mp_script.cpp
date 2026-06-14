@@ -108,7 +108,7 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 	}
 	else if (pS)
 	{
-		float3 Pos, Angle;
+		fvec3 Pos, Angle;
 		///			ps_who->setFlag(GAME_PLAYER_FLAG_CS_SPECTATOR);
 		if (!GetPosAngleFromActor(id, Pos, Angle))
 			assign_RP(E, ps_who);

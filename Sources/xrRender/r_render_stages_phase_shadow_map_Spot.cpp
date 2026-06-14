@@ -47,7 +47,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		RenderBackendLegacy.set_Element(shader->E[SE_L_FILL]);
 
 		// Fill vertex buffer
-		float2 p0, p1;
+		fvec2 p0, p1;
 		u32 Offset;
 		u32 C = color_rgba(255, 255, 255, 255);
 		float _w = float(L->TransformContext.ShadowContext.size);

@@ -53,9 +53,9 @@ bool CStalkerActionCombatBase::fire_make_sense() const
 
 void CStalkerActionCombatBase::fire()
 {
-	float3 enemy_position = object().memory().enemy().selected()->Position();
-	float3 object_position = object().Position();
-	float3 direction = float3().sub(enemy_position, object_position);
+	fvec3 enemy_position = object().memory().enemy().selected()->Position();
+	fvec3 object_position = object().Position();
+	fvec3 direction = fvec3().sub(enemy_position, object_position);
 	float yaw, pitch;
 	direction.getHP(yaw, pitch);
 	const MonsterSpace::SBoneRotation& current_angles = object().movement().head_orientation();

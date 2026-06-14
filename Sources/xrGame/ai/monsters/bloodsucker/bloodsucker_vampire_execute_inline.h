@@ -160,10 +160,10 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::look_head()
 {
 	CKinematics* pK = smart_cast<CKinematics*>(object->Visual());
-	float4x4 bone_transform;
+	fmat4x4 bone_transform;
 	bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
 
-	float4x4 global_transform;
+	fmat4x4 global_transform;
 	global_transform.mul_43(object->Transform(), bone_transform);
 
 	object->CControlledActor::look_point(global_transform.c);

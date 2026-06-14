@@ -9,7 +9,7 @@ template <typename _Object> class CStateMonsterDangerMoveToHomePoint : public CS
 
 	u32 m_target_node;
 	bool m_skip_camp;
-	float3 m_danger_pos;
+	fvec3 m_danger_pos;
 
   public:
 	CStateMonsterDangerMoveToHomePoint(_Object* obj);
@@ -24,7 +24,7 @@ template <typename _Object> class CStateMonsterDangerMoveToHomePoint : public CS
 	virtual void setup_substates();
 
   private:
-	float3& get_most_danger_pos();
+	fvec3& get_most_danger_pos();
 };
 
 #include "monster_state_home_point_danger_inline.h"

@@ -28,7 +28,7 @@
 #include "../../../ActorEffector.h"
 #include "../../../../xrEngine/CameraBase.h"
 
-void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const float3& Position,
+void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const fvec3& Position,
 								  float power)
 {
 	if (!g_Alive())
@@ -46,7 +46,7 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 		return;
 
 	// ignore distant sounds
-	float3 center;
+	fvec3 center;
 	Center(center);
 	float dist = center.distance_to(Position);
 	if (dist > db().m_max_hear_dist)
@@ -82,7 +82,7 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 }
 #define MAX_LOCK_TIME 2.f
 
-void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impulse, float3& dir)
+void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impulse, fvec3& dir)
 {
 	//OPTICK_EVENT("CBaseMonster::HitEntity");
 
@@ -96,11 +96,11 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
 
 	if (EnemyMan.get_enemy() == pEntity)
 	{
-		float3 position_in_bone_space;
+		fvec3 position_in_bone_space;
 		position_in_bone_space.set(0.f, 0.f, 0.f);
 
 		// перевод из локальных координат в мировые вектора направления импульса
-		float3 hit_dir;
+		fvec3 hit_dir;
 		Transform().transform_dir(hit_dir, dir);
 		hit_dir.normalize();
 
@@ -132,11 +132,11 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
 			float h1, p1;
 			Engine.RenderView.Direction.getHP(h1, p1);
 
-			float3 hd = hit_dir;
+			fvec3 hd = hit_dir;
 			hd.mul(-1);
 			float d = -h1 + hd.getH();
 			s->wnd()->SetHeading(d);
-			s->wnd()->SetHeadingPivot(float2().set(256, 512));
+			s->wnd()->SetHeadingPivot(fvec2().set(256, 512));
 			STOP_PROFILE;
 
 			// SetAttackEffector			();
@@ -156,17 +156,17 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
 				if (eff_sect.c_str())
 				{
 					int id = -1;
-					float3 cam_pos, cam_dir, cam_norm;
+					fvec3 cam_pos, cam_dir, cam_norm;
 					Actor()->cam_Active()->Get(cam_pos, cam_dir, cam_norm);
 					cam_dir.normalize_safe();
 					dir.normalize_safe();
 
 					float ang_diff = angle_difference(cam_dir.getH(), dir.getH());
-					float3 cp;
+					fvec3 cp;
 					cp.crossproduct(cam_dir, dir);
 					bool bUp = (cp.y > 0.0f);
 
-					float3 cross;
+					fvec3 cross;
 					cross.crossproduct(cam_dir, dir);
 					VERIFY(ang_diff >= 0.0f && ang_diff <= PI);
 
@@ -249,7 +249,7 @@ BOOL CBaseMonster::feel_vision_isRelevant(CObject* O)
 	return TRUE;
 }
 
-void CBaseMonster::HitSignal(float amount, float3& vLocalDir, CObject* who, s16 element)
+void CBaseMonster::HitSignal(float amount, fvec3& vLocalDir, CObject* who, s16 element)
 {
 	if (!g_Alive())
 		return;
@@ -311,18 +311,18 @@ void CBaseMonster::Hit_Psy(CObject* object, float value)
 	HS.GenHeader(GE_HIT, object->ID()); //					//	u_EventGen		(P,GE_HIT, object->ID()); //
 	HS.whoID = (ID());					// own		//	P.w_u16			(ID());									// own
 	HS.weaponID = (ID());				// own		//	P.w_u16			(ID());									// own
-	HS.dir = (float3().set(0.f, 1.f,
-							0.f)); // direction	//	P.w_dir			(float3().set(0.f,1.f,0.f));			// direction
+	HS.dir = (fvec3().set(0.f, 1.f,
+							0.f)); // direction	//	P.w_dir			(fvec3().set(0.f,1.f,0.f));			// direction
 	HS.power = (value);			   // hit value	//	P.w_float		(value);								// hit value
 	HS.boneID = (BI_NONE);		   // bone		//	P.w_s16			(BI_NONE);								// bone
-	HS.p_in_bone_space = (float3().set(0.f, 0.f, 0.f)); //	P.w_vec3		(float3().set(0.f,0.f,0.f));
+	HS.p_in_bone_space = (fvec3().set(0.f, 0.f, 0.f)); //	P.w_vec3		(fvec3().set(0.f,0.f,0.f));
 	HS.impulse = (0.f);									 //	P.w_float		(0.f);
 	HS.hit_type = (ALife::eHitTypeTelepatic);			 //	P.w_u16			(u16(ALife::eHitTypeTelepatic));
 	HS.Write_Packet(P);
 	u_EventSend(P);
 }
 
-void CBaseMonster::Hit_Wound(CObject* object, float value, const float3& dir, float impulse)
+void CBaseMonster::Hit_Wound(CObject* object, float value, const fvec3& dir, float impulse)
 {
 	NET_Packet P;
 	SHit HS;
@@ -334,7 +334,7 @@ void CBaseMonster::Hit_Wound(CObject* object, float value, const float3& dir, fl
 	HS.boneID =
 		(smart_cast<CKinematics*>(object->Visual())
 			 ->LL_GetBoneRoot()); //	P.w_s16		(smart_cast<CKinematics*>(object->Visual())->LL_GetBoneRoot());
-	HS.p_in_bone_space = (float3().set(0.f, 0.f, 0.f)); //	P.w_vec3	(float3().set(0.f,0.f,0.f));
+	HS.p_in_bone_space = (fvec3().set(0.f, 0.f, 0.f)); //	P.w_vec3	(fvec3().set(0.f,0.f,0.f));
 	HS.impulse = (impulse);								 //	P.w_float	(impulse);
 	HS.hit_type = (ALife::eHitTypeWound);				 //	P.w_u16		(u16(ALife::eHitTypeWound));
 	HS.Write_Packet(P);

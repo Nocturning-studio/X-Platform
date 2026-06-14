@@ -68,7 +68,7 @@ const u32 FIRE_MAKE_SENSE_INTERVAL = 10000;
 #define HIT_UNKNOWN 4
 
 // Вспомогательная функция для определения направления попадания
-int GetHitDirection(const float3& hit_dir_local)
+int GetHitDirection(const fvec3& hit_dir_local)
 {
 	if (_abs(hit_dir_local.z) > _abs(hit_dir_local.x))
 	{
@@ -198,7 +198,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 		return (base * m_disp_stand_crouch_zoom);
 }
 
-void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, float3& P, float3& D)
+void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 {
 	//.	VERIFY				(inventory().ActiveItem());
 	if (!inventory().ActiveItem())
@@ -207,7 +207,7 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, float3& P, float3& D)
 		Msg("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
 #endif // DEBUG
 		P = Position();
-		D = float3().set(0.f, 0.f, 1.f);
+		D = fvec3().set(0.f, 0.f, 1.f);
 		return;
 	}
 
@@ -242,7 +242,7 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, float3& P, float3& D)
 	// --- [IMPROVEMENT] SUPPRESSION FIRE TARGETING ---
 	const CEntityAlive* enemy = memory().enemy().selected();
 	bool suppress_fire = false;
-	float3 aim_target_pos = {0, 0, 0};
+	fvec3 aim_target_pos = {0, 0, 0};
 
 	// Если врага не видно ИЛИ мы в ярости (Counter-Attack)
 	if (enemy && (!memory().visual().visible_right_now(enemy) || m_is_counter_attacking))
@@ -282,9 +282,9 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, float3& P, float3& D)
 			if (suppress_fire)
 			{
 				// При движении нужна коррекция позиции оружия
-				float3 fire_dir;
+				fvec3 fire_dir;
 				// Центр сталкера
-				float3 center;
+				fvec3 center;
 				Center(center);
 				// Стреляем от центра (грубо) в сторону фантома
 				fire_dir.sub(aim_target_pos, center).normalize();
@@ -429,7 +429,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 				}
 
 				// Преобразуем направление попадания в локальные координаты модели
-				float3 local_hit_dir;
+				fvec3 local_hit_dir;
 				Transform().transform_dir(local_hit_dir, pHDS->direction());
 				local_hit_dir.normalize();
 
@@ -492,7 +492,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 	inherited::Hit(&HDS);
 }
 
-void CAI_Stalker::HitSignal(float amount, float3& vLocalDir, CObject* who, s16 element)
+void CAI_Stalker::HitSignal(float amount, fvec3& vLocalDir, CObject* who, s16 element)
 {
 	if (getDestroy())
 		return;
@@ -805,7 +805,7 @@ IC BOOL ray_query_callback(collide::rq_result& result, LPVOID params)
 	return (false);
 }
 
-void CAI_Stalker::can_kill_entity(const float3& position, const float3& direction, float distance,
+void CAI_Stalker::can_kill_entity(const fvec3& position, const fvec3& direction, float distance,
 								  collide::rq_results& rq_storage)
 {
 	VERIFY(!fis_zero(direction.square_magnitude()));
@@ -821,7 +821,7 @@ void CAI_Stalker::can_kill_entity(const float3& position, const float3& directio
 	m_pick_distance = std::max(m_pick_distance, params.m_pick_distance);
 }
 
-void CAI_Stalker::can_kill_entity_from(const float3& position, float3 direction, float distance)
+void CAI_Stalker::can_kill_entity_from(const fvec3& position, fvec3 direction, float distance)
 {
 	m_pick_distance = 0.f;
 	rq_storage.r_clear();
@@ -878,7 +878,7 @@ void CAI_Stalker::update_can_kill_info()
 	m_can_kill_member = false;
 	m_can_kill_enemy = false;
 
-	float3 position, direction;
+	fvec3 position, direction;
 	VERIFY(inventory().ActiveItem());
 	g_fireParams(0, position, direction);
 	can_kill_entity_from(position, direction, start_pick_distance());
@@ -1147,7 +1147,7 @@ float CAI_Stalker::missile_throw_force()
 	return (m_throw_force);
 }
 
-void CAI_Stalker::throw_target(const float3& position)
+void CAI_Stalker::throw_target(const fvec3& position)
 {
 	float distance_to_sqr = position.distance_to_sqr(m_throw_target);
 	m_throw_actual = m_throw_actual && (distance_to_sqr < _sqr(.1f));
@@ -1175,7 +1175,7 @@ void CAI_Stalker::update_throw_params()
 	m_throw_position = eye_matrix.c;
 
 	// computing velocity with minimum magnitude
-	float3 velocity;
+	fvec3 velocity;
 	velocity.sub(m_throw_target, m_throw_position);
 	float time = ThrowMinVelTime(velocity, ph_world->Gravity());
 	TransferenceToThrowVel(velocity, time, ph_world->Gravity());

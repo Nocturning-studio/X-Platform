@@ -62,7 +62,7 @@ void CGraviArtefact::UpdateCLChild()
 	{
 		if (m_fJumpHeight)
 		{
-			float3 dir;
+			fvec3 dir;
 			dir.set(0, -1.f, 0);
 			collide::rq_result RQ;
 
@@ -84,8 +84,8 @@ void CGraviArtefact::UpdateCLChild()
 			if (K)
 			{
 				K->CalculateBones();
-				float4x4 Ruck_MTX = K->LL_GetTransform(m_CarringBoneID);
-				float3 x;
+				fmat4x4 Ruck_MTX = K->LL_GetTransform(m_CarringBoneID);
+				fvec3 x;
 				x.set(-0.1f, 0.f, -0.3f);
 				Ruck_MTX.translate_add(x);
 				Ruck_MTX.mulA_43(Transform());

@@ -76,7 +76,7 @@ class ENGINE_API CInput
 	void iRelease(IInputReceiver* pc);
 	BOOL iGetAsyncKeyState(int dik);
 	BOOL iGetAsyncBtnState(int btn);
-	void iGetLastMouseDelta(int2& p)
+	void iGetLastMouseDelta(ivec2& p)
 	{
 		p.set(offs[0], offs[1]);
 	}

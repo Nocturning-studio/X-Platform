@@ -1,19 +1,19 @@
 #include "stdafx.h"
 #include "ISpatial.h"
 
-extern float3 c_spatial_offset[8];
+extern fvec3 c_spatial_offset[8];
 
 template <bool b_first> class walker
 {
   public:
 	u32 mask;
-	float3 center;
-	float3 size;
+	fvec3 center;
+	fvec3 size;
 	Fbox box;
 	ISpatial_DB* space;
 
   public:
-	walker(ISpatial_DB* _space, u32 _mask, const float3& _center, const float3& _size)
+	walker(ISpatial_DB* _space, u32 _mask, const fvec3& _center, const fvec3& _size)
 	{
 		mask = _mask;
 		center = _center;
@@ -21,7 +21,7 @@ template <bool b_first> class walker
 		box.setb(center, size);
 		space = _space;
 	}
-	void walk(ISpatial_NODE* N, float3& n_C, float n_R)
+	void walk(ISpatial_NODE* N, fvec3& n_C, float n_R)
 	{
 		// box
 		float n_vR = 2 * n_R;
@@ -39,7 +39,7 @@ template <bool b_first> class walker
 			if (0 == (S->spatial.type & mask))
 				continue;
 
-			float3& sC = S->spatial.sphere.P;
+			fvec3& sC = S->spatial.sphere.P;
 			float sR = S->spatial.sphere.R;
 			Fbox sB;
 			sB.set(sC.x - sR, sC.y - sR, sC.z - sR, sC.x + sR, sC.y + sR, sC.z + sR);
@@ -57,7 +57,7 @@ template <bool b_first> class walker
 		{
 			if (0 == N->children[octant])
 				continue;
-			float3 c_C;
+			fvec3 c_C;
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);
 			walk(N->children[octant], c_C, c_R);
 			if (b_first && !space->q_result->empty())
@@ -66,7 +66,7 @@ template <bool b_first> class walker
 	}
 };
 
-void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const float3& _center, const float3& _size)
+void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const fvec3& _center, const fvec3& _size)
 {
 	cs.Enter();
 	q_result = &R;
@@ -84,8 +84,8 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const float3
 	cs.Leave();
 }
 
-void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const float3& _center, const float _radius)
+void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const fvec3& _center, const float _radius)
 {
-	float3 _size = {_radius, _radius, _radius};
+	fvec3 _size = {_radius, _radius, _radius};
 	q_box(R, _o, _mask, _center, _size);
 }

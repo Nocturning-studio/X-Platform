@@ -79,14 +79,14 @@ struct ECORE_API ogf_desc
 // OGF_BBOX
 struct ogf_bbox
 {
-	float3 min;
-	float3 max;
+	fvec3 min;
+	fvec3 max;
 };
 
 // OGF_BSPHERE
 struct ogf_bsphere
 {
-	float3 c;
+	fvec3 c;
 	float r;
 };
 

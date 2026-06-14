@@ -92,7 +92,7 @@ void CActor::cam_UnsetLadder()
 }
 float CActor::CameraHeight()
 {
-	float3 R;
+	fvec3 R;
 	character_physics_support()->movement()->Box().getsize(R);
 	return m_fCamHeightFactor * R.y;
 }
@@ -105,17 +105,17 @@ IC float viewport_near(float& w, float& h)
 	return _max(_max(VIEWPORT_NEAR, _max(w, h)), c);
 }
 
-ICF void calc_point(float3& pt, float radius, float depth, float alpha)
+ICF void calc_point(fvec3& pt, float radius, float depth, float alpha)
 {
 	pt.x = radius * _sin(alpha);
 	pt.y = radius + radius * _cos(alpha);
 	pt.z = depth;
 }
 
-ICF BOOL test_point(xrXRC& xrc, const float4x4& transform, const float3x3& mat, const float3& ext, float radius,
+ICF BOOL test_point(xrXRC& xrc, const fmat4x4& transform, const fmat3x3& mat, const fvec3& ext, float radius,
 					float angle)
 {
-	float3 pt;
+	fvec3 pt;
 	calc_point(pt, radius, VIEWPORT_NEAR / 2, angle);
 	transform.transform_tiny(pt);
 
@@ -143,9 +143,9 @@ void CActor::cam_Update(float dt, float fFOV)
 	if (mstate_real & mcClimb && cam_active != eacFreeLook)
 		camUpdateLadder(dt);
 
-	float3 point = {0, CameraHeight(), 0}, dangle = {0, 0, 0};
+	fvec3 point = {0, CameraHeight(), 0}, dangle = {0, 0, 0};
 
-	float4x4 transform, transformR;
+	fmat4x4 transform, transformR;
 	transform.setXYZ(0, r_torso.yaw, 0);
 	transform.translate_over(Transform().c);
 
@@ -154,7 +154,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		if (!fis_zero(r_torso_tgt_roll))
 		{
-			float3 src_pt, tgt_pt;
+			fvec3 src_pt, tgt_pt;
 			float radius = point.y * 0.5f;
 			float alpha = r_torso_tgt_roll / 2.f;
 			float dZ = ((PI_DIV_2 - ((PI + alpha) / 2)));
@@ -164,7 +164,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			float valid_angle = alpha;
 			// transform with roll
 			transformR.setXYZ(-r_torso.pitch, r_torso.yaw, -dZ);
-			float3x3 mat;
+			fmat3x3 mat;
 			mat.i = transformR.i;
 			mat.j = transformR.j;
 			mat.k = transformR.k;
@@ -181,7 +181,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			box.grow(c);
 
 			// query
-			float3 bc, bd;
+			fvec3 bc, bd;
 			Fbox xf;
 			xf.transform(box, transform);
 			xf.get_CD(bc, bd);
@@ -194,7 +194,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			{
 				float da = 0.f;
 				BOOL bIntersect = FALSE;
-				float3 ext = {w, h, VIEWPORT_NEAR / 2};
+				fvec3 ext = {w, h, VIEWPORT_NEAR / 2};
 				if (test_point(xrc, transform, mat, ext, radius, alpha))
 				{
 					da = PI / 1000.f;
@@ -307,7 +307,7 @@ void CActor::update_camera(CCameraShotEffector* effector)
 }
 
 #ifdef DEBUG
-void dbg_draw_frustum(float FOV, float _FAR, float A, float3& P, float3& D, float3& U);
+void dbg_draw_frustum(float FOV, float _FAR, float A, fvec3& P, fvec3& D, fvec3& U);
 extern Flags32 dbg_net_Draw_Flags;
 
 void CActor::OnRender()

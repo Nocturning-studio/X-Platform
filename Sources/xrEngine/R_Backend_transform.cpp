@@ -3,7 +3,7 @@
 
 #include "r_backend_transform.h"
 
-void R_transforms::set_World(const float4x4& m)
+void R_transforms::set_World(const fmat4x4& m)
 {
 	m_World.set(m);
 	m_WorldView.mul_43(m_View, m_World);
@@ -18,7 +18,7 @@ void R_transforms::set_World(const float4x4& m)
 	if (c_InvWorld)
 		apply_InvWorld();
 }
-void R_transforms::set_View(const float4x4& m)
+void R_transforms::set_View(const fmat4x4& m)
 {
 	m_View.set(m);
 	m_WorldView.mul_43(m_View, m_World);
@@ -33,7 +33,7 @@ void R_transforms::set_View(const float4x4& m)
 	if (c_WorldViewProject)
 		RenderBackendLegacy.set_Constant(c_WorldViewProject, m_WorldViewProject);
 }
-void R_transforms::set_Project(const float4x4& m)
+void R_transforms::set_Project(const fmat4x4& m)
 {
 	m_Project.set(m);
 	m_ViewProject.mul(m_Project, m_View);

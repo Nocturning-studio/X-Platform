@@ -11,7 +11,7 @@
 #include "../xrEngine/render.h"
 #include "../xrEngine/IGame_Persistent.h"
 
-const float3 zero_vel = {0.f, 0.f, 0.f};
+const fvec3 zero_vel = {0.f, 0.f, 0.f};
 
 CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load)
 	: inherited(destroy_on_game_load)
@@ -87,7 +87,7 @@ void CParticlesObject::UpdateSpatial()
 	// spatial	(+ workaround occasional bug inside particle-system)
 	if (_valid(renderable.visual->vis.sphere))
 	{
-		float3 P;
+		fvec3 P;
 		float R;
 		renderable.transform.transform_tiny(P, renderable.visual->vis.sphere.P);
 		R = renderable.visual->vis.sphere.R;
@@ -139,14 +139,14 @@ void CParticlesObject::Play()
 	m_bStopping = false;
 }
 
-void CParticlesObject::play_at_pos(const float3& pos, BOOL transform)
+void CParticlesObject::play_at_pos(const fvec3& pos, BOOL transform)
 {
 	if (g_dedicated_server)
 		return;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
 	VERIFY(V);
-	float4x4 m;
+	fmat4x4 m;
 	m.translate(pos);
 	V->UpdateParent(m, zero_vel, transform);
 	V->Play();
@@ -230,7 +230,7 @@ void CParticlesObject::PerformAllTheWork_mt()
 	mt_dt = 0;
 }
 
-void CParticlesObject::SetTransform(const float4x4& m)
+void CParticlesObject::SetTransform(const fmat4x4& m)
 {
 	if (g_dedicated_server)
 		return;
@@ -242,7 +242,7 @@ void CParticlesObject::SetTransform(const float4x4& m)
 	UpdateSpatial();
 }
 
-void CParticlesObject::UpdateParent(const float4x4& m, const float3& vel)
+void CParticlesObject::UpdateParent(const fmat4x4& m, const fvec3& vel)
 {
 	if (g_dedicated_server)
 		return;
@@ -253,11 +253,11 @@ void CParticlesObject::UpdateParent(const float4x4& m, const float3& vel)
 	UpdateSpatial();
 }
 
-float3& CParticlesObject::Position()
+fvec3& CParticlesObject::Position()
 {
 	if (g_dedicated_server)
 	{
-		static float3 _pos = float3().set(0, 0, 0);
+		static fvec3 _pos = fvec3().set(0, 0, 0);
 		return _pos;
 	}
 	return renderable.visual->vis.sphere.P;

@@ -77,13 +77,13 @@ void SBinocVisibleObj::Update()
 
 	Fbox b = m_object->Visual()->vis.box;
 
-	float4x4 transform;
+	fmat4x4 transform;
 	transform.mul(Engine.RenderView.ViewProjection, m_object->Transform());
-	float2 mn = {flt_max, flt_max}, mx = {flt_min, flt_min};
+	fvec2 mn = {flt_max, flt_max}, mx = {flt_min, flt_min};
 
 	for (u32 k = 0; k < 8; ++k)
 	{
-		float3 p;
+		fvec3 p;
 		b.getpoint(k, p);
 		transform.transform(p);
 		mn.x = _min(mn.x, p.x);
@@ -256,7 +256,7 @@ void CBinocularsVision::Update()
 			new_vis_obj->create_default(m_frame_color.get());
 			new_vis_obj->m_upd_speed = m_rotating_speed;
 			if (NULL == m_snd_found._feedback())
-				m_snd_found.play_at_pos(0, float3().set(0, 0, 0), sm_2D);
+				m_snd_found.play_at_pos(0, fvec3().set(0, 0, 0), sm_2D);
 		}
 	}
 	concurrency::parallel_sort(m_active_objects.begin(), m_active_objects.end());

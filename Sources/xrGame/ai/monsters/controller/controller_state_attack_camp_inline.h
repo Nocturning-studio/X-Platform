@@ -22,9 +22,9 @@ void CStateControlCampAbstract::initialize()
 	m_angle_from = angle_normalize(angle - ANGLE_DISP);
 	m_angle_to = angle_normalize(angle + ANGLE_DISP);
 
-	float3 trace_from;
+	fvec3 trace_from;
 	object->Center(trace_from);
-	float3 direction;
+	fvec3 direction;
 
 	// trace discretely left
 	for (float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang - ANGLE_DISP_STEP))
@@ -62,8 +62,8 @@ void CStateControlCampAbstract::initialize()
 
 	m_target_angle = m_angle_from;
 
-	float3 pos;
-	pos.mad(object->Position(), float3().setHP(angle, 0.f), 3.f);
+	fvec3 pos;
+	pos.mad(object->Position(), fvec3().setHP(angle, 0.f), 3.f);
 	object->dir().face_target(pos);
 }
 
@@ -72,8 +72,8 @@ void CStateControlCampAbstract::execute()
 {
 	update_target_angle();
 
-	float3 point;
-	point.mad(object->Position(), float3().setHP(m_target_angle, 0.f), 3.f);
+	fvec3 point;
+	point.mad(object->Position(), fvec3().setHP(m_target_angle, 0.f), 3.f);
 
 	object->custom_dir().head_look_point(point);
 	object->custom_anim().set_body_state(CControllerAnimation::eTorsoIdle, CControllerAnimation::eLegsTypeSteal);

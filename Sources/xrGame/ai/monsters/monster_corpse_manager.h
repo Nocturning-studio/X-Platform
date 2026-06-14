@@ -8,7 +8,7 @@ class CMonsterCorpseManager
 	CBaseMonster* monster;
 
 	const CEntityAlive* corpse;
-	float3 position;
+	fvec3 position;
 	u32 vertex;
 	TTime time_last_seen;
 
@@ -28,7 +28,7 @@ class CMonsterCorpseManager
 	{
 		return corpse;
 	}
-	const float3& get_corpse_position()
+	const fvec3& get_corpse_position()
 	{
 		return position;
 	}

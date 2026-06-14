@@ -6,13 +6,13 @@
 struct actor_mp_state
 {
 	Fquaternion physics_quaternion;
-	float3 physics_angular_velocity;
-	float3 physics_linear_velocity;
-	float3 physics_force;
-	float3 physics_torque;
-	float3 physics_position;
-	float3 position; // should be removed in future(?)
-	float3 logic_acceleration;
+	fvec3 physics_angular_velocity;
+	fvec3 physics_linear_velocity;
+	fvec3 physics_force;
+	fvec3 physics_torque;
+	fvec3 physics_position;
+	fvec3 position; // should be removed in future(?)
+	fvec3 logic_acceleration;
 
 	float model_yaw;
 	float camera_yaw;	// should be removed in future

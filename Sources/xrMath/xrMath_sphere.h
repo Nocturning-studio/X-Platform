@@ -2,7 +2,7 @@
 
 #include "xrMath_common.h"
 #include "xrMath_types.h"
-#include "xrMath_vector3d.h"
+#include "xrMath_vector3.h"
 
 template <class T> struct _sphere
 {
@@ -189,4 +189,4 @@ template <class T> BOOL _valid(const _sphere<T>& s)
 	return _valid(s.P) && _valid(s.R);
 }
 
-void XRMATH_API Fsphere_compute(Fsphere& dest, const float3* verts, int count);
+void XRMATH_API Fsphere_compute(Fsphere& dest, const fvec3* verts, int count);

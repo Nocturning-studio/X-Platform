@@ -31,8 +31,8 @@ class CStalkerMovementParams
 	friend class CStalkerMovementManager;
 
   private:
-	float3 m_desired_position;
-	float3 m_desired_direction;
+	fvec3 m_desired_position;
+	fvec3 m_desired_direction;
 	MonsterSpace::EBodyState m_body_state;
 	MonsterSpace::EMovementType m_movement_type;
 	MonsterSpace::EMentalState m_mental_state;

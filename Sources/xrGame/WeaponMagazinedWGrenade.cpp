@@ -284,7 +284,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 	if (m_bGrenadeMode)
 	{
 		fTime -= dt;
-		float3 p1, d;
+		fvec3 p1, d;
 		p1.set(get_LastFP2());
 		d.set(get_LastFD());
 
@@ -340,7 +340,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 	// стрельнуть из подствольника
 	if (m_bGrenadeMode && GetState() == eIdle && S == eFire && getRocketCount())
 	{
-		float3 p1, d;
+		fvec3 p1, d;
 		p1.set(get_LastFP2());
 		d.set(get_LastFD());
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
@@ -361,10 +361,10 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 		if (IsGameTypeSingle())
 			p1.set(get_LastFP2());
 
-		float4x4 launch_matrix;
+		fmat4x4 launch_matrix;
 		launch_matrix.identity();
 		launch_matrix.k.set(d);
-		float3::generate_orthonormal_basis(launch_matrix.k, launch_matrix.j, launch_matrix.i);
+		fvec3::generate_orthonormal_basis(launch_matrix.k, launch_matrix.j, launch_matrix.i);
 		launch_matrix.c.set(p1);
 
 		if (IsZoomed() && H_Parent()->CLS_ID == CLSID_OBJECT_ACTOR)
@@ -380,18 +380,18 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 
 			if (HasPick)
 			{
-				float3 Transference;
+				fvec3 Transference;
 				Transference.mul(d, RQ.range);
-				float3 res[2];
+				fvec3 res[2];
 #ifdef DEBUG
 //.				DBG_OpenCashedDraw();
-//.				DBG_DrawLine(p1,float3().add(p1,d),D3DCOLOR_XRGB(255,0,0));
+//.				DBG_DrawLine(p1,fvec3().add(p1,d),D3DCOLOR_XRGB(255,0,0));
 #endif
 				u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed,
 																EffectiveGravity(), res);
 #ifdef DEBUG
-//.				if(canfire0>0)DBG_DrawLine(p1,float3().add(p1,res[0]),D3DCOLOR_XRGB(0,255,0));
-//.				if(canfire0>1)DBG_DrawLine(p1,float3().add(p1,res[1]),D3DCOLOR_XRGB(0,0,255));
+//.				if(canfire0>0)DBG_DrawLine(p1,fvec3().add(p1,res[0]),D3DCOLOR_XRGB(0,255,0));
+//.				if(canfire0>1)DBG_DrawLine(p1,fvec3().add(p1,res[1]),D3DCOLOR_XRGB(0,0,255));
 //.				DBG_ClosedCashedDraw(30000);
 #endif
 

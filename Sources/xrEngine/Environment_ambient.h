@@ -8,12 +8,12 @@ class ENGINE_API CEnvAmbient
 		u32 life_time;
 		ref_sound sound;
 		shared_str particles;
-		float3 offset;
+		fvec3 offset;
 		float wind_gust_factor;
 		float wind_blast_in_time;
 		float wind_blast_out_time;
 		float wind_blast_strength;
-		float3 wind_blast_direction;
+		fvec3 wind_blast_direction;
 
 		~SEffect()
 		{
@@ -23,8 +23,8 @@ class ENGINE_API CEnvAmbient
 	struct SSndChannel
 	{
 		shared_str m_load_section;
-		float2 m_sound_dist;
-		int4 m_sound_period;
+		fvec2 m_sound_dist;
+		ivec4 m_sound_period;
 
 		typedef xr_vector<ref_sound> sounds_type;
 
@@ -62,7 +62,7 @@ class ENGINE_API CEnvAmbient
 	shared_str m_load_section;
 
 	EffectVec m_effects;
-	int2 m_effect_period;
+	ivec2 m_effect_period;
 
 	SSndChannelVec m_sound_channels;
 	shared_str m_ambients_config_filename;

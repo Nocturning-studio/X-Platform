@@ -47,7 +47,7 @@ class CPHObject : public ISpatial
 	};
 
   protected:
-	float3 AABB;
+	fvec3 AABB;
 
   protected:
 	virtual dGeomID dSpacedGeom() = 0;

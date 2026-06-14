@@ -57,8 +57,8 @@ class CWeaponShotEffector
 	void SetRndSeed(s32 Seed);
 
 	virtual void Shot(float angle);
-	virtual void GetDeltaAngle(float3& delta_angle);
-	virtual void GetLastDelta(float3& delta_angle);
+	virtual void GetDeltaAngle(fvec3& delta_angle);
+	virtual void GetLastDelta(fvec3& delta_angle);
 	virtual void Clear();
 
 	virtual void ApplyLastAngles(float* pitch, float* yaw);

@@ -99,7 +99,7 @@ void CObjectAnimator::Update(float dt)
 {
 	if (m_Current)
 	{
-		float3 R, P;
+		fvec3 R, P;
 		m_Current->_Evaluate(m_MParam.Frame(), P, R);
 		m_MParam.Update(dt, m_Speed, bLoop);
 		m_Transform.setXYZi(R.x, R.y, R.z);
@@ -172,7 +172,7 @@ void CObjectAnimator::DrawPath()
 		float min_t = (float)m_Current->FrameStart() / fps;
 		float max_t = (float)m_Current->FrameEnd() / fps;
 
-		float3 T, r;
+		fvec3 T, r;
 		u32 clr = 0xffffffff;
 		path_points.clear();
 		for (float t = min_t; (t < max_t) || fsimilar(t, max_t, EPS_L); t += 1 / 30.f)

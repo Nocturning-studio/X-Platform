@@ -303,7 +303,7 @@ void CControlAnimationBase::SelectVelocities()
 
 void CControlAnimationBase::CheckVelocityBounce()
 {
-	float3 temp_vec;
+	fvec3 temp_vec;
 	m_object->character_physics_support()->movement()->GetCharacterVelocity(temp_vec);
 	float prev_speed = m_prev_character_velocity;
 	float cur_speed = temp_vec.magnitude();

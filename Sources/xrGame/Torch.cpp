@@ -25,8 +25,8 @@ static const float TIME_2_HIDE = 5.f;
 static const float TORCH_INERTION_CLAMP = PI_DIV_6;
 static const float TORCH_INERTION_SPEED_MAX = 7.5f;
 static const float TORCH_INERTION_SPEED_MIN = 0.5f;
-static const float3 TORCH_OFFSET = {-0.2f, +0.1f, -0.3f};
-static const float3 OMNI_OFFSET = {-0.2f, +0.1f, -0.1f};
+static const fvec3 TORCH_OFFSET = {-0.2f, +0.1f, -0.3f};
+static const fvec3 OMNI_OFFSET = {-0.2f, +0.1f, -0.1f};
 static const float OPTIMIZATION_DISTANCE = 100.f;
 
 static bool stalker_use_dynamic_lights = false;
@@ -318,7 +318,7 @@ void CTorch::UpdateCL()
 		return;
 
 	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
-	float4x4 M;
+	fmat4x4 M;
 
 	if (H_Parent())
 	{
@@ -348,13 +348,13 @@ void CTorch::UpdateCL()
 			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN,
 											 TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Engine.TimeManager.GetDeltaTime());
 
-			float3 dir, right, up;
+			fvec3 dir, right, up;
 			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
-			float3::generate_orthonormal_basis_normalized(dir, up, right);
+			fvec3::generate_orthonormal_basis_normalized(dir, up, right);
 
 			if (true)
 			{
-				float3 offset = M.c;
+				fvec3 offset = M.c;
 				offset.mad(M.i, TORCH_OFFSET.x);
 				offset.mad(M.j, TORCH_OFFSET.y);
 				offset.mad(M.k, TORCH_OFFSET.z);
@@ -390,7 +390,7 @@ void CTorch::UpdateCL()
 				light_render->set_position(M.c);
 				light_render->set_rotation(M.k, M.i);
 
-				float3 offset = M.c;
+				fvec3 offset = M.c;
 				offset.mad(M.i, OMNI_OFFSET.x);
 				offset.mad(M.j, OMNI_OFFSET.y);
 				offset.mad(M.k, OMNI_OFFSET.z);

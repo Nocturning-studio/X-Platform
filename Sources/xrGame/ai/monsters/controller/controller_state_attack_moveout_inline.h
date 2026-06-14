@@ -112,7 +112,7 @@ void CStateControlMoveOutAbstract::update_look_point()
 	{
 		float angle = ai().level_graph().vertex_cover_angle(object->ai_location().level_vertex_id(), deg(10),
 															std::greater<float>());
-		m_look_point.mad(object->Position(), float3().setHP(angle, 0.f), 3.f);
+		m_look_point.mad(object->Position(), fvec3().setHP(angle, 0.f), 3.f);
 		m_current_delay = DEFAULT_LOOK_POINT_CHANGE_DELAY;
 	}
 	else

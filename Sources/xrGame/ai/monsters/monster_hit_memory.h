@@ -26,10 +26,10 @@ class CMonsterHitMemory
 
 	void add_hit(CObject* who, EHitSide side);
 
-	float3 get_last_hit_dir();
+	fvec3 get_last_hit_dir();
 	TTime get_last_hit_time();
 	CObject* get_last_hit_object();
-	float3 get_last_hit_position();
+	fvec3 get_last_hit_position();
 
 	void clear()
 	{

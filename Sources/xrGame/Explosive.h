@@ -36,10 +36,10 @@ class CExplosive : public IDamageSource
 	virtual void Explode();
 
   public:
-	virtual void ExplodeParams(const float3& pos, const float3& dir);
+	virtual void ExplodeParams(const fvec3& pos, const fvec3& dir);
 
 	static float ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj,
-								 const float3& expl_centre, const float expl_radius);
+								 const fvec3& expl_centre, const float expl_radius);
 
 	virtual void OnEvent(NET_Packet& P, u16 type); //{inherited::OnEvent( P, type);}
 	virtual void OnAfterExplosion();
@@ -62,11 +62,11 @@ class CExplosive : public IDamageSource
 	virtual void UpdateExplosionPos()
 	{
 	}
-	virtual void GetExplVelocity(float3& v);
-	virtual void GetExplPosition(float3& p);
-	virtual void GetExplDirection(float3& d);
-	virtual void GenExplodeEvent(const float3& pos, const float3& normal);
-	virtual void FindNormal(float3& normal);
+	virtual void GetExplVelocity(fvec3& v);
+	virtual void GetExplPosition(fvec3& p);
+	virtual void GetExplDirection(fvec3& d);
+	virtual void GenExplodeEvent(const fvec3& pos, const fvec3& normal);
+	virtual void FindNormal(fvec3& normal);
 	virtual CGameObject* cast_game_object() = 0;
 	virtual CExplosive* cast_explosive()
 	{
@@ -76,10 +76,10 @@ class CExplosive : public IDamageSource
 	{
 		return this;
 	}
-	virtual void GetRayExplosionSourcePos(float3& pos);
-	virtual void GetExplosionBox(float3& size);
-	virtual void ActivateExplosionBox(const float3& size, float3& in_out_pos);
-	void SetExplosionSize(const float3& new_size);
+	virtual void GetRayExplosionSourcePos(fvec3& pos);
+	virtual void GetExplosionBox(fvec3& size);
+	virtual void ActivateExplosionBox(const fvec3& size, fvec3& in_out_pos);
+	void SetExplosionSize(const fvec3& new_size);
 	virtual bool Useful() const;
 
   protected:
@@ -94,11 +94,11 @@ class CExplosive : public IDamageSource
 
   private:
 	void PositionUpdate();
-	static void GetRaySourcePos(CExplosive* exp_obj, const float3& expl_centre, float3& p);
+	static void GetRaySourcePos(CExplosive* exp_obj, const fvec3& expl_centre, fvec3& p);
 
 	void ExplodeWaveProcessObject(collide::rq_results& storage, CPhysicsShellHolder* sh);
 	void ExplodeWaveProcess();
-	static float TestPassEffect(const float3& source_p, const float3& dir, float range, float ef_radius,
+	static float TestPassEffect(const fvec3& source_p, const fvec3& dir, float range, float ef_radius,
 								collide::rq_results& storage, CObject* blasted_obj);
 	void LightCreate();
 	void LightDestroy();
@@ -109,9 +109,9 @@ class CExplosive : public IDamageSource
 	u16 m_iCurrentParentID;
 
 	// bool						m_bReadyToExplode;
-	float3 m_vExplodePos;
-	float3 m_vExplodeSize;
-	float3 m_vExplodeDir;
+	fvec3 m_vExplodePos;
+	fvec3 m_vExplodeSize;
+	fvec3 m_vExplodeDir;
 
 	// параметры взрыва
 	float m_fBlastHit;
@@ -200,10 +200,10 @@ add_to_type_list(CExplosive)
 #undef script_type_list
 #define script_type_list save_type_list(CExplosive)
 
-	IC void random_point_in_object_box(float3& out_pos, CObject* obj)
+	IC void random_point_in_object_box(fvec3& out_pos, CObject* obj)
 {
 	const Fbox& l_b1 = obj->BoundingBox();
-	float3 l_c, l_d;
+	fvec3 l_c, l_d;
 	l_b1.get_CD(l_c, l_d);
 	out_pos.random_point(l_d);
 	obj->Transform().transform_tiny(out_pos);

@@ -12,9 +12,9 @@ namespace CDB
 //         sR - radius of sphere
 // Notes : Normalized directional vectors expected
 // -----------------------------------------------------------------------
-IC bool IntersectRaySphere(const float3& rO, const float3& rV, const float3& sO, float sR)
+IC bool IntersectRaySphere(const fvec3& rO, const fvec3& rV, const fvec3& sO, float sR)
 {
-	float3 Q;
+	fvec3 Q;
 	Q.sub(sO, rO);
 
 	float c = Q.magnitude();
@@ -26,9 +26,9 @@ IC bool IntersectRaySphere(const float3& rO, const float3& rV, const float3& sO,
 }
 
 //-- Ray-Triangle : 2nd level of indirection --------------------------------
-IC bool TestRayTri(const float3& C, const float3& D, float3** p, float& u, float& v, float& range, bool bCull)
+IC bool TestRayTri(const fvec3& C, const fvec3& D, fvec3** p, float& u, float& v, float& range, bool bCull)
 {
-	float3 edge1, edge2, tvec, pvec, qvec;
+	fvec3 edge1, edge2, tvec, pvec, qvec;
 	float det, inv_det;
 	// find vectors for two edges sharing vert0
 	edge1.sub(*p[1], *p[0]);
@@ -73,9 +73,9 @@ IC bool TestRayTri(const float3& C, const float3& D, float3** p, float& u, float
 	return true;
 }
 //-- Ray-Triangle : 1st level of indirection --------------------------------
-IC bool TestRayTri(const float3& C, const float3& D, float3* p, float& u, float& v, float& range, bool bCull)
+IC bool TestRayTri(const fvec3& C, const fvec3& D, fvec3* p, float& u, float& v, float& range, bool bCull)
 {
-	float3 edge1, edge2, tvec, pvec, qvec;
+	fvec3 edge1, edge2, tvec, pvec, qvec;
 	float det, inv_det;
 	// find vectors for two edges sharing vert0
 	edge1.sub(p[1], p[0]);
@@ -121,9 +121,9 @@ IC bool TestRayTri(const float3& C, const float3& D, float3* p, float& u, float&
 }
 
 //-- Ray-Triangle(always return range) : 1st level of indirection --------------------------------
-IC bool TestRayTri2(const float3& C, const float3& D, float3* p, float& range)
+IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3* p, float& range)
 {
-	float3 edge1, edge2, tvec, pvec, qvec;
+	fvec3 edge1, edge2, tvec, pvec, qvec;
 	float det, inv_det, u, v;
 
 	// find vectors for two edges sharing vert0
@@ -151,9 +151,9 @@ IC bool TestRayTri2(const float3& C, const float3& D, float3* p, float& range)
 		return false;
 	return true;
 }
-IC bool TestRayTri2(const float3& C, const float3& D, float3** p, float& range)
+IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3** p, float& range)
 {
-	float3 edge1, edge2, tvec, pvec, qvec;
+	fvec3 edge1, edge2, tvec, pvec, qvec;
 	float det, inv_det, u, v;
 
 	// find vectors for two edges sharing vert0
@@ -277,10 +277,10 @@ IC bool TestRayTri2(const float3& C, const float3& D, float3** p, float& range)
 	}
 //---------------------------------------------------------------------------
 
-IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, float3** p, BOOL bCulling)
+IC bool TestBBoxTri(const fmat3x3& A, const fvec3& T, const fvec3& extA, fvec3** p, BOOL bCulling)
 {
 	// construct triangle normal, difference of center and vertex (18 ops)
-	float3 D, E[2], N;
+	fvec3 D, E[2], N;
 	E[0].sub(*p[1], *p[0]);
 	E[1].sub(*p[2], *p[0]);
 	N.crossproduct(E[0], E[1]);
@@ -317,14 +317,14 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	TESTV1(A2dD, A2dE0, A2dE1, extA.z); // AXIS_A2
 
 	// axis C+t*A0xE0
-	float3 A0xE0;
+	fvec3 A0xE0;
 	A0xE0.crossproduct(A.i, E[0]);
 	float A0xE0dD = A0xE0.dotproduct(D);
 	R = _abs(extA.y * A2dE0) + _abs(extA.z * A1dE0);
 	TESTV2(A0xE0dD, A0dN, R); // AXIS_A0xE0
 
 	// axis C+t*A0xE1
-	float3 A0xE1;
+	fvec3 A0xE1;
 	A0xE1.crossproduct(A.i, E[1]);
 	float A0xE1dD = A0xE1.dotproduct(D);
 	R = _abs(extA.y * A2dE1) + _abs(extA.z * A1dE1);
@@ -338,14 +338,14 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	TESTV2(A0xE2dD, -A0dN, R); // AXIS_A0xE2
 
 	// axis C+t*A1xE0
-	float3 A1xE0;
+	fvec3 A1xE0;
 	A1xE0.crossproduct(A.j, E[0]);
 	float A1xE0dD = A1xE0.dotproduct(D);
 	R = _abs(extA.x * A2dE0) + _abs(extA.z * A0dE0);
 	TESTV2(A1xE0dD, A1dN, R); // AXIS_A1xE0
 
 	// axis C+t*A1xE1
-	float3 A1xE1;
+	fvec3 A1xE1;
 	A1xE1.crossproduct(A.j, E[1]);
 	float A1xE1dD = A1xE1.dotproduct(D);
 	R = _abs(extA.x * A2dE1) + _abs(extA.z * A0dE1);
@@ -358,14 +358,14 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	TESTV2(A1xE2dD, -A1dN, R); // AXIS_A1xE2
 
 	// axis C+t*A2xE0
-	float3 A2xE0;
+	fvec3 A2xE0;
 	A2xE0.crossproduct(A.k, E[0]);
 	float A2xE0dD = A2xE0.dotproduct(D);
 	R = _abs(extA.x * A1dE0) + _abs(extA.y * A0dE0);
 	TESTV2(A2xE0dD, A2dN, R); // AXIS_A2xE0
 
 	// axis C+t*A2xE1
-	float3 A2xE1;
+	fvec3 A2xE1;
 	A2xE1.crossproduct(A.k, E[1]);
 	float A2xE1dD = A2xE1.dotproduct(D);
 	R = _abs(extA.x * A1dE1) + _abs(extA.y * A0dE1);
@@ -379,10 +379,10 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	// intersection occurs
 	return true;
 }
-IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, float3* p, BOOL bCulling)
+IC bool TestBBoxTri(const fmat3x3& A, const fvec3& T, const fvec3& extA, fvec3* p, BOOL bCulling)
 {
 	// construct triangle normal, difference of center and vertex (18 ops)
-	float3 D, E[2], N;
+	fvec3 D, E[2], N;
 	E[0].sub(p[1], p[0]);
 	E[1].sub(p[2], p[0]);
 	N.crossproduct(E[0], E[1]);
@@ -419,14 +419,14 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	TESTV1(A2dD, A2dE0, A2dE1, extA.z); // AXIS_A2
 
 	// axis C+t*A0xE0
-	float3 A0xE0;
+	fvec3 A0xE0;
 	A0xE0.crossproduct(A.i, E[0]);
 	float A0xE0dD = A0xE0.dotproduct(D);
 	R = _abs(extA.y * A2dE0) + _abs(extA.z * A1dE0);
 	TESTV2(A0xE0dD, A0dN, R); // AXIS_A0xE0
 
 	// axis C+t*A0xE1
-	float3 A0xE1;
+	fvec3 A0xE1;
 	A0xE1.crossproduct(A.i, E[1]);
 	float A0xE1dD = A0xE1.dotproduct(D);
 	R = _abs(extA.y * A2dE1) + _abs(extA.z * A1dE1);
@@ -440,14 +440,14 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	TESTV2(A0xE2dD, -A0dN, R); // AXIS_A0xE2
 
 	// axis C+t*A1xE0
-	float3 A1xE0;
+	fvec3 A1xE0;
 	A1xE0.crossproduct(A.j, E[0]);
 	float A1xE0dD = A1xE0.dotproduct(D);
 	R = _abs(extA.x * A2dE0) + _abs(extA.z * A0dE0);
 	TESTV2(A1xE0dD, A1dN, R); // AXIS_A1xE0
 
 	// axis C+t*A1xE1
-	float3 A1xE1;
+	fvec3 A1xE1;
 	A1xE1.crossproduct(A.j, E[1]);
 	float A1xE1dD = A1xE1.dotproduct(D);
 	R = _abs(extA.x * A2dE1) + _abs(extA.z * A0dE1);
@@ -460,14 +460,14 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 	TESTV2(A1xE2dD, -A1dN, R); // AXIS_A1xE2
 
 	// axis C+t*A2xE0
-	float3 A2xE0;
+	fvec3 A2xE0;
 	A2xE0.crossproduct(A.k, E[0]);
 	float A2xE0dD = A2xE0.dotproduct(D);
 	R = _abs(extA.x * A1dE0) + _abs(extA.y * A0dE0);
 	TESTV2(A2xE0dD, A2dN, R); // AXIS_A2xE0
 
 	// axis C+t*A2xE1
-	float3 A2xE1;
+	fvec3 A2xE1;
 	A2xE1.crossproduct(A.k, E[1]);
 	float A2xE1dD = A2xE1.dotproduct(D);
 	R = _abs(extA.x * A1dE1) + _abs(extA.y * A0dE1);
@@ -484,9 +484,9 @@ IC bool TestBBoxTri(const float3x3& A, const float3& T, const float3& extA, floa
 //---------------------------------------------------------------------------}
 
 //----------------------------------------------------------------------------
-IC float MgcSqrDistance(const float3& rkPoint, const float3& orig, const float3& e0, const float3& e1)
+IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0, const fvec3& e1)
 {
-	float3 kDiff;
+	fvec3 kDiff;
 	kDiff.sub(orig, rkPoint);
 
 	float fA00 = e0.square_magnitude();
@@ -715,11 +715,11 @@ enum EST_Result
 	stInside = 2,
 };
 
-IC EST_Result TestSphereTri(const float3& sphereOrigin, float sphereRadius, const float3& orig, const float3& e0,
-							const float3& e1)
+IC EST_Result TestSphereTri(const fvec3& sphereOrigin, float sphereRadius, const fvec3& orig, const fvec3& e0,
+							const fvec3& e1)
 {
 	float fRSqr = sphereRadius * sphereRadius;
-	float3 kV0mC;
+	fvec3 kV0mC;
 	kV0mC.sub(orig, sphereOrigin);
 
 	// count the number of triangle vertices inside the sphere
@@ -730,7 +730,7 @@ IC EST_Result TestSphereTri(const float3& sphereOrigin, float sphereRadius, cons
 		iInside++;
 
 	// test if v1 is inside the sphere
-	float3 kDiff;
+	fvec3 kDiff;
 	kDiff.add(kV0mC, e0);
 	if (kDiff.square_magnitude() <= fRSqr)
 		iInside++;
@@ -755,17 +755,17 @@ IC EST_Result TestSphereTri(const float3& sphereOrigin, float sphereRadius, cons
 	return (fSqrDist < fRSqr) ? stIntersect : stNone;
 }
 //---------------------------------------------------------------------------
-IC EST_Result TestSphereTri(const float3& sphereOrigin, float sphereRadius, float3* p)
+IC EST_Result TestSphereTri(const fvec3& sphereOrigin, float sphereRadius, fvec3* p)
 {
-	float3 e0, e1;
+	fvec3 e0, e1;
 	// find vectors for two edges sharing vert0
 	e0.sub(p[1], p[0]);
 	e1.sub(p[2], p[0]);
 	return TestSphereTri(sphereOrigin, sphereRadius, p[0], e0, e1);
 }
-IC EST_Result TestSphereTri(const float3& sphereOrigin, float sphereRadius, float3** p)
+IC EST_Result TestSphereTri(const fvec3& sphereOrigin, float sphereRadius, fvec3** p)
 {
-	float3 e0, e1;
+	fvec3 e0, e1;
 	// find vectors for two edges sharing vert0
 	e0.sub(*p[1], *p[0]);
 	e1.sub(*p[2], *p[0]);
@@ -775,7 +775,7 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 {
 	// Test for intersection in the coordinate system of the box by
 	// transforming the sphere into that coordinate system.
-	float3 kCDiff;
+	fvec3 kCDiff;
 	kCDiff.sub(rkSphere.P, rkBox.m_translate);
 
 	float fAx = _abs(kCDiff.dotproduct(rkBox.m_rotate.i));
@@ -853,11 +853,11 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 	}
 }
 //----------------------------------------------------------------------------
-IC bool TestRayOBB(const float3& origin, const float3& direction, const Fobb& rkBox)
+IC bool TestRayOBB(const fvec3& origin, const fvec3& direction, const Fobb& rkBox)
 {
 	float fWdU[3], fAWdU[3], fDdU[3], fADdU[3], fAWxDdU[3], fRhs;
 
-	float3 kDiff;
+	fvec3 kDiff;
 	kDiff.sub(origin, rkBox.m_translate);
 
 	fWdU[0] = direction.dotproduct(rkBox.m_rotate.i);
@@ -881,7 +881,7 @@ IC bool TestRayOBB(const float3& origin, const float3& direction, const Fobb& rk
 	if (fADdU[2] > rkBox.m_halfsize[2] && fDdU[2] * fWdU[2] >= (float)0.0)
 		return false;
 
-	float3 kWxD;
+	fvec3 kWxD;
 	kWxD.crossproduct(direction, kDiff);
 
 	fAWxDdU[0] = _abs(kWxD.dotproduct(rkBox.m_rotate.i));

@@ -48,13 +48,13 @@ BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 
 	CParticlesObject* pStaticPG;
 	pStaticPG = CParticlesObject::Create("anomaly\\galantine", FALSE);
-	float4x4 pos;
+	fmat4x4 pos;
 	// pos.rotateY(1.57);
 	// pos.mulA(pos);
 	pos.scale(0.7f, 0.7f, 0.7f);
 	pos.translate_over(Transform().c);
 
-	float3 vel;
+	fvec3 vel;
 	vel.set(0, 0, 0);
 	pStaticPG->UpdateParent(pos, vel);
 	pStaticPG->Play();
@@ -92,7 +92,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 	{
 		if (m_bStrike)
 		{
-			float3 P;
+			fvec3 P;
 			P.set(Position());
 			feel_touch_update(P, m_fRadius);
 
@@ -100,9 +100,9 @@ void CBlackGraviArtefact::UpdateCLChild()
 
 			CParticlesObject* pStaticPG;
 			pStaticPG = CParticlesObject::Create(*m_sParticleName, TRUE);
-			float4x4 pos;
+			fmat4x4 pos;
 			pos.set(Transform());
-			float3 vel;
+			fvec3 vel;
 			// vel.sub(Position(),ps_Element(0).vPosition);
 			// vel.div((Level().timeServer()-ps_Element(0).dwTime)/1000.f);
 			vel.set(0, 0, 0);
@@ -116,9 +116,9 @@ void CBlackGraviArtefact::UpdateCLChild()
 		Transform().set(H_Parent()->Transform());
 }
 
-// void CBlackGraviArtefact::Hit(float P, float3 &dir,
+// void CBlackGraviArtefact::Hit(float P, fvec3 &dir,
 //						CObject* who, s16 element,
-//						float3 position_in_object_space,
+//						fvec3 position_in_object_space,
 //						float impulse,
 //						ALife::EHitType hit_type)
 void CBlackGraviArtefact::Hit(SHit* pHDS)
@@ -170,10 +170,10 @@ BOOL CBlackGraviArtefact::feel_touch_contact(CObject* O)
 void CBlackGraviArtefact::GraviStrike()
 {
 	xr_list<s16> elements_list;
-	xr_list<float3> bone_position_list;
+	xr_list<fvec3> bone_position_list;
 
-	float3 object_pos;
-	float3 strike_dir;
+	fvec3 object_pos;
+	fvec3 strike_dir;
 
 	rq_storage.r_clear();
 
@@ -214,7 +214,7 @@ void CBlackGraviArtefact::GraviStrike()
 			while (!elements_list.empty())
 			{
 				s16 element = elements_list.front();
-				float3 bone_pos = bone_position_list.front();
+				fvec3 bone_pos = bone_position_list.front();
 
 				NET_Packet P;
 				SHit HS;

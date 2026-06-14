@@ -25,8 +25,8 @@ struct SBullet
 	} flags;
 	u16 bullet_material_idx;
 
-	float3 pos; // текущая позиция
-	float3 dir;
+	fvec3 pos; // текущая позиция
+	fvec3 dir;
 	float speed; // текущая скорость
 
 	u16 parent_id; // ID персонажа который иницировал действие
@@ -65,7 +65,7 @@ struct SBullet
 	SBullet();
 	~SBullet();
 
-	void Init(const float3& position, const float3& direction, float start_speed, float power, float impulse,
+	void Init(const fvec3& position, const fvec3& direction, float start_speed, float power, float impulse,
 			  u16 sender_id, u16 sendersweapon_id, ALife::EHitType e_hit_type, float maximum_distance,
 			  const CCartridge& cartridge, bool SendHit);
 };
@@ -99,8 +99,8 @@ class CBulletManager
 		BOOL Repeated; // последовательное повторное попадание в динамический объект
 		_hit result;
 		SBullet bullet;
-		float3 normal;
-		float3 point;
+		fvec3 normal;
+		fvec3 point;
 		collide::rq_result R;
 		u16 tgt_material;
 	};
@@ -144,14 +144,14 @@ class CBulletManager
 	float m_fTracerLengthMin;
 
   protected:
-	void PlayWhineSound(SBullet* bullet, CObject* object, const float3& pos);
-	void PlayExplodePS(const float4x4& xf);
+	void PlayWhineSound(SBullet* bullet, CObject* object, const fvec3& pos);
+	void PlayExplodePS(const fmat4x4& xf);
 	// функция обработки хитов объектов
 	static BOOL test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
 	static BOOL firetrace_callback(collide::rq_result& result, LPVOID params);
 
 	// Deffer event
-	void RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bullet, const float3& end_point, collide::rq_result& R,
+	void RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bullet, const fvec3& end_point, collide::rq_result& R,
 					   u16 target_material);
 
 	// попадание по динамическому объекту
@@ -161,11 +161,11 @@ class CBulletManager
 	void StaticObjectHit(_event& E);
 
 	// попадание по любому объекту, на выходе - импульс и сила переданные пулей объекту
-	_hit ObjectHit(SBullet* bullet, const float3& end_point, collide::rq_result& R, u16 target_material,
-				   float3& hit_normal);
+	_hit ObjectHit(SBullet* bullet, const fvec3& end_point, collide::rq_result& R, u16 target_material,
+				   fvec3& hit_normal);
 	// отметка на пораженном объекте
-	void FireShotmark(SBullet* bullet, const float3& vDir, const float3& vEnd, collide::rq_result& R,
-					  u16 target_material, const float3& vNormal, bool ShowMark = true);
+	void FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec3& vEnd, collide::rq_result& R,
+					  u16 target_material, const fvec3& vNormal, bool ShowMark = true);
 	// просчет полета пули за некоторый промежуток времени
 	// принимается что на этом участке пуля движется прямолинейно
 	// и равномерно, а после просчета также изменяется текущая
@@ -180,7 +180,7 @@ class CBulletManager
 
 	void Load();
 	void Clear();
-	void AddBullet(const float3& position, const float3& direction, float starting_speed, float power, float impulse,
+	void AddBullet(const fvec3& position, const fvec3& direction, float starting_speed, float power, float impulse,
 				   u16 sender_id, u16 sendersweapon_id, ALife::EHitType e_hit_type, float maximum_distance,
 				   const CCartridge& cartridge, bool SendHit, bool AimBullet = false);
 

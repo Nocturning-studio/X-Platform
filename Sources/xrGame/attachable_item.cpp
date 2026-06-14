@@ -38,8 +38,8 @@ void CAttachableItem::reload(LPCSTR section)
 	if (!pSettings->line_exist(section, "attach_angle_offset"))
 		return;
 
-	float3 angle_offset = pSettings->r_fvector3(section, "attach_angle_offset");
-	float3 position_offset = pSettings->r_fvector3(section, "attach_position_offset");
+	fvec3 angle_offset = pSettings->r_fvector3(section, "attach_angle_offset");
+	fvec3 position_offset = pSettings->r_fvector3(section, "attach_position_offset");
 	m_offset.setHPB(VPUSH(angle_offset));
 	m_offset.c = position_offset;
 	m_bone_name = pSettings->r_string(section, "attach_bone_name");

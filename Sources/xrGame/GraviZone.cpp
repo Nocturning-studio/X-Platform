@@ -136,8 +136,8 @@ void CBaseGraviZone ::Affect(SZoneObjectInfo* O)
 	//////////////////////////////////////////////////////////////////////////
 	//	зат€гиваем объет по направлению к центру зоны
 
-	float3 throw_in_dir;
-	float3 zone_center;
+	fvec3 throw_in_dir;
+	fvec3 zone_center;
 	ThrowInCenter(zone_center);
 	throw_in_dir.sub(zone_center, GO->Position());
 
@@ -177,11 +177,11 @@ void CBaseGraviZone ::Affect(SZoneObjectInfo* O)
 	}
 }
 
-void CBaseGraviZone ::ThrowInCenter(float3& C)
+void CBaseGraviZone ::ThrowInCenter(fvec3& C)
 {
 	Center(C);
 }
-void CBaseGraviZone ::AffectPull(CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist)
+void CBaseGraviZone ::AffectPull(CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist)
 {
 	CEntityAlive* EA = smart_cast<CEntityAlive*>(GO);
 	if (EA && EA->g_Alive())
@@ -193,25 +193,25 @@ void CBaseGraviZone ::AffectPull(CPhysicsShellHolder* GO, const float3& throw_in
 		AffectPullDead(GO, throw_in_dir, dist);
 	}
 }
-void CBaseGraviZone ::AffectPullAlife(CEntityAlive* EA, const float3& throw_in_dir, float dist)
+void CBaseGraviZone ::AffectPullAlife(CEntityAlive* EA, const fvec3& throw_in_dir, float dist)
 {
 	float rel_power = RelativePower(dist);
 	float throw_power = m_fThrowInImpulseAlive * rel_power * rel_power * rel_power * rel_power * rel_power;
 	// throw_in_dir.normalize();
 
-	float3 vel;
+	fvec3 vel;
 	vel.set(throw_in_dir);
 	vel.mul(throw_power);
 	EA->character_physics_support()->movement()->AddControlVel(vel);
 }
-void CBaseGraviZone ::AffectPullDead(CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist)
+void CBaseGraviZone ::AffectPullDead(CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist)
 {
 	GO->PPhysicsShell()->applyImpulse(throw_in_dir, dist * m_fThrowInImpulse * GO->GetMass() / 100.f);
 }
-void CBaseGraviZone ::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist)
+void CBaseGraviZone ::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist)
 {
 
-	float3 position_in_bone_space;
+	fvec3 position_in_bone_space;
 
 	float power = Power(dist); // Power(GO->Position().distance_to(zone_center));
 	float impulse = m_fHitImpulseScale * power * GO->GetMass();
@@ -259,7 +259,7 @@ void CBaseGraviZone ::PlayTeleParticles(CGameObject* pObject)
 		particle_str = m_sTeleParticlesBig;
 	}
 
-	PP->StartParticles(particle_str, float3().set(0, 1, 0), ID());
+	PP->StartParticles(particle_str, fvec3().set(0, 1, 0), ID());
 }
 void CBaseGraviZone ::StopTeleParticles(CGameObject* pObject)
 {

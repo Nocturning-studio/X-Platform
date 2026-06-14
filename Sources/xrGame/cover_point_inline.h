@@ -8,12 +8,12 @@
 
 #pragma once
 
-IC CCoverPoint::CCoverPoint(const float3& point, u32 level_vertex_id)
+IC CCoverPoint::CCoverPoint(const fvec3& point, u32 level_vertex_id)
 	: m_position(point), m_level_vertex_id(level_vertex_id)
 {
 }
 
-IC const float3& CCoverPoint::position() const
+IC const fvec3& CCoverPoint::position() const
 {
 	return (m_position);
 }

@@ -13,14 +13,14 @@
 class CParticleParams
 {
   public:
-	float3 m_tParticlePosition;
-	float3 m_tParticleAngles;
-	float3 m_tParticleVelocity;
+	fvec3 m_tParticlePosition;
+	fvec3 m_tParticleAngles;
+	fvec3 m_tParticleVelocity;
 
   public:
-	IC CParticleParams(const float3& tPositionOffset = float3().set(0, 0, 0),
-					   const float3& tAnglesOffset = float3().set(0, 0, 0),
-					   const float3& tVelocity = float3().set(0, 0, 0));
+	IC CParticleParams(const fvec3& tPositionOffset = fvec3().set(0, 0, 0),
+					   const fvec3& tAnglesOffset = fvec3().set(0, 0, 0),
+					   const fvec3& tVelocity = fvec3().set(0, 0, 0));
 	virtual ~CParticleParams();
 	IC void initialize();
 

@@ -49,9 +49,9 @@ struct CRemoveOldDangerCover
 
 struct CDangerLocationPredicate
 {
-	float3 m_position;
+	fvec3 m_position;
 
-	IC CDangerLocationPredicate(const float3& position)
+	IC CDangerLocationPredicate(const fvec3& position)
 	{
 		m_position = position;
 	}
@@ -62,7 +62,7 @@ struct CDangerLocationPredicate
 	}
 };
 
-IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(const float3& position)
+IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(const fvec3& position)
 {
 	LOCATIONS::iterator I =
 		std::find_if(m_danger_locations.begin(), m_danger_locations.end(), CDangerLocationPredicate(position));

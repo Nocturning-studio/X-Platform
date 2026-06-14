@@ -12,11 +12,11 @@ ui_core* UI()
 {
 	return GamePersistent().m_pUI_core;
 };
-extern ENGINE_API float2 g_current_font_scale;
+extern ENGINE_API fvec2 g_current_font_scale;
 
-void S2DVert::rotate_pt(const float2& pivot, float cosA, float sinA, float kx)
+void S2DVert::rotate_pt(const fvec2& pivot, float cosA, float sinA, float kx)
 {
-	float2 t = pt;
+	fvec2 t = pt;
 	t.sub(pivot);
 	pt.x = t.x * cosA + t.y * sinA;
 	pt.y = t.y * cosA - t.x * sinA;
@@ -27,10 +27,10 @@ void C2DFrustum::CreateFromRect(const Frect& rect)
 {
 	m_rect.set(float(rect.x1), float(rect.y1), float(rect.x2), float(rect.y2));
 	planes.resize(4);
-	planes[0].build(rect.lt, float2().set(-1, 0));
-	planes[1].build(rect.lt, float2().set(0, -1));
-	planes[2].build(rect.rb, float2().set(+1, 0));
-	planes[3].build(rect.rb, float2().set(0, +1));
+	planes[0].build(rect.lt, fvec2().set(-1, 0));
+	planes[1].build(rect.lt, fvec2().set(0, -1));
+	planes[2].build(rect.rb, fvec2().set(+1, 0));
+	planes[3].build(rect.rb, fvec2().set(0, +1));
 }
 
 sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
@@ -66,7 +66,7 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 		// clip everything to this plane
 		cls[src->size()] = cls[0];
 		src->push_back((*src)[0]);
-		float2 dir_pt, dir_uv;
+		fvec2 dir_pt, dir_uv;
 		float denum, t;
 		for (j = 0; j < src->size() - 1; j++)
 		{
@@ -125,12 +125,12 @@ void ui_core::OnDeviceReset()
 	m_2DFrustum.CreateFromRect(Frect().set(0.0f, 0.0f, float(Device.dwWidth), float(Device.dwHeight)));
 }
 
-void ui_core::ClientToScreenScaled(float2& dest, float left, float top)
+void ui_core::ClientToScreenScaled(fvec2& dest, float left, float top)
 {
 	dest.set(ClientToScreenScaledX(left), ClientToScreenScaledY(top));
 }
 
-void ui_core::ClientToScreenScaled(float2& src_and_dest)
+void ui_core::ClientToScreenScaled(fvec2& src_and_dest)
 {
 	src_and_dest.set(ClientToScreenScaledX(src_and_dest.x), ClientToScreenScaledY(src_and_dest.y));
 }

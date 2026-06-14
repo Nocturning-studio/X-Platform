@@ -194,7 +194,7 @@ void CUIDragItem::OnFrame()
 
 void CUIDragItem::Draw()
 {
-	float2 tmp;
+	fvec2 tmp;
 	tmp.sub(GetWndPos(), GetUICursor()->GetCursorPosition());
 	tmp.sub(m_pos_offset);
 	tmp.mul(-1.0f);
@@ -214,7 +214,7 @@ void CUIDragItem::SetBackList(CUIDragDropListEx* l)
 	}
 }
 
-float2 CUIDragItem::GetPosition()
+fvec2 CUIDragItem::GetPosition()
 {
-	return float2().add(m_pos_offset, GetUICursor()->GetCursorPosition());
+	return fvec2().add(m_pos_offset, GetUICursor()->GetCursorPosition());
 }

@@ -11,7 +11,7 @@ void CRender::PrepareToRender()
 	CalculateSceneVisibility();
 }
 
-void CRender::render_main(float4x4& view_projection, SceneGraphPacket& dest)
+void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 {
 	PROFILE_FUNCTION();
 
@@ -53,7 +53,7 @@ void CRender::render_main(float4x4& view_projection, SceneGraphPacket& dest)
 	// -------------------------------------------------------------------------
 	// 2. Sorting (Сортируем в dest)
 	// -------------------------------------------------------------------------
-	const float3 camera_pos = Engine.RenderView.Position;
+	const fvec3 camera_pos = Engine.RenderView.Position;
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
 		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
 		float dist_b = b->spatial.sphere.P.distance_to_sqr(camera_pos);
@@ -463,7 +463,7 @@ void CRender::render_stage_occlusion_culling()
 	stats.l_total = stats.l_shadowed + stats.l_unshadowed;
 
 	const u32 frame = Engine.TimeManager.GetFrameCount();
-	const float3& cam_pos = Engine.RenderView.Position;
+	const fvec3& cam_pos = Engine.RenderView.Position;
 
 	// --------------------------------------------------------------------
 	// Расчёт safe_area с использованием консольной переменной

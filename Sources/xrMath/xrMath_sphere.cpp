@@ -20,31 +20,31 @@ class Basis
 	// data members
 	int m, s; // size and number of support vectors
 
-	float3 q0;
+	fvec3 q0;
 
 	float z[d + 1];
 	float f[d + 1];
-	float3 v[d + 1];
-	float3 a[d + 1];
-	float3 c[d + 1];
+	fvec3 v[d + 1];
+	fvec3 a[d + 1];
+	fvec3 c[d + 1];
 	float sqr_r[d + 1];
 
-	float3* current_c; // vectors to some c[j]
+	fvec3* current_c; // vectors to some c[j]
 	float current_sqr_r;
 
   public:
 	Basis();
 
 	// access
-	const float3* center() const;
+	const fvec3* center() const;
 	float squared_radius() const;
 	int size() const;
 	int support_size() const;
-	float excess(const float3& p) const;
+	float excess(const fvec3& p) const;
 
 	// modification
 	void reset(); // generates empty sphere with m=s=0
-	bool push(const float3& p);
+	bool push(const fvec3& p);
 	void pop();
 };
 
@@ -54,7 +54,7 @@ class Miniball
 {
   public:
 	// types
-	typedef std::list<float3> VectorList;
+	typedef std::list<fvec3> VectorList;
 	typedef VectorList::iterator It;
 	typedef VectorList::const_iterator Cit;
 
@@ -83,11 +83,11 @@ class Miniball
 	Miniball()
 	{
 	}
-	void check_in(const float3& p);
+	void check_in(const fvec3& p);
 	void build();
 
 	// access
-	float3 center() const;
+	fvec3 center() const;
 	float squared_radius() const;
 	int num_points() const;
 	Cit points_begin() const;
@@ -100,7 +100,7 @@ class Miniball
 // Miniball
 // --------
 
-void Miniball::check_in(const float3& p)
+void Miniball::check_in(const fvec3& p)
 {
 	L.push_back(p);
 }
@@ -171,14 +171,14 @@ void Miniball::pivot_mb(It i)
 
 float Miniball::max_excess(It t, It i, It& pivot) const
 {
-	const float3* pCenter = B.center();
+	const fvec3* pCenter = B.center();
 	float sqr_r = B.squared_radius();
 
 	float e, max_e = 0;
 
 	for (It k = t; k != i; ++k)
 	{
-		const float3& point = (*k);
+		const fvec3& point = (*k);
 		e = -sqr_r;
 
 		e += point.distance_to_sqr(*pCenter);
@@ -193,9 +193,9 @@ float Miniball::max_excess(It t, It i, It& pivot) const
 	return max_e;
 }
 
-float3 Miniball::center() const
+fvec3 Miniball::center() const
 {
-	return *((float3*)B.center());
+	return *((fvec3*)B.center());
 }
 
 float Miniball::squared_radius() const
@@ -236,7 +236,7 @@ Miniball::Cit Miniball::support_points_end() const
 //----------------------------------------------------------------------
 // Basis
 //---------------------------------------------------------------------
-const float3* Basis::center() const
+const fvec3* Basis::center() const
 {
 	return current_c;
 }
@@ -256,7 +256,7 @@ int Basis::support_size() const
 	return s;
 }
 
-float Basis::excess(const float3& p) const
+float Basis::excess(const fvec3& p) const
 {
 	float e = -current_sqr_r;
 	e += p.distance_to_sqr(*current_c);
@@ -282,7 +282,7 @@ void Basis::pop()
 	--m;
 }
 
-bool Basis::push(const float3& p)
+bool Basis::push(const fvec3& p)
 {
 	if (m == 0)
 	{
@@ -339,7 +339,7 @@ bool Basis::push(const float3& p)
 	return true;
 }
 
-void Fsphere_compute(Fsphere& dest, const float3* verts, int count)
+void Fsphere_compute(Fsphere& dest, const fvec3* verts, int count)
 {
 	Miniball mb;
 

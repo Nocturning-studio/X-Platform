@@ -157,7 +157,7 @@ void Log(const char* msg, float dop)
 	Log(buf);
 }
 
-void Log(const char* msg, const float3& dop)
+void Log(const char* msg, const fvec3& dop)
 {
 	char buf[1024];
 
@@ -165,7 +165,7 @@ void Log(const char* msg, const float3& dop)
 	Log(buf);
 }
 
-void Log(const char* msg, const float4x4& dop)
+void Log(const char* msg, const fmat4x4& dop)
 {
 	char buf[1024];
 

@@ -25,18 +25,18 @@ struct dxGeomTransform : public dxGeom
 		dRSetIdentity(final_R);
 	}
 };
-void CPHPositionsPairs::Positions(const float3*& p0, const float3*& p1)
+void CPHPositionsPairs::Positions(const fvec3*& p0, const fvec3*& p1)
 {
 	CODEGeom* g = *geom;
 	if (g->is_transformed_bt())
 	{
 		g->geometry_transform()->recomputeAABB();
-		p0 = (const float3*)dGeomGetUserData(g->geom())->last_pos;
-		p1 = (const float3*)((dxGeomTransform*)g->geometry_transform())->final_pos;
+		p0 = (const fvec3*)dGeomGetUserData(g->geom())->last_pos;
+		p1 = (const fvec3*)((dxGeomTransform*)g->geometry_transform())->final_pos;
 	}
 	else
 	{
-		p1 = (const float3*)dGeomGetPosition(g->geometry_transform());
-		p0 = (const float3*)dGeomGetUserData(g->geometry_transform())->last_pos;
+		p1 = (const fvec3*)dGeomGetPosition(g->geometry_transform());
+		p0 = (const fvec3*)dGeomGetUserData(g->geometry_transform())->last_pos;
 	}
 }

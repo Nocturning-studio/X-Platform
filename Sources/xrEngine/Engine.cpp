@@ -336,7 +336,6 @@ bool CEngine::CheckLoadingEvents()
 
 void CEngine::ProcessFrame()
 {
-	OPTICK_THREAD("X-Ray Primary Thread");
 	OPTICK_FRAME("X-Ray Primary Thread");
 	PROFILE_FUNCTION();
 

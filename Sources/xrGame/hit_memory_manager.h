@@ -61,7 +61,7 @@ class CHitMemoryManager
 
   public:
 	void add(const CEntityAlive* who);
-	void add(float amount, const float3& local_direction, const CObject* who, s16 element);
+	void add(float amount, const fvec3& local_direction, const CObject* who, s16 element);
 	void add(const CHitObject& hit_object);
 
   public:

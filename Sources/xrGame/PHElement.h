@@ -35,7 +35,7 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 					 //	dVector3					m_safe_position;			//e					//st
 					 //	dQuaternion					m_safe_quaternion;
 					 //	dVector3					m_safe_velocity;			//e					//st
-					 //	float4x4						m_inverse_local_transform;	//e				//bt
+					 //	fmat4x4						m_inverse_local_transform;	//e				//bt
 	dReal k_w;		 //->to shell ??		//st
 	dReal k_l;		 //->to shell ??		//st
 	// ObjectContactCallbackFun*	temp_for_push_out;			//->to shell ??		//aux
@@ -79,7 +79,7 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	virtual void add_Box(const Fobb& V);									// aux
 	virtual void add_Cylinder(const Fcylinder& V);							// aux
 	virtual void add_Shape(const SBoneShape& shape);						// aux
-	virtual void add_Shape(const SBoneShape& shape, const float4x4& offset); // aux
+	virtual void add_Shape(const SBoneShape& shape, const fmat4x4& offset); // aux
 	virtual CODEGeom* last_geom()
 	{
 		return CPHGeometryOwner::last_geom();
@@ -106,7 +106,7 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 		CPHGeometryOwner::SetMaterial(m);
 	}							 // aux
 	virtual u16 numberOfGeoms(); // aux
-	virtual const float3& local_mass_Center()
+	virtual const fvec3& local_mass_Center()
 	{
 		return CPHGeometryOwner::local_mass_Center();
 	} // aux
@@ -114,8 +114,8 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	{
 		return CPHGeometryOwner::get_volume();
 	}																								  // aux
-	virtual void get_Extensions(const float3& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
-	virtual void get_MaxAreaDir(float3& dir)
+	virtual void get_Extensions(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
+	virtual void get_MaxAreaDir(fvec3& dir)
 	{
 		CPHGeometryOwner::get_MaxAreaDir(dir);
 	}
@@ -123,23 +123,23 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	////////////////////////////////////////////////////Mass/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private:
-	void calculate_it_data(const float3& mc, float mass);				  // aux
-	void calculate_it_data_use_density(const float3& mc, float density); // aux
-	void calc_it_fract_data_use_density(const float3& mc,
+	void calculate_it_data(const fvec3& mc, float mass);				  // aux
+	void calculate_it_data_use_density(const fvec3& mc, float density); // aux
+	void calc_it_fract_data_use_density(const fvec3& mc,
 										float density); // sets element mass and fractures parts mass	//aux
 	dMass recursive_mass_summ(u16 start_geom, FRACTURE_I cur_fracture); // aux
   public:																//
-	virtual const float3& mass_Center();								// aux
+	virtual const fvec3& mass_Center();								// aux
 	virtual void setDensity(float M);									// aux
 	virtual float getDensity()
 	{
 		return m_mass.mass / m_volume;
 	}																// aux
-	virtual void setMassMC(float M, const float3& mass_center);	// aux
-	virtual void setDensityMC(float M, const float3& mass_center); // aux
+	virtual void setMassMC(float M, const fvec3& mass_center);	// aux
+	virtual void setDensityMC(float M, const fvec3& mass_center); // aux
 	virtual void setInertia(const dMass& M);						// aux
 	virtual void addInertia(const dMass& M);
-	virtual void add_Mass(const SBoneShape& shape, const float4x4& offset, const float3& mass_center, float mass,
+	virtual void add_Mass(const SBoneShape& shape, const fmat4x4& offset, const fvec3& mass_center, float mass,
 						  CPHFracture* fracture = NULL);   // aux
 	virtual void set_BoxMass(const Fobb& box, float mass); // aux
 	virtual void setMass(float M);						   // aux
@@ -148,7 +148,7 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 		return m_mass.mass;
 	}																	   // aux
 	virtual dMass* getMassTensor();										   // aux
-	void ReAdjustMassPositions(const float4x4& shift_pivot, float density); // aux
+	void ReAdjustMassPositions(const fmat4x4& shift_pivot, float density); // aux
 	void ResetMass(float density);										   // aux
 	void CutVelocity(float l_limit, float a_limit);
 	///////////////////////////////////////////////////PushOut///////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	////////////////////////////////////////////////Updates///////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool AnimToVel(float dt, float l_limit, float a_limit);
-	void BoneGlPos(float4x4& m, CBoneInstance* B);
+	void BoneGlPos(fmat4x4& m, CBoneInstance* B);
 	void ToBonePos(CBoneInstance* B);
 
 	void SetBoneCallbackOverwrite(bool v);
@@ -204,7 +204,7 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 		angular = k_w;																	   //
 	}
 	virtual void applyImpact(const SPHImpact& impact); //
-	virtual void applyImpulseTrace(const float3& pos, const float3& dir, float val,
+	virtual void applyImpulseTrace(const fvec3& pos, const fvec3& dir, float val,
 								   const u16 id);				 // called anywhere ph state influent
 	virtual void set_DisableParams(const SAllDDOParams& params); //
 	virtual void set_DynamicLimits(float l_limit = default_l_limit, float w_limit = default_w_limit); // aux (may not
@@ -217,20 +217,20 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	{
 		return !!(m_flags.test(flFixed));
 	}
-	virtual void applyForce(const float3& dir, float val);	  // aux
+	virtual void applyForce(const fvec3& dir, float val);	  // aux
 	virtual void applyForce(float x, float y, float z);		  // called anywhere ph state influent
-	virtual void applyImpulse(const float3& dir, float val); // aux
-	virtual void applyImpulseVsMC(const float3& pos, const float3& dir, float val); //
-	virtual void applyImpulseVsGF(const float3& pos, const float3& dir, float val); //
-	virtual void applyGravityAccel(const float3& accel);
-	virtual void getForce(float3& force);
-	virtual void getTorque(float3& torque);
-	virtual void get_LinearVel(float3& velocity);		  // aux
-	virtual void get_AngularVel(float3& velocity);		  // aux
-	virtual void set_LinearVel(const float3& velocity);  // called anywhere ph state influent
-	virtual void set_AngularVel(const float3& velocity); // called anywhere ph state influent
-	virtual void setForce(const float3& force);		  //
-	virtual void setTorque(const float3& torque);		  //
+	virtual void applyImpulse(const fvec3& dir, float val); // aux
+	virtual void applyImpulseVsMC(const fvec3& pos, const fvec3& dir, float val); //
+	virtual void applyImpulseVsGF(const fvec3& pos, const fvec3& dir, float val); //
+	virtual void applyGravityAccel(const fvec3& accel);
+	virtual void getForce(fvec3& force);
+	virtual void getTorque(fvec3& torque);
+	virtual void get_LinearVel(fvec3& velocity);		  // aux
+	virtual void get_AngularVel(fvec3& velocity);		  // aux
+	virtual void set_LinearVel(const fvec3& velocity);  // called anywhere ph state influent
+	virtual void set_AngularVel(const fvec3& velocity); // called anywhere ph state influent
+	virtual void setForce(const fvec3& force);		  //
+	virtual void setTorque(const fvec3& torque);		  //
 	virtual void set_ApplyByGravity(bool flag);			  //
 	virtual bool get_ApplyByGravity();					  //
 	///////////////////////////////////////////////////Net////////////////////////////////////////////////////////////////////////////////////////
@@ -241,19 +241,19 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	virtual void net_Export(NET_Packet& P);
 	///////////////////////////////////////////////////Position///////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void SetTransform(const float4x4& m0); //
-	virtual void TransformPosition(const float4x4& form);
+	virtual void SetTransform(const fmat4x4& m0); //
+	virtual void TransformPosition(const fmat4x4& form);
 	virtual void getQuaternion(Fquaternion& quaternion);								  //
 	virtual void setQuaternion(const Fquaternion& quaternion);							  //
-	virtual void SetGlobalPositionDynamic(const float3& position);						  //
-	virtual void GetGlobalPositionDynamic(float3* v);									  //
-	virtual void cv2obj_Xfrom(const Fquaternion& q, const float3& pos, float4x4& transform);  //
-	virtual void cv2bone_Xfrom(const Fquaternion& q, const float3& pos, float4x4& transform); //
-	virtual void InterpolateGlobalTransform(float4x4* m); // called UpdateCL vis influent
-	virtual void InterpolateGlobalPosition(float3* v);	 // aux
-	virtual void GetGlobalTransformDynamic(float4x4* m);	 // aux
-	IC void InverceLocalForm(float4x4&);
-	IC void MulB43InverceLocalForm(float4x4&);
+	virtual void SetGlobalPositionDynamic(const fvec3& position);						  //
+	virtual void GetGlobalPositionDynamic(fvec3* v);									  //
+	virtual void cv2obj_Xfrom(const Fquaternion& q, const fvec3& pos, fmat4x4& transform);  //
+	virtual void cv2bone_Xfrom(const Fquaternion& q, const fvec3& pos, fmat4x4& transform); //
+	virtual void InterpolateGlobalTransform(fmat4x4* m); // called UpdateCL vis influent
+	virtual void InterpolateGlobalPosition(fvec3* v);	 // aux
+	virtual void GetGlobalTransformDynamic(fmat4x4* m);	 // aux
+	IC void InverceLocalForm(fmat4x4&);
+	IC void MulB43InverceLocalForm(fmat4x4&);
 
 	////////////////////////////////////////////////////Structure/////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,25 +290,25 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
 	void PassEndGeoms(u16 from, u16 to, CPHElement* dest); // aux
 	////////////////////////////////////////////////////Build/Activate////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void Activate(const float4x4& m0, float dt01, const float4x4& m2,
+	virtual void Activate(const fmat4x4& m0, float dt01, const fmat4x4& m2,
 						  bool disable = false); // some isues not to be aux
-	virtual void Activate(const float4x4& transform, const float3& lin_vel, const float3& ang_vel,
+	virtual void Activate(const fmat4x4& transform, const fvec3& lin_vel, const fvec3& ang_vel,
 						  bool disable = false);							// some isues not to be aux
 	virtual void Activate(bool disable = false);							// some isues not to be aux
-	virtual void Activate(const float4x4& start_from, bool disable = false); // some isues not to be aux
+	virtual void Activate(const fmat4x4& start_from, bool disable = false); // some isues not to be aux
 	virtual void Deactivate();												// aux
 							   // //aux
 	void CreateSimulBase();											// create body & cpace																//aux
-	void ReInitDynamics(const float4x4& shift_pivot, float density); // set body & geom positions
+	void ReInitDynamics(const fmat4x4& shift_pivot, float density); // set body & geom positions
 	void PresetActive();											//
 	void build();													// aux
 	void build(bool disable);										// aux
 	void destroy();													// called anywhere ph state influent
 	void Start();													// aux
 	void RunSimulation();											// called anywhere ph state influent
-	void RunSimulation(const float4x4& start_from);					//
+	void RunSimulation(const fmat4x4& start_from);					//
 	void ClearDestroyInfo();
-	void GetAnimBonePos(float4x4& bp);
+	void GetAnimBonePos(fmat4x4& bp);
 	//		bool						CheckBreakConsistent					()
 	CPHElement();		   // aux
 	virtual ~CPHElement(); // aux

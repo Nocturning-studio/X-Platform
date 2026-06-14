@@ -276,9 +276,9 @@ template <class T> struct _vector2
 	}
 };
 
-typedef _vector2<float> float2;
-typedef _vector2<double> double2;
-typedef _vector2<int> int2;
+typedef _vector2<float> fvec2;
+typedef _vector2<double> dvec2;
+typedef _vector2<int> ivec2;
 
 template <class T> BOOL _valid(const _vector2<T>& v)
 {

@@ -56,7 +56,7 @@ void CMincer::Load(LPCSTR section)
 BOOL CMincer::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL result = inherited::net_Spawn(DC);
-	float3 C;
+	fvec3 C;
 	Center(C);
 	C.y += m_fTeleHeight;
 	m_telekinetics.SetCenter(C);
@@ -82,7 +82,7 @@ BOOL CMincer::feel_touch_contact(CObject* O)
 {
 	return inherited::feel_touch_contact(O) && smart_cast<CPhysicsShellHolder*>(O);
 }
-void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist)
+void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist)
 {
 	inherited::AffectThrow(O, GO, throw_in_dir, dist);
 }
@@ -106,20 +106,20 @@ bool CMincer::BlowoutState()
 	Telekinesis().deactivate();
 	return ret;
 }
-void CMincer ::ThrowInCenter(float3& C)
+void CMincer ::ThrowInCenter(fvec3& C)
 {
 	C.set(m_telekinetics.Center());
 	C.y = Position().y;
 }
 
-void CMincer ::Center(float3& C) const
+void CMincer ::Center(fvec3& C) const
 {
 	C.set(Position());
 }
 
 void CMincer::NotificateDestroy(CPHDestroyableNotificate* dn)
 {
-	float3 dir;
+	fvec3 dir;
 	float impulse;
 	// if(!m_telekinetics.has_impacts()) return;
 
@@ -129,24 +129,24 @@ void CMincer::NotificateDestroy(CPHDestroyableNotificate* dn)
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(obj);
 	if (PP && *m_torn_particles)
 	{
-		PP->StartParticles(m_torn_particles, float3().set(0, 1, 0), ID());
+		PP->StartParticles(m_torn_particles, fvec3().set(0, 1, 0), ID());
 	}
 	m_tearing_sound.play_at_pos(0, m_telekinetics.Center());
 
-	float3 position_in_bone_space, throw_in_dir;
+	fvec3 position_in_bone_space, throw_in_dir;
 	position_in_bone_space.set(0.0f, 0.0f, 0.0f);
 	throw_in_dir.set(1.0f, 0.0f, 1.0f);
 	CreateHit(obj->ID(), ID(), throw_in_dir, 0.0f, 0, position_in_bone_space, impulse, ALife::eHitTypeExplosion);
 }
 
-void CMincer::AffectPullAlife(CEntityAlive* EA, const float3& throw_in_dir, float dist)
+void CMincer::AffectPullAlife(CEntityAlive* EA, const fvec3& throw_in_dir, float dist)
 {
 	float power = Power(dist);
-	// float3 dir;
+	// fvec3 dir;
 	// dir.random_dir(throw_in_dir,2.f*PI);
 	if (EA->CLS_ID != CLSID_OBJECT_ACTOR)
 	{
-		float3 pos_in_bone_space;
+		fvec3 pos_in_bone_space;
 		pos_in_bone_space.set(0, 0, 0);
 		CreateHit(EA->ID(), ID(), throw_in_dir, power, 0, pos_in_bone_space, 0.0f, m_eHitTypeBlowout);
 	}

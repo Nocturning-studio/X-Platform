@@ -9,10 +9,10 @@ template <typename _Object> class CStateMonsterFindEnemyLook : public CState<_Ob
 
 	bool look_right_side;
 	u8 current_stage;
-	float3 target_point;
+	fvec3 target_point;
 
-	float3 current_dir;
-	float3 start_position;
+	fvec3 current_dir;
+	fvec3 start_position;
 
 	enum
 	{

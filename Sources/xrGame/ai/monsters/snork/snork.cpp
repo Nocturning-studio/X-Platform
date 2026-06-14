@@ -124,7 +124,7 @@ void CSnork::UpdateCL()
 	{
 		DBG().level_info(this).add_item(point->position(), COLOR_RED);
 
-		float3 pos;
+		fvec3 pos;
 		pos.set(Position());
 		pos.y += 5.f;
 
@@ -135,13 +135,13 @@ void CSnork::UpdateCL()
 
 #define TRACE_RANGE 30.f
 
-float CSnork::trace(const float3& dir)
+float CSnork::trace(const fvec3& dir)
 {
 	float ret_val = flt_max;
 
 	collide::rq_result l_rq;
 
-	float3 trace_from;
+	fvec3 trace_from;
 	Center(trace_from);
 
 	float trace_dist = Radius() + TRACE_RANGE;
@@ -156,7 +156,7 @@ float CSnork::trace(const float3& dir)
 }
 
 #define JUMP_DISTANCE 10.f
-bool CSnork::find_geometry(float3& dir)
+bool CSnork::find_geometry(fvec3& dir)
 {
 	// 1. trace direction
 	dir = Direction();
@@ -173,13 +173,13 @@ bool CSnork::find_geometry(float3& dir)
 	return false;
 }
 
-bool CSnork::trace_geometry(const float3& d, float& range)
+bool CSnork::trace_geometry(const fvec3& d, float& range)
 {
-	float3 dir;
+	fvec3 dir;
 	float h, p;
 
-	float3 Pl, Pc, Pr;
-	float3 center;
+	fvec3 Pl, Pc, Pr;
+	fvec3 center;
 	Center(center);
 
 	range = trace(d);
@@ -203,7 +203,7 @@ bool CSnork::trace_geometry(const float3& d, float& range)
 	Pc.mad(center, dir, range);
 
 	// trace left ray
-	float3 temp_p;
+	fvec3 temp_p;
 	temp_p.mad(Pc, Transform().i, Radius() / 2);
 	dir.sub(temp_p, center);
 	dir.normalize_safe();
@@ -215,7 +215,7 @@ bool CSnork::trace_geometry(const float3& d, float& range)
 	Pl.mad(center, dir, range);
 
 	// trace right ray
-	float3 inv = Transform().i;
+	fvec3 inv = Transform().i;
 	inv.invert();
 	temp_p.mad(Pc, inv, Radius() / 2);
 	dir.sub(temp_p, center);
@@ -229,8 +229,8 @@ bool CSnork::trace_geometry(const float3& d, float& range)
 
 	float h1, p1, h2, p2;
 
-	float3().sub(Pl, Pc).getHP(h1, p1);
-	float3().sub(Pc, Pr).getHP(h2, p2);
+	fvec3().sub(Pl, Pc).getHP(h1, p1);
+	fvec3().sub(Pc, Pr).getHP(h2, p2);
 
 	return (fsimilar(h1, h2, 0.1f) && fsimilar(p1, p2, 0.1f));
 }
@@ -257,7 +257,7 @@ void CSnork::HitEntityInJump(const CEntity* pEntity)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CSnork::jump(const float3& position, float factor)
+void CSnork::jump(const fvec3& position, float factor)
 {
 	com_man().script_jump(position, factor);
 	sound().play(MonsterSound::eMonsterSoundAggressive);

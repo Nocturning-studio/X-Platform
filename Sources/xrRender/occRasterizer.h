@@ -12,12 +12,12 @@ class occTri
 {
   public:
 	occTri* adjacent[3];
-	float3 raster[3];
+	fvec3 raster[3];
 	Fplane plane;
 	float area;
 	u32 flags;
 	u32 skip;
-	float3 center;
+	fvec3 center;
 };
 
 const float occQ_s32 = float(0x40000000); // [-2..2]

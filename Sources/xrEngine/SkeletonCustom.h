@@ -43,8 +43,8 @@ class ENGINE_API CBoneInstance
 {
   public:
 	// data
-	float4x4 mTransform;		  // final x-form matrix (local to model)
-	float4x4 mRenderTransform; // final x-form matrix (model_base -> bone -> model)
+	fmat4x4 mTransform;		  // final x-form matrix (local to model)
+	fmat4x4 mRenderTransform; // final x-form matrix (model_base -> bone -> model)
 	BoneCallback Callback;
 	void* Callback_Param;
 	BOOL Callback_overwrite;	  // performance hint - don't calc anims
@@ -77,14 +77,14 @@ class ENGINE_API CBoneData
 	vecBones children; // bones which are slaves to this
 	Fobb obb;
 
-	float4x4 bind_transform;
-	float4x4 m2b_transform; // model to bone conversion transform
+	fmat4x4 bind_transform;
+	fmat4x4 m2b_transform; // model to bone conversion transform
 	SBoneShape shape;
 	shared_str game_mtl_name;
 	u16 game_mtl_idx;
 	SJointIKData IK_data;
 	float mass;
-	float3 center_of_mass;
+	fvec3 center_of_mass;
 
 	DEFINE_VECTOR(u16, FacesVec, FacesVecIt);
 	DEFINE_VECTOR(FacesVec, ChildFacesVec, ChildFacesVecIt);
@@ -121,7 +121,7 @@ class ENGINE_API CBoneData
 		child_faces[child_idx].push_back(idx);
 	}
 	// Calculation
-	void CalculateM2B(const float4x4& Parent);
+	void CalculateM2B(const fmat4x4& Parent);
 
 	virtual u32 mem_usage()
 	{
@@ -138,9 +138,9 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 {
 #pragma warning(pop)
 	CKinematics* m_Parent;	 // 4
-	const float4x4* m_Transform;	 // 4
+	const fmat4x4* m_Transform;	 // 4
 	ref_shader m_Shader;	 // 4
-	float3 m_ContactPoint; // 12		model space
+	fvec3 m_ContactPoint; // 12		model space
 	float m_fTimeStart;		 // 4
   public:
 #ifdef DEBUG
@@ -149,8 +149,8 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 	Fsphere m_LocalBounds; // 16		model space
 	struct WMFace
 	{
-		float3 vert[3];
-		float2 uv[3];
+		fvec3 vert[3];
+		fvec2 uv[3];
 		u16 bone_id[3][2];
 		float weight[3];
 	};
@@ -159,7 +159,7 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
   public:
 	Fsphere m_Bounds; // 16		world space
   public:
-	CSkeletonWallmark(CKinematics* p, const float4x4* m, ref_shader s, const float3& cp, float ts)
+	CSkeletonWallmark(CKinematics* p, const fmat4x4* m, ref_shader s, const fvec3& cp, float ts)
 		: m_Parent(p), m_Transform(m), m_Shader(s), m_fTimeStart(ts), m_ContactPoint(cp)
 	{
 #ifdef DEBUG
@@ -182,7 +182,7 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 	{
 		return m_Faces.size() * 3;
 	}
-	IC bool Similar(ref_shader& sh, const float3& cp, float eps)
+	IC bool Similar(ref_shader& sh, const fvec3& cp, float eps)
 	{
 		return (m_Shader == sh) && m_ContactPoint.similar(cp, eps);
 	}
@@ -190,11 +190,11 @@ class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 =
 	{
 		return m_fTimeStart;
 	}
-	IC const float4x4* Transform()
+	IC const fmat4x4* Transform()
 	{
 		return m_Transform;
 	}
-	IC const float3& ContactPoint()
+	IC const fvec3& ContactPoint()
 	{
 		return m_ContactPoint;
 	}
@@ -236,7 +236,7 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 #ifdef DEBUG
 	BOOL dbg_single_use_marker;
 #endif
-	virtual void Bone_Calculate(CBoneData* bd, float4x4* parent);
+	virtual void Bone_Calculate(CBoneData* bd, fmat4x4* parent);
 	virtual void OnCalculateBones()
 	{
 	}
@@ -293,13 +293,13 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 
   public:
 	// wallmarks
-	void AddWallmark(const float4x4* parent, const float3& start, const float3& dir, ref_shader shader, float size);
+	void AddWallmark(const fmat4x4* parent, const fvec3& start, const fvec3& dir, ref_shader shader, float size);
 	void CalculateWallmarks();
 	void RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& verts);
 	void ClearWallmarks();
 
   public:
-	bool PickBone(const float4x4& parent_transform, float3& normal, float& dist, const float3& start, const float3& dir,
+	bool PickBone(const fmat4x4& parent_transform, fvec3& normal, float& dist, const fvec3& start, const fvec3& dir,
 				  u16 bone_id);
 	virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
 
@@ -341,11 +341,11 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 		u64 F = visimask.flags & ((u64(1) << u64(LL_BoneCount())) - 1);
 		return (u16)btwCount1(F);
 	}
-	ICF float4x4& LL_GetTransform(u16 bone_id)
+	ICF fmat4x4& LL_GetTransform(u16 bone_id)
 	{
 		return LL_GetBoneInstance(bone_id).mTransform;
 	}
-	ICF float4x4& LL_GetTransform_R(u16 bone_id)
+	ICF fmat4x4& LL_GetTransform_R(u16 bone_id)
 	{
 		return LL_GetBoneInstance(bone_id).mRenderTransform;
 	} // rendering only
@@ -354,7 +354,7 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 		VERIFY(bone_id < LL_BoneCount());
 		return (*bones)[bone_id]->obb;
 	}
-	void LL_GetBindTransform(xr_vector<float4x4>& matrices);
+	void LL_GetBindTransform(xr_vector<fmat4x4>& matrices);
 	int LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
 
 	u16 LL_GetBoneRoot()
@@ -390,7 +390,7 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 
 	// debug
 #ifdef DEBUG
-	void DebugRender(float4x4& Transform);
+	void DebugRender(fmat4x4& Transform);
 #endif
 
 	// General "Visual" stuff

@@ -5,7 +5,7 @@
 #include "du_sphere.h"
 //---------------------------------------------------------------------------
 // #pragma package(smart_init)
-float3 du_sphere_vertices[DU_SPHERE_NUMVERTEX] = {
+fvec3 du_sphere_vertices[DU_SPHERE_NUMVERTEX] = {
 	{0.0000f, 1.0000f, 0.0000f},	{0.8944f, 0.4472f, 0.0000f},	{0.2764f, 0.4472f, 0.8507f},
 	{-0.7236f, 0.4472f, 0.5257f},	{-0.7236f, 0.4472f, -0.5257f},	{0.2764f, 0.4472f, -0.8507f},
 	{0.7236f, -0.4472f, 0.5257f},	{-0.2764f, -0.4472f, 0.8507f},	{-0.8944f, -0.4472f, -0.0000f},
@@ -60,7 +60,7 @@ WORD du_sphere_faces[DU_SPHERE_NUMFACES * 3] = {
 	71, 91, 70, 61, 6,	63, 91, 61, 63, 60, 61, 91, 71, 60, 91, 10, 60, 71,
 };
 
-float3 du_sphere_verticesl[DU_SPHERE_NUMVERTEXL] = {
+fvec3 du_sphere_verticesl[DU_SPHERE_NUMVERTEXL] = {
 	{0, -1.0, 0},
 	{0.309018f, -0.951056f, 0},
 	{0.587786f, -0.809018f, 0},

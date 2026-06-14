@@ -24,5 +24,5 @@ class CUILabel : public CUIFrameLineWnd, public CUILinesOwner // IUITextControl
 	void SetLightAnim(LPCSTR lanim);
 
   protected:
-	//	float2 m_textPos;
+	//	fvec2 m_textPos;
 };

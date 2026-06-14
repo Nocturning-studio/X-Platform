@@ -51,7 +51,7 @@ u32 cash_draw_remove_time = u32(-1);
 
 struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 {
-	float3 v[3];
+	fvec3 v[3];
 	u32 c;
 	bool solid;
 	SPHDBGDrawTri(CDB::RESULT* T, u32 ac)
@@ -62,7 +62,7 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 		c = ac;
 		solid = false;
 	}
-	SPHDBGDrawTri(CDB::TRI* T, const float3* V_array, u32 ac)
+	SPHDBGDrawTri(CDB::TRI* T, const fvec3* V_array, u32 ac)
 	{
 
 		v[0].set(V_array[T->verts[0]]);
@@ -71,7 +71,7 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 		c = ac;
 		solid = false;
 	}
-	SPHDBGDrawTri(const float3& v0, const float3& v1, const float3& v2, u32 ac, bool solid_)
+	SPHDBGDrawTri(const fvec3& v0, const fvec3& v1, const fvec3& v2, u32 ac, bool solid_)
 	{
 		v[0].set(v0);
 		v[1].set(v1);
@@ -111,16 +111,16 @@ void DBG_DrawTri(CDB::RESULT* T, u32 c)
 {
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, c));
 }
-void DBG_DrawTri(CDB::TRI* T, const float3* V_verts, u32 c)
+void DBG_DrawTri(CDB::TRI* T, const fvec3* V_verts, u32 c)
 {
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, V_verts, c));
 }
 
 struct SPHDBGDrawLine : public SPHDBGDrawAbsract
 {
-	float3 p[2];
+	fvec3 p[2];
 	u32 c;
-	SPHDBGDrawLine(const float3& p0, const float3& p1, u32 ca)
+	SPHDBGDrawLine(const fvec3& p0, const fvec3& p1, u32 ca)
 	{
 		p[0].set(p0);
 		p[1].set(p1);
@@ -132,87 +132,87 @@ struct SPHDBGDrawLine : public SPHDBGDrawAbsract
 	}
 };
 
-void DBG_DrawLine(const float3& p0, const float3& p1, u32 c)
+void DBG_DrawLine(const fvec3& p0, const fvec3& p1, u32 c)
 {
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(p0, p1, c));
 }
-void DBG_DrawMatrix(const float4x4& m, float size, u8 a /* = 255*/)
+void DBG_DrawMatrix(const fmat4x4& m, float size, u8 a /* = 255*/)
 {
-	float3 to;
-	to.add(m.c, float3().mul(m.i, size));
+	fvec3 to;
+	to.add(m.c, fvec3().mul(m.i, size));
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, D3DCOLOR_XRGB(a, 0, 0)));
-	to.add(m.c, float3().mul(m.j, size));
+	to.add(m.c, fvec3().mul(m.j, size));
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, D3DCOLOR_XRGB(0, a, 0)));
-	to.add(m.c, float3().mul(m.k, size));
+	to.add(m.c, fvec3().mul(m.k, size));
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, D3DCOLOR_XRGB(0, 0, a)));
 }
 
-template <int> IC void rotate(float4x4& m, float ang);
+template <int> IC void rotate(fmat4x4& m, float ang);
 
-template <> IC void rotate<0>(float4x4& m, float ang)
+template <> IC void rotate<0>(fmat4x4& m, float ang)
 {
 	m.rotateX(ang);
 }
-template <> IC void rotate<1>(float4x4& m, float ang)
+template <> IC void rotate<1>(fmat4x4& m, float ang)
 {
 	m.rotateY(ang);
 }
 
-template <> IC void rotate<2>(float4x4& m, float ang)
+template <> IC void rotate<2>(fmat4x4& m, float ang)
 {
 	m.rotateZ(ang);
 }
 
 template <int ax>
-void DBG_DrawRotation(float ang0, float ang1, const float4x4& m, const float3& l, float size, u32 ac, bool solid,
+void DBG_DrawRotation(float ang0, float ang1, const fmat4x4& m, const fvec3& l, float size, u32 ac, bool solid,
 					  u32 tessel)
 {
-	float3 from;
+	fvec3 from;
 	from.set(m.c);
-	float3 ln;
+	fvec3 ln;
 	ln.set(l);
 	ln.mul(size);
 
 	const float ftess = (float)tessel;
-	float4x4 mm;
+	fmat4x4 mm;
 	rotate<ax>(mm, ang0);
 	mm.mulA_43(m);
-	float4x4 r;
+	fmat4x4 r;
 	rotate<ax>(r, (ang1 - ang0) / ftess);
 	for (u32 i = 0; tessel > i; ++i)
 	{
-		float3 tmp;
+		fvec3 tmp;
 		mm.transform_dir(tmp, ln);
-		float3 to0;
+		fvec3 to0;
 		to0.add(from, tmp);
 		mm.mulB_43(r);
 		mm.transform_dir(tmp, ln);
-		float3 to1;
+		fvec3 to1;
 		to1.add(from, tmp);
 		DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(from, to0, to1, ac, solid));
 	}
 }
 
-void DBG_DrawRotationX(const float4x4& m, float ang0, float ang1, float size, u32 ac, bool solid, u32 tessel)
+void DBG_DrawRotationX(const fmat4x4& m, float ang0, float ang1, float size, u32 ac, bool solid, u32 tessel)
 {
-	DBG_DrawRotation<0>(ang0, ang1, m, float3().set(0, 0, 1), size, ac, solid, tessel);
+	DBG_DrawRotation<0>(ang0, ang1, m, fvec3().set(0, 0, 1), size, ac, solid, tessel);
 }
 
-void DBG_DrawRotationY(const float4x4& m, float ang0, float ang1, float size, u32 ac, bool solid, u32 tessel)
+void DBG_DrawRotationY(const fmat4x4& m, float ang0, float ang1, float size, u32 ac, bool solid, u32 tessel)
 {
-	DBG_DrawRotation<1>(ang0, ang1, m, float3().set(1, 0, 0), size, ac, solid, tessel);
+	DBG_DrawRotation<1>(ang0, ang1, m, fvec3().set(1, 0, 0), size, ac, solid, tessel);
 }
 
-void DBG_DrawRotationZ(const float4x4& m, float ang0, float ang1, float size, u32 ac, bool solid, u32 tessel)
+void DBG_DrawRotationZ(const fmat4x4& m, float ang0, float ang1, float size, u32 ac, bool solid, u32 tessel)
 {
-	DBG_DrawRotation<2>(ang0, ang1, m, float3().set(0, 1, 0), size, ac, solid, tessel);
+	DBG_DrawRotation<2>(ang0, ang1, m, fvec3().set(0, 1, 0), size, ac, solid, tessel);
 }
 
 struct SPHDBGDrawAABB : public SPHDBGDrawAbsract
 {
-	float3 p[2];
+	fvec3 p[2];
 	u32 c;
-	SPHDBGDrawAABB(const float3& center, const float3& AABB, u32 ac)
+	SPHDBGDrawAABB(const fvec3& center, const fvec3& AABB, u32 ac)
 	{
 		p[0].set(center);
 		p[1].set(AABB);
@@ -224,17 +224,17 @@ struct SPHDBGDrawAABB : public SPHDBGDrawAbsract
 	}
 };
 
-void DBG_DrawAABB(const float3& center, const float3& AABB, u32 c)
+void DBG_DrawAABB(const fvec3& center, const fvec3& AABB, u32 c)
 {
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawAABB>(center, AABB, c));
 }
 
 struct SPHDBGDrawOBB : public SPHDBGDrawAbsract
 {
-	float4x4 m;
-	float3 h;
+	fmat4x4 m;
+	fvec3 h;
 	u32 c;
-	SPHDBGDrawOBB(const float4x4 am, const float3 ah, u32 ac)
+	SPHDBGDrawOBB(const fmat4x4 am, const fvec3 ah, u32 ac)
 	{
 		m.set(am);
 		h.set(ah);
@@ -245,16 +245,16 @@ struct SPHDBGDrawOBB : public SPHDBGDrawAbsract
 		Level().debug_renderer().draw_obb(m, h, c);
 	}
 };
-void DBG_DrawOBB(const float4x4& m, const float3 h, u32 c)
+void DBG_DrawOBB(const fmat4x4& m, const fvec3 h, u32 c)
 {
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawOBB>(m, h, c));
 };
 struct SPHDBGDrawPoint : public SPHDBGDrawAbsract
 {
-	float3 p;
+	fvec3 p;
 	float size;
 	u32 c;
-	SPHDBGDrawPoint(const float3 ap, float s, u32 ac)
+	SPHDBGDrawPoint(const fvec3 ap, float s, u32 ac)
 	{
 		p.set(ap), size = s;
 		c = ac;
@@ -262,14 +262,14 @@ struct SPHDBGDrawPoint : public SPHDBGDrawAbsract
 	virtual void render()
 	{
 		// Level().debug_renderer().draw_aabb(p,size,size,size,c);
-		float4x4 m;
+		fmat4x4 m;
 		m.identity();
 		m.scale(size, size, size);
 		m.c.set(p);
 		Level().debug_renderer().draw_ellipse(m, c);
 	}
 };
-void DBG_DrawPoint(const float3& p, float size, u32 c)
+void DBG_DrawPoint(const fvec3& p, float size, u32 c)
 {
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawPoint>(p, size, c));
 }
@@ -554,7 +554,7 @@ void PH_DBG_Render()
 			SPHContactDBGDraw& c = *i;
 			bool is_cyl = c.geomClass == dCylinderClassUser;
 			Level().debug_renderer().draw_aabb(c.pos, .01f, .01f, .01f, D3DCOLOR_XRGB(255 * is_cyl, 0, 255 * !is_cyl));
-			float3 dir;
+			fvec3 dir;
 			dir.set(c.norm);
 			dir.mul(c.depth * 100.f);
 			dir.add(c.pos);

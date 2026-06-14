@@ -17,12 +17,12 @@ CUICustomItem::~CUICustomItem()
 {
 }
 
-void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos, u32 color, float x1, float y1, float x2, float y2)
+void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float x1, float y1, float x2, float y2)
 {
 	//OPTICK_EVENT("CUICustomItem::Render");
 
 	CTexture* T = RenderBackendLegacy.get_ActiveTexture(0);
-	float2 ts;
+	fvec2 ts;
 	ts.set(float(T->get_Width()), float(T->get_Height()));
 
 	if (!(uFlags & flValidRect))
@@ -35,8 +35,8 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos, u32 color, floa
 		uFlags |= flValidOriginalRect;
 	}
 
-	float2 LTp, RBp;
-	float2 LTt, RBt;
+	fvec2 LTp, RBp;
+	fvec2 LTt, RBt;
 	// координаты на экране в пикселях
 	UI()->ClientToScreenScaled(LTp, x1, y1);
 	LTp.add(pos);
@@ -79,7 +79,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos, u32 color, floa
 	}
 }
 //--------------------------------------------------------------------
-void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos, u32 color)
+void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color)
 {
 	//OPTICK_EVENT("CUICustomItem::Render");
 
@@ -87,14 +87,14 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos, u32 color)
 }
 //--------------------------------------------------------------------
 
-void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos_ns, u32 color, float angle)
+void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, float angle)
 {
 	//OPTICK_EVENT("CUICustomItem::Render");
 
 	//.	angle = -0.3f;
 	CTexture* T = RenderBackendLegacy.get_ActiveTexture(0);
-	float2 ts;
-	float2 hp;
+	fvec2 ts;
+	fvec2 hp;
 	ts.set(float(T->get_Width()), float(T->get_Height()));
 	hp.set(0.5f / ts.x, 0.5f / ts.y);
 
@@ -107,7 +107,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos_ns, u32 color, f
 		uFlags |= flValidOriginalRect;
 	}
 
-	float2 pivot, offset, SZ;
+	fvec2 pivot, offset, SZ;
 	SZ.set(iVisRect.rb);
 
 	//	UI()->ClientToScreenScaled			(SZ, iVisRect.x2, iVisRect.y2);
@@ -125,7 +125,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos_ns, u32 color, f
 	pivot.set(pivot);
 	offset.set(pos_ns);
 
-	float2 LTt, RBt;
+	fvec2 LTt, RBt;
 	LTt.set(iOriginalRect.x1 / ts.x + hp.x, iOriginalRect.y1 / ts.y + hp.y);
 	RBt.set(iOriginalRect.x2 / ts.x + hp.x, iOriginalRect.y2 / ts.y + hp.y);
 	// Check mirror mode
@@ -164,7 +164,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const float2& pos_ns, u32 color, f
 	if (R && R->size())
 		for (u32 k = 0; k < R->size(); k++, Pointer++)
 		{
-			//.			float2 _pt;
+			//.			fvec2 _pt;
 			//.			UI()->ClientToScreenScaled			(_pt, (*R)[k].pt.x, (*R)[k].pt.y);
 			//.			Pointer->set						(_pt.x, _pt.y,	color, (*R)[k].uv.x, (*R)[k].uv.y);
 			Pointer->set((*R)[k].pt.x, (*R)[k].pt.y, color, (*R)[k].uv.x, (*R)[k].uv.y);

@@ -20,7 +20,7 @@ void CWalmarkManager::Clear()
 	m_wallmarks.clear();
 }
 
-void CWalmarkManager::AddWallmark(const float3& dir, const float3& start_pos, float range, float wallmark_size,
+void CWalmarkManager::AddWallmark(const fvec3& dir, const fvec3& start_pos, float range, float wallmark_size,
 								  SHADER_VECTOR& wallmarks_vector, int t)
 {
 	CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + t; // result.element;
@@ -29,10 +29,10 @@ void CWalmarkManager::AddWallmark(const float3& dir, const float3& start_pos, fl
 	if (pMaterial->Flags.is(SGameMtl::flBloodmark))
 	{
 		// вычислить нормаль к пораженной поверхности
-		float3* pVerts = Level().ObjectSpace.GetStaticVerts();
+		fvec3* pVerts = Level().ObjectSpace.GetStaticVerts();
 
 		// вычислить точку попадания
-		float3 end_point;
+		fvec3 end_point;
 		end_point.set(0, 0, 0);
 		end_point.mad(start_pos, dir, range);
 
@@ -48,7 +48,7 @@ void CWalmarkManager::AddWallmark(const float3& dir, const float3& start_pos, fl
 }
 
 /*
-void CWalmarkManager::PlaceWallmark(const float3& dir, const float3& start_pos,
+void CWalmarkManager::PlaceWallmark(const fvec3& dir, const fvec3& start_pos,
 									  float trace_dist, float wallmark_size,
 									  SHADER_VECTOR& wallmarks_vector,CObject* ignore_obj)
 {
@@ -73,7 +73,7 @@ void CWalmarkManager::PlaceWallmark(const float3& dir, const float3& start_pos,
 }
 */
 
-void CWalmarkManager::PlaceWallmarks(const float3& start_pos)
+void CWalmarkManager::PlaceWallmarks(const fvec3& start_pos)
 {
 	m_pos = start_pos;
 	//.	LPCSTR				sect				= pSettings->r_string(m_owner->cNameSect(), "wallmark_section");
@@ -84,8 +84,8 @@ void CWalmarkManager::PlaceWallmarks(const float3& start_pos)
 	StartWorkflow();
 }
 
-float Distance(const float3& rkPoint, const float3 rkTri[3], float& pfSParam, float& pfTParam, float3& closest,
-			   float3& dir);
+float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, float& pfTParam, fvec3& closest,
+			   fvec3& dir);
 
 void CWalmarkManager::StartWorkflow()
 {
@@ -97,15 +97,15 @@ void CWalmarkManager::StartWorkflow()
 	u32 max_wallmarks_count = pSettings->r_u32(sect, "max_count");
 
 	XRC.box_options(0);
-	XRC.box_query(Level().ObjectSpace.GetStaticModel(), m_pos, float3().set(m_trace_dist, m_trace_dist, m_trace_dist));
+	XRC.box_query(Level().ObjectSpace.GetStaticModel(), m_pos, fvec3().set(m_trace_dist, m_trace_dist, m_trace_dist));
 
 	CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
-	float3* V_array = Level().ObjectSpace.GetStaticVerts();
+	fvec3* V_array = Level().ObjectSpace.GetStaticVerts();
 	CDB::RESULT* R_begin = XRC.r_begin();
 	CDB::RESULT* R_end = XRC.r_end();
 	//.	Triangle		ntri;
 	//.	float			ndist					= dInfinity;
-	//.	float3			npoint;
+	//.	fvec3			npoint;
 	u32 wm_count = 0;
 
 	u32 _ray_test = 0;
@@ -114,8 +114,8 @@ void CWalmarkManager::StartWorkflow()
 	u32 _not_dist = 0;
 	/*
 		DBG_OpenCashedDraw		();
-		DBG_DrawAABB			(m_pos,float3().set(m_trace_dist,m_trace_dist,m_trace_dist),D3DCOLOR_XRGB(255,0,0));
-		DBG_DrawAABB			(m_pos,float3().set(0.05f,0.05f,0.05f),D3DCOLOR_XRGB(0,255,0));
+		DBG_DrawAABB			(m_pos,fvec3().set(m_trace_dist,m_trace_dist,m_trace_dist),D3DCOLOR_XRGB(255,0,0));
+		DBG_DrawAABB			(m_pos,fvec3().set(0.05f,0.05f,0.05f),D3DCOLOR_XRGB(0,255,0));
 
 		CTimer T; T.Start();
 	*/
@@ -127,16 +127,16 @@ void CWalmarkManager::StartWorkflow()
 			break;
 
 		//.		Triangle					tri;
-		float3 end_point;
+		fvec3 end_point;
 		//.		ETriDist					c;
-		float3 pdir;
+		fvec3 pdir;
 		float pfSParam;
 		float pfTParam;
 
 		//.		CalculateTriangle			(T_array+Res->id,cast_fp(m_pos),tri);
 
 		//.		float dist					= DistToTri(&tri,cast_fp(m_pos),cast_fp(pdir),cast_fp(end_point),c,V_array);
-		float3 _tri[3];
+		fvec3 _tri[3];
 
 		CDB::TRI* _t = T_array + Res->id;
 
@@ -191,7 +191,7 @@ void CWalmarkManager::StartWorkflow()
 	*/
 }
 /*
-void CWalmarkManager::PlaceWallmarks(const float3& start_pos,CObject* ignore_obj)
+void CWalmarkManager::PlaceWallmarks(const fvec3& start_pos,CObject* ignore_obj)
 {
 	if(m_wallmarks)
 			PlaceWallmarks(start_pos,m_trace_dist,m_wallmark_size,*m_wallmarks,ignore_obj);
@@ -217,17 +217,17 @@ void CWalmarkManager::Load(LPCSTR section)
 	}
 }
 
-float Distance(const float3& rkPoint, const float3 rkTri[3], float& pfSParam, float& pfTParam, float3& closest,
-			   float3& dir)
+float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, float& pfTParam, fvec3& closest,
+			   fvec3& dir)
 {
 
-	//.    float3 kDiff = rkTri.Origin() - rkPoint;
-	float3 kDiff;
+	//.    fvec3 kDiff = rkTri.Origin() - rkPoint;
+	fvec3 kDiff;
 	kDiff.sub(rkTri[0], rkPoint); //
 
-	float3 Edge0;
+	fvec3 Edge0;
 	Edge0.sub(rkTri[1], rkTri[0]); //
-	float3 Edge1;
+	fvec3 Edge1;
 	Edge1.sub(rkTri[2], rkTri[0]); //
 
 	//.    float fA00 = rkTri.Edge0().SquaredLength();

@@ -21,7 +21,7 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 	dest_direction.set(0.f, 0.f, 0.f);
 
 	// select point
-	float3 dir_to_enemy, dir_from_enemy;
+	fvec3 dir_to_enemy, dir_from_enemy;
 	dir_to_enemy.sub(object->EnemyMan.get_enemy()->Position(), object->Position());
 	dir_to_enemy.normalize();
 

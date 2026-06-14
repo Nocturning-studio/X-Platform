@@ -12,20 +12,20 @@ template <bool bClass3, bool bFirst> class frustum_collider
   public:
 	COLLIDER* dest;
 	TRI* tris;
-	float3* verts;
+	fvec3* verts;
 
 	const CFrustum* F;
 
-	IC void _init(COLLIDER* CL, float3* V, TRI* T, const CFrustum* _F)
+	IC void _init(COLLIDER* CL, fvec3* V, TRI* T, const CFrustum* _F)
 	{
 		dest = CL;
 		tris = T;
 		verts = V;
 		F = _F;
 	}
-	IC EFC_Visible _box(float3& C, float3& E, u32& mask)
+	IC EFC_Visible _box(fvec3& C, fvec3& E, u32& mask)
 	{
-		float3 mM[2];
+		fvec3 mM[2];
 		mM[0].sub(C, E);
 		mM[1].add(C, E);
 		return F->testAABB(&mM[0].x, mask);
@@ -63,7 +63,7 @@ template <bool bClass3, bool bFirst> class frustum_collider
 	void _stab(const AABBNoLeafNode* node, u32 mask)
 	{
 		// Actual frustum/aabb test
-		EFC_Visible result = _box((float3&)node->mAABB.mCenter, (float3&)node->mAABB.mExtents, mask);
+		EFC_Visible result = _box((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, mask);
 		if (fcvNone == result)
 			return;
 

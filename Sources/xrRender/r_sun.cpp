@@ -8,7 +8,7 @@ extern float ps_r_sun_far;
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static float3 corners[8] = {
+static fvec3 corners[8] = {
 	{-1, -1, 0},	
 	{-1, -1, +1}, 
 	{-1, +1, +1}, 
@@ -49,7 +49,7 @@ template <bool _debug> class FixedConvexVolume
 	xr_vector<Sun::Ray> view_frustum_rays;
 	Sun::Ray view_ray;
 	Sun::Ray light_ray;
-	float3 light_cuboid_points[LIGHT_CUBOIDVERTICES_COUNT];
+	fvec3 light_cuboid_points[LIGHT_CUBOIDVERTICES_COUNT];
 	_poly light_cuboid_polys[LIGHT_CUBOIDSIDEPOLYS_COUNT];
 
   public:
@@ -65,10 +65,10 @@ template <bool _debug> class FixedConvexVolume
 			// verify
 			if (_debug)
 			{
-				float3& p0 = light_cuboid_points[P.points[0]];
-				float3& p1 = light_cuboid_points[P.points[1]];
-				float3& p2 = light_cuboid_points[P.points[2]];
-				float3& p3 = light_cuboid_points[P.points[3]];
+				fvec3& p0 = light_cuboid_points[P.points[0]];
+				fvec3& p1 = light_cuboid_points[P.points[1]];
+				fvec3& p2 = light_cuboid_points[P.points[2]];
+				fvec3& p3 = light_cuboid_points[P.points[3]];
 				Fplane p012;
 				p012.build(p0, p1, p2);
 				Fplane p123;
@@ -83,7 +83,7 @@ template <bool _debug> class FixedConvexVolume
 	}
 
 	void compute_caster_model_fixed(xr_vector<Fplane>& dest, 
-									float3& translation, 
+									fvec3& translation, 
 									float map_size,
 									bool clip_by_view_near)
 	{
@@ -115,7 +115,7 @@ template <bool _debug> class FixedConvexVolume
 				break;
 		}
 
-		float3 align_vector;
+		fvec3 align_vector;
 		align_vector.set(0.f, 0.f, 0.f);
 
 		// Align ray points to the align planes.
@@ -126,13 +126,13 @@ template <bool _debug> class FixedConvexVolume
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
 				float tmp_dist = 0;
-				float3 tmp_point = view_frustum_rays[i].Position;
+				fvec3 tmp_point = view_frustum_rays[i].Position;
 
 				tmp_dist = light_cuboid_polys[align_planes[p]].plane.classify(tmp_point);
 				min_dist = _min(tmp_dist, min_dist);
 			}
 
-			float3 shift = light_cuboid_polys[align_planes[p]].plane.n;
+			fvec3 shift = light_cuboid_polys[align_planes[p]].plane.n;
 			shift.mul(min_dist);
 			align_vector.add(shift);
 		}
@@ -158,9 +158,9 @@ template <bool _debug> class FixedConvexVolume
 				float plane_dot_ray = view_frustum_rays[i].Direction.dotproduct(light_cuboid_polys[align_planes[p]].plane.n);
 				if (plane_dot_ray < 0)
 				{
-					float3 per_plane_view;
+					fvec3 per_plane_view;
 					per_plane_view.crossproduct(light_cuboid_polys[align_planes[p]].plane.n, view_ray.Direction);
-					float3 per_view_to_plane;
+					fvec3 per_view_to_plane;
 					per_view_to_plane.crossproduct(per_plane_view, view_ray.Direction);
 
 					float tmp_mag = -plane_dot_ray / view_frustum_rays[i].Direction.dotproduct(per_view_to_plane);
@@ -185,7 +185,7 @@ template <bool _debug> class FixedConvexVolume
 		// compute culling planes by rays as edges
 		for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 		{
-			float3 tmp_vector;
+			fvec3 tmp_vector;
 			tmp_vector.crossproduct(view_frustum_rays[i].Direction, light_ray.Direction);
 
 			// check if the vectors are parallel
@@ -207,7 +207,7 @@ template <bool _debug> class FixedConvexVolume
 		// compute culling planes by ray points pairs as edges
 		if (clip_by_view_near && abs(view_ray.Direction.dotproduct(light_ray.Direction)) < 0.8)
 		{
-			float3 perp_light_view, perp_light_to_view;
+			fvec3 perp_light_view, perp_light_to_view;
 			perp_light_view.crossproduct(view_ray.Direction, light_ray.Direction);
 			perp_light_to_view.crossproduct(perp_light_view, light_ray.Direction);
 
@@ -220,7 +220,7 @@ template <bool _debug> class FixedConvexVolume
 
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
-				float3 P = view_frustum_rays[i].Position;
+				fvec3 P = view_frustum_rays[i].Position;
 				P.mad(view_frustum_rays[i].Direction, 5);
 
 				if (plane.classify(P) > max_dist)
@@ -273,7 +273,7 @@ template <bool _debug> class FixedConvexVolume
 		for (u32 j = 0; j < view_frustum_rays.size(); ++j)
 		{
 			float tmp_dist = 0.f;
-			float3 tmp_pt = view_frustum_rays[j].Position;
+			fvec3 tmp_pt = view_frustum_rays[j].Position;
 			tmp_pt.mad(view_frustum_rays[j].Direction, mad_factor);
 			tmp_dist = plane.classify(tmp_pt);
 
@@ -298,9 +298,9 @@ template <bool _debug> class FixedConvexVolume
 		return valid;
 	}
 
-	void translate_light_model(float3 translate)
+	void translate_light_model(fvec3 translate)
 	{
-		float4x4 trans_mat;
+		fmat4x4 trans_mat;
 		trans_mat.translate(translate);
 		for (int i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; ++i)
 			light_cuboid_polys[i].plane.d -= translate.dotproduct(light_cuboid_polys[i].plane.n);
@@ -318,9 +318,9 @@ template <bool _debug> class DumbConvexVolume
 	struct _poly
 	{
 		xr_vector<int> points;
-		float3 planeN;
+		fvec3 planeN;
 		float planeD;
-		float classify(float3& p)
+		float classify(fvec3& p)
 		{
 			return planeN.dotproduct(p) + planeD;
 		}
@@ -341,7 +341,7 @@ template <bool _debug> class DumbConvexVolume
 	};
 
   public:
-	xr_vector<float3> points;
+	xr_vector<fvec3> points;
 	xr_vector<_poly> polys;
 	xr_vector<_edge> edges;
 
@@ -351,7 +351,7 @@ template <bool _debug> class DumbConvexVolume
 		for (int it = 0; it < int(polys.size()); it++)
 		{
 			_poly& P = polys[it];
-			float3 t1, t2;
+			fvec3 t1, t2;
 			t1.sub(points[P.points[0]], points[P.points[1]]);
 			t2.sub(points[P.points[0]], points[P.points[2]]);
 			P.planeN.crossproduct(t1, t2).normalize();
@@ -360,10 +360,10 @@ template <bool _debug> class DumbConvexVolume
 			// verify
 			if (_debug)
 			{
-				float3& p0 = points[P.points[0]];
-				float3& p1 = points[P.points[1]];
-				float3& p2 = points[P.points[2]];
-				float3& p3 = points[P.points[3]];
+				fvec3& p0 = points[P.points[0]];
+				fvec3& p1 = points[P.points[1]];
+				fvec3& p2 = points[P.points[2]];
+				fvec3& p3 = points[P.points[3]];
 				Fplane p012;
 				p012.build(p0, p1, p2);
 				Fplane p123;
@@ -377,12 +377,12 @@ template <bool _debug> class DumbConvexVolume
 		}
 	}
 
-	void compute_caster_model(xr_vector<Fplane>& dest, float3 direction)
+	void compute_caster_model(xr_vector<Fplane>& dest, fvec3 direction)
 	{
 		CRenderTarget& T = *RenderImplementation.RenderTarget;
 
 		// COG
-		float3 cog = {0, 0, 0};
+		fvec3 cog = {0, 0, 0};
 		for (int it = 0; it < int(points.size()); it++)
 			cog.add(points[it]);
 		cog.div(float(points.size()));
@@ -442,7 +442,7 @@ template <bool _debug> class DumbConvexVolume
 			_edge& E = edges[e];
 			if (_debug)
 				T.dbg_addline(points[E.p0], points[E.p1], color_rgba(255, 255, 255, 255));
-			float3 point;
+			fvec3 point;
 			points.push_back(point.sub(points[E.p0], direction));
 			points.push_back(point.sub(points[E.p1], direction));
 			polys.push_back(_poly());
@@ -479,16 +479,16 @@ template <bool _debug> class DumbConvexVolume
 };
 
 //////////////////////////////////////////////////////////////////////////
-float3 wform(float4x4& m, float3 const& v)
+fvec3 wform(fmat4x4& m, fvec3 const& v)
 {
-	float4 r;
+	fvec4 r;
 	r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
 	r.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42;
 	r.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43;
 	r.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + m._44;
 	// VERIFY		(r.w>0.f);
 	float invW = 1.0f / r.w;
-	float3 r3 = {r.x * invW, r.y * invW, r.z * invW};
+	fvec3 r3 = {r.x * invW, r.y * invW, r.z * invW};
 	return r3;
 }
 
@@ -520,7 +520,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 	// 1. Calculate view-frustum bounds in world space
 	// ---------------------------------------------------------------------
-	float4x4 ex_project, ex_full, ex_full_inverse;
+	fmat4x4 ex_project, ex_full, ex_full_inverse;
 	{
 		ex_project = Engine.RenderView.Project;
 		ex_full.mul(ex_project, Engine.RenderView.View);
@@ -530,13 +530,13 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	// Local variables for calculation
 	CFrustum cull_frustum;
 	xr_vector<Fplane> cull_planes;
-	float3 cull_COP;
+	fvec3 cull_COP;
 	CSector* cull_sector;
-	float4x4 cull_transform;
+	fmat4x4 cull_transform;
 
 	{
 		// Lets begin from base frustum
-		float4x4 fulltransform_inv = ex_full_inverse;
+		fmat4x4 fulltransform_inv = ex_full_inverse;
 #ifdef _DEBUG
 		typedef DumbConvexVolume<true> t_volume;
 #else
@@ -566,8 +566,8 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 		// Create approximate ortho-transform
 		// view: auto find 'up' and 'right' vectors
-		float4x4 mdir_View, mdir_Project;
-		float3 L_dir, L_up, L_right, L_pos;
+		fmat4x4 mdir_View, mdir_Project;
+		fvec3 L_dir, L_up, L_right, L_pos;
 		L_pos.set(sun->get_position());
 		L_dir.set(sun->get_direction()).normalize();
 		L_right.set(1, 0, 0);
@@ -589,7 +589,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 			// Initialize the first cascade rays, then each cascade will initialize rays for next one.
 			if (cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
 			{
-				float3 near_p, edge_vec;
+				fvec3 near_p, edge_vec;
 				for (int p = 0; p < 4; p++)
 				{
 					near_p = wform(fulltransform_inv, corners[facetable[4][p]]);
@@ -625,20 +625,20 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 		// build viewport transform
 		float view_dim = float(RenderImplementation.o.smapsize);
-		float4x4 m_viewport = { view_dim / 2.f, 0.0f,			 0.0f, 0.0f, 
+		fmat4x4 m_viewport = { view_dim / 2.f, 0.0f,			 0.0f, 0.0f, 
 								0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
 								0.0f,			0.0f,			 1.0f, 0.0f, 
 								view_dim / 2.f, view_dim / 2.f,	 0.0f, 1.0f };
-		float4x4 m_viewport_inv;
+		fmat4x4 m_viewport_inv;
 		D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
 
 		cull_transform.mul(mdir_Project, mdir_View);
-		float4x4 cull_transform_inv;
+		fmat4x4 cull_transform_inv;
 		cull_transform_inv.invert(cull_transform);
 
 		for (int p = 0; p < 8; p++)
 		{
-			float3 xf = wform(cull_transform_inv, corners[p]);
+			fvec3 xf = wform(cull_transform_inv, corners[p]);
 			light_cuboid.light_cuboid_points[p] = xf;
 		}
 
@@ -650,13 +650,13 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 				light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
 			}
 
-		float3 lightXZshift;
+		fvec3 lightXZshift;
 		light_cuboid.compute_caster_model_fixed(cull_planes, 
 												lightXZshift, 
 												m_sun_cascades[cascade_ind].size,
 												m_sun_cascades[cascade_ind].reset_chain);
 
-		float3 proj_view = Engine.RenderView.Direction;
+		fvec3 proj_view = Engine.RenderView.Direction;
 		proj_view.y = 0;
 		proj_view.normalize();
 
@@ -671,7 +671,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		if (cascade_ind < m_sun_cascades.size() - 1)
 			m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
-		float3 cam_shifted = L_pos;
+		fvec3 cam_shifted = L_pos;
 		cam_shifted.add(lightXZshift);
 
 		// rebuild the view transform with the shift.
@@ -686,15 +686,15 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		for (u32 p = 0; p < cull_planes.size(); p++)
 			cull_frustum._add(cull_planes[p]);
 
-		float3 cam_proj = Engine.RenderView.Position;
+		fvec3 cam_proj = Engine.RenderView.Position;
 		const float align_aim_step_coef = 4.f;
 		cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
 					 floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
 					 floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
 		cam_proj.mul(align_aim_step_coef);
-		float3 cam_pixel = wform(cull_transform, cam_proj);
+		fvec3 cam_pixel = wform(cull_transform, cam_proj);
 		cam_pixel = wform(m_viewport, cam_pixel);
-		float3 shift_proj = lightXZshift;
+		fvec3 shift_proj = lightXZshift;
 		cull_transform.transform_dir(shift_proj);
 		m_viewport.transform_dir(shift_proj);
 
@@ -713,10 +713,10 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 		m_viewport_inv.transform_dir(cam_pixel);
 		cull_transform_inv.transform_dir(cam_pixel);
-		float3 diff = cam_pixel;
+		fvec3 diff = cam_pixel;
 		static float sign_test = -1.f;
 		diff.mul(sign_test);
-		float4x4 adjust;
+		fmat4x4 adjust;
 		adjust.translate(diff);
 		cull_transform.mulB_44(adjust);
 

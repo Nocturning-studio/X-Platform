@@ -12,12 +12,12 @@ float CMeleeChecker::distance_to_enemy(const CEntity* enemy)
 	if (dist > MAX_TRACE_ENEMY_RANGE)
 		return dist;
 
-	float3 enemy_center;
+	fvec3 enemy_center;
 	enemy->Center(enemy_center);
 
-	float3 my_head_pos = get_head_position(m_object);
+	fvec3 my_head_pos = get_head_position(m_object);
 
-	float3 dir;
+	fvec3 dir;
 	dir.sub(enemy_center, my_head_pos);
 	dir.normalize_safe();
 

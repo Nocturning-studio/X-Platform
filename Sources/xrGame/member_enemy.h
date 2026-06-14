@@ -23,7 +23,7 @@ class CMemberEnemy
 	mask_type m_mask;
 	mask_type m_distribute_mask;
 	float m_probability;
-	float3 m_enemy_position;
+	fvec3 m_enemy_position;
 	u32 m_level_time;
 
   public:

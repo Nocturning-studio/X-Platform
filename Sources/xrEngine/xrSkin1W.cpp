@@ -13,7 +13,7 @@ void __stdcall xrSkin1W_SSE(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInst
 	{
 		const vertBoned1W& src = S[i];
 		vertRender& dst = D[i];
-		const float4x4& M = Bones[src.matrix].mRenderTransform;
+		const fmat4x4& M = Bones[src.matrix].mRenderTransform;
 
 		// --- Преобразование позиции (с учётом трансляции) ---
 		// Вектор позиции: (x, y, z, 1.0f)

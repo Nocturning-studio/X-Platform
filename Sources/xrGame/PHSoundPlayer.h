@@ -9,7 +9,7 @@ class CPHSoundPlayer
 	CPhysicsShellHolder* m_object;
 
   public:
-	void Play(SGameMtlPair* mtl_pair, const float3& pos);
+	void Play(SGameMtlPair* mtl_pair, const fvec3& pos);
 	CPHSoundPlayer(CPhysicsShellHolder* m_object);
 	virtual ~CPHSoundPlayer();
 

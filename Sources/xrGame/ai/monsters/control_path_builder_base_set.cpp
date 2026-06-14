@@ -34,7 +34,7 @@ void CControlPathBuilderBase::prepare_builder()
 // Desc: just set desirable position and update actuality
 // all checkings will be made on update stage
 //////////////////////////////////////////////////////////////////////////
-void CControlPathBuilderBase::set_target_point(const float3& position, u32 node)
+void CControlPathBuilderBase::set_target_point(const fvec3& position, u32 node)
 {
 	// обновить актуальность
 	m_target_actual = m_target_actual && (m_target_set.position.similar(position) && (m_target_set.node == node));
@@ -53,7 +53,7 @@ void CControlPathBuilderBase::set_target_point(u32 node)
 	set_target_point(ai().level_graph().vertex_position(node), node);
 }
 
-void CControlPathBuilderBase::set_retreat_from_point(const float3& position)
+void CControlPathBuilderBase::set_retreat_from_point(const fvec3& position)
 {
 	// обновить актуальность
 	m_target_actual = m_target_actual && (m_target_set.position.similar(position));

@@ -128,14 +128,14 @@ class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer
 	}
 
   public:
-	virtual void PHGetLinearVell(float3& velocity);
-	virtual void PHSetLinearVell(float3& velocity);
+	virtual void PHGetLinearVell(fvec3& velocity);
+	virtual void PHSetLinearVell(fvec3& velocity);
 	virtual void PHSetMaterial(LPCSTR m);
 	virtual void PHSetMaterial(u16 m);
 	void PHSaveState(NET_Packet& P);
 	void PHLoadState(IReader& P);
 	virtual float GetMass();
-	virtual void PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
+	virtual void PHHit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 					   ALife::EHitType hit_type = ALife::eHitTypeWound);
 	virtual void Hit(SHit* pHDS);
 	///////////////////////////////////////////////////////////////////////

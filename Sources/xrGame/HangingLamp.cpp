@@ -47,7 +47,7 @@ void CHangingLamp::RespawnInit()
 	}
 }
 
-void CHangingLamp::Center(float3& C) const
+void CHangingLamp::Center(fvec3& C) const
 {
 	if (renderable.visual)
 	{
@@ -219,10 +219,10 @@ void CHangingLamp::UpdateCL()
 			PKinematics(Visual())->CalculateBones();
 
 		// update T&R from light (main) bone
-		float4x4 xf;
+		fmat4x4 xf;
 		if (light_bone != BI_NONE)
 		{
-			float4x4& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(light_bone);
+			fmat4x4& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(light_bone);
 			xf.mul(Transform(), M);
 			VERIFY(!fis_zero(DET(xf)));
 		}
@@ -242,7 +242,7 @@ void CHangingLamp::UpdateCL()
 			{
 				if (ambient_bone != BI_NONE)
 				{
-					float4x4& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(ambient_bone);
+					fmat4x4& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(ambient_bone);
 					xf.mul(Transform(), M);
 					VERIFY(!fis_zero(DET(xf)));
 				}
@@ -304,8 +304,8 @@ void CHangingLamp::TurnOff()
 		processing_deactivate();
 }
 
-// void CHangingLamp::Hit(float P,float3 &dir, CObject* who,s16 element,
-//					   float3 p_in_object_space, float impulse, ALife::EHitType hit_type)
+// void CHangingLamp::Hit(float P,fvec3 &dir, CObject* who,s16 element,
+//					   fvec3 p_in_object_space, float impulse, ALife::EHitType hit_type)
 void CHangingLamp::Hit(SHit* pHDS)
 {
 	SHit HDS = *pHDS;

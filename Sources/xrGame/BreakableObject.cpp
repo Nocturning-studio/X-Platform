@@ -71,7 +71,7 @@ void CBreakableObject::shedule_Update(u32 dt)
 void CBreakableObject::UpdateCL()
 {
 	inherited::UpdateCL();
-	//	float4x4	d;
+	//	fmat4x4	d;
 	if (m_pPhysicsShell && m_pPhysicsShell->isFullActive())
 		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 }
@@ -81,8 +81,8 @@ void CBreakableObject::enable_notificate()
 		ProcessDamage();
 }
 
-// void CBreakableObject::Hit(float P,float3 &dir, CObject* who,s16 element,
-//					   float3 p_in_object_space, float impulse, ALife::EHitType hit_type)
+// void CBreakableObject::Hit(float P,fvec3 &dir, CObject* who,s16 element,
+//					   fvec3 p_in_object_space, float impulse, ALife::EHitType hit_type)
 void CBreakableObject::Hit(SHit* pHDS)
 {
 	CheckHitBreak(pHDS->damage(), pHDS->hit_type);
@@ -207,10 +207,10 @@ void CBreakableObject::Split()
 {
 	// for (u16 k=0; k<K->LL_BoneCount(); k++){
 
-	//		float4x4& M = K->LL_GetTransform(k);
-	//		float4x4 R; R.setHPB(-0.1,-0.1,-0.1);
+	//		fmat4x4& M = K->LL_GetTransform(k);
+	//		fmat4x4 R; R.setHPB(-0.1,-0.1,-0.1);
 	//		M.mulB		(R);
-	//		float4x4 S;	S.scale(0.98f,0.98f,0.98f);
+	//		fmat4x4 S;	S.scale(0.98f,0.98f,0.98f);
 	//		M.mulB		(S);
 	//}
 }
@@ -225,7 +225,7 @@ void CBreakableObject::Break()
 	u16 el_num = m_pPhysicsShell->get_ElementsNumber();
 	for (u16 i = 0; i < el_num; i++)
 	{
-		float3 pos, dir;
+		fvec3 pos, dir;
 		pos.set(Random.randF(-0.3f, 0.3f), Random.randF(-0.3f, 0.3f), Random.randF(-0.3f, 0.3f));
 		dir.set(Random.randF(-0.3f, 0.3f), Random.randF(-0.3f, 0.3f), Random.randF(-0.3f, 0.3f));
 		dir.normalize();
@@ -324,17 +324,17 @@ void CBreakableObject::CheckHitBreak(float power, ALife::EHitType hit_type)
 		Break();
 }
 
-void CBreakableObject::ApplyExplosion(const float3& dir, float impulse)
+void CBreakableObject::ApplyExplosion(const fvec3& dir, float impulse)
 {
 	if (!m_pPhysicsShell)
 		return;
-	float3 pos;
+	fvec3 pos;
 	pos.set(0.f, 0.f, 0.f);
 	u16 el_num = m_pPhysicsShell->get_ElementsNumber();
 	for (u16 i = 0; i < el_num; i++)
 	{
 
-		float3 max_area_dir;
+		fvec3 max_area_dir;
 		CPhysicsElement* element = m_pPhysicsShell->get_ElementByStoreOrder(i);
 		element->get_MaxAreaDir(max_area_dir);
 		float sign = max_area_dir.dotproduct(dir) > 0.f ? 1.f : -1.f;

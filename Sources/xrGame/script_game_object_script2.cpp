@@ -210,10 +210,10 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 		//
 		.def("set_desired_position", (void(CScriptGameObject::*)())(&CScriptGameObject::set_desired_position))
 		.def("set_desired_position",
-			 (void(CScriptGameObject::*)(const float3*))(&CScriptGameObject::set_desired_position))
+			 (void(CScriptGameObject::*)(const fvec3*))(&CScriptGameObject::set_desired_position))
 		.def("set_desired_direction", (void(CScriptGameObject::*)())(&CScriptGameObject::set_desired_direction))
 		.def("set_desired_direction",
-			 (void(CScriptGameObject::*)(const float3*))(&CScriptGameObject::set_desired_direction))
+			 (void(CScriptGameObject::*)(const fvec3*))(&CScriptGameObject::set_desired_direction))
 		.def("set_patrol_path", &CScriptGameObject::set_patrol_path)
 		.def("set_dest_level_vertex_id", &CScriptGameObject::set_dest_level_vertex_id)
 		.def("level_vertex_id", &CScriptGameObject::level_vertex_id)

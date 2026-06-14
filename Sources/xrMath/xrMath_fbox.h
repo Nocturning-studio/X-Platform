@@ -11,7 +11,7 @@ template <class T> class _box3
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 	typedef _vector3<T> Tvector;
-	typedef _matrix<T> Tmatrix;
+	typedef _matrix4x4<T> Tmatrix;
 
   public:
 	union {
@@ -269,7 +269,7 @@ template <class T> class _box3
 	}
 	IC SelfRef scale(float s) // 0.1 means make 110%, -0.1 means make 90%
 	{
-		float3 bd;
+		fvec3 bd;
 		bd.sub(max, min).mul(s);
 		grow(bd);
 		return *this;

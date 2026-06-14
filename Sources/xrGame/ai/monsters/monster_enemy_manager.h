@@ -8,7 +8,7 @@ class CMonsterEnemyManager
 	CBaseMonster* monster;
 
 	const CEntityAlive* enemy;
-	float3 position;
+	fvec3 position;
 	u32 vertex;
 	u32 time_last_seen;
 
@@ -18,7 +18,7 @@ class CMonsterEnemyManager
 	bool expediency;
 
 	const CEntityAlive* prev_enemy;
-	float3 prev_enemy_position;
+	fvec3 prev_enemy_position;
 
 	bool enemy_see_me;
 
@@ -51,7 +51,7 @@ class CMonsterEnemyManager
 	{
 		return danger_type;
 	}
-	const float3& get_enemy_position()
+	const fvec3& get_enemy_position()
 	{
 		return position;
 	}

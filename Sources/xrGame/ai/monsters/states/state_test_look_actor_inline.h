@@ -18,8 +18,8 @@ void CStateMonsterLookActorAbstract::execute()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterTurnAwayFromActorAbstract::execute()
 {
-	float3 point;
-	float3 dir;
+	fvec3 point;
+	fvec3 dir;
 	dir.sub(object->Position(), Level().CurrentEntity()->Position());
 	dir.normalize();
 	point.mad(object->Position(), dir, 2.f);

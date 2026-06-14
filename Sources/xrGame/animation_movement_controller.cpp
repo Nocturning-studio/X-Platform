@@ -3,7 +3,7 @@
 #include "../xrEngine/SkeletonAnimated.h"
 #include "game_object_space.h"
 
-animation_movement_controller::animation_movement_controller(float4x4* _pObjTransform, CKinematics* _pKinematicsC, CBlend* b)
+animation_movement_controller::animation_movement_controller(fmat4x4* _pObjTransform, CKinematics* _pKinematicsC, CBlend* b)
 	: m_startObjTransform(*_pObjTransform), m_pObjTransform(*_pObjTransform), m_pKinematicsC(_pKinematicsC), m_control_blend(b)
 {
 	VERIFY(_pKinematicsC);
@@ -50,8 +50,8 @@ void animation_movement_controller::RootBoneCallback(CBoneInstance* B)
 
 	if (O->m_control_blend->playing)
 	{
-		float4x4 m;
-		m.mul_43(B->mTransform, float4x4().invert(O->m_startRootTransform));
+		fmat4x4 m;
+		m.mul_43(B->mTransform, fmat4x4().invert(O->m_startRootTransform));
 		O->m_pObjTransform.mul_43(O->m_startObjTransform, m);
 	}
 	B->mTransform.set(O->m_startRootTransform);

@@ -71,10 +71,10 @@ void CUIPropertiesBox::RemoveAll()
 	m_UIListWnd.Clear();
 }
 
-void CUIPropertiesBox::Show(const Frect& parent_rect, const float2& point)
+void CUIPropertiesBox::Show(const Frect& parent_rect, const fvec2& point)
 {
-	float2 prop_pos;
-	float2 prop_size = GetWndSize();
+	fvec2 prop_pos;
+	fvec2 prop_size = GetWndSize();
 
 	if (point.x - prop_size.x > parent_rect.x1 && point.y + prop_size.y < parent_rect.y2)
 	{

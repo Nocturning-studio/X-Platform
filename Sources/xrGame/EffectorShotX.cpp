@@ -17,7 +17,7 @@ BOOL CCameraShotEffectorX::ProcessCam(SCamEffectorInfo& info)
 	return TRUE;
 };
 
-void CCameraShotEffectorX::GetDeltaAngle(float3& delta_angle)
+void CCameraShotEffectorX::GetDeltaAngle(fvec3& delta_angle)
 {
 	delta_angle.x = 0.0f;
 	delta_angle.y = 0.0f;

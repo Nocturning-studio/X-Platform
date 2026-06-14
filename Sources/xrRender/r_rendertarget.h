@@ -33,7 +33,7 @@ class CRenderTarget : public IRender_Target
 #ifdef DEBUG
 	struct dbg_line_t
 	{
-		float3 P0, P1;
+		fvec3 P0, P1;
 		u32 color;
 	};
 	xr_vector<std::pair<Fsphere, Fcolor>> dbg_spheres;
@@ -178,7 +178,7 @@ class CRenderTarget : public IRender_Target
 	void accum_spot_geom_create();
 	void accum_spot_geom_destroy();
 
-	void u_calc_tc_duality_ss(float2& r0, float2& r1, float2& l0, float2& l1);
+	void u_calc_tc_duality_ss(fvec2& r0, fvec2& r1, fvec2& l0, fvec2& l1);
 
 	virtual u32 get_width()
 	{

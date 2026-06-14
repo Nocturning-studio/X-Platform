@@ -25,8 +25,8 @@ extern LPCSTR dbg_trace_object;
 struct SPHContactDBGDraw
 {
 	int geomClass;
-	float3 norm;
-	float3 pos;
+	fvec3 norm;
+	fvec3 pos;
 	float depth;
 };
 DEFINE_VECTOR(SPHContactDBGDraw, CONTACT_VECTOR, CONTACT_I);
@@ -79,8 +79,8 @@ enum
 };
 struct SPHObjDBGDraw
 {
-	float3 AABB;
-	float3 AABB_center;
+	fvec3 AABB;
+	fvec3 AABB_center;
 };
 
 DEFINE_VECTOR(SPHObjDBGDraw, PHOBJ_DBG_V, PHOBJ_DBG_I);
@@ -104,17 +104,17 @@ void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a);
 void DBG_DrawPHObject(CPHObject* obj);
 void DBG_DrawContact(dContact& c);
 void DBG_DrawTri(CDB::RESULT* T, u32 c);
-void DBG_DrawTri(CDB::TRI* T, const float3* V_verts, u32 c);
-void DBG_DrawLine(const float3& p0, const float3& p1, u32 c);
-void DBG_DrawAABB(const float3& center, const float3& AABB, u32 c);
-void DBG_DrawOBB(const float4x4& m, const float3 h, u32 c);
-void DBG_DrawPoint(const float3& p, float size, u32 c);
-void DBG_DrawMatrix(const float4x4& m, float size, u8 a = 255);
-void DBG_DrawRotationX(const float4x4& m, float ang0, float ang1, float size, u32 ac, bool solid = false,
+void DBG_DrawTri(CDB::TRI* T, const fvec3* V_verts, u32 c);
+void DBG_DrawLine(const fvec3& p0, const fvec3& p1, u32 c);
+void DBG_DrawAABB(const fvec3& center, const fvec3& AABB, u32 c);
+void DBG_DrawOBB(const fmat4x4& m, const fvec3 h, u32 c);
+void DBG_DrawPoint(const fvec3& p, float size, u32 c);
+void DBG_DrawMatrix(const fmat4x4& m, float size, u8 a = 255);
+void DBG_DrawRotationX(const fmat4x4& m, float ang0, float ang1, float size, u32 ac, bool solid = false,
 					   u32 tessel = 7);
-void DBG_DrawRotationY(const float4x4& m, float ang0, float ang1, float size, u32 ac, bool solid = false,
+void DBG_DrawRotationY(const fmat4x4& m, float ang0, float ang1, float size, u32 ac, bool solid = false,
 					   u32 tessel = 7);
-void DBG_DrawRotationZ(const float4x4& m, float ang0, float ang1, float size, u32 ac, bool solid = false,
+void DBG_DrawRotationZ(const fmat4x4& m, float ang0, float ang1, float size, u32 ac, bool solid = false,
 					   u32 tessel = 7);
 void _cdecl DBG_OutText(LPCSTR s, ...);
 void DBG_DrawFrameStart();
@@ -133,8 +133,8 @@ struct CFunctionGraph
 	type_function m_function;
 	float x_min, x_max, s;
 	// float y_min,y_max;
-	// float2 left_bottom;
-	// float2 range;
+	// fvec2 left_bottom;
+	// fvec2 range;
   public:
 	CFunctionGraph();
 	~CFunctionGraph();

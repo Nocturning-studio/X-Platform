@@ -33,7 +33,7 @@ class CWeaponKnife : public CWeapon
 
 	void state_Attacking(float dt);
 
-	virtual void KnifeStrike(const float3& pos, const float3& dir);
+	virtual void KnifeStrike(const fvec3& pos, const fvec3& dir);
 
 	float fWallmarkSize;
 	u16 knife_material_idx;

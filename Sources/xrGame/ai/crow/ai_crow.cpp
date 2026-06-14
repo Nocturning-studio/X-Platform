@@ -50,7 +50,7 @@ void CAI_Crow::SSound::Load(LPCSTR prefix)
 	R_ASSERT(m_Sounds.size());
 }
 
-void CAI_Crow::SSound::SetPosition(const float3& pos)
+void CAI_Crow::SSound::SetPosition(const fvec3& pos)
 {
 	for (int i = 0; i < (int)m_Sounds.size(); ++i)
 		if (m_Sounds[i]._feedback())
@@ -151,7 +151,7 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
 	processing_deactivate();
 
 	// –андомизируем позицию разлета ворон
-	float3 tmp = Actor()->Position();
+	fvec3 tmp = Actor()->Position();
 	tmp.x = tmp.x + ::Random.randF(-50.0f, 50.0f);
 	tmp.y = tmp.y + ::Random.randF(20.0f, 50.0f);
 	tmp.z = tmp.z + ::Random.randF(-50.0f, 50.0f);
@@ -191,7 +191,7 @@ void CAI_Crow::switch2_DeathDead()
 }
 void CAI_Crow::switch2_DeathFall()
 {
-	float3 V;
+	fvec3 V;
 	V.mul(Transform().k, fSpeed);
 	//	m_PhysicMovementControl->SetVelocity(V);
 	smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death.GetRandom(), TRUE, cb_OnHitEndPlaying, this);
@@ -201,10 +201,10 @@ void CAI_Crow::state_Flying(float fdt)
 {
 	// Update position and orientation of the planes
 	float fAT = fASpeed * fdt;
-	float3& vDirection = Transform().k;
+	fvec3& vDirection = Transform().k;
 
 	// Tweak orientation based on last position and goal
-	float3 vOffset;
+	fvec3 vOffset;
 	vOffset.sub(vGoalDir, Position());
 
 	// First, tweak the pitch
@@ -249,14 +249,14 @@ void CAI_Crow::state_Flying(float fdt)
 	Position().mad(vOldPosition, vDirection, fSpeed * fdt);
 }
 
-static float3 vV = {0, 0, 0};
+static fvec3 vV = {0, 0, 0};
 void CAI_Crow::state_DeathFall()
 {
-	float3 tAcceleration;
+	fvec3 tAcceleration;
 	tAcceleration.set(0, -10.f, 0);
 	if (m_pPhysicsShell)
 	{
-		float3 velocity;
+		fvec3 velocity;
 		m_pPhysicsShell->get_LinearVel(velocity);
 		if (velocity.y > -0.001f)
 			st_target = eDeathDead;
@@ -356,7 +356,7 @@ void CAI_Crow::shedule_Update(u32 DT)
 		if (fGoalChangeTime <= 0)
 		{
 			fGoalChangeTime += fGoalChangeDelta + fGoalChangeDelta * Random.randF(-0.5f, 0.5f);
-			float3 vP;
+			fvec3 vP;
 			vP.set(Engine.RenderView.Position.x, Engine.RenderView.Position.y + fMinHeight, Engine.RenderView.Position.z);
 			vGoalDir.x = vP.x + vVarGoal.x * Random.randF(-0.5f, 0.5f);
 			vGoalDir.y = vP.y + vVarGoal.y * Random.randF(-0.5f, 0.5f);
@@ -442,7 +442,7 @@ void CAI_Crow::net_Import(NET_Packet& P)
 	Transform().setHPB(yaw, pitch, bank);
 }
 //---------------------------------------------------------------------
-void CAI_Crow::HitSignal(float /**HitAmount/**/, float3& /**local_dir/**/, CObject* who, s16 /**element/**/)
+void CAI_Crow::HitSignal(float /**HitAmount/**/, fvec3& /**local_dir/**/, CObject* who, s16 /**element/**/)
 {
 	// bool				first_time = !!g_Alive();
 	//	bool				first_time = !PPhysicsShell();
@@ -457,7 +457,7 @@ void CAI_Crow::HitSignal(float /**HitAmount/**/, float3& /**local_dir/**/, CObje
 		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_dead.GetRandom());
 }
 //---------------------------------------------------------------------
-void CAI_Crow::HitImpulse(float /**amount/**/, float3& /**vWorldDir/**/, float3& /**vLocalDir/**/)
+void CAI_Crow::HitImpulse(float /**amount/**/, fvec3& /**vWorldDir/**/, fvec3& /**vLocalDir/**/)
 {
 }
 //---------------------------------------------------------------------
@@ -469,7 +469,7 @@ void CAI_Crow::CreateSkeleton()
 									 .game_mtl_idx);
 }
 
-// void CAI_Crow::Hit	(float P, float3 &dir, CObject* who, s16 element,float3 p_in_object_space, float impulse,
+// void CAI_Crow::Hit	(float P, fvec3 &dir, CObject* who, s16 element,fvec3 p_in_object_space, float impulse,
 // ALife::EHitType hit_type)
 void CAI_Crow::Hit(SHit* pHDS)
 {

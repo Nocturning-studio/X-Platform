@@ -3,7 +3,7 @@
 
 #include "../xrEngine/PS_instance.h"
 
-extern const float3 zero_vel;
+extern const fvec3 zero_vel;
 
 class CParticlesObject : public CPS_Instance
 {
@@ -36,15 +36,15 @@ class CParticlesObject : public CPS_Instance
 	void PerformAllTheWork(u32 dt);
 	void __stdcall PerformAllTheWork_mt();
 
-	float3& Position();
-	void SetTransform(const float4x4& m);
-	IC float4x4& Transform()
+	fvec3& Position();
+	void SetTransform(const fmat4x4& m);
+	IC fmat4x4& Transform()
 	{
 		return renderable.transform;
 	}
-	void UpdateParent(const float4x4& m, const float3& vel);
+	void UpdateParent(const fmat4x4& m, const fvec3& vel);
 
-	void play_at_pos(const float3& pos, BOOL transform = FALSE);
+	void play_at_pos(const fvec3& pos, BOOL transform = FALSE);
 	virtual void Play();
 	void Stop(BOOL bDefferedStop = TRUE);
 	virtual BOOL Locked()

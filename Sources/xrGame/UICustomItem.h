@@ -36,7 +36,7 @@ class CUICustomItem
 	Frect iOriginalRect;
 
 	// точка, относительно которой применяем поворот
-	float2 iHeadingPivot;
+	fvec2 iHeadingPivot;
 
 	u32 uFlags;
 	u32 uAlign;
@@ -64,20 +64,20 @@ class CUICustomItem
 	Frect GetOriginalRect() const;
 	Frect GetOriginalRectScaled();
 
-	void SetHeadingPivot(const float2& p)
+	void SetHeadingPivot(const fvec2& p)
 	{
 		iHeadingPivot = p;
 		uFlags |= flValidHeadingPivot;
 	}
-	float2 GetHeadingPivot()
+	fvec2 GetHeadingPivot()
 	{
 		return iHeadingPivot;
 	}
 
-	void Render(FVF::TL*& Pointer, const float2& pos, u32 color, float x1, float y1, float x2, float y2);
+	void Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float x1, float y1, float x2, float y2);
 
-	void Render(FVF::TL*& Pointer, const float2& pos, u32 color);
-	void Render(FVF::TL*& Pointer, const float2& pos, u32 color, float angle);
+	void Render(FVF::TL*& Pointer, const fvec2& pos, u32 color);
+	void Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float angle);
 
 	IC void SetAlign(u32 align)
 	{

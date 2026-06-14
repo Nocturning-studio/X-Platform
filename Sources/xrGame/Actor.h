@@ -135,7 +135,7 @@ class CActor : public CEntityAlive,
 	// Render
 	virtual void renderable_Render();
 	virtual BOOL renderable_ShadowGenerate();
-	virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const float3& Position,
+	virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const fvec3& Position,
 								float power);
 	virtual Feel::Sound* dcast_FeelSound()
 	{
@@ -228,11 +228,11 @@ class CActor : public CEntityAlive,
 
 	virtual void Die(CObject* who);
 	virtual void Hit(SHit* pHDS);
-	virtual void PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
+	virtual void PHHit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 					   ALife::EHitType hit_type /* = ALife::eHitTypeWound */);
-	virtual void HitSignal(float P, float3& vLocalDir, CObject* who, s16 element);
+	virtual void HitSignal(float P, fvec3& vLocalDir, CObject* who, s16 element);
 	void HitSector(CObject* who, CObject* weapon);
-	void HitMark(float P, float3 dir, CObject* who, s16 element, float3 position_in_bone_space, float impulse,
+	void HitMark(float P, fvec3 dir, CObject* who, s16 element, fvec3 position_in_bone_space, float impulse,
 				 ALife::EHitType hit_type);
 
 	virtual float GetMass();
@@ -446,7 +446,7 @@ class CActor : public CEntityAlive,
 	CCameraBase* cameras[eacMaxCam];
 	EActorCameras cam_active;
 	float fPrevCamPos;
-	float3 vPrevCamDir;
+	fvec3 vPrevCamDir;
 	float fCurAVelocity;
 	CEffectorBobbing* pCamBobbing;
 
@@ -522,7 +522,7 @@ class CActor : public CEntityAlive,
 	// Motions (передвижени€ актрера)
 	//////////////////////////////////////////////////////////////////////////
   public:
-	void g_cl_CheckControls(u32 mstate_wf, float3& vControlAccel, float& Jump, float dt);
+	void g_cl_CheckControls(u32 mstate_wf, fvec3& vControlAccel, float& Jump, float dt);
 	void g_cl_ValidateMState(float dt, u32 mstate_wf);
 	void g_cl_Orientate(u32 mstate_rl, float dt);
 	void g_sv_Orientate(u32 mstate_rl, float dt);
@@ -579,7 +579,7 @@ class CActor : public CEntityAlive,
 	//////////////////////////////////////////////////////////////////////////
   public:
 	virtual void g_WeaponBones(int& L, int& R1, int& R2);
-	virtual void g_fireParams(const CHudItem* pHudItem, float3& P, float3& D);
+	virtual void g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D);
 	virtual BOOL g_State(SEntityState& state) const;
 	virtual float GetWeaponAccuracy() const;
 	bool IsZoomAimingMode() const
@@ -605,12 +605,12 @@ class CActor : public CEntityAlive,
 	// crouch+no acceleration
 	float m_fDispCrouchNoAccelFactor;
 	// смещение firepoint относительно default firepoint дл€ бросани€ болтов и гранат
-	float3 m_vMissileOffset;
+	fvec3 m_vMissileOffset;
 
   public:
 	// ѕолучение, и запись смещени€ дл€ гранат
-	float3 GetMissileOffset() const;
-	void SetMissileOffset(const float3& vNewOffset);
+	fvec3 GetMissileOffset() const;
+	void SetMissileOffset(const fvec3& vNewOffset);
 
   protected:
 	// косточки используемые при стрельбе
@@ -647,7 +647,7 @@ class CActor : public CEntityAlive,
 
   protected:
 	xr_deque<net_update> NET;
-	float3 NET_SavedAccel;
+	fvec3 NET_SavedAccel;
 	net_update NET_Last;
 	BOOL NET_WasInterpolating; // previous update was by interpolation or by extrapolation
 	u32 NET_Time;			   // server time of last update
@@ -673,10 +673,10 @@ class CActor : public CEntityAlive,
 	/// spline coeff /////////////////////
 	float SCoeff[3][4];			 // коэффициэнты дл€ сплайна Ѕизье
 	float HCoeff[3][4];			 // коэффициэнты дл€ сплайна Ёрмита
-	float3 IPosS, IPosH, IPosL; // положение актера после интерпол€ции Ѕизье, Ёрмита, линейной
+	fvec3 IPosS, IPosH, IPosL; // положение актера после интерпол€ции Ѕизье, Ёрмита, линейной
 
 #ifdef DEBUG
-	DEF_DEQUE(VIS_POSITION, float3);
+	DEF_DEQUE(VIS_POSITION, fvec3);
 
 	VIS_POSITION LastPosS;
 	VIS_POSITION LastPosH;
@@ -717,14 +717,14 @@ class CActor : public CEntityAlive,
 	// Actor physics
 	//////////////////////////////////////////////////////////////////////////
   public:
-	void g_Physics(float3& accel, float jump, float dt);
-	virtual void ForceTransform(const float4x4& m);
-	void SetPhPosition(const float4x4& pos);
+	void g_Physics(fvec3& accel, float jump, float dt);
+	virtual void ForceTransform(const fmat4x4& m);
+	void SetPhPosition(const fmat4x4& pos);
 	virtual void PH_B_CrPr(); // actions & operations before physic correction-prediction steps
 	virtual void PH_I_CrPr(); // actions & operations after correction before prediction steps
 	virtual void PH_A_CrPr(); // actions & operations after phisic correction-prediction steps
 							  //	virtual void			UpdatePosStack	( u32 Time0, u32 Time1 );
-	virtual void MoveActor(float3 NewPos, float3 NewDir);
+	virtual void MoveActor(fvec3 NewPos, fvec3 NewDir);
 
 	virtual void SpawnAmmoForWeapon(CInventoryItem* pIItem);
 	virtual void RemoveAmmoForWeapon(CInventoryItem* pIItem);
@@ -750,8 +750,8 @@ class CActor : public CEntityAlive,
 	virtual void ChangeVisual(shared_str NewVisual);
 	virtual void OnChangeVisual();
 
-	virtual void RenderIndicator(float3 dpos, float r1, float r2, ref_shader IndShader);
-	virtual void RenderText(LPCSTR Text, float3 dpos, float* pdup, u32 color);
+	virtual void RenderIndicator(fvec3 dpos, float r1, float r2, ref_shader IndShader);
+	virtual void RenderText(LPCSTR Text, fvec3 dpos, float* pdup, u32 color);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Controlled Routines
@@ -786,8 +786,8 @@ class CActor : public CEntityAlive,
 #ifdef DEBUG
 	friend class CLevelGraph;
 #endif
-	float3 m_AutoPickUp_AABB;
-	float3 m_AutoPickUp_AABB_Offset;
+	fvec3 m_AutoPickUp_AABB;
+	fvec3 m_AutoPickUp_AABB_Offset;
 
 	void Check_for_AutoPickUp();
 	void SelectBestWeapon(CObject* O);
@@ -819,8 +819,8 @@ class CActor : public CEntityAlive,
 	u16 m_iLastHitterID;
 	u16 m_iLastHittingWeaponID;
 	s16 m_s16LastHittedElement;
-	float3 m_vLastHitDir;
-	float3 m_vLastHitPos;
+	fvec3 m_vLastHitDir;
+	fvec3 m_vLastHitPos;
 	float m_fLastHealth;
 	bool m_bWasHitted;
 	bool m_bWasBackStabbed;
@@ -828,7 +828,7 @@ class CActor : public CEntityAlive,
 	virtual bool Check_for_BackStab_Bone(u16 element);
 
   public:
-	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, float3 Pos, float3 Dir);
+	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, fvec3 Pos, fvec3 Dir);
 
 	virtual void OnHitHealthLoss(float NewHealth);
 	virtual void OnCriticalHitHealthLoss();
@@ -843,8 +843,8 @@ class CActor : public CEntityAlive,
 	virtual void on_weapon_shot_start(CWeapon* weapon);
 	virtual void on_weapon_shot_stop(CWeapon* weapon);
 	virtual void on_weapon_hide(CWeapon* weapon);
-	float3 weapon_recoil_delta_angle();
-	float3 weapon_recoil_last_delta();
+	fvec3 weapon_recoil_delta_angle();
+	fvec3 weapon_recoil_last_delta();
 
   protected:
 	virtual void update_camera(CCameraShotEffector* effector);
@@ -875,7 +875,7 @@ class CActor : public CEntityAlive,
 
   private:
 	collide::rq_results RQR;
-	BOOL CanPickItem(const CFrustum& frustum, const float3& from, CObject* item);
+	BOOL CanPickItem(const CFrustum& frustum, const fvec3& from, CObject* item);
 	xr_vector<ISpatial*> ISpatialResult;
 
   private:

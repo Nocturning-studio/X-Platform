@@ -31,8 +31,8 @@ class CScriptSoundAction : public CScriptAbstractAction
 	EGoalType m_tGoalType;
 	bool m_bLooped;
 	bool m_bStartedToPlay;
-	float3 m_tSoundPosition;
-	float3 m_tSoundAngles;
+	fvec3 m_tSoundPosition;
+	fvec3 m_tSoundAngles;
 	ESoundTypes m_sound_type;
 	MonsterSound::EType m_monster_sound;
 	int m_monster_sound_delay;
@@ -41,18 +41,18 @@ class CScriptSoundAction : public CScriptAbstractAction
   public:
 	IC CScriptSoundAction();
 	IC CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneName,
-						  const float3& tPositionOffset = float3().set(0, 0, 0),
-						  const float3& tAngleOffset = float3().set(0, 0, 0), bool bLooped = false,
+						  const fvec3& tPositionOffset = fvec3().set(0, 0, 0),
+						  const fvec3& tAngleOffset = fvec3().set(0, 0, 0), bool bLooped = false,
 						  ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
-	IC CScriptSoundAction(LPCSTR caSoundToPlay, const float3& tPosition,
-						  const float3& tAngleOffset = float3().set(0, 0, 0), bool bLooped = false,
+	IC CScriptSoundAction(LPCSTR caSoundToPlay, const fvec3& tPosition,
+						  const fvec3& tAngleOffset = fvec3().set(0, 0, 0), bool bLooped = false,
 						  ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
 	IC CScriptSoundAction(CScriptSound& sound, LPCSTR caBoneName,
-						  const float3& tPositionOffset = float3().set(0, 0, 0),
-						  const float3& tAngleOffset = float3().set(0, 0, 0), bool bLooped = false,
+						  const fvec3& tPositionOffset = fvec3().set(0, 0, 0),
+						  const fvec3& tAngleOffset = fvec3().set(0, 0, 0), bool bLooped = false,
 						  ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
-	IC CScriptSoundAction(CScriptSound& sound, const float3& tPosition,
-						  const float3& tAngleOffset = float3().set(0, 0, 0), bool bLooped = false,
+	IC CScriptSoundAction(CScriptSound& sound, const fvec3& tPosition,
+						  const fvec3& tAngleOffset = fvec3().set(0, 0, 0), bool bLooped = false,
 						  ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
 	////////////////////////////////////////////////////////////////////////////////////
 	// Monster Specific
@@ -66,9 +66,9 @@ class CScriptSoundAction : public CScriptAbstractAction
 	virtual ~CScriptSoundAction();
 	void SetSound(LPCSTR caSoundToPlay);
 	IC void SetSound(const CScriptSound& sound);
-	IC void SetPosition(const float3& tPosition);
+	IC void SetPosition(const fvec3& tPosition);
 	IC void SetBone(LPCSTR caBoneName);
-	IC void SetAngles(const float3& tAngles);
+	IC void SetAngles(const fvec3& tAngles);
 	IC void SetSoundType(const ESoundTypes sound_type);
 	IC void initialize();
 

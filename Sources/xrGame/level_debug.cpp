@@ -126,10 +126,10 @@ void CLevelDebug::draw_object_info()
 			break;
 		}
 
-		float4x4 res;
+		fmat4x4 res;
 		res.mul(Engine.RenderView.ViewProjection, it->first->Transform());
 
-		float4 v_res;
+		fvec4 v_res;
 
 		float delta_height = 0.f;
 
@@ -245,17 +245,17 @@ void CLevelDebug::CTextInfo::draw_text()
 // CLevelInfo
 //////////////////////////////////////////////////////////////////////////
 
-void CLevelDebug::CLevelInfo::add_item(const float3& pos, u32 color, u32 id)
+void CLevelDebug::CLevelInfo::add_item(const fvec3& pos, u32 color, u32 id)
 {
 	inherited::add_item(SLevelItem(pos, color, id));
 }
 
-void CLevelDebug::CLevelInfo::add_item(const float3& pos1, const float3& pos2, u32 color, u32 id)
+void CLevelDebug::CLevelInfo::add_item(const fvec3& pos1, const fvec3& pos2, u32 color, u32 id)
 {
 	inherited::add_item(SLevelItem(pos1, pos2, color, id));
 }
 
-void CLevelDebug::CLevelInfo::add_item(const float3& pos, float radius, u32 color, u32 id)
+void CLevelDebug::CLevelInfo::add_item(const fvec3& pos, float radius, u32 color, u32 id)
 {
 	inherited::add_item(SLevelItem(pos, radius, color, id));
 }
@@ -269,7 +269,7 @@ struct DrawLevelPredicate
 		{
 			Level().debug_renderer().draw_aabb(s.position1, 0.35f, 0.35f, 0.35f, s.color);
 
-			float3 upV;
+			fvec3 upV;
 			upV = s.position1;
 			upV.y += 5.0f;
 

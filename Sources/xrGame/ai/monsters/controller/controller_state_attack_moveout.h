@@ -5,7 +5,7 @@ template <typename _Object> class CStateControlMoveOut : public CState<_Object>
 	typedef CState<_Object> inherited;
 	typedef CState<_Object>* state_ptr;
 
-	float3 m_look_point;
+	fvec3 m_look_point;
 
 	u32 m_last_time_look_point_updated;
 	u32 m_current_delay;
@@ -16,7 +16,7 @@ template <typename _Object> class CStateControlMoveOut : public CState<_Object>
 		eMoveToLastEnemyLocation
 	} m_state;
 
-	float3 m_target_position;
+	fvec3 m_target_position;
 	u32 m_target_node;
 
 	u32 m_enemy_vertex;

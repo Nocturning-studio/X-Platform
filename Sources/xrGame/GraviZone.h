@@ -29,11 +29,11 @@ class CBaseGraviZone : public CCustomZone
 
 	// воздействие зоной на объект
 	virtual void Affect(SZoneObjectInfo* O);
-	virtual void AffectPull(CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist);
-	virtual void AffectPullAlife(CEntityAlive* EA, const float3& throw_in_dir, float dist);
-	virtual void AffectPullDead(CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist);
-	virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const float3& throw_in_dir, float dist);
-	virtual void ThrowInCenter(float3& C);
+	virtual void AffectPull(CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist);
+	virtual void AffectPullAlife(CEntityAlive* EA, const fvec3& throw_in_dir, float dist);
+	virtual void AffectPullDead(CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist);
+	virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const fvec3& throw_in_dir, float dist);
+	virtual void ThrowInCenter(fvec3& C);
 	virtual bool CheckAffectField(CPhysicsShellHolder* GO, float dist_to_radius);
 	virtual void shedule_Update(u32 dt);
 	virtual bool BlowoutState();

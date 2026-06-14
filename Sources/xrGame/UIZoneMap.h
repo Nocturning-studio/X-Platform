@@ -25,7 +25,7 @@ class CUIZoneMap
 	void Init();
 
 	void Render();
-	void UpdateRadar(float3 pos);
+	void UpdateRadar(fvec3 pos);
 
 	void SetScale(float s)
 	{

@@ -14,7 +14,7 @@ void CMonsterCorpseCoverEvaluator::evaluate(const CCoverPoint* cover_point, floa
 	if (my_distance >= m_max_distance)
 		return;
 
-	float3 direction;
+	fvec3 direction;
 	float y, p;
 	direction.sub(m_start_position, cover_point->position());
 	direction.getHP(y, p);

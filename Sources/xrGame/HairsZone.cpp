@@ -67,7 +67,7 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
 	if (O->zone_ignore)
 		return;
 
-	float3 P;
+	fvec3 P;
 	Transform().transform_tiny(P, CFORM()->getSphere().P);
 
 #ifdef DEBUG
@@ -79,11 +79,11 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
 	}
 #endif
 
-	float3 hit_dir;
+	fvec3 hit_dir;
 	hit_dir.set(::Random.randF(-.5f, .5f), ::Random.randF(.0f, 1.f), ::Random.randF(-.5f, .5f));
 	hit_dir.normalize();
 
-	float3 position_in_bone_space;
+	fvec3 position_in_bone_space;
 
 	// FIX BY IXRAY (THANKS BY NSDeathman)
 	P.y = pGameObject->Position().y;

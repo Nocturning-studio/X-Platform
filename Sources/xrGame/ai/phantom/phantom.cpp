@@ -148,7 +148,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 	if (new_state != m_CurState)
 	{
 		CKinematicsAnimated* K = smart_cast<CKinematicsAnimated*>(Visual());
-		float4x4 transform = Transform_center();
+		fmat4x4 transform = Transform_center();
 		UpdateEvent = 0;
 		// after event
 		switch (m_CurState)
@@ -160,7 +160,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		case stContact: {
 			SStateData& sdata = m_state_data[m_CurState];
 			PlayParticles(sdata.particles.c_str(), FALSE, transform);
-			float3 vE, vP;
+			fvec3 vE, vP;
 			m_enemy->Center(vE);
 			Center(vP);
 			if (vP.distance_to_sqr(vE) < _sqr(Radius()))
@@ -233,15 +233,15 @@ void CPhantom::OnFlyState()
 	UpdateFlyMedia();
 	if (g_Alive())
 	{
-		float3 vE, vP;
+		fvec3 vE, vP;
 		m_enemy->Center(vE);
 		Center(vP);
 		if (vP.distance_to_sqr(vE) < _sqr(Radius() + m_enemy->Radius()))
 		{
 			SwitchToState(stContact);
 			//			Hit
-			//(1000.f,float3().set(0,0,1),this,-1,float3().set(0,0,0),100.f,ALife::eHitTypeFireWound);
-			SHit HDS(1000.f, float3().set(0, 0, 1), this, BI_NONE, float3().set(0, 0, 0), 100.f,
+			//(1000.f,fvec3().set(0,0,1),this,-1,fvec3().set(0,0,0),100.f,ALife::eHitTypeFireWound);
+			SHit HDS(1000.f, fvec3().set(0, 0, 1), this, BI_NONE, fvec3().set(0, 0, 0), 100.f,
 					 ALife::eHitTypeFireWound);
 			Hit(&HDS);
 		}
@@ -254,11 +254,11 @@ void CPhantom::OnDeadState()
 void CPhantom::UpdateFlyMedia()
 {
 	UpdatePosition(m_enemy->Position());
-	float4x4 transform = Transform_center();
+	fmat4x4 transform = Transform_center();
 	// update particles
 	if (m_fly_particles)
 	{
-		float3 vel;
+		fvec3 vel;
 		vel.sub(m_enemy->Position(), Position()).normalize_safe().mul(fSpeed);
 		m_fly_particles->UpdateParent(transform, vel);
 	}
@@ -288,7 +288,7 @@ void CPhantom::UpdateCL()
 		SwitchToState_internal(m_TgtState);
 }
 //---------------------------------------------------------------------
-// void CPhantom::Hit	(float P, float3 &dir, CObject* who, s16 element,float3 p_in_object_space, float impulse,
+// void CPhantom::Hit	(float P, fvec3 &dir, CObject* who, s16 element,fvec3 p_in_object_space, float impulse,
 // ALife::EHitType hit_type)
 void CPhantom::Hit(SHit* pHDS)
 {
@@ -302,15 +302,15 @@ void CPhantom::Hit(SHit* pHDS)
 	}
 }
 //---------------------------------------------------------------------
-float4x4 CPhantom::Transform_center()
+fmat4x4 CPhantom::Transform_center()
 {
-	float3 center;
+	fvec3 center;
 	Center(center);
-	float4x4 transform = Transform();
+	fmat4x4 transform = Transform();
 	return transform.translate_over(center);
 }
 
-CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemove, const float4x4& transform)
+CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemove, const fmat4x4& transform)
 {
 	CParticlesObject* ps = CParticlesObject::Create(name.c_str(), bAutoRemove);
 	ps->UpdateParent(transform, zero_vel);
@@ -319,10 +319,10 @@ CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemo
 }
 
 //---------------------------------------------------------------------
-void CPhantom::UpdatePosition(const float3& tgt_pos)
+void CPhantom::UpdatePosition(const fvec3& tgt_pos)
 {
 	float tgt_h, tgt_p;
-	float3 tgt_dir, cur_dir;
+	fvec3 tgt_dir, cur_dir;
 	tgt_dir.sub(tgt_pos, Position());
 	tgt_dir.getHP(tgt_h, tgt_p);
 
@@ -331,7 +331,7 @@ void CPhantom::UpdatePosition(const float3& tgt_pos)
 
 	cur_dir.setHP(vHP.x, vHP.y);
 
-	float3 prev_pos = Position();
+	fvec3 prev_pos = Position();
 	Transform().rotateY(-vHP.x);
 	Position().mad(prev_pos, cur_dir, fSpeed * Engine.TimeManager.GetDeltaTime());
 }
@@ -343,10 +343,10 @@ void CPhantom::PsyHit(const CObject* object, float value)
 	HS.GenHeader(GE_HIT, object->ID());					 //				//	u_EventGen		(P,GE_HIT, object->ID());
 	HS.whoID = (ID());									 // own			//	P.w_u16			(object->ID());
 	HS.weaponID = (ID());								 // own			//	P.w_u16			(object->ID());
-	HS.dir = (float3().set(0.f, 1.f, 0.f));			 // direction	//	P.w_dir			(float3().set(0.f,1.f,0.f));
+	HS.dir = (fvec3().set(0.f, 1.f, 0.f));			 // direction	//	P.w_dir			(fvec3().set(0.f,1.f,0.f));
 	HS.power = (value);									 // hit value	//	P.w_float		(value);
 	HS.boneID = (BI_NONE);								 // bone			//	P.w_s16			(BI_NONE);
-	HS.p_in_bone_space = (float3().set(0.f, 0.f, 0.f)); //	P.w_vec3		(float3().set(0.f,0.f,0.f));
+	HS.p_in_bone_space = (fvec3().set(0.f, 0.f, 0.f)); //	P.w_vec3		(fvec3().set(0.f,0.f,0.f));
 	HS.impulse = (0.f);									 //	P.w_float		(0.f);
 	HS.hit_type = (ALife::eHitTypeTelepatic);			 //	P.w_u16			(u16(ALife::eHitTypeTelepatic));
 	HS.Write_Packet(P);

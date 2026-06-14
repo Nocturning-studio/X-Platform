@@ -395,13 +395,13 @@ void CUICustomEdit::Update()
 void CUICustomEdit::Draw()
 {
 	CUIWindow::Draw();
-	float2 pos;
+	fvec2 pos;
 	GetAbsolutePos(pos);
 	m_lines.Draw(pos.x + m_textPos.x, pos.y + m_textPos.y);
 
 	if (m_bInputFocus)
 	{ // draw cursor here
-		float2 outXY;
+		fvec2 outXY;
 
 		outXY.x = 0.0f;
 		float _h = m_lines.m_pFont->CurrentHeight_();

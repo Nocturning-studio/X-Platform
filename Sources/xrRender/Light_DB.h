@@ -10,8 +10,8 @@ struct Flight
 	Fcolor diffuse;		/* Diffuse color of light */
 	Fcolor specular;	/* Specular color of light */
 	Fcolor ambient;		/* Ambient color of light */
-	float3 position;	/* Position in world space */
-	float3 direction;	/* Direction in world space */
+	fvec3 position;	/* Position in world space */
+	fvec3 direction;	/* Direction in world space */
 	float range;		/* Cutoff range */
 	float falloff;		/* Falloff */
 	float attenuation0; /* Constant attenuation */

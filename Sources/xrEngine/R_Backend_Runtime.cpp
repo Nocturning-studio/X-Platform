@@ -132,7 +132,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 }
 
 #ifndef DEDICATED_SREVER
-void CBackend::set_ClipPlanes(u32 _enable, float4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
+void CBackend::set_ClipPlanes(u32 _enable, fmat4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
 {
 	if (0 == HW.GetCaps().geometry.dwClipPlanes)
 		return;
@@ -217,7 +217,7 @@ void CBackend::set_Textures(STextureList* _T)
 }
 #else
 
-void CBackend::set_ClipPlanes(u32 _enable, float4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
+void CBackend::set_ClipPlanes(u32 _enable, fmat4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
 {
 }
 void CBackend::set_Textures(STextureList* _T)
@@ -370,13 +370,13 @@ void CBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP 
 }
 
 // 2D texgen (texture adjustment matrix)
-void CBackend::u_compute_texgen_screen(float4x4& m_Texgen)
+void CBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
 {
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	float o_w = (.5f / _w);
 	float o_h = (.5f / _h);
-	float4x4 m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 
+	fmat4x4 m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 
 							 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 
 							 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
@@ -391,7 +391,7 @@ void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	float d_Z = EPS_S;
 	float d_W = 1.f;
 
-	float2 p0, p1;
+	fvec2 p0, p1;
 	p0.set(0.5f / w, 0.5f / h);
 	p1.set((w + 0.5f) / w, (h + 0.5f) / h);
 

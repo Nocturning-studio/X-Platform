@@ -18,13 +18,13 @@ void R_tree::unmap()
 	c_c_sun = 0;
 }
 
-void R_tree::set_m_transform_v(float4x4& mat)
+void R_tree::set_m_transform_v(fmat4x4& mat)
 {
 	if (c_m_transform_v)
 		RenderBackendLegacy.set_Constant(c_m_transform_v, mat);
 }
 
-void R_tree::set_m_transform(float4x4& mat)
+void R_tree::set_m_transform(fmat4x4& mat)
 {
 	if (c_m_transform)
 		RenderBackendLegacy.set_Constant(c_m_transform, mat);

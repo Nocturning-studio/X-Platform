@@ -91,7 +91,7 @@ void CControlDirection::update_frame()
 	m_man->path_builder().m_body.target.pitch = m_pitch.current_angle;
 
 	// save object position
-	float3 P = m_object->Position();
+	fvec3 P = m_object->Position();
 	// set angles
 	if (!m_object->animation_movement_controlled())
 		m_object->Transform().setHPB(-m_man->path_builder().m_body.current.yaw, -m_man->path_builder().m_body.current.pitch,
@@ -123,7 +123,7 @@ void CControlDirection::pitch_correction()
 		if (cur_point.position.distance_to_sqr(next_point.position) > 1)
 		{
 			// получаем искомый вектор направления
-			float3 target_dir;
+			fvec3 target_dir;
 			target_dir.sub(next_point.position, cur_point.position);
 			m_data.pitch.target_angle = -target_dir.getP();
 			return;
@@ -136,16 +136,16 @@ void CControlDirection::pitch_correction()
 	decompress_normal(P.n, ai().level_graph().vertex(node)->plane());
 	P.d = -P.n.dotproduct(ai().level_graph().vertex_position(node));
 
-	float3 position_on_plane;
+	fvec3 position_on_plane;
 	P.project(position_on_plane, m_object->Position());
 
 	// находим проекцию точки, лежащей на векторе текущего направления
-	float3 dir_point, proj_point;
+	fvec3 dir_point, proj_point;
 	dir_point.mad(position_on_plane, m_object->Direction(), 1.f);
 	P.project(proj_point, dir_point);
 
 	// получаем искомый вектор направления
-	float3 target_dir;
+	fvec3 target_dir;
 	target_dir.sub(proj_point, position_on_plane);
 
 	float yaw, pitch;
@@ -158,9 +158,9 @@ void CControlDirection::pitch_correction()
 // Services
 //////////////////////////////////////////////////////////////////////////
 
-bool CControlDirection::is_face_target(const float3& position, float eps_angle)
+bool CControlDirection::is_face_target(const fvec3& position, float eps_angle)
 {
-	float target_h = float3().sub(position, m_object->Position()).getH();
+	float target_h = fvec3().sub(position, m_object->Position()).getH();
 	float my_h = m_object->Direction().getH();
 
 	if (angle_difference(target_h, my_h) > eps_angle)
@@ -174,10 +174,10 @@ bool CControlDirection::is_face_target(const CObject* obj, float eps_angle)
 	return is_face_target(obj->Position(), eps_angle);
 }
 
-bool CControlDirection::is_from_right(const float3& position)
+bool CControlDirection::is_from_right(const fvec3& position)
 {
 	float yaw, pitch;
-	float3().sub(position, m_object->Position()).getHP(yaw, pitch);
+	fvec3().sub(position, m_object->Position()).getHP(yaw, pitch);
 	yaw *= -1;
 
 	return (from_right(yaw, m_heading.current_angle));
@@ -202,9 +202,9 @@ float CControlDirection::get_heading_current()
 	return m_heading.current_angle;
 }
 
-float CControlDirection::angle_to_target(const float3& position)
+float CControlDirection::angle_to_target(const fvec3& position)
 {
-	float angle = float3().sub(position, m_object->Position()).getH();
+	float angle = fvec3().sub(position, m_object->Position()).getH();
 	angle *= -1;
 
 	return (angle_normalize(angle));

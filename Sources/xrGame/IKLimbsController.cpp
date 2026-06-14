@@ -49,41 +49,41 @@ void CIKLimbsController::Create(CGameObject* O)
 
 struct envc : private boost::noncopyable, public SEnumVerticesCallback
 {
-	float3& pos;
-	float3 start_pos;
-	const float4x4& i_bind_transform;
-	const float3& ax;
-	envc(const float4x4& _i_bind_transform, const float3& _ax, float3& _pos)
+	fvec3& pos;
+	fvec3 start_pos;
+	const fmat4x4& i_bind_transform;
+	const fvec3& ax;
+	envc(const fmat4x4& _i_bind_transform, const fvec3& _ax, fvec3& _pos)
 		: SEnumVerticesCallback(), i_bind_transform(_i_bind_transform), ax(_ax), pos(_pos)
 	{
 		start_pos.set(0, 0, 0);
 	}
-	void operator()(const float3& p)
+	void operator()(const fvec3& p)
 	{
-		float3 lpos;
+		fvec3 lpos;
 		i_bind_transform.transform_tiny(lpos, p);
-		// float3 diff;diff.sub( lpos, pos );
-		if (float3().sub(lpos, start_pos).dotproduct(ax) > float3().sub(pos, start_pos).dotproduct(ax))
+		// fvec3 diff;diff.sub( lpos, pos );
+		if (fvec3().sub(lpos, start_pos).dotproduct(ax) > fvec3().sub(pos, start_pos).dotproduct(ax))
 			pos.set(lpos);
 	}
 };
 
-void get_toe(CKinematics* skeleton, float3& toe, const u16 bones[4])
+void get_toe(CKinematics* skeleton, fvec3& toe, const u16 bones[4])
 {
 	VERIFY(skeleton);
-	xr_vector<float4x4> binds;
+	xr_vector<fmat4x4> binds;
 	skeleton->LL_GetBindTransform(binds);
-	float4x4 ibind;
+	fmat4x4 ibind;
 	ibind.invert(binds[bones[3]]);
-	float3 ax;
-	float3 pos;
+	fvec3 ax;
+	fvec3 pos;
 	pos.set(0, 0, 0);
 	ax.set(1, 0, -1);
 	envc pred(ibind, ax, pos);
 	skeleton->EnumBoneVertices(pred, bones[3]);
 
 	binds[bones[3]].transform_tiny(pos);
-	float4x4().invert(binds[bones[2]]).transform_tiny(pos);
+	fmat4x4().invert(binds[bones[2]]).transform_tiny(pos);
 
 	toe.set(pos);
 
@@ -98,10 +98,10 @@ void CIKLimbsController::LimbSetup(const u16 bones[4])
 	_bone_chains.push_back(CIKLimb());
 	CKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	VERIFY(skeleton_animated);
-	float3 toe;
+	fvec3 toe;
 	get_toe(skeleton_animated, toe, bones);
 	_bone_chains.back().Create((u16)_bone_chains.size() - 1, skeleton_animated, bones, toe,
-							   true); // float3( ).set( 0.13143f, 0, 0.20f )
+							   true); // fvec3( ).set( 0.13143f, 0, 0.20f )
 }
 
 void CIKLimbsController::LimbCalculate(SCalculateData& cd)
@@ -128,7 +128,7 @@ void CIKLimbsController::Calculate()
 
 	update_blend(m_legs_blend);
 	CKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
-	const float4x4& obj = m_object->Transform();
+	const fmat4x4& obj = m_object->Transform();
 	VERIFY(skeleton_animated);
 
 	{

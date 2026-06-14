@@ -19,7 +19,7 @@ class PHDynamicData
 public:
 dVector3 pos;
 dMatrix3 R;
-float4x4 BoneTransform;
+fmat4x4 BoneTransform;
 private:
 dBodyID body;
 CPHInterpolation* p_parent_body_interpolation;
@@ -29,15 +29,15 @@ dGeomID transform;
 //PHDynamicData* Childs;
 //xr_vector<PHDynamicData>  Childs;
 unsigned int numOfChilds;
-float4x4 ZeroTransform;
+fmat4x4 ZeroTransform;
 public:
 	inline void UpdateInterpolation(){
 		body_interpolation.UpdatePositions();
 		body_interpolation.UpdateRotations();
 	}
 	void UpdateInterpolationRecursive()	;
-	void InterpolateTransform(float4x4& transform);
-	void InterpolateTransformVsParent(float4x4& transform);
+	void InterpolateTransform(fmat4x4& transform);
+	void InterpolateTransformVsParent(fmat4x4& transform);
 	PHDynamicData& operator [] (unsigned int i) {return Childs[i];};
 	void Destroy();
 	void Create(unsigned int numOfchilds,dBodyID Body);
@@ -46,20 +46,20 @@ public:
 	bool SetChild(unsigned int ChildNum,unsigned int numOfchilds,dBodyID body);
 	void SetAsZero();
 	void SetAsZeroRecursive();
-	void SetZeroTransform(float4x4& aTransform);
+	void SetZeroTransform(fmat4x4& aTransform);
 	PHDynamicData(unsigned int numOfchilds,dBodyID body);
 	PHDynamicData();
 	virtual ~PHDynamicData();
-	void GetWorldMX(float4x4& aTransform){
+	void GetWorldMX(fmat4x4& aTransform){
 			dMatrix3 R;
 			dQtoR(dBodyGetQuaternion(body),R);
 			DMXPStoFMX(R,dBodyGetPosition(body),aTransform);
 			}
-	void GetTGeomWorldMX(float4x4& aTransform){
+	void GetTGeomWorldMX(fmat4x4& aTransform){
 			if(!transform) return;
-			float4x4 NormTransform,Transform;
+			fmat4x4 NormTransform,Transform;
 			dVector3 P0={0,0,0,-1};
-			float3 Translate,Translate1;
+			fvec3 Translate,Translate1;
 			//compute_final_tx(geom);
 			//dQtoR(dBodyGetQuaternion(body),R);
 			DMXPStoFMX(dBodyGetRotation(body),P0,NormTransform);
@@ -87,18 +87,18 @@ public:
 			}
 #endif // #if 0
   public:
-	static inline void DMXPStoFMX(const dReal* R, const dReal* pos, float4x4& aTransform)
+	static inline void DMXPStoFMX(const dReal* R, const dReal* pos, fmat4x4& aTransform)
 	{
 
 		CopyMemory(&aTransform, R, sizeof(dMatrix3));
 		aTransform.transpose();
-		CopyMemory(&aTransform.c, pos, sizeof(float3));
+		CopyMemory(&aTransform.c, pos, sizeof(fvec3));
 		aTransform._14 = 0.f;
 		aTransform._24 = 0.f;
 		aTransform._34 = 0.f;
 		aTransform._44 = 1.f;
 	};
-	static inline void DMXtoFMX(const dReal* R, float4x4& aTransform)
+	static inline void DMXtoFMX(const dReal* R, fmat4x4& aTransform)
 	{
 		aTransform._11 = R[0];
 		aTransform._12 = R[4];
@@ -116,7 +116,7 @@ public:
 		aTransform._34 = 0.f;
 		aTransform._44 = 1.f;
 	};
-	static inline void FMX33toDMX(const float3x3& aTransform, dReal* R)
+	static inline void FMX33toDMX(const fmat3x3& aTransform, dReal* R)
 	{
 		R[0] = aTransform._11;
 		R[4] = aTransform._12;
@@ -130,7 +130,7 @@ public:
 		R[6] = aTransform._32;
 		R[10] = aTransform._33;
 	};
-	static inline void FMXtoDMX(const float4x4& aTransform, dReal* R)
+	static inline void FMXtoDMX(const fmat4x4& aTransform, dReal* R)
 	{
 		R[0] = aTransform._11;
 		R[4] = aTransform._12;

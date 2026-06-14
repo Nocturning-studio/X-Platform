@@ -8,7 +8,7 @@
 
 // проверить, находится ли объект entity на ноде
 // возвращает позицию объекта, если он находится на ноде, или центр его ноды
-float3 get_valid_position(const CEntity* entity, const float3& actual_position)
+fvec3 get_valid_position(const CEntity* entity, const fvec3& actual_position)
 {
 	if (ai().level_graph().valid_vertex_id(entity->ai_location().level_vertex_id()) &&
 		ai().level_graph().valid_vertex_position(entity->Position()) &&
@@ -26,12 +26,12 @@ bool object_position_valid(const CEntity* entity)
 			ai().level_graph().inside(entity->ai_location().level_vertex_id(), entity->Position()));
 }
 
-float3 get_bone_position(CObject* object, LPCSTR bone_name)
+fvec3 get_bone_position(CObject* object, LPCSTR bone_name)
 {
 	u16 bone_id = smart_cast<CKinematics*>(object->Visual())->LL_BoneID(bone_name);
 	CBoneInstance& bone = smart_cast<CKinematics*>(object->Visual())->LL_GetBoneInstance(bone_id);
 
-	float4x4 global_transform;
+	fmat4x4 global_transform;
 	global_transform.mul(object->Transform(), bone.mTransform);
 
 	return (global_transform.c);

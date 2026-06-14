@@ -238,7 +238,7 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 	if ((cam_active == eacFreeFly) || (cam_active == eacFreeLook))
 	{
 		CCameraBase* C = cameras[cam_active];
-		float3 vmove = {0, 0, 0};
+		fvec3 vmove = {0, 0, 0};
 		switch (cmd)
 		{
 		case kUP:
@@ -259,13 +259,13 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 			vmove.mad(C->vDirection, -Engine.TimeManager.GetDeltaTime() * Accel_mul);
 			break;
 		case kR_STRAFE: {
-			float3 right;
+			fvec3 right;
 			right.crossproduct(C->vNormal, C->vDirection);
 			vmove.mad(right, Engine.TimeManager.GetDeltaTime() * Accel_mul);
 		}
 		break;
 		case kL_STRAFE: {
-			float3 right;
+			fvec3 right;
 			right.crossproduct(C->vNormal, C->vDirection);
 			vmove.mad(right, -Engine.TimeManager.GetDeltaTime() * Accel_mul);
 		}
@@ -355,13 +355,13 @@ void CSpectator::cam_Update(CActor* A)
 {
 	if (A)
 	{
-		const float4x4& M = A->Transform();
+		const fmat4x4& M = A->Transform();
 		CCameraBase* pACam = A->cam_Active();
 		CCameraBase* cam = cameras[cam_active];
 		switch (cam_active)
 		{
 		case eacFirstEye: {
-			float3 P, D, N;
+			fvec3 P, D, N;
 			pACam->Get(P, D, N);
 			cam->Set(P, D, N);
 		}
@@ -373,10 +373,10 @@ void CSpectator::cam_Update(CActor* A)
 		}
 		case eacFreeLook: {
 			cam->SetParent(A);
-			float4x4 tmp;
+			fmat4x4 tmp;
 			tmp.identity();
 
-			float3 point, point1, dangle;
+			fvec3 point, point1, dangle;
 			point.set(0.f, 1.6f, 0.f);
 			point1.set(0.f, 1.6f, 0.f);
 			M.transform_tiny(point);
@@ -389,7 +389,7 @@ void CSpectator::cam_Update(CActor* A)
 		break;
 		}
 		//-----------------------------------
-		float3 P, D, N;
+		fvec3 P, D, N;
 		cam->Get(P, D, N);
 		cameras[eacFreeFly]->Set(P, D, N);
 		cameras[eacFreeFly]->Set(cam->yaw, cam->pitch, 0);
@@ -401,7 +401,7 @@ void CSpectator::cam_Update(CActor* A)
 	else
 	{
 		CCameraBase* cam = cameras[eacFreeFly];
-		float3 point, dangle;
+		fvec3 point, dangle;
 		point.set(0.f, 1.6f, 0.f);
 		Transform().transform_tiny(point);
 

@@ -131,14 +131,14 @@ template <bool bClass3, bool bFirst> class box_collider
   public:
 	COLLIDER* dest;
 	TRI* tris;
-	float3* verts;
+	fvec3* verts;
 
-	float3 b_min, b_max;
+	fvec3 b_min, b_max;
 	Point center, extents;
 
 	Point mLeafVerts[3];
 
-	IC void _init(COLLIDER* CL, float3* V, TRI* T, const float3& C, const float3& E)
+	IC void _init(COLLIDER* CL, fvec3* V, TRI* T, const fvec3& C, const fvec3& E)
 	{
 		dest = CL;
 		verts = V;
@@ -148,7 +148,7 @@ template <bool bClass3, bool bFirst> class box_collider
 		b_min.sub(C, E);
 		b_max.add(C, E);
 	}
-	ICF bool _box(const float3& C, const float3& E)
+	ICF bool _box(const fvec3& C, const fvec3& E)
 	{
 		if (b_max.x < C.x - E.x)
 			return false;
@@ -245,15 +245,15 @@ template <bool bClass3, bool bFirst> class box_collider
 	void _prim(DWORD prim)
 	{
 		TRI& T = tris[prim];
-		float3& v0 = verts[T.verts[0]];
+		fvec3& v0 = verts[T.verts[0]];
 		mLeafVerts[0].x = v0.x;
 		mLeafVerts[0].y = v0.y;
 		mLeafVerts[0].z = v0.z;
-		float3& v1 = verts[T.verts[1]];
+		fvec3& v1 = verts[T.verts[1]];
 		mLeafVerts[1].x = v1.x;
 		mLeafVerts[1].y = v1.y;
 		mLeafVerts[1].z = v1.z;
-		float3& v2 = verts[T.verts[2]];
+		fvec3& v2 = verts[T.verts[2]];
 		mLeafVerts[2].x = v2.x;
 		mLeafVerts[2].y = v2.y;
 		mLeafVerts[2].z = v2.z;
@@ -269,7 +269,7 @@ template <bool bClass3, bool bFirst> class box_collider
 	void _stab(const AABBNoLeafNode* node)
 	{
 		// Actual box-box test
-		if (!_box((float3&)node->mAABB.mCenter, (float3&)node->mAABB.mExtents))
+		if (!_box((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents))
 			return;
 
 		// 1st chield
@@ -290,7 +290,7 @@ template <bool bClass3, bool bFirst> class box_collider
 	}
 };
 
-void COLLIDER::box_query(const MODEL* m_def, const float3& b_center, const float3& b_dim)
+void COLLIDER::box_query(const MODEL* m_def, const fvec3& b_center, const fvec3& b_dim)
 {
 	m_def->syncronize();
 

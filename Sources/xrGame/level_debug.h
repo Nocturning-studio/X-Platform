@@ -102,9 +102,9 @@ class CLevelDebug
 		typedef CItemBase<SInfoItem> inherited;
 
 #define DELTA_HEIGHT_DEFAULT 16.f
-#define SHIFT_POS_DEFAULT float3().set(0.f, 2.f, 0.f)
+#define SHIFT_POS_DEFAULT fvec3().set(0.f, 2.f, 0.f)
 
-		float3 m_shift_pos;
+		fvec3 m_shift_pos;
 		float m_delta_height;
 
 	  public:
@@ -116,13 +116,13 @@ class CLevelDebug
 		void add_item(LPCSTR text, u32 color, u32 id = u32(-1));
 
 		void draw_info(float x, float& y);
-		IC void setup(const float3& shift = SHIFT_POS_DEFAULT, float delta = DELTA_HEIGHT_DEFAULT)
+		IC void setup(const fvec3& shift = SHIFT_POS_DEFAULT, float delta = DELTA_HEIGHT_DEFAULT)
 		{
 			m_shift_pos.set(shift);
 			m_delta_height = delta;
 		}
 
-		IC float3& get_shift_pos()
+		IC fvec3& get_shift_pos()
 		{
 			return m_shift_pos;
 		}
@@ -159,8 +159,8 @@ class CLevelDebug
 
 	struct SLevelItem
 	{
-		float3 position1;
-		float3 position2;
+		fvec3 position1;
+		fvec3 position2;
 		float radius;
 
 		enum
@@ -173,27 +173,27 @@ class CLevelDebug
 		u32 color;
 		u32 id;
 
-		SLevelItem(const float3& p, u32 col, u32 i)
+		SLevelItem(const fvec3& p, u32 col, u32 i)
 		{
 			set(p, col, i);
 			ptype = ePoint;
 		}
 
-		SLevelItem(const float3& p, const float3& p2, u32 col, u32 i)
+		SLevelItem(const fvec3& p, const fvec3& p2, u32 col, u32 i)
 		{
 			set(p, col, i);
 			ptype = eLine;
 			position2 = p2;
 		}
 
-		SLevelItem(const float3& p, float r, u32 col, u32 i)
+		SLevelItem(const fvec3& p, float r, u32 col, u32 i)
 		{
 			set(p, col, i);
 			ptype = eBox;
 			radius = r;
 		}
 
-		void set(const float3& p, u32 col, u32 i)
+		void set(const fvec3& p, u32 col, u32 i)
 		{
 			position1 = p;
 			color = col;
@@ -206,9 +206,9 @@ class CLevelDebug
 		typedef CItemBase<SLevelItem> inherited;
 
 	  public:
-		void add_item(const float3& pos, u32 color, u32 id = u32(-1));
-		void add_item(const float3& pos1, const float3& pos2, u32 color, u32 id = u32(-1));
-		void add_item(const float3& pos, float radius, u32 color, u32 id = u32(-1));
+		void add_item(const fvec3& pos, u32 color, u32 id = u32(-1));
+		void add_item(const fvec3& pos1, const fvec3& pos2, u32 color, u32 id = u32(-1));
+		void add_item(const fvec3& pos, float radius, u32 color, u32 id = u32(-1));
 		void draw_info();
 	};
 

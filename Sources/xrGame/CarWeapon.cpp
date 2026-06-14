@@ -12,7 +12,7 @@
 void CCarWeapon::BoneCallbackX(CBoneInstance* B)
 {
 	CCarWeapon* P = static_cast<CCarWeapon*>(B->Callback_Param);
-	float4x4 rX;
+	fmat4x4 rX;
 	rX.rotateX(P->m_cur_x_rot);
 	B->mTransform.mulB_43(rX);
 }
@@ -20,7 +20,7 @@ void CCarWeapon::BoneCallbackX(CBoneInstance* B)
 void CCarWeapon::BoneCallbackY(CBoneInstance* B)
 {
 	CCarWeapon* P = static_cast<CCarWeapon*>(B->Callback_Param);
-	float4x4 rY;
+	fmat4x4 rY;
 	rY.rotateY(P->m_cur_y_rot);
 	B->mTransform.mulB_43(rY);
 }
@@ -45,7 +45,7 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 	CBoneData& bdY = K->LL_GetData(m_rotate_y_bone); // VERIFY(bdY.IK_data.type==jtJoint);
 	m_lim_y_rot.set(bdY.IK_data.limits[1].limit.x, bdY.IK_data.limits[1].limit.y);
 
-	xr_vector<float4x4> matrices;
+	xr_vector<fmat4x4> matrices;
 	K->LL_GetBindTransform(matrices);
 	m_i_bind_x_transform.invert(matrices[m_rotate_x_bone]);
 	m_i_bind_y_transform.invert(matrices[m_rotate_y_bone]);
@@ -164,9 +164,9 @@ void CCarWeapon::UpdateBarrelDir()
 	m_fire_bone_transform.transform_dir(m_fire_norm);
 
 	m_allow_fire = true;
-	float4x4 XFi;
+	fmat4x4 XFi;
 	XFi.invert(m_object->Transform());
-	float3 dep;
+	fvec3 dep;
 	XFi.transform_dir(dep, m_destEnemyDir);
 	{ // x angle
 		m_i_bind_x_transform.transform_dir(dep);
@@ -202,18 +202,18 @@ bool CCarWeapon::AllowFire()
 
 float CCarWeapon::FireDirDiff()
 {
-	float3 d1, d2;
+	fvec3 d1, d2;
 	d1.set(m_cur_x_rot, m_cur_y_rot, 0).normalize_safe();
 	d2.set(m_tgt_x_rot, m_tgt_y_rot, 0).normalize_safe();
 	return rad2deg(acosf(d1.dotproduct(d2)));
 }
 
-const float3& CCarWeapon::get_CurrentFirePoint()
+const fvec3& CCarWeapon::get_CurrentFirePoint()
 {
 	return m_fire_pos;
 }
 
-const float4x4& CCarWeapon::get_ParticlesTransform()
+const fmat4x4& CCarWeapon::get_ParticlesTransform()
 {
 	return m_fire_bone_transform;
 }
@@ -276,13 +276,13 @@ void CCarWeapon::Action(int id, u32 flags)
 	}
 	break;
 	case eWpnToDefaultDir: {
-		SetParam(eWpnDesiredDir, float2().set(m_bind_y_rot, m_bind_x_rot));
+		SetParam(eWpnDesiredDir, fvec2().set(m_bind_y_rot, m_bind_x_rot));
 	}
 	break;
 	}
 }
 
-void CCarWeapon::SetParam(int id, float2 val)
+void CCarWeapon::SetParam(int id, fvec2 val)
 {
 	switch (id)
 	{
@@ -292,7 +292,7 @@ void CCarWeapon::SetParam(int id, float2 val)
 	}
 }
 
-void CCarWeapon::SetParam(int id, float3 val)
+void CCarWeapon::SetParam(int id, fvec3 val)
 {
 	switch (id)
 	{
@@ -301,17 +301,17 @@ void CCarWeapon::SetParam(int id, float3 val)
 		break;
 	}
 }
-const float3& CCarWeapon::ViewCameraPos()
+const fvec3& CCarWeapon::ViewCameraPos()
 {
 	return m_fire_pos;
 }
 
-const float3& CCarWeapon::ViewCameraDir()
+const fvec3& CCarWeapon::ViewCameraDir()
 {
 	return m_fire_dir;
 }
 
-const float3& CCarWeapon::ViewCameraNorm()
+const fvec3& CCarWeapon::ViewCameraNorm()
 {
 	return m_fire_norm;
 }

@@ -63,8 +63,8 @@ class CSoundRender_Core : public CSound_manager_interface
 
 	struct SListener
 	{
-		float3 position;
-		float3 orientation[2];
+		fvec3 position;
+		fvec3 orientation[2];
 	};
 	SListener Listener;
 
@@ -139,24 +139,24 @@ class CSoundRender_Core : public CSound_manager_interface
 	virtual int pause_emitters(bool val);
 
 	virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f);
-	virtual void play_at_pos(ref_sound& S, CObject* O, const float3& pos, u32 flags = 0, float delay = 0.f);
-	virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, float3* pos = 0,
-								  float* vol = 0, float* freq = 0, float2* range = 0);
+	virtual void play_at_pos(ref_sound& S, CObject* O, const fvec3& pos, u32 flags = 0, float delay = 0.f);
+	virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, fvec3* pos = 0,
+								  float* vol = 0, float* freq = 0, fvec2* range = 0);
 	virtual void set_master_volume(float f);
 	virtual void set_geometry_som(IReader* I);
 	virtual void set_geometry_occ(CDB::MODEL* M);
 	virtual void set_handler(sound_event* E);
 
-	virtual void update(const float3& P, const float3& D, const float3& N);
+	virtual void update(const fvec3& P, const fvec3& D, const fvec3& N);
 	virtual void update_events();
 	virtual void statistic(CSound_stats* dest, CSound_stats_ext* ext);
-	virtual void update_listener(const float3& P, const float3& D, const float3& N, float dt);
+	virtual void update_listener(const fvec3& P, const fvec3& D, const fvec3& N, float dt);
 
 	void refresh_sources();
 	void UpdateEAX();
 	void commit_eax(SEAXEnvironmentData* EAXEnvData);
 
-	const float3& listener_position()
+	const fvec3& listener_position()
 	{
 		return Listener.position;
 	}
@@ -175,8 +175,8 @@ class CSoundRender_Core : public CSound_manager_interface
 	}
 
 	virtual void object_relcase(CObject* obj);
-	virtual float get_occlusion_to(const float3& hear_pt, const float3& snd_pt, float dispersion = 0.2f);
-	float get_occlusion(float3& P, float R, float3* occ);
+	virtual float get_occlusion_to(const fvec3& hear_pt, const fvec3& snd_pt, float dispersion = 0.2f);
+	float get_occlusion(fvec3& P, float R, fvec3* occ);
 
 	SEAXEnvironmentData m_EAXEnvData;
 	bool b_EAXUpdated;

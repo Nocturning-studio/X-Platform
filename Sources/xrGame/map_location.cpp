@@ -160,12 +160,12 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		DisableSpot();
 }
 
-float2 CMapLocation::Position()
+fvec2 CMapLocation::Position()
 {
 	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_Position;
 
-	float2 pos;
+	fvec2 pos;
 	pos.set(0.0f, 0.0f);
 
 	if (m_flags.test(ePosToActor) && Level().CurrentEntity())
@@ -200,12 +200,12 @@ float2 CMapLocation::Position()
 	return pos;
 }
 
-float2 CMapLocation::Direction()
+fvec2 CMapLocation::Direction()
 {
 	if (m_cached.m_updatedFrame == Engine.TimeManager.GetFrameCount())
 		return m_cached.m_Direction;
 
-	float2 res;
+	fvec2 res;
 	res.set(0.0f, 0.0f);
 
 	if (Level().CurrentViewEntity() && Level().CurrentViewEntity()->ID() == m_objectID)
@@ -219,7 +219,7 @@ float2 CMapLocation::Direction()
 			res.set(0.0f, 0.0f);
 		else
 		{
-			const float3& op = pObject->Direction();
+			const fvec3& op = pObject->Direction();
 			res.set(op.x, op.z);
 		}
 	}
@@ -229,7 +229,7 @@ float2 CMapLocation::Direction()
 		CObject* pObject = Level().Objects.net_Find(m_objectID);
 		if (pObject)
 		{
-			float2 dcp, obj_pos;
+			fvec2 dcp, obj_pos;
 			dcp.set(Engine.RenderView.Position.x, Engine.RenderView.Position.z);
 			obj_pos.set(pObject->Position().x, pObject->Position().z);
 			res.sub(obj_pos, dcp);
@@ -360,7 +360,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 			return;
 
 		// update spot position
-		float2 position = Position();
+		fvec2 position = Position();
 
 		m_position_on_map = map->ConvertRealToLocal(position);
 
@@ -373,7 +373,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 			// update heading if needed
 			if (sp->Heading())
 			{
-				float2 dir_global = Direction();
+				fvec2 dir_global = Direction();
 				float h = dir_global.getH();
 				float h_ = map->GetHeading() + h;
 				sp->SetHeading(h_);
@@ -462,7 +462,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 				{
 					GameGraph::_GRAPH_ID gid = (*lit)->ai_location().game_vertex_id();
 					Msg("[%d]", gid);
-					float3 p = ai().game_graph().vertex(gid)->level_point();
+					fvec3 p = ai().game_graph().vertex(gid)->level_point();
 					Msg("lch_name=%s pos=%f %f %f",
 						*ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y,
 						p.z);
@@ -470,7 +470,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 			};
 			if (bDone)
 			{
-				float2 position;
+				fvec2 position;
 				position.set((*lit)->Position().x, (*lit)->Position().z);
 				m_position_on_map = map->ConvertRealToLocal(position);
 				UpdateSpotPointer(map, GetSpotPointer(sp));
@@ -484,7 +484,7 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp)
 	if (sp->GetParent())
 		return; // already is child
 	float heading;
-	float2 pointer_pos;
+	fvec2 pointer_pos;
 	if (map->GetPointerTo(m_position_on_map, sp->GetWidth() / 2, pointer_pos, heading))
 	{
 		sp->SetWndPos(pointer_pos);
@@ -494,8 +494,8 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp)
 		sp->SetClipRect(clip_rect);
 		map->AttachChild(sp);
 
-		float2 tt = map->ConvertLocalToReal(m_position_on_map);
-		float3 ttt;
+		fvec2 tt = map->ConvertLocalToReal(m_position_on_map);
+		fvec3 ttt;
 		ttt.set(tt.x, 0.0f, tt.y);
 		float dist_to_target = Level().CurrentEntity()->Position().distance_to(ttt);
 		map->SetPointerDistance(dist_to_target);
@@ -721,7 +721,7 @@ CUserDefinedMapLocation::~CUserDefinedMapLocation()
 {
 }
 
-void CUserDefinedMapLocation::InitExternal(const shared_str& level_name, const float3& pos)
+void CUserDefinedMapLocation::InitExternal(const shared_str& level_name, const fvec3& pos)
 {
 	m_level_name = level_name;
 	m_position_global = pos;
@@ -763,14 +763,14 @@ shared_str CUserDefinedMapLocation::LevelName()
 	return m_level_name;
 }
 
-float2 CUserDefinedMapLocation::Position()
+fvec2 CUserDefinedMapLocation::Position()
 {
-	return float2().set(m_position.x, m_position.z);
+	return fvec2().set(m_position.x, m_position.z);
 }
 
-float2 CUserDefinedMapLocation::Direction()
+fvec2 CUserDefinedMapLocation::Direction()
 {
-	return float2().set(0.0f, 0.0f);
+	return fvec2().set(0.0f, 0.0f);
 }
 
 void CUserDefinedMapLocation::save(IWriter& stream)

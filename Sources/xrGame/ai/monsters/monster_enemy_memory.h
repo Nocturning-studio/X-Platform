@@ -38,7 +38,7 @@ class CMonsterEnemyMemory
 	void remove_links(CObject* O);
 
 	void add_enemy(const CEntityAlive* enemy);
-	void add_enemy(const CEntityAlive* enemy, const float3& pos, u32 vertex, u32 time);
+	void add_enemy(const CEntityAlive* enemy, const fvec3& pos, u32 vertex, u32 time);
 
   private:
 	void remove_non_actual();

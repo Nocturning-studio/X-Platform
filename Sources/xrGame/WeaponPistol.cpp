@@ -193,7 +193,7 @@ void CWeaponPistol::OnShot()
 	PlayAnimShoot();
 
 	// Shell Drop
-	float3 vel;
+	fvec3 vel;
 	PHGetLinearVell(vel);
 	OnShellDrop(get_LastSP(), vel);
 

@@ -60,26 +60,26 @@ struct CShapeTestPredicate
 
 void CSpaceRestrictionShape::fill_shape(const CCF_Shape::shape_def& shape)
 {
-	float3 start, dest;
+	fvec3 start, dest;
 	switch (shape.type)
 	{
 	case 0: {
-		start.sub(float3().set(shape.data.sphere.P), float3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
-		dest.add(float3().set(shape.data.sphere.P), float3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
+		start.sub(fvec3().set(shape.data.sphere.P), fvec3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
+		dest.add(fvec3().set(shape.data.sphere.P), fvec3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
 		start.add(m_restrictor->Position());
 		dest.add(m_restrictor->Position());
 		break;
 	}
 	case 1: {
-		float3 points[8] = {float3().set(-.5f, -.5f, -.5f), float3().set(-.5f, -.5f, +.5f),
-							 float3().set(-.5f, +.5f, -.5f), float3().set(-.5f, +.5f, +.5f),
-							 float3().set(+.5f, -.5f, -.5f), float3().set(+.5f, -.5f, +.5f),
-							 float3().set(+.5f, +.5f, -.5f), float3().set(+.5f, +.5f, +.5f)};
-		start = float3().set(flt_max, flt_max, flt_max);
-		dest = float3().set(flt_min, flt_min, flt_min);
-		float4x4 Q;
+		fvec3 points[8] = {fvec3().set(-.5f, -.5f, -.5f), fvec3().set(-.5f, -.5f, +.5f),
+							 fvec3().set(-.5f, +.5f, -.5f), fvec3().set(-.5f, +.5f, +.5f),
+							 fvec3().set(+.5f, -.5f, -.5f), fvec3().set(+.5f, -.5f, +.5f),
+							 fvec3().set(+.5f, +.5f, -.5f), fvec3().set(+.5f, +.5f, +.5f)};
+		start = fvec3().set(flt_max, flt_max, flt_max);
+		dest = fvec3().set(flt_min, flt_min, flt_min);
+		fmat4x4 Q;
 		Q.mul_43(m_restrictor->Transform(), shape.data.box);
-		float3 temp;
+		fvec3 temp;
 		for (int i = 0; i < 8; ++i)
 		{
 			Q.transform_tiny(temp, points[i]);

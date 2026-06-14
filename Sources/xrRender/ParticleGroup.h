@@ -76,7 +76,7 @@ class ECORE_API CParticleGroup : public IParticleCustom
 {
 	const CPGDef* m_Def;
 	float m_CurrentTime;
-	float3 m_InitialPosition;
+	fvec3 m_InitialPosition;
 
   public:
 	DEFINE_VECTOR(IRender_Visual*, VisualVec, VisualVecIt);
@@ -108,7 +108,7 @@ class ECORE_API CParticleGroup : public IParticleCustom
 		void StopRelatedChild(u32 idx);
 		void StartFreeChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
 
-		void UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform);
+		void UpdateParent(const fmat4x4& m, const fvec3& velocity, BOOL bTransform);
 		void OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
 
 		u32 ParticlesCount();
@@ -140,7 +140,7 @@ class ECORE_API CParticleGroup : public IParticleCustom
 	virtual void OnDeviceCreate();
 	virtual void OnDeviceDestroy();
 
-	virtual void UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform);
+	virtual void UpdateParent(const fmat4x4& m, const fvec3& velocity, BOOL bTransform);
 
 	BOOL Compile(CPGDef* def);
 

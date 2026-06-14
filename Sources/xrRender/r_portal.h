@@ -7,7 +7,7 @@ class CPortal : public IRender_Portal
 {
   public:
 	// Геометрические данные
-	svector<float3, 8> m_vertices;
+	svector<fvec3, 8> m_vertices;
 	Fplane m_plane;
 	Fsphere m_sphere;
 
@@ -20,10 +20,10 @@ class CPortal : public IRender_Portal
 	virtual ~CPortal();
 
 	// Инициализация (вызывается при загрузке)
-	void Setup(float3* v_ptr, int v_count, CSector* face, CSector* back);
+	void Setup(fvec3* v_ptr, int v_count, CSector* face, CSector* back);
 
 	// Доступ к данным
-	IC const svector<float3, 8>& GetVertices() const
+	IC const svector<fvec3, 8>& GetVertices() const
 	{
 		return m_vertices;
 	}
@@ -53,13 +53,13 @@ class CPortal : public IRender_Portal
 	}
 
 	// Определяет, в какой сектор смотрит точка
-	CSector* GetSectorFacing(const float3& v) const
+	CSector* GetSectorFacing(const fvec3& v) const
 	{
 		return (m_plane.classify(v) > 0) ? m_front_sector : m_back_sector;
 	}
 
 	// Определяет, какой сектор находится "сзади" точки (откуда смотрим)
-	CSector* GetSectorBack(const float3& v) const
+	CSector* GetSectorBack(const fvec3& v) const
 	{
 		return (m_plane.classify(v) > 0) ? m_back_sector : m_front_sector;
 	}

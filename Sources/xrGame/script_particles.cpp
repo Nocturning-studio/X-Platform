@@ -42,9 +42,9 @@ void CScriptParticlesCustom::shedule_Update(u32 _dt)
 	if (m_animator)
 	{
 		float dt = float(_dt) / 1000.f;
-		float3 prev_pos = m_animator->Transform().c;
+		fvec3 prev_pos = m_animator->Transform().c;
 		m_animator->Update(dt);
-		float3 vel;
+		fvec3 vel;
 		vel.sub(m_animator->Transform().c, prev_pos).div(dt);
 		UpdateParent(m_animator->Transform(), vel);
 	}
@@ -96,7 +96,7 @@ void CScriptParticles::Play()
 	m_particles->Play();
 }
 
-void CScriptParticles::PlayAtPos(const float3& position)
+void CScriptParticles::PlayAtPos(const fvec3& position)
 {
 	VERIFY(m_particles);
 	m_particles->play_at_pos(position);
@@ -114,10 +114,10 @@ void CScriptParticles::StopDeffered()
 	m_particles->Stop(TRUE);
 }
 
-void CScriptParticles::MoveTo(const float3& pos, const float3& vel)
+void CScriptParticles::MoveTo(const fvec3& pos, const fvec3& vel)
 {
 	VERIFY(m_particles);
-	float4x4 XF;
+	fmat4x4 XF;
 	XF.translate(pos);
 	m_particles->UpdateParent(XF, vel);
 }

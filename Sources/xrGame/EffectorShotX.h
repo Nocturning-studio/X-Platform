@@ -12,7 +12,7 @@ class CCameraShotEffectorX : public CCameraShotEffector
 	virtual ~CCameraShotEffectorX();
 
 	virtual BOOL ProcessCam(SCamEffectorInfo& info);
-	virtual void GetDeltaAngle(float3& delta_angle);
+	virtual void GetDeltaAngle(fvec3& delta_angle);
 	virtual void Shot(float angle);
 	virtual void Clear();
 

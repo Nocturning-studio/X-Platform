@@ -106,7 +106,7 @@ void CHUDTarget::CursorOnFrame()
 {
 	//PROFILE_FUNCTION();
 
-	float3 p1, dir;
+	fvec3 p1, dir;
 
 	p1 = Engine.RenderView.Position;
 	dir = Engine.RenderView.Direction;
@@ -140,14 +140,14 @@ void CHUDTarget::Render()
 	if (0 == E)
 		return;
 
-	float3 p1 = Engine.RenderView.Position;
-	float3 dir = Engine.RenderView.Direction;
+	fvec3 p1 = Engine.RenderView.Position;
+	fvec3 dir = Engine.RenderView.Direction;
 
 	// Render cursor
 	u32 C = C_DEFAULT;
 
 	FVF::TL PT;
-	float3 p2;
+	fvec3 p2;
 	p2.mad(p1, dir, RQ.range);
 	PT.transform(p2, Engine.RenderView.ViewProjection);
 	float di_size = C_SIZE / powf(PT.p.w, .2f);
@@ -271,7 +271,7 @@ void CHUDTarget::Render()
 				u32			vOffset;
 				FVF::TL*	pv		= (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4,hGeom.stride(),vOffset);
 
-				float2		scr_size;
+				fvec2		scr_size;
 		//.		scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
 				scr_size.set	(float(Device.dwWidth) ,float(Device.dwHeight));
 				float			size_x = scr_size.x	* di_size;

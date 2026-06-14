@@ -201,7 +201,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 	VERIFY(bdY.IK_data.type == jtJoint);
 	m_lim_y_rot.set(bdY.IK_data.limits[1].limit.x, bdY.IK_data.limits[1].limit.y);
 
-	xr_vector<float4x4> matrices;
+	xr_vector<fmat4x4> matrices;
 	K->LL_GetBindTransform(matrices);
 	m_i_bind_x_transform.invert(matrices[m_rotate_x_bone]);
 	m_i_bind_y_transform.invert(matrices[m_rotate_y_bone]);
@@ -287,7 +287,7 @@ float GetCurrAcc(float V0, float V1, float dist, float a0, float a1);
 
 void CHelicopter::MoveStep()
 {
-	float3 dir, pathDir;
+	fvec3 dir, pathDir;
 	float desired_H = m_movement.currPathH;
 	float desired_P;
 	if (m_movement.type != eMovNone)
@@ -346,7 +346,7 @@ void CHelicopter::MoveStep()
 
 	if (m_body.b_looking_at_point)
 	{
-		float3 desired_dir;
+		fvec3 desired_dir;
 		desired_dir.sub(m_body.looking_point, m_movement.currP).normalize_safe();
 
 		float center_desired_H, tmp_P;
@@ -366,7 +366,7 @@ void CHelicopter::MoveStep()
 	angle_lerp(m_body.currBodyHPB.y, needBodyP, m_body.model_angSpeedPitch, STEP);
 
 	float sign;
-	float3 cp;
+	fvec3 cp;
 	cp.crossproduct(pathDir, dir);
 	(cp.y > 0.0) ? sign = 1.0f : sign = -1.0f;
 	float ang_diff = angle_difference(m_movement.currPathH, desired_H);
@@ -460,12 +460,12 @@ void CHelicopter::goPatrolByPatrolPath(LPCSTR path_name, int start_idx)
 	m_movement.goPatrolByPatrolPath(path_name, start_idx);
 }
 
-void CHelicopter::goByRoundPath(float3 center, float radius, bool clockwise)
+void CHelicopter::goByRoundPath(fvec3 center, float radius, bool clockwise)
 {
 	m_movement.goByRoundPath(center, radius, clockwise);
 }
 
-void CHelicopter::LookAtPoint(float3 point, bool do_it)
+void CHelicopter::LookAtPoint(fvec3 point, bool do_it)
 {
 	m_body.LookAtPoint(point, do_it);
 }

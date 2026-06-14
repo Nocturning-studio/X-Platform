@@ -7,7 +7,7 @@
 #include "xrMessages.h"
 #include "Level.h"
 
-SHit::SHit(float aPower, float3& adir, CObject* awho, u16 aelement, float3 ap_in_bone_space, float aimpulse,
+SHit::SHit(float aPower, fvec3& adir, CObject* awho, u16 aelement, fvec3 ap_in_bone_space, float aimpulse,
 		   ALife::EHitType ahit_type, float aAP, bool AimBullet)
 {
 	power = aPower;

@@ -889,7 +889,7 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
                 "  e.g. \"1e+8\" becomes \"100000000\".");
 
             static float vec4a[4] = { 0.10f, 0.20f, 0.30f, 0.44f };
-            ImGui::InputFloat3("input float3", vec4a);
+            ImGui::InputFloat3("input fvec3", vec4a);
         }
 
         ImGui::SeparatorText("Drags");
@@ -2496,28 +2496,28 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
         static int vec4i[4] = { 1, 5, 100, 255 };
 
         ImGui::SeparatorText("2-wide");
-        ImGui::InputFloat2("input float2", vec4f);
-        ImGui::DragFloat2("drag float2", vec4f, 0.01f, 0.0f, 1.0f);
-        ImGui::SliderFloat2("slider float2", vec4f, 0.0f, 1.0f);
-        ImGui::InputInt2("input int2", vec4i);
-        ImGui::DragInt2("drag int2", vec4i, 1, 0, 255);
-        ImGui::SliderInt2("slider int2", vec4i, 0, 255);
+        ImGui::InputFloat2("input fvec2", vec4f);
+        ImGui::DragFloat2("drag fvec2", vec4f, 0.01f, 0.0f, 1.0f);
+        ImGui::SliderFloat2("slider fvec2", vec4f, 0.0f, 1.0f);
+        ImGui::InputInt2("input ivec2", vec4i);
+        ImGui::DragInt2("drag ivec2", vec4i, 1, 0, 255);
+        ImGui::SliderInt2("slider ivec2", vec4i, 0, 255);
 
         ImGui::SeparatorText("3-wide");
-        ImGui::InputFloat3("input float3", vec4f);
-        ImGui::DragFloat3("drag float3", vec4f, 0.01f, 0.0f, 1.0f);
-        ImGui::SliderFloat3("slider float3", vec4f, 0.0f, 1.0f);
-        ImGui::InputInt3("input int3", vec4i);
-        ImGui::DragInt3("drag int3", vec4i, 1, 0, 255);
-        ImGui::SliderInt3("slider int3", vec4i, 0, 255);
+        ImGui::InputFloat3("input fvec3", vec4f);
+        ImGui::DragFloat3("drag fvec3", vec4f, 0.01f, 0.0f, 1.0f);
+        ImGui::SliderFloat3("slider fvec3", vec4f, 0.0f, 1.0f);
+        ImGui::InputInt3("input ivec3", vec4i);
+        ImGui::DragInt3("drag ivec3", vec4i, 1, 0, 255);
+        ImGui::SliderInt3("slider ivec3", vec4i, 0, 255);
 
         ImGui::SeparatorText("4-wide");
-        ImGui::InputFloat4("input float4", vec4f);
-        ImGui::DragFloat4("drag float4", vec4f, 0.01f, 0.0f, 1.0f);
-        ImGui::SliderFloat4("slider float4", vec4f, 0.0f, 1.0f);
-        ImGui::InputInt4("input int4", vec4i);
-        ImGui::DragInt4("drag int4", vec4i, 1, 0, 255);
-        ImGui::SliderInt4("slider int4", vec4i, 0, 255);
+        ImGui::InputFloat4("input fvec4", vec4f);
+        ImGui::DragFloat4("drag fvec4", vec4f, 0.01f, 0.0f, 1.0f);
+        ImGui::SliderFloat4("slider fvec4", vec4f, 0.0f, 1.0f);
+        ImGui::InputInt4("input ivec4", vec4i);
+        ImGui::DragInt4("drag ivec4", vec4i, 1, 0, 255);
+        ImGui::SliderInt4("slider ivec4", vec4i, 0, 255);
 
         ImGui::TreePop();
     }
@@ -6478,7 +6478,7 @@ static void ShowDemoWindowTables()
                 ImGui::TableSetColumnIndex(1);
                 ImGui::SliderFloat("float1", &dummy_f, 0.0f, 1.0f);
                 ImGui::TableSetColumnIndex(2);
-                ImGui::SliderFloat("##float2", &dummy_f, 0.0f, 1.0f); // No visible label since right-aligned
+                ImGui::SliderFloat("##fvec2", &dummy_f, 0.0f, 1.0f); // No visible label since right-aligned
                 ImGui::PopID();
             }
             ImGui::EndTable();

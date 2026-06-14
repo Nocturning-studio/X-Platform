@@ -158,7 +158,7 @@ void CParticleManager::Render(int effect_id)
 {
 	//    ParticleEffect* pe	= GetEffectPtr(effect_id);
 }
-void CParticleManager::Transform(int alist_id, const float4x4& full, const float3& vel)
+void CParticleManager::Transform(int alist_id, const fmat4x4& full, const fvec3& vel)
 {
 	// Execute the specified action list.
 	ParticleActions* pa = GetActionListPtr(alist_id);
@@ -166,14 +166,14 @@ void CParticleManager::Transform(int alist_id, const float4x4& full, const float
 	if (pa == NULL)
 		return; // ERROR
 
-	float4x4 mT;
+	fmat4x4 mT;
 	mT.translate(full.c);
 
 	// Step through all the actions in the action list.
 	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
 	{
 		BOOL r = (*it)->m_Flags.is(ParticleAction::ALLOW_ROTATE);
-		const float4x4& m = r ? full : mT;
+		const fmat4x4& m = r ? full : mT;
 		(*it)->Transform(m);
 		switch ((*it)->type)
 		{

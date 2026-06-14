@@ -100,7 +100,7 @@ float CEntity::CalcCondition(float hit)
 	return hit;
 }
 
-// void CEntity::Hit			(float perc, float3 &dir, CObject* who, s16 element,float3 position_in_object_space,
+// void CEntity::Hit			(float perc, fvec3 &dir, CObject* who, s16 element,fvec3 position_in_object_space,
 // float impulse, ALife::EHitType hit_type)
 void CEntity::Hit(SHit* pHDS)
 {
@@ -110,12 +110,12 @@ void CEntity::Hit(SHit* pHDS)
 
 	// *** process hit calculations
 	// Calc impulse
-	float3 vLocalDir;
+	fvec3 vLocalDir;
 	float m = pHDS->dir.magnitude();
 	VERIFY(m > EPS);
 
 	// convert impulse into local coordinate system
-	float4x4 mInvTransform;
+	fmat4x4 mInvTransform;
 	mInvTransform.invert(Transform());
 	mInvTransform.transform_dir(vLocalDir, pHDS->dir);
 	vLocalDir.invert();

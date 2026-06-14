@@ -52,7 +52,7 @@ IC bool CPatrolPathManager::random() const
 	return (m_random);
 }
 
-IC const float3& CPatrolPathManager::destination_position() const
+IC const fvec3& CPatrolPathManager::destination_position() const
 {
 	VERIFY(_valid(m_dest_position));
 	return (m_dest_position);

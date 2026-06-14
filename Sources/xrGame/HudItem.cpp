@@ -75,7 +75,7 @@ void CHudItem::net_Destroy()
 	m_dwStateTime = 0;
 }
 
-void CHudItem::PlaySound(HUD_SOUND& hud_snd, const float3& position)
+void CHudItem::PlaySound(HUD_SOUND& hud_snd, const fvec3& position)
 {
 	HUD_SOUND::PlaySound(hud_snd, position, object().H_Root(), !!GetHUDmode());
 }
@@ -171,7 +171,7 @@ void CHudItem::Deactivate()
 	OnHiddenItem();
 }
 
-void CHudItem::UpdateHudAdditonal(float4x4& hud_trans)
+void CHudItem::UpdateHudAdditonal(fmat4x4& hud_trans)
 {
 }
 
@@ -182,7 +182,7 @@ void CHudItem::UpdateHudPosition()
 		if (item().IsHidden())
 			SetHUDmode(FALSE);
 
-		float4x4 trans;
+		fmat4x4 trans;
 
 		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
 		if (pActor)
@@ -215,27 +215,27 @@ static const float ZOOM_PITCH_OFFSET_D = 0.075f; // 0.02f;
 static const float ORIGIN_OFFSET = -0.05f;
 static const float TENDTO_SPEED = 5.f;
 
-void CHudItem::UpdateHudInertion(float4x4& hud_trans)
+void CHudItem::UpdateHudInertion(fmat4x4& hud_trans)
 {
 	// if (m_pHUD) // && m_bInertionAllow && m_bInertionEnable)
 	//{
-	float4x4 transform;
-	float3& origin = hud_trans.c;
+	fmat4x4 transform;
+	fvec3& origin = hud_trans.c;
 	transform = hud_trans;
 
-	static float3 m_last_dir = {0, 0, 0};
+	static fvec3 m_last_dir = {0, 0, 0};
 
 	// calc difference
-	float3 diff_dir;
+	fvec3 diff_dir;
 	diff_dir.sub(transform.k, m_last_dir);
 
 	// clamp by PI_DIV_2
-	float3 last;
+	fvec3 last;
 	last.normalize_safe(m_last_dir);
 	float dot = last.dotproduct(transform.k);
 	if (dot < EPS)
 	{
-		float3 v0;
+		fvec3 v0;
 		v0.crossproduct(m_last_dir, transform.k);
 		m_last_dir.crossproduct(transform.k, v0);
 		diff_dir.sub(transform.k, m_last_dir);

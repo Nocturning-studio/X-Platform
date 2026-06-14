@@ -27,7 +27,7 @@ class ENGINE_API CMatrix : public xr_resource_named
 	};
 
   public:
-	float4x4 transform;
+	fmat4x4 transform;
 
 	u32 dwFrame;
 	u32 dwMode;
@@ -44,7 +44,7 @@ class ENGINE_API CMatrix : public xr_resource_named
 		std::memset(this, 0, sizeof(CMatrix));
 	}
 
-	IC void tc_trans(float4x4& T, float u, float v)
+	IC void tc_trans(fmat4x4& T, float u, float v)
 	{
 		T.identity();
 		T.m[2][0] = u;

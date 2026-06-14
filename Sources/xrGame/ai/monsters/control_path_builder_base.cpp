@@ -103,7 +103,7 @@ void CControlPathBuilderBase::detour_graph_points(u32 game_graph_vertex_id)
 	set_game_path_type();
 }
 
-void CControlPathBuilderBase::set_dest_direction(const float3& dir)
+void CControlPathBuilderBase::set_dest_direction(const fvec3& dir)
 {
 	if (m_last_time_dir_set + m_time > time())
 		return;
@@ -111,7 +111,7 @@ void CControlPathBuilderBase::set_dest_direction(const float3& dir)
 	m_last_time_dir_set = time();
 }
 
-void CControlPathBuilderBase::set_target_accessible(STarget& target, const float3& position)
+void CControlPathBuilderBase::set_target_accessible(STarget& target, const fvec3& position)
 {
 	if (!m_man->path_builder().accessible(position))
 	{

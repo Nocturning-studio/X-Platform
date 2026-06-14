@@ -17,7 +17,7 @@
 
 template <typename T> IC SRotation CObjectParams<T>::orientation(const T* object) const
 {
-	float3 t;
+	fvec3 t;
 	object->Transform().getHPB(t.x, t.y, t.z);
 	return (SRotation(t.x, t.y, 0.f));
 }
@@ -43,7 +43,7 @@ template <typename T> IC void CObjectParams<T>::fill(const T* game_object)
 		m_position.set(game_object->Position().x, m_position.y, game_object->Position().z);
 	}
 	else
-		m_position = float3().set(0.f, 0.f, 0.f);
+		m_position = fvec3().set(0.f, 0.f, 0.f);
 }
 
 template <typename T> IC CMemoryObject<T>::CMemoryObject()

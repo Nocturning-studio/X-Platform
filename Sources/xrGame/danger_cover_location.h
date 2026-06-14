@@ -20,7 +20,7 @@ class CDangerCoverLocation : public CDangerLocation
   public:
 	IC CDangerCoverLocation(const CCoverPoint* cover, u32 level_time, u32 interval, float radius,
 							const squad_mask_type& mask = squad_mask_type(-1));
-	virtual const float3& position() const;
+	virtual const fvec3& position() const;
 };
 
 #include "danger_cover_location_inline.h"

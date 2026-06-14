@@ -61,7 +61,7 @@ class CLevelGraph
 	u32 m_max_z;
 
   protected:
-	u32 vertex(const float3& position) const;
+	u32 vertex(const fvec3& position) const;
 
   public:
 	typedef u32 const_iterator;
@@ -117,14 +117,14 @@ class CLevelGraph
 	ICF CVertex* vertex(u32 vertex_id) const;
 	ICF u32 vertex(const CVertex* vertex_p) const;
 	ICF u32 vertex(const CVertex& vertex_r) const;
-	IC const float3 vertex_position(const CLevelGraph::CPosition& source_position) const;
-	IC const float3& vertex_position(float3& dest_position, const CLevelGraph::CPosition& source_position) const;
+	IC const fvec3 vertex_position(const CLevelGraph::CPosition& source_position) const;
+	IC const fvec3& vertex_position(fvec3& dest_position, const CLevelGraph::CPosition& source_position) const;
 	IC const CLevelGraph::CPosition& vertex_position(CLevelGraph::CPosition& dest_position,
-													 const float3& source_position) const;
-	IC const CLevelGraph::CPosition vertex_position(const float3& position) const;
-	IC const float3 vertex_position(u32 vertex_id) const;
-	IC const float3 vertex_position(const CVertex& vertex) const;
-	IC const float3 vertex_position(const CVertex* vertex) const;
+													 const fvec3& source_position) const;
+	IC const CLevelGraph::CPosition vertex_position(const fvec3& position) const;
+	IC const fvec3 vertex_position(u32 vertex_id) const;
+	IC const fvec3 vertex_position(const CVertex& vertex) const;
+	IC const fvec3 vertex_position(const CVertex* vertex) const;
 	IC float vertex_plane_y(const CVertex& vertex, const float inX, const float inZ) const;
 	IC float vertex_plane_y(const CVertex* vertex, const float inX, const float inZ) const;
 	IC float vertex_plane_y(const u32 vertex_id, const float inX, const float inZ) const;
@@ -132,24 +132,24 @@ class CLevelGraph
 	IC float vertex_plane_y(const CVertex* vertex) const;
 	IC float vertex_plane_y(const u32 vertex_id) const;
 	IC bool inside(const CVertex& vertex, const CLevelGraph::CPosition& vertex_position) const;
-	IC bool inside(const CVertex& vertex, const float3& vertex_position) const;
+	IC bool inside(const CVertex& vertex, const fvec3& vertex_position) const;
 	IC bool inside(const CVertex* vertex, const CLevelGraph::CPosition& vertex_position) const;
-	IC bool inside(const CVertex* vertex, const float3& vertex_position) const;
+	IC bool inside(const CVertex* vertex, const fvec3& vertex_position) const;
 	IC bool inside(const u32 vertex_id, const CLevelGraph::CPosition& vertex_position) const;
-	IC bool inside(const u32 vertex_id, const float3& position) const;
-	IC bool inside(const u32 vertex_id, const float2& position) const;
+	IC bool inside(const u32 vertex_id, const fvec3& position) const;
+	IC bool inside(const u32 vertex_id, const fvec2& position) const;
 	IC bool inside(const CVertex& vertex, const CLevelGraph::CPosition& vertex_position, const float epsilon) const;
-	IC bool inside(const CVertex& vertex, const float3& vertex_position, const float epsilon) const;
+	IC bool inside(const CVertex& vertex, const fvec3& vertex_position, const float epsilon) const;
 	IC bool inside(const CVertex* vertex, const CLevelGraph::CPosition& vertex_position, const float epsilon) const;
-	IC bool inside(const CVertex* vertex, const float3& vertex_position, const float epsilon) const;
+	IC bool inside(const CVertex* vertex, const fvec3& vertex_position, const float epsilon) const;
 	IC bool inside(const u32 vertex_id, const CLevelGraph::CPosition& vertex_position, const float epsilon) const;
-	IC bool inside(const u32 vertex_id, const float3& position, const float epsilon) const;
-	IC void project_point(const Fplane& plane, float3& point) const;
+	IC bool inside(const u32 vertex_id, const fvec3& position, const float epsilon) const;
+	IC void project_point(const Fplane& plane, fvec3& point) const;
 	IC u32 row_length() const;
-	float distance(const float3& position, const CVertex* vertex) const;
-	float distance(const float3& position, const u32 vertex_id) const;
-	float distance(const u32 vertex_id, const float3& position) const;
-	IC float distance(const float3& position, const float3& point0, const float3& point1) const;
+	float distance(const fvec3& position, const CVertex* vertex) const;
+	float distance(const fvec3& position, const u32 vertex_id) const;
+	float distance(const u32 vertex_id, const fvec3& position) const;
+	IC float distance(const fvec3& position, const fvec3& point0, const fvec3& point1) const;
 	IC float distance(u32 vertex_id0, u32 vertex_id1) const;
 	IC float distance(const CVertex* tpNode0, u32 vertex_id1) const;
 	IC float distance(u32 vertex_id0, const CVertex* vertex) const;
@@ -160,15 +160,15 @@ class CLevelGraph
 									float* x, float* y) const;
 	IC ELineIntersections intersect_no_check(float x1, float y1, float x2, float y2, float x3, float y3, float x4,
 											 float y4, float* x, float* y) const;
-	IC bool similar(const float3& point0, const float3& point1) const;
-	IC bool inside(const float3& point, const SContour& contour) const;
+	IC bool similar(const fvec3& point0, const fvec3& point1) const;
+	IC bool inside(const fvec3& point, const SContour& contour) const;
 	IC void intersect(SSegment& segment, const SContour& contour0, const SContour& contour1) const;
-	IC float nearest(float3& destination, const float3& position, const float3& point0, const float3& point1) const;
+	IC float nearest(fvec3& destination, const fvec3& position, const fvec3& point0, const fvec3& point1) const;
 	IC void contour(SContour& contour, u32 vertex_id) const;
 	IC void contour(SContour& contour, const CVertex* vertex) const;
-	IC void nearest(float3& destination, const float3& position, const SContour& contour) const;
-	IC bool intersect(float3& destination, const float3& v1, const float3& v2, const float3& v3,
-					  const float3& v4) const;
+	IC void nearest(fvec3& destination, const fvec3& position, const SContour& contour) const;
+	IC bool intersect(fvec3& destination, const fvec3& v1, const fvec3& v2, const fvec3& v3,
+					  const fvec3& v4) const;
 	IC float square(float a1, float b1, float alpha = PI_DIV_2) const;
 	IC float compute_square(float angle, float AOV, float b0, float b1, float b2, float b3) const;
 	IC float compute_square(float angle, float AOV, const CVertex* vertex) const;
@@ -183,48 +183,48 @@ class CLevelGraph
 	IC float vertex_cover_angle(u32 vertex_id, float inc_angle, _predicate compare_predicate) const;
 	IC void set_invalid_vertex(u32& vertex_id, CVertex** vertex = NULL) const;
 	IC const u32 vertex_id(const CLevelGraph::CVertex* vertex) const;
-	u32 vertex_id(const float3& position) const;
-	u32 vertex(u32 current_vertex_id, const float3& position) const;
-	void choose_point(const float3& start_point, const float3& finish_point, const SContour& contour, int vertex_id,
-					  float3& temp_point, int& saved_index) const;
-	IC bool check_vertex_in_direction(u32 start_vertex_id, const float3& start_position, u32 finish_vertex_id) const;
-	IC u32 check_position_in_direction(u32 start_vertex_id, const float3& start_position,
-									   const float3& finish_position) const;
-	float check_position_in_direction(u32 start_vertex_id, const float3& start_position,
-									  const float3& finish_position, const float max_distance) const;
-	float mark_nodes_in_direction(u32 start_vertex_id, const float3& start_position, const float3& direction,
+	u32 vertex_id(const fvec3& position) const;
+	u32 vertex(u32 current_vertex_id, const fvec3& position) const;
+	void choose_point(const fvec3& start_point, const fvec3& finish_point, const SContour& contour, int vertex_id,
+					  fvec3& temp_point, int& saved_index) const;
+	IC bool check_vertex_in_direction(u32 start_vertex_id, const fvec3& start_position, u32 finish_vertex_id) const;
+	IC u32 check_position_in_direction(u32 start_vertex_id, const fvec3& start_position,
+									   const fvec3& finish_position) const;
+	float check_position_in_direction(u32 start_vertex_id, const fvec3& start_position,
+									  const fvec3& finish_position, const float max_distance) const;
+	float mark_nodes_in_direction(u32 start_vertex_id, const fvec3& start_position, const fvec3& direction,
 								  float distance, xr_vector<u32>& vertex_stack, xr_vector<bool>* vertex_marks) const;
-	float mark_nodes_in_direction(u32 start_vertex_id, const float3& start_position, u32 finish_node,
+	float mark_nodes_in_direction(u32 start_vertex_id, const fvec3& start_position, u32 finish_node,
 								  xr_vector<u32>& vertex_stack, xr_vector<bool>* vertex_marks) const;
-	float mark_nodes_in_direction(u32 start_vertex_id, const float3& start_position, const float3& finish_point,
+	float mark_nodes_in_direction(u32 start_vertex_id, const fvec3& start_position, const fvec3& finish_point,
 								  xr_vector<u32>& vertex_stack, xr_vector<bool>* vertex_marks) const;
-	float farthest_vertex_in_direction(u32 start_vertex_id, const float3& start_point, const float3& finish_point,
+	float farthest_vertex_in_direction(u32 start_vertex_id, const fvec3& start_point, const fvec3& finish_point,
 									   u32& finish_vertex_id, xr_vector<bool>* tpaMarks,
 									   bool check_accessability = false) const;
-	bool create_straight_path(u32 start_vertex_id, const float3& start_point, const float3& finish_point,
-							  xr_vector<float3>& tpaOutputPoints, xr_vector<u32>& tpaOutputNodes, bool bAddFirstPoint,
+	bool create_straight_path(u32 start_vertex_id, const fvec3& start_point, const fvec3& finish_point,
+							  xr_vector<fvec3>& tpaOutputPoints, xr_vector<u32>& tpaOutputNodes, bool bAddFirstPoint,
 							  bool bClearPath = true) const;
-	bool create_straight_path(u32 start_vertex_id, const float2& start_point, const float2& finish_point,
-							  xr_vector<float3>& tpaOutputPoints, xr_vector<u32>& tpaOutputNodes, bool bAddFirstPoint,
+	bool create_straight_path(u32 start_vertex_id, const fvec2& start_point, const fvec2& finish_point,
+							  xr_vector<fvec3>& tpaOutputPoints, xr_vector<u32>& tpaOutputNodes, bool bAddFirstPoint,
 							  bool bClearPath = true) const;
 	template <bool bAssignY, typename T>
-	IC bool create_straight_path(u32 start_vertex_id, const float2& start_point, const float2& finish_point,
+	IC bool create_straight_path(u32 start_vertex_id, const fvec2& start_point, const fvec2& finish_point,
 								 xr_vector<T>& tpaOutputPoints, const T& example, bool bAddFirstPoint,
 								 bool bClearPath = true) const;
 	template <typename T> IC void assign_y_values(xr_vector<T>& path);
 	template <typename P>
-	IC void iterate_vertices(const float3& min_position, const float3& max_position, const P& predicate) const;
-	IC bool check_vertex_in_direction(u32 start_vertex_id, const float2& start_position, u32 finish_vertex_id) const;
-	IC u32 check_position_in_direction(u32 start_vertex_id, const float2& start_position,
-									   const float2& finish_position) const;
-	bool check_vertex_in_direction_slow(u32 start_vertex_id, const float2& start_position,
+	IC void iterate_vertices(const fvec3& min_position, const fvec3& max_position, const P& predicate) const;
+	IC bool check_vertex_in_direction(u32 start_vertex_id, const fvec2& start_position, u32 finish_vertex_id) const;
+	IC u32 check_position_in_direction(u32 start_vertex_id, const fvec2& start_position,
+									   const fvec2& finish_position) const;
+	bool check_vertex_in_direction_slow(u32 start_vertex_id, const fvec2& start_position,
 										u32 finish_vertex_id) const;
-	u32 check_position_in_direction_slow(u32 start_vertex_id, const float2& start_position,
-										 const float2& finish_position) const;
-	IC float3 v3d(const float2& vector2d) const;
-	IC float2 v2d(const float3& vector3d) const;
-	IC bool valid_vertex_position(const float3& position) const;
-	bool neighbour_in_direction(const float3& direction, u32 start_vertex_id) const;
+	u32 check_position_in_direction_slow(u32 start_vertex_id, const fvec2& start_position,
+										 const fvec2& finish_position) const;
+	IC fvec3 v3d(const fvec2& vector2d) const;
+	IC fvec2 v2d(const fvec3& vector3d) const;
+	IC bool valid_vertex_position(const fvec3& position) const;
+	bool neighbour_in_direction(const fvec3& direction, u32 start_vertex_id) const;
 
 #ifdef DEBUG
 #ifndef AI_COMPILER
@@ -234,14 +234,14 @@ class CLevelGraph
   private:
 	int m_current_level_id;
 	bool m_current_actual;
-	float3 m_current_center;
-	float3 m_current_radius;
+	fvec3 m_current_center;
+	fvec3 m_current_radius;
 
   public:
 	void setup_current_level(const int& level_id);
 
   private:
-	float3 convert_position(const float3& position);
+	fvec3 convert_position(const fvec3& position);
 	void draw_edge(const int& vertex_id0, const int& vertex_id1);
 	void draw_vertex(const int& vertex_id);
 	void draw_stalkers(const int& vertex_id);

@@ -8,9 +8,9 @@
 #define DU_BOX_NUMLINES 12
 #define DU_BOX_NUMVERTEX2 36
 
-extern ECORE_API float3 du_box_vertices[];
+extern ECORE_API fvec3 du_box_vertices[];
 extern ECORE_API WORD du_box_faces[];
 extern ECORE_API WORD du_box_lines[];
 
-extern ECORE_API float3 du_box_vertices2[];
+extern ECORE_API fvec3 du_box_vertices2[];
 #endif

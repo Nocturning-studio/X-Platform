@@ -149,7 +149,7 @@ void CHUDManager::RenderUI()
 		pFont->SetColor(0x80FF0000);
 		LPCSTR _str = CStringTable().translate("st_game_paused").c_str();
 
-		float2 _pos;
+		fvec2 _pos;
 		_pos.set(UI_BASE_WIDTH / 2.0f, UI_BASE_HEIGHT / 2.0f);
 		UI()->ClientToScreenScaled(_pos);
 		pFont->SetAligment(CGameFont::alCenter);
@@ -177,7 +177,7 @@ void CHUDManager::ShowCrosshair(bool show)
 	m_pHUDTarget->m_bShowCrosshair = show;
 }
 
-void CHUDManager::Hit(int idx, float power, const float3& dir)
+void CHUDManager::Hit(int idx, float power, const fvec3& dir)
 {
 	HitMarker.Hit(idx, dir);
 }

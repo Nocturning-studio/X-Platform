@@ -52,7 +52,7 @@ MODEL::~MODEL()
 struct BTHREAD_params
 {
 	MODEL* M;
-	float3* V;
+	fvec3* V;
 	int Vcnt;
 	TRI* T;
 	int Tcnt;
@@ -60,7 +60,7 @@ struct BTHREAD_params
 	void* BCP;
 };
 
-void MODEL::build(float3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
+void MODEL::build(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
 {
 	R_ASSERT(S_INIT == status);
 	R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
@@ -99,12 +99,12 @@ void MODEL::build(float3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, voi
 #endif
 }
 
-void MODEL::build_internal(float3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
+void MODEL::build_internal(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
 {
 	// verts
 	verts_count = Vcnt;
-	verts = xr_alloc<float3>(verts_count);
-	CopyMemory(verts, V, verts_count * sizeof(float3));
+	verts = xr_alloc<fvec3>(verts_count);
+	CopyMemory(verts, V, verts_count * sizeof(fvec3));
 
 	// tris
 	tris_count = Tcnt;
@@ -166,7 +166,7 @@ u32 MODEL::memory()
 		Msg("! xrCDB: model still isn't ready");
 		return 0;
 	}
-	u32 V = verts_count * sizeof(float3);
+	u32 V = verts_count * sizeof(fvec3);
 	u32 T = tris_count * sizeof(TRI);
 	return tree->GetUsedBytes() + V + T + sizeof(*this) + sizeof(*tree);
 }

@@ -83,7 +83,7 @@ void CControlJump::on_release()
 //////////////////////////////////////////////////////////////////////////
 // Start jump
 //////////////////////////////////////////////////////////////////////////
-void CControlJump::start_jump(const float3& point)
+void CControlJump::start_jump(const fvec3& point)
 {
 	// initialize internals
 	m_velocity_bounced = false;
@@ -118,7 +118,7 @@ void CControlJump::start_jump(const float3& point)
 			float dist = time * vel.velocity.linear;
 
 			// check nodes in direction
-			float3 target_point;
+			fvec3 target_point;
 			target_point.mad(m_object->Position(), m_object->Direction(), dist);
 			if (m_man->path_builder().accessible(target_point))
 			{
@@ -278,9 +278,9 @@ bool CControlJump::is_on_the_ground()
 	if (m_time_started + (m_jump_time * 1000) > time())
 		return false;
 
-	float3 direction;
+	fvec3 direction;
 	direction.set(0.f, -1.f, 0.f);
-	float3 trace_from;
+	fvec3 trace_from;
 	m_object->Center(trace_from);
 
 	collide::rq_result l_rq;
@@ -307,7 +307,7 @@ void CControlJump::grounding()
 		return;
 	}
 
-	float3 target_position;
+	fvec3 target_position;
 	target_position.mad(m_object->Position(), m_object->Direction(), m_build_line_distance);
 
 	if (!m_man->build_path_line(this, target_position, u32(-1),
@@ -337,12 +337,12 @@ void CControlJump::stop()
 
 //////////////////////////////////////////////////////////////////////////
 // Get target point in world space
-float3 CControlJump::get_target(CObject* obj)
+fvec3 CControlJump::get_target(CObject* obj)
 {
 	u16 bone_id = smart_cast<CKinematics*>(obj->Visual())->LL_GetBoneRoot();
 	CBoneInstance& bone = smart_cast<CKinematics*>(obj->Visual())->LL_GetBoneInstance(bone_id);
 
-	float4x4 global_transform;
+	fmat4x4 global_transform;
 	global_transform.mul(obj->Transform(), bone.mTransform);
 
 	if (m_object->m_monster_type == CBaseMonster::eMonsterTypeOutdoor)
@@ -421,7 +421,7 @@ void CControlJump::hit_test()
 		return;
 
 	// ѕроверить на нанесение хита во врем€ прыжка
-	float3 trace_from;
+	fvec3 trace_from;
 	m_object->Center(trace_from);
 
 	collide::rq_result l_rq;
@@ -440,7 +440,7 @@ void CControlJump::hit_test()
 
 		m_object_hitted = true;
 		// определить дистанцию до врага
-		float3 d;
+		fvec3 d;
 		d.sub(m_data.target_object->Position(), m_object->Position());
 		if (d.magnitude() > m_hit_trace_range)
 			m_object_hitted = false;
@@ -474,8 +474,8 @@ bool CControlJump::can_jump(CObject* target)
 	if (m_time_next_allowed > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
-	float3 source_position = m_object->Position();
-	float3 target_position;
+	fvec3 source_position = m_object->Position();
+	fvec3 target_position;
 	target->Center(target_position);
 
 	// проверка на dist
@@ -484,7 +484,7 @@ bool CControlJump::can_jump(CObject* target)
 		return false;
 
 	// получить вектор направлени€ и его мир угол
-	float dir_yaw = float3().sub(target_position, source_position).getH();
+	float dir_yaw = fvec3().sub(target_position, source_position).getH();
 	dir_yaw = angle_normalize(-dir_yaw);
 
 	// проверка на angle
@@ -519,7 +519,7 @@ bool CControlJump::can_jump(CObject* target)
 			float dist = time * vel.velocity.linear;
 
 			// check nodes in direction
-			float3 target_point;
+			fvec3 target_point;
 			target_point.mad(m_object->Position(), m_object->Direction(), dist);
 
 			if (m_man->path_builder().accessible(target_point))
@@ -546,7 +546,7 @@ bool CControlJump::can_jump(CObject* target)
 	return true;
 }
 
-float3 CControlJump::predict_position(CObject* obj, const float3& pos)
+fvec3 CControlJump::predict_position(CObject* obj, const fvec3& pos)
 {
 	return pos;
 
@@ -559,12 +559,12 @@ float3 CControlJump::predict_position(CObject* obj, const float3& pos)
 
 	//
 
-	// float3					dir;
+	// fvec3					dir;
 	// dir.set					(entity->movement_control()->GetVelocity());
 	// float speed				= dir.magnitude();
 	// dir.normalize_safe		();
 
-	// float3					prediction_pos;
+	// fvec3					prediction_pos;
 	////prediction_pos.mad		(pos, dir, prediction_dist);
 	// prediction_pos.mad		(pos, dir, speed * jump_time / 2);
 

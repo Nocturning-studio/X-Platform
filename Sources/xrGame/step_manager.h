@@ -37,7 +37,7 @@ class CStepManager
 	}
 
   protected:
-	float3 get_foot_position(ELegType leg_type);
+	fvec3 get_foot_position(ELegType leg_type);
 	virtual bool is_on_ground()
 	{
 		return true;

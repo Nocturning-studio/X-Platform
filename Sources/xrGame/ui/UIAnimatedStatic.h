@@ -26,7 +26,7 @@ class CUIAnimatedStatic : public CUIStatic
 	// Признак проигрывания анимации
 	bool m_bPlaying;
 
-	float2 m_pos;
+	fvec2 m_pos;
 
 	u32 m_prevTime;
 

@@ -89,7 +89,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 		lines.push_back(last);
 	}
 
-	float3 target_pos = enemy->Position();
+	fvec3 target_pos = enemy->Position();
 	float next_right_yaw = delta_yaw;
 	float next_left_yaw = delta_yaw;
 
@@ -108,7 +108,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 		// определить cur_line.yaw
 
 		float h1, p1, h2, p2;
-		float3 dir;
+		fvec3 dir;
 		dir.sub(target_pos, first.p_from);
 		dir.getHP(h1, p1);
 		dir.sub(target_pos, cur_line.p_from);
@@ -147,7 +147,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 
 	// Пройти по всем линиям и заполнить таргеты у npc
 	float first_h, first_p;
-	float3 d;
+	fvec3 d;
 	d.sub(target_pos, first.p_from);
 	d.getHP(first_h, first_p);
 

@@ -93,8 +93,8 @@ void CPHObject::Collide()
 		CPHMoveStorage::iterator I = tracers->begin(), E = tracers->end();
 		for (; E != I; I++)
 		{
-			const float3 *from = 0, *to = 0;
-			float3 dir;
+			const fvec3 *from = 0, *to = 0;
+			fvec3 dir;
 			I.Positions(from, to);
 			if (from->x == -dInfinity)
 				continue;
@@ -109,7 +109,7 @@ void CPHObject::Collide()
 			if (ph_dbg_draw_mask.test(phDbgDrawRayMotions))
 			{
 				DBG_OpenCashedDraw();
-				DBG_DrawLine(*from, float3().add(*from, float3().mul(dir, magnitude)), D3DCOLOR_XRGB(0, 255, 0));
+				DBG_DrawLine(*from, fvec3().add(*from, fvec3().mul(dir, magnitude)), D3DCOLOR_XRGB(0, 255, 0));
 				DBG_ClosedCashedDraw(30000);
 			}
 

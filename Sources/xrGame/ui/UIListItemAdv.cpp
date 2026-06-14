@@ -30,7 +30,7 @@ void CUIListItemAdv::AddField(LPCSTR val, float width)
 
 void CUIListItemAdv::AddWindow(CUIWindow* pWnd)
 {
-	float2 pos = pWnd->GetWndPos();
+	fvec2 pos = pWnd->GetWndPos();
 	pos.x = GetNextLeftPos();
 	pos.y = (GetHeight() - pWnd->GetHeight()) / 2;
 	pWnd->SetWndPos(pos);

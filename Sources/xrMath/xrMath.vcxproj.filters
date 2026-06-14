@@ -37,10 +37,10 @@
     <ClInclude Include="xrMath_flags.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_matrix.h">
+    <ClInclude Include="xrMath_matrix4x4.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_matrix33.h">
+    <ClInclude Include="xrMath_matrix3x3.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_obb.h">
@@ -62,9 +62,6 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_vector2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="xrMath_vector3d.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_vector4.h">
@@ -94,6 +91,7 @@
     <ClInclude Include="xrMath_sphere.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="xrMath_vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

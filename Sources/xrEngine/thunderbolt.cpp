@@ -144,7 +144,7 @@ shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* p
 	return collection.back()->section;
 }
 
-BOOL CEffect_Thunderbolt::RayPick(const float3& s, const float3& d, float& dist)
+BOOL CEffect_Thunderbolt::RayPick(const fvec3& s, const fvec3& d, float& dist)
 {
 	BOOL bRes = TRUE;
 #ifdef _EDITOR
@@ -157,8 +157,8 @@ BOOL CEffect_Thunderbolt::RayPick(const float3& s, const float3& d, float& dist)
 		dist = RQ.range;
 	else
 	{
-		float3 N = {0.f, -1.f, 0.f};
-		float3 P = {0.f, 0.f, 0.f};
+		fvec3 N = {0.f, -1.f, 0.f};
+		fvec3 P = {0.f, 0.f, 0.f};
 		Fplane PL;
 		PL.build(P, N);
 		float dst = dist;
@@ -185,8 +185,8 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 	current = g_pGamePersistent->Environment().thunderbolt_collection(collection, id)->GetRandomDesc();
 	VERIFY(current);
 
-	float4x4 XF, S;
-	float3 pos, dev;
+	fmat4x4 XF, S;
+	fvec3 pos, dev;
 	float sun_h, sun_p;
 	CEnvironment& environment = g_pGamePersistent->Environment();
 	environment.CurrentEnv->sun_dir.getHP(sun_h, sun_p);
@@ -200,7 +200,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 	dev.z = Random.randF(-environment.p_tilt, environment.p_tilt);
 	XF.setXYZi(dev);
 
-	float3 light_dir = {0.f, -1.f, 0.f};
+	fvec3 light_dir = {0.f, -1.f, 0.f};
 	XF.transform_dir(light_dir);
 	lightning_size = FAR_DIST * 2.f;
 	RayPick(pos, light_dir, lightning_size);
@@ -220,7 +220,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 	else
 	{
 		next_lightning_time = Engine.TimeManager.GetGlobalTime() + period + Random.randF(-period * 0.3f, period * 0.3f);
-		current->snd.play_no_feedback(0, 0, dist / 300.f, &pos, 0, 0, &float2().set(dist / 2, dist * 2.f));
+		current->snd.play_no_feedback(0, 0, dist / 300.f, &pos, 0, 0, &fvec2().set(dist / 2, dist * 2.f));
 	}
 
 	current_direction.invert(); // for env-sun
@@ -244,7 +244,7 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 		if (current_time > life_time)
 			state = stIdle;
 		current_time += Engine.TimeManager.GetDeltaTime();
-		float3 fClr;
+		fvec3 fClr;
 		int frame;
 		u32 uClr = current->color_anim->CalculateRGB(current_time / life_time, frame);
 		fClr.set(clampr(float(color_get_R(uClr) / 255.f), 0.f, 1.f), clampr(float(color_get_G(uClr) / 255.f), 0.f, 1.f),
@@ -255,7 +255,7 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 
 		CEnvironment& environment = g_pGamePersistent->Environment();
 
-		float3& sky_color = environment.CurrentEnv->sky_color;
+		fvec3& sky_color = environment.CurrentEnv->sky_color;
 		sky_color.mad(fClr, environment.p_sky_color);
 		clamp(sky_color.x, 0.f, 1.f);
 		clamp(sky_color.y, 0.f, 1.f);
@@ -302,7 +302,7 @@ void CEffect_Thunderbolt::Render()
 		RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
 
 		// gradient
-		float3 vecSx, vecSy;
+		fvec3 vecSx, vecSy;
 		u32 VS_Offset;
 		FVF::LIT* pv = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock(8, hGeom_gradient.stride(), VS_Offset);
 		// top

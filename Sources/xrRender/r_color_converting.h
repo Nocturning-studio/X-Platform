@@ -5,7 +5,7 @@ IC float sRgbToLinear(float vValue)
 	return vValue * (vValue * (vValue * 0.305306011f + 0.682171111f) + 0.012522878f);
 }
 
-IC float3 sRgbToLinear(float3 vValue)
+IC fvec3 sRgbToLinear(fvec3 vValue)
 {
 	vValue.x = sRgbToLinear(vValue.x);
 	vValue.y = sRgbToLinear(vValue.y);
@@ -14,9 +14,9 @@ IC float3 sRgbToLinear(float3 vValue)
 	return vValue;
 }
 
-IC float3 sRgbToLinear(float R, float G, float B)
+IC fvec3 sRgbToLinear(float R, float G, float B)
 {
-	float3 vValue = {0, 0, 0};
+	fvec3 vValue = {0, 0, 0};
 
 	vValue.x = sRgbToLinear(R);
 	vValue.y = sRgbToLinear(G);

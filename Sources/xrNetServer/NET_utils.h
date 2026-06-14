@@ -63,11 +63,11 @@ class NET_Packet
 	{
 		w(&a, 4);
 	} // float
-	IC void w_vec3(const float3& a)
+	IC void w_vec3(const fvec3& a)
 	{
 		w(&a, 3 * sizeof(float));
 	} // vec3
-	IC void w_vec4(const float4& a)
+	IC void w_vec4(const fvec4& a)
 	{
 		w(&a, 4 * sizeof(float));
 	} // vec4
@@ -127,13 +127,13 @@ class NET_Packet
 	{
 		w_float_q8(angle_normalize(a), 0, PI_MUL_2);
 	}
-	IC void w_dir(const float3& D)
+	IC void w_dir(const fvec3& D)
 	{
 		w_u16(compress_normal(D));
 	}
-	IC void w_sdir(const float3& D)
+	IC void w_sdir(const fvec3& D)
 	{
-		float3 C;
+		fvec3 C;
 		float mag = D.magnitude();
 		if (mag > EPS_S)
 		{
@@ -158,7 +158,7 @@ class NET_Packet
 		else
 			w_u8(0);
 	}
-	IC void w_matrix(float4x4& M)
+	IC void w_matrix(fmat4x4& M)
 	{
 		w_vec3(M.i);
 		w_vec3(M.j);
@@ -244,11 +244,11 @@ class NET_Packet
 	}
 
 	// reading - utilities
-	IC void r_vec3(float3& A)
+	IC void r_vec3(fvec3& A)
 	{
 		r(&A, 3 * sizeof(float));
 	} // vec3
-	IC void r_vec4(float4& A)
+	IC void r_vec4(fvec4& A)
 	{
 		r(&A, 4 * sizeof(float));
 	} // vec4
@@ -294,15 +294,15 @@ class NET_Packet
 		r(&A, 1);
 	} // byte (1b)
 	// IReader compatibility
-	IC float3 r_vec3()
+	IC fvec3 r_vec3()
 	{
-		float3 A;
+		fvec3 A;
 		r(&A, 3 * sizeof(float));
 		return (A);
 	} // vec3
-	IC float4 r_vec4()
+	IC fvec4 r_vec4()
 	{
-		float4 A;
+		fvec4 A;
 		r(&A, 4 * sizeof(float));
 		return (A);
 	} // vec4
@@ -401,14 +401,14 @@ class NET_Packet
 	{
 		r_float_q8(A, 0, PI_MUL_2);
 	}
-	IC void r_dir(float3& A)
+	IC void r_dir(fvec3& A)
 	{
 		u16 t;
 		r_u16(t);
 		decompress_normal(A, t);
 	}
 
-	IC void r_sdir(float3& A)
+	IC void r_sdir(fvec3& A)
 	{
 		u16 t;
 		r_u16(t);
@@ -437,7 +437,7 @@ class NET_Packet
 		r_advance(dest.size() + 1);
 	}
 
-	IC void r_matrix(float4x4& M)
+	IC void r_matrix(fmat4x4& M)
 	{
 		r_vec3(M.i);
 		M._14_ = 0;

@@ -41,17 +41,17 @@ struct net_updateData
 	float SCoeff[3][4];
 
 #ifdef DEBUG
-	DEF_VECTOR(VIS_POSITION, float3);
+	DEF_VECTOR(VIS_POSITION, fvec3);
 	VIS_POSITION LastVisPos;
 #endif
 
-	float3 IStartPos;
+	fvec3 IStartPos;
 	Fquaternion IStartRot;
 
-	float3 IRecPos;
+	fvec3 IRecPos;
 	Fquaternion IRecRot;
 
-	float3 IEndPos;
+	fvec3 IEndPos;
 	Fquaternion IEndRot;
 
 	SPHNetState LastState;
@@ -270,7 +270,7 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 	}
 	break;
 	case GE_CHANGE_POS: {
-		float3 p;
+		fvec3 p;
 		P.r_vec3(p);
 		CPHSynchronize* pSyncObj = NULL;
 		pSyncObj = object().PHGetSyncItem(0);
@@ -608,7 +608,7 @@ void CInventoryItem::PH_I_CrPr() // actions & operations between two phisic pred
 	////////////////////////////////////
 	pSyncObj->get_State(p->RecalculatedState);
 	///////////////////////////////////////////////
-	float4x4 transformX;
+	fmat4x4 transformX;
 	pSyncObj->cv2obj_Xfrom(p->RecalculatedState.quaternion, p->RecalculatedState.position, transformX);
 
 	VERIFY2(_valid(transformX), *object().cName());
@@ -673,7 +673,7 @@ void CInventoryItem::PH_A_CrPr()
 	if (!m_flags.test(FInInterpolate))
 		return;
 	////////////////////////////////////
-	float4x4 transformX;
+	fmat4x4 transformX;
 	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformX);
 
 	VERIFY2(_valid(transformX), *object().cName());
@@ -695,12 +695,12 @@ void CInventoryItem::CalculateInterpolationParams()
 	p->IStartPos.set(object().Position());
 	p->IStartRot.set(object().Transform());
 
-	float3 P0, P1, P2, P3;
+	fvec3 P0, P1, P2, P3;
 
 	CPHSynchronize* pSyncObj = NULL;
 	pSyncObj = object().PHGetSyncItem(0);
 
-	float4x4 transformX0, transformX1;
+	fmat4x4 transformX0, transformX1;
 
 	if (m_flags.test(FInInterpolation))
 	{
@@ -746,7 +746,7 @@ void CInventoryItem::CalculateInterpolationParams()
 	pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformX1);
 	P3.set(transformX1.c);
 	/////////////////////////////////////////////////////////////////////////////
-	float3 TotalPath;
+	fvec3 TotalPath;
 	TotalPath.sub(P3, P0);
 	float TotalLen = TotalPath.magnitude();
 
@@ -769,7 +769,7 @@ void CInventoryItem::CalculateInterpolationParams()
 	else
 		p->m_dwIEndTime = p->m_dwIStartTime + ConstTime;
 	/////////////////////////////////////////////////////////////////////////////
-	float3 V0, V1;
+	fvec3 V0, V1;
 	V0.sub(P1, P0);
 	V1.sub(P3, P2);
 	lV0 = V0.magnitude();
@@ -830,7 +830,7 @@ void CInventoryItem::make_Interpolation()
 			CPHSynchronize* pSyncObj = NULL;
 			pSyncObj = object().PHGetSyncItem(0);
 			pSyncObj->set_State(p->PredictedState);
-			float4x4 transformI;
+			fmat4x4 transformI;
 			pSyncObj->cv2obj_Xfrom(p->PredictedState.quaternion, p->PredictedState.position, transformI);
 			VERIFY2(_valid(object().renderable.transform), *object().cName());
 			object().Transform().set(transformI);
@@ -845,7 +845,7 @@ void CInventoryItem::make_Interpolation()
 			else if (factor < 0)
 				factor = 0;
 
-			float3 IPos;
+			fvec3 IPos;
 			Fquaternion IRot;
 
 			float c = factor;
@@ -870,7 +870,7 @@ void CInventoryItem::make_Interpolation()
 	};
 
 #ifdef DEBUG
-	float3 iPos = object().Position();
+	fvec3 iPos = object().Position();
 
 	if (!object().H_Parent() && object().getVisible())
 	{
@@ -963,11 +963,11 @@ void CInventoryItem::UpdateTransform()
 	//		boneL = boneR2;
 #pragma todo("TO ALL: serious performance problem")
 	V->CalculateBones();
-	float4x4& mL = V->LL_GetTransform(u16(boneL));
-	float4x4& mR = V->LL_GetTransform(u16(boneR));
+	fmat4x4& mL = V->LL_GetTransform(u16(boneL));
+	fmat4x4& mR = V->LL_GetTransform(u16(boneR));
 	// Calculate
-	float4x4 mRes;
-	float3 R, D, N;
+	fmat4x4 mRes;
+	fvec3 R, D, N;
 	D.sub(mL.c, mR.c);
 	D.normalize_safe();
 
@@ -1001,9 +1001,9 @@ void CInventoryItem::OnRender()
 		if (!(dbg_net_Draw_Flags.is_any((1 << 4))))
 			return;
 
-		float3 bc, bd;
+		fvec3 bc, bd;
 		object().Visual()->vis.box.get_CD(bc, bd);
-		float4x4 M = object().Transform();
+		fmat4x4 M = object().Transform();
 		M.c.add(bc);
 		Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
 		/*
@@ -1030,7 +1030,7 @@ void CInventoryItem::OnRender()
 					Level().debug_renderer().draw_aabb			(Position(), size, size, size, color_rgba(0, 255, 0,
 		255));
 
-					float3 Pos1, Pos2;
+					fvec3 Pos1, Pos2;
 					VIS_POSITION_it It = LastVisPos.begin();
 					Pos1 = *It;
 					for (; It != LastVisPos.end(); It++)
@@ -1045,7 +1045,7 @@ void CInventoryItem::OnRender()
 				if (OnClient() && !H_Parent() && m_bInInterpolation)
 				{
 
-					float4x4 transformI;
+					fmat4x4 transformI;
 
 					transformI.rotation(IRecRot);
 					transformI.c.set(IRecPos);
@@ -1057,7 +1057,7 @@ void CInventoryItem::OnRender()
 					Level().debug_renderer().draw_obb			(transformI,bd,color_rgba(0, 255, 0, 255));
 
 					///////////////////////////////////////////////////////////////////////////
-					float3 point0 = IStartPos, point1;
+					fvec3 point0 = IStartPos, point1;
 
 					float c = 0;
 					for (float i=0.1f; i<1.1f; i+= 0.1f)

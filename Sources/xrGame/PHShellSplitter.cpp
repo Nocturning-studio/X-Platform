@@ -288,7 +288,7 @@ void CPHShellSplitterHolder::PassEndSplitters(const CShellSplitInfo& spl_inf, CP
 }
 
 static ELEMENT_PAIR_VECTOR new_elements;
-DEFINE_VECTOR(float4x4, TRANSFORM_VECTOR, TRANSFORM_I)
+DEFINE_VECTOR(fmat4x4, TRANSFORM_VECTOR, TRANSFORM_I)
 static TRANSFORM_VECTOR bones_bind_forms;
 shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& split_elem,
 													  const CPHElement* source_element)

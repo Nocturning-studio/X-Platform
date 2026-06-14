@@ -2120,10 +2120,10 @@ void game_sv_Deathmatch::OnRender()
 	/*
 	for (int i0 = 0; i0<int(rpoints[0].size())-1; i0++)
 	{
-		float3 v0 = rpoints[0][i0].P;
+		fvec3 v0 = rpoints[0][i0].P;
 		for (int i1=i0+1; i1<int(rpoints[0].size()); i1++)
 		{
-			float3 v1 = rpoints[0][i1].P;
+			fvec3 v1 = rpoints[0][i1].P;
 			bool			failed =
 	!m_graph_engine->search(*m_level_graph,m_level_graph->vertex(u32(-1),v0),m_level_graph->vertex(u32(-1),v1),&xPath,GraphEngineSpace::CBaseParameters());
 			if (failed) continue;
@@ -2132,10 +2132,10 @@ void game_sv_Deathmatch::OnRender()
 			xr_vector<u32>::const_iterator E = xPath.end();
 			for ( ; I != E; ++I) {
 				Level().debug_renderer().draw_aabb(
-					float3().set(
+					fvec3().set(
 					m_level_graph->vertex_position(*I)
 					).add(
-					float3().set(0.f,.025f,0.f)
+					fvec3().set(0.f,.025f,0.f)
 					),
 					.05f,
 					.05f,
@@ -2144,8 +2144,8 @@ void game_sv_Deathmatch::OnRender()
 					);
 				if (I!=E-1)
 				{
-					float3 p0 = m_level_graph->vertex_position(*I);
-					float3 p1 = m_level_graph->vertex_position(*(I+1));
+					fvec3 p0 = m_level_graph->vertex_position(*I);
+					fvec3 p1 = m_level_graph->vertex_position(*(I+1));
 					Level().debug_renderer().draw_line(Fidentity,
 						p0,
 						p1,

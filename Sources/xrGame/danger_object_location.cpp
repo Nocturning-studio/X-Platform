@@ -10,7 +10,7 @@
 #include "danger_object_location.h"
 #include "gameobject.h"
 
-const float3& CDangerObjectLocation::position() const
+const fvec3& CDangerObjectLocation::position() const
 {
 	return (m_object->Position());
 }

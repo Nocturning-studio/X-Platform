@@ -5,7 +5,7 @@
 #include "../xrEngine/../xrODE/ode/src/collision_kernel.h"
 #pragma warning(default : 4995)
 #pragma warning(default : 4267)
-IC void spatialParsFromDGeom(dGeomID d_space, float3& center, float3& AABB, float& radius)
+IC void spatialParsFromDGeom(dGeomID d_space, fvec3& center, fvec3& AABB, float& radius)
 {
 
 	d_space->computeAABB();

@@ -56,16 +56,16 @@ class CPhantom : public CEntity
 
 	float fSpeed;
 	float fASpeed;
-	float2 vHP;
+	fvec2 vHP;
 
 	float fContactHit;
 
-	float4x4 Transform_center();
+	fmat4x4 Transform_center();
 
-	CParticlesObject* PlayParticles(const shared_str& name, BOOL bAutoRemove, const float4x4& transform);
+	CParticlesObject* PlayParticles(const shared_str& name, BOOL bAutoRemove, const fmat4x4& transform);
 	//	void				PlayMotion					(MotionID);
 
-	void UpdatePosition(const float3& tgt_pos);
+	void UpdatePosition(const fvec3& tgt_pos);
 
 	void PsyHit(const CObject* object, float value);
 
@@ -85,10 +85,10 @@ class CPhantom : public CEntity
 	virtual void shedule_Update(u32 DT);
 	virtual void UpdateCL();
 
-	virtual void HitSignal(float HitAmount, float3& local_dir, CObject* who, s16 element)
+	virtual void HitSignal(float HitAmount, fvec3& local_dir, CObject* who, s16 element)
 	{
 	}
-	virtual void HitImpulse(float amount, float3& vWorldDir, float3& vLocalDir)
+	virtual void HitImpulse(float amount, fvec3& vWorldDir, fvec3& vLocalDir)
 	{
 	}
 	virtual void Hit(SHit* pHDS);

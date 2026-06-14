@@ -100,7 +100,7 @@ void CUICustomSpin::OnBtnDownClick()
 void CUICustomSpin::Draw()
 {
 	CUIWindow::Draw();
-	float2 pos;
+	fvec2 pos;
 	GetAbsolutePos(pos);
 	m_pLines->Draw(pos.x + 3, pos.y);
 }

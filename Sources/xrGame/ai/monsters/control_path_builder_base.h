@@ -16,7 +16,7 @@ class CControlPathBuilderBase : public CControl_ComBase
 	bool m_try_min_time;
 	bool m_enable;
 	bool m_use_dest_orient;
-	float3 m_dest_dir;
+	fvec3 m_dest_dir;
 	MovementManager::EPathType m_path_type;
 	bool m_extrapolate;
 	u32 m_velocity_mask;
@@ -30,7 +30,7 @@ class CControlPathBuilderBase : public CControl_ComBase
 
 	struct STarget
 	{
-		float3 position;
+		fvec3 position;
 		u32 node;
 		void init()
 		{
@@ -38,7 +38,7 @@ class CControlPathBuilderBase : public CControl_ComBase
 			node = u32(-1);
 		}
 
-		void set(const float3& pos, u32 vertex)
+		void set(const fvec3& pos, u32 vertex)
 		{
 			position.set(pos);
 			node = vertex;
@@ -146,7 +146,7 @@ class CControlPathBuilderBase : public CControl_ComBase
 	{
 		m_desirable_mask = mask;
 	}
-	void set_dest_direction(const float3& dir);
+	void set_dest_direction(const fvec3& dir);
 
 	IC bool enabled()
 	{
@@ -154,9 +154,9 @@ class CControlPathBuilderBase : public CControl_ComBase
 	}
 	// -------------------------------------------------------------------
 	// Set methods
-	void set_target_point(const float3& position, u32 node = u32(-1));
+	void set_target_point(const fvec3& position, u32 node = u32(-1));
 	void set_target_point(u32 node);
-	void set_retreat_from_point(const float3& position);
+	void set_retreat_from_point(const fvec3& position);
 
 	IC void set_rebuild_time(u32 time);
 	IC void set_cover_params(float min, float max, float dev, float radius);
@@ -167,18 +167,18 @@ class CControlPathBuilderBase : public CControl_ComBase
 	void detour_graph_points(u32 game_graph_vertex_id = u32(-1));
 	IC void set_generic_parameters();
 
-	float3 get_target_found()
+	fvec3 get_target_found()
 	{
 		return m_target_found.position;
 	}
-	float3 get_target_set()
+	fvec3 get_target_set()
 	{
 		return m_target_set.position;
 	}
 
 	// -------------------------------------------------------------------
 	// Services
-	void set_target_accessible(STarget& target, const float3& position);
+	void set_target_accessible(STarget& target, const fvec3& position);
 
   private:
 	// functional

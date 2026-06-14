@@ -105,7 +105,7 @@ class CALifeSimulatorBase : public IPureDestroyableObject
 				const ALife::_SPAWN_ID& spawn_id);
 	void create(CSE_ALifeObject* object);
 	CSE_Abstract* create(CSE_ALifeGroupAbstract* object, CSE_ALifeDynamicObject* j);
-	CSE_Abstract* spawn_item(LPCSTR section, const float3& position, u32 level_vertex_id,
+	CSE_Abstract* spawn_item(LPCSTR section, const fvec3& position, u32 level_vertex_id,
 							 GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration = true);
 	void append_item_vector(ALife::OBJECT_VECTOR& tObjectVector, ALife::ITEM_P_VECTOR& tItemList);
 	shared_str level_name() const;

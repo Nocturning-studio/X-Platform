@@ -30,16 +30,16 @@ class ENGINE_API CGameFont
 	};
 
   protected:
-	float2 vHalfPixel;
-	int2 vTS;
+	fvec2 vHalfPixel;
+	ivec2 vTS;
 
 	EAligment eCurrentAlignment;
 	u32 dwCurrentColor;
 	float fCurrentHeight;
 	float fCurrentX, fCurrentY;
-	float2 vInterval;
+	fvec2 vInterval;
 
-	float3* TCMap;
+	fvec3* TCMap;
 	float fHeight;
 	float fXStep;
 	float fYStep;
@@ -67,7 +67,7 @@ class ENGINE_API CGameFont
 	};
 
   protected:
-	IC const float3& GetCharTC(u16 c)
+	IC const fvec3& GetCharTC(u16 c)
 	{
 		return TCMap[c];
 	}
@@ -95,7 +95,7 @@ class ENGINE_API CGameFont
 	{
 		vInterval.set(x, y);
 	};
-	IC void SetInterval(const float2& v)
+	IC void SetInterval(const fvec2& v)
 	{
 		vInterval.set(v);
 	};

@@ -30,13 +30,13 @@ class CPHJoint : public CPhysicsJoint
 		eVs vs;			   // coordinate system
 		float force;	   // max force
 		float velocity;	   // velocity to achieve
-		float3 direction; // axis direction
+		fvec3 direction; // axis direction
 		IC void set_limits(float h, float l)
 		{
 			high = h;
 			low = l;
 		}
-		IC void set_direction(const float3& v)
+		IC void set_direction(const fvec3& v)
 		{
 			direction.set(v);
 		}
@@ -54,7 +54,7 @@ class CPHJoint : public CPhysicsJoint
 	};
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	xr_vector<SPHAxis> axes;
-	float3 anchor;
+	fvec3 anchor;
 	eVs vs_anchor;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	void CreateBall();
@@ -66,10 +66,10 @@ class CPHJoint : public CPhysicsJoint
 	void SetForceActive(const int axis_num);
 	void SetVelocityActive(const int axis_num);
 	void SetLimitsActive(int axis_num);
-	void CalcAxis(int ax_num, float3& axis, float& lo, float& hi, const float4x4& first_matrix,
-				  const float4x4& second_matrix);
-	void CalcAxis(int ax_num, float3& axis, float& lo, float& hi, const float4x4& first_matrix,
-				  const float4x4& second_matrix, const float4x4& rotate);
+	void CalcAxis(int ax_num, fvec3& axis, float& lo, float& hi, const fmat4x4& first_matrix,
+				  const fmat4x4& second_matrix);
+	void CalcAxis(int ax_num, fvec3& axis, float& lo, float& hi, const fmat4x4& first_matrix,
+				  const fmat4x4& second_matrix, const fmat4x4& rotate);
 	virtual u16 GetAxesNumber();
 	virtual void SetAxisSDfactors(float spring_factor, float damping_factor, int axis_num);
 	virtual void SetJointSDfactors(float spring_factor, float damping_factor);
@@ -77,28 +77,28 @@ class CPHJoint : public CPhysicsJoint
 	virtual void SetLimitsSDfactorsActive();
 	virtual void SetAxisSDfactorsActive(int axis_num);
 	virtual void SetAxis(const SPHAxis& axis, const int axis_num);
-	virtual void SetAnchor(const float3& position)
+	virtual void SetAnchor(const fvec3& position)
 	{
 		SetAnchor(position.x, position.y, position.z);
 	}
-	virtual void SetAnchorVsFirstElement(const float3& position)
+	virtual void SetAnchorVsFirstElement(const fvec3& position)
 	{
 		SetAnchorVsFirstElement(position.x, position.y, position.z);
 	}
-	virtual void SetAnchorVsSecondElement(const float3& position)
+	virtual void SetAnchorVsSecondElement(const fvec3& position)
 	{
 		SetAnchorVsSecondElement(position.x, position.y, position.z);
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void SetAxisDir(const float3& orientation, const int axis_num)
+	virtual void SetAxisDir(const fvec3& orientation, const int axis_num)
 	{
 		SetAxisDir(orientation.x, orientation.y, orientation.z, axis_num);
 	}
-	virtual void SetAxisDirVsFirstElement(const float3& orientation, const int axis_num)
+	virtual void SetAxisDirVsFirstElement(const fvec3& orientation, const int axis_num)
 	{
 		SetAxisDirVsFirstElement(orientation.x, orientation.y, orientation.z, axis_num);
 	}
-	virtual void SetAxisDirVsSecondElement(const float3& orientation, const int axis_num)
+	virtual void SetAxisDirVsSecondElement(const fvec3& orientation, const int axis_num)
 	{
 		SetAxisDirVsSecondElement(orientation.x, orientation.y, orientation.z, axis_num);
 	}
@@ -155,9 +155,9 @@ class CPHJoint : public CPhysicsJoint
 		return m_joint1;
 	}
 	virtual void GetLimits(float& lo_limit, float& hi_limit, int axis_num);
-	virtual void GetAxisDir(int num, float3& axis, eVs& vs);
-	virtual void GetAxisDirDynamic(int num, float3& axis);
-	virtual void GetAnchorDynamic(float3& anchor);
+	virtual void GetAxisDir(int num, fvec3& axis, eVs& vs);
+	virtual void GetAxisDirDynamic(int num, fvec3& axis);
+	virtual void GetAnchorDynamic(fvec3& anchor);
 	virtual void GetAxisSDfactors(float& spring_factor, float& damping_factor, int axis_num);
 	virtual void GetJointSDfactors(float& spring_factor, float& damping_factor);
 	virtual void GetMaxForceAndVelocity(float& force, float& velocity, int axis_num);
@@ -180,7 +180,7 @@ class CPHJoint : public CPhysicsJoint
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-IC void own_axis(const float4x4& m, float3& axis)
+IC void own_axis(const fmat4x4& m, fvec3& axis)
 {
 	if (m._11 == 1.f)
 	{
@@ -211,10 +211,10 @@ IC void own_axis(const float4x4& m, float3& axis)
 	return;
 }
 
-IC void own_axis_angle(const float4x4& m, float3& axis, float& angle)
+IC void own_axis_angle(const fmat4x4& m, fvec3& axis, float& angle)
 {
 	own_axis(m, axis);
-	float3 ort1, ort2;
+	fvec3 ort1, ort2;
 	if (!(axis.z == 0.f && axis.y == 0.f))
 	{
 		ort1.set(0.f, -axis.z, axis.y);
@@ -228,7 +228,7 @@ IC void own_axis_angle(const float4x4& m, float3& axis, float& angle)
 	ort1.normalize();
 	ort2.normalize();
 
-	float3 ort1_t;
+	fvec3 ort1_t;
 	m.transform_dir(ort1_t, ort1);
 
 	float cosinus = ort1.dotproduct(ort1_t);
@@ -238,10 +238,10 @@ IC void own_axis_angle(const float4x4& m, float3& axis, float& angle)
 		angle = -angle;
 }
 
-IC void axis_angleB(const float4x4& m, const float3& axis, float& angle)
+IC void axis_angleB(const fmat4x4& m, const fvec3& axis, float& angle)
 {
 
-	float3 ort1, ort2;
+	fvec3 ort1, ort2;
 	if (!(fis_zero(axis.z) && fis_zero(axis.y)))
 	{
 		ort1.set(0.f, -axis.z, axis.y);
@@ -254,9 +254,9 @@ IC void axis_angleB(const float4x4& m, const float3& axis, float& angle)
 	}
 	ort1.normalize();
 	ort2.normalize();
-	float3 ort1_t;
+	fvec3 ort1_t;
 	m.transform_dir(ort1_t, ort1);
-	float3 ort_r;
+	fvec3 ort_r;
 	float pr1, pr2;
 	pr1 = ort1.dotproduct(ort1_t);
 	pr2 = ort2.dotproduct(ort1_t);
@@ -275,10 +275,10 @@ IC void axis_angleB(const float4x4& m, const float3& axis, float& angle)
 		angle = -angle;
 }
 
-IC void axis_angleA(const float4x4& m, const float3& axis, float& angle)
+IC void axis_angleA(const fmat4x4& m, const fvec3& axis, float& angle)
 {
 
-	float3 ort1, ort2, axis_t;
+	fvec3 ort1, ort2, axis_t;
 	m.transform_dir(axis_t, axis);
 	if (!(fis_zero(axis_t.z) && fis_zero(axis_t.y)))
 	{
@@ -292,9 +292,9 @@ IC void axis_angleA(const float4x4& m, const float3& axis, float& angle)
 	}
 	ort1.normalize();
 	ort2.normalize();
-	float3 ort1_t;
+	fvec3 ort1_t;
 	m.transform_dir(ort1_t, ort1);
-	float3 ort_r;
+	fvec3 ort_r;
 	float pr1, pr2;
 	pr1 = ort1.dotproduct(ort1_t);
 	pr2 = ort2.dotproduct(ort1_t);

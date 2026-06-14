@@ -204,7 +204,7 @@ void CRenderBackendDX9::GetDeviceCaps(void* pCaps)
 		*(D3DCAPS9*)pCaps = m_Caps;
 }
 
-void CRenderBackendDX9::Clear(u32 clearFlags, const float4 color, float depth, u8 stencil)
+void CRenderBackendDX9::Clear(u32 clearFlags, const fvec4 color, float depth, u8 stencil)
 {
 	if (!m_pDevice)
 		return;

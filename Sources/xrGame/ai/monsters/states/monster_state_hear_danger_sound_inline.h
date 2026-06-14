@@ -51,8 +51,8 @@ void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 	{
 		SStateHideFromPoint data;
 
-		float3 run_away_point;
-		float3 dir;
+		fvec3 run_away_point;
+		fvec3 dir;
 		dir.sub(object->Position(), object->SoundMemory.GetSound().position);
 		dir.normalize_safe();
 		run_away_point.mad(object->Position(), dir, 1.f);

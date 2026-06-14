@@ -24,7 +24,7 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 	{
 		if (wpn)
 		{
-			float3 center;
+			fvec3 center;
 			Center(center);
 			if (wpn->Use(Engine.RenderView.Position, Engine.RenderView.Direction, center))
 			{

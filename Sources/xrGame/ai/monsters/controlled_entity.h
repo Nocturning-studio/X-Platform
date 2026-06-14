@@ -14,7 +14,7 @@ struct SControlledInfo
 {
 	ETask m_task;
 	const CEntity* m_object;
-	float3 m_position;
+	fvec3 m_position;
 	u32 m_node;
 	float m_radius;
 };

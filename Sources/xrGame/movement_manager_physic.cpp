@@ -43,7 +43,7 @@ void CMovementManager::apply_collision_hit(CPHMovementControl* movement_control)
 	{
 		const ICollisionDamageInfo* di = movement_control->CollisionDamageInfo();
 		VERIFY(di);
-		float3 dir;
+		fvec3 dir;
 		di->HitDir(dir);
 
 		//		object().Hit
@@ -55,12 +55,12 @@ void CMovementManager::apply_collision_hit(CPHMovementControl* movement_control)
 	}
 }
 
-void CMovementManager::move_along_path(CPHMovementControl* movement_control, float3& dest_position, float time_delta)
+void CMovementManager::move_along_path(CPHMovementControl* movement_control, fvec3& dest_position, float time_delta)
 {
 	//OPTICK_EVENT("CMovementManager::move_along_path");
 	START_PROFILE("Build Path/Move Along Path")
 	VERIFY(movement_control);
-	float3 motion;
+	fvec3 motion;
 	dest_position = object().Position();
 
 	float precision = 0.5f;
@@ -112,7 +112,7 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, flo
 	float desirable_dist = dist;
 
 	// определить целевую точку
-	float3 target;
+	fvec3 target;
 
 	u32 prev_cur_point_index = detail().curr_travel_point_index();
 
@@ -137,7 +137,7 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, flo
 
 	target.set(detail().path()[detail().curr_travel_point_index() + 1].position);
 	// определить направление к целевой точке
-	float3 dir_to_target;
+	fvec3 dir_to_target;
 	dir_to_target.sub(target, dest_position);
 
 	// дистанция до целевой точки
@@ -183,7 +183,7 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, flo
 	// установить позицию
 	motion.mul(dir_to_target, dist / dist_to_target);
 	dest_position.add(motion);
-	float3 velocity = dir_to_target;
+	fvec3 velocity = dir_to_target;
 	velocity.normalize_safe();
 	if (velocity.y > 0.9f)
 		velocity.y = 0.8f;
@@ -247,7 +247,7 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, flo
 	{
 		if (!movement_control->PhyssicsOnlyMode())
 		{
-			float3 velocity = {0.f, 0.f, 0.f};
+			fvec3 velocity = {0.f, 0.f, 0.f};
 			movement_control->SetVelocity(velocity);
 			m_speed = 0.f;
 		}

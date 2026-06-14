@@ -10,7 +10,7 @@ void CStateMonsterMoveToRestrictorAbstract::initialize()
 	inherited::initialize();
 	object->path().prepare_builder();
 
-	float3 position;
+	fvec3 position;
 	u32 node = object->control().path_builder().restrictions().accessible_nearest(object->Position(), position);
 	object->path().set_target_point(ai().level_graph().vertex_position(node), node);
 }

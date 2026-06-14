@@ -26,7 +26,7 @@ struct SStateDataAction
 //////////////////////////////////////////////////////////////////////////
 struct SStateDataMoveToPoint
 {
-	float3 point;
+	fvec3 point;
 	u32 vertex;
 
 	bool accelerated;
@@ -65,7 +65,7 @@ struct SStateDataMoveToPointEx : public SStateDataMoveToPoint
 //////////////////////////////////////////////////////////////////////////
 struct SStateHideFromPoint
 {
-	float3 point;
+	fvec3 point;
 
 	bool accelerated;
 	bool braking;
@@ -98,7 +98,7 @@ struct SStateHideFromPoint
 //////////////////////////////////////////////////////////////////////////
 struct SStateDataLookToPoint
 {
-	float3 point;
+	fvec3 point;
 	u32 face_delay;
 	SStateDataAction action;
 
@@ -114,7 +114,7 @@ struct SStateDataLookToPoint
 //////////////////////////////////////////////////////////////////////////
 struct SStateDataMoveAroundPoint
 {
-	float3 point;
+	fvec3 point;
 	u32 vertex;
 
 	float radius;
@@ -139,7 +139,7 @@ struct SStateDataMoveAroundPoint
 //////////////////////////////////////////////////////////////////////////
 struct SStateDataActionLook : public SStateDataAction
 {
-	float3 point;
+	fvec3 point;
 
 	SStateDataActionLook()
 	{

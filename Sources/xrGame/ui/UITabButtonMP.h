@@ -24,8 +24,8 @@ class CUITabButtonMP : public CUITabButton
 		m_orientationVertical = bVert;
 	};
 	u32 m_temp_index;
-	float2 m_text_ident_pushed;
-	float2 m_text_ident_cursor_over;
+	fvec2 m_text_ident_pushed;
+	fvec2 m_text_ident_cursor_over;
 
   private:
 	bool m_orientationVertical;

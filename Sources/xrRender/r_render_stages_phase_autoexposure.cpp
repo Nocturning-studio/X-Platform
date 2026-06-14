@@ -41,7 +41,7 @@ void CRender::prepare_scene_luminance()
 	adaptation_speed = std::max(0.01f, std::min(adaptation_speed, 10.0f));
 	TimeDelta = std::min(TimeDelta, 0.033f);
 
-	float4 adaptation_params{adaptation_speed, TimeDelta, 0.0f, 0.0f};
+	fvec4 adaptation_params{adaptation_speed, TimeDelta, 0.0f, 0.0f};
 
 	RenderBackendLegacy.set_Element(RenderTarget->s_autoexposure->E[SE_PASS_AUTOEXPOSURE_PREPARE_LUMINANCE]);
 	RenderBackendLegacy.set_Constant("adaptation_params", adaptation_params);
@@ -51,7 +51,7 @@ void CRender::prepare_scene_luminance()
 void CRender::apply_exposure()
 {
 	// Параметры автоэкспозиции
-	float3 none, full, result;
+	fvec3 none, full, result;
 	none.set(1, 0, 1);
 	full.set(ps_r_autoexposure_middlegray, 1.f, ps_r_autoexposure_low_lum);
 	result.lerp(none, full, ps_r_autoexposure_amount);
@@ -65,7 +65,7 @@ void CRender::apply_exposure()
 void CRender::dummy_exposure()
 {
 	// Параметры автоэкспозиции
-	float3 none, full, result;
+	fvec3 none, full, result;
 	none.set(1, 0, 1);
 	full.set(ps_r_autoexposure_middlegray, 1.f, ps_r_autoexposure_low_lum);
 	result.lerp(none, full, ps_r_autoexposure_amount);

@@ -8,7 +8,7 @@ template <typename _Object> class CStateMonsterSquadRestFollow : public CState<_
 	typedef CState<_Object> inherited;
 	typedef CState<_Object>* state_ptr;
 
-	float3 last_point;
+	fvec3 last_point;
 
   public:
 	CStateMonsterSquadRestFollow(_Object* obj);

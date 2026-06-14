@@ -74,7 +74,7 @@ class game_sv_mp : public game_sv_GameState
 	virtual void RespawnPlayer(ClientID id_who, bool NoSpectator);
 	void SpawnPlayer(ClientID id, LPCSTR N);
 	virtual void SetSkin(CSE_Abstract* E, u16 Team, u16 ID);
-	bool GetPosAngleFromActor(ClientID id, float3& Pos, float3& Angle);
+	bool GetPosAngleFromActor(ClientID id, fvec3& Pos, fvec3& Angle);
 	void AllowDeadBodyRemove(ClientID id, u16 GameID);
 	void SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons);
 	void SpawnWeaponForActor(u16 actorId, LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer);

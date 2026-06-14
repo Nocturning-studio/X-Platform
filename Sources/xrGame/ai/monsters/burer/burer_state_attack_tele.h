@@ -49,7 +49,7 @@ template <typename _Object> class CStateBurerAttackTele : public CState<_Object>
 	void SelectObjects();
 
 	// internal for FindObjects
-	void FindFreeObjects(xr_vector<CObject*>& tpObjects, const float3& pos);
+	void FindFreeObjects(xr_vector<CObject*>& tpObjects, const fvec3& pos);
 
   private:
 };

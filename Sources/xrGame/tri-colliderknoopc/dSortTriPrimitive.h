@@ -11,7 +11,7 @@
 
 template <class T>
 IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGeom* o2, int flags,
-												   dContactGeom* contact, int skip, const float3& AABB)
+												   dContactGeom* contact, int skip, const fvec3& AABB)
 {
 	dxGeomUserData* data = dGeomGetUserData(o1);
 	dReal* last_pos = data->last_pos;
@@ -24,11 +24,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 	box.setb(cast_fv(p), AABB);
 
 	CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
-	const float3* V_array = Level().ObjectSpace.GetStaticVerts();
+	const fvec3* V_array = Level().ObjectSpace.GetStaticVerts();
 	if (no_last_pos || !last_box.contains(box))
 	{
 
-		float3 aabb;
+		fvec3 aabb;
 		aabb.set(AABB);
 		aabb.mul(ph_tri_query_ex_aabb_rate);
 		///////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@ class FTreeVisual : public IRender_Visual, public IRender_Mesh
   private:
 	struct _5color
 	{
-		float3 rgb; // - all static lighting
+		fvec3 rgb; // - all static lighting
 		float hemi;	 // - hemisphere
 		float sun;	 // - sun
 	};
@@ -16,7 +16,7 @@ class FTreeVisual : public IRender_Visual, public IRender_Mesh
   protected:
 	_5color c_scale;
 	_5color c_bias;
-	float4x4 transform;
+	fmat4x4 transform;
 
   public:
 	virtual void Render(float LOD); // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored

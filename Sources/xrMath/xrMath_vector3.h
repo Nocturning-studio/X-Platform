@@ -726,8 +726,8 @@ IC _vector3<T> operator/(T s, const _vector3<T>& a) {
 	return r;
 }
 
-typedef _vector3<float> float3;
-typedef _vector3<s32> int3;
+typedef _vector3<float> fvec3;
+typedef _vector3<s32> ivec3;
 
 template <class T> BOOL _valid(const _vector3<T>& v)
 {
@@ -808,7 +808,7 @@ IC BOOL exact_normalize(float* a)
 	}
 	return TRUE;
 }
-IC BOOL exact_normalize(float3& a)
+IC BOOL exact_normalize(fvec3& a)
 {
 	return exact_normalize(&a.x);
 }

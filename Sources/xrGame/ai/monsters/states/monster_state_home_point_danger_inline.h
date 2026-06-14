@@ -142,7 +142,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
 
 		SStateDataLookToPoint data;
 
-		float3 dir;
+		fvec3 dir;
 		object->CoverMan->less_cover_direction(dir);
 
 		data.point.mad(object->Position(), dir, 10.f);
@@ -171,7 +171,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
 	}
 }
 TEMPLATE_SPECIALIZATION
-float3& CStateMonsterDangerMoveToHomePointAbstract::get_most_danger_pos()
+fvec3& CStateMonsterDangerMoveToHomePointAbstract::get_most_danger_pos()
 {
 	m_danger_pos.set(0, 0, 0);
 

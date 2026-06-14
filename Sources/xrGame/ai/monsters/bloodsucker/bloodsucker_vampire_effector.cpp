@@ -53,7 +53,7 @@ BOOL CVampirePPEffector::Process(SPPInfo& pp)
 #define V_EFF_DELTA_ANGLE_Z V_EFF_DELTA_ANGLE_X
 #define V_EFF_ANGLE_SPEED 0.2f
 #define V_EFF_BEST_DISTANCE 0.3f
-CVampireCameraEffector::CVampireCameraEffector(float time, const float3& src, const float3& tgt)
+CVampireCameraEffector::CVampireCameraEffector(float time, const fvec3& src, const fvec3& tgt)
 	: inherited(eCEVampire, time)
 {
 	fLifeTime = time;
@@ -90,7 +90,7 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	float time_left_perc = fLifeTime / m_time_total;
 
 	// Инициализация
-	float4x4 Mdef;
+	fmat4x4 Mdef;
 	Mdef.identity();
 	Mdef.j.set(info.n);
 	Mdef.k.set(info.d);
@@ -139,10 +139,10 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	//////////////////////////////////////////////////////////////////////////
 
 	// Установить углы смещения
-	float4x4 R;
+	fmat4x4 R;
 	R.setHPB(dangle_current.x, dangle_current.y, dangle_current.z);
 
-	float4x4 mR;
+	fmat4x4 mR;
 	mR.mul(Mdef, R);
 
 	info.d.set(mR.k);

@@ -16,7 +16,7 @@ void CRender::render_lights(light_Package& LP)
     auto is_valid_light = [](light* L) {
         if (L == nullptr)
             return false;
-        float3 zero = { 0, -1000, 0 };
+        fvec3 zero = { 0, -1000, 0 };
         if (L->get_position().similar(zero, EPS_L))
             return false;
         return true;

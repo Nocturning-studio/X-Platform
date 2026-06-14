@@ -158,7 +158,7 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 	else
 		CUITextureMaster::InitTexture(tex_name, sh_name, &m_UIStaticItem);
 
-	float2 p = GetWndPos();
+	fvec2 p = GetWndPos();
 	m_UIStaticItem.SetPos(p.x, p.y);
 	m_bAvailableTexture = true;
 }
@@ -202,7 +202,7 @@ void CUIStatic::DrawText()
 			DrawHighlightedText();
 		else
 		{
-			float2 p;
+			fvec2 p;
 			GetAbsolutePos(p);
 			m_pLines->Draw(p.x + m_TextOffset.x, p.y + m_TextOffset.y);
 		}
@@ -308,14 +308,14 @@ void CUIStatic::Update()
 
 			float _value = (float)color_get_R(clr);
 			float f_scale = _value / 64.0f;
-			float2 _sz;
+			fvec2 _sz;
 			_sz.set(m_xxxRect.width() * f_scale, m_xxxRect.height() * f_scale);
 			SetWndSize(_sz);
 		}
 		else
 		{
 			EnableHeading_int(!!m_lanim_transform.m_lanimFlags.test(1 << 4));
-			SetWndSize(float2().set(m_xxxRect.width(), m_xxxRect.height()));
+			SetWndSize(fvec2().set(m_xxxRect.width(), m_xxxRect.height()));
 		}
 	}
 
@@ -327,7 +327,7 @@ void CUIStatic::Update()
 	{
 		g_btnHint->SetHintText(this, *m_hint_text);
 
-		float2 c_pos = GetUICursor()->GetCursorPosition();
+		fvec2 c_pos = GetUICursor()->GetCursorPosition();
 		Frect vis_rect;
 		vis_rect.set(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
 
@@ -391,12 +391,12 @@ void CUIStatic::Update()
 		// ѕозиционирование рассчитываем только если родитель в принципе виден
 		if (bParentVisible)
 		{
-			float2 parentPos;
+			fvec2 parentPos;
 			// »спользуем GetParent() самого хинта, так как он приаттачен к нам
 			if (m_hint->GetParent())
 			{
 				m_hint->GetParent()->GetAbsolutePos(parentPos);
-				float2 cursosPos = GetUICursor()->GetCursorPosition();
+				fvec2 cursosPos = GetUICursor()->GetCursorPosition();
 
 				float x = cursosPos.x - parentPos.x;
 				float y = cursosPos.y - parentPos.y - m_hint->GetHeight();

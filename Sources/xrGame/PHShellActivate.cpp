@@ -34,7 +34,7 @@ void CPHShell::activate(bool disable)
 	if (!disable)
 		EnableObject(0);
 }
-void CPHShell::Activate(const float4x4& m0, float dt01, const float4x4& m2, bool disable)
+void CPHShell::Activate(const fmat4x4& m0, float dt01, const fmat4x4& m2, bool disable)
 {
 
 	if (isActive())
@@ -59,7 +59,7 @@ void CPHShell::Activate(const float4x4& m0, float dt01, const float4x4& m2, bool
 			(*i)->Activate();
 	}
 
-	float4x4 m;
+	fmat4x4 m;
 	GetGlobalTransformDynamic(&m);
 	m.invert();
 	m.mulA_43(mTransform);
@@ -78,12 +78,12 @@ void CPHShell::Activate(const float4x4& m0, float dt01, const float4x4& m2, bool
 	/////////////////////////////////////////////////////////////////////////////
 	// mTransform.set(m0);
 	// Activate(disable);
-	float3 lin_vel;
+	fvec3 lin_vel;
 	lin_vel.sub(m2.c, m0.c);
 	set_LinearVel(lin_vel);
 }
 
-void CPHShell::Activate(const float4x4& transform, const float3& lin_vel, const float3& ang_vel, bool disable)
+void CPHShell::Activate(const fmat4x4& transform, const fvec3& lin_vel, const fvec3& ang_vel, bool disable)
 {
 
 	if (isActive())
@@ -254,7 +254,7 @@ void CPHShell::Deactivate()
 		CPHObject::UnFreeze();
 		ph_world->StepTouch();
 		ph_world->UnFreeze();
-		// float4x4 m;
+		// fmat4x4 m;
 		// InterpolateGlobalTransform(&m);
 	}
 	spatial_unregister();

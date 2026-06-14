@@ -74,7 +74,7 @@ void CBaseMonster::post_fsm_update()
 	{
 
 		float dir_yaw = control().path_builder().detail().direction().getH();
-		float yaw_target = float3().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
+		float yaw_target = fvec3().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
 
 		float angle_diff = angle_difference(yaw_target, dir_yaw);
 

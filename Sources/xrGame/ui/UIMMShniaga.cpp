@@ -275,7 +275,7 @@ void CUIMMShniaga::Update()
 	if (m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time)
 	{
 		//		playing = true;
-		float2 pos = m_shniaga->GetWndPos();
+		fvec2 pos = m_shniaga->GetWndPos();
 		float l = 2 * PI * m_anims[0]->GetHeight() / 2;
 		int n = iFloor(pos.y / l);
 		float a = 2 * PI * (pos.y - l * n) / l;
@@ -299,7 +299,7 @@ void CUIMMShniaga::Update()
 bool CUIMMShniaga::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 
-	float2 pos = UI()->GetUICursor()->GetCursorPosition();
+	fvec2 pos = UI()->GetUICursor()->GetCursorPosition();
 	Frect r;
 	m_magnifier->GetAbsoluteRect(r);
 	if (WINDOW_LBUTTON_DOWN == mouse_action && r.in(pos.x, pos.y))
@@ -384,7 +384,7 @@ bool b_shniaganeed_pp = true;
 void CUIMMShniaga::SetVisibleMagnifier(bool f)
 {
 	b_shniaganeed_pp = f;
-	float2 pos = m_magnifier->GetWndPos();
+	fvec2 pos = m_magnifier->GetWndPos();
 	if (f)
 		pos.x = m_mag_pos;
 	else
@@ -430,7 +430,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 		{
 			m_sound->whell_Stop();
 
-			float2 pos = m_shniaga->GetWndPos();
+			fvec2 pos = m_shniaga->GetWndPos();
 			pos.y = m_destination;
 			m_shniaga->SetWndPos(pos);
 

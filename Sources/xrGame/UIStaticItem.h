@@ -11,7 +11,7 @@ class CUIStaticItem : public IUISimpleTextureControl, public CUICustomItem
 {
 	ref_shader hShader;
 	//	ref_geom		hGeom_fan;
-	float2 iPos;
+	fvec2 iPos;
 	u32 dwColor;
 	int iTileX;
 	int iTileY;

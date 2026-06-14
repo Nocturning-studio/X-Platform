@@ -26,7 +26,7 @@ class ENGINE_API Vision : private pure_relcase
 
 	void o_new(CObject* E);
 	void o_delete(CObject* E);
-	void o_trace(float3& P, float dt, float vis_threshold);
+	void o_trace(fvec3& P, float dt, float vis_threshold);
 
   public:
 	Vision();
@@ -37,17 +37,17 @@ class ENGINE_API Vision : private pure_relcase
 		CObject* O;
 		collide::ray_cache Cache;
 		float Cache_vis;
-		float3 cp_LP;
-		float3 cp_LR_src;
-		float3 cp_LR_dst;
-		float3 cp_LAST; // last point found to be visible
+		fvec3 cp_LP;
+		fvec3 cp_LR_src;
+		fvec3 cp_LR_dst;
+		fvec3 cp_LAST; // last point found to be visible
 	};
 	xr_vector<feel_visible_Item> feel_visible;
 
   public:
 	void feel_vision_clear();
-	void feel_vision_query(float4x4& mFull, float3& P);
-	void feel_vision_update(CObject* parent, float3& P, float dt, float vis_threshold);
+	void feel_vision_query(fmat4x4& mFull, fvec3& P);
+	void feel_vision_update(CObject* parent, fvec3& P, float dt, float vis_threshold);
 	void __stdcall feel_vision_relcase(CObject* object);
 	void feel_vision_get(xr_vector<CObject*>& R)
 	{
@@ -57,7 +57,7 @@ class ENGINE_API Vision : private pure_relcase
 			if (positive(I->fuzzy))
 				R.push_back(I->O);
 	}
-	float3 feel_vision_get_vispoint(CObject* _O)
+	fvec3 feel_vision_get_vispoint(CObject* _O)
 	{
 		xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
 		for (; I != E; I++)
@@ -67,7 +67,7 @@ class ENGINE_API Vision : private pure_relcase
 				return I->cp_LAST;
 			}
 		VERIFY2(0, "There is no such object in the potentially visible list");
-		return float3().set(flt_max, flt_max, flt_max);
+		return fvec3().set(flt_max, flt_max, flt_max);
 	}
 	virtual BOOL feel_vision_isRelevant(CObject* O) = 0;
 	virtual float feel_vision_mtl_transp(CObject* O, u32 element) = 0;

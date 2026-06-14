@@ -18,8 +18,8 @@ class CHOM
 	CDB::MODEL* m_pModel;
 	occTri* m_pTris;
 	BOOL bEnabled;
-	float4x4 m_transform;
-	float4x4 m_transform_01;
+	fmat4x4 m_transform;
+	fmat4x4 m_transform_01;
 #ifdef DEBUG
 	u32 tris_in_frame_visible;
 	u32 tris_in_frame;
@@ -34,7 +34,7 @@ class CHOM
 	u32 m_idx_read;	 // Индекс буфера, из которого читает visible()
 	u32 m_idx_write; // Индекс буфера, в который пишет MT_RENDER()
 
-	void ProcessTriangle(CDB::RESULT* it, u32 _frame, const float3& COP, CFrustum& clip);
+	void ProcessTriangle(CDB::RESULT* it, u32 _frame, const fvec3& COP, CFrustum& clip);
 
 	void Render_DB(CFrustum& base);
 

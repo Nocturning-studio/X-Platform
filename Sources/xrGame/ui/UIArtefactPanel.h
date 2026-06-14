@@ -19,7 +19,7 @@ class CUIArtefactPanel : public CUIWindow
 
   protected:
 	float m_fScale;
-	float2 m_cell_size;
+	fvec2 m_cell_size;
 	xr_vector<Frect> m_vRects;
 	CUIStaticItem m_si;
 };

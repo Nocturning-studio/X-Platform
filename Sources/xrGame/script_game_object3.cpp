@@ -45,7 +45,7 @@ struct CSoundObject;
 struct CHitObject;
 }; // namespace MemorySpace
 
-const CCoverPoint* CScriptGameObject::best_cover(const float3& position, const float3& enemy_position, float radius,
+const CCoverPoint* CScriptGameObject::best_cover(const fvec3& position, const fvec3& enemy_position, float radius,
 												 float min_enemy_distance, float max_enemy_distance)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
@@ -60,7 +60,7 @@ const CCoverPoint* CScriptGameObject::best_cover(const float3& position, const f
 	return (point);
 }
 
-const CCoverPoint* CScriptGameObject::safe_cover(const float3& position, float radius, float min_distance)
+const CCoverPoint* CScriptGameObject::safe_cover(const fvec3& position, float radius, float min_distance)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
@@ -367,7 +367,7 @@ void CScriptGameObject::set_desired_position()
 		stalker->movement().set_desired_position(0);
 }
 
-void CScriptGameObject::set_desired_position(const float3* desired_position)
+void CScriptGameObject::set_desired_position(const fvec3* desired_position)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
@@ -390,7 +390,7 @@ void CScriptGameObject::set_desired_direction()
 		stalker->movement().set_desired_direction(0);
 }
 
-void CScriptGameObject::set_desired_direction(const float3* desired_direction)
+void CScriptGameObject::set_desired_direction(const fvec3* desired_direction)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
@@ -560,7 +560,7 @@ DetailPathManager::EDetailPathType CScriptGameObject::detail_path_type() const
 	return (DetailPathManager::eDetailPathTypeSmooth);
 }
 
-void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const float3* vector3d, u32 dwLookOverDelay)
+void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const fvec3* vector3d, u32 dwLookOverDelay)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
@@ -580,7 +580,7 @@ void CScriptGameObject::set_sight(SightManager::ESightType sight_type, bool tors
 		stalker->sight().setup(sight_type, torso_look, path);
 }
 
-void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const float3& vector3d, bool torso_look = false)
+void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const fvec3& vector3d, bool torso_look = false)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
@@ -590,7 +590,7 @@ void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const flo
 		stalker->sight().setup(sight_type, vector3d, torso_look);
 }
 
-void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const float3* vector3d)
+void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const fvec3* vector3d)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
@@ -799,17 +799,17 @@ void CScriptGameObject::patrol_path_make_inactual()
 	monster->movement().patrol().make_inactual();
 }
 
-float3 CScriptGameObject::head_orientation() const
+fvec3 CScriptGameObject::head_orientation() const
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CScriptGameObject : cannot access class member head_orientation!");
-		return (float3().set(flt_max, flt_max, flt_max));
+		return (fvec3().set(flt_max, flt_max, flt_max));
 	}
 	const SRotation& r = stalker->movement().head_orientation().current;
-	return (float3().setHP(-r.yaw, -r.pitch));
+	return (fvec3().setHP(-r.yaw, -r.pitch));
 }
 
 void CScriptGameObject::info_add(LPCSTR text)
@@ -826,7 +826,7 @@ void CScriptGameObject::info_clear()
 #endif
 }
 
-void CScriptGameObject::jump(const float3& position, float factor)
+void CScriptGameObject::jump(const fvec3& position, float factor)
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
 	if (!monster)

@@ -12,7 +12,7 @@ using namespace collide;
 //--------------------------------------------------------------------------------
 // RayTest - Occluded/No
 //--------------------------------------------------------------------------------
-BOOL CObjectSpace::RayTest(const float3& start, const float3& dir, float range, collide::rq_target tgt,
+BOOL CObjectSpace::RayTest(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt,
 						   collide::ray_cache* cache, CObject* ignore_object)
 {
 	BOOL _ret = _RayTest(start, dir, range, tgt, cache, ignore_object);
@@ -22,7 +22,7 @@ BOOL CObjectSpace::RayTest(const float3& start, const float3& dir, float range, 
 	return _ret;
 }
 
-BOOL CObjectSpace::_RayTest(const float3& start, const float3& dir, float range, collide::rq_target tgt,
+BOOL CObjectSpace::_RayTest(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt,
 							collide::ray_cache* cache, CObject* ignore_object)
 {
 	VERIFY(_abs(dir.magnitude() - 1) < EPS);
@@ -98,7 +98,7 @@ BOOL CObjectSpace::_RayTest(const float3& start, const float3& dir, float range,
 				cache->set(start, dir, range, TRUE);
 				CDB::RESULT* R = xrc.r_begin();
 				CDB::TRI& T = Static.get_tris()[R->id];
-				float3* V = Static.get_verts();
+				fvec3* V = Static.get_verts();
 				cache->verts[0].set(V[T.verts[0]]);
 				cache->verts[1].set(V[T.verts[1]]);
 				cache->verts[2].set(V[T.verts[2]]);
@@ -117,7 +117,7 @@ BOOL CObjectSpace::_RayTest(const float3& start, const float3& dir, float range,
 //--------------------------------------------------------------------------------
 // RayPick
 //--------------------------------------------------------------------------------
-BOOL CObjectSpace::RayPick(const float3& start, const float3& dir, float range, rq_target tgt, rq_result& R,
+BOOL CObjectSpace::RayPick(const fvec3& start, const fvec3& dir, float range, rq_target tgt, rq_result& R,
 						   CObject* ignore_object)
 {
 	BOOL _res = _RayPick(start, dir, range, tgt, R, ignore_object);
@@ -125,7 +125,7 @@ BOOL CObjectSpace::RayPick(const float3& start, const float3& dir, float range, 
 	return _res;
 }
 
-BOOL CObjectSpace::_RayPick(const float3& start, const float3& dir, float range, rq_target tgt, rq_result& R,
+BOOL CObjectSpace::_RayPick(const fvec3& start, const fvec3& dir, float range, rq_target tgt, rq_result& R,
 							CObject* ignore_object)
 {
 	// œŒÀ”◊¿≈Ã ƒ¿ÕÕ€≈

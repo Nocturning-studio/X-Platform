@@ -41,7 +41,7 @@ class CAI_Bloodsucker : public CBaseMonster, public CControlledActor
 		return true;
 	}
 	virtual bool check_start_conditions(ControlCom::EControlType);
-	virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, float3& dir);
+	virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, fvec3& dir);
 
 	//--------------------------------------------------------------------
 	// Utils
@@ -54,7 +54,7 @@ class CAI_Bloodsucker : public CBaseMonster, public CControlledActor
   private:
 	static void BoneCallback(CBoneInstance* B);
 	void vfAssignBones();
-	void LookDirection(float3 to_dir, float bone_turn_speed);
+	void LookDirection(fvec3 to_dir, float bone_turn_speed);
 
 	bonesManipulation Bones;
 

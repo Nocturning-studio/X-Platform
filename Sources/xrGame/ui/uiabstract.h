@@ -133,9 +133,9 @@ class IUISimpleWindow : public boost::noncopyable
 	virtual void Draw() = 0;
 	virtual void Draw(float x, float y) = 0;
 	virtual void Update() = 0;
-	virtual void SetWndPos(const float2& pos) = 0;
+	virtual void SetWndPos(const fvec2& pos) = 0;
 	virtual void SetWndPos(float x, float y) = 0;
-	virtual void SetWndSize(const float2& size) = 0;
+	virtual void SetWndSize(const fvec2& size) = 0;
 	virtual void SetWndRect(const Frect& rect) = 0;
 	virtual void SetHeight(float height) = 0;
 	virtual void SetWidth(float width) = 0;
@@ -160,7 +160,7 @@ class CUISimpleWindow : public IUISimpleWindow
 		m_wndPos.set(x, y);
 		m_wndSize.set(width, height);
 	}
-	virtual void SetWndPos(const float2& pos)
+	virtual void SetWndPos(const fvec2& pos)
 	{
 		m_wndPos.set(pos.x, pos.y);
 	}
@@ -168,15 +168,15 @@ class CUISimpleWindow : public IUISimpleWindow
 	{
 		m_wndPos.set(x, y);
 	}
-	IC float2 GetWndPos() const
+	IC fvec2 GetWndPos() const
 	{
 		return m_wndPos;
 	}
-	virtual void SetWndSize(const float2& size)
+	virtual void SetWndSize(const fvec2& size)
 	{
 		m_wndSize = size;
 	}
-	IC float2 GetWndSize() const
+	IC fvec2 GetWndSize() const
 	{
 		return m_wndSize;
 	}
@@ -245,15 +245,15 @@ class CUISimpleWindow : public IUISimpleWindow
 		m_wndPos.x += dx;
 		m_wndPos.y += dy;
 	}
-	void MoveWndDelta(const float2& d)
+	void MoveWndDelta(const fvec2& d)
 	{
 		MoveWndDelta(d.x, d.y);
 	};
 
   protected:
 	bool m_bShowMe;
-	float2 m_wndPos;
-	float2 m_wndSize;
+	fvec2 m_wndPos;
+	fvec2 m_wndSize;
 	EWindowAlignment m_alignment;
 };
 class CUISelectable

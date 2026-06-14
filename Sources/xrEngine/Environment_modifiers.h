@@ -5,17 +5,17 @@
 class ENGINE_API CEnvModifier
 {
   public:
-    float3 position;
+    fvec3 position;
     float radius;
     float power;
     float far_plane;
-    float3 fog_color;
+    fvec3 fog_color;
     float fog_density;
-    float3 ambient;
-    float3 sky_color;
-    float3 hemi_color;
+    fvec3 ambient;
+    fvec3 sky_color;
+    fvec3 hemi_color;
     Flags16 use_flags;
 
     bool load(IReader* fs);
-    float sum(CEnvModifier& _another, float3& view);
+    float sum(CEnvModifier& _another, fvec3& view);
 };

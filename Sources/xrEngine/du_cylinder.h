@@ -6,7 +6,7 @@
 #define DU_CYLINDER_NUMVERTEX 26
 #define DU_CYLINDER_NUMFACES 48
 #define DU_CYLINDER_NUMLINES 30 // 36
-extern ECORE_API float3 du_cylinder_vertices[];
+extern ECORE_API fvec3 du_cylinder_vertices[];
 extern ECORE_API u16 du_cylinder_faces[];
 extern ECORE_API u16 du_cylinder_lines[];
 

@@ -265,10 +265,10 @@ u32 CMemoryManager::memory_time(const CObject* object) const
 	return (result);
 }
 
-float3 CMemoryManager::memory_position(const CObject* object) const
+fvec3 CMemoryManager::memory_position(const CObject* object) const
 {
 	u32 time = 0;
-	float3 result = float3().set(0.f, 0.f, 0.f);
+	fvec3 result = fvec3().set(0.f, 0.f, 0.f);
 	if (!this->object().g_Alive())
 		return (result);
 

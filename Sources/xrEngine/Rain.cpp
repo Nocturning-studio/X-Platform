@@ -68,7 +68,7 @@ struct FastRandom
 };
 //////////////////////////////////////////////////////////////////////
 // UV Coordinates for drop animation
-static float2 s_drops_uv[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
+static fvec2 s_drops_uv[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	float angle_deg = 90.0f * tilt_factor;
 	clamp(angle_deg, 55.0f, 90.0f);
 
-	float4x4 m_rotate;
+	fmat4x4 m_rotate;
 	float rot_x = deg2rad(angle_deg);
 	float rot_y = -(wind_direction + PI_DIV_2);
 	m_rotate.setXYZi(rot_x, rot_y, 0.0f);
@@ -143,17 +143,17 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	float spawn_h = min_h + R.randF() * (max_h - min_h);
 
 	float wind_shift_dist = spawn_h / tanf(deg2rad(angle_deg));
-	float3 wind_shift_dir;
+	fvec3 wind_shift_dir;
 	wind_shift_dir.setHP(wind_direction, 0.0f);
 	wind_shift_dir.mul(-wind_shift_dist);
 
 	float dist = radius * _sqrt(R.randF());
 	float ang = R.randF(0.0f, PI_MUL_2);
 
-	float3 offset;
+	fvec3 offset;
 	offset.set(dist * _cos(ang), 0.f, dist * _sin(ang));
 
-	float3& cam_pos = Engine.RenderView.Position;
+	fvec3& cam_pos = Engine.RenderView.Position;
 	dest.P.set(cam_pos.x + offset.x + wind_shift_dir.x, cam_pos.y + spawn_h, cam_pos.z + offset.z + wind_shift_dir.z);
 
 	// -------------------------------------------------------------------------
@@ -201,7 +201,7 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	}
 }
 
-BOOL CEffect_Rain::RayTrace(const float3& s, const float3& d, float& range, collide::rq_target tgt)
+BOOL CEffect_Rain::RayTrace(const fvec3& s, const fvec3& d, float& range, collide::rq_target tgt)
 {
 	if (!g_pGameLevel)
 		return FALSE;
@@ -243,14 +243,14 @@ void CEffect_Rain::SimulateDrops(float dt)
 	if (write_queue.capacity() < m_drops.size())
 		write_queue.reserve(m_drops.size());
 
-	const float3& view_pos = Engine.RenderView.Position;
+	const fvec3& view_pos = Engine.RenderView.Position;
 	u32 global_time = Engine.TimeManager.GetGlobalTimeMs();
 	u32 current_frame = Engine.TimeManager.GetFrameCount();
 	float radius_wrap_sqr = _sqr((SOURCE_RADIUS + 2.0f));
 
 	// Локальные буферы
 	concurrency::combinable<xr_vector<RainDrawParam>> local_render_buffers;
-	concurrency::combinable<xr_vector<float3>> local_splash_queue;
+	concurrency::combinable<xr_vector<fvec3>> local_splash_queue;
 
 	// ПАРАЛЛЕЛЬНЫЙ ЦИКЛ
 	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i) {
@@ -269,7 +269,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 		float check_dist = move_dist * 1.1f; // Проверяем чуть дальше
 
 		// Рассчитываем новую позицию
-		float3 new_pos;
+		fvec3 new_pos;
 		new_pos.mad(drop.P, drop.D, move_dist);
 
 		// Проверяем луч от текущей позиции к новой
@@ -375,14 +375,14 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 
 		// Рассчитываем позиции для рендеринга
-		float3 pos_head = drop.P;
-		float3 pos_trail;
+		fvec3 pos_head = drop.P;
+		fvec3 pos_trail;
 		pos_trail.mad(pos_head, drop.D, -visual_len);
 
 		// Проверяем, не проходит ли капля сквозь геометрию
 		// Делаем быструю проверку луча от хвоста к голове
 		float ray_len = visual_len;
-		float3 ray_dir;
+		fvec3 ray_dir;
 		ray_dir.sub(pos_head, pos_trail);
 		ray_dir.normalize();
 
@@ -402,7 +402,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 
 		// Проверка видимости
-		float3 center;
+		fvec3 center;
 		center.sub(pos_head, pos_trail);
 		center.mul(0.5f);
 		float radius = center.magnitude();
@@ -437,7 +437,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 			}
 		});
 
-		local_splash_queue.combine_each([&](const xr_vector<float3>& local_splashes) {
+		local_splash_queue.combine_each([&](const xr_vector<fvec3>& local_splashes) {
 			for (const auto& pos : local_splashes)
 			{
 				SpawnSplash(pos);
@@ -502,8 +502,8 @@ void CEffect_Rain::OnFrame()
 	// Update ambient sound
 	if (m_snd_ambient._feedback())
 	{
-		float3 snd_pos;
-		snd_pos.mad(Engine.RenderView.Position, float3().set(0, 1, 0), SOURCE_OFFSET);
+		fvec3 snd_pos;
+		snd_pos.mad(Engine.RenderView.Position, fvec3().set(0, 1, 0), SOURCE_OFFSET);
 		m_snd_ambient.set_position(snd_pos);
 		m_snd_ambient.set_volume(1.1f * factor * hemi_factor);
 	}
@@ -550,7 +550,7 @@ void CEffect_Rain::Render()
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(MAX_DESIRED_DROPS));
 
 	float factor_visual = factor / 2.f + .5f;
-	float3 f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
+	fvec3 f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
 	u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 
 	// 1. Render Drops
@@ -576,8 +576,8 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 	FVF::LIT* verts = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock(count * 4, m_geom_rain->vb_stride, v_offset);
 
 	// Вспомогательные
-	const float3& view_pos = Engine.RenderView.Position;
-	float3 cam_dir, line_dir, line_top, p, center;
+	const fvec3& view_pos = Engine.RenderView.Position;
+	fvec3 cam_dir, line_dir, line_top, p, center;
 	float w = DROP_WIDTH;
 
 	// Просто молотим данные из буфера в видеокарту
@@ -643,7 +643,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 		(IRender_DetailModel::fvfVertexOut*)RenderBackendLegacy.Vertex.Lock(max_verts, m_geom_drops->vb_stride, v_offset);
 	u16* i_ptr = RenderBackendLegacy.Index.Lock(max_inds, i_offset);
 
-	float4x4 m_transform, m_scale;
+	fmat4x4 m_transform, m_scale;
 	int p_count = 0;
 
 	while (P)
@@ -710,7 +710,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 // PARTICLE POOL MANAGEMENT
 // ===========================================================================================
 
-void CEffect_Rain::SpawnSplash(const float3& pos)
+void CEffect_Rain::SpawnSplash(const fvec3& pos)
 {
 	if (::Random.randI(2) != 0)
 		return;

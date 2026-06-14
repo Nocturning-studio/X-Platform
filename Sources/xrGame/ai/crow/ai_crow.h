@@ -56,7 +56,7 @@ class CAI_Crow : public CEntity
 			return m_Sounds[Random.randI(0, m_Sounds.size())];
 		}
 		void Load(LPCSTR prefix);
-		void SetPosition(const float3& pos);
+		void SetPosition(const fvec3& pos);
 		void Unload();
 	};
 
@@ -79,12 +79,12 @@ class CAI_Crow : public CEntity
 	};
 	SCrowSounds m_Sounds;
 
-	float3 vOldPosition;
+	fvec3 vOldPosition;
 	ECrowStates st_current, st_target;
 	// parameters block
-	float3 vGoalDir;
-	float3 vCurrentDir;
-	float3 vHPB;
+	fvec3 vGoalDir;
+	fvec3 vCurrentDir;
+	fvec3 vHPB;
 	float fDHeading;
 
 	// constants
@@ -92,7 +92,7 @@ class CAI_Crow : public CEntity
 	float fSpeed;
 	float fASpeed;
 	float fMinHeight;
-	float3 vVarGoal;
+	fvec3 vVarGoal;
 	float fIdleSoundDelta;
 
 	// variables
@@ -145,11 +145,11 @@ class CAI_Crow : public CEntity
 	virtual void net_Export(NET_Packet& P);
 	virtual void net_Import(NET_Packet& P);
 
-	virtual void g_fireParams(const CHudItem* /**pHudItem/**/, float3& /**P/**/, float3& /**D/**/){};
+	virtual void g_fireParams(const CHudItem* /**pHudItem/**/, fvec3& /**P/**/, fvec3& /**D/**/){};
 	virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/){};
 
-	virtual void HitSignal(float HitAmount, float3& local_dir, CObject* who, s16 element);
-	virtual void HitImpulse(float amount, float3& vWorldDir, float3& vLocalDir);
+	virtual void HitSignal(float HitAmount, fvec3& local_dir, CObject* who, s16 element);
+	virtual void HitImpulse(float amount, fvec3& vWorldDir, fvec3& vLocalDir);
 	virtual void Hit(SHit* pHDS);
 	virtual void Die(CObject* who);
 	virtual float ffGetFov() const

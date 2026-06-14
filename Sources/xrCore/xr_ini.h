@@ -147,33 +147,33 @@ class XRCORE_API CInifile
 	{
 		return r_color(*S, L);
 	}
-	int2 r_ivector2(LPCSTR S, LPCSTR L);
-	int2 r_ivector2(const shared_str& S, LPCSTR L)
+	ivec2 r_ivector2(LPCSTR S, LPCSTR L);
+	ivec2 r_ivector2(const shared_str& S, LPCSTR L)
 	{
 		return r_ivector2(*S, L);
 	}
-	int3 r_ivector3(LPCSTR S, LPCSTR L);
-	int3 r_ivector3(const shared_str& S, LPCSTR L)
+	ivec3 r_ivector3(LPCSTR S, LPCSTR L);
+	ivec3 r_ivector3(const shared_str& S, LPCSTR L)
 	{
 		return r_ivector3(*S, L);
 	}
-	int4 r_ivector4(LPCSTR S, LPCSTR L);
-	int4 r_ivector4(const shared_str& S, LPCSTR L)
+	ivec4 r_ivector4(LPCSTR S, LPCSTR L);
+	ivec4 r_ivector4(const shared_str& S, LPCSTR L)
 	{
 		return r_ivector4(*S, L);
 	}
-	float2 r_fvector2(LPCSTR S, LPCSTR L);
-	float2 r_fvector2(const shared_str& S, LPCSTR L)
+	fvec2 r_fvector2(LPCSTR S, LPCSTR L);
+	fvec2 r_fvector2(const shared_str& S, LPCSTR L)
 	{
 		return r_fvector2(*S, L);
 	}
-	float3 r_fvector3(LPCSTR S, LPCSTR L);
-	float3 r_fvector3(const shared_str& S, LPCSTR L)
+	fvec3 r_fvector3(LPCSTR S, LPCSTR L);
+	fvec3 r_fvector3(const shared_str& S, LPCSTR L)
 	{
 		return r_fvector3(*S, L);
 	}
-	float4 r_fvector4(LPCSTR S, LPCSTR L);
-	float4 r_fvector4(const shared_str& S, LPCSTR L)
+	fvec4 r_fvector4(LPCSTR S, LPCSTR L);
+	fvec4 r_fvector4(const shared_str& S, LPCSTR L)
 	{
 		return r_fvector4(*S, L);
 	}
@@ -196,12 +196,12 @@ class XRCORE_API CInifile
 	void w_float(LPCSTR S, LPCSTR L, float V, LPCSTR comment = 0);
 	void w_fcolor(LPCSTR S, LPCSTR L, const Fcolor& V, LPCSTR comment = 0);
 	void w_color(LPCSTR S, LPCSTR L, u32 V, LPCSTR comment = 0);
-	void w_ivector2(LPCSTR S, LPCSTR L, const int2& V, LPCSTR comment = 0);
-	void w_ivector3(LPCSTR S, LPCSTR L, const int3& V, LPCSTR comment = 0);
-	void w_ivector4(LPCSTR S, LPCSTR L, const int4& V, LPCSTR comment = 0);
-	void w_fvector2(LPCSTR S, LPCSTR L, const float2& V, LPCSTR comment = 0);
-	void w_fvector3(LPCSTR S, LPCSTR L, const float3& V, LPCSTR comment = 0);
-	void w_fvector4(LPCSTR S, LPCSTR L, const float4& V, LPCSTR comment = 0);
+	void w_ivector2(LPCSTR S, LPCSTR L, const ivec2& V, LPCSTR comment = 0);
+	void w_ivector3(LPCSTR S, LPCSTR L, const ivec3& V, LPCSTR comment = 0);
+	void w_ivector4(LPCSTR S, LPCSTR L, const ivec4& V, LPCSTR comment = 0);
+	void w_fvector2(LPCSTR S, LPCSTR L, const fvec2& V, LPCSTR comment = 0);
+	void w_fvector3(LPCSTR S, LPCSTR L, const fvec3& V, LPCSTR comment = 0);
+	void w_fvector4(LPCSTR S, LPCSTR L, const fvec4& V, LPCSTR comment = 0);
 	void w_bool(LPCSTR S, LPCSTR L, BOOL V, LPCSTR comment = 0);
 
 	void remove_line(LPCSTR S, LPCSTR L);

@@ -20,18 +20,18 @@ class CLevelChanger : public CGameObject, public Feel::Touch
   private:
 	GameGraph::_GRAPH_ID m_game_vertex_id;
 	u32 m_level_vertex_id;
-	float3 m_position;
-	float3 m_angles;
+	fvec3 m_position;
+	fvec3 m_angles;
 	float m_entrance_time;
 	void update_actor_invitation();
 	bool m_bSilentMode;
-	bool get_reject_pos(float3& p, float3& r);
+	bool get_reject_pos(fvec3& p, fvec3& r);
 
   public:
 	virtual ~CLevelChanger();
 	virtual BOOL net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
-	virtual void Center(float3& C) const;
+	virtual void Center(fvec3& C) const;
 	virtual float Radius() const;
 	virtual void shedule_Update(u32 dt);
 	virtual void feel_touch_new(CObject* O);

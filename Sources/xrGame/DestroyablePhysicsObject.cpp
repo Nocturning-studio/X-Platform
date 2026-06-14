@@ -72,7 +72,7 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 	return res;
 }
 
-// void CDestroyablePhysicsObject::Hit							(float P,float3 &dir,CObject *who,s16 element,float3
+// void CDestroyablePhysicsObject::Hit							(float P,fvec3 &dir,CObject *who,s16 element,fvec3
 // p_in_object_space, float impulse,  ALife::EHitType hit_type)
 void CDestroyablePhysicsObject::Hit(SHit* pHDS)
 {
@@ -106,14 +106,14 @@ void CDestroyablePhysicsObject::Destroy()
 	}
 	if (*m_destroy_particles)
 	{
-		// float3 dir;dir.set(0,1,0);
-		float4x4 m;
+		// fvec3 dir;dir.set(0,1,0);
+		fmat4x4 m;
 		m.identity();
 		/////////////////////////////////////////////////
 		m.j.set(0, 1.f, 0);
 		///////////////////////////////////////////////
 
-		float3 hdir;
+		fvec3 hdir;
 		hdir.set(CPHDestroyable::FatalHit().direction());
 
 		if (fsimilar(_abs(m.j.dotproduct(hdir)), 1.f, EPS_L))

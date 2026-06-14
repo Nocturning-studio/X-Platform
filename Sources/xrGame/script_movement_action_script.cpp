@@ -62,21 +62,21 @@ void CScriptMovementAction::script_register(lua_State* L)
 				  .def(constructor<MonsterSpace::EBodyState, MonsterSpace::EMovementType,
 								   DetailPathManager::EDetailPathType, const CPatrolPathParams&, float>())
 				  .def(constructor<MonsterSpace::EBodyState, MonsterSpace::EMovementType,
-								   DetailPathManager::EDetailPathType, const float3&>())
+								   DetailPathManager::EDetailPathType, const fvec3&>())
 				  .def(constructor<MonsterSpace::EBodyState, MonsterSpace::EMovementType,
-								   DetailPathManager::EDetailPathType, const float3&, float>())
-				  .def(constructor<const float3&, float>())
+								   DetailPathManager::EDetailPathType, const fvec3&, float>())
+				  .def(constructor<const fvec3&, float>())
 
 				  // Monsters
-				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, float3&>())
+				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, fvec3&>())
 				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, CPatrolPathParams&>())
 				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, CScriptGameObject*>())
-				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, float3&, float>())
-				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, u32, float3&>())
-				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, u32, float3&, float>())
+				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, fvec3&, float>())
+				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, u32, fvec3&>())
+				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, u32, fvec3&, float>())
 				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, CPatrolPathParams&, float>())
 				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, CScriptGameObject*, float>())
-				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, float3&, float,
+				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, fvec3&, float,
 								   MonsterSpace::EScriptMonsterSpeedParam>())
 				  .def(constructor<MonsterSpace::EScriptMonsterMoveAction, CPatrolPathParams&, float,
 								   MonsterSpace::EScriptMonsterSpeedParam>())

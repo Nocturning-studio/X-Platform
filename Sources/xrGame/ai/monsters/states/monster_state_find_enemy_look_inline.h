@@ -28,7 +28,7 @@ void CStateMonsterFindEnemyLookAbstract::initialize()
 
 	look_right_side = ((Random.randI(2)) ? true : false);
 	current_stage = 0;
-	target_point = float3().set(0.f, 0.f, 0.f);
+	target_point = fvec3().set(0.f, 0.f, 0.f);
 
 	current_dir = object->Direction();
 	start_position = object->Position();

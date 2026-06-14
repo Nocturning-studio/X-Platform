@@ -159,7 +159,7 @@ void IGame_Level::OnFrame()
 	if (Sounds_Random.size() && (Engine.TimeManager.GetGlobalTimeMs() > Sounds_Random_dwNextTime))
 	{
 		Sounds_Random_dwNextTime = Engine.TimeManager.GetGlobalTimeMs() + ::Random.randI(10000, 20000);
-		float3 pos;
+		fvec3 pos;
 		pos.random_dir().normalize().mul(::Random.randF(30, 100)).add(Engine.RenderView.Position);
 		int id = ::Random.randI(Sounds_Random.size());
 		if (Sounds_Random_Enabled)

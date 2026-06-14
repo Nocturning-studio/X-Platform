@@ -107,7 +107,7 @@ BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 	if (!info.d.similar(m_vOldCameraDir, m_fCameraMoveEpsilon))
 		camera_moved = true;
 
-	float3 dir;
+	fvec3 dir;
 	dir.sub(m_vCurrentPoint, m_vTargetPoint);
 
 	///	if(dir.magnitude()<m_fEpsilon || m_dwTimePassed>m_dwDeltaTime)

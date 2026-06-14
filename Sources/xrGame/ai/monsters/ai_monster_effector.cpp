@@ -69,7 +69,7 @@ BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 	float time_left_perc = fLifeTime / total;
 
 	// Инициализация
-	float4x4 Mdef;
+	fmat4x4 Mdef;
 	Mdef.identity();
 	Mdef.j.set(info.n);
 	Mdef.k.set(info.d);
@@ -79,16 +79,16 @@ BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 	float period_all = period_number * PI_MUL_2; // макс. значение цикла
 	float cur_amp = max_amp * (PI / 180) * time_left_perc;
 
-	float3 dangle;
+	fvec3 dangle;
 	dangle.x = cur_amp / offset.x * _sin(period_all / offset.x * (1.0f - time_left_perc));
 	dangle.y = cur_amp / offset.y * _cos(period_all / offset.y * (1.0f - time_left_perc));
 	dangle.z = cur_amp / offset.z * _sin(period_all / offset.z * (1.0f - time_left_perc));
 
 	// Установить углы смещения
-	float4x4 R;
+	fmat4x4 R;
 	R.setHPB(dangle.x, dangle.y, dangle.z);
 
-	float4x4 mR;
+	fmat4x4 mR;
 	mR.mul(Mdef, R);
 
 	info.d.set(mR.k);

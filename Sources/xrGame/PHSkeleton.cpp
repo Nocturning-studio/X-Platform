@@ -176,7 +176,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 		P.w_u16(0);
 	}
 	/////////////////////////////
-	float3 min, max;
+	fvec3 min, max;
 
 	min.set(F_MAX, F_MAX, F_MAX);
 	max.set(-F_MAX, -F_MAX, -F_MAX);
@@ -187,7 +187,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	{
 		SPHNetState state;
 		obj->PHGetSyncItem(i)->get_State(state);
-		float3& p = state.position;
+		fvec3& p = state.position;
 		if (p.x < min.x)
 			min.x = p.x;
 		if (p.y < min.y)

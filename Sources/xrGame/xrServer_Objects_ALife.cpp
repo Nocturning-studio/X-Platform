@@ -289,7 +289,7 @@ CALifeSimulator& CSE_ALifeObject::alife() const
 	return (*m_alife_simulator);
 }
 
-float3 CSE_ALifeObject::draw_level_position() const
+fvec3 CSE_ALifeObject::draw_level_position() const
 {
 	return (Position());
 }
@@ -1193,13 +1193,13 @@ void CSE_ALifeObjectHangingLamp::FillProps(LPCSTR pref, PropItemVec& values)
 
 #define VIS_RADIUS 0.25f
 void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected,
-										   const float4x4& parent, int priority, bool strictB2F)
+										   const fmat4x4& parent, int priority, bool strictB2F)
 {
 	inherited1::on_render(du, owner, bSelected, parent, priority, strictB2F);
 	if ((1 == priority) && (false == strictB2F))
 	{
 		u32 clr = bSelected ? 0x00FFFFFF : 0x00FFFF00;
-		float4x4 main_transform, ambient_transform;
+		fmat4x4 main_transform, ambient_transform;
 		owner->get_bone_transform(*light_main_bone, main_transform);
 		main_transform.mulA_43(parent);
 		if (flags.is(flPointAmbient))

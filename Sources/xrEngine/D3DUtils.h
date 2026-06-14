@@ -78,7 +78,7 @@ class ECORE_API CDrawUtilities : public CDUInterface, public pureRender
 
   public:
 	void DD_DrawFace_begin(BOOL bWire);
-	void DD_DrawFace_push(const float3& p0, const float3& p1, const float3& p2, u32 clr);
+	void DD_DrawFace_push(const fvec3& p0, const fvec3& p1, const fvec3& p2, u32 clr);
 	void DD_DrawFace_end();
 
   public:
@@ -99,44 +99,44 @@ class ECORE_API CDrawUtilities : public CDUInterface, public pureRender
 	void UpdateGrid(int number_of_cell, float square_size, int subdiv = 10);
 
 	//----------------------------------------------------
-	virtual void __stdcall DrawCross(const float3& p, float szx1, float szy1, float szz1, float szx2, float szy2,
+	virtual void __stdcall DrawCross(const fvec3& p, float szx1, float szy1, float szz1, float szx2, float szy2,
 									 float szz2, u32 clr, BOOL bRot45 = false);
-	virtual void __stdcall DrawCross(const float3& p, float sz, u32 clr, BOOL bRot45 = false)
+	virtual void __stdcall DrawCross(const fvec3& p, float sz, u32 clr, BOOL bRot45 = false)
 	{
 		DrawCross(p, sz, sz, sz, sz, sz, sz, clr, bRot45);
 	}
 	virtual void __stdcall DrawEntity(u32 clr, ref_shader s);
-	virtual void __stdcall DrawFlag(const float3& p, float heading, float height, float sz, float sz_fl, u32 clr,
+	virtual void __stdcall DrawFlag(const fvec3& p, float heading, float height, float sz, float sz_fl, u32 clr,
 									BOOL bDrawEntity);
-	virtual void __stdcall DrawRomboid(const float3& p, float radius, u32 clr);
-	virtual void __stdcall DrawJoint(const float3& p, float radius, u32 clr);
+	virtual void __stdcall DrawRomboid(const fvec3& p, float radius, u32 clr);
+	virtual void __stdcall DrawJoint(const fvec3& p, float radius, u32 clr);
 
-	virtual void __stdcall DrawSpotLight(const float3& p, const float3& d, float range, float phi, u32 clr);
-	virtual void __stdcall DrawDirectionalLight(const float3& p, const float3& d, float radius, float range, u32 clr);
-	virtual void __stdcall DrawPointLight(const float3& p, float radius, u32 clr);
+	virtual void __stdcall DrawSpotLight(const fvec3& p, const fvec3& d, float range, float phi, u32 clr);
+	virtual void __stdcall DrawDirectionalLight(const fvec3& p, const fvec3& d, float radius, float range, u32 clr);
+	virtual void __stdcall DrawPointLight(const fvec3& p, float radius, u32 clr);
 
-	virtual void __stdcall DrawSound(const float3& p, float radius, u32 clr);
-	virtual void __stdcall DrawLineSphere(const float3& p, float radius, u32 clr, BOOL bCross);
+	virtual void __stdcall DrawSound(const fvec3& p, float radius, u32 clr);
+	virtual void __stdcall DrawLineSphere(const fvec3& p, float radius, u32 clr, BOOL bCross);
 
-	virtual void __stdcall dbgDrawPlacement(const float3& p, int sz, u32 clr, LPCSTR caption = 0,
+	virtual void __stdcall dbgDrawPlacement(const fvec3& p, int sz, u32 clr, LPCSTR caption = 0,
 											u32 clr_font = 0xffffffff);
-	virtual void __stdcall dbgDrawVert(const float3& p0, u32 clr, LPCSTR caption = 0);
-	virtual void __stdcall dbgDrawEdge(const float3& p0, const float3& p1, u32 clr, LPCSTR caption = 0);
-	virtual void __stdcall dbgDrawFace(const float3& p0, const float3& p1, const float3& p2, u32 clr,
+	virtual void __stdcall dbgDrawVert(const fvec3& p0, u32 clr, LPCSTR caption = 0);
+	virtual void __stdcall dbgDrawEdge(const fvec3& p0, const fvec3& p1, u32 clr, LPCSTR caption = 0);
+	virtual void __stdcall dbgDrawFace(const fvec3& p0, const fvec3& p1, const fvec3& p2, u32 clr,
 									   LPCSTR caption = 0);
 
-	virtual void __stdcall DrawFace(const float3& p0, const float3& p1, const float3& p2, u32 clr_s, u32 clr_w,
+	virtual void __stdcall DrawFace(const fvec3& p0, const fvec3& p1, const fvec3& p2, u32 clr_s, u32 clr_w,
 									BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawLine(const float3& p0, const float3& p1, u32 clr);
-	IC virtual void __stdcall DrawLine(const float3* p, u32 clr)
+	virtual void __stdcall DrawLine(const fvec3& p0, const fvec3& p1, u32 clr);
+	IC virtual void __stdcall DrawLine(const fvec3* p, u32 clr)
 	{
 		DrawLine(p[0], p[1], clr);
 	}
-	virtual void __stdcall DrawLink(const float3& p0, const float3& p1, float sz, u32 clr);
-	IC virtual void __stdcall DrawFaceNormal(const float3& p0, const float3& p1, const float3& p2, float size,
+	virtual void __stdcall DrawLink(const fvec3& p0, const fvec3& p1, float sz, u32 clr);
+	IC virtual void __stdcall DrawFaceNormal(const fvec3& p0, const fvec3& p1, const fvec3& p2, float size,
 											 u32 clr)
 	{
-		float3 N, C, P;
+		fvec3 N, C, P;
 		N.mknormal(p0, p1, p2);
 		C.set(p0);
 		C.add(p1);
@@ -145,20 +145,20 @@ class ECORE_API CDrawUtilities : public CDUInterface, public pureRender
 		P.mad(C, N, size);
 		DrawLine(C, P, clr);
 	}
-	IC virtual void __stdcall DrawFaceNormal(const float3* p, float size, u32 clr)
+	IC virtual void __stdcall DrawFaceNormal(const fvec3* p, float size, u32 clr)
 	{
 		DrawFaceNormal(p[0], p[1], p[2], size, clr);
 	}
-	IC virtual void __stdcall DrawFaceNormal(const float3& C, const float3& N, float size, u32 clr)
+	IC virtual void __stdcall DrawFaceNormal(const fvec3& C, const fvec3& N, float size, u32 clr)
 	{
-		float3 P;
+		fvec3 P;
 		P.mad(C, N, size);
 		DrawLine(C, P, clr);
 	}
-	virtual void __stdcall DrawSelectionBox(const float3& center, const float3& size, u32* c = 0);
+	virtual void __stdcall DrawSelectionBox(const fvec3& center, const fvec3& size, u32* c = 0);
 	IC virtual void __stdcall DrawSelectionBox(const Fbox& box, u32* c = 0)
 	{
-		float3 S, C;
+		fvec3 S, C;
 		box.getsize(S);
 		box.getcenter(C);
 		DrawSelectionBox(C, S, c);
@@ -169,45 +169,45 @@ class ECORE_API CDrawUtilities : public CDUInterface, public pureRender
 	virtual void __stdcall DrawIdentCylinder(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
 	virtual void __stdcall DrawIdentBox(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
 
-	virtual void __stdcall DrawBox(const float3& offs, const float3& Size, BOOL bSolid, BOOL bWire, u32 clr_s,
+	virtual void __stdcall DrawBox(const fvec3& offs, const fvec3& Size, BOOL bSolid, BOOL bWire, u32 clr_s,
 								   u32 clr_w);
-	virtual void __stdcall DrawAABB(const float3& p0, const float3& p1, u32 clr_s, u32 clr_w, BOOL bSolid,
+	virtual void __stdcall DrawAABB(const fvec3& p0, const fvec3& p1, u32 clr_s, u32 clr_w, BOOL bSolid,
 									BOOL bWire);
-	virtual void __stdcall DrawAABB(const float4x4& parent, const float3& center, const float3& size, u32 clr_s,
+	virtual void __stdcall DrawAABB(const fmat4x4& parent, const fvec3& center, const fvec3& size, u32 clr_s,
 									u32 clr_w, BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawOBB(const float4x4& parent, const Fobb& box, u32 clr_s, u32 clr_w);
-	virtual void __stdcall DrawSphere(const float4x4& parent, const float3& center, float radius, u32 clr_s, u32 clr_w,
+	virtual void __stdcall DrawOBB(const fmat4x4& parent, const Fobb& box, u32 clr_s, u32 clr_w);
+	virtual void __stdcall DrawSphere(const fmat4x4& parent, const fvec3& center, float radius, u32 clr_s, u32 clr_w,
 									  BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawSphere(const float4x4& parent, const Fsphere& S, u32 clr_s, u32 clr_w, BOOL bSolid,
+	virtual void __stdcall DrawSphere(const fmat4x4& parent, const Fsphere& S, u32 clr_s, u32 clr_w, BOOL bSolid,
 									  BOOL bWire)
 	{
 		DrawSphere(parent, S.P, S.R, clr_s, clr_w, bSolid, bWire);
 	}
-	virtual void __stdcall DrawCylinder(const float4x4& parent, const float3& center, const float3& dir, float height,
+	virtual void __stdcall DrawCylinder(const fmat4x4& parent, const fvec3& center, const fvec3& dir, float height,
 										float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawCone(const float4x4& parent, const float3& apex, const float3& dir, float height,
+	virtual void __stdcall DrawCone(const fmat4x4& parent, const fvec3& apex, const fvec3& dir, float height,
 									float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawPlane(const float3& center, const float2& scale, const float3& rotate, u32 clr_s,
+	virtual void __stdcall DrawPlane(const fvec3& center, const fvec2& scale, const fvec3& rotate, u32 clr_s,
 									 u32 clr_w, BOOL bCull, BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawPlane(const float3& p, const float3& n, const float2& scale, u32 clr_s, u32 clr_w,
+	virtual void __stdcall DrawPlane(const fvec3& p, const fvec3& n, const fvec2& scale, u32 clr_s, u32 clr_w,
 									 BOOL bCull, BOOL bSolid, BOOL bWire);
-	virtual void __stdcall DrawRectangle(const float3& o, const float3& u, const float3& v, u32 clr_s, u32 clr_w,
+	virtual void __stdcall DrawRectangle(const fvec3& o, const fvec3& u, const fvec3& v, u32 clr_s, u32 clr_w,
 										 BOOL bSolid, BOOL bWire);
 
 	virtual void __stdcall DrawGrid();
-	virtual void __stdcall DrawPivot(const float3& pos, float sz = 5.f);
-	virtual void __stdcall DrawAxis(const float4x4& T);
-	virtual void __stdcall DrawObjectAxis(const float4x4& T, float sz, BOOL sel);
-	virtual void __stdcall DrawSelectionRect(const int2& m_SelStart, const int2& m_SelEnd);
+	virtual void __stdcall DrawPivot(const fvec3& pos, float sz = 5.f);
+	virtual void __stdcall DrawAxis(const fmat4x4& T);
+	virtual void __stdcall DrawObjectAxis(const fmat4x4& T, float sz, BOOL sel);
+	virtual void __stdcall DrawSelectionRect(const ivec2& m_SelStart, const ivec2& m_SelEnd);
 
-	virtual void __stdcall DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, float3* vertices, int vc, u32 color, BOOL bCull,
+	virtual void __stdcall DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, fvec3* vertices, int vc, u32 color, BOOL bCull,
 										  BOOL bCycle);
 	virtual void __stdcall DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull,
 										   BOOL bCycle);
 	virtual void __stdcall DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull,
 											BOOL bCycle);
 
-	virtual void __stdcall OutText(const float3& pos, LPCSTR text, u32 color = 0xFF000000,
+	virtual void __stdcall OutText(const fvec3& pos, LPCSTR text, u32 color = 0xFF000000,
 								   u32 shadow_color = 0xFF909090);
 
 	virtual void OnRender();

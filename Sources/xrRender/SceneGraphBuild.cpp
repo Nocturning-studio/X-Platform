@@ -89,13 +89,13 @@ float r_ssaLOD_A, r_ssaLOD_B;
 float r_ssaGLOD_start, r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
 
-ICF float CalcScreenSpaceArea(float& distSQ, float3& C, IRender_Visual* V)
+ICF float CalcScreenSpaceArea(float& distSQ, fvec3& C, IRender_Visual* V)
 {
 	float R = V->vis.sphere.R + 0;
 	distSQ = Engine.RenderView.Position.distance_to_sqr(C) + EPS;
 	return R / distSQ;
 }
-ICF float CalcScreenSpaceArea(float& distSQ, float3& C, float R)
+ICF float CalcScreenSpaceArea(float& distSQ, fvec3& C, float R)
 {
 	distSQ = Engine.RenderView.Position.distance_to_sqr(C) + EPS;
 	return R / distSQ;
@@ -192,7 +192,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cd
 //    ctx           - Текущий контекст обхода (матрицы, флаги, владелец).
 //    dest          - Целевой пакет данных (куда записывать результат).
 // ===============================================================================================
-void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, float3& object_center, const SceneTraversalContext& ctx,
+void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, const SceneTraversalContext& ctx,
 								 SceneGraphPacket& dest)
 {
 	// -------------------------------------------------------------------------
@@ -554,8 +554,8 @@ namespace
 // Структура для хранения пары Dist/Size для одного уровня детализации
 struct CullLevel
 {
-	float4 dist;
-	float4 size;
+	fvec4 dist;
+	fvec4 size;
 };
 
 // Массив уровней оптимизации для СТАТИКИ (12 уровней)
@@ -601,7 +601,7 @@ static const CullLevel s_dynamic_cull_levels[] = {
 const float BASE_FOV = 67.f;
 
 // Helper: Приблизительная дистанция с учетом FOV (для биноклей и прицелов)
-IC float GetDistFromCamera(const float3& from_position)
+IC float GetDistFromCamera(const fvec3& from_position)
 {
 	float distance = Engine.RenderView.Position.distance_to(from_position);
 	// Защита от деления на ноль, если FOV экстремально мал (на всякий случай)
@@ -652,7 +652,7 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	else
 	{
 		// Для динамики используем текущую матрицу трансформации из переданного контекста
-		float3 pos;
+		fvec3 pos;
 		// Используем ctx.current_transform
 		ctx.current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 		adjusted_distance = GetDistFromCamera(pos);
@@ -753,7 +753,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 		// Проверка на использование LOD-модели
 		if (pV->m_lod)
 		{
-			float3 Tpos;
+			fvec3 Tpos;
 			float D;
 			// Используем матрицу из ctx для трансформации центра сферы
 			ctx.current_transform->transform_tiny(Tpos, pV->vis.sphere.P);
@@ -774,7 +774,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 			// Если объект близко - рисуем полную модель
 
 			// Нужно ли обновлять кости? (Software Skinning Optimization)
-			float3 pos;
+			fvec3 pos;
 			// Используем матрицу из ctx
 			ctx.current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 			float adjusted_distane = GetDistFromCamera(pos);
@@ -817,7 +817,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 	default: {
 		// Листовой узел (Mesh) - конечная геометрия
 
-		float3 Tpos;
+		fvec3 Tpos;
 		// Трансформируем позицию используя матрицу из ctx
 		ctx.current_transform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
@@ -906,7 +906,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
 		// Скелетная статика (трупы, декорации)
-		float3 pos;
+		fvec3 pos;
 		// Используем матрицу из ctx (для статики это обычно Identity, но для универсальности берем из контекста)
 		ctx.current_transform->transform_tiny(pos, pVisual->vis.sphere.P);
 
@@ -972,7 +972,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	case MT_TREE_PM:
 	case MT_TREE_ST: {
 		// Вычисляем позицию для сортировки
-		float3 Tpos;
+		fvec3 Tpos;
 		ctx.current_transform->transform_tiny(Tpos, pVisual->vis.sphere.P);
 
 		// Отправляем в ДИНАМИЧЕСКУЮ очередь.
@@ -1003,7 +1003,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 {
 	// 1. Трансформация позиции в мировые координаты
 	// Используем матрицу из переданного контекста, а не this->m_current_transform
-	float3 world_position;
+	fvec3 world_position;
 	ctx.current_transform->transform_tiny(world_position, pVisual->vis.sphere.P);
 
 	// 2. Frustum Culling (Отсечение по пирамиде видимости)
@@ -1226,7 +1226,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID: {
 		// Скелетная статика (трупы как часть уровня и т.д.)
-		float3 object_pos;
+		fvec3 object_pos;
 		// Используем трансформацию из контекста (даже если это Identity, важно соблюдать контракт)
 		ctx.current_transform->transform_tiny(object_pos, pVisual->vis.sphere.P);
 
@@ -1296,7 +1296,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 	case MT_TREE_ST:
 	case MT_TREE_PM: {
 		// Получаем мировую позицию
-		float3 world_pos;
+		fvec3 world_pos;
 		ctx.current_transform->transform_tiny(world_pos, pVisual->vis.sphere.P);
 
 		// Используем EnqueueDynamic, чтобы сохранить матрицу трансформации

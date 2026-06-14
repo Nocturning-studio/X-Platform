@@ -520,7 +520,7 @@ void CWeaponMagazined::state_Fire(float dt)
 {
 	VERIFY(fTimeToFire > 0.f);
 
-	float3 p1, d;
+	fvec3 p1, d;
 	p1.set(get_LastFP());
 	d.set(get_LastFD());
 
@@ -602,7 +602,7 @@ void CWeaponMagazined::OnShot()
 	PlayAnimShoot();
 
 	// Shell Drop
-	float3 vel;
+	fvec3 vel;
 	PHGetLinearVell(vel);
 	OnShellDrop(get_LastSP(), vel);
 

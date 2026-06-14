@@ -109,30 +109,30 @@ LPCSTR CKinematics::LL_BoneName_dbg(u16 ID)
 }
 
 #ifdef DEBUG
-void CKinematics::DebugRender(float4x4& Transform)
+void CKinematics::DebugRender(fmat4x4& Transform)
 {
 	CalculateBones();
 
 	CBoneData::BoneDebug dbgLines;
 	(*bones)[iRoot]->DebugQuery(dbgLines);
 
-	float3 Z;
+	fvec3 Z;
 	Z.set(0, 0, 0);
-	float3 H1;
+	fvec3 H1;
 	H1.set(0.01f, 0.01f, 0.01f);
-	float3 H2;
+	fvec3 H2;
 	H2.mul(H1, 2);
 	for (u32 i = 0; i < dbgLines.size(); i += 2)
 	{
-		float4x4& M1 = bone_instances[dbgLines[i]].mTransform;
-		float4x4& M2 = bone_instances[dbgLines[i + 1]].mTransform;
+		fmat4x4& M1 = bone_instances[dbgLines[i]].mTransform;
+		fmat4x4& M2 = bone_instances[dbgLines[i + 1]].mTransform;
 
-		float3 P1, P2;
+		fvec3 P1, P2;
 		M1.transform_tiny(P1, Z);
 		M2.transform_tiny(P2, Z);
 		RenderBackendLegacy.dbg_DrawLINE(Transform, P1, P2, D3DCOLOR_XRGB(0, 255, 0));
 
-		float4x4 M;
+		fmat4x4 M;
 		M.mul_43(Transform, M2);
 		RenderBackendLegacy.dbg_DrawOBB(M, H1, D3DCOLOR_XRGB(255, 255, 255));
 		RenderBackendLegacy.dbg_DrawOBB(M, H2, D3DCOLOR_XRGB(255, 255, 255));
@@ -141,12 +141,12 @@ void CKinematics::DebugRender(float4x4& Transform)
 	for (u32 b = 0; b < bones->size(); b++)
 	{
 		Fobb& obb = (*bones)[b]->obb;
-		float4x4& Mbone = bone_instances[b].mTransform;
-		float4x4 Mbox;
+		fmat4x4& Mbone = bone_instances[b].mTransform;
+		fmat4x4 Mbox;
 		obb.transform_get(Mbox);
-		float4x4 X;
+		fmat4x4 X;
 		X.mul(Mbone, Mbox);
-		float4x4 W;
+		fmat4x4 W;
 		W.mul(Transform, X);
 		RenderBackendLegacy.dbg_DrawOBB(W, obb.m_halfsize, D3DCOLOR_XRGB(0, 0, 255));
 	}
@@ -197,7 +197,7 @@ bool pred_sort_P(const std::pair<shared_str, u32>& A, const std::pair<shared_str
 	return A.first._get() < B.first._get();
 }
 
-void CBoneData::CalculateM2B(const float4x4& parent)
+void CBoneData::CalculateM2B(const fmat4x4& parent)
 {
 	// Build matrix
 	m2b_transform.mul_43(parent, bind_transform);
@@ -340,7 +340,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 			IKD->r_stringZ(B->game_mtl_name);
 			IKD->r(&B->shape, sizeof(SBoneShape));
 			B->IK_data.Import(*IKD, vers);
-			float3 vXYZ, vT;
+			fvec3 vXYZ, vT;
 			IKD->r_fvector3(vXYZ);
 			IKD->r_fvector3(vT);
 			B->bind_transform.setXYZi(vXYZ);
@@ -567,8 +567,8 @@ void CKinematics::LL_SetBonesVisible(u64 mask)
 		}
 		else
 		{
-			float4x4& A = bone_instances[b].mTransform;
-			float4x4& B = bone_instances[b].mRenderTransform;
+			fmat4x4& A = bone_instances[b].mTransform;
+			fmat4x4& B = bone_instances[b].mRenderTransform;
 			A.scale(0.f, 0.f, 0.f);
 			B.mul_43(A, (*bones)[b]->m2b_transform);
 		}
@@ -609,27 +609,27 @@ void CKinematics::Visibility_Update()
 	}
 }
 
-IC static void RecursiveBindTransform(CKinematics* K, xr_vector<float4x4>& matrices, u16 bone_id, const float4x4& parent)
+IC static void RecursiveBindTransform(CKinematics* K, xr_vector<fmat4x4>& matrices, u16 bone_id, const fmat4x4& parent)
 {
 	CBoneData& BD = K->LL_GetData(bone_id);
-	float4x4& BM = matrices[bone_id];
+	fmat4x4& BM = matrices[bone_id];
 	// Build matrix
 	BM.mul_43(parent, BD.bind_transform);
 	for (xr_vector<CBoneData*>::iterator C = BD.children.begin(); C != BD.children.end(); C++)
 		RecursiveBindTransform(K, matrices, (*C)->GetSelfID(), BM);
 }
 
-void CKinematics::LL_GetBindTransform(xr_vector<float4x4>& matrices)
+void CKinematics::LL_GetBindTransform(xr_vector<fmat4x4>& matrices)
 {
 	matrices.resize(LL_BoneCount());
 	RecursiveBindTransform(this, matrices, iRoot, Fidentity);
 }
 
-void BuildMatrix(float4x4& mView, float invsz, const float3 norm, const float3& from)
+void BuildMatrix(fmat4x4& mView, float invsz, const fvec3 norm, const fvec3& from)
 {
 	// build projection
-	float4x4 mScale;
-	float3 at, up, right, y;
+	fmat4x4 mScale;
+	fvec3 at, up, right, y;
 	at.sub(from, norm);
 	y.set(0, 1, 0);
 	if (_abs(norm.y) > .99f)
@@ -649,12 +649,12 @@ void CKinematics::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 
 DEFINE_VECTOR(Fobb, OBBVec, OBBVecIt);
 
-bool CKinematics::PickBone(const float4x4& parent_transform, float3& normal, float& dist, const float3& start,
-						   const float3& dir, u16 bone_id)
+bool CKinematics::PickBone(const fmat4x4& parent_transform, fvec3& normal, float& dist, const fvec3& start,
+						   const fvec3& dir, u16 bone_id)
 {
-	float3 S, D; // normal		= {0,0,0}
+	fvec3 S, D; // normal		= {0,0,0}
 	// transform ray from world to model
-	float4x4 P;
+	fmat4x4 P;
 	P.invert(parent_transform);
 	P.transform_tiny(S, start);
 	P.transform_dir(D, dir);
@@ -667,12 +667,12 @@ bool CKinematics::PickBone(const float4x4& parent_transform, float3& normal, flo
 	return false;
 }
 
-void CKinematics::AddWallmark(const float4x4* parent_transform, const float3& start, const float3& dir,
+void CKinematics::AddWallmark(const fmat4x4* parent_transform, const fvec3& start, const fvec3& dir,
 							  ref_shader _shader, float size)
 {
-	float3 S, D, normal = {0, 0, 0};
+	fvec3 S, D, normal = {0, 0, 0};
 	// transform ray from world to model
-	float4x4 P;
+	fmat4x4 P;
 	P.invert(*parent_transform);
 	P.transform_tiny(S, start);
 	P.transform_dir(D, dir);
@@ -701,7 +701,7 @@ void CKinematics::AddWallmark(const float4x4* parent_transform, const float3& st
 		return;
 
 	// calculate contact point
-	float3 cp;
+	fvec3 cp;
 	cp.mad(S, D, dist);
 
 	// collect collide boxes
@@ -740,12 +740,12 @@ void CKinematics::AddWallmark(const float4x4* parent_transform, const float3& st
 	wm->Transform()->transform_tiny(wm->m_Bounds.P, cp);
 	wm->m_Bounds.R = wm->m_Bounds.R;
 
-	float3 tmp;
+	fvec3 tmp;
 	tmp.invert(D);
 	normal.add(tmp).normalize();
 
 	// build UV projection matrix
-	float4x4 mView, mRot;
+	fmat4x4 mView, mRot;
 	BuildMatrix(mView, 1 / (0.9f * size), normal, cp);
 	mRot.rotateZ(::Random.randF(deg2rad(-20.f), deg2rad(20.f)));
 	mView.mulA_43(mRot);
@@ -822,19 +822,19 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
 		float w = (Engine.TimeManager.GetGlobalTime() - wm->TimeStart()) / LIFE_TIME;
 		for (u32 k = 0; k < 3; k++)
 		{
-			float3 P;
+			fvec3 P;
 			if (F.bone_id[k][0] == F.bone_id[k][1])
 			{
 				// 1-link
-				float4x4& transform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				fmat4x4& transform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
 				transform0.transform_tiny(P, F.vert[k]);
 			}
 			else
 			{
 				// 2-link
-				float3 P0, P1;
-				float4x4& transform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-				float4x4& transform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+				fvec3 P0, P1;
+				fmat4x4& transform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				fmat4x4& transform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
 				transform0.transform_tiny(P0, F.vert[k]);
 				transform1.transform_tiny(P1, F.vert[k]);
 				P.lerp(P0, P1, F.weight[k]);

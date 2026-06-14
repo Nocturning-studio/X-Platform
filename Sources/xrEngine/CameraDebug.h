@@ -17,7 +17,7 @@ class ENGINE_API CCameraDebug :
 	D3DXMATRIX      g_matPosition;
 	D3DXVECTOR3		g_vecVelocity;
 	D3DXVECTOR3		g_vecAngularVelocity;
-	float3			savedP,savedD,savedN;
+	fvec3			savedP,savedD,savedN;
 	ECameraStyle	savedStyle;
 	Flags32			savedDF;
 public:

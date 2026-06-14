@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC bool CDangerLocation::operator==(const float3& position) const
+IC bool CDangerLocation::operator==(const fvec3& position) const
 {
 	return (!!this->position().similar(position));
 }

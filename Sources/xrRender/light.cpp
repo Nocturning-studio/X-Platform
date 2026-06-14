@@ -116,7 +116,7 @@ void light::get_sectors()
 	}
 	if (LightFlags.type == IRender_Light::POINT)
 	{
-		//m_sectors = RenderImplementation.detectSectors_sphere(sector, position, float3().set(range, range, range));
+		//m_sectors = RenderImplementation.detectSectors_sphere(sector, position, fvec3().set(range, range, range));
 	}
 }
 
@@ -132,7 +132,7 @@ void light::set_active(bool a)
 			return;
 
 		// ѕроверка валидности позиции
-		float3 zero = {0, -1000, 0};
+		fvec3 zero = {0, -1000, 0};
 		if (position.similar(zero, EPS_L))
 		{
 			DbgMsg("! [Warning] Trying to activate light with uninitialized position.");
@@ -161,7 +161,7 @@ void light::set_active(bool a)
 	}
 }
 
-void light::set_position(const float3& P)
+void light::set_position(const fvec3& P)
 {
 	float eps = EPS_L;
 	if (position.similar(P, eps))
@@ -196,9 +196,9 @@ void light::set_cone(float angle)
 	cone = angle;
 	spatial_move();
 }
-void light::set_rotation(const float3& D, const float3& R)
+void light::set_rotation(const fvec3& D, const fvec3& R)
 {
-	float3 old_D = direction;
+	fvec3 old_D = direction;
 	direction.normalize(D);
 	right.normalize(R);
 	if (!fsimilar(1.f, old_D.dotproduct(D)))
@@ -210,7 +210,7 @@ void light::spatial_move()
 	DbgMsg("~ [Debug] spatial_move called for light at (%.1f,%.1f,%.1f)", position.x, position.y, position.z);
 
 	// ѕроверка валидности позиции перед обновлением
-	float3 zero = {0, -1000, 0};
+	fvec3 zero = {0, -1000, 0};
 	if (position.similar(zero, EPS_L))
 	{
 		DbgMsg("! [Warning] light::spatial_move called with uninitialized position");
@@ -268,7 +268,7 @@ vis_data& light::get_homdata()
 	return hom;
 };
 
-float3 light::spatial_sector_point()
+fvec3 light::spatial_sector_point()
 {
 	return position;
 }
@@ -282,7 +282,7 @@ void light::transform_calc()
 	m_transform_frame = Engine.TimeManager.GetFrameCount();
 
 	// build final rotation / translation
-	float3 L_dir, L_up, L_right;
+	fvec3 L_dir, L_up, L_right;
 
 	// dir
 	L_dir.set(direction);
@@ -316,7 +316,7 @@ void light::transform_calc()
 	}
 
 	// matrix
-	float4x4 mR;
+	fmat4x4 mR;
 	mR.i = L_right;
 	mR._14 = 0;
 	mR.j = L_up;
@@ -333,7 +333,7 @@ void light::transform_calc()
 	case IRender_Light::POINT: {
 		// scale of identity sphere
 		float L_R = range;
-		float4x4 mScale;
+		fmat4x4 mScale;
 		mScale.scale(L_R, L_R, L_R);
 		m_transform.mul_43(mR, mScale);
 	}
@@ -341,14 +341,14 @@ void light::transform_calc()
 	case IRender_Light::SPOT: {
 		// scale to account range and angle
 		float s = 2.f * range * tanf(cone / 2.f);
-		float4x4 mScale;
+		fmat4x4 mScale;
 		mScale.scale(s, s, range); // make range and radius
 		m_transform.mul_43(mR, mScale);
 	}
 	break;
 	case IRender_Light::OMNIPART: {
 		float L_R = 2 * range; // volume is half-radius
-		float4x4 mScale;
+		fmat4x4 mScale;
 		mScale.scale(L_R, L_R, L_R);
 		m_transform.mul_43(mR, mScale);
 	}
@@ -360,9 +360,9 @@ void light::transform_calc()
 }
 
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
-static float3 cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f},
+static fvec3 cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f},
 							{0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
-static float3 cmDir[6] = {{1.f, 0.f, 0.f},	 {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
+static fvec3 cmDir[6] = {{1.f, 0.f, 0.f},	 {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
 						   {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f},  {0.f, 0.f, -1.f}};
 
 void light::_export(light_Package& package)
@@ -379,7 +379,7 @@ void light::_export(light_Package& package)
 			for (int f = 0; f < 6; f++)
 			{
 				light* L = omnipart[f];
-				float3 R;
+				fvec3 R;
 				R.crossproduct(cmNorm[f], cmDir[f]);
 				L->set_type(IRender_Light::OMNIPART);
 				L->set_shadow(true);

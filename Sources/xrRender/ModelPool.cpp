@@ -505,7 +505,7 @@ void CModelPool::dump()
 }
 
 #ifdef _EDITOR
-IC bool _IsBoxVisible(IRender_Visual* visual, const float4x4& transform)
+IC bool _IsBoxVisible(IRender_Visual* visual, const fmat4x4& transform)
 {
 	Fbox bb;
 	bb.transform(visual->vis.box, transform);
@@ -519,7 +519,7 @@ IC bool _IsValidShader(IRender_Visual* visual, u32 priority, bool strictB2F)
 	return false;
 }
 
-void CModelPool::Render(IRender_Visual* m_pVisual, const float4x4& mTransform, int priority, bool strictB2F,
+void CModelPool::Render(IRender_Visual* m_pVisual, const fmat4x4& mTransform, int priority, bool strictB2F,
 						float m_fLOD)
 {
 	// render visual
@@ -619,7 +619,7 @@ void CModelPool::Render(IRender_Visual* m_pVisual, const float4x4& mTransform, i
 	}
 }
 
-void CModelPool::RenderSingle(IRender_Visual* m_pVisual, const float4x4& mTransform, float m_fLOD)
+void CModelPool::RenderSingle(IRender_Visual* m_pVisual, const fmat4x4& mTransform, float m_fLOD)
 {
 	for (int p = 0; p < 4; p++)
 	{

@@ -9,8 +9,8 @@ void XRCORE_API Log(LPCSTR msg, LPCSTR dop);
 void XRCORE_API Log(LPCSTR msg, u32 dop);
 void XRCORE_API Log(LPCSTR msg, int dop);
 void XRCORE_API Log(LPCSTR msg, float dop);
-void XRCORE_API Log(LPCSTR msg, const float3& dop);
-void XRCORE_API Log(LPCSTR msg, const float4x4& dop);
+void XRCORE_API Log(LPCSTR msg, const fvec3& dop);
+void XRCORE_API Log(LPCSTR msg, const fmat4x4& dop);
 void XRCORE_API LogWinErr(LPCSTR msg, long err_code);
 
 #ifndef PURE_LOG

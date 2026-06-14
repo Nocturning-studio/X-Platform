@@ -14,11 +14,11 @@ template <class T> struct _quaternion;
 #include "xrMath_random.h"
 
 #include "xrMath_color.h"
-#include "xrMath_vector3d.h"
+#include "xrMath_vector3.h"
 #include "xrMath_vector2.h"
 #include "xrMath_vector4.h"
-#include "xrMath_matrix.h"
-#include "xrMath_matrix33.h"
+#include "xrMath_matrix4x4.h"
+#include "xrMath_matrix3x3.h"
 #include "xrMath_quaternion.h"
 #include "xrMath_rect.h"
 #include "xrMath_fbox.h"
@@ -36,5 +36,5 @@ template <class T> struct _quaternion;
 
 #pragma pack(pop)
 
-extern XRMATH_API float4x4 Fidentity;
+extern XRMATH_API fmat4x4 Fidentity;
 extern XRMATH_API CRandom Random;

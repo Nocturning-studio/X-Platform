@@ -9,7 +9,7 @@ CPortal::~CPortal()
 {
 }
 
-void CPortal::Setup(float3* v_ptr, int v_count, CSector* face, CSector* back)
+void CPortal::Setup(fvec3* v_ptr, int v_count, CSector* face, CSector* back)
 {
 	// Расчет Bounding Sphere
 	Fbox BB;
@@ -24,7 +24,7 @@ void CPortal::Setup(float3* v_ptr, int v_count, CSector* face, CSector* back)
 	m_back_sector = back;
 
 	// Расчет плоскости
-	float3 N, T;
+	fvec3 N, T;
 	N.set(0, 0, 0);
 
 	// Robust normal calculation

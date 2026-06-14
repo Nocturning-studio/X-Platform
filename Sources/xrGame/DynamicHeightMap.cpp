@@ -29,7 +29,7 @@ CHM_Static::CHM_Static()
 
 void CHM_Static::Update()
 {
-	float3& view = Engine.RenderView.Position;
+	fvec3& view = Engine.RenderView.Position;
 	int v_x = iFloor(view.x / dhm_size);
 	int v_z = iFloor(view.z / dhm_size);
 
@@ -138,13 +138,13 @@ void CHM_Static::Update()
 
 		// Cull polys
 		RAPID::tri* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-		float3 vecUP;
+		fvec3 vecUP;
 		vecUP.set(0, 1, 0);
 		for (u32 tid = 0; tid < triCount; ++tid)
 		{
 			RAPID::tri& T = tris[XRC.BBoxContact[tid].id];
 			Poly P;
-			float3 N;
+			fvec3 N;
 			P.v[0].set(*T.verts[0]);
 			P.v[1].set(*T.verts[1]);
 			P.v[2].set(*T.verts[2]);
@@ -162,9 +162,9 @@ void CHM_Static::Update()
 				float rx = (float(x) / float(dhm_precision)) * dhm_size + bb.min.x;
 				float rz = (float(z) / float(dhm_precision)) * dhm_size + bb.min.z;
 				float ry = bb.min.y - 5;
-				float3 pos;
+				fvec3 pos;
 				pos.set(rx, bb.max.y, rz);
-				float3 dir;
+				fvec3 dir;
 				dir.set(0, -1, 0);
 
 				float r_u, r_v, r_range;

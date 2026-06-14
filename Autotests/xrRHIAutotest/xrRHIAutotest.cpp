@@ -95,7 +95,7 @@ int main()
 	sampDesc.addressW = xrRHI::RHI_TextureAddress::Wrap;
 	sampDesc.mipLODBias = 0.0f;
 	sampDesc.maxAnisotropy = 1;
-	sampDesc.borderColor = float4{0, 0, 0, 0};
+	sampDesc.borderColor = fvec4{0, 0, 0, 0};
 
 	xrRHI::RHISampler sampler = backend->CreateSampler(sampDesc);
 	TEST_ASSERT(sampler, "CreateSampler failed");
@@ -106,7 +106,7 @@ int main()
 	xrRHI::Print("Texture and sampler set.\n");
 
 	// 9. Очищаем экран и делаем Present
-	float4 clearColor{0.2f, 0.2f, 0.8f, 1.0f};
+	fvec4 clearColor{0.2f, 0.2f, 0.8f, 1.0f};
 	backend->Clear(xrRHI::RHI_CLEAR_TARGET | xrRHI::RHI_CLEAR_ZBUFFER, clearColor, 1.0f, 0);
 	backend->Present();
 	xrRHI::Print("Clear and Present done.\n");

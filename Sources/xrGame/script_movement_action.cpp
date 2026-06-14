@@ -55,12 +55,12 @@ CScriptMovementAction::CScriptMovementAction()
 	SetPatrolRandom(true);
 	SetSpeed(0);
 	SetObjectToGo(0);
-	SetPosition(float3().set(0, 0, 0));
+	SetPosition(fvec3().set(0, 0, 0));
 	m_tGoalType = eGoalTypeDummy;
 	m_bCompleted = true;
 }
 
-CScriptMovementAction::CScriptMovementAction(const float3& tPosition, float fSpeed)
+CScriptMovementAction::CScriptMovementAction(const fvec3& tPosition, float fSpeed)
 {
 	SetBodyState(MonsterSpace::eBodyStateStand);
 	SetMovementType(MonsterSpace::eMovementTypeStand);
@@ -70,7 +70,7 @@ CScriptMovementAction::CScriptMovementAction(const float3& tPosition, float fSpe
 	m_tGoalType = eGoalTypeNoPathPosition;
 }
 
-CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, float3& tPosition,
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, fvec3& tPosition,
 											 float dist_to_end)
 {
 	MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
@@ -81,7 +81,7 @@ CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAct
 }
 
 CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, u32 node_id,
-											 float3& tPosition, float dist_to_end)
+											 fvec3& tPosition, float dist_to_end)
 {
 	m_tMoveAction = tAct;
 	m_tDestinationPosition = tPosition;

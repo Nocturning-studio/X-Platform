@@ -17,7 +17,7 @@ class ENGINE_API IParticleCustom : public IRender_Visual
 	virtual void OnDeviceCreate() = 0;
 	virtual void OnDeviceDestroy() = 0;
 
-	virtual void UpdateParent(const float4x4& m, const float3& velocity, BOOL bTransform) = 0;
+	virtual void UpdateParent(const fmat4x4& m, const fvec3& velocity, BOOL bTransform) = 0;
 	virtual void OnFrame(u32 dt) = 0;
 
 	virtual void Play() = 0;

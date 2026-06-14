@@ -101,7 +101,7 @@ bool CSE_ALifeDynamicObject::synchronize_location()
 	{
 		if (!m_bOnline)
 		{
-			float3 position = o_Position;
+			fvec3 position = o_Position;
 			u32 level_vertex_id = m_tNodeID;
 			alife().graph().change(this, m_tGraphID, tGraphID);
 			if (ai().level_graph().inside(ai().level_graph().vertex(level_vertex_id), position))

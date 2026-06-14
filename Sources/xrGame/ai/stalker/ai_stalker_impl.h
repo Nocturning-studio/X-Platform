@@ -20,10 +20,10 @@ IC CAgentManager& CAI_Stalker::agent_manager() const
 	return (Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).agent_manager());
 }
 
-IC float3 CAI_Stalker::weapon_shot_effector_direction(const float3& current) const
+IC fvec3 CAI_Stalker::weapon_shot_effector_direction(const fvec3& current) const
 {
 	VERIFY(weapon_shot_effector().IsActive());
-	float3 result;
+	fvec3 result;
 	weapon_shot_effector().GetDeltaAngle(result);
 
 	float y, p;

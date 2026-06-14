@@ -12,31 +12,31 @@ namespace collide
 {
 struct tri
 {
-	float3 e10;
+	fvec3 e10;
 	float e10s;
-	float3 e21;
+	fvec3 e21;
 	float e21s;
-	float3 e02;
+	fvec3 e02;
 	float e02s;
-	float3 p[3];
-	float3 N;
+	fvec3 p[3];
+	fvec3 N;
 	float d;
 };
 struct elipsoid
 {
-	float4x4 mL2W; // convertion from sphere(000,1) to real space
-	float4x4 mW2L; // convertion from real space to sphere(000,1)
+	fmat4x4 mL2W; // convertion from sphere(000,1) to real space
+	fmat4x4 mW2L; // convertion from real space to sphere(000,1)
 };
 struct ray_cache
 {
 	// previous state
-	float3 start;
-	float3 dir;
+	fvec3 start;
+	fvec3 dir;
 	float range;
 	BOOL result;
 
 	// cached vertices
-	float3 verts[3];
+	fvec3 verts[3];
 	ray_cache()
 	{
 		start.set(0, 0, 0);
@@ -47,14 +47,14 @@ struct ray_cache
 		verts[1].set(0, 0, 0);
 		verts[2].set(0, 0, 0);
 	}
-	void set(const float3& _start, const float3& _dir, const float _range, const BOOL _result)
+	void set(const fvec3& _start, const fvec3& _dir, const float _range, const BOOL _result)
 	{
 		start = _start;
 		dir = _dir;
 		range = _range;
 		result = _result;
 	}
-	BOOL similar(const float3& _start, const float3& _dir, const float _range)
+	BOOL similar(const fvec3& _start, const fvec3& _dir, const float _range)
 	{
 		if (!_start.similar(start))
 			return FALSE;
@@ -77,12 +77,12 @@ enum rq_target
 };
 struct ray_defs
 {
-	float3 start;
-	float3 dir;
+	fvec3 start;
+	fvec3 dir;
 	float range;
 	u32 flags;
 	rq_target tgt;
-	ray_defs(const float3& _start, const float3& _dir, float _range, u32 _flags, rq_target _tgt)
+	ray_defs(const fvec3& _start, const fvec3& _dir, float _range, u32 _flags, rq_target _tgt)
 	{
 		start = _start;
 		dir = _dir;

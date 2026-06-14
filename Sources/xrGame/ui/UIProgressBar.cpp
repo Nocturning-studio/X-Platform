@@ -111,7 +111,7 @@ void CUIProgressBar::Draw()
 
 	if (m_CurrentLength > 0)
 	{
-		float2 pos = m_UIProgressItem.GetWndPos();
+		fvec2 pos = m_UIProgressItem.GetWndPos();
 		progress_rect.add(rect.left + pos.x, rect.top + pos.y);
 
 		UI()->PushScissor(progress_rect);

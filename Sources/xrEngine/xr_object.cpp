@@ -102,7 +102,7 @@ void CObject::setVisible(BOOL _visible)
 	}
 }
 
-void CObject::Center(float3& C) const
+void CObject::Center(fvec3& C) const
 {
 	VERIFY2(renderable.visual, *cName());
 	renderable.transform.transform_tiny(C, renderable.visual->vis.sphere.P);
@@ -273,7 +273,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
 				spatial_move();
 			else
 			{
-				float3 C;
+				fvec3 C;
 				Center(C);
 				if (!C.similar(spatial.sphere.P, eps_P))
 					spatial_move();

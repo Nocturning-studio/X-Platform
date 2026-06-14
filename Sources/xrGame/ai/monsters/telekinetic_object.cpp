@@ -123,7 +123,7 @@ void CTelekineticObject::raise(float step)
 
 	step *= strength;
 
-	float3 dir;
+	fvec3 dir;
 	dir.set(0.f, 1.0f, 0.f);
 
 	float elem_size = float(object->m_pPhysicsShell->Elements().size());
@@ -169,7 +169,7 @@ void CTelekineticObject::keep()
 	float cur_h = object->Position().y;
 
 	// установить dir в соответствие с текущей высотой
-	float3 dir;
+	fvec3 dir;
 	if (cur_h > target_height + 0.6f)
 		dir.set(0.f, -1.0f, 0.f);
 	else if (cur_h < target_height + 0.6f)
@@ -197,7 +197,7 @@ void CTelekineticObject::release()
 	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
 		return;
 
-	float3 dir_inv;
+	fvec3 dir_inv;
 	dir_inv.set(0.f, -1.0f, 0.f);
 
 	// включить гравитацию
@@ -211,7 +211,7 @@ void CTelekineticObject::release()
 	switch_state(TS_None);
 }
 
-void CTelekineticObject::fire_t(const float3& target, float time)
+void CTelekineticObject::fire_t(const fvec3& target, float time)
 {
 	switch_state(TS_Fire);
 	// time_fire_started	= Engine.TimeManager.GetGlobalTimeMs();
@@ -222,7 +222,7 @@ void CTelekineticObject::fire_t(const float3& target, float time)
 	// включить гравитацию
 	object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
 
-	float3 transference;
+	fvec3 transference;
 	transference.sub(target, object->Position());
 	TransferenceToThrowVel(transference, time, object->EffectiveGravity());
 	object->m_pPhysicsShell->set_LinearVel(transference);
@@ -233,7 +233,7 @@ void CTelekineticObject::fire_t(const float3& target, float time)
 	if (sound_hold._handle() && sound_hold._feedback())
 		sound_hold.stop();
 }
-void CTelekineticObject::fire(const float3& target, float power)
+void CTelekineticObject::fire(const fvec3& target, float power)
 {
 	// state				= TS_Fire;
 	switch_state(TS_Fire);
@@ -243,7 +243,7 @@ void CTelekineticObject::fire(const float3& target, float power)
 		return;
 
 	// вычислить направление
-	float3 dir;
+	fvec3 dir;
 	dir.sub(target, object->Position());
 	dir.normalize();
 
@@ -286,7 +286,7 @@ void CTelekineticObject::rotate()
 		return;
 
 	// вычислить направление
-	float3 dir;
+	fvec3 dir;
 	dir.random_dir();
 	dir.normalize();
 

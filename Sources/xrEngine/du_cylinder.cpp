@@ -5,7 +5,7 @@
 #include "du_cylinder.h"
 //---------------------------------------------------------------------------
 // #pragma package(smart_init)
-float3 du_cylinder_vertices[DU_CYLINDER_NUMVERTEX] = {
+fvec3 du_cylinder_vertices[DU_CYLINDER_NUMVERTEX] = {
 	{0.5000f, 0.0000f, 0.5000f},	// 0
 	{0.5000f, -0.0000f, -0.5000f},	// 1
 	{0.4330f, -0.2500f, -0.5000f},	// 2

@@ -42,7 +42,7 @@ extern ECORE_API float ps_r_Tree_w_rot;
 extern ECORE_API float ps_r_Tree_w_speed;
 extern ECORE_API float ps_r_Tree_w_amp;
 extern ECORE_API float ps_r_Tree_SBC; // scale bias correct
-extern ECORE_API float3 ps_r_Tree_Wave;
+extern ECORE_API fvec3 ps_r_Tree_Wave;
 
 extern ECORE_API float ps_r_WallmarkTTL;
 extern ECORE_API float ps_r_WallmarkSHIFT;
@@ -117,7 +117,7 @@ extern ECORE_API float ps_r_fxaa_edge_treshold_min;
 
 extern ECORE_API float ps_r_mblur;
 
-extern ECORE_API float3 ps_r_dof;
+extern ECORE_API fvec3 ps_r_dof;
 extern ECORE_API u32 ps_r_dof_quality;
 
 extern ECORE_API float ps_r_ls_depth_scale; // 1.0f

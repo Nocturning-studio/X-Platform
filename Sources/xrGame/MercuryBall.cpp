@@ -40,7 +40,7 @@ void CMercuryBall::UpdateCLChild()
 
 			if (::Random.randF(0.f, 1.0f) > 0.6f)
 			{
-				float3 dir;
+				fvec3 dir;
 				dir.set(::Random.randF(-0.5f, 0.5f), 0.0f, ::Random.randF(-0.5f, 0.5f));
 				m_pPhysicsShell->applyImpulse(dir, ::Random.randF(m_fImpulseMin, m_fImpulseMax) * Engine.TimeManager.GetDeltaTime() *
 													   m_pPhysicsShell->getMass());

@@ -96,7 +96,7 @@ float CScriptIniFile::r_float(LPCSTR S, LPCSTR L)
 	return (inherited::r_float(S, L));
 }
 
-float3 CScriptIniFile::r_fvector3(LPCSTR S, LPCSTR L)
+fvec3 CScriptIniFile::r_fvector3(LPCSTR S, LPCSTR L)
 {
 	THROW3(inherited::section_exist(S), "Cannot find section", S);
 	THROW3(inherited::line_exist(S, L), "Cannot find line", L);

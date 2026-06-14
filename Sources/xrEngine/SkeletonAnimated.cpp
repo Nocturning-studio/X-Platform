@@ -851,7 +851,7 @@ IC void QR2Quat(const CKeyQR& K, Fquaternion& Q)
 	Q.w = float(K.w) * KEY_QuantI;
 }
 
-IC void QT2T(const CKeyQT& K, const CMotion& M, float3& T)
+IC void QT2T(const CKeyQT& K, const CMotion& M, fvec3& T)
 {
 	T.x = float(K.x) * M._sizeT.x + M._initT.x;
 	T.y = float(K.y) * M._sizeT.y + M._initT.y;
@@ -889,7 +889,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 		const CKeyQT* K1t = &M._keysT[(frame + 0) % count];
 		const CKeyQT* K2t = &M._keysT[(frame + 1) % count];
 
-		float3 T1, T2;
+		fvec3 T1, T2;
 		QT2T(*K1t, M, T1);
 		QT2T(*K2t, M, T2);
 		/*
@@ -1056,7 +1056,7 @@ IC void key_add(CKey& res, const CKey& k0, const CKey& k1) // add right
 IC void q_scale(Fquaternion& q, float v)
 {
 	float angl;
-	float3 ax;
+	fvec3 ax;
 	q.get_axis_angle(ax, angl);
 	q.rotation(ax, angl * v);
 	q.normalize();
@@ -1091,7 +1091,7 @@ IC void keys_substruct(CKey* R, const CKey* BR, int b_count)
 	}
 }
 
-IC void q_scalem(float4x4& m, float v)
+IC void q_scalem(fmat4x4& m, float v)
 {
 	Fquaternion q;
 	q.set(m);
@@ -1100,13 +1100,13 @@ IC void q_scalem(float4x4& m, float v)
 }
 
 // sclale base' * q by scale_factor returns result in matrix  m_res
-IC void q_scale_vs_basem(float4x4& m_res, const Fquaternion& q, const Fquaternion& base, float scale_factor)
+IC void q_scale_vs_basem(fmat4x4& m_res, const Fquaternion& q, const Fquaternion& base, float scale_factor)
 {
-	float4x4 mb, imb;
+	fmat4x4 mb, imb;
 	mb.rotation(base);
 	imb.invert(mb);
 
-	float4x4 m;
+	fmat4x4 m;
 	m.rotation(q);
 	m_res.mul(imb, m);
 	q_scalem(m_res, scale_factor);
@@ -1116,22 +1116,22 @@ IC void q_add_scaled_basem(Fquaternion& q, const Fquaternion& base, const Fquate
 						   float v1)
 {
 	// VERIFY(0.f =< v && 1.f >= v );
-	float4x4 m0;
+	fmat4x4 m0;
 	m0.rotation(q0);
-	float4x4 m, ml1;
+	fmat4x4 m, ml1;
 	q_scale_vs_basem(ml1, q1, base, v1);
 	m.mul(m0, ml1);
 	q.set(m);
 	q.normalize();
 }
 
-IC float DET(const float4x4& a)
+IC float DET(const fmat4x4& a)
 {
 	return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) +
 			 a._13 * (a._21 * a._32 - a._22 * a._31)));
 }
 
-IC bool check_scale(const float4x4& m)
+IC bool check_scale(const fmat4x4& m)
 {
 	float det = DET(m);
 	return (0.8f < det && det < 1.3f);
@@ -1139,7 +1139,7 @@ IC bool check_scale(const float4x4& m)
 
 IC bool check_scale(const Fquaternion& q)
 {
-	float4x4 m;
+	fmat4x4 m;
 	m.rotation(q);
 	return check_scale(m);
 }
@@ -1177,7 +1177,7 @@ IC void MixChannels(CKey& Result, const CKey* R, const float* BA, int b_count)
 }
 
 // calculate single bone with key blending and callbck calling
-void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, const float4x4* parent,
+void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, const fmat4x4* parent,
 								 const CBlendInstance::BlendSVec& Blend, u8 channel_mask /*= (1<<0)*/)
 {
 	////OPTICK_EVENT("CKinematicsAnimated::CLBone");
@@ -1246,7 +1246,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			// Mix channels
 			// MixInterlerp(Result,channels,BCA,ch_count);
 			MixChannels(Result, channels, BC, ch_count);
-			float4x4 RES;
+			fmat4x4 RES;
 			RES.mk_transform(Result.Q, Result.T);
 			BONE_INST.mTransform.mul_43(*parent, RES);
 #ifdef DEBUG
@@ -1293,7 +1293,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
 			CKeyQT*	K2t	= &M._keysT[(frame+1)%count];
 
-			float3 T1,T2,Dt;
+			fvec3 T1,T2,Dt;
 			T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
 			T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
 			T1.z		= float(K1t->z)*M._sizeT.z+M._initT.z;
@@ -1326,7 +1326,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 	}
 }
 
-void CKinematicsAnimated::Bone_GetAnimPos(float4x4& pos, u16 id, u8 mask_channel, bool ignore_callbacks)
+void CKinematicsAnimated::Bone_GetAnimPos(fmat4x4& pos, u16 id, u8 mask_channel, bool ignore_callbacks)
 {
 	////OPTICK_EVENT("CKinematicsAnimated::Bone_GetAnimPos");
 
@@ -1334,7 +1334,7 @@ void CKinematicsAnimated::Bone_GetAnimPos(float4x4& pos, u16 id, u8 mask_channel
 	BoneChain_Calculate(&LL_GetData(id), bi, mask_channel, ignore_callbacks);
 	pos.set(bi.mTransform);
 }
-void CKinematicsAnimated::Bone_Calculate(CBoneData* bd, float4x4* parent)
+void CKinematicsAnimated::Bone_Calculate(CBoneData* bd, fmat4x4* parent)
 {
 	////OPTICK_EVENT("CKinematicsAnimated::Bone_Calculate");
 

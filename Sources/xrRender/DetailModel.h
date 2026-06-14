@@ -9,8 +9,8 @@ class ECORE_API CDetail : public IRender_DetailModel
 	void Optimize();
 	virtual void Unload();
 
-	virtual void transfer(float4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset);
-	virtual void transfer(float4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv);
+	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset);
+	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv);
 	virtual ~CDetail();
 };
 #endif

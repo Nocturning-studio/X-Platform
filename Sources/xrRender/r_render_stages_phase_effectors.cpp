@@ -7,14 +7,14 @@
 #include "..\xrEngine\environment.h"
 #include "blender_effectors.h"
 ///////////////////////////////////////////////////////////////////////////////////
-void CRenderTarget::u_calc_tc_duality_ss(float2& r0, float2& r1, float2& l0, float2& l1)
+void CRenderTarget::u_calc_tc_duality_ss(fvec2& r0, fvec2& r1, fvec2& l0, fvec2& l1)
 {
 	// Calculate ordinaty TCs from blur and SS
 	float tw = float(dwWidth);
 	float th = float(dwHeight);
 	if (dwHeight != Device.dwHeight)
 		RenderImplementation.EffectorsManager->set_blur(1.f);
-	float2 shift, p0, p1;
+	fvec2 shift, p0, p1;
 	shift.set(.5f / tw, .5f / th);
 	shift.mul(RenderImplementation.EffectorsManager->get_blur());
 	p0.set(.5f / tw, .5f / th).add(shift);
@@ -32,10 +32,10 @@ void CRenderTarget::u_calc_tc_duality_ss(float2& r0, float2& r1, float2& l0, flo
 ///////////////////////////////////////////////////////////////////////////////////
 struct TL_2c3uv
 {
-	float4 p;
+	fvec4 p;
 	u32 color0;
 	u32 color1;
-	float2 uv[3];
+	fvec2 uv[3];
 	IC void set(float x, float y, u32 c0, u32 c1, float u0, float v0, float u1, float v1, float u2, float v2)
 	{
 		p.set(x, y, EPS_S, 1.f);
@@ -73,9 +73,9 @@ void CRender::render_effectors_pass_color_blind_filter()
 	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
 	RenderBackendLegacy.set_Stencil(FALSE);
 
-	float3 RedMatrix;
-	float3 GreenMatrix;
-	float3 BlueMatrix;
+	fvec3 RedMatrix;
+	fvec3 GreenMatrix;
+	fvec3 BlueMatrix;
 
 	switch (ps_r_color_blind_mode)
 	{
@@ -157,7 +157,7 @@ void CRender::render_effectors_pass_combine()
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 
-	float2 r0, r1, l0, l1;
+	fvec2 r0, r1, l0, l1;
 	RenderTarget->u_calc_tc_duality_ss(r0, r1, l0, l1);
 
 	float NightVisionEnabled = 0.0f;

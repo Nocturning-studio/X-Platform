@@ -19,7 +19,7 @@ class CPoltergeisMovementManager : public CControlPathBuilder
 	{
 	}
 
-	virtual void move_along_path(CPHMovementControl* movement_control, float3& dest_position, float time_delta);
+	virtual void move_along_path(CPHMovementControl* movement_control, fvec3& dest_position, float time_delta);
 
-	float3 CalculateRealPosition();
+	fvec3 CalculateRealPosition();
 };

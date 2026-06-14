@@ -38,7 +38,7 @@ void CUIMultiTextStatic::RemovePhraseByIndex(u32 idx)
 
 void CUIMultiTextStatic::Draw()
 {
-	float2 p;
+	fvec2 p;
 	GetAbsolutePos(p);
 
 	for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)

@@ -34,7 +34,7 @@ class CMonsterEffectorHit : public CEffectorCam
 	float period_number;
 	float power;
 
-	float3 offset;
+	fvec3 offset;
 
   public:
 	CMonsterEffectorHit(float time, float amp, float periods, float power);

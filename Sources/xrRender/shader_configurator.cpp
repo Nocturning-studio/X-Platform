@@ -124,7 +124,7 @@ float GetFloatValueIfExist(LPCSTR section_name, LPCSTR line_name, float default_
 		return default_value;
 }
 
-float3 GetRGBColorValueIfExist(LPCSTR section_name, LPCSTR line_name, float3 default_value, CInifile* config)
+fvec3 GetRGBColorValueIfExist(LPCSTR section_name, LPCSTR line_name, fvec3 default_value, CInifile* config)
 {
 	if (config->line_exist(section_name, line_name))
 		return config->r_fvector3(section_name, line_name);
@@ -132,7 +132,7 @@ float3 GetRGBColorValueIfExist(LPCSTR section_name, LPCSTR line_name, float3 def
 		return default_value;
 }
 
-float4 GetRGBAColorValueIfExist(LPCSTR section_name, LPCSTR line_name, float4 default_value, CInifile* config)
+fvec4 GetRGBAColorValueIfExist(LPCSTR section_name, LPCSTR line_name, fvec4 default_value, CInifile* config)
 {
 	if (config->line_exist(section_name, line_name))
 		return config->r_fvector4(section_name, line_name);

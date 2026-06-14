@@ -292,8 +292,8 @@ class CCustomZone : public CSpaceRestrictor, public Feel::Touch
 	DEFINE_VECTOR(SZoneObjectInfo, OBJECT_INFO_VEC, OBJECT_INFO_VEC_IT);
 	OBJECT_INFO_VEC m_ObjectInfoMap;
 
-	void CreateHit(u16 id_to, u16 id_from, const float3& hit_dir, float hit_power, s16 bone_id,
-				   const float3& pos_in_bone, float hit_impulse, ALife::EHitType hit_type);
+	void CreateHit(u16 id_to, u16 id_from, const fvec3& hit_dir, float hit_power, s16 bone_id,
+				   const fvec3& pos_in_bone, float hit_impulse, ALife::EHitType hit_type);
 
 	virtual void Hit(SHit* pHDS);
 
@@ -304,7 +304,7 @@ class CCustomZone : public CSpaceRestrictor, public Feel::Touch
 	void PlayAwakingParticles();
 	void PlayBlowoutParticles();
 	void PlayEntranceParticles(CGameObject* pObject);
-	void PlayBulletParticles(float3& pos);
+	void PlayBulletParticles(fvec3& pos);
 
 	void PlayHitParticles(CGameObject* pObject);
 
@@ -323,7 +323,7 @@ class CCustomZone : public CSpaceRestrictor, public Feel::Touch
 
 	// обновление, если зона передвигается
 	virtual void OnMove();
-	float3 m_vPrevPos;
+	fvec3 m_vPrevPos;
 	u32 m_dwLastTimeMoved;
 
 	// видимость зоны детектором

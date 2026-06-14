@@ -27,12 +27,12 @@ void CCar::SExhaust::Init()
 	CBoneData& bone_data = K->LL_GetData(u16(bone_id));
 	transform.set(bone_data.bind_transform);
 	/// transform.mulA(pcar->Transform());
-	// float4x4 element_transform;
+	// fmat4x4 element_transform;
 	// pelement->InterpolateGlobalTransform(&element_transform);
 	// element_transform.invert();
 	// transform.mulA(element_transform);
 	p_pgobject = CParticlesObject::Create(*pcar->m_exhaust_particles, FALSE);
-	float3 zero_vector;
+	fvec3 zero_vector;
 	zero_vector.set(0.f, 0.f, 0.f);
 	p_pgobject->UpdateParent(pcar->Transform(), zero_vector);
 }
@@ -40,13 +40,13 @@ void CCar::SExhaust::Init()
 void CCar::SExhaust::Update()
 {
 	VERIFY(!ph_world->Processing());
-	float4x4 global_transform;
+	fmat4x4 global_transform;
 	pelement->InterpolateGlobalTransform(&global_transform);
 	global_transform.mulB_43(transform);
 	dVector3 res;
-	float3 res_vel;
+	fvec3 res_vel;
 	dBodyGetPointVel(pelement->get_body(), global_transform.c.x, global_transform.c.y, global_transform.c.z, res);
-	CopyMemory(&res_vel, res, sizeof(float3));
+	CopyMemory(&res_vel, res, sizeof(fvec3));
 	// velocity.mul(0.95f);
 	// res_vel.mul(0.05f);
 	// velocity.add(res_vel);

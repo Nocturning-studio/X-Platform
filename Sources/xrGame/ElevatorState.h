@@ -32,7 +32,7 @@ class CElevatorState
 
 	CClimableObject* m_ladder;
 	CPHCharacter* m_character;
-	float3 m_start_position; // for depart state
+	fvec3 m_start_position; // for depart state
 	u32 m_start_time;
 
   public:
@@ -41,9 +41,9 @@ class CElevatorState
 	void SetCharacter(CPHCharacter* character);
 	void SetElevator(CClimableObject* climable);
 	void EvaluateState();
-	bool GetControlDir(float3& dir);
-	void GetJumpDir(const float3& accel, float3& dir);
-	void GetLeaderNormal(float3& dir);
+	bool GetControlDir(fvec3& dir);
+	void GetJumpDir(const fvec3& accel, fvec3& dir);
+	void GetLeaderNormal(fvec3& dir);
 	bool Active()
 	{
 		return m_ladder && m_state != clbNone;
@@ -80,7 +80,7 @@ class CElevatorState
 	void UpdateStNearDown();
 	void UpdateStClimbingUp();
 	void UpdateStClimbingDown();
-	void UpdateClimbingCommon(const float3& d_to_ax, float to_ax, const float3& control_accel, float ca);
+	void UpdateClimbingCommon(const fvec3& d_to_ax, float to_ax, const fvec3& control_accel, float ca);
 	void UpdateDepart();
 };
 

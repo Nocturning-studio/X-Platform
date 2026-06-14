@@ -15,7 +15,7 @@ class CPHGeometryOwner
 	// bl
 	bool b_builded;
 	dSpaceID m_group;								   // e					//bl
-	float3 m_mass_center;							   // e ??				//bl
+	fvec3 m_mass_center;							   // e ??				//bl
 	CPhysicsShellHolder* m_phys_ref_object;			   //->to shell ??		//bl
 	float m_volume;									   // e ??				//bl
 	u16 ul_material;								   // e ??				//bl
@@ -27,7 +27,7 @@ class CPHGeometryOwner
 	void add_Box(const Fobb& V);									// aux
 	void add_Cylinder(const Fcylinder& V);							// aux
 	void add_Shape(const SBoneShape& shape);						// aux
-	void add_Shape(const SBoneShape& shape, const float4x4& offset); // aux
+	void add_Shape(const SBoneShape& shape, const fmat4x4& offset); // aux
 	CODEGeom* last_geom()
 	{
 		if (m_geoms.empty())
@@ -65,11 +65,11 @@ class CPHGeometryOwner
 	CODEGeom* GeomByBoneID(u16 bone_id);
 	u16 numberOfGeoms();	   // aux
 	dGeomID dSpacedGeometry(); // aux
-	float3 get_mc_data();	   // aux
-	float3 get_mc_geoms();	   // aux
-	void get_mc_kinematics(CKinematics* K, float3& mc, float& mass);
+	fvec3 get_mc_data();	   // aux
+	fvec3 get_mc_geoms();	   // aux
+	void get_mc_kinematics(CKinematics* K, fvec3& mc, float& mass);
 	void calc_volume_data(); // aux
-	const float3& local_mass_Center()
+	const fvec3& local_mass_Center()
 	{
 		return m_mass_center;
 	} // aux
@@ -78,13 +78,13 @@ class CPHGeometryOwner
 		calc_volume_data();
 		return m_volume;
 	};																						  // aux
-	void get_Extensions(const float3& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
-	void get_MaxAreaDir(float3& dir);
+	void get_Extensions(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
+	void get_MaxAreaDir(fvec3& dir);
 	float getRadius();
-	void setStaticForm(const float4x4& form);
-	void setPosition(const float3& pos);
+	void setStaticForm(const fmat4x4& form);
+	void setPosition(const fvec3& pos);
 	void clear_cashed_tries();
-	void get_mc_vs_transform(float3& mc, const float4x4& m);
+	void get_mc_vs_transform(fvec3& mc, const fmat4x4& m);
 
   protected:
 	void build();

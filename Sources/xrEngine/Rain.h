@@ -33,16 +33,16 @@ class ENGINE_API CEffect_Rain
 	// В ней нет логики, только данные для GPU.
 	struct RainDrawParam
 	{
-		float3 PosHead;  // Позиция головы капли
-		float3 PosTrail; // Позиция хвоста капли
-		float2 UV[4]; // Готовые UV координаты (можно оптимизировать, передавая индекс, но для буфера так быстрее)
+		fvec3 PosHead;  // Позиция головы капли
+		fvec3 PosTrail; // Позиция хвоста капли
+		fvec2 UV[4]; // Готовые UV координаты (можно оптимизировать, передавая индекс, но для буфера так быстрее)
 	};
 
 	struct RainDrop
 	{
-		float3 P;	  // Position
-		float3 Phit; // Hit position (end of life)
-		float3 D;	  // Direction
+		fvec3 P;	  // Position
+		fvec3 Phit; // Hit position (end of life)
+		fvec3 D;	  // Direction
 		float fSpeed;
 		u32 dwTime_Life;
 		u32 dwTime_Hit;
@@ -57,7 +57,7 @@ class ENGINE_API CEffect_Rain
 	struct SplashParticle
 	{
 		SplashParticle *next, *prev;
-		float4x4 mTransform;
+		fmat4x4 mTransform;
 		Fsphere bounds;
 		float time;
 	};
@@ -110,10 +110,10 @@ class ENGINE_API CEffect_Rain
 	}
 
 	void SpawnDrop(RainDrop& dest, float radius, struct FastRandom& R);
-	void SpawnSplash(const float3& pos);
+	void SpawnSplash(const fvec3& pos);
 
 	// Physics Helpers
-	BOOL RayTrace(const float3& s, const float3& d, float& range, collide::rq_target tgt);
+	BOOL RayTrace(const fvec3& s, const fvec3& d, float& range, collide::rq_target tgt);
 
 	// Render Helpers
 	void UpdateAndRenderDrops(u32 desired_items, u32 rain_color);

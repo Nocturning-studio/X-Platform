@@ -65,10 +65,10 @@ add_to_type_list(CPHExpireOnStepCondition)
 class CPHConstForceAction : public CPHShellBasedAction
 {
 
-	float3 m_force;
+	fvec3 m_force;
 
   public:
-	CPHConstForceAction(CPhysicsShell* shell, const float3& force);
+	CPHConstForceAction(CPhysicsShell* shell, const fvec3& force);
 	virtual void run();
 
 	virtual bool compare(const CPHReqComparerV* v) const

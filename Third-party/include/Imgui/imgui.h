@@ -172,7 +172,7 @@ struct ImFontBuilderIO;             // Opaque interface to a font builder (stb_t
 struct ImFontConfig;                // Configuration data when adding a font or merging fonts
 struct ImFontGlyph;                 // A single font glyph (code point + coordinates within in ImFontAtlas + offset)
 struct ImFontGlyphRangesBuilder;    // Helper to build glyph ranges from text/string data
-struct ImColor;                     // Helper functions to create a color that can be converted to either u32 or float4 (*OBSOLETE* please avoid using)
+struct ImColor;                     // Helper functions to create a color that can be converted to either u32 or fvec4 (*OBSOLETE* please avoid using)
 
 // Forward declarations: ImGui layer
 struct ImGuiContext;                // Dear ImGui context (opaque structure, unless including imgui_internal.h)

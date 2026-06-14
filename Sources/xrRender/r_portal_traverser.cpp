@@ -47,7 +47,7 @@ CPortalTraverser::SectorVisibility& CPortalTraverser::GetOrAddSectorData(CSector
 	return vis;
 }
 
-void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, float3& view_pos, float4x4& xform, u32 options)
+void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_pos, fmat4x4& xform, u32 options)
 {
 	VERIFY(start);
 	Reset(); // Очистка перед запуском
@@ -59,7 +59,7 @@ void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, float3& view_
 	m_start_sector = start;
 
 	// Матрица для Scissor теста (Projection -> Viewport 0..1)
-	float4x4 m_viewport_01 = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
+	fmat4x4 m_viewport_01 = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f,  0.0f, 1.0f};
 	m_xform_proj.mul(m_viewport_01, m_xform);
 
@@ -134,7 +134,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 			continue;
 
 		// Создаем копию сферы на стеке.
-		float3 sphere_pos = portal->GetSphere().P;
+		fvec3 sphere_pos = portal->GetSphere().P;
 		float sphere_rad = portal->GetSphere().R;
 
 		if (!cur_frustum.testSphere_dirty(sphere_pos, sphere_rad))
@@ -143,7 +143,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 		// D. Screen Space Area Culling & Fade
 		if (m_options & VQ_SSA)
 		{
-			float3 dir2portal;
+			fvec3 dir2portal;
 			dir2portal.sub(portal->GetSphere().P, m_view_pos);
 			float dist_sq = dir2portal.square_magnitude();
 			float ssa = portal->GetSphere().R * portal->GetSphere().R / dist_sq;
@@ -184,9 +184,9 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 			bb.invalidate();
 			float depth = flt_max;
 
-			for (const float3& v : *clipped_poly)
+			for (const fvec3& v : *clipped_poly)
 			{
-				float4 t;
+				fvec4 t;
 				// Трансформация в Screen Space (0..1)
 				t.x = v.x * m_xform_proj._11 + v.y * m_xform_proj._21 + v.z * m_xform_proj._31 + m_xform_proj._41;
 				t.y = v.x * m_xform_proj._12 + v.y * m_xform_proj._22 + v.z * m_xform_proj._32 + m_xform_proj._42;
@@ -238,7 +238,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 		// G. Рекурсия
 		CFrustum next_frustum;
 		// Создаем новый фрустум, ограниченный порталом
-		float3 plane_n = portal->GetPlane().n;
+		fvec3 plane_n = portal->GetPlane().n;
 		next_frustum.CreateFromPortal(clipped_poly, plane_n, m_view_pos, m_xform);
 
 		m_visited_portals.push_back(portal); // Помечаем
@@ -254,7 +254,7 @@ void CPortalTraverser::RenderFade()
 
 	// 2. Сортировка Back-to-Front (для корректного Alpha Blending)
 	// Используем лямбду с захватом позиции камеры (m_view_pos)
-	float3 camera_pos = m_view_pos;
+	fvec3 camera_pos = m_view_pos;
 
 	std::sort(m_fade_portals.begin(), m_fade_portals.end(),
 			  [camera_pos](const std::pair<CPortal*, float>& a, const std::pair<CPortal*, float>& b) {
@@ -287,7 +287,7 @@ void CPortalTraverser::RenderFade()
 		ssa_range = EPS;
 
 	// Получаем текущий ambient цвет из окружения
-	float3 ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
+	fvec3 ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
 	u32 ambient_clr = color_rgba_f(ambient_f.x, ambient_f.y, ambient_f.z, 0);
 
 	// 6. Заполнение геометрии

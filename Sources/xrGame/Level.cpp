@@ -303,12 +303,12 @@ int CLevel::get_RPID(LPCSTR /**name/**/)
 	if (0==params)	return -1;
 
 	// Read data
-	float4	pos;
+	fvec4	pos;
 	int			team;
 	sscanf		(params,"%f,%f,%f,%d,%f",&pos.x,&pos.y,&pos.z,&team,&pos.w); pos.y += 0.1f;
 
 	// Search respawn point
-	svector<float4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
+	svector<fvec4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
 	for (int i=0; i<(int)(rp.size()); ++i)
 		if (pos.similar(rp[i],EPS_L))	return i;
 	*/
@@ -743,7 +743,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 		char Name[128];
 		Name[0] = 0;
 		sscanf(LPCSTR(P1), "%s", Name);
-		Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, float3().set(0, 0, 0));
+		Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, fvec3().set(0, 0, 0));
 	}
 	//else if (E == eChangeRP && P1)
 	//{
@@ -1122,7 +1122,7 @@ void GlobalFeelTouch::update()
 
 bool GlobalFeelTouch::is_object_denied(CObject const* O)
 {
-	/*float3 temp_vector;
+	/*fvec3 temp_vector;
 	feel_touch_update(temp_vector, 0.f);*/
 	if (std::find_if(feel_touch_disable.begin(), feel_touch_disable.end(),
 					 std::bind(objects_ptrs_equal(), std::placeholders::_1, O)) == feel_touch_disable.end())

@@ -345,7 +345,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
 IC bool aabb_tri_aabb(Point center, Point extents, const Point* mLeafVerts)
 {
 	Point v0, v1, v2;
-	// float3 v0,v1,v2;
+	// fvec3 v0,v1,v2;
 	v0.x = mLeafVerts[0].x - center.x;
 	v1.x = mLeafVerts[1].x - center.x;
 	v2.x = mLeafVerts[2].x - center.x;
@@ -398,7 +398,7 @@ IC bool __aabb_tri(Point center, Point extents, const Point* mLeafVerts)
 {
 	// move everything so that the boxcenter is in (0,0,0)
 	Point v0, v1, v2;
-	// float3 v0,v1,v2;
+	// fvec3 v0,v1,v2;
 	v0.x = mLeafVerts[0].x - center.x;
 	v1.x = mLeafVerts[1].x - center.x;
 	v2.x = mLeafVerts[2].x - center.x;

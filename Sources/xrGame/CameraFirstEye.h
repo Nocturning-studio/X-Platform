@@ -15,7 +15,7 @@ class CCameraFirstEye : public CCameraBase
 	virtual void Move(int cmd, float val = 0, float factor = 1.0f);
 
 	virtual void OnActivate(CCameraBase* old_cam);
-	virtual void Update(float3& point, float3& noise_angle);
+	virtual void Update(fvec3& point, fvec3& noise_angle);
 
 	virtual float GetWorldYaw()
 	{

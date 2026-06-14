@@ -42,7 +42,7 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 		return m_pD3D;
 	}
 	virtual void GetDeviceCaps(void* pCaps) override;
-	virtual void Clear(u32 clearFlags, const float4 color, float depth, u8 stencil) override;
+	virtual void Clear(u32 clearFlags, const fvec4 color, float depth, u8 stencil) override;
 
 	RHITexture CreateTexture(const TextureDesc& desc, const void* initialData);
 	void DestroyTexture(RHITexture texture);

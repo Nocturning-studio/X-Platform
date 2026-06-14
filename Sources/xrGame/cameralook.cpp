@@ -23,10 +23,10 @@ CCameraLook::~CCameraLook()
 {
 }
 
-void CCameraLook::Update(float3& point, float3& /**noise_dangle/**/)
+void CCameraLook::Update(fvec3& point, fvec3& /**noise_dangle/**/)
 {
 	vPosition.set(point);
-	float4x4 mR;
+	fmat4x4 mR;
 	mR.setHPB(-yaw, -pitch, -roll);
 
 	vDirection.set(mR.k);
@@ -37,7 +37,7 @@ void CCameraLook::Update(float3& point, float3& /**noise_dangle/**/)
 		parent->Transform().transform_dir(vDirection);
 		parent->Transform().transform_dir(vNormal);
 	}
-	float3 vDir;
+	fvec3 vDir;
 	collide::rq_result R;
 
 	float covariance = VIEWPORT_NEAR * 6.f;
@@ -101,7 +101,7 @@ void CCameraLook::OnActivate(CCameraBase* old_cam)
 
 int cam_dik = DIK_LSHIFT;
 
-float3 CCameraLook2::m_cam_offset;
+fvec3 CCameraLook2::m_cam_offset;
 void CCameraLook2::OnActivate(CCameraBase* old_cam)
 {
 	CCameraLook::OnActivate(old_cam);
@@ -115,7 +115,7 @@ void CCameraLook2::OnActivate(CCameraBase* old_cam)
 	}
 }
 
-void CCameraLook2::Update(float3& point, float3&)
+void CCameraLook2::Update(fvec3& point, fvec3&)
 {
 	if (!m_locked_enemy)
 	{ // autoaim
@@ -159,35 +159,35 @@ void CCameraLook2::Update(float3& point, float3&)
 	if (m_locked_enemy)
 		UpdateAutoAim();
 
-	float4x4 mR;
+	fmat4x4 mR;
 	mR.setHPB(-yaw, -pitch, -roll);
 
 	vDirection.set(mR.k);
 	vNormal.set(mR.j);
 
-	float4x4 a_transform;
+	fmat4x4 a_transform;
 	a_transform.setXYZ(0, -yaw, 0);
 	a_transform.translate_over(point);
-	float3 _off = m_cam_offset;
+	fvec3 _off = m_cam_offset;
 	a_transform.transform_tiny(_off);
 	vPosition.set(_off);
 }
 
 void CCameraLook2::UpdateAutoAim()
 {
-	float3 _dest_point;
+	fvec3 _dest_point;
 	m_locked_enemy->Center(_dest_point);
 	_dest_point.y += 0.2f;
 
-	float3 _dest_dir;
+	fvec3 _dest_dir;
 	_dest_dir.sub(_dest_point, vPosition);
 
-	float4x4 _m;
+	fmat4x4 _m;
 	_m.identity();
 	_m.k.normalize_safe(_dest_dir);
-	float3::generate_orthonormal_basis(_m.k, _m.j, _m.i);
+	fvec3::generate_orthonormal_basis(_m.k, _m.j, _m.i);
 
-	float3 xyz;
+	fvec3 xyz;
 	_m.getXYZi(xyz);
 
 	yaw = angle_inertion_var(yaw, xyz.y, m_autoaim_inertion_yaw.x, m_autoaim_inertion_yaw.y, PI, Engine.TimeManager.GetDeltaTime());

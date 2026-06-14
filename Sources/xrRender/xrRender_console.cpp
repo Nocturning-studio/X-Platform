@@ -212,7 +212,7 @@ u32 ps_r_Detail_quality = 2;
 float ps_r_Tree_w_rot = 10.0f;
 float ps_r_Tree_w_speed = 1.00f;
 float ps_r_Tree_w_amp = 0.005f;
-float3 ps_r_Tree_Wave = {.1f, .01f, .11f};
+fvec3 ps_r_Tree_Wave = {.1f, .01f, .11f};
 float ps_r_Tree_SBC = 1.5f; // scale bias correct
 
 float ps_r_WallmarkTTL = 300.f;
@@ -265,7 +265,7 @@ float ps_r_fxaa_edge_treshold_min = 0.0f;
 
 float ps_r_mblur = 0.5f;
 
-float3 ps_r_dof = float3().set(100.0f, 100.0f, 100.0f);
+fvec3 ps_r_dof = fvec3().set(100.0f, 100.0f, 100.0f);
 
 float ps_r_ls_depth_scale = 1.00001f;
 float ps_r_ls_depth_bias = -0.001f;
@@ -525,14 +525,14 @@ class CCC_DofFocalDepth : public CCC_Float
 class CCC_Dof : public CCC_Vector3
 {
   public:
-	CCC_Dof(LPCSTR N, float3* V, const float3 _min, const float3 _max) : CCC_Vector3(N, V, _min, _max)
+	CCC_Dof(LPCSTR N, fvec3* V, const fvec3 _min, const fvec3 _max) : CCC_Vector3(N, V, _min, _max)
 	{
 		;
 	}
 
 	virtual void Execute(LPCSTR args)
 	{
-		//float3 v;
+		//fvec3 v;
 		//if (3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
 		//	InvalidSyntax();
 		//else if ((v.x > v.y - 0.1f) || (v.z < v.y + 0.1f))
@@ -602,7 +602,7 @@ class CCC_DetailQuality : public CCC_Token
 ///////////////////////////////////////////////////////////////////////////////////
 void xrRender_initconsole()
 {
-	float3 tw_min, tw_max;
+	fvec3 tw_min, tw_max;
 
 	// Render common commands
 	CMD3(CCC_Preset, "_preset", &ps_Preset, qpreset_token);

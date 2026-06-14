@@ -118,8 +118,8 @@ struct dxGeomUserData
 	u16 element_position;
 	u16 bone_id;
 	xr_vector<int> cashed_tries;
-	float3 last_aabb_size;
-	float3 last_aabb_pos;
+	fvec3 last_aabb_size;
+	fvec3 last_aabb_pos;
 
 	//	struct ContactsParameters
 	//	{

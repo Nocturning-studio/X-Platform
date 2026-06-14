@@ -305,7 +305,7 @@ extern IMGUI_API ImGuiContext* GImGui;  // Current implicit context pointer
 #elif defined(__clang__)
 #define IM_DEBUG_BREAK()    __builtin_debugtrap()
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-#define IM_DEBUG_BREAK()    __asm__ volatile("int3;nop")
+#define IM_DEBUG_BREAK()    __asm__ volatile("ivec3;nop")
 #elif defined(__GNUC__) && defined(__thumb__)
 #define IM_DEBUG_BREAK()    __asm__ volatile(".inst 0xde01")
 #elif defined(__GNUC__) && defined(__arm__) && !defined(__thumb__)

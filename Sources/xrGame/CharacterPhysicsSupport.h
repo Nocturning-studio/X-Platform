@@ -59,7 +59,7 @@ class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 	} anim_mov_state;
 
 	CEntityAlive& m_EntityAlife;
-	float4x4& mTransform;
+	fmat4x4& mTransform;
 	CPhysicsShell*& m_pPhysicsShell;
 	CPhysicsShell* m_physics_skeleton;
 	CPHMovementControl* m_PhysicMovementControl;
@@ -157,7 +157,7 @@ class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 	{
 		return m_BonceDamageFactor;
 	}
-	void set_movement_position(const float3& pos);
+	void set_movement_position(const fvec3& pos);
 	//////////////////base hierarchi methods///////////////////////////////////////////////////
 	void CreateCharacter();
 	void in_UpdateCL();
@@ -167,13 +167,13 @@ class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 	void in_NetRelcase(CObject* O);
 	void in_Init();
 	void in_Load(LPCSTR section);
-	void in_Hit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
+	void in_Hit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 				ALife::EHitType hit_type, bool is_killing = false);
 	void in_NetSave(NET_Packet& P);
 	void in_ChangeVisual();
 	void on_create_anim_mov_ctrl();
 	void on_destroy_anim_mov_ctrl();
-	void PHGetLinearVell(float3& velocity);
+	void PHGetLinearVell(fvec3& velocity);
 	SCollisionHitCallback* get_collision_hit_callback();
 	bool set_collision_hit_callback(SCollisionHitCallback* cc);
 	/////////////////////////////////////////////////////////////////
@@ -192,8 +192,8 @@ class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 	static void DeathAnimCallback(CBlend* B);
 	void CreateIKController();
 	void DestroyIKController();
-	void CollisionCorrectObjPos(const float3& start_from, bool character_create = false);
-	void FlyTo(const float3& disp);
+	void CollisionCorrectObjPos(const fvec3& start_from, bool character_create = false);
+	void FlyTo(const fvec3& disp);
 	void TestForWounded();
 	IC void UpdateFrictionAndJointResistanse();
 	IC void UpdateDeathAnims();

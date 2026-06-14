@@ -44,6 +44,6 @@ class CUIItemInfo : public CUIWindow
 	CUIWpnParams* UIWpnParams;
 	CUIArtefactParams* UIArtefactParams;
 
-	float2 UIItemImageSize;
+	fvec2 UIItemImageSize;
 	CUIStatic* UIItemImage;
 };

@@ -253,7 +253,7 @@ void game_sv_Single::teleport_object(NET_Packet& net_packet, u16 id)
 
 	GameGraph::_GRAPH_ID game_vertex_id;
 	u32 level_vertex_id;
-	float3 position;
+	fvec3 position;
 
 	net_packet.r(&game_vertex_id, sizeof(game_vertex_id));
 	net_packet.r(&level_vertex_id, sizeof(level_vertex_id));

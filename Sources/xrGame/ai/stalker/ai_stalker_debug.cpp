@@ -79,7 +79,7 @@ void try_change_current_entity()
 		if (Level().CurrentEntity() == current)
 			continue;
 
-		float3 A, B, tmp;
+		fvec3 A, B, tmp;
 		current->Center(A);
 
 		tmp.sub(A, actor->cam_Active()->vPosition);
@@ -919,7 +919,7 @@ void CAI_Stalker::OnRender()
 
 	if (inventory().ActiveItem())
 	{
-		float3 position, direction, temp;
+		fvec3 position, direction, temp;
 		g_fireParams(0, position, direction);
 		temp = direction;
 		temp.mul(1.f);
@@ -939,7 +939,7 @@ void CAI_Stalker::OnRender()
 		feel_vision_get(objects);
 		if (std::find(objects.begin(), objects.end(), memory().enemy().selected()) != objects.end())
 		{
-			float3 position = feel_vision_get_vispoint(const_cast<CEntityAlive*>(memory().enemy().selected()));
+			fvec3 position = feel_vision_get_vispoint(const_cast<CEntityAlive*>(memory().enemy().selected()));
 			Level().debug_renderer().draw_aabb(position, .05f, .05f, .05f, D3DCOLOR_XRGB(0 * 255, 255, 0 * 255));
 			return;
 		}
@@ -950,7 +950,7 @@ void CAI_Stalker::OnRender()
 	inherited::OnRender();
 
 	{
-		float3 c0 = Position(), c1, t0 = Position(), t1;
+		fvec3 c0 = Position(), c1, t0 = Position(), t1;
 		c0.y += 2.f;
 		c1.setHP(-movement().m_body.current.yaw, -movement().m_body.current.pitch);
 		c1.add(c0);
@@ -965,7 +965,7 @@ void CAI_Stalker::OnRender()
 	if (memory().danger().selected() &&
 		ai().level_graph().valid_vertex_position(memory().danger().selected()->position()))
 	{
-		float3 position = memory().danger().selected()->position();
+		fvec3 position = memory().danger().selected()->position();
 		u32 level_vertex_id = ai().level_graph().vertex_id(position);
 		float half_size = ai().level_graph().header().cell_size() * .5f;
 		position.y += 1.f;
@@ -976,7 +976,7 @@ void CAI_Stalker::OnRender()
 		if (ai().level_graph().valid_vertex_id(level_vertex_id))
 		{
 			LevelGraph::CVertex* v = ai().level_graph().vertex(level_vertex_id);
-			float3 direction;
+			fvec3 direction;
 			float best_value = -1.f;
 			u32 i = 0, j = 0;
 			for (i = 0, j = 0; i < 36; ++i)
@@ -1026,13 +1026,13 @@ void CAI_Stalker::dbg_draw_vision()
 	if (!smart_cast<CGameObject*>(Level().CurrentEntity()))
 		return;
 
-	float3 shift;
+	fvec3 shift;
 	shift.set(0.f, 2.5f, 0.f);
 
-	float4x4 res;
+	fmat4x4 res;
 	res.mul(Engine.RenderView.ViewProjection, Transform());
 
-	float4 v_res;
+	fvec4 v_res;
 
 	res.transform(v_res, shift);
 
@@ -1055,7 +1055,7 @@ void CAI_Stalker::dbg_draw_vision()
 	HUD().Font().pFontMedium->OutNext(out_text);
 }
 
-typedef xr_vector<float3> COLLIDE_POINTS;
+typedef xr_vector<fvec3> COLLIDE_POINTS;
 
 class ray_query_param
 {
@@ -1064,13 +1064,13 @@ class ray_query_param
 	float m_power;
 	float m_power_threshold;
 	float m_pick_distance;
-	float3 m_start_position;
-	float3 m_direction;
+	fvec3 m_start_position;
+	fvec3 m_direction;
 	COLLIDE_POINTS* m_points;
 
   public:
-	IC ray_query_param(CCustomMonster* holder, float power_threshold, float distance, const float3& start_position,
-					   const float3& direction, COLLIDE_POINTS& points)
+	IC ray_query_param(CCustomMonster* holder, float power_threshold, float distance, const fvec3& start_position,
+					   const fvec3& direction, COLLIDE_POINTS& points)
 	{
 		m_holder = holder;
 		m_power = 1.f;
@@ -1085,7 +1085,7 @@ class ray_query_param
 BOOL _ray_query_callback(collide::rq_result& result, LPVOID params)
 {
 	ray_query_param* param = (ray_query_param*)params;
-	param->m_points->push_back(float3().mad(param->m_start_position, param->m_direction, result.range));
+	param->m_points->push_back(fvec3().mad(param->m_start_position, param->m_direction, result.range));
 
 	float power = param->m_holder->feel_vision_mtl_transp(result.O, result.element);
 	param->m_power *= power;
@@ -1096,7 +1096,7 @@ BOOL _ray_query_callback(collide::rq_result& result, LPVOID params)
 	return (false);
 }
 
-void fill_points(CCustomMonster* self, const float3& position, const float3& direction, float distance,
+void fill_points(CCustomMonster* self, const fvec3& position, const fvec3& direction, float distance,
 				 collide::rq_results& rq_storage, COLLIDE_POINTS& points, float& pick_distance)
 {
 	VERIFY(!fis_zero(direction.square_magnitude()));
@@ -1134,9 +1134,9 @@ void draw_visiblity_rays(CCustomMonster* self, const CObject* object, collide::r
 	if (!item)
 		return;
 
-	float3 start_position = self->eye_matrix.c;
-	float3 dest_position = item->cp_LAST;
-	float3 direction = float3().sub(dest_position, start_position);
+	fvec3 start_position = self->eye_matrix.c;
+	fvec3 dest_position = item->cp_LAST;
+	fvec3 direction = fvec3().sub(dest_position, start_position);
 	float distance = direction.magnitude();
 	direction.normalize();
 	float pick_distance = flt_max;
@@ -1151,7 +1151,7 @@ void draw_visiblity_rays(CCustomMonster* self, const CObject* object, collide::r
 
 	VERIFY(points.size() > 1);
 
-	float3 size = float3().set(.05f, .05f, .05f);
+	fvec3 size = fvec3().set(.05f, .05f, .05f);
 	Level().debug_renderer().draw_aabb(points.front(), size.x, size.y, size.z, D3DCOLOR_XRGB(0, 0, 255));
 
 	{

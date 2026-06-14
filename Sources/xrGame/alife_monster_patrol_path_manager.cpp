@@ -50,7 +50,7 @@ const u32& CALifeMonsterPatrolPathManager::target_level_vertex_id() const
 	return (path().vertex(m_current_vertex_index)->data().level_vertex_id());
 }
 
-const float3& CALifeMonsterPatrolPathManager::target_position() const
+const fvec3& CALifeMonsterPatrolPathManager::target_position() const
 {
 	return (path().vertex(m_current_vertex_index)->data().position());
 }
@@ -58,7 +58,7 @@ const float3& CALifeMonsterPatrolPathManager::target_position() const
 void CALifeMonsterPatrolPathManager::select_nearest()
 {
 	m_current_vertex_index = u32(-1);
-	float3 global_position = ai().game_graph().vertex(object().m_tGraphID)->game_point();
+	fvec3 global_position = ai().game_graph().vertex(object().m_tGraphID)->game_point();
 	float best_distance = flt_max;
 	CPatrolPath::const_vertex_iterator I = path().vertices().begin();
 	CPatrolPath::const_vertex_iterator E = path().vertices().end();

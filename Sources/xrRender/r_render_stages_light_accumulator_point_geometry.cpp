@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-float3 du_sphere_vertices[DU_SPHERE_NUMVERTEX] = {
+fvec3 du_sphere_vertices[DU_SPHERE_NUMVERTEX] = {
 	0.0000f,  1.0000f,	0.0000f,  0.8944f,	0.4472f,  0.0000f,	0.2764f,  0.4472f,	0.8507f,  -0.7236f, 0.4472f,
 	0.5257f,  -0.7236f, 0.4472f,  -0.5257f, 0.2764f,  0.4472f,	-0.8507f, 0.7236f,	-0.4472f, 0.5257f,	-0.2764f,
 	-0.4472f, 0.8507f,	-0.8944f, -0.4472f, -0.0000f, -0.2764f, -0.4472f, -0.8507f, 0.7236f,  -0.4472f, -0.5257f,

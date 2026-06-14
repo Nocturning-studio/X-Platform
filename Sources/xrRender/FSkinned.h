@@ -20,18 +20,18 @@ class CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates
 	virtual void _Load_hw(Fvisual& V, void* data);
 	virtual void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount);
 	void _EnumBoneVertices(SEnumVerticesCallback& C, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) const;
-	virtual void _FillVerticesHW1W(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
+	virtual void _FillVerticesHW1W(const fmat4x4& view, CSkeletonWallmark& wm, const fvec3& normal, float size,
 								   Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual void _FillVerticesHW2W(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
+	virtual void _FillVerticesHW2W(const fmat4x4& view, CSkeletonWallmark& wm, const fvec3& normal, float size,
 								   Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual void _FillVertices(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
+	virtual void _FillVertices(const fmat4x4& view, CSkeletonWallmark& wm, const fvec3& normal, float size,
 							   Fvisual* V, u16 bone_id, u32 iBase, u32 iCount);
 
-	virtual BOOL _PickBoneHW1W(float3& normal, float& range, const float3& S, const float3& D, Fvisual* V,
+	virtual BOOL _PickBoneHW1W(fvec3& normal, float& range, const fvec3& S, const fvec3& D, Fvisual* V,
 							   u16* indices, CBoneData::FacesVec& faces);
-	virtual BOOL _PickBoneHW2W(float3& normal, float& range, const float3& S, const float3& D, Fvisual* V,
+	virtual BOOL _PickBoneHW2W(fvec3& normal, float& range, const fvec3& S, const fvec3& D, Fvisual* V,
 							   u16* indices, CBoneData::FacesVec& faces);
-	virtual BOOL _PickBone(float3& normal, float& range, const float3& S, const float3& D, Fvisual* V, u16 bone_id,
+	virtual BOOL _PickBone(fvec3& normal, float& range, const fvec3& S, const fvec3& D, Fvisual* V, u16 bone_id,
 						   u32 iBase, u32 iCount);
 
   public:
@@ -56,8 +56,8 @@ class CSkeletonX_ST : public Fvisual, public CSkeletonX_ext
 	virtual void Release();
 	virtual void AfterLoad(CKinematics* parent, u16 child_idx);
 	virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-	virtual BOOL PickBone(float3& normal, float& dist, const float3& start, const float3& dir, u16 bone_id);
-	virtual void FillVertices(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
+	virtual BOOL PickBone(fvec3& normal, float& dist, const fvec3& start, const fvec3& dir, u16 bone_id);
+	virtual void FillVertices(const fmat4x4& view, CSkeletonWallmark& wm, const fvec3& normal, float size,
 							  u16 bone_id);
 
   private:
@@ -84,8 +84,8 @@ class CSkeletonX_PM : public FProgressive, public CSkeletonX_ext
 	virtual void Release();
 	virtual void AfterLoad(CKinematics* parent, u16 child_idx);
 	virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-	virtual BOOL PickBone(float3& normal, float& dist, const float3& start, const float3& dir, u16 bone_id);
-	virtual void FillVertices(const float4x4& view, CSkeletonWallmark& wm, const float3& normal, float size,
+	virtual BOOL PickBone(fvec3& normal, float& dist, const fvec3& start, const fvec3& dir, u16 bone_id);
+	virtual void FillVertices(const fmat4x4& view, CSkeletonWallmark& wm, const fvec3& normal, float size,
 							  u16 bone_id);
 
   private:

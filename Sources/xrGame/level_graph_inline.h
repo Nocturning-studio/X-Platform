@@ -79,22 +79,22 @@ template <typename T> IC void CLevelGraph::unpack_xz(const CLevelGraph::CVertex*
 	unpack_xz(*vertex, x, z);
 }
 
-ICF const float3 CLevelGraph::vertex_position(const CLevelGraph::CPosition& source_position) const
+ICF const fvec3 CLevelGraph::vertex_position(const CLevelGraph::CPosition& source_position) const
 {
-	float3 dest_position;
+	fvec3 dest_position;
 	unpack_xz(source_position, dest_position.x, dest_position.z);
 	dest_position.y = (float(source_position.y()) / 65535) * header().factor_y() + header().box().min.y;
 	return (dest_position);
 }
 
-ICF const float3& CLevelGraph::vertex_position(float3& dest_position,
+ICF const fvec3& CLevelGraph::vertex_position(fvec3& dest_position,
 												const CLevelGraph::CPosition& source_position) const
 {
 	return (dest_position = vertex_position(source_position));
 }
 
 IC const CLevelGraph::CPosition& CLevelGraph::vertex_position(CLevelGraph::CPosition& dest_position,
-															  const float3& source_position) const
+															  const fvec3& source_position) const
 {
 	VERIFY(iFloor((source_position.z - header().box().min.z) / header().cell_size() + .5f) < (int)m_row_length);
 	int pxz = iFloor(((source_position.x - header().box().min.x) / header().cell_size() + .5f)) * m_row_length +
@@ -107,25 +107,25 @@ IC const CLevelGraph::CPosition& CLevelGraph::vertex_position(CLevelGraph::CPosi
 	return (dest_position);
 }
 
-IC const float3 CLevelGraph::vertex_position(u32 vertex_id) const
+IC const fvec3 CLevelGraph::vertex_position(u32 vertex_id) const
 {
-	float3 t = vertex_position(vertex(vertex_id));
+	fvec3 t = vertex_position(vertex(vertex_id));
 	return (t);
 }
 
-IC const float3 CLevelGraph::vertex_position(const CLevelGraph::CVertex& vertex) const
+IC const fvec3 CLevelGraph::vertex_position(const CLevelGraph::CVertex& vertex) const
 {
-	float3 position;
+	fvec3 position;
 	vertex_position(position, vertex.position());
 	return (position);
 }
 
-IC const float3 CLevelGraph::vertex_position(const CLevelGraph::CVertex* vertex) const
+IC const fvec3 CLevelGraph::vertex_position(const CLevelGraph::CVertex* vertex) const
 {
 	return (vertex_position(*vertex));
 }
 
-IC const CLevelGraph::CPosition CLevelGraph::vertex_position(const float3& position) const
+IC const CLevelGraph::CPosition CLevelGraph::vertex_position(const fvec3& position) const
 {
 	CLevelGraph::CPosition _vertex_position;
 	return (vertex_position(_vertex_position, position));
@@ -136,7 +136,7 @@ IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const CLevelGrap
 	return (vertex_position.xz() == vertex.position().xz());
 }
 
-IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const float3& position) const
+IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const fvec3& position) const
 {
 	if (!valid_vertex_position(position))
 		return (false);
@@ -148,7 +148,7 @@ IC bool CLevelGraph::inside(const CVertex* vertex, const CLevelGraph::CPosition&
 	return (inside(*vertex, vertex_position));
 }
 
-IC bool CLevelGraph::inside(const CVertex* vertex, const float3& position) const
+IC bool CLevelGraph::inside(const CVertex* vertex, const fvec3& position) const
 {
 	return (inside(*vertex, position));
 }
@@ -158,7 +158,7 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const CLevelGraph::CPosition& v
 	return (inside(vertex(vertex_id), vertex_position));
 }
 
-IC bool CLevelGraph::inside(const u32 vertex_id, const float3& position) const
+IC bool CLevelGraph::inside(const u32 vertex_id, const fvec3& position) const
 {
 	bool b = inside(vertex(vertex_id), position);
 	return (b);
@@ -171,7 +171,7 @@ IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const CLevelGrap
 			(_abs(vertex_position(vertex).y - vertex_position(_vertex_position).y) <= epsilon));
 }
 
-IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const float3& position, const float epsilon) const
+IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const fvec3& position, const float epsilon) const
 {
 	if (!valid_vertex_position(position))
 		return (false);
@@ -184,7 +184,7 @@ IC bool CLevelGraph::inside(const CVertex* vertex, const CLevelGraph::CPosition&
 	return (inside(*vertex, vertex_position, epsilon));
 }
 
-IC bool CLevelGraph::inside(const CVertex* vertex, const float3& position, const float epsilon) const
+IC bool CLevelGraph::inside(const CVertex* vertex, const fvec3& position, const float epsilon) const
 {
 	return (inside(*vertex, position, epsilon));
 }
@@ -195,12 +195,12 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const CLevelGraph::CPosition& v
 	return (inside(vertex(vertex_id), vertex_position, epsilon));
 }
 
-IC bool CLevelGraph::inside(const u32 vertex_id, const float3& position, const float epsilon) const
+IC bool CLevelGraph::inside(const u32 vertex_id, const fvec3& position, const float epsilon) const
 {
 	return (inside(vertex(vertex_id), position, epsilon));
 }
 
-IC bool CLevelGraph::inside(const u32 vertex_id, const float2& position) const
+IC bool CLevelGraph::inside(const u32 vertex_id, const fvec2& position) const
 {
 	int pxz = iFloor(((position.x - header().box().min.x) / header().cell_size() + .5f)) * m_row_length +
 			  iFloor((position.y - header().box().min.z) / header().cell_size() + .5f);
@@ -211,7 +211,7 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const float2& position) const
 
 IC float CLevelGraph::vertex_plane_y(const CLevelGraph::CVertex& vertex, const float inX, const float inZ) const
 {
-	float3 DUP, normal, v, v1, P;
+	fvec3 DUP, normal, v, v1, P;
 	Fplane PL;
 
 	DUP.set(0, 1, 0);
@@ -380,19 +380,19 @@ IC const u32 CLevelGraph::vertex_id(const CLevelGraph::CVertex* vertex) const
 	return (u32(vertex - m_nodes));
 }
 
-IC float3 CLevelGraph::v3d(const float2& vector2d) const
+IC fvec3 CLevelGraph::v3d(const fvec2& vector2d) const
 {
-	return (float3().set(vector2d.x, 0.f, vector2d.y));
+	return (fvec3().set(vector2d.x, 0.f, vector2d.y));
 }
 
-IC float2 CLevelGraph::v2d(const float3& vector3d) const
+IC fvec2 CLevelGraph::v2d(const fvec3& vector3d) const
 {
-	return (float2().set(vector3d.x, vector3d.z));
+	return (fvec2().set(vector3d.x, vector3d.z));
 }
 
 template <bool bAssignY, typename T>
-IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& start_point,
-										  const float2& finish_point, xr_vector<T>& tpaOutputPoints, const T& example,
+IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const fvec2& start_point,
+										  const fvec2& finish_point, xr_vector<T>& tpaOutputPoints, const T& example,
 										  bool bAddFirstPoint, bool bClearPath) const
 {
 	if (!valid_vertex_position(v3d(finish_point)))
@@ -400,7 +400,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& sta
 
 	u32 cur_vertex_id = start_vertex_id, prev_vertex_id = start_vertex_id;
 	Fbox2 box;
-	float2 identity, start, dest, dir;
+	fvec2 identity, start, dest, dir;
 	T path_node = example;
 
 	identity.x = identity.y = header().cell_size() / 2.f;
@@ -408,8 +408,8 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& sta
 	dest = finish_point;
 	dir.sub(dest, start);
 	u32 dest_xz = vertex_position(v3d(dest)).xz();
-	float2 temp;
-	float3 pos3d;
+	fvec2 temp;
+	fvec3 pos3d;
 	unpack_xz(vertex(start_vertex_id), temp.x, temp.y);
 
 	if (bClearPath)
@@ -427,7 +427,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& sta
 
 	if (vertex(start_vertex_id)->position().xz() == dest_xz)
 	{
-		float3 tIntersectPoint = v3d(dest);
+		fvec3 tIntersectPoint = v3d(dest);
 		if (bAssignY)
 			tIntersectPoint.y = vertex_plane_y(vertex(cur_vertex_id), tIntersectPoint.x, tIntersectPoint.z);
 		path_node.set_position(tIntersectPoint);
@@ -453,7 +453,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& sta
 			box.grow(identity);
 			if (box.pick_exact(start, dir))
 			{
-				float2 temp;
+				fvec2 temp;
 				temp.add(box.min, box.max);
 				temp.mul(.5f);
 				float dist = _sqr(temp.x - dest.x) + _sqr(temp.y - dest.y);
@@ -465,11 +465,11 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& sta
 
 				cur_sqr = dist;
 
-				float2 next1, next2;
+				fvec2 next1, next2;
 #ifdef DEBUG
-				next1 = next2 = float2().set(0.f, 0.f);
+				next1 = next2 = fvec2().set(0.f, 0.f);
 #endif
-				float3 tIntersectPoint;
+				fvec3 tIntersectPoint;
 
 				switch (I)
 				{
@@ -549,7 +549,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const float2& sta
 
 template <typename T> IC void CLevelGraph::assign_y_values(xr_vector<T>& path)
 {
-	float3 DUP = {0, 1, 0}, normal, v1, P = {0, 0, 0};
+	fvec3 DUP = {0, 1, 0}, normal, v1, P = {0, 0, 0};
 	Fplane PL;
 	const CVertex* _vertex;
 	u32 prev_id = u32(-1);
@@ -577,7 +577,7 @@ IC u32 CLevelGraph::row_length() const
 	return (m_row_length);
 }
 
-IC bool CLevelGraph::valid_vertex_position(const float3& position) const
+IC bool CLevelGraph::valid_vertex_position(const fvec3& position) const
 {
 	if ((position.x < header().box().min.x - header().cell_size() * .5f) ||
 		(position.x > header().box().max.x + header().cell_size() * .5f) ||
@@ -623,7 +623,7 @@ IC void CLevelGraph::clear_mask(u32 vertex_id)
 }
 
 template <typename P>
-IC void CLevelGraph::iterate_vertices(const float3& min_position, const float3& max_position,
+IC void CLevelGraph::iterate_vertices(const fvec3& min_position, const fvec3& max_position,
 									  const P& predicate) const
 {
 	CVertex *I, *E;

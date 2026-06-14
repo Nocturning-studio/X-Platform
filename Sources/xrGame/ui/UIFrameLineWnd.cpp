@@ -57,7 +57,7 @@ void CUIFrameLineWnd::Draw()
 {
 	if (m_bTextureAvailable)
 	{
-		float2 p;
+		fvec2 p;
 		GetAbsolutePos(p);
 		UIFrameLine.SetPos(p.x, p.y);
 		UIFrameLine.Render();

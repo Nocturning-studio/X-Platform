@@ -28,7 +28,7 @@ enum
 struct ENGINE_API CKey
 {
 	Fquaternion Q; // rotation
-	float3 T;	   // translation
+	fvec3 T;	   // translation
 };
 struct ENGINE_API CKeyQR
 {
@@ -52,8 +52,8 @@ class ENGINE_API CMotion
   public:
 	ref_smem<CKeyQR> _keysR;
 	ref_smem<CKeyQT> _keysT;
-	float3 _initT;
-	float3 _sizeT;
+	fvec3 _initT;
+	fvec3 _sizeT;
 
   public:
 	void set_flags(u8 val)

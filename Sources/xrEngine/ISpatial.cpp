@@ -7,7 +7,7 @@
 ENGINE_API ISpatial_DB* g_SpatialSpace = NULL;
 ENGINE_API ISpatial_DB* g_SpatialSpacePhysic = NULL;
 
-float3 c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1},
+fvec3 c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1},
 							   {-1, -1, 1},	 {1, -1, 1},  {-1, 1, 1},  {1, 1, 1}};
 
 //////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ BOOL ISpatial::spatial_inside()
 	return TRUE;
 }
 
-BOOL verify_sp(ISpatial* sp, float3& node_center, float node_radius)
+BOOL verify_sp(ISpatial* sp, fvec3& node_center, float node_radius)
 {
 	float dr = -(-node_radius + sp->spatial.sphere.R);
 	if (sp->spatial.sphere.P.x < node_center.x - dr)
@@ -171,7 +171,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 	if (0 == m_root)
 	{
 		// initialize
-		float3 bbc, bbd;
+		fvec3 bbc, bbd;
 		BB.get_CD(bbc, bbd);
 
 		bbc.set(0, 0, 0);		   // generic
@@ -206,7 +206,7 @@ void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 	P = NULL;
 }
 
-void ISpatial_DB::_insert(ISpatial_NODE* N, float3& n_C, float n_R)
+void ISpatial_DB::_insert(ISpatial_NODE* N, fvec3& n_C, float n_R)
 {
 	//*** we are assured that object lives inside our node
 	float n_vR = 2 * n_R;
@@ -229,9 +229,9 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, float3& n_C, float n_R)
 	if (s_R < c_R)
 	{
 		// object can be pushed further down - select "octant", calc node position
-		float3& s_C = rt_insert_object->spatial.sphere.P;
+		fvec3& s_C = rt_insert_object->spatial.sphere.P;
 		u32 octant = _octant(n_C, s_C);
-		float3 c_C;
+		fvec3 c_C;
 		c_C.mad(n_C, c_spatial_offset[octant], c_R);
 		VERIFY(octant == _octant(n_C, c_C)); // check table assosiations
 		ISpatial_NODE*& chield = N->children[octant];

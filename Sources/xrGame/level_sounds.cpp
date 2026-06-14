@@ -123,7 +123,7 @@ BOOL SMusicTrack::in(u32 game_time)
 
 void SMusicTrack::Play()
 {
-	m_SourceStereo.play_at_pos(0, float3().set(0.0f, 0.0f, 0.0f), sm_2D);
+	m_SourceStereo.play_at_pos(0, fvec3().set(0.0f, 0.0f, 0.0f), sm_2D);
 	SetVolume(1.0f);
 }
 

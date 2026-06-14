@@ -129,7 +129,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	BOOL result = inherited::net_Spawn(DC);
 	if (*m_sParticlesName)
 	{
-		float3 dir;
+		fvec3 dir;
 		dir.set(0, 1, 0);
 		CParticlesPlayer::StartParticles(m_sParticlesName, dir, ID(), -1, false);
 	}
@@ -197,7 +197,7 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 	StartLights();
 	if (*m_sParticlesName)
 	{
-		float3 dir;
+		fvec3 dir;
 		dir.set(0, 1, 0);
 		CParticlesPlayer::StartParticles(m_sParticlesName, dir, ID(), -1, false);
 	}
@@ -216,7 +216,7 @@ void CArtefact::UpdateWorkload(u32 dt)
 {
 	VERIFY(!ph_world->Processing());
 	// particles - velocity
-	float3 vel = {0, 0, 0};
+	fvec3 vel = {0, 0, 0};
 	if (H_Parent())
 	{
 		CPhysicsShellHolder* pPhysicsShellHolder = smart_cast<CPhysicsShellHolder*>(H_Parent());
@@ -248,7 +248,7 @@ void CArtefact::shedule_Update(u32 dt)
 		o_switch_2_slow();
 	else
 	{
-		float3 center;
+		fvec3 center;
 		Center(center);
 		BOOL rendering = (Engine.TimeManager.GetFrameCount() == o_render_frame);
 		float cam_distance = Engine.RenderView.Position.distance_to(center) - Radius();
@@ -329,11 +329,11 @@ void CArtefact::Show()
 	SwitchState(eShowing);
 }
 
-void CArtefact::MoveTo(float3 const& position)
+void CArtefact::MoveTo(fvec3 const& position)
 {
 	if (!PPhysicsShell())
 		return;
-	float4x4 M = Transform();
+	fmat4x4 M = Transform();
 	M.translate(position);
 	ForceTransform(M);
 	// m_bInInterpolation = false;
@@ -371,12 +371,12 @@ void CArtefact::UpdateTransform()
 		boneL = boneR2;
 
 		V->CalculateBones();
-		float4x4& mL = V->LL_GetTransform(u16(boneL));
-		float4x4& mR = V->LL_GetTransform(u16(boneR));
+		fmat4x4& mL = V->LL_GetTransform(u16(boneL));
+		fmat4x4& mR = V->LL_GetTransform(u16(boneR));
 
 		// Calculate
-		float4x4 mRes;
-		float3 R, D, N;
+		fmat4x4 mRes;
+		fvec3 R, D, N;
 		D.sub(mL.c, mR.c);
 		D.normalize_safe();
 		R.crossproduct(mR.j, D);
@@ -564,7 +564,7 @@ void SArtefactActivation::PhDataUpdate(dReal step)
 {
 	if (m_cur_activation_state == eFlying)
 	{
-		float3 dir = {0, -1.f, 0};
+		fvec3 dir = {0, -1.f, 0};
 		if (Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth, NULL, m_af))
 		{
 			dir.y = ph_world->Gravity() * 1.1f;
@@ -591,7 +591,7 @@ void SArtefactActivation::ChangeEffects()
 
 	if (state_def.m_particle.size())
 	{
-		float3 dir;
+		fvec3 dir;
 		dir.set(0, 1, 0);
 
 		m_af->CParticlesPlayer::StartParticles(state_def.m_particle, dir, m_af->ID(), iFloor(state_def.m_time * 1000));
@@ -623,7 +623,7 @@ void SArtefactActivation::SpawnAnomaly()
 	float zone_power = (float)atof(_GetItem(str, 2, tmp));
 	LPCSTR zone_sect = _GetItem(str, 0, tmp); // must be last call of _GetItem... (LPCSTR !!!)
 
-	float3 pos;
+	fvec3 pos;
 	m_af->Center(pos);
 	CSE_Abstract* object = Level().spawn_item(
 		zone_sect, pos, (g_dedicated_server) ? u32(-1) : m_af->ai_location().level_vertex_id(), 0xffff, true);

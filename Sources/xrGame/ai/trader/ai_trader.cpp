@@ -93,7 +93,7 @@ void CAI_Trader::BoneCallback(CBoneInstance* B)
 
 void CAI_Trader::LookAtActor(CBoneInstance* B)
 {
-	float3 dir;
+	fvec3 dir;
 	dir.sub(Level().CurrentEntity()->Position(), Position());
 
 	float yaw, pitch;
@@ -108,7 +108,7 @@ void CAI_Trader::LookAtActor(CBoneInstance* B)
 	if (angle_normalize_signed(yaw - cur_yaw) > 0)
 		dy *= -1.f;
 
-	float4x4 M;
+	fmat4x4 M;
 	M.setHPB(0.f, -dy, 0.f);
 	B->mTransform.mulB_43(M);
 }
@@ -260,7 +260,7 @@ void CAI_Trader::g_WeaponBones(int& L, int& R1, int& R2)
 	L = V->LL_BoneID("bip01_l_finger1");
 }
 
-void CAI_Trader::g_fireParams(const CHudItem* pHudItem, float3& P, float3& D)
+void CAI_Trader::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 {
 	VERIFY(inventory().ActiveItem());
 	if (g_Alive() && inventory().ActiveItem())

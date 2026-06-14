@@ -52,8 +52,8 @@ class CTelekineticObject
 	virtual void keep();
 	virtual void keep_update();
 	virtual void release();
-	virtual void fire(const float3& target, float power);
-	void fire_t(const float3& target, float time);
+	virtual void fire(const fvec3& target, float power);
+	void fire_t(const fvec3& target, float time);
 	virtual void fire_update();
 	virtual void update_state();
 	virtual bool can_activate(CPhysicsShellHolder* obj);

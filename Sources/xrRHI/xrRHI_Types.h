@@ -213,7 +213,7 @@ struct SamplerDesc
 	RHI_TextureAddress addressW;
 	float mipLODBias;
 	u32 maxAnisotropy;
-	float4 borderColor;
+	fvec4 borderColor;
 };
 
 struct RHISamplerImpl;

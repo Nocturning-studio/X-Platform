@@ -21,14 +21,14 @@ void CStateMonsterLookToUnprotectedAreaAbstract::initialize()
 {
 	inherited::initialize();
 
-	float3 position;
+	fvec3 position;
 	position = object->Position();
 	position.y += 0.3f;
 
 	float angle =
 		ai().level_graph().vertex_cover_angle(object->ai_location().level_vertex_id(), PI_DIV_6, std::less<float>());
 
-	float3 dir;
+	fvec3 dir;
 	dir.set(1.f, 0.f, 0.f);
 	dir.setHP(angle + PI, 0.f);
 	dir.normalize();

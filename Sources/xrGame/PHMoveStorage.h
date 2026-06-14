@@ -12,7 +12,7 @@ class CPHPositionsPairs
 	{
 		geom = i;
 	}
-	void Positions(const float3*& p0, const float3*& p1);
+	void Positions(const fvec3*& p0, const fvec3*& p1);
 	IC CPHPositionsPairs& operator++()
 	{
 		++geom;

@@ -26,7 +26,7 @@ BOOL CActorMemory::feel_vision_isRelevant(CObject* O)
 	return (TRUE);
 }
 
-void CActorMemory::camera(float3& position, float3& direction, float3& normal, float& field_of_view,
+void CActorMemory::camera(fvec3& position, fvec3& direction, fvec3& normal, float& field_of_view,
 						  float& aspect_ratio, float& near_plane, float& far_plane)
 {
 	CCameraBase& camera = *m_actor->cam_Active();

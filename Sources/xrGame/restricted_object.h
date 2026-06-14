@@ -48,12 +48,12 @@ class CRestrictedObject
 	virtual BOOL net_Spawn(CSE_Abstract* data);
 	virtual void net_Destroy();
 	void add_border(u32 start_vertex_id, float radius) const;
-	void add_border(const float3& start_position, const float3& dest_position) const;
+	void add_border(const fvec3& start_position, const fvec3& dest_position) const;
 	void add_border(u32 start_vertex_id, u32 dest_vertex_id) const;
 	void remove_border() const;
-	u32 accessible_nearest(const float3& position, float3& result) const;
-	bool accessible(const float3& position) const;
-	bool accessible(const float3& position, float radius) const;
+	u32 accessible_nearest(const fvec3& position, fvec3& result) const;
+	bool accessible(const fvec3& position) const;
+	bool accessible(const fvec3& position, float radius) const;
 	bool accessible(u32 level_vertex_id) const;
 	bool accessible(u32 level_vertex_id, float radius) const;
 	void add_restrictions(const xr_vector<ALife::_OBJECT_ID>& out_restrictions,

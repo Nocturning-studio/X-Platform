@@ -26,13 +26,13 @@ class CLevelFogOfWar : public IPureSerializeObject<IReader, IWriter>, public CUI
 
 	virtual void Draw();
 
-	void Open(float2 pos);
+	void Open(fvec2 pos);
 	void Open(u32 row, u32 col, bool mask);
 	void Init(const shared_str& level);
-	void GetTexUVLT(float2& frame, u32 col, u32 row);
-	int2 ConvertRealToLocal(const float2& src);
+	void GetTexUVLT(fvec2& frame, u32 col, u32 row);
+	ivec2 ConvertRealToLocal(const fvec2& src);
 	Irect ConvertRealToLocal(const Frect& src);
-	float2 ConvertLocalToReal(const int2& src);
+	fvec2 ConvertLocalToReal(const ivec2& src);
 
 	virtual void save(IWriter& stream);
 	virtual void load(IReader& stream);

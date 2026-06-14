@@ -15,12 +15,12 @@ class CEffectorZoomInertion : public CEffectorCam
 	float m_fDispRadius;
 
 	float m_fEpsilon;
-	float3 m_vCurrentPoint;
-	float3 m_vLastPoint;
-	float3 m_vTargetPoint;
-	float3 m_vTargetVel;
+	fvec3 m_vCurrentPoint;
+	fvec3 m_vLastPoint;
+	fvec3 m_vTargetPoint;
+	fvec3 m_vTargetVel;
 
-	float3 m_vOldCameraDir;
+	fvec3 m_vOldCameraDir;
 
 	u32 m_dwTimePassed;
 

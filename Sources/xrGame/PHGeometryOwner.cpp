@@ -77,9 +77,9 @@ void CPHGeometryOwner::set_body(dBodyID body)
 		(*i)->set_body(body);
 }
 
-float3 CPHGeometryOwner::get_mc_data()
+fvec3 CPHGeometryOwner::get_mc_data()
 {
-	float3 s;
+	fvec3 s;
 	float pv;
 	m_mass_center.set(0, 0, 0);
 	m_volume = 0.f;
@@ -95,14 +95,14 @@ float3 CPHGeometryOwner::get_mc_data()
 	return m_mass_center;
 }
 
-float3 CPHGeometryOwner::get_mc_geoms()
+fvec3 CPHGeometryOwner::get_mc_geoms()
 {
 	////////////////////to be implemented
-	float3 mc;
+	fvec3 mc;
 	mc.set(0.f, 0.f, 0.f);
 	return mc;
 }
-void CPHGeometryOwner::get_mc_kinematics(CKinematics* K, float3& mc, float& mass)
+void CPHGeometryOwner::get_mc_kinematics(CKinematics* K, fvec3& mc, float& mass)
 {
 
 	mc.set(0.f, 0.f, 0.f);
@@ -112,7 +112,7 @@ void CPHGeometryOwner::get_mc_kinematics(CKinematics* K, float3& mc, float& mass
 	for (; i_geom != e; ++i_geom)
 	{
 		CBoneData& data = K->LL_GetData((*i_geom)->bone_id());
-		float3 add;
+		fvec3 add;
 		mass += data.mass;
 		m_volume += (*i_geom)->volume();
 		add.set(data.center_of_mass);
@@ -183,15 +183,15 @@ void CPHGeometryOwner::add_Cylinder(const Fcylinder& V)
 	m_geoms.push_back(smart_cast<CODEGeom*>(xr_new<CCylinderGeom>(V)));
 }
 
-void CPHGeometryOwner::add_Shape(const SBoneShape& shape, const float4x4& offset)
+void CPHGeometryOwner::add_Shape(const SBoneShape& shape, const fmat4x4& offset)
 {
 	switch (shape.type)
 	{
 	case SBoneShape::stBox: {
 		Fobb box = shape.box;
-		float4x4 m;
+		fmat4x4 m;
 		m.set(offset);
-		// float4x4 position;
+		// fmat4x4 position;
 		// position.set(box.m_rotate);
 		// position.c.set(box.m_translate);
 		// position.mulA(offset);
@@ -331,7 +331,7 @@ u16 CPHGeometryOwner::numberOfGeoms()
 	return (u16)m_geoms.size();
 }
 
-void CPHGeometryOwner::get_Extensions(const float3& axis, float center_prg, float& lo_ext, float& hi_ext)
+void CPHGeometryOwner::get_Extensions(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
 	lo_ext = dInfinity;
 	hi_ext = -dInfinity;
@@ -348,7 +348,7 @@ void CPHGeometryOwner::get_Extensions(const float3& axis, float center_prg, floa
 	}
 }
 
-void CPHGeometryOwner::get_MaxAreaDir(float3& dir)
+void CPHGeometryOwner::get_MaxAreaDir(fvec3& dir)
 {
 	if (m_geoms.empty())
 		return;
@@ -362,18 +362,18 @@ float CPHGeometryOwner::getRadius()
 		return 0.f;
 }
 
-void CPHGeometryOwner::get_mc_vs_transform(float3& mc, const float4x4& m)
+void CPHGeometryOwner::get_mc_vs_transform(fvec3& mc, const fmat4x4& m)
 {
 	mc.set(m_mass_center);
 	m.transform_tiny(mc);
 	VERIFY2(_valid(mc), "invalid mc in_set_transform");
 }
 
-void CPHGeometryOwner::setStaticForm(const float4x4& form)
+void CPHGeometryOwner::setStaticForm(const fmat4x4& form)
 {
 	if (!b_builded)
 		return;
-	float4x4 f;
+	fmat4x4 f;
 	f.set(form);
 	get_mc_vs_transform(f.c, form);
 	GEOM_I i = m_geoms.begin(), e = m_geoms.end();
@@ -381,7 +381,7 @@ void CPHGeometryOwner::setStaticForm(const float4x4& form)
 		(*i)->set_static_ref_form(f);
 }
 
-void CPHGeometryOwner::setPosition(const float3& pos)
+void CPHGeometryOwner::setPosition(const fvec3& pos)
 {
 	GEOM_I i = m_geoms.begin(), e = m_geoms.end();
 	for (; i != e; ++i)

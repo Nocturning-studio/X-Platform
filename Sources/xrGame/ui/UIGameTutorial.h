@@ -121,7 +121,7 @@ class CUISequenceSimpleItem : public CUISequenceItem
 	float m_time_start;
 	float m_time_length;
 	string64 m_pda_section;
-	float2 m_desired_cursor_pos;
+	fvec2 m_desired_cursor_pos;
 	int m_continue_dik_guard;
 
   public:

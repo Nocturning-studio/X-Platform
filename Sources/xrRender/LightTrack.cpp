@@ -46,7 +46,7 @@ CROS_impl::CROS_impl()
 	MODE = IRender_ObjectSpecific::TRACE_HEMI;
 }
 
-inline void CROS_impl::accum_hemi(float* hemi_cube, float3& dir, float scale)
+inline void CROS_impl::accum_hemi(float* hemi_cube, fvec3& dir, float scale)
 {
 	if (dir.x > 0)
 		hemi_cube[CUBE_FACE_POS_X] += dir.x * scale;
@@ -74,7 +74,7 @@ void CROS_impl::smart_update(IRenderable* O)
 	--ticks_to_update;
 
 	// Получение текущей позиции
-	float3 position;
+	fvec3 position;
 	O->renderable.transform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
 
 	if (ticks_to_update <= 0)
@@ -105,7 +105,7 @@ void CROS_impl::smart_update(IRenderable* O)
 	}
 }
 
-void CROS_impl::calc_sky_hemi_value(float3& position, CObject* _object)
+void CROS_impl::calc_sky_hemi_value(fvec3& position, CObject* _object)
 {
 	// hemi-tracing
 	sky_rays_uptodate += ps_r_dhemi_count;
@@ -126,7 +126,7 @@ void CROS_impl::calc_sky_hemi_value(float3& position, CObject* _object)
 		}
 
 		// take sample
-		float3 direction;
+		fvec3 direction;
 		direction.set(hdir[sample][0], hdir[sample][1], hdir[sample][2]).normalize();
 		result[sample] =
 			!g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
@@ -146,7 +146,7 @@ void CROS_impl::calc_sky_hemi_value(float3& position, CObject* _object)
 	{
 		if (result[it])
 		{
-			float3 dir;
+			fvec3 dir;
 			dir.set(hdir[it][0], hdir[it][1], hdir[it][2]);
 			accum_hemi(hemi_cube, dir, ps_r_dhemi_sky_scale);
 		}
@@ -167,7 +167,7 @@ void CROS_impl::update(IRenderable* O)
 	CObject* _object = dynamic_cast<CObject*>(O);
 
 	// select sample, randomize position inside object
-	float3 position;
+	fvec3 position;
 	O->renderable.transform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
 	float radius = O->renderable.visual->vis.sphere.R;
 	position.y += .3f * radius;

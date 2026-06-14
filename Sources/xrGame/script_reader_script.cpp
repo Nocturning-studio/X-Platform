@@ -28,7 +28,7 @@ bool r_bool_IReader(IReader* self)
 	return (!!self->r_u8());
 }
 
-void r_fvector3(IReader* self, float3* arg0)
+void r_fvector3(IReader* self, fvec3* arg0)
 {
 	self->r_fvector3(*arg0);
 }

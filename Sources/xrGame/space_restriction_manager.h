@@ -70,7 +70,7 @@ class CSpaceRestrictionManager : public CSpaceRestrictionHolder
 
 	bool accessible(ALife::_OBJECT_ID id, const Fsphere& sphere);
 	bool accessible(ALife::_OBJECT_ID id, u32 level_vertex_id, float radius);
-	u32 accessible_nearest(ALife::_OBJECT_ID id, const float3& position, float3& result);
+	u32 accessible_nearest(ALife::_OBJECT_ID id, const fvec3& position, fvec3& result);
 
 	IC bool restriction_presented(shared_str restrictions, shared_str restriction) const;
 

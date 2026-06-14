@@ -17,7 +17,7 @@ void __stdcall xrSkin2W_SSE(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInst
 		u16 idx0 = src.matrix0;
 		u16 idx1 = src.matrix1;
 
-		const float4x4& M0 = Bones[idx0].mRenderTransform;
+		const fmat4x4& M0 = Bones[idx0].mRenderTransform;
 		__m128 srcP = _mm_set_ps(1.0f, src.P.z, src.P.y, src.P.x);
 		__m128 srcN = _mm_set_ps(0.0f, src.N.z, src.N.y, src.N.x);
 
@@ -44,7 +44,7 @@ void __stdcall xrSkin2W_SSE(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInst
 		}
 		else
 		{
-			const float4x4& M1 = Bones[idx1].mRenderTransform;
+			const fmat4x4& M1 = Bones[idx1].mRenderTransform;
 			__m128 m1_row0 = _mm_loadu_ps(&M1._11);
 			__m128 m1_row1 = _mm_loadu_ps(&M1._21);
 			__m128 m1_row2 = _mm_loadu_ps(&M1._31);

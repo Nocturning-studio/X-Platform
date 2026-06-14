@@ -72,15 +72,15 @@ void CUIStaticItem::Render()
 	if (alpha_ref != -1)
 		RenderBackendLegacy.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
-	float2 bp;
+	fvec2 bp;
 	UI()->ClientToScreenScaled(bp, float(iPos.x), float(iPos.y));
 	bp.x = (float)iFloor(bp.x);
 	bp.y = (float)iFloor(bp.y);
 
 	// actual rendering
 	u32 vOffset;
-	float2 pos;
-	float2 f_len;
+	fvec2 pos;
+	fvec2 f_len;
 	UI()->ClientToScreenScaled(f_len, iVisRect.x2, iVisRect.y2);
 
 	int tile_x = fis_zero(iRemX) ? iTileX : iTileX + 1;
@@ -125,7 +125,7 @@ void CUIStaticItem::Render(float angle)
 	if (alpha_ref != -1)
 		RenderBackendLegacy.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
-	float2 bp_ns;
+	fvec2 bp_ns;
 	bp_ns.set(iPos);
 
 	// actual rendering

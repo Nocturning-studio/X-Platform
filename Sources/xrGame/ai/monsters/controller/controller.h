@@ -183,7 +183,7 @@ class CController : public CBaseMonster
 #ifdef _DEBUG
 	virtual void debug_on_key(int key);
 
-	float3 P1, P2;
+	fvec3 P1, P2;
 #endif
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

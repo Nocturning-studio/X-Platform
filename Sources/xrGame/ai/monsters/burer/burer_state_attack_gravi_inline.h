@@ -149,8 +149,8 @@ void CStateBurerAttackGraviAbstract::ExecuteGraviFire()
 {
 	object->com_man().ta_pointbreak();
 
-	float3 from_pos;
-	float3 target_pos;
+	fvec3 from_pos;
+	fvec3 target_pos;
 	from_pos = object->Position();
 	from_pos.y += 0.5f;
 	target_pos = object->EnemyMan.get_enemy()->Position();

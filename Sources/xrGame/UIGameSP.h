@@ -37,8 +37,8 @@ class CUIGameSP : public CUIGameCustom
 	void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
 	void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox);
 	virtual void ReInitShownUI();
-	void ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, float3 pos, float3 ang, float3 pos2,
-					 float3 ang2, bool b);
+	void ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, fvec3 pos, fvec3 ang, fvec3 pos2,
+					 fvec3 ang2, bool b);
 
 	virtual void HideShownDialogs();
 
@@ -59,10 +59,10 @@ class CChangeLevelWnd : public CUIDialogWnd
   public:
 	GameGraph::_GRAPH_ID m_game_vertex_id;
 	u32 m_level_vertex_id;
-	float3 m_position;
-	float3 m_angles;
-	float3 m_position_cancel;
-	float3 m_angles_cancel;
+	fvec3 m_position;
+	fvec3 m_angles;
+	fvec3 m_position_cancel;
+	fvec3 m_angles_cancel;
 	bool m_b_position_cancel;
 
 	CChangeLevelWnd();

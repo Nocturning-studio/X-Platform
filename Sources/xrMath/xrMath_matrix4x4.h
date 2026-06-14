@@ -28,11 +28,11 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct _matrix
+template <class T> struct _matrix4x4
 {
   public:
 	typedef T TYPE;
-	typedef _matrix<T> Self;
+	typedef _matrix4x4<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 	typedef _vector3<T> Tvector;
@@ -746,12 +746,12 @@ template <class T> struct _matrix
 		dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
 		dest.z = v.x * _13 + v.y * _23 + v.z * _33 + _43;
 	}
-	ICF void transform_tiny32(float2& dest, const Tvector& v) const // preferred to use
+	ICF void transform_tiny32(fvec2& dest, const Tvector& v) const // preferred to use
 	{
 		dest.x = v.x * _11 + v.y * _21 + v.z * _31 + _41;
 		dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
 	}
-	ICF void transform_tiny23(Tvector& dest, const float2& v) const // preferred to use
+	ICF void transform_tiny23(Tvector& dest, const fvec2& v) const // preferred to use
 	{
 		dest.x = v.x * _11 + v.y * _21 + _41;
 		dest.y = v.x * _12 + v.y * _22 + _42;
@@ -763,7 +763,7 @@ template <class T> struct _matrix
 		dest.y = v.x * _12 + v.y * _22 + v.z * _32;
 		dest.z = v.x * _13 + v.y * _23 + v.z * _33;
 	}
-	IC void transform(float4& dest, const Tvector& v) const // preferred to use
+	IC void transform(fvec4& dest, const Tvector& v) const // preferred to use
 	{
 		dest.w = v.x * _14 + v.y * _24 + v.z * _34 + _44;
 		dest.x = (v.x * _11 + v.y * _21 + v.z * _31 + _41) / dest.w;
@@ -880,14 +880,14 @@ template <class T> struct _matrix
 	}
 };
 
-typedef _matrix<float> float4x4;
+typedef _matrix4x4<float> fmat4x4;
 
-template <class T> BOOL _valid(const _matrix<T>& m)
+template <class T> BOOL _valid(const _matrix4x4<T>& m)
 {
 	return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) &&
 		   _valid(m.c) && _valid(m._44_);
 }
 
-extern XRMATH_API float4x4 Fidentity;
+extern XRMATH_API fmat4x4 Fidentity;
 
 #pragma warning(pop)

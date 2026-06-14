@@ -9,7 +9,7 @@ template <typename _Object> class CStateControlHide : public CState<_Object>
 
 	struct
 	{
-		float3 position;
+		fvec3 position;
 		u32 node;
 	} target;
 

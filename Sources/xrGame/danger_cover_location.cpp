@@ -10,7 +10,7 @@
 #include "danger_cover_location.h"
 #include "cover_point.h"
 
-const float3& CDangerCoverLocation::position() const
+const fvec3& CDangerCoverLocation::position() const
 {
 	return (m_cover->position());
 }

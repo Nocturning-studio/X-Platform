@@ -103,10 +103,10 @@ void CUIScrollView::RecalcSize()
 {
 	if (!m_pad)
 		return;
-	float2 pad_size;
+	fvec2 pad_size;
 	pad_size.set(0.0f, 0.0f);
 
-	float2 item_pos;
+	fvec2 item_pos;
 	item_pos.set(m_rightIndent, m_vertInterval + m_upIndent);
 	pad_size.y += m_upIndent;
 	pad_size.y += m_downIndent;
@@ -150,7 +150,7 @@ void CUIScrollView::RecalcSize()
 void CUIScrollView::UpdateScroll()
 {
 
-	float2 w_pos = m_pad->GetWndPos();
+	fvec2 w_pos = m_pad->GetWndPos();
 	m_VScrollBar->SetHeight(GetHeight());
 	m_VScrollBar->SetRange(0, iFloor(m_pad->GetHeight() * Scroll2ViewV()));
 
@@ -207,7 +207,7 @@ bool CUIScrollView::NeedShowScrollBar()
 void CUIScrollView::OnScrollV(CUIWindow*, void*)
 {
 	int s_pos = m_VScrollBar->GetScrollPos();
-	float2 w_pos = m_pad->GetWndPos();
+	fvec2 w_pos = m_pad->GetWndPos();
 	m_pad->SetWndPos(w_pos.x, float(-s_pos));
 }
 
@@ -229,7 +229,7 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
 	case WINDOW_MOUSE_MOVE:
 		if (pInput->iGetAsyncBtnState(0))
 		{
-			float2 curr_pad_pos = m_pad->GetWndPos();
+			fvec2 curr_pad_pos = m_pad->GetWndPos();
 			curr_pad_pos.y += GetUICursor()->GetCursorPositionDelta().y;
 
 			float max_pos = m_pad->GetHeight() - GetHeight();

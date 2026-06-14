@@ -14,12 +14,12 @@ CPHSoundPlayer::~CPHSoundPlayer()
 	m_object = NULL;
 }
 
-void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair, const float3& pos)
+void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair, const fvec3& pos)
 {
 
 	if (!m_sound._feedback())
 	{
-		float3 vel;
+		fvec3 vel;
 		m_object->PHGetLinearVell(vel);
 		if (vel.square_magnitude() > 0.01f)
 		{

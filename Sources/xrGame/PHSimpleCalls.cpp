@@ -61,7 +61,7 @@ bool CPHShellBasedAction::obsolete() const
 	return !m_shell || !m_shell->isActive();
 }
 
-CPHConstForceAction::CPHConstForceAction(CPhysicsShell* shell, const float3& force) : CPHShellBasedAction(shell)
+CPHConstForceAction::CPHConstForceAction(CPhysicsShell* shell, const fvec3& force) : CPHShellBasedAction(shell)
 {
 	m_force.set(force);
 }

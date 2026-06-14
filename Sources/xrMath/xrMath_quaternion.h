@@ -180,7 +180,7 @@ template <class T> struct /*XRMATH_API*/ _quaternion
 		return *this;
 	}
 
-	IC SelfRef set(const _matrix<T>& m);
+	IC SelfRef set(const _matrix4x4<T>& m);
 
 	// multiplies q1 * q2, and places the result in *this.
 	// no failure. 	renormalization not automatic
@@ -329,13 +329,13 @@ template <class T> struct /*XRMATH_API*/ _quaternion
 	}
 
 	// makes unit rotation
-	IC SelfRef rotationYawPitchRoll(const float3& ypr)
+	IC SelfRef rotationYawPitchRoll(const fvec3& ypr)
 	{
 		return rotationYawPitchRoll(ypr.x, ypr.y, ypr.z);
 	}
 
 	// set a quaternion from an axis and a rotation around the axis
-	IC SelfRef rotation(float3& axis, T angle)
+	IC SelfRef rotation(fvec3& axis, T angle)
 	{
 		T sinTheta;
 
@@ -350,7 +350,7 @@ template <class T> struct /*XRMATH_API*/ _quaternion
 	// gets an axis and angle of rotation around the axis from a quaternion
 	// returns TRUE if there is an axis.
 	// returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
-	IC BOOL get_axis_angle(float3& axis, T& angle)
+	IC BOOL get_axis_angle(fvec3& axis, T& angle)
 	{
 		T OneOverSinTheta;
 

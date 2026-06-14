@@ -236,7 +236,7 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive* object0, const CEntityAl
 		return (false);
 
 	float yaw1, pitch1, yaw2, pitch2, fYawFov, fPitchFov, fRange;
-	float3 tPosition = object0->Position();
+	fvec3 tPosition = object0->Position();
 
 	yaw1 = object0->Orientation().yaw;
 	pitch1 = object0->Orientation().pitch;

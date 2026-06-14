@@ -16,13 +16,13 @@ class ENGINE_API CEnvDescriptor
 	ref_texture clouds_texture;
 	ref_texture lut_texture;
 
-	float4 clouds_color;
-	float3 sky_color;
+	fvec4 clouds_color;
+	fvec3 sky_color;
 	float sky_rotation;
 
 	float far_plane;
 
-	float3 fog_color;
+	fvec3 fog_color;
 	float fog_density;
 	float fog_sky_influence;
 	float vertical_fog_intensity;
@@ -30,7 +30,7 @@ class ENGINE_API CEnvDescriptor
 	float vertical_fog_height;
 
 	float rain_density;
-	float3 rain_color;
+	fvec3 rain_color;
 
 	float bolt_period;
 	float bolt_duration;
@@ -42,11 +42,11 @@ class ENGINE_API CEnvDescriptor
 	float wind_velocity;
 	float wind_tilt;
 
-	float3 ambient;
+	fvec3 ambient;
 	float ambient_brightness;
-	float4 hemi_color; // w = R2 correction
-	float3 sun_color;
-	float3 sun_dir;
+	fvec4 hemi_color; // w = R2 correction
+	fvec3 sun_color;
+	fvec3 sun_dir;
 	float m_fSunShaftsIntensity;
 	float m_fWaterIntensity;
 
@@ -57,10 +57,10 @@ class ENGINE_API CEnvDescriptor
 	float m_fTreeAmplitude;
 	float m_fTreeSpeed;
 	float m_fTreeRotation;
-	float3 m_fTreeWave;
+	fvec3 m_fTreeWave;
 
 	// NSDeathman(Очередное ЧСВ в коде указало свой ник): Кинематографические инструменты
-	float3 m_SepiaColor;
+	fvec3 m_SepiaColor;
 	float m_SepiaPower;
 	float m_VignettePower;
 
@@ -69,8 +69,8 @@ class ENGINE_API CEnvDescriptor
 	CEnvDescriptor(shared_str const& identifier);
 
 	float GetFloatIfExist(LPCSTR line_name, float default_value, CInifile& config);
-	float3 GetRGBColorIfExist(LPCSTR line_name, float3 default_value, CInifile& config);
-	float4 GetRGBAColorIfExist(LPCSTR line_name, float4 default_value, CInifile& config);
+	fvec3 GetRGBColorIfExist(LPCSTR line_name, fvec3 default_value, CInifile& config);
+	fvec4 GetRGBAColorIfExist(LPCSTR line_name, fvec4 default_value, CInifile& config);
 	LPCSTR GetStringIfExist(LPCSTR line_name, LPCSTR default_value, CInifile& config);
 
 	void load(CEnvironment& environment, CInifile& config);

@@ -29,7 +29,7 @@ CUI3tButton::CUI3tButton()
 	m_bEnableTextHighlighting = false;
 	m_bCheckMode = false;
 	m_bChangeVis = false;
-	SetPushOffset(float2().set(0.0f, 0.0f));
+	SetPushOffset(fvec2().set(0.0f, 0.0f));
 }
 
 CUI3tButton::~CUI3tButton()

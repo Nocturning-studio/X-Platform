@@ -181,12 +181,12 @@ class ENGINE_API CKinematicsAnimated : public CKinematics
 	// Calculation
   private:
 	void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
-	void CLBone(const CBoneData* bd, CBoneInstance& bi, const float4x4* parent, const CBlendInstance::BlendSVec& Blend,
+	void CLBone(const CBoneData* bd, CBoneInstance& bi, const fmat4x4* parent, const CBlendInstance::BlendSVec& Blend,
 				u8 mask_channel = (1 << 0));
 
   public:
-	virtual void Bone_Calculate(CBoneData* bd, float4x4* parent);
-	void Bone_GetAnimPos(float4x4& pos, u16 id, u8 channel_mask, bool ignore_callbacks);
+	virtual void Bone_Calculate(CBoneData* bd, fmat4x4* parent);
+	void Bone_GetAnimPos(fmat4x4& pos, u16 id, u8 channel_mask, bool ignore_callbacks);
 	virtual void OnCalculateBones();
 
   public:

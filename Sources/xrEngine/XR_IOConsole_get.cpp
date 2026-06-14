@@ -99,7 +99,7 @@ xr_token* CConsole::GetXRToken(LPCSTR cmd) const
 	return NULL;
 }
 
-float3* CConsole::GetFVectorPtr(LPCSTR cmd) const
+fvec3* CConsole::GetFVectorPtr(LPCSTR cmd) const
 {
 	IConsole_Command* cc = GetCommand(cmd);
 	CCC_Vector3* cf = dynamic_cast<CCC_Vector3*>(cc);
@@ -110,12 +110,12 @@ float3* CConsole::GetFVectorPtr(LPCSTR cmd) const
 	return NULL;
 }
 
-float3 CConsole::GetFVector(LPCSTR cmd) const
+fvec3 CConsole::GetFVector(LPCSTR cmd) const
 {
-	float3* pV = GetFVectorPtr(cmd);
+	fvec3* pV = GetFVectorPtr(cmd);
 	if (pV)
 	{
 		return *pV;
 	}
-	return float3().set(0.0f, 0.0f, 0.0f);
+	return fvec3().set(0.0f, 0.0f, 0.0f);
 }

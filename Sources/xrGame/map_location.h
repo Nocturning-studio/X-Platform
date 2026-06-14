@@ -39,14 +39,14 @@ class CMapLocation : public IPureDestroyableObject
 	u16 m_refCount;
 	int m_ttl;
 	u32 m_actual_time;
-	float3 m_position_global;	// last global position, actual time only current frame
-	float2 m_position_on_map; // last position on parent map, actual time only current frame
+	fvec3 m_position_global;	// last global position, actual time only current frame
+	fvec2 m_position_on_map; // last position on parent map, actual time only current frame
 
 	struct SCachedValues
 	{
 		u32 m_updatedFrame;
-		float2 m_Position;
-		float2 m_Direction;
+		fvec2 m_Position;
+		fvec2 m_Direction;
 		shared_str m_LevelName;
 		bool m_Actuality;
 	};
@@ -100,8 +100,8 @@ class CMapLocation : public IPureDestroyableObject
 	virtual void UpdateMiniMap(CUICustomMap* map);
 	virtual void UpdateLevelMap(CUICustomMap* map);
 
-	virtual float2 Position();
-	virtual float2 Direction();
+	virtual fvec2 Position();
+	virtual fvec2 Direction();
 	virtual shared_str LevelName();
 	u16 RefCount()
 	{
@@ -122,7 +122,7 @@ class CMapLocation : public IPureDestroyableObject
 		return m_objectID;
 	}
 	virtual bool Update(); // returns actual
-	float3 GetLastPosition()
+	fvec3 GetLastPosition()
 	{
 		return m_position_global;
 	};
@@ -180,18 +180,18 @@ class CUserDefinedMapLocation : public CMapLocation
 {
 	typedef CMapLocation inherited;
 	shared_str m_level_name;
-	float3 m_position;
+	fvec3 m_position;
 
   public:
 	GameGraph::_GRAPH_ID m_graph_id;
 	CUserDefinedMapLocation(LPCSTR type, u16 object_id);
 	virtual ~CUserDefinedMapLocation();
 	virtual bool Update(); // returns actual
-	virtual float2 Position();
-	virtual float2 Direction();
+	virtual fvec2 Position();
+	virtual fvec2 Direction();
 	virtual shared_str LevelName();
 
-	void InitExternal(const shared_str& level_name, const float3& pos);
+	void InitExternal(const shared_str& level_name, const fvec3& pos);
 	virtual void save(IWriter& stream);
 	virtual void load(IReader& stream);
 

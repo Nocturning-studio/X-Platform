@@ -37,7 +37,7 @@ template <typename T> IC void CLevelStraightLinePathManager::create_path(T& vert
 
 	_dist_type fCumulativeDistance = 0, fLastDirectDistance = 0, fDirectDistance;
 
-	float3 tPosition = m_parameters->m_start_point;
+	fvec3 tPosition = m_parameters->m_start_point;
 
 	xr_vector<_index_type>::iterator I = path->begin();
 	xr_vector<_index_type>::iterator E = path->end();

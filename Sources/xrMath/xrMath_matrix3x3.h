@@ -3,10 +3,10 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct _matrix33
+template <class T> struct _matrix3x3
 {
   public:
-	typedef _matrix33<T> Self;
+	typedef _matrix3x3<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 	typedef _vector3<T> Tvector;
@@ -28,7 +28,7 @@ template <class T> struct _matrix33
 		float m[3][3]; // Array
 	};
 	// Class members
-	IC SelfRef set_rapid(const _matrix<T>& a)
+	IC SelfRef set_rapid(const _matrix4x4<T>& a)
 	{
 		m[0][0] = a.m[0][0];
 		m[0][1] = a.m[0][1];
@@ -46,7 +46,7 @@ template <class T> struct _matrix33
 		CopyMemory(this, &a, 9 * sizeof(float));
 		return *this;
 	}
-	IC SelfRef set(const _matrix<T>& a)
+	IC SelfRef set(const _matrix4x4<T>& a)
 	{
 		_11 = a._11;
 		_12 = a._12;
@@ -86,7 +86,7 @@ template <class T> struct _matrix33
 		_33 = matSource._33;
 		return *this;
 	}
-	IC SelfRef transpose(const _matrix<T>& matSource) // faster version of transpose
+	IC SelfRef transpose(const _matrix4x4<T>& matSource) // faster version of transpose
 	{
 		_11 = matSource._11;
 		_12 = matSource._21;
@@ -101,7 +101,7 @@ template <class T> struct _matrix33
 	}
 	IC SelfRef transpose(void) // self transpose - slower
 	{
-		_matrix33 a;
+		_matrix3x3 a;
 		CopyMemory(&a, this, 9 * sizeof(float)); // save matrix
 		transpose(a);
 		return *this;
@@ -148,7 +148,7 @@ template <class T> struct _matrix33
 		int nrot;
 		Tvector b;
 		Tvector z;
-		_matrix33 v;
+		_matrix3x3 v;
 		Tvector d;
 
 		v.identity();
@@ -406,9 +406,9 @@ template <class T> struct _matrix33
 	}
 };
 
-typedef _matrix33<float> float3x3;
+typedef _matrix3x3<float> fmat3x3;
 
-template <class T> BOOL _valid(const _matrix33<T>& m)
+template <class T> BOOL _valid(const _matrix3x3<T>& m)
 {
 	return _valid(m.i) && _valid(m.j) && _valid(m.k);
 }

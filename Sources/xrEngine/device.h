@@ -45,9 +45,9 @@ class ENGINE_API CRenderDevice
 	BOOL b_is_Active;
 	void OnWM_Activate(WPARAM wParam, LPARAM lParam);
 
-	float2 GetScreenResolution()
+	fvec2 GetScreenResolution()
 	{
-		float2 Resolution;
+		fvec2 Resolution;
 
 		Resolution.x = (float)dwWidth;
 		Resolution.y = (float)dwHeight;
@@ -55,7 +55,7 @@ class ENGINE_API CRenderDevice
 		return Resolution;
 	}
 
-	void SetScreenResolution(int2 Resolution)
+	void SetScreenResolution(ivec2 Resolution)
 	{
 		dwWidth = Resolution.x;
 		dwHeight = Resolution.y;

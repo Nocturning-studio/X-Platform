@@ -930,22 +930,22 @@ IC bool DM_Compare_Players(game_PlayerState* p1, game_PlayerState* p2)
 	return p1->frags() > p2->frags();
 };
 
-void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, float3& pos)
+void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, fvec3& pos)
 {
 	if (!EffName)
 		return;
 	// вычислить позицию и направленность партикла
-	float4x4 M;
+	fmat4x4 M;
 	M.translate(pos);
 
-	//	CParticlesPlayer::MakeTransform(pObj,0,float3().set(0.f,1.f,0.f),float3().set(0.f,0.f,0.f),pos);
+	//	CParticlesPlayer::MakeTransform(pObj,0,fvec3().set(0.f,1.f,0.f),fvec3().set(0.f,0.f,0.f),pos);
 
 	// установить particles
 	CParticlesObject* ps = NULL;
 
 	ps = CParticlesObject::Create(EffName, TRUE);
 
-	ps->UpdateParent(M, float3().set(0.f, 0.f, 0.f));
+	ps->UpdateParent(M, fvec3().set(0.f, 0.f, 0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);
 }
 

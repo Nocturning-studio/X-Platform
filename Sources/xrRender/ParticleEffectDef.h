@@ -24,15 +24,15 @@ namespace PS
 {
 class CParticleEffect;
 
-typedef BOOL (*CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const float3& pt,
-								  const float3& norm); // TRUE-continue collision exec
+typedef BOOL (*CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const fvec3& pt,
+								  const fvec3& norm); // TRUE-continue collision exec
 typedef void (*DestroyCallback)(CParticleEffect* E, PAPI::Particle& P);
 
 class PFunction;
 struct SFrame
 {
-	float2 m_fTexSize;
-	float2 reserved;
+	fvec2 m_fTexSize;
+	fvec2 reserved;
 	int m_iFrameDimX;
 	int m_iFrameCount;
 	float m_fSpeed;
@@ -44,7 +44,7 @@ struct SFrame
 		m_iFrameCount = 16;
 		m_fSpeed = 24.f;
 	}
-	IC void CalculateTC(int frame, float2& lt, float2& rb)
+	IC void CalculateTC(int frame, fvec2& lt, fvec2& rb)
 	{
 		lt.x = (frame % m_iFrameDimX) * m_fTexSize.x;
 		lt.y = (frame / m_iFrameDimX) * m_fTexSize.y;
@@ -90,8 +90,8 @@ class ECORE_API CPEDef
 	// def
 	float m_fTimeLimit;			 // time limit
 	int m_MaxParticles;			 // max particle count
-	float3 m_VelocityScale;	 // velocity scale
-	float3 m_APDefaultRotation; // align to path
+	fvec3 m_VelocityScale;	 // velocity scale
+	fvec3 m_APDefaultRotation; // align to path
 								 // collision
 	float m_fCollideOneMinusFriction;
 	float m_fCollideResilience;
@@ -147,7 +147,7 @@ class ECORE_API CPEDef
 	void FillProp(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner);
 	void Copy(const CPEDef& src);
 	BOOL Equal(const CPEDef* pe);
-	void Render(const float4x4& parent);
+	void Render(const fmat4x4& parent);
 	void Compile();
 	static PFunction* FindCommandPrototype(LPCSTR src, LPCSTR& dest);
 	void __stdcall FillActionList(ChooseItemVec& items, void* param);

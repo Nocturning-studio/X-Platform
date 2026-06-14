@@ -23,6 +23,6 @@ class CActorMemory : public vision_client
   public:
 	CActorMemory(CActor* actor);
 	virtual BOOL feel_vision_isRelevant(CObject* object);
-	virtual void camera(float3& position, float3& direction, float3& normal, float& field_of_view,
+	virtual void camera(fvec3& position, fvec3& direction, fvec3& normal, float& field_of_view,
 						float& aspect_ratio, float& near_plane, float& far_plane);
 };

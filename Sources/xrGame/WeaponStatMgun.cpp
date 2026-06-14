@@ -15,7 +15,7 @@
 void CWeaponStatMgun::BoneCallbackX(CBoneInstance* B)
 {
 	CWeaponStatMgun* P = static_cast<CWeaponStatMgun*>(B->Callback_Param);
-	float4x4 rX;
+	fmat4x4 rX;
 	rX.rotateX(P->m_cur_x_rot);
 	B->mTransform.mulB_43(rX);
 }
@@ -23,7 +23,7 @@ void CWeaponStatMgun::BoneCallbackX(CBoneInstance* B)
 void CWeaponStatMgun::BoneCallbackY(CBoneInstance* B)
 {
 	CWeaponStatMgun* P = static_cast<CWeaponStatMgun*>(B->Callback_Param);
-	float4x4 rY;
+	fmat4x4 rY;
 	rY.rotateY(P->m_cur_y_rot);
 	B->mTransform.mulB_43(rY);
 }
@@ -101,7 +101,7 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 	VERIFY(bdY.IK_data.type == jtJoint);
 	m_lim_y_rot.set(bdY.IK_data.limits[1].limit.x, bdY.IK_data.limits[1].limit.y);
 
-	xr_vector<float4x4> matrices;
+	xr_vector<fmat4x4> matrices;
 	K->LL_GetBindTransform(matrices);
 	m_i_bind_x_transform.invert(matrices[m_rotate_x_bone]);
 	m_i_bind_y_transform.invert(matrices[m_rotate_y_bone]);
@@ -162,8 +162,8 @@ void CWeaponStatMgun::UpdateCL()
 	}
 }
 
-// void CWeaponStatMgun::Hit(	float P, float3 &dir,	CObject* who,
-//							s16 element,float3 p_in_object_space,
+// void CWeaponStatMgun::Hit(	float P, fvec3 &dir,	CObject* who,
+//							s16 element,fvec3 p_in_object_space,
 //							float impulse, ALife::EHitType hit_type)
 void CWeaponStatMgun::Hit(SHit* pHDS)
 {
@@ -184,9 +184,9 @@ void CWeaponStatMgun::UpdateBarrelDir()
 	m_fire_bone_transform.transform_dir(m_fire_dir);
 
 	m_allow_fire = true;
-	float4x4 XFi;
+	fmat4x4 XFi;
 	XFi.invert(Transform());
-	float3 dep;
+	fvec3 dep;
 	XFi.transform_dir(dep, m_destEnemyDir);
 	{ // x angle
 		m_i_bind_x_transform.transform_dir(dep);
@@ -214,18 +214,18 @@ void CWeaponStatMgun::UpdateBarrelDir()
 
 void CWeaponStatMgun::cam_Update(float dt, float fov)
 {
-	float3 P, Da;
+	fvec3 P, Da;
 	Da.set(0, 0, 0);
 
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
-	const float4x4& C = K->LL_GetTransform(m_camera_bone);
+	const fmat4x4& C = K->LL_GetTransform(m_camera_bone);
 	Transform().transform_tiny(P, C.c);
 
-	float3 d = C.k;
+	fvec3 d = C.k;
 	Transform().transform_dir(d);
-	float2 des_cam_dir;
+	fvec2 des_cam_dir;
 
 	d.getHP(des_cam_dir.x, des_cam_dir.y);
 	des_cam_dir.mul(-1.0f);
@@ -271,7 +271,7 @@ void CWeaponStatMgun::Action(int id, u32 flags)
 	}
 }
 
-void CWeaponStatMgun::SetParam(int id, float2 val)
+void CWeaponStatMgun::SetParam(int id, fvec2 val)
 {
 	inheritedHolder::SetParam(id, val);
 	switch (id)

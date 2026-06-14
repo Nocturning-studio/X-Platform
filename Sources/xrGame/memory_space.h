@@ -54,7 +54,7 @@ struct CNotYetVisibleObject
 struct SObjectParams
 {
 	u32 m_level_vertex_id;
-	float3 m_position;
+	fvec3 m_position;
 #ifdef USE_ORIENTATION
 	SRotation m_orientation;
 #endif
@@ -167,7 +167,7 @@ struct CVisibleObject : CMemoryObject<CGameObject>
 
 struct CHitObject : public CMemoryObject<CEntityAlive>
 {
-	float3 m_direction;
+	fvec3 m_direction;
 	u16 m_bone_index;
 	float m_amount;
 };

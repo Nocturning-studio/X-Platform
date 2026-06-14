@@ -176,13 +176,13 @@ struct ref_sound
 	IC void destroy();
 
 	IC void play(CObject* O, u32 flags = 0, float delay = 0.f);
-	IC void play_at_pos(CObject* O, const float3& pos, u32 flags = 0, float delay = 0.f);
-	IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, float3* pos = 0, float* vol = 0,
-							 float* freq = 0, float2* range = 0);
+	IC void play_at_pos(CObject* O, const fvec3& pos, u32 flags = 0, float delay = 0.f);
+	IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, fvec3* pos = 0, float* vol = 0,
+							 float* freq = 0, fvec2* range = 0);
 
 	IC void stop();
 	IC void stop_deffered();
-	IC void set_position(const float3& pos);
+	IC void set_position(const fvec3& pos);
 	IC void set_frequency(float freq);
 	IC void set_range(float min, float max);
 	IC void set_volume(float vol);
@@ -214,7 +214,7 @@ class XRSOUND_API CSound_source
 class XRSOUND_API CSound_params
 {
   public:
-	float3 position;
+	fvec3 position;
 	float base_volume;
 	float volume;
 	float freq;
@@ -231,7 +231,7 @@ class XRSOUND_API CSound_emitter
 	virtual BOOL is_2D() = 0;
 	virtual void switch_to_2D() = 0;
 	virtual void switch_to_3D() = 0;
-	virtual void set_position(const float3& pos) = 0;
+	virtual void set_position(const fvec3& pos) = 0;
 	virtual void set_frequency(float freq) = 0;
 	virtual void set_range(float min, float max) = 0;
 	virtual void set_volume(float vol) = 0;
@@ -324,22 +324,22 @@ class XRSOUND_API CSound_manager_interface
 	virtual int pause_emitters(bool val) = 0;
 
 	virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f) = 0;
-	virtual void play_at_pos(ref_sound& S, CObject* O, const float3& pos, u32 flags = 0, float delay = 0.f) = 0;
-	virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, float3* pos = 0,
-								  float* vol = 0, float* freq = 0, float2* range = 0) = 0;
+	virtual void play_at_pos(ref_sound& S, CObject* O, const fvec3& pos, u32 flags = 0, float delay = 0.f) = 0;
+	virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, fvec3* pos = 0,
+								  float* vol = 0, float* freq = 0, fvec2* range = 0) = 0;
 
 	virtual void set_master_volume(float f = psSoundVFactor) = 0;
 	virtual void set_geometry_som(IReader* I) = 0;
 	virtual void set_geometry_occ(CDB::MODEL* M) = 0;
 	virtual void set_handler(sound_event* E) = 0;
 
-	virtual void update(const float3& P, const float3& D, const float3& N) = 0;
+	virtual void update(const fvec3& P, const fvec3& D, const fvec3& N) = 0;
 	virtual void statistic(CSound_stats* s0, CSound_stats_ext* s1) = 0;
 
-	virtual float get_occlusion_to(const float3& hear_pt, const float3& snd_pt, float dispersion = 0.2f) = 0;
+	virtual float get_occlusion_to(const fvec3& hear_pt, const fvec3& snd_pt, float dispersion = 0.2f) = 0;
 
 	virtual void object_relcase(CObject* obj) = 0;
-	virtual const float3& listener_position() = 0;
+	virtual const fvec3& listener_position() = 0;
 
 	virtual void set_device_pause_state(bool paused) = 0;
 
@@ -396,20 +396,20 @@ IC void ref_sound::play(CObject* O, u32 flags, float d)
 	::Sound->play(*this, O, flags, d);
 }
 
-IC void ref_sound::play_at_pos(CObject* O, const float3& pos, u32 flags, float d)
+IC void ref_sound::play_at_pos(CObject* O, const fvec3& pos, u32 flags, float d)
 {
 	VERIFY(!::Sound->i_locked());
 	::Sound->play_at_pos(*this, O, pos, flags, d);
 }
 
-IC void ref_sound::play_no_feedback(CObject* O, u32 flags, float d, float3* pos, float* vol, float* freq,
-									float2* range)
+IC void ref_sound::play_no_feedback(CObject* O, u32 flags, float d, fvec3* pos, float* vol, float* freq,
+									fvec2* range)
 {
 	VERIFY(!::Sound->i_locked());
 	::Sound->play_no_feedback(*this, O, flags, d, pos, vol, freq, range);
 }
 
-IC void ref_sound::set_position(const float3& pos)
+IC void ref_sound::set_position(const fvec3& pos)
 {
 	VERIFY(!::Sound->i_locked());
 	VERIFY(_feedback());

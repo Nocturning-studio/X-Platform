@@ -36,7 +36,7 @@ class
 	SLevel
 {
 	shared_str m_name;
-	float3 m_offset;
+	fvec3 m_offset;
 	_LEVEL_ID m_id;
 	shared_str m_section;
 	xrGUID m_guid;
@@ -47,7 +47,7 @@ class
 		return (m_name);
 	}
 
-	IC const float3& offset() const
+	IC const fvec3& offset() const
 	{
 		return (m_offset);
 	}
@@ -98,8 +98,8 @@ class
 #endif
 	CVertex
 {
-	float3 tLocalPoint;
-	float3 tGlobalPoint;
+	fvec3 tLocalPoint;
+	fvec3 tGlobalPoint;
 	u32 tLevelID : 8;
 	u32 tNodeID : 24;
 	u8 tVertexTypes[LOCATION_TYPE_COUNT];
@@ -109,8 +109,8 @@ class
 	u8 tDeathPointCount;
 
   public:
-	IC const float3& level_point() const;
-	IC const float3& game_point() const;
+	IC const fvec3& level_point() const;
+	IC const fvec3& game_point() const;
 	IC _LEVEL_ID level_id() const;
 	IC u32 level_vertex_id() const;
 	IC const u8* vertex_type() const;
@@ -159,12 +159,12 @@ class
 #endif
 	CLevelPoint
 {
-	float3 tPoint;
+	fvec3 tPoint;
 	u32 tNodeID;
 	float fDistance;
 
   public:
-	IC const float3& level_point() const
+	IC const fvec3& level_point() const
 	{
 		return (tPoint);
 	}

@@ -15,7 +15,7 @@ using namespace Opcode;
 #define _MM_ALIGN16 __declspec(align(16))
 #endif // _MM_ALIGN16
 
-struct _MM_ALIGN16 vec_t : public float3
+struct _MM_ALIGN16 vec_t : public fvec3
 {
 	float pad;
 };
@@ -48,9 +48,9 @@ ICF u32& uf(float& x)
 {
 	return (u32&)x;
 }
-ICF BOOL isect_fpu(const float3& min, const float3& max, const ray_t& ray, float3& coord)
+ICF BOOL isect_fpu(const fvec3& min, const fvec3& max, const ray_t& ray, fvec3& coord)
 {
-	float3 MaxT;
+	fvec3 MaxT;
 	MaxT.x = MaxT.y = MaxT.z = -1.0f;
 	BOOL Inside = TRUE;
 
@@ -215,13 +215,13 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
   public:
 	COLLIDER* dest;
 	TRI* tris;
-	float3* verts;
+	fvec3* verts;
 
 	ray_t ray;
 	float rRange;
 	float rRange2;
 
-	IC void _init(COLLIDER* CL, float3* V, TRI* T, const float3& C, const float3& D, float R)
+	IC void _init(COLLIDER* CL, fvec3* V, TRI* T, const fvec3& C, const fvec3& D, float R)
 	{
 		dest = CL;
 		tris = T;
@@ -253,7 +253,7 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 	}
 
 	// fpu
-	ICF BOOL _box_fpu(const float3& bCenter, const float3& bExtents, float3& coord)
+	ICF BOOL _box_fpu(const fvec3& bCenter, const fvec3& bExtents, fvec3& coord)
 	{
 		Fbox BB;
 		BB.min.sub(bCenter, bExtents);
@@ -261,7 +261,7 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		return isect_fpu(BB.min, BB.max, ray, coord);
 	}
 	// sse
-	ICF BOOL _box_sse(const float3& bCenter, const float3& bExtents, float& dist)
+	ICF BOOL _box_sse(const fvec3& bCenter, const fvec3& bExtents, float& dist)
 	{
 		aabb_t box;
 		box.min.sub(bCenter, bExtents);
@@ -273,13 +273,13 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 
 	IC bool _tri(u32* p, float& u, float& v, float& range)
 	{
-		float3 edge1, edge2, tvec, pvec, qvec;
+		fvec3 edge1, edge2, tvec, pvec, qvec;
 		float det, inv_det;
 
 		// find vectors for two edges sharing vert0
-		float3& p0 = verts[p[0]];
-		float3& p1 = verts[p[1]];
-		float3& p2 = verts[p[2]];
+		fvec3& p0 = verts[p[0]];
+		fvec3& p1 = verts[p[1]];
+		fvec3& p2 = verts[p[2]];
 		edge1.sub(p1, p0);
 		edge2.sub(p2, p0);
 		// begin calculating determinant - also used to calculate U parameter
@@ -384,7 +384,7 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		{
 			// use SSE
 			float d;
-			if (!_box_sse((float3&)node->mAABB.mCenter, (float3&)node->mAABB.mExtents, d))
+			if (!_box_sse((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, d))
 				return;
 			if (d > rRange)
 				return;
@@ -392,8 +392,8 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		else
 		{
 			// use FPU
-			float3 P;
-			if (!_box_fpu((float3&)node->mAABB.mCenter, (float3&)node->mAABB.mExtents, P))
+			fvec3 P;
+			if (!_box_fpu((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, P))
 				return;
 			if (P.distance_to_sqr(ray.pos) > rRange2)
 				return;
@@ -417,7 +417,7 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 	}
 };
 
-void COLLIDER::ray_query(const MODEL* m_def, const float3& r_start, const float3& r_dir, float r_range)
+void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& r_dir, float r_range)
 {
 	m_def->syncronize();
 

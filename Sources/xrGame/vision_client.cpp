@@ -40,11 +40,11 @@ void vision_client::eye_pp_s01()
 {
 	Engine.Statistic->AI_Vis_Query.Begin();
 
-	float3 c, k, j;
+	fvec3 c, k, j;
 	float field_of_view, aspect_ratio, near_plane, far_plane;
 	camera(c, k, j, field_of_view, aspect_ratio, near_plane, far_plane);
 
-	float4x4 mProject, mFull, mView;
+	fmat4x4 mProject, mFull, mView;
 	mView.build_camera_dir(c, k, j);
 	m_position = c;
 	mProject.build_projection(field_of_view, aspect_ratio, near_plane, far_plane);

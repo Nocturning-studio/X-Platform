@@ -42,7 +42,7 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
 	VERIFY3(count, "Invalid count for section in the purchase list", *name);
 	VERIFY3(!fis_zero(probability, EPS_S), "Invalid probability for section in the purchase list", *name);
 
-	const float3& position = owner.Position();
+	const fvec3& position = owner.Position();
 	const u32& level_vertex_id = owner.ai_location().level_vertex_id();
 	const ALife::_OBJECT_ID& id = owner.ID();
 	CRandom random((u32)(CPU::QPC() & u32(-1)));

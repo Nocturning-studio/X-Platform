@@ -46,11 +46,11 @@ class CDetailManager
 	struct SDetailRenderContext
 	{
 		DetailsRenderMode mode;
-		const float4x4* cullMatrix;
+		const fmat4x4* cullMatrix;
 		const CFrustum* cullFrustum;
-		float3 c_sun;
-		float3 c_ambient;
-		float3 c_hemi;
+		fvec3 c_sun;
+		fvec3 c_ambient;
+		fvec3 c_hemi;
 		float minX, maxX;
 		float minZ, maxZ;
 		bool useAABB;
@@ -81,7 +81,7 @@ class CDetailManager
 	// Выравниваем структуру для SSE операций
 	struct __declspec(align(16)) SlotItem
 	{
-		float4x4 mRotY;			// 64 bytes
+		fmat4x4 mRotY;			// 64 bytes
 		float scale;			// 4
 		float scale_calculated; // 4
 		float c_hemi;			// 4
@@ -96,15 +96,15 @@ class CDetailManager
 
 	struct InstanceData
 	{
-		float4 Mat0;
-		float4 Mat1;
-		float4 Mat2;
-		float4 Color;
+		fvec4 Mat0;
+		fvec4 Mat1;
+		fvec4 Mat2;
+		fvec4 Color;
 	};
 
 	struct DetailBatch
 	{
-		xr_vector<float3> positions;	   // Для CPU (Culling)
+		xr_vector<fvec3> positions;	   // Для CPU (Culling)
 		xr_vector<InstanceData> instances; // Для GPU (Memcpy)
 
 		void clear_not_free()
@@ -178,8 +178,8 @@ class CDetailManager
 	u32 m_vis_calc_id;	 // Индекс буфера, который сейчас считаем
 
 	// Сохраненная позиция камеры для расчета в потоке (чтобы не было гонок данных с Device)
-	float3 m_vCameraPos_calc; 
-	float4x4 m_mFullTransform_calc;
+	fvec3 m_vCameraPos_calc; 
+	fmat4x4 m_mFullTransform_calc;
 	typedef svector<CDetail*, dm_max_objects> DetailVec;
 	typedef DetailVec::iterator DetailIt;
 	typedef poolSS<SlotItem, 4096> PSS;
@@ -235,12 +235,12 @@ class CDetailManager
 	IDirect3DIndexBuffer9* hw_IB;
 	void hw_Load();
 	void hw_Unload();
-	void Render(DetailsRenderMode Mode, float4x4* pCullMatrix = nullptr, const CFrustum* pExternalCull = nullptr);
+	void Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix = nullptr, const CFrustum* pExternalCull = nullptr);
 
 	DetailSlot& QueryDB(int sx, int sz);
 
 	void cache_Initialize();
-	void cache_Update(int sx, int sz, float3& view, int limit);
+	void cache_Update(int sx, int sz, fvec3& view, int limit);
 	void cache_Task(int gx, int gz, Slot* D);
 	Slot* cache_Query(int sx, int sz);
 

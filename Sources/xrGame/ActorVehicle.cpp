@@ -101,7 +101,7 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 
 	//	CHolderCustom* vehicle=smart_cast<CHolderCustom*>(object);
 	CHolderCustom* vehicle = object;
-	float3 center;
+	fvec3 center;
 	Center(center);
 	if (m_holder)
 	{

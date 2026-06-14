@@ -33,19 +33,19 @@ class CODEGeom
 	// get
 	virtual float volume() = 0;
 	virtual void get_mass(dMass& m) = 0; // unit dencity mass;
-	void get_mass(dMass& m, const float3& ref_point, float density);
-	void get_mass(dMass& m, const float3& ref_point);
-	void add_self_mass(dMass& m, const float3& ref_point);
-	void add_self_mass(dMass& m, const float3& ref_point, float density);
-	void get_local_center_bt(float3& center);	// for built
-	void get_global_center_bt(float3& center); // for built
-	void get_local_form_bt(float4x4& form);		// for built
-	void get_global_form_bt(float4x4& form);		// for built
+	void get_mass(dMass& m, const fvec3& ref_point, float density);
+	void get_mass(dMass& m, const fvec3& ref_point);
+	void add_self_mass(dMass& m, const fvec3& ref_point);
+	void add_self_mass(dMass& m, const fvec3& ref_point, float density);
+	void get_local_center_bt(fvec3& center);	// for built
+	void get_global_center_bt(fvec3& center); // for built
+	void get_local_form_bt(fmat4x4& form);		// for built
+	void get_global_form_bt(fmat4x4& form);		// for built
 
-	void set_static_ref_form(const float4x4& form); // for built
-	virtual void get_max_area_dir_bt(float3& dir) = 0;
+	void set_static_ref_form(const fmat4x4& form); // for built
+	virtual void get_max_area_dir_bt(fvec3& dir) = 0;
 	virtual float radius() = 0;
-	virtual void get_extensions_bt(const float3& axis, float center_prg, float& lo_ext, float& hi_ext) = 0;
+	virtual void get_extensions_bt(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext) = 0;
 	void clear_cashed_tries();
 	IC dGeomID geom()
 	{
@@ -78,9 +78,9 @@ class CODEGeom
 	{
 		return dGeomGetUserData(geometry())->element_position;
 	}
-	virtual const float3& local_center() = 0;
-	virtual void get_local_form(float4x4& form) = 0;
-	virtual void set_local_form(const float4x4& form) = 0;
+	virtual const fvec3& local_center() = 0;
+	virtual void get_local_form(fmat4x4& form) = 0;
+	virtual void set_local_form(const fmat4x4& form) = 0;
 	// set
 	// element part
 	void set_body(dBodyID body);
@@ -112,9 +112,9 @@ class CODEGeom
 
   public:
 	static void get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM);
-	void build(const float3& ref_point);
-	virtual void set_position(const float3& ref_point); // for build geom
-	void move_local_basis(const float4x4& inv_new_mul_old);
+	void build(const fvec3& ref_point);
+	virtual void set_position(const fvec3& ref_point); // for build geom
+	void move_local_basis(const fmat4x4& inv_new_mul_old);
 	void destroy();
 	CODEGeom();
 	virtual ~CODEGeom();
@@ -130,14 +130,14 @@ class CBoxGeom : public CODEGeom
 	//	virtual					~CBoxGeom			(const Fobb& box) ;
 	virtual float volume();
 	virtual float radius();
-	virtual void get_extensions_bt(const float3& axis, float center_prg, float& lo_ext, float& hi_ext);
-	virtual void get_max_area_dir_bt(float3& dir);
+	virtual void get_extensions_bt(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext);
+	virtual void get_max_area_dir_bt(fvec3& dir);
 	virtual void get_mass(dMass& m); // unit dencity mass;
-	virtual const float3& local_center();
-	virtual void get_local_form(float4x4& form);
-	virtual void set_local_form(const float4x4& form);
+	virtual const fvec3& local_center();
+	virtual void get_local_form(fmat4x4& form);
+	virtual void set_local_form(const fmat4x4& form);
 	virtual dGeomID create();
-	virtual void set_position(const float3& ref_point);
+	virtual void set_position(const fvec3& ref_point);
 };
 
 class CSphereGeom : public CODEGeom
@@ -149,14 +149,14 @@ class CSphereGeom : public CODEGeom
 	CSphereGeom(const Fsphere& sphere);
 	virtual float volume();
 	virtual float radius();
-	virtual void get_extensions_bt(const float3& axis, float center_prg, float& lo_ext, float& hi_ext);
-	virtual void get_max_area_dir_bt(float3& dir){};
+	virtual void get_extensions_bt(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext);
+	virtual void get_max_area_dir_bt(fvec3& dir){};
 	virtual void get_mass(dMass& m); // unit dencity mass;
-	virtual const float3& local_center();
-	virtual void get_local_form(float4x4& form);
-	virtual void set_local_form(const float4x4& form);
+	virtual const fvec3& local_center();
+	virtual void get_local_form(fmat4x4& form);
+	virtual void set_local_form(const fmat4x4& form);
 	virtual dGeomID create();
-	virtual void set_position(const float3& ref_point);
+	virtual void set_position(const fvec3& ref_point);
 };
 class CCylinderGeom : public CODEGeom
 {
@@ -167,13 +167,13 @@ class CCylinderGeom : public CODEGeom
 	CCylinderGeom(const Fcylinder& cyl);
 	virtual float volume();
 	virtual float radius();
-	virtual void get_extensions_bt(const float3& axis, float center_prg, float& lo_ext, float& hi_ext);
-	virtual void get_max_area_dir_bt(float3& dir){};
-	virtual const float3& local_center();
+	virtual void get_extensions_bt(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext);
+	virtual void get_max_area_dir_bt(fvec3& dir){};
+	virtual const fvec3& local_center();
 	virtual void get_mass(dMass& m); // unit dencity mass;
-	virtual void get_local_form(float4x4& form);
-	virtual void set_local_form(const float4x4& form);
+	virtual void get_local_form(fmat4x4& form);
+	virtual void set_local_form(const fmat4x4& form);
 	virtual dGeomID create();
-	virtual void set_position(const float3& ref_point);
+	virtual void set_position(const fvec3& ref_point);
 };
 #endif // GEOMETRY_H

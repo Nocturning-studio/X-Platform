@@ -93,7 +93,7 @@ void CCustomRocket::net_Destroy()
 	StopFlying();
 }
 
-void CCustomRocket::SetLaunchParams(const float4x4& transform, const float3& vel, const float3& angular_vel)
+void CCustomRocket::SetLaunchParams(const fmat4x4& transform, const fvec3& vel, const fvec3& angular_vel)
 {
 	VERIFY2(_valid(transform), "SetLaunchParams. Invalid transform argument!");
 	m_LaunchTransform = transform;
@@ -147,7 +147,7 @@ void CCustomRocket::create_physic_shell()
 	CPhysicsElement* E = P_create_Element();
 	R_ASSERT(E);
 
-	float3 ax;
+	fvec3 ax;
 	float radius;
 	CHOOSE_MAX(obb.m_halfsize.x, ax.set(obb.m_rotate.i); ax.mul(obb.m_halfsize.x);
 			   radius = _min(obb.m_halfsize.y, obb.m_halfsize.z); obb.m_halfsize.y /= 2.f;
@@ -191,11 +191,11 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 
 	SGameMtl* material = 0;
 	CCustomRocket* l_this = l_pUD1 ? smart_cast<CCustomRocket*>(l_pUD1->ph_ref_object) : NULL;
-	float3 vUp;
+	fvec3 vUp;
 	if (!l_this)
 	{
 		l_this = l_pUD2 ? smart_cast<CCustomRocket*>(l_pUD2->ph_ref_object) : NULL;
-		vUp.invert(*(float3*)&c.geom.normal);
+		vUp.invert(*(fvec3*)&c.geom.normal);
 
 		// if(dGeomGetClass(c.geom.g1)==dTriListClass)
 		//	material=GMLib.GetMaterialByIdx((u16)c.surface.mode);
@@ -205,7 +205,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 	}
 	else
 	{
-		vUp.set(*(float3*)&c.geom.normal);
+		vUp.set(*(fvec3*)&c.geom.normal);
 
 		// if(dGeomGetClass(c.geom.g2)==dTriListClass)
 		//	material=GMLib.GetMaterialByIdx((u16)c.surface.mode);
@@ -227,7 +227,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 	{
 		if (l_this->m_pOwner)
 		{
-			float3 l_pos;
+			fvec3 l_pos;
 			l_pos.set(l_this->Position());
 #ifdef DEBUG
 			bool corrected_pos = false;
@@ -243,14 +243,14 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 
 				if (l_pUD->pushing_neg)
 				{
-					float3 velocity;
+					fvec3 velocity;
 					l_this->PHGetLinearVell(velocity);
 					if (velocity.square_magnitude() > EPS)
 					{ //. desync?
 						velocity.normalize();
 						Triangle neg_tri;
 						CalculateTriangle(l_pUD->neg_tri, g, neg_tri);
-						float cosinus = velocity.dotproduct(*((float3*)neg_tri.norm));
+						float cosinus = velocity.dotproduct(*((fvec3*)neg_tri.norm));
 						VERIFY(_valid(neg_tri.dist));
 						float dist = neg_tri.dist / cosinus;
 						velocity.mul(dist * 1.1f);
@@ -258,7 +258,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 #ifdef DEBUG
 						corrected_pos = true;
 //.	DBG_OpenCashedDraw();
-//.	const float3*	 V_array	= Level().ObjectSpace.GetStaticVerts();
+//.	const fvec3*	 V_array	= Level().ObjectSpace.GetStaticVerts();
 //.	DBG_DrawTri(neg_tri.T, V_array, D3DCOLOR_XRGB(255,255,0));
 //.	DBG_ClosedCashedDraw(50000);
 #endif
@@ -272,10 +272,10 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 
 			l_this->Contact(l_pos, vUp);
 			l_this->m_pPhysicsShell->DisableCollision();
-			l_this->m_pPhysicsShell->set_LinearVel(float3().set(0, 0, 0));
-			l_this->m_pPhysicsShell->set_AngularVel(float3().set(0, 0, 0));
-			l_this->m_pPhysicsShell->setForce(float3().set(0, 0, 0));
-			l_this->m_pPhysicsShell->setTorque(float3().set(0, 0, 0));
+			l_this->m_pPhysicsShell->set_LinearVel(fvec3().set(0, 0, 0));
+			l_this->m_pPhysicsShell->set_AngularVel(fvec3().set(0, 0, 0));
+			l_this->m_pPhysicsShell->setForce(fvec3().set(0, 0, 0));
+			l_this->m_pPhysicsShell->setTorque(fvec3().set(0, 0, 0));
 			l_this->m_pPhysicsShell->set_ApplyByGravity(false);
 			l_this->setEnabled(FALSE);
 		}
@@ -324,7 +324,7 @@ void CCustomRocket::reload(LPCSTR section)
 	}
 }
 
-void CCustomRocket::Contact(const float3& pos, const float3& normal)
+void CCustomRocket::Contact(const fvec3& pos, const fvec3& normal)
 {
 	m_contact.contact = true;
 	m_contact.pos.set(pos);
@@ -457,7 +457,7 @@ void CCustomRocket::UpdateEnginePh()
 		return;
 	float force = m_fEngineImpulse * fixed_step; // * Engine.TimeManager.GetDeltaTime();
 	float k_back = 1.f;
-	float3 l_pos, l_dir;
+	fvec3 l_pos, l_dir;
 	l_pos.set(0, 0, -2.f);
 	l_dir.set(Transform().k);
 
@@ -546,18 +546,18 @@ void CCustomRocket::UpdateParticles()
 	if (!m_pEngineParticles && !m_pFlyParticles)
 		return;
 
-	float3 vel;
+	fvec3 vel;
 	PHGetLinearVell(vel);
 
 	vel.add(m_vPrevVel, vel);
 	vel.mul(0.5f);
 	m_vPrevVel.set(vel);
 
-	float4x4 particles_transform;
+	fmat4x4 particles_transform;
 	particles_transform.identity();
 	particles_transform.k.set(Transform().k);
 	particles_transform.k.mul(-1.f);
-	float3::generate_orthonormal_basis(particles_transform.k, particles_transform.j, particles_transform.i);
+	fvec3::generate_orthonormal_basis(particles_transform.k, particles_transform.j, particles_transform.i);
 	particles_transform.c.set(Transform().c);
 
 	if (m_pEngineParticles)

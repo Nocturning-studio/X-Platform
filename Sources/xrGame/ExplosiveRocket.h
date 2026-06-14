@@ -56,7 +56,7 @@ class CExplosiveRocket : public CCustomRocket, public CInventoryItem, public CEx
 	virtual void OnH_B_Independent(bool just_before_destroy);
 	virtual void UpdateCL();
 
-	virtual void Contact(const float3& pos, const float3& normal);
+	virtual void Contact(const fvec3& pos, const fvec3& normal);
 
 	virtual void OnEvent(NET_Packet& P, u16 type);
 

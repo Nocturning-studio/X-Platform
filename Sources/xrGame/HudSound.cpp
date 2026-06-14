@@ -72,7 +72,7 @@ void HUD_SOUND::DestroySound(HUD_SOUND& hud_snd)
 	hud_snd.m_activeSnd = NULL;
 }
 
-void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const float3& position, const CObject* parent, bool b_hud_mode,
+void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const fvec3& position, const CObject* parent, bool b_hud_mode,
 						  bool looped)
 {
 	if (hud_snd.sounds.empty())
@@ -88,7 +88,7 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const float3& position, const CObj
 	hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(hud_snd.sounds.size())];
 
 	hud_snd.m_activeSnd->snd.play_at_pos(const_cast<CObject*>(parent),
-										 flags & sm_2D ? float3().set(0, 0, 0) : position, flags,
+										 flags & sm_2D ? fvec3().set(0, 0, 0) : position, flags,
 										 /*0.f*/ hud_snd.m_activeSnd->delay);
 	hud_snd.m_activeSnd->snd.set_volume(hud_snd.m_activeSnd->volume);
 }

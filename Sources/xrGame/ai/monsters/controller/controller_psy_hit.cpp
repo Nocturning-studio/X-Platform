@@ -153,12 +153,12 @@ bool CControllerPsyHit::check_conditions_final()
 	// DBG().level_info(this).clear		();
 
 	//// 1. head-2-head
-	// float3 trace_from, trace_to;
+	// fvec3 trace_from, trace_to;
 	// trace_from	= get_head_position(m_object);
 	// trace_to	= get_head_position(Actor());
 
 	// float dist = trace_from.distance_to(trace_to);
-	// float3 trace_dir;
+	// fvec3 trace_dir;
 	// trace_dir.sub(trace_to,trace_from);
 
 	// collide::rq_result	l_rq;
@@ -231,11 +231,11 @@ void CControllerPsyHit::death_glide_start()
 	CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
 	VERIFY(!ce);
 
-	float3 src_pos = Actor()->cam_Active()->vPosition;
-	float3 target_pos = m_object->Position();
+	fvec3 src_pos = Actor()->cam_Active()->vPosition;
+	fvec3 target_pos = m_object->Position();
 	target_pos.y += 1.2f;
 
-	float3 dir;
+	fvec3 dir;
 	dir.sub(target_pos, src_pos);
 
 	float dist = dir.magnitude();
@@ -284,11 +284,11 @@ void CControllerPsyHit::death_glide_end()
 	CController* monster = smart_cast<CController*>(m_object);
 	monster->draw_fire_particles();
 
-	monster->m_sound_tube_hit_left.play_at_pos(Actor(), float3().set(-1.f, 0.f, 1.f), sm_2D);
-	monster->m_sound_tube_hit_right.play_at_pos(Actor(), float3().set(1.f, 0.f, 1.f), sm_2D);
+	monster->m_sound_tube_hit_left.play_at_pos(Actor(), fvec3().set(-1.f, 0.f, 1.f), sm_2D);
+	monster->m_sound_tube_hit_right.play_at_pos(Actor(), fvec3().set(1.f, 0.f, 1.f), sm_2D);
 
 	// m_object->Hit_Psy		(Actor(), monster->m_tube_damage);
-	m_object->Hit_Wound(Actor(), monster->m_tube_damage, float3().set(0.0f, 1.0f, 0.0f), 0.0f);
+	m_object->Hit_Wound(Actor(), monster->m_tube_damage, fvec3().set(0.0f, 1.0f, 0.0f), 0.0f);
 }
 
 void CControllerPsyHit::update_frame()
@@ -297,7 +297,7 @@ void CControllerPsyHit::update_frame()
 	//	CController *monster = smart_cast<CController *>(m_object);
 	//	if (!monster->m_sound_tube_start._feedback()) {
 	//		m_sound_state = ePull;
-	//		monster->m_sound_tube_pull.play_at_pos(Actor(), float3().set(0.f, 0.f, 0.f), sm_2D);
+	//		monster->m_sound_tube_pull.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
 	//	}
 	// }
 }
@@ -307,15 +307,15 @@ void CControllerPsyHit::set_sound_state(ESoundState state)
 	CController* monster = smart_cast<CController*>(m_object);
 	if (state == ePrepare)
 	{
-		monster->m_sound_tube_prepare.play_at_pos(Actor(), float3().set(0.f, 0.f, 0.f), sm_2D);
+		monster->m_sound_tube_prepare.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
 	}
 	else if (state == eStart)
 	{
 		if (monster->m_sound_tube_prepare._feedback())
 			monster->m_sound_tube_prepare.stop();
 
-		monster->m_sound_tube_start.play_at_pos(Actor(), float3().set(0.f, 0.f, 0.f), sm_2D);
-		monster->m_sound_tube_pull.play_at_pos(Actor(), float3().set(0.f, 0.f, 0.f), sm_2D);
+		monster->m_sound_tube_start.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
+		monster->m_sound_tube_pull.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
 	}
 	else if (state == eHit)
 	{
@@ -324,8 +324,8 @@ void CControllerPsyHit::set_sound_state(ESoundState state)
 		if (monster->m_sound_tube_pull._feedback())
 			monster->m_sound_tube_pull.stop();
 
-		// monster->m_sound_tube_hit_left.play_at_pos(Actor(), float3().set(-1.f, 0.f, 1.f), sm_2D);
-		// monster->m_sound_tube_hit_right.play_at_pos(Actor(), float3().set(1.f, 0.f, 1.f), sm_2D);
+		// monster->m_sound_tube_hit_left.play_at_pos(Actor(), fvec3().set(-1.f, 0.f, 1.f), sm_2D);
+		// monster->m_sound_tube_hit_right.play_at_pos(Actor(), fvec3().set(1.f, 0.f, 1.f), sm_2D);
 	}
 	else if (state == eNone)
 	{

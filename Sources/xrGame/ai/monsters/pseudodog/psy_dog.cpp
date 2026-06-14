@@ -227,7 +227,7 @@ void CPsyDogPhantom::Think()
 	if (!control().direction().is_face_target(EnemyMan.get_enemy(), PI_DIV_6))
 		return;
 
-	float3 target;
+	fvec3 target;
 	target.mad(Position(), Direction(), 10.f);
 
 	// нода в прямой видимости?
@@ -245,7 +245,7 @@ void CPsyDogPhantom::Think()
 	setVisible(TRUE);
 	setEnabled(TRUE);
 
-	CParticlesPlayer::StartParticles(m_particles_appear, float3().set(0.0f, 0.1f, 0.0f), ID());
+	CParticlesPlayer::StartParticles(m_particles_appear, fvec3().set(0.0f, 0.1f, 0.0f), ID());
 
 	if (EnemyMan.get_enemy() != Actor())
 		return;
@@ -257,7 +257,7 @@ void CPsyDogPhantom::Think()
 		m_appear_effector.ppi, m_appear_effector.time, m_appear_effector.time_attack, m_appear_effector.time_release));
 }
 
-// void CPsyDogPhantom::Hit(float P,float3 &dir,CObject*who,s16 element,float3 p_in_object_space,float impulse,
+// void CPsyDogPhantom::Hit(float P,fvec3 &dir,CObject*who,s16 element,fvec3 p_in_object_space,float impulse,
 // ALife::EHitType hit_type)
 void CPsyDogPhantom::Hit(SHit* pHDS)
 {
@@ -269,9 +269,9 @@ void CPsyDogPhantom::Hit(SHit* pHDS)
 
 void CPsyDogPhantom::net_Destroy()
 {
-	float3 center;
+	fvec3 center;
 	Center(center);
-	PlayParticles(m_particles_disappear, center, float3().set(0.f, 1.f, 0.f));
+	PlayParticles(m_particles_disappear, center, fvec3().set(0.f, 1.f, 0.f));
 
 	if (m_parent && !is_wait_to_destroy_object())
 	{

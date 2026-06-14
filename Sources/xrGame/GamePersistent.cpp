@@ -122,9 +122,9 @@ CGamePersistent::CGamePersistent(void)
 	m_PickDofFstop = READ_IF_EXISTS(pSettings, r_float, "zone_pick_dof", "fstop", 8);
 	m_PickDofFocalDepth = READ_IF_EXISTS(pSettings, r_float, "zone_pick_dof", "focal_depth", 1);
 	m_DofChangeSpeed = READ_IF_EXISTS(pSettings, r_float, "dof_params", "change_speed", 0.2f);
-	m_DofUI = READ_IF_EXISTS(pSettings, r_fvector3, "ui_dof", "dof", float3().set(2.0f, 0.5f, 1));
+	m_DofUI = READ_IF_EXISTS(pSettings, r_fvector3, "ui_dof", "dof", fvec3().set(2.0f, 0.5f, 1));
 
-	float3* DofValue = Console->GetFVectorPtr("r_dof");
+	fvec3* DofValue = Console->GetFVectorPtr("r_dof");
 	SetBaseDof(*DofValue);
 
 	SetNightVisionState(false);
@@ -296,7 +296,7 @@ void CGamePersistent::WeathersUpdate()
 				{
 					ref_sound& snd = ch.get_rnd_sound();
 
-					float3 pos;
+					fvec3 pos;
 					float angle = ::Random.randF(PI_MUL_2);
 					pos.x = _cos(angle);
 					pos.y = 0;
@@ -335,7 +335,7 @@ void CGamePersistent::WeathersUpdate()
 					ambient_effect_wind_on = true;
 
 					ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
-					float3 pos;
+					fvec3 pos;
 					pos.add(Engine.RenderView.Position, eff->offset);
 					ambient_particles->play_at_pos(pos);
 					if (eff->sound._handle())
@@ -703,17 +703,17 @@ void CGamePersistent::SetPickableEffectorDOF(bool bSet)
 		RestoreEffectorDOF();
 }
 
-void CGamePersistent::GetCurrentDof(float3& dof)
+void CGamePersistent::GetCurrentDof(fvec3& dof)
 {
 	dof = m_dof[1];
 }
 
-void CGamePersistent::SetBaseDof(const float3& dof)
+void CGamePersistent::SetBaseDof(const fvec3& dof)
 {
 	m_dof[0] = m_dof[1] = m_dof[2] = m_dof[3] = dof;
 }
 
-void CGamePersistent::SetEffectorDOF(const float3& needed_dof)
+void CGamePersistent::SetEffectorDOF(const fvec3& needed_dof)
 {
 	if (m_bPickableDOF)
 		return;
@@ -744,7 +744,7 @@ void CGamePersistent::UpdateDof()
 
 	float TimeDelta = Engine.TimeManager.GetDeltaTime();
 	float Scale = 1.0f / Engine.TimeManager.GetTimeFactor();
-	float3 diff;
+	fvec3 diff;
 	diff.sub(m_dof[0], m_dof[2]);
 	diff.mul(TimeDelta / m_DofChangeSpeed);
 	m_dof[1].mad(m_dof[1], diff, Scale);

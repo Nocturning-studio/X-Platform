@@ -162,7 +162,7 @@ void CRenderDevice::PreCache()
 	float angle = PI_MUL_2 * factor;
 
 	// Расчет векторов
-	float3 dir, top, right;
+	fvec3 dir, top, right;
 	dir.set(_sin(angle), 0, _cos(angle));
 	dir.normalize();
 	top.set(0, 1, 0);

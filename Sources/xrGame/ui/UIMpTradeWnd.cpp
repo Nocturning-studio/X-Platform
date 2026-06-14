@@ -177,7 +177,7 @@ void CUIMpTradeWnd::FillUpSubLevelButtons()
 {
 	u32 root_cnt = m_store_hierarchy->CurrentLevel().ChildCount();
 
-	float2 pos;
+	fvec2 pos;
 	pos.set(40.0f, 90.0f);
 
 	for (u32 i = 0; i < root_cnt; ++i)

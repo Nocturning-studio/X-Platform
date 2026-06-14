@@ -26,7 +26,7 @@ struct HUD_SOUND
 
 	static void DestroySound(HUD_SOUND& hud_snd);
 
-	static void PlaySound(HUD_SOUND& snd, const float3& position, const CObject* parent, bool hud_mode,
+	static void PlaySound(HUD_SOUND& snd, const fvec3& position, const CObject* parent, bool hud_mode,
 						  bool looped = false);
 
 	static void StopSound(HUD_SOUND& snd);
@@ -39,7 +39,7 @@ struct HUD_SOUND
 			return FALSE;
 	}
 
-	ICF void set_position(const float3& pos)
+	ICF void set_position(const fvec3& pos)
 	{
 		if (m_activeSnd)
 		{

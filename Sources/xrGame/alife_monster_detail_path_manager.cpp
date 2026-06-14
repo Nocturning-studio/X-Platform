@@ -32,7 +32,7 @@ CALifeMonsterDetailPathManager::CALifeMonsterDetailPathManager(object_type* obje
 }
 
 void CALifeMonsterDetailPathManager::target(const GameGraph::_GRAPH_ID& game_vertex_id, const u32& level_vertex_id,
-											const float3& position)
+											const fvec3& position)
 {
 	VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
 	VERIFY((ai().game_graph().vertex(game_vertex_id)->level_id() != ai().alife().graph().level().level_id()) ||
@@ -247,7 +247,7 @@ void CALifeMonsterDetailPathManager::on_switch_offline()
 	m_path.clear();
 }
 
-float3 CALifeMonsterDetailPathManager::draw_level_position() const
+fvec3 CALifeMonsterDetailPathManager::draw_level_position() const
 {
 	if (path().empty())
 		return (object().Position());
@@ -263,9 +263,9 @@ float3 CALifeMonsterDetailPathManager::draw_level_position() const
 	if (current->level_id() != next->level_id())
 		return (object().Position());
 
-	float3 current_vertex = current->level_point();
-	float3 next_vertex = next->level_point();
-	float3 direction = float3().sub(next_vertex, current_vertex);
+	fvec3 current_vertex = current->level_point();
+	fvec3 next_vertex = next->level_point();
+	fvec3 direction = fvec3().sub(next_vertex, current_vertex);
 	direction.normalize();
 	return (current_vertex.mad(direction, walked_distance()));
 }

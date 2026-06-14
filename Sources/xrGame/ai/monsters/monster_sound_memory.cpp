@@ -80,7 +80,7 @@ void CMonsterSoundMemory::HearSound(const SoundElem& s)
 		Sounds.push_back(s);
 }
 
-void CMonsterSoundMemory::HearSound(const CObject* who, int eType, const float3& Position, float power, TTime time)
+void CMonsterSoundMemory::HearSound(const CObject* who, int eType, const fvec3& Position, float power, TTime time)
 {
 	SoundElem s;
 	s.SetConvert(who, eType, Position, power, time);

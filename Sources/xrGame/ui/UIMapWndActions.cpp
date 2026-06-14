@@ -317,9 +317,9 @@ bool CEvaluatorTargetMapShown::evaluate()
 		return true;
 	if (m_storage->property(2))
 		return true;
-	float2 pt = m_object->m_tgtCenter;
+	fvec2 pt = m_object->m_tgtCenter;
 	pt.mul(m_object->GlobalMap()->GetCurrentZoom());
-	float2 _p;
+	fvec2 _p;
 	m_object->GlobalMap()->GetAbsolutePos(_p);
 	pt.add(_p);
 	Frect rect = m_object->ActiveMapRect();

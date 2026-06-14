@@ -48,7 +48,7 @@ void CCameraBase::Load(LPCSTR section)
 		yaw = (lim_yaw[0] + lim_yaw[1]) * 0.5f;
 }
 
-IC float AClamp(float2& l, float v)
+IC float AClamp(fvec2& l, float v)
 {
 	return (2 * v - l[0] - l[1]) / (l[1] - l[0]);
 }

@@ -41,15 +41,15 @@ class CScriptBinderObject;
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-float3 CScriptGameObject::Center()
+fvec3 CScriptGameObject::Center()
 {
-	float3 c;
+	fvec3 c;
 	m_game_object->Center(c);
 	return c;
 }
 
-BIND_FUNCTION10(&object(), CScriptGameObject::Position, CGameObject, Position, float3, float3());
-BIND_FUNCTION10(&object(), CScriptGameObject::Direction, CGameObject, Direction, float3, float3());
+BIND_FUNCTION10(&object(), CScriptGameObject::Position, CGameObject, Position, fvec3, fvec3());
+BIND_FUNCTION10(&object(), CScriptGameObject::Direction, CGameObject, Direction, fvec3, fvec3());
 BIND_FUNCTION10(&object(), CScriptGameObject::Mass, CPhysicsShellHolder, GetMass, float, float(-1));
 BIND_FUNCTION10(&object(), CScriptGameObject::ID, CGameObject, ID, u32, u32(-1));
 BIND_FUNCTION10(&object(), CScriptGameObject::getVisible, CGameObject, getVisible, BOOL, FALSE);
@@ -319,7 +319,7 @@ u32 CScriptGameObject::get_current_patrol_point_index()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-float3 CScriptGameObject::bone_position(LPCSTR bone_name) const
+fvec3 CScriptGameObject::bone_position(LPCSTR bone_name) const
 {
 	u16 bone_id;
 	if (xr_strlen(bone_name))
@@ -327,7 +327,7 @@ float3 CScriptGameObject::bone_position(LPCSTR bone_name) const
 	else
 		bone_id = smart_cast<CKinematics*>(object().Visual())->LL_GetBoneRoot();
 
-	float4x4 matrix;
+	fmat4x4 matrix;
 	matrix.mul_43(object().Transform(),
 				  smart_cast<CKinematics*>(object().Visual())->LL_GetBoneInstance(bone_id).mTransform);
 	return (matrix.c);
@@ -446,7 +446,7 @@ void CScriptGameObject::eat(CScriptGameObject* item)
 	inventory_owner->inventory().Eat(inventory_item);
 }
 
-bool CScriptGameObject::inside(const float3& position, float epsilon) const
+bool CScriptGameObject::inside(const fvec3& position, float epsilon) const
 {
 	CSpaceRestrictor* space_restrictor = smart_cast<CSpaceRestrictor*>(&object());
 	if (!space_restrictor)
@@ -461,7 +461,7 @@ bool CScriptGameObject::inside(const float3& position, float epsilon) const
 	return (space_restrictor->inside(sphere));
 }
 
-bool CScriptGameObject::inside(const float3& position) const
+bool CScriptGameObject::inside(const fvec3& position) const
 {
 	return (inside(position, EPS_L));
 }
@@ -551,7 +551,7 @@ void CScriptGameObject::set_range(float new_range)
 	monster->set_range(new_range);
 }
 
-u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, float3 direction, float max_distance) const
+u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, fvec3 direction, float max_distance) const
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster)
@@ -570,8 +570,8 @@ u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, float3 direction
 
 	direction.normalize_safe();
 	direction.mul(max_distance);
-	float3 start_position = ai().level_graph().vertex_position(level_vertex_id);
-	float3 finish_position = float3(start_position).add(direction);
+	fvec3 start_position = ai().level_graph().vertex_position(level_vertex_id);
+	fvec3 finish_position = fvec3(start_position).add(direction);
 	u32 result = u32(-1);
 	monster->movement().restrictions().add_border(level_vertex_id, max_distance);
 	ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, 0, true);

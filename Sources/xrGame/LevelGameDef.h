@@ -100,7 +100,7 @@ extern ECORE_API xr_token rpoint_game_type[];
 		chunk WAY_CHUNK_POINTS
 			word (count)
 			for (i=0; i<count; ++i){
-				float3 (pos)
+				fvec3 (pos)
 				dword	(flags)
 				stringZ	(name)
 			}

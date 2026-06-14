@@ -35,11 +35,11 @@ CTracer::~CTracer()
 {
 }
 
-IC void FillSprite_Circle(FVF::LIT*& pv, const float3& pos, const float r1, float r2, u32 color)
+IC void FillSprite_Circle(FVF::LIT*& pv, const fvec3& pos, const float r1, float r2, u32 color)
 {
-	const float3& T = Engine.RenderView.Top;
-	const float3& R = Engine.RenderView.Right;
-	float3 Vr, Vt;
+	const fvec3& T = Engine.RenderView.Top;
+	const fvec3& R = Engine.RenderView.Right;
+	fvec3 Vr, Vt;
 	Vr.x = R.x * r1;
 	Vr.y = R.y * r1;
 	Vr.z = R.z * r1;
@@ -47,7 +47,7 @@ IC void FillSprite_Circle(FVF::LIT*& pv, const float3& pos, const float r1, floa
 	Vt.y = T.y * r2;
 	Vt.z = T.z * r2;
 
-	float3 a, b, c, d;
+	fvec3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -62,14 +62,14 @@ IC void FillSprite_Circle(FVF::LIT*& pv, const float3& pos, const float r1, floa
 	pv++;
 }
 
-IC void FillSprite_Line(FVF::LIT*& pv, const float3& pos, const float3& dir, float r1, float r2, u32 color)
+IC void FillSprite_Line(FVF::LIT*& pv, const fvec3& pos, const fvec3& dir, float r1, float r2, u32 color)
 {
-	const float3& T = dir;
+	const fvec3& T = dir;
 
-	float3 R;
+	fvec3 R;
 	R.crossproduct(T, Engine.RenderView.Direction).normalize_safe();
 
-	float3 Vr, Vt;
+	fvec3 Vr, Vt;
 	Vr.x = R.x * r1;
 	Vr.y = R.y * r1;
 	Vr.z = R.z * r1;
@@ -77,7 +77,7 @@ IC void FillSprite_Line(FVF::LIT*& pv, const float3& pos, const float3& dir, flo
 	Vt.y = T.y * r2;
 	Vt.z = T.z * r2;
 
-	float3 a, b, c, d;
+	fvec3 a, b, c, d;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
 	c.invert(a);
@@ -92,12 +92,12 @@ IC void FillSprite_Line(FVF::LIT*& pv, const float3& pos, const float3& dir, flo
 	pv++;
 }
 
-void CTracer::Render(FVF::LIT*& verts, const float3& pos, const float3& center, const float3& dir, float length,
+void CTracer::Render(FVF::LIT*& verts, const fvec3& pos, const fvec3& center, const fvec3& dir, float length,
 					 float width, u8 colorID)
 {
 	//OPTICK_EVENT("CTracer::Render");
 
-	if (::Render->ViewBase.testSphere_dirty((float3&)center, length * .5f))
+	if (::Render->ViewBase.testSphere_dirty((fvec3&)center, length * .5f))
 	{
 		if (colorID >= m_aColors.size())
 			colorID = 0;

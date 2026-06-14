@@ -72,7 +72,7 @@ struct SceneGraphPacket
 	struct DReuseItem
 	{
 		IRender_Visual* visual;
-		float4x4 matrix;
+		fmat4x4 matrix;
 	};
 	xr_vector<DReuseItem> m_visuals_dynamic_visible;
 
@@ -186,7 +186,7 @@ struct SceneGraphScratchPad
 struct SceneTraversalContext
 {
 	IRenderable* current_owner;
-	float4x4* current_transform;
+	fmat4x4* current_transform;
 	const CFrustum* frustum;
 	BOOL is_hud_pass;
 	BOOL is_invisible_mode;
@@ -293,13 +293,13 @@ class CSceneGraph
 	void ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
 	// Low-level insertion
-	void EnqueueDynamic(IRender_Visual* pVisual, float3& Center, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
+	void EnqueueDynamic(IRender_Visual* pVisual, fvec3& Center, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
 	// === Traversal Logic ===
-	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, float4x4& mCombined, float3& _cop, BOOL _dynamic,
+	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
 						 BOOL _precise_portals, SceneGraphPacket& dest);
-	void render_subspace(IRender_Sector* _sector, float4x4& mCombined, float3& _cop, BOOL _dynamic,
+	void render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
 						 BOOL _precise_portals, SceneGraphPacket& dest);
 
 	void render_reuse(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet);

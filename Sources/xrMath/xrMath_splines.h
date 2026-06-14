@@ -1,7 +1,7 @@
 #pragma once
 
 // Сплайны (math implementation)
-inline void spline1(float t, float3* p, float3* ret)
+inline void spline1(float t, fvec3* p, fvec3* ret)
 {
 	float t2 = t * t;
 	float t3 = t2 * t;
@@ -23,7 +23,7 @@ inline void spline1(float t, float3* p, float3* ret)
 	}
 }
 
-inline void spline2(float t, float3* p, float3* ret)
+inline void spline2(float t, fvec3* p, fvec3* ret)
 {
 	float s = 1.0f - t;
 	float t2 = t * t;
@@ -43,7 +43,7 @@ inline void spline2(float t, float3* p, float3* ret)
 #define beta1 1.0f
 #define beta2 0.8f
 
-inline void spline3(float t, float3* p, float3* ret)
+inline void spline3(float t, fvec3* p, fvec3* ret)
 {
 	float s = 1.0f - t;
 	float t2 = t * t;

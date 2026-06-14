@@ -22,12 +22,12 @@ class CTorch : public CInventoryItemObject
 	shared_str light_trace_bone;
 
 	float m_delta_h;
-	float2 m_prev_hp;
+	fvec2 m_prev_hp;
 	bool m_switched_on;
 	ref_light light_render;
 	ref_light light_omni;
 	ref_glow glow_render;
-	float3 m_focus;
+	fvec3 m_focus;
 
   private:
 	inline bool can_use_dynamic_lights();

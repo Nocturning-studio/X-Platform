@@ -20,7 +20,7 @@ struct PARTICLES_API ParticleAction
 	}
 
 	virtual void Execute(ParticleEffect* pe, float dt) = 0;
-	virtual void Transform(const float4x4& m) = 0;
+	virtual void Transform(const fmat4x4& m) = 0;
 
 	virtual void Load(IReader& F) = 0;
 	virtual void Save(IWriter& F) = 0;

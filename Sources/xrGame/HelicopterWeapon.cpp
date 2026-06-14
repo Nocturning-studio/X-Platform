@@ -9,7 +9,7 @@
 void CHelicopter::BoneMGunCallbackX(CBoneInstance* B)
 {
 	CHelicopter* P = static_cast<CHelicopter*>(B->Callback_Param);
-	float4x4 rX;
+	fmat4x4 rX;
 	rX.rotateX(P->m_cur_rot.x);
 	B->mTransform.mulB_43(rX);
 }
@@ -17,7 +17,7 @@ void CHelicopter::BoneMGunCallbackX(CBoneInstance* B)
 void CHelicopter::BoneMGunCallbackY(CBoneInstance* B)
 {
 	CHelicopter* P = static_cast<CHelicopter*>(B->Callback_Param);
-	float4x4 rY;
+	fmat4x4 rY;
 	rY.rotateY(P->m_cur_rot.y);
 	B->mTransform.mulB_43(rY);
 }
@@ -102,7 +102,7 @@ void CHelicopter::MGunUpdateFire()
 }
 void CHelicopter::OnShot()
 {
-	float3 fire_pos, fire_dir;
+	fvec3 fire_pos, fire_dir;
 	fire_pos = get_CurrentFirePoint();
 	fire_dir = m_fire_dir;
 
@@ -110,7 +110,7 @@ void CHelicopter::OnShot()
 	clamp(fire_trail_speed, GetCurrVelocity(), 300.0f);
 	if (m_enemy.bUseFireTrail)
 	{
-		float3 enemy_pos = m_enemy.destEnemyPos;
+		fvec3 enemy_pos = m_enemy.destEnemyPos;
 
 		float dt = Engine.TimeManager.GetGlobalTime() - m_enemy.fStartFireTime;
 		VERIFY(dt >= 0);
@@ -121,9 +121,9 @@ void CHelicopter::OnShot()
 			return;
 		}
 
-		float3 fp = fire_pos;
+		fvec3 fp = fire_pos;
 		fp.y = enemy_pos.y;
-		float3 fd;
+		fvec3 fd;
 		fd.sub(enemy_pos, fp).normalize_safe();
 		if (dist > (m_enemy.fire_trail_length_curr / 2.0f))
 		{
@@ -137,7 +137,7 @@ void CHelicopter::OnShot()
 
 		static float fire_trace_width = pSettings->r_float(*cNameSect(), "fire_trace_width");
 		enemy_pos.mad(fd, dist);
-		float3 disp_dir;
+		fvec3 disp_dir;
 		disp_dir.random_point(fire_trace_width);
 
 		enemy_pos.add(disp_dir);
@@ -166,8 +166,8 @@ void CHelicopter::MGunFireStart()
 	{
 		// start calc fire trail
 		m_enemy.fStartFireTime = Engine.TimeManager.GetGlobalTime();
-		float3 fp = get_CurrentFirePoint();
-		float3 ep = m_enemy.destEnemyPos;
+		fvec3 fp = get_CurrentFirePoint();
+		fvec3 ep = m_enemy.destEnemyPos;
 
 		// calc min firetrail length
 		float h = fp.y - ep.y;
@@ -284,12 +284,12 @@ void CHelicopter::UpdateMGunDir()
 	//.fake
 
 	m_allow_fire = TRUE;
-	float4x4 XFi;
+	fmat4x4 XFi;
 	XFi.invert(Transform());
-	float3 dep;
+	fvec3 dep;
 	XFi.transform_tiny(dep, m_enemy.destEnemyPos);
 	{ // x angle
-		float3 A_;
+		fvec3 A_;
 		A_.sub(dep, m_bind_x);
 		m_i_bind_x_transform.transform_dir(A_);
 		A_.normalize();
@@ -300,7 +300,7 @@ void CHelicopter::UpdateMGunDir()
 			m_allow_fire = FALSE;
 	}
 	{ // y angle
-		float3 A_;
+		fvec3 A_;
 		A_.sub(dep, m_bind_y);
 		m_i_bind_y_transform.transform_dir(A_);
 		A_.normalize();
@@ -324,18 +324,18 @@ void CHelicopter::startRocket(u16 idx)
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(this->ID());
 
-		float4x4 rocketTransform;
+		fmat4x4 rocketTransform;
 		(idx == 1) ? rocketTransform = m_left_rocket_bone_transform : rocketTransform = m_right_rocket_bone_transform;
 
-		float3 vel;
-		float3 dir;
+		fvec3 vel;
+		fvec3 dir;
 		dir.sub(m_enemy.destEnemyPos, rocketTransform.c).normalize_safe();
 		vel.mul(dir, CRocketLauncher::m_fLaunchSpeed);
 
-		float4x4 transform;
+		fmat4x4 transform;
 		transform.identity();
 		transform.k.set(dir);
-		float3::generate_orthonormal_basis(transform.k, transform.j, transform.i);
+		fvec3::generate_orthonormal_basis(transform.k, transform.j, transform.i);
 		transform.c = rocketTransform.c;
 		VERIFY2(_valid(transform), "CHelicopter::startRocket. Invalid transform");
 		LaunchRocket(transform, vel, zero_vel);
@@ -352,13 +352,13 @@ void CHelicopter::startRocket(u16 idx)
 	}
 }
 
-const float4x4& CHelicopter::get_ParticlesTransform()
+const fmat4x4& CHelicopter::get_ParticlesTransform()
 
 {
 	return m_fire_bone_transform;
 }
 
-const float3& CHelicopter::get_CurrentFirePoint()
+const fvec3& CHelicopter::get_CurrentFirePoint()
 {
 	return m_fire_pos;
 }

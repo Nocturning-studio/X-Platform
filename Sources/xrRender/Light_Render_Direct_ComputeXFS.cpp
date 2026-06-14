@@ -4,7 +4,7 @@
 void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 {
 	// Build EYE-space transform
-	float3 L_dir, L_up, L_right, L_pos;
+	fvec3 L_dir, L_up, L_right, L_pos;
 	L_dir.set(L->get_direction());
 	L_dir.normalize();
 

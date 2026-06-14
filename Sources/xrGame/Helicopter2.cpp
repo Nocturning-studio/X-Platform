@@ -14,10 +14,10 @@
 
 bool CHelicopter::isObjectVisible(CObject* O)
 {
-	float3 dir_to_object;
-	float3 to_point;
+	fvec3 dir_to_object;
+	fvec3 to_point;
 	O->Center(to_point);
-	float3 from_point = Transform().c;
+	fvec3 from_point = Transform().c;
 	dir_to_object.sub(to_point, from_point).normalize_safe();
 	float ray_length = from_point.distance_to(to_point);
 
@@ -50,7 +50,7 @@ void CHelicopter::StartFlame()
 		return;
 	m_pParticle = CParticlesObject::Create(*m_smoke_particle, FALSE);
 
-	float3 zero_vector;
+	fvec3 zero_vector;
 	zero_vector.set(0.f, 0.f, 0.f);
 	m_pParticle->UpdateParent(m_particleTransform, zero_vector);
 	m_pParticle->Play();
@@ -66,9 +66,9 @@ void CHelicopter::UpdateHeliParticles()
 	if (m_pParticle)
 	{
 
-		float3 vel;
+		fvec3 vel;
 
-		float3 last_pos = PositionStack.back().vPosition;
+		fvec3 last_pos = PositionStack.back().vPosition;
 		vel.sub(Position(), last_pos);
 		vel.mul(5.0f);
 
@@ -77,8 +77,8 @@ void CHelicopter::UpdateHeliParticles()
 	// lighting
 	if (m_light_render->get_active())
 	{
-		float4x4 xf;
-		float4x4& M = K->LL_GetTransform(u16(m_light_bone));
+		fmat4x4 xf;
+		fmat4x4& M = K->LL_GetTransform(u16(m_light_bone));
 		xf.mul(Transform(), M);
 		VERIFY(!fis_zero(DET(xf)));
 
@@ -109,11 +109,11 @@ void CHelicopter::ExplodeHelicopter()
 		CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
 
 	CExplosive::SetInitiator(ID());
-	CExplosive::GenExplodeEvent(Position(), float3().set(0.f, 1.f, 0.f));
+	CExplosive::GenExplodeEvent(Position(), fvec3().set(0.f, 1.f, 0.f));
 	m_brokenSound.stop();
 }
 
-void CHelicopter::SetDestPosition(float3* pos)
+void CHelicopter::SetDestPosition(fvec3* pos)
 {
 	m_movement.SetDestPosition(pos);
 	if (bDebug)
@@ -136,7 +136,7 @@ void CHelicopter::SetEnemy(CScriptGameObject* e)
 	m_enemy.destEnemyID = e->ID();
 }
 
-void CHelicopter::SetEnemy(float3* pos)
+void CHelicopter::SetEnemy(fvec3* pos)
 {
 	m_enemy.type = eEnemyPoint;
 	m_enemy.destEnemyPos = *pos;
@@ -188,7 +188,7 @@ float CHelicopter::GetOnPointRangeDist()
 float CHelicopter::GetRealAltitude()
 {
 	collide::rq_result cR;
-	float3 down_dir;
+	fvec3 down_dir;
 
 	down_dir.set(0.0f, -1.0f, 0.0f);
 
@@ -241,7 +241,7 @@ void CHelicopter::Hit(SHit* pHDS)
 	CPHDestroyable::SetFatalHit(*pHDS);
 }
 
-void CHelicopter::PHHit(float P, float3& dir, CObject* who, s16 element, float3 p_in_object_space, float impulse,
+void CHelicopter::PHHit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 						ALife::EHitType hit_type)
 {
 	if (!g_Alive())
@@ -295,9 +295,9 @@ void CHelicopter::DieHelicopter()
 		PPhysicsShell()->set_ObjectContactCallback(CollisionCallbackDead);
 		PPhysicsShell()->set_ContactCallback(ContactShotMark);
 	}
-	float3 lin_vel;
+	fvec3 lin_vel;
 
-	float3 prev_pos = PositionStack.front().vPosition;
+	fvec3 prev_pos = PositionStack.front().vPosition;
 	lin_vel.sub(Transform().c, prev_pos);
 
 	if (Engine.TimeManager.GetGlobalTimeMs() != PositionStack.front().dwTime)
@@ -409,7 +409,7 @@ void SHeliBodyState::reinit()
 	parent->Transform().getHPB(currBodyHPB.x, currBodyHPB.y, currBodyHPB.z);
 }
 
-void SHeliBodyState::LookAtPoint(float3 point, bool do_it)
+void SHeliBodyState::LookAtPoint(fvec3 point, bool do_it)
 {
 	b_looking_at_point = do_it;
 	looking_point = point;

@@ -18,7 +18,7 @@ template <typename _Object> class CStateMonsterHearInterestingSound : public CSt
 	virtual void setup_substates();
 
   private:
-	float3 get_target_position();
+	fvec3 get_target_position();
 };
 
 #include "monster_state_hear_int_sound_inline.h"
