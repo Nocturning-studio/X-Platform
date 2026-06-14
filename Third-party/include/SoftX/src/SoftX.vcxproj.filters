@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\include\SoftX\Device.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\SoftX.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\DeviceContext.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Src\Library kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\CPUDetector.h">
+      <Filter>Include\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\LibInternal.h">
+      <Filter>Include\Library kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\ThirdPartyIncluding.h">
+      <Filter>Include\Library kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\Types.h">
+      <Filter>Include\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RenderTargetInterface.h">
+      <Filter>Include\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RenderTargetTexture.h">
+      <Filter>Include\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\ThreadPool.h">
+      <Filter>Include\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\ThreadPoolManager.h">
+      <Filter>Include\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\Renderer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\TextureRGBA32F.h">
+      <Filter>Include\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\TextureInterface.h">
+      <Filter>Include\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\DepthBuffer.h">
+      <Filter>Include\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\FrameBuffer.h">
+      <Filter>Include\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\DepthTextureView.h">
+      <Filter>Include\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RasterizerAVX.h">
+      <Filter>Include\Rasterizer\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RasterizerFactory.h">
+      <Filter>Include\Rasterizer\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RasterizerInterface.h">
+      <Filter>Include\Rasterizer\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RasterizerScalar.h">
+      <Filter>Include\Rasterizer\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\RasterizerSSE.h">
+      <Filter>Include\Rasterizer\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\QueryRasterizerFactory.h">
+      <Filter>Include\Rasterizer\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\QueryRasterizerInterface.h">
+      <Filter>Include\Rasterizer\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\QueryRasterizerScalar.h">
+      <Filter>Include\Rasterizer\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerCommon.h">
+      <Filter>Src\Rasterizer\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\OcclusionQuery.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\QueryRasterizerSSE.h">
+      <Filter>Include\Rasterizer\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX\QueryRasterizerAVX.h">
+      <Filter>Include\Rasterizer\Query</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Device.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceContextDraw.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftX.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceContext.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Src\Library kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUDetector.cpp">
+      <Filter>Src\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPoolManager.cpp">
+      <Filter>Src\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceContextDebug.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerAVX.cpp">
+      <Filter>Src\Rasterizer\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerFactory.cpp">
+      <Filter>Src\Rasterizer\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerScalar.cpp">
+      <Filter>Src\Rasterizer\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerSSE.cpp">
+      <Filter>Src\Rasterizer\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryRasterizerFactory.cpp">
+      <Filter>Src\Rasterizer\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryRasterizerScalar.cpp">
+      <Filter>Src\Rasterizer\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="OcclusionQuery.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryRasterizerSSE.cpp">
+      <Filter>Src\Rasterizer\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryRasterizerAVX.cpp">
+      <Filter>Src\Rasterizer\Query</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{ab021737-3a84-4a11-bae8-bcfe070b1f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{a8dfff75-6c46-410d-bb2a-205c40b04f8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Library kernel">
+      <UniqueIdentifier>{18b0d32c-7bdc-49ca-801e-9b759155c3b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Rasterizer">
+      <UniqueIdentifier>{8be6e881-4235-47dd-b82c-4eac683af232}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Tools">
+      <UniqueIdentifier>{c9c78706-64e6-4b7f-afdf-275f8d0c823a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Rasterizer">
+      <UniqueIdentifier>{02c1fc7c-4a1e-4b05-8da7-d90272d12b1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Tools">
+      <UniqueIdentifier>{f1c2a1c4-1393-4da3-8db6-bf2b694a6e34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Library kernel">
+      <UniqueIdentifier>{b4f4c9ec-fc2d-489b-8448-3d518fe62573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Resources">
+      <UniqueIdentifier>{35b70c0c-d052-47ae-a192-33e9dd03fce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Resources\Textures">
+      <UniqueIdentifier>{81064715-bdee-4e43-8282-2ce06654c3e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Rasterizer\Standard">
+      <UniqueIdentifier>{94eeadfc-8a4e-4473-a187-c020c79a6884}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Rasterizer\Query">
+      <UniqueIdentifier>{d1fb7987-a3d2-45ee-ba1c-71004db70a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Rasterizer\Standard">
+      <UniqueIdentifier>{06a3abe7-21ef-4788-bb77-8e13e036da5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Rasterizer\Query">
+      <UniqueIdentifier>{e327d422-6520-4a2a-874e-43b37ef65abd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+</Project>
