@@ -1,13 +1,19 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
 #include <ppl.h>
 
+#include <SoftX.h>
 #include "RasterizerCommon.h"
-#include <SoftX/include/SoftX/SoftX.h>
-#include <SoftX/include/SoftX/ThreadPoolManager.h>
-
-#define DEBUG_TILING
-
+#include "Renderer.h"
+#include "ThreadPoolManager.h"
+/////////////////////////////////////////////////////////////////
+//#define DEBUG_TILING
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 void DeviceContext::DrawPoint(int x, int y, float z, const float4& color)
@@ -425,3 +431,4 @@ void DeviceContext::DrawFullScreenQuad()
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

@@ -1,8 +1,14 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
+#include <SoftX.h>
 #include "RasterizerCommon.h"
-#include <SoftX/include/SoftX/SoftX.h>
-
+#include "RasterizerScalar.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 // Shared depth test + pixel write — called from both traversal paths.
@@ -228,3 +234,4 @@ void RasterizerScalar::RasterizeTriangle(
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

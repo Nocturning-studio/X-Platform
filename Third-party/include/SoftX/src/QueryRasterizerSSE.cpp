@@ -1,11 +1,18 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
+#include <SoftX.h>
 #include "RasterizerCommon.h"
-#include <SoftX/include/SoftX/SoftX.h>
+#include "QueryRasterizerSSE.h"
+
 #include <xmmintrin.h>
 #include <smmintrin.h>
 #include <nmmintrin.h>
-
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 uint32_t QueryRasterizerSSE::RasterizeTriangle(
@@ -222,3 +229,4 @@ uint32_t QueryRasterizerSSE::RasterizeTriangle(
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

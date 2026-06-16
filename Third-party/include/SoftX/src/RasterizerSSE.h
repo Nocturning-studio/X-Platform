@@ -1,11 +1,16 @@
-﻿#pragma once
-
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#pragma once
+/////////////////////////////////////////////////////////////////
 #include "LibInternal.h"
 #include "RasterizerInterface.h"
-
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
-class SOFTX_API RasterizerAVX : public IRasterizer
+class SOFTX_API RasterizerSSE : public IRasterizer
 {
   public:
     void RasterizeTriangle(const VertexOutput& v0,
@@ -22,3 +27,4 @@ class SOFTX_API RasterizerAVX : public IRasterizer
 };
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

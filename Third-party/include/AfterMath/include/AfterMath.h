@@ -53,7 +53,7 @@
 // ============================================================================
 // Global Using Declarations for Convenience
 // ============================================================================
-#ifdef AFTERMATH_DEFAULTS
+#if 0
 // Constants
 using AfterMath::Constants::PI;
 using AfterMath::Constants::TWO_PI;

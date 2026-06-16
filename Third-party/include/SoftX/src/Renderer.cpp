@@ -1,7 +1,15 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
-#include <SoftX/include/SoftX/SoftX.h>
-
+#include <SoftX.h>
+#include "Renderer.h"
+#include "RasterizerInterface.h"
+#include "ThreadPoolManager.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 Renderer::Renderer(IRasterizer& rasterizer,
@@ -83,12 +91,12 @@ void Renderer::BinTriangles(const std::vector<VertexOutput>& inputVerts, const s
         const auto& v1 = inputVerts[tri.y];
         const auto& v2 = inputVerts[tri.z];
 
-        float x0 = clamp(v0.Position.x, 0.0f, rtWidthF);
-        float y0 = clamp(v0.Position.y, 0.0f, rtHeightF);
-        float x1 = clamp(v1.Position.x, 0.0f, rtWidthF);
-        float y1 = clamp(v1.Position.y, 0.0f, rtHeightF);
-        float x2 = clamp(v2.Position.x, 0.0f, rtWidthF);
-        float y2 = clamp(v2.Position.y, 0.0f, rtHeightF);
+        float x0 = AfterMath::clamp(v0.Position.x, 0.0f, rtWidthF);
+        float y0 = AfterMath::clamp(v0.Position.y, 0.0f, rtHeightF);
+        float x1 = AfterMath::clamp(v1.Position.x, 0.0f, rtWidthF);
+        float y1 = AfterMath::clamp(v1.Position.y, 0.0f, rtHeightF);
+        float x2 = AfterMath::clamp(v2.Position.x, 0.0f, rtWidthF);
+        float y2 = AfterMath::clamp(v2.Position.y, 0.0f, rtHeightF);
 
         float minX = std::min({ x0, x1, x2 });
         float maxX = std::max({ x0, x1, x2 });
@@ -98,10 +106,10 @@ void Renderer::BinTriangles(const std::vector<VertexOutput>& inputVerts, const s
         if (minX >= rtWidthF || maxX <= 0.0f || minY >= rtHeightF || maxY <= 0.0f)
             continue;
 
-        int tileX0 = clamp(static_cast<int>(std::floor(minX)) / static_cast<int>(ts), 0, static_cast<int>(tilesX) - 1);
-        int tileY0 = clamp(static_cast<int>(std::floor(minY)) / static_cast<int>(ts), 0, static_cast<int>(tilesY) - 1);
-        int tileX1 = clamp(static_cast<int>(std::ceil(maxX)) / static_cast<int>(ts), 0, static_cast<int>(tilesX) - 1);
-        int tileY1 = clamp(static_cast<int>(std::ceil(maxY)) / static_cast<int>(ts), 0, static_cast<int>(tilesY) - 1);
+        int tileX0 = AfterMath::clamp(static_cast<int>(std::floor(minX)) / static_cast<int>(ts), 0, static_cast<int>(tilesX) - 1);
+        int tileY0 = AfterMath::clamp(static_cast<int>(std::floor(minY)) / static_cast<int>(ts), 0, static_cast<int>(tilesY) - 1);
+        int tileX1 = AfterMath::clamp(static_cast<int>(std::ceil(maxX)) / static_cast<int>(ts), 0, static_cast<int>(tilesX) - 1);
+        int tileY1 = AfterMath::clamp(static_cast<int>(std::ceil(maxY)) / static_cast<int>(ts), 0, static_cast<int>(tilesY) - 1);
 
         for (int ty = tileY0; ty <= tileY1; ++ty)
         {
@@ -156,3 +164,4 @@ void Renderer::RenderTiles()
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

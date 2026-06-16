@@ -1,7 +1,12 @@
-﻿#pragma once
-
-#include <SoftX/include/SoftX/SoftX.h>
-
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#pragma once
+/////////////////////////////////////////////////////////////////
+#include <SoftX.h>
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 namespace RasterizerCommon
@@ -228,7 +233,7 @@ namespace RasterizerCommon
 
             if (aIn != bIn) {
                 float t = (0.0f - A.Position.z) / (B.Position.z - A.Position.z);
-                t = clamp(t, 0.0f, 1.0f);
+                t = AfterMath::clamp(t, 0.0f, 1.0f);
                 poly[polySize++] = LerpVertexClipSpace(A, B, t);
             }
         }
@@ -250,3 +255,4 @@ namespace RasterizerCommon
 } // namespace RasterizerCommon
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

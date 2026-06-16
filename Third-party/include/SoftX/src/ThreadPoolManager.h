@@ -3,20 +3,24 @@
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
-#include "pch.h"
+#pragma once
+/////////////////////////////////////////////////////////////////
+#include <memory>
 
-#include "ThreadPoolManager.h"
+#include "LibInternal.h"
+#include "ThreadPool.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
-std::unique_ptr<ThreadPool> ThreadPoolManager::s_pool;
-std::once_flag ThreadPoolManager::s_initFlag;
-
-ThreadPool& ThreadPoolManager::Get()
+class SOFTX_API ThreadPoolManager
 {
-	std::call_once(s_initFlag, []() { s_pool = std::make_unique<ThreadPool>(std::thread::hardware_concurrency()); });
-	return *s_pool;
-}
+  public:
+	static ThreadPool& Get();
+
+  private:
+	static std::unique_ptr<ThreadPool> s_pool;
+	static std::once_flag s_initFlag;
+};
 
 SOFTX_END
 /////////////////////////////////////////////////////////////////

@@ -1,10 +1,17 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
-#include <SoftX/include/SoftX/SoftX.h>
+#include <SoftX.h>
 #include "RasterizerCommon.h"
+#include "RasterizerSSE.h"
+
 #include <xmmintrin.h>
 #include <smmintrin.h>
-
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 void RasterizerSSE::RasterizeTriangle(const VertexOutput& v0,
@@ -342,3 +349,4 @@ void RasterizerSSE::RasterizeTriangle(const VertexOutput& v0,
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

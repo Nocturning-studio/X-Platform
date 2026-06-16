@@ -1,6 +1,16 @@
-﻿#include "pch.h"
-#include <SoftX/include/SoftX/SoftX.h>
-
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
+#include <SoftX.h>
+#include "QueryRasterizerInterface.h"
+#include "QueryRasterizerAVX.h"
+#include "QueryRasterizerSSE.h"
+#include "QueryRasterizerScalar.h"
+#include "CPUDetector.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 std::unique_ptr<IQueryRasterizer> CreateBestQueryRasterizer()
@@ -16,3 +26,4 @@ std::unique_ptr<IQueryRasterizer> CreateBestQueryRasterizer()
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

@@ -39,7 +39,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-    <EnableUnitySupport>false</EnableUnitySupport>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -54,7 +54,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-    <EnableUnitySupport>false</EnableUnitySupport>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -76,25 +76,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)Third-party\lib\x86\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)Third-party\lib\x86\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)Third-party\lib\x64\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)Third-party\lib\x64\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -102,7 +102,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;AFTERMATH_DEFAULTS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -125,7 +125,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;AFTERMATH_DEFAULTS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -153,7 +153,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;AFTERMATH_DEFAULTS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -176,7 +176,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;AFTERMATH_DEFAULTS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SOFTX_IMPLEMENTATION;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -201,36 +201,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\SoftX\CPUDetector.h" />
-    <ClInclude Include="..\include\SoftX\DepthBuffer.h" />
-    <ClInclude Include="..\include\SoftX\DepthTextureView.h" />
-    <ClInclude Include="..\include\SoftX\Device.h" />
-    <ClInclude Include="..\include\SoftX\DeviceContext.h" />
-    <ClInclude Include="..\include\SoftX\FrameBuffer.h" />
-    <ClInclude Include="..\include\SoftX\LibInternal.h" />
-    <ClInclude Include="..\include\SoftX\OcclusionQuery.h" />
-    <ClInclude Include="..\include\SoftX\QueryRasterizerAVX.h" />
-    <ClInclude Include="..\include\SoftX\QueryRasterizerFactory.h" />
-    <ClInclude Include="..\include\SoftX\QueryRasterizerInterface.h" />
-    <ClInclude Include="..\include\SoftX\QueryRasterizerScalar.h" />
-    <ClInclude Include="..\include\SoftX\QueryRasterizerSSE.h" />
-    <ClInclude Include="..\include\SoftX\RasterizerAVX.h" />
-    <ClInclude Include="..\include\SoftX\RasterizerInterface.h" />
-    <ClInclude Include="..\include\SoftX\RasterizerFactory.h" />
-    <ClInclude Include="..\include\SoftX\RasterizerScalar.h" />
-    <ClInclude Include="..\include\SoftX\RasterizerSSE.h" />
-    <ClInclude Include="..\include\SoftX\Renderer.h" />
-    <ClInclude Include="..\include\SoftX\RenderTargetInterface.h" />
-    <ClInclude Include="..\include\SoftX\RenderTargetTexture.h" />
-    <ClInclude Include="..\include\SoftX\SoftX.h" />
-    <ClInclude Include="..\include\SoftX\TextureRGBA32F.h" />
-    <ClInclude Include="..\include\SoftX\TextureInterface.h" />
-    <ClInclude Include="..\include\SoftX\ThirdPartyIncluding.h" />
-    <ClInclude Include="..\include\SoftX\ThreadPool.h" />
-    <ClInclude Include="..\include\SoftX\ThreadPoolManager.h" />
-    <ClInclude Include="..\include\SoftX\Types.h" />
+    <ClInclude Include="..\include\DepthBuffer.h" />
+    <ClInclude Include="..\include\DepthTextureView.h" />
+    <ClInclude Include="..\include\Device.h" />
+    <ClInclude Include="..\include\DeviceContext.h" />
+    <ClInclude Include="..\include\FrameBuffer.h" />
+    <ClInclude Include="..\include\LibInternal.h" />
+    <ClInclude Include="..\include\OcclusionQuery.h" />
+    <ClInclude Include="..\include\QueryRasterizerInterface.h" />
+    <ClInclude Include="..\include\RasterizerInterface.h" />
+    <ClInclude Include="..\include\RenderTargetInterface.h" />
+    <ClInclude Include="..\include\RenderTargetTexture.h" />
+    <ClInclude Include="..\include\SoftX.h" />
+    <ClInclude Include="..\include\TextureRGBA32F.h" />
+    <ClInclude Include="..\include\TextureInterface.h" />
+    <ClInclude Include="..\include\ThirdPartyIncluding.h" />
+    <ClInclude Include="..\include\Types.h" />
+    <ClInclude Include="CPUDetector.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="QueryRasterizerAVX.h" />
+    <ClInclude Include="QueryRasterizerFactory.h" />
+    <ClInclude Include="QueryRasterizerScalar.h" />
+    <ClInclude Include="QueryRasterizerSSE.h" />
+    <ClInclude Include="RasterizerAVX.h" />
     <ClInclude Include="RasterizerCommon.h" />
+    <ClInclude Include="RasterizerFactory.h" />
+    <ClInclude Include="RasterizerScalar.h" />
+    <ClInclude Include="RasterizerSSE.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="ThreadPoolManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPUDetector.cpp" />
@@ -254,16 +254,10 @@
     <ClCompile Include="RasterizerScalar.cpp" />
     <ClCompile Include="RasterizerSSE.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="SoftX.cpp" />
     <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\optick\OptickCore.vcxproj">
-      <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

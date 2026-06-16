@@ -1,12 +1,19 @@
-﻿#include "pch.h"
-#include <SoftX/include/SoftX/SoftX.h>
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
+#include <SoftX.h>
+#include "CPUDetector.h"
+
 #include <array>
 #include <cstring>
 
 #ifdef _WIN32
 #include <intrin.h>
 #endif
-
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 CPUCapabilities CPUDetector::s_caps{};
@@ -93,3 +100,4 @@ const CPUCapabilities& CPUDetector::GetCapabilities() {
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

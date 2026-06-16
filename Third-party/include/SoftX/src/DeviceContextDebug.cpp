@@ -1,11 +1,16 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
 #include <ppl.h>
 
 #include "RasterizerCommon.h"
-#include <SoftX/include/SoftX/SoftX.h>
-#include <SoftX/include/SoftX/ThreadPoolManager.h>
-
+#include <SoftX.h>
+#include "ThreadPoolManager.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 void DeviceContext::DrawDebugLine(int x0, int y0, int x1, int y1, const float4& color)
@@ -103,3 +108,4 @@ void DeviceContext::DrawActiveTileBorders(const std::vector<Tile>& tiles)
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

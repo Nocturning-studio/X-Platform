@@ -1,8 +1,14 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
+#include <SoftX.h>
 #include "RasterizerCommon.h"
-#include <SoftX/include/SoftX/SoftX.h>
-
+#include "QueryRasterizerScalar.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 static inline bool ProcessPixel(uint x, uint y,
@@ -164,3 +170,4 @@ uint QueryRasterizerScalar::RasterizeTriangle(const VertexOutput& v0,
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

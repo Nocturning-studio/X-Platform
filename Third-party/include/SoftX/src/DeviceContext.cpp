@@ -1,7 +1,14 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
-#include <SoftX/include/SoftX/SoftX.h>
-
+#include <SoftX.h>
+#include "RasterizerFactory.h"
+#include "ThreadPoolManager.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 DeviceContext::DeviceContext()
@@ -276,3 +283,4 @@ bool DeviceContext::Validate(std::string* errorMsg) const
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

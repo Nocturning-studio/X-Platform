@@ -1,8 +1,15 @@
-﻿#include "pch.h"
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#include "pch.h"
 
+#include <SoftX.h>
 #include "RasterizerCommon.h"
-#include <SoftX/include/SoftX/SoftX.h>
-
+#include "QueryRasterizerFactory.h"
+#include "ThreadPoolManager.h"
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 OcclusionQuery::OcclusionQuery()
@@ -300,3 +307,4 @@ void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
 }
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////

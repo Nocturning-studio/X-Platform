@@ -3,20 +3,19 @@
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
-#include "pch.h"
-
-#include "ThreadPoolManager.h"
+#pragma once
 /////////////////////////////////////////////////////////////////
-SOFTX_BEGIN
+#include "LibInternal.h"
+#include "ThirdPartyIncluding.h"
 
-std::unique_ptr<ThreadPool> ThreadPoolManager::s_pool;
-std::once_flag ThreadPoolManager::s_initFlag;
+#include "Types.h"
 
-ThreadPool& ThreadPoolManager::Get()
-{
-	std::call_once(s_initFlag, []() { s_pool = std::make_unique<ThreadPool>(std::thread::hardware_concurrency()); });
-	return *s_pool;
-}
+#include "DepthBuffer.h"
+#include "FrameBuffer.h"
+#include "RenderTargetTexture.h"
 
-SOFTX_END
+#include "OcclusionQuery.h"
+
+#include "Device.h"
+#include "DeviceContext.h"
 /////////////////////////////////////////////////////////////////

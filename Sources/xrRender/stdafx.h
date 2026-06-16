@@ -28,7 +28,7 @@
 #include "r_color_converting.h"
 #include "../xrEngine/Engine.h"
 
-#include <SoftX/include/SoftX/SoftX.h>
+#include <SoftX/include/SoftX.h>
 
 IC void jitter(CBlender_Compile& C)
 {

@@ -1,4 +1,9 @@
-﻿#pragma once
+﻿/////////////////////////////////////////////////////////////////
+// SoftX – Software Graphics API
+// Copyright (c) 2026 NSDeathman
+// Licensed under the MIT License.
+/////////////////////////////////////////////////////////////////
+#pragma once
 
 #include <windows.h>
 #include <vector>
@@ -12,7 +17,7 @@
 #include "TextureRGBA32F.h"
 #include "DepthTextureView.h"
 #include <unordered_map>
-
+/////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 // Presentation parameters
@@ -291,3 +296,4 @@ enum class ComparisonFunc
 };
 
 SOFTX_END
+/////////////////////////////////////////////////////////////////
