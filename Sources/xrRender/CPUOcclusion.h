@@ -24,6 +24,8 @@ public:
 
     bool IsLoaded() const { return m_loaded; }
 
+    void SwapDepthBuffers();
+    void WaitForBuildAndSwap();
     void BuildDepthBuffer(const fmat4x4& viewProj);
     void SaveDepthBuffer(const SoftX::DepthBuffer& depthBuffer, const char* filename);
     void SaveDepthBuffer();
@@ -51,7 +53,7 @@ private:
     bool m_loaded = false;
 
     std::unique_ptr<SoftX::Device> m_softDevice;
-    std::unique_ptr<SoftX::DepthBuffer> m_softDepthBuffer;
+
     std::unique_ptr<SoftX::VertexBuffer> m_softOccluderVB;
     std::unique_ptr<SoftX::IndexBuffer> m_softOccluderIB;
 
@@ -71,10 +73,15 @@ private:
     fmat4x4 m_currentViewProj;
     SoftX::Viewport m_currentViewport;
 
+    std::unique_ptr<SoftX::DepthBuffer> m_softDepthBuffer[2];
+    int m_writeIdx = 0;   // индекс буфера для записи (build)
+    int m_readIdx = 1;   // индекс буфера для чтения (query)
+
+    // Асинхронная задача заполнения
+    std::future<void> m_buildFuture;
+
     void InitializeSoftX(const xr_vector<fvec3>& vertices, const xr_vector<u16>& indices);
     void ShutdownSoftX();
-
-    fmat4x4 BuildInfiniteFarProj(const fmat4x4& viewProj);
 
     void CreateLightPointGeometry();
     void CreateLightSpotGeometry();

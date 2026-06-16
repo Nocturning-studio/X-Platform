@@ -19,7 +19,7 @@ void CPUOcclusion::BeginOcclusionQueries(const fmat4x4& viewProj, const SoftX::V
     if (!m_activeQuery->IsReady())
         m_activeQuery->Flush();
 
-    m_activeQuery->SetDepthBuffer(*m_softDepthBuffer);
+    m_activeQuery->SetDepthBuffer(*m_softDepthBuffer[m_readIdx]);
     m_activeQuery->SetViewport(m_currentViewport);
     m_activeQuery->Begin();
 }

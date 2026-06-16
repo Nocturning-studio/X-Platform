@@ -106,7 +106,7 @@ void CPUOcclusion::SaveDepthBuffer(const SoftX::DepthBuffer& depthBuffer, const 
 
 void CPUOcclusion::SaveDepthBuffer()
 {
-    SaveDepthBufferToTGA(*m_softDepthBuffer, "output.tga");
+    SaveDepthBufferToTGA(*m_softDepthBuffer[m_readIdx], "output.tga");
 }
 
 CPUOcclusion::CPUOcclusion()
@@ -246,10 +246,13 @@ void CPUOcclusion::InitializeSoftX(const xr_vector<fvec3>& vertices,
     m_activeQuery = nullptr;
     m_pendingQuery = nullptr;
 
-    m_softDepthBuffer = std::make_unique<SoftX::DepthBuffer>(uint2(DEPTH_MAP_SIZE, DEPTH_MAP_SIZE));
+    m_softDepthBuffer[0] = std::make_unique<SoftX::DepthBuffer>(uint2(DEPTH_MAP_SIZE, DEPTH_MAP_SIZE));
+    m_softDepthBuffer[1] = std::make_unique<SoftX::DepthBuffer>(uint2(DEPTH_MAP_SIZE, DEPTH_MAP_SIZE));
+    m_writeIdx = 0;
+    m_readIdx = 1;
 
     ctx.SetRenderTarget(nullptr, true);
-    ctx.SetDepthBuffer(m_softDepthBuffer.get());
+    ctx.SetDepthBuffer(m_softDepthBuffer[m_writeIdx].get());
 
     ctx.SetCullMode(SoftX::CullMode::None);
     ctx.SetFillMode(SoftX::FillMode::Solid);
@@ -272,59 +275,69 @@ void CPUOcclusion::ShutdownSoftX()
 
     m_softOccluderVB.reset();
     m_softOccluderIB.reset();
-    m_softDepthBuffer.reset();
+    m_softDepthBuffer[0].reset();
+    m_softDepthBuffer[1].reset();
+    if (m_buildFuture.valid())
+        m_buildFuture.wait();
     m_softDevice.reset();
     m_queryPool.clear();
     m_activeQuery = nullptr;
     m_pendingQuery = nullptr;
 }
 
+void CPUOcclusion::SwapDepthBuffers()
+{
+    std::swap(m_writeIdx, m_readIdx);
+}
+
+void CPUOcclusion::WaitForBuildAndSwap()
+{
+    if (m_buildFuture.valid())
+    {
+        m_buildFuture.wait();
+        SwapDepthBuffers();
+    }
+}
+
 void CPUOcclusion::BuildDepthBuffer(const fmat4x4& viewProj)
 {
     if (!m_softDevice) return;
 
-    SoftX::DeviceContext& ctx = m_softDevice->GetImmediateContext();
+    // Дожидаемся предыдущей задачи, если ещё не завершилась
+    if (m_buildFuture.valid())
+        m_buildFuture.wait();
 
-    ctx.ClearDepth(1.0f);
+    // Запускаем заполнение в фоне
+    m_buildFuture = std::async(std::launch::async, [this, viewProj]()
+        {
+            SoftX::DeviceContext& ctx = m_softDevice->GetImmediateContext();
 
-    auto occlusionVS = [](const SoftX::VertexInput& input, const SoftX::ConstantBuffer& cb, const SoftX::TextureTable&) -> SoftX::VertexOutput
-    {
-        const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
-        const float x = input.Position.x;
-        const float y = input.Position.y;
-        const float z = input.Position.z;
+            ctx.SetRenderTarget(nullptr, true);
+            ctx.SetDepthBuffer(m_softDepthBuffer[m_writeIdx].get());
 
-        float w = x * mvp._14 + y * mvp._24 + z * mvp._34 + mvp._44;
-        float outX = x * mvp._11 + y * mvp._21 + z * mvp._31 + mvp._41;
-        float outY = x * mvp._12 + y * mvp._22 + z * mvp._32 + mvp._42;
-        float outZ = x * mvp._13 + y * mvp._23 + z * mvp._33 + mvp._43;
+            ctx.ClearDepth(1.0f);
 
-        SoftX::VertexOutput output;
-        output.Position = float4(outX, outY, outZ, w);
-        output.Color = float4(0, 0, 0, 0);
-        output.Normal = float3(0, 0, 0);
-        output.UV = float2(0, 0);
-        return output;
-    };
-    ctx.SetVertexShader(occlusionVS);
+            auto occlusionVS = [](const SoftX::VertexInput& input, const SoftX::ConstantBuffer& cb, const SoftX::TextureTable&) -> SoftX::VertexOutput
+            {
+                const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
+                float x = input.Position.x, y = input.Position.y, z = input.Position.z;
+                float w = x * mvp._14 + y * mvp._24 + z * mvp._34 + mvp._44;
+                float outX = x * mvp._11 + y * mvp._21 + z * mvp._31 + mvp._41;
+                float outY = x * mvp._12 + y * mvp._22 + z * mvp._32 + mvp._42;
+                float outZ = x * mvp._13 + y * mvp._23 + z * mvp._33 + mvp._43;
+                SoftX::VertexOutput output;
+                output.Position = float4(outX, outY, outZ, w);
+                return output;
+            };
+            ctx.SetVertexShader(occlusionVS);
+            ctx.SetPixelShader([](const auto&, const auto&, const auto&) { return float4(0, 0, 0, 0); });
 
-    auto occlusionPS = [](const SoftX::VertexOutput&, const SoftX::ConstantBuffer&, const SoftX::TextureTable&) -> float4
-    {
-        return float4(0, 0, 0, 0);
-    };
-    ctx.SetPixelShader(occlusionPS);
-
-    SoftX::ConstantBuffer cb(&viewProj, sizeof(viewProj));
-    ctx.SetConstantBuffer(cb);
-
-    ctx.SetVertexBuffer(*m_softOccluderVB);
-    ctx.SetIndexBuffer(*m_softOccluderIB);
-
-    ctx.SetDepthFunc(SoftX::ComparisonFunc::Less);
-
-    ctx.DrawIndexed();
-
-    //SaveDepthBufferToTGA(*m_softDepthBuffer, "OccluderDepth.tga");
+            SoftX::ConstantBuffer cb(&viewProj, sizeof(viewProj));
+            ctx.SetConstantBuffer(cb);
+            ctx.SetVertexBuffer(*m_softOccluderVB);
+            ctx.SetIndexBuffer(*m_softOccluderIB);
+            ctx.DrawIndexed();
+        });
 }
 
 void CPUOcclusion::DebugRenderLightVolumes(const light_Package& package, const fmat4x4& VP)
@@ -335,7 +348,7 @@ void CPUOcclusion::DebugRenderLightVolumes(const light_Package& package, const f
 
     ctx.ClearDepth(1.0f);
     ctx.SetRenderTarget(nullptr, false);
-    ctx.SetDepthBuffer(m_softDepthBuffer.get());
+    ctx.SetDepthBuffer(m_softDepthBuffer[m_writeIdx].get());
     ctx.SetDepthWriteEnable(true);
     ctx.SetDepthFunc(SoftX::ComparisonFunc::Less);
     ctx.SetCullMode(SoftX::CullMode::None);
@@ -367,7 +380,7 @@ void CPUOcclusion::DebugRenderLightVolumes(const light_Package& package, const f
     };
     ctx.SetVertexShader(occlusionVS);
 
-    SoftX::Viewport fullVP(0.0f, 0.0f, (float)m_softDepthBuffer->Width(), (float)m_softDepthBuffer->Height(), 0.0f, 1.0f);
+    SoftX::Viewport fullVP(0.0f, 0.0f, (float)m_softDepthBuffer[m_writeIdx]->Width(), (float)m_softDepthBuffer[m_writeIdx]->Height(), 0.0f, 1.0f);
     ctx.SetViewport(fullVP);
 
     // Построим frustum из VP для теста видимости
@@ -449,6 +462,6 @@ void CPUOcclusion::DebugRenderLightVolumes(const light_Package& package, const f
     Msg("Processed light sources count : %d",
         package.v_point.size() + package.v_spot.size() + package.v_shadowed.size());
 
-    SaveDepthBufferToTGA(*m_softDepthBuffer, "LightVolumes.tga");
+    SaveDepthBufferToTGA(*m_softDepthBuffer[m_writeIdx], "LightVolumes.tga");
 }
 ////////////////////////////////////////////////////////////////////////////////
