@@ -53,6 +53,7 @@
 // ============================================================================
 // Global Using Declarations for Convenience
 // ============================================================================
+#ifdef AFTERMATH_DEFAULTS
 // Constants
 using AfterMath::Constants::PI;
 using AfterMath::Constants::TWO_PI;
@@ -84,6 +85,7 @@ using AfterMath::FastMath::fast_inv_sqrt;
 using AfterMath::FastMath::fast_exp;
 using AfterMath::FastMath::fast_log;
 using AfterMath::FastMath::fast_pow;
+#endif //AFTERMATH_DEFAULTS
 
 // Common Type Aliases
 using half = AfterMath::half;
@@ -114,7 +116,6 @@ using double3 = AfterMath::TemplateVector3<double>;
 using int4 = AfterMath::TemplateVector4<int>;
 using uint4 = AfterMath::TemplateVector4<unsigned int>;
 using double4 = AfterMath::TemplateVector4<double>;
-
 // ============================================================================
 // Common Global Constants
 // ============================================================================

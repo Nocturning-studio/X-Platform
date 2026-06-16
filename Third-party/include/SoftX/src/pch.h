@@ -8,4 +8,4 @@
 #include <string>
 #include <vector>
 
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>

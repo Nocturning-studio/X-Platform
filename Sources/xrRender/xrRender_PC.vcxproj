@@ -962,6 +962,8 @@
     <ClInclude Include="Blender_Particle.h" />
     <ClInclude Include="Blender_Screen_SET.h" />
     <ClInclude Include="Blender_multiple_usage.h" />
+    <ClInclude Include="CPUOcclusion.h" />
+    <ClInclude Include="CPUOcclusionShaders.h" />
     <ClInclude Include="DetailManager.h" />
     <ClInclude Include="DetailModel.h" />
     <ClInclude Include="doug_lea_allocator_wrapper.h" />
@@ -1030,6 +1032,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\xrEngine\du_sphere_part.cpp" />
+    <ClCompile Include="CPUOcclusion.cpp" />
+    <ClCompile Include="CPUOcclusionQueries.cpp" />
+    <ClCompile Include="CPUOcclusionVolumes.cpp" />
     <ClCompile Include="DetailManager.cpp" />
     <ClCompile Include="DetailManager_VS.cpp" />
     <ClCompile Include="DetailModel.cpp" />
@@ -1123,7 +1128,6 @@
     <ClCompile Include="Light_Render_Direct.cpp" />
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />
     <ClCompile Include="light_smapvis.cpp" />
-    <ClCompile Include="light_vis.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="r_blenders.cpp" />
     <ClCompile Include="r_loader.cpp" />
@@ -1190,6 +1194,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Third-party\include\optick\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\SoftX\src\SoftX.vcxproj">
+      <Project>{ce2f84c9-34dd-436b-aff9-d3a84c290e0c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>

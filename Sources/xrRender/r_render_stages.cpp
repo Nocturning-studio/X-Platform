@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+п»ї////////////////////////////////////////////////////////////////////////////////
 // Created: 19.03.2025
 // Author: NSDeathman
 // Nocturning studio for NS Platform X
@@ -15,10 +15,10 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 {
 	PROFILE_FUNCTION();
 
-	// Увеличиваем маркер кадра (легаси)
+	// РЈРІРµР»РёС‡РёРІР°РµРј РјР°СЂРєРµСЂ РєР°РґСЂР° (Р»РµРіР°СЃРё)
 	SceneGraph.m_traversal_marker++;
 
-	// Если текущий сектор не определен, рисуем только HUD и выходим.
+	// Р•СЃР»Рё С‚РµРєСѓС‰РёР№ СЃРµРєС‚РѕСЂ РЅРµ РѕРїСЂРµРґРµР»РµРЅ, СЂРёСЃСѓРµРј С‚РѕР»СЊРєРѕ HUD Рё РІС‹С…РѕРґРёРј.
 	if (!pLastSector)
 	{
 		set_Object(nullptr);
@@ -28,9 +28,9 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	}
 
 	// -------------------------------------------------------------------------
-	// 0. Настройка контекста (TLS)
+	// 0. РќР°СЃС‚СЂРѕР№РєР° РєРѕРЅС‚РµРєСЃС‚Р° (TLS)
 	// -------------------------------------------------------------------------
-	// Получаем уникальный маркер обхода для текущего вызова
+	// РџРѕР»СѓС‡Р°РµРј СѓРЅРёРєР°Р»СЊРЅС‹Р№ РјР°СЂРєРµСЂ РѕР±С…РѕРґР° РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РІС‹Р·РѕРІР°
 	u32 current_marker = SceneGraph.m_traversal_marker.fetch_add(1) + 1;
 
 	m_TraversalContext.frustum = &ViewBase;
@@ -38,20 +38,20 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	m_TraversalContext.current_transform = &Fidentity;
 	m_TraversalContext.render_phase = CRender::PHASE_NORMAL;
 
-	// АКТИВИРУЕМ TLS:
-	// Теперь все вызовы add_Visual/add_Geometry внутри этого скоупа
-	// будут писать в переданный пакет 'dest'
+	// РђРљРўРР’РР РЈР•Рњ TLS:
+	// РўРµРїРµСЂСЊ РІСЃРµ РІС‹Р·РѕРІС‹ add_Visual/add_Geometry РІРЅСѓС‚СЂРё СЌС‚РѕРіРѕ СЃРєРѕСѓРїР°
+	// Р±СѓРґСѓС‚ РїРёСЃР°С‚СЊ РІ РїРµСЂРµРґР°РЅРЅС‹Р№ РїР°РєРµС‚ 'dest'
 	CurrentRenderContext::Scope tls_scope(dest, m_TraversalContext);
 
 	// -------------------------------------------------------------------------
-	// 1. Spatial Query (Пишем в dest)
+	// 1. Spatial Query (РџРёС€РµРј РІ dest)
 	// -------------------------------------------------------------------------
-	// Очистка не требуется, так как подразумевается, что dest.Clear() был вызван до render_main
+	// РћС‡РёСЃС‚РєР° РЅРµ С‚СЂРµР±СѓРµС‚СЃСЏ, С‚Р°Рє РєР°Рє РїРѕРґСЂР°Р·СѓРјРµРІР°РµС‚СЃСЏ, С‡С‚Рѕ dest.Clear() Р±С‹Р» РІС‹Р·РІР°РЅ РґРѕ render_main
 	g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED,
 							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
 	// -------------------------------------------------------------------------
-	// 2. Sorting (Сортируем в dest)
+	// 2. Sorting (РЎРѕСЂС‚РёСЂСѓРµРј РІ dest)
 	// -------------------------------------------------------------------------
 	const fvec3 camera_pos = Engine.RenderView.Position;
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
@@ -73,7 +73,7 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	if (active_phase() == PHASE_NORMAL)
 	{
 		uLastLTRACK++;
-		// Используем результаты из dest
+		// РСЃРїРѕР»СЊР·СѓРµРј СЂРµР·СѓР»СЊС‚Р°С‚С‹ РёР· dest
 		size_t renderable_count = dest.m_spatial_query_results.size();
 		size_t light_track_id = 0xffffffff;
 
@@ -88,7 +88,7 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 
 		if (renderable_count)
 		{
-			// Используем результаты из dest
+			// РСЃРїРѕР»СЊР·СѓРµРј СЂРµР·СѓР»СЊС‚Р°С‚С‹ РёР· dest
 			if (IRenderable* renderable = dest.m_spatial_query_results[light_track_id]->dcast_Renderable())
 			{
 				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
@@ -98,14 +98,14 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	}
 
 	// -------------------------------------------------------------------------
-	// 4. Portal Traversal (Траверсер внутри dest)
+	// 4. Portal Traversal (РўСЂР°РІРµСЂСЃРµСЂ РІРЅСѓС‚СЂРё dest)
 	// -------------------------------------------------------------------------
-	// Используем траверсер, привязанный к конкретному пакету
+	// РСЃРїРѕР»СЊР·СѓРµРј С‚СЂР°РІРµСЂСЃРµСЂ, РїСЂРёРІСЏР·Р°РЅРЅС‹Р№ Рє РєРѕРЅРєСЂРµС‚РЅРѕРјСѓ РїР°РєРµС‚Сѓ
 	dest.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
 								   CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
 
 	// -------------------------------------------------------------------------
-	// 5. Static Geometry (Берем из dest)
+	// 5. Static Geometry (Р‘РµСЂРµРј РёР· dest)
 	// -------------------------------------------------------------------------
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
@@ -117,7 +117,7 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 		for (const auto& frustum : sec_vis.frustums)
 		{
 			set_Frustum((CFrustum*)&frustum);
-			// add_Geometry сама возьмет dest из TLS (CurrentRenderContext)
+			// add_Geometry СЃР°РјР° РІРѕР·СЊРјРµС‚ dest РёР· TLS (CurrentRenderContext)
 			add_Geometry(root_visual);
 		}
 	}
@@ -125,14 +125,14 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	HOM.MT_SYNC();
 
 	// -------------------------------------------------------------------------
-	// 6. Dynamic Geometry & Lights (Берем из dest)
+	// 6. Dynamic Geometry & Lights (Р‘РµСЂРµРј РёР· dest)
 	// -------------------------------------------------------------------------
 	for (ISpatial* spatial : dest.m_spatial_query_results)
 	{
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
 
-		// --- Источники света ---
+		// --- РСЃС‚РѕС‡РЅРёРєРё СЃРІРµС‚Р° ---
 		if (spatial->spatial.type & STYPE_LIGHTSOURCE)
 		{
 			light* pLight = (light*)(spatial->dcast_Light());
@@ -140,16 +140,16 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 
 			if (pLight->get_LOD() > EPS_L)
 			{
-				// Примечание: Lights.add_light пишет в глобальный список.
-				// При полном выносе в поток это место потребует защиты мьютексом
-				// или своего буфера для lights. Пока оставляем как есть.
+				// РџСЂРёРјРµС‡Р°РЅРёРµ: Lights.add_light РїРёС€РµС‚ РІ РіР»РѕР±Р°Р»СЊРЅС‹Р№ СЃРїРёСЃРѕРє.
+				// РџСЂРё РїРѕР»РЅРѕРј РІС‹РЅРѕСЃРµ РІ РїРѕС‚РѕРє СЌС‚Рѕ РјРµСЃС‚Рѕ РїРѕС‚СЂРµР±СѓРµС‚ Р·Р°С‰РёС‚С‹ РјСЊСЋС‚РµРєСЃРѕРј
+				// РёР»Рё СЃРІРѕРµРіРѕ Р±СѓС„РµСЂР° РґР»СЏ lights. РџРѕРєР° РѕСЃС‚Р°РІР»СЏРµРј РєР°Рє РµСЃС‚СЊ.
 				if (HOM.visible(pLight->get_homdata()))
 					Lights.add_light(pLight);
 			}
 			continue;
 		}
 
-		// --- Динамика ---
+		// --- Р”РёРЅР°РјРёРєР° ---
 		if (!(spatial->spatial.type & STYPE_RENDERABLE))
 			continue;
 
@@ -157,7 +157,7 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 		if (!renderable)
 			continue;
 
-		// 1. ФИЛЬТР HUD
+		// 1. Р¤РР›Р¬РўР  HUD
 		if (!sector)
 		{
 			float dist_sq = spatial->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
@@ -175,24 +175,24 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 
 		BOOL bVisible = HOM.visible(vis_temp);
 
-		// Возвращаем обновленные тайминги обратно в оригинал
+		// Р’РѕР·РІСЂР°С‰Р°РµРј РѕР±РЅРѕРІР»РµРЅРЅС‹Рµ С‚Р°Р№РјРёРЅРіРё РѕР±СЂР°С‚РЅРѕ РІ РѕСЂРёРіРёРЅР°Р»
 		vis_orig.hom_frame = vis_temp.hom_frame;
 		vis_orig.hom_tested = vis_temp.hom_tested;
 
 		if (bVisible)
 		{
-			// Рендерим
+			// Р РµРЅРґРµСЂРёРј
 			m_TraversalContext.frustum = &ViewBase;
 			set_Object(renderable);
 
-			// add_Visual внутри вызовется с использованием dest из TLS
+			// add_Visual РІРЅСѓС‚СЂРё РІС‹Р·РѕРІРµС‚СЃСЏ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј dest РёР· TLS
 			renderable->renderable_Render();
 
 			set_Object(nullptr);
 		}
 	}
 
-	// Сброс контекста
+	// РЎР±СЂРѕСЃ РєРѕРЅС‚РµРєСЃС‚Р°
 	m_TraversalContext.frustum = nullptr;
 
 	// 7. HUD Rendering
@@ -204,13 +204,13 @@ void CRender::CalculateSceneVisibility()
 {
 	PROFILE_FUNCTION();
 
-	// 1. Управление буферами (SWAP)
-	// Переключаем индексы буферов один раз за кадр здесь.
-	// Write - куда пишем сейчас. Read - откуда будем читать в фазах рендеринга.
+	// 1. РЈРїСЂР°РІР»РµРЅРёРµ Р±СѓС„РµСЂР°РјРё (SWAP)
+	// РџРµСЂРµРєР»СЋС‡Р°РµРј РёРЅРґРµРєСЃС‹ Р±СѓС„РµСЂРѕРІ РѕРґРёРЅ СЂР°Р· Р·Р° РєР°РґСЂ Р·РґРµСЃСЊ.
+	// Write - РєСѓРґР° РїРёС€РµРј СЃРµР№С‡Р°СЃ. Read - РѕС‚РєСѓРґР° Р±СѓРґРµРј С‡РёС‚Р°С‚СЊ РІ С„Р°Р·Р°С… СЂРµРЅРґРµСЂРёРЅРіР°.
 	m_scene_write_ix = (m_scene_write_ix + 1) % 2;
 
-	// В синхронном режиме (пока нет многопоточности) читаем из того же буфера, в который пишем.
-	// При параллельном исполнении здесь будет: m_scene_read_ix = (m_scene_write_ix + 1) % 2;
+	// Р’ СЃРёРЅС…СЂРѕРЅРЅРѕРј СЂРµР¶РёРјРµ (РїРѕРєР° РЅРµС‚ РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚Рё) С‡РёС‚Р°РµРј РёР· С‚РѕРіРѕ Р¶Рµ Р±СѓС„РµСЂР°, РІ РєРѕС‚РѕСЂС‹Р№ РїРёС€РµРј.
+	// РџСЂРё РїР°СЂР°Р»Р»РµР»СЊРЅРѕРј РёСЃРїРѕР»РЅРµРЅРёРё Р·РґРµСЃСЊ Р±СѓРґРµС‚: m_scene_read_ix = (m_scene_write_ix + 1) % 2;
 	m_scene_read_ix = m_scene_write_ix;
 
 	// -------------------------------------------------------------------------
@@ -220,31 +220,31 @@ void CRender::CalculateSceneVisibility()
 		MainSceneWorkItem& item = GetGBufferWriteItem();
 		item.Clear();
 
-		// Сохраняем матрицы для истории (чтобы Draw поток знал, как рисовать)
+		// РЎРѕС…СЂР°РЅСЏРµРј РјР°С‚СЂРёС†С‹ РґР»СЏ РёСЃС‚РѕСЂРёРё (С‡С‚РѕР±С‹ Draw РїРѕС‚РѕРє Р·РЅР°Р», РєР°Рє СЂРёСЃРѕРІР°С‚СЊ)
 		item.view = Engine.RenderView.View;
 		item.projection = Engine.RenderView.Project;
 		item.view_projection = Engine.RenderView.ViewProjection;
 
-		// Конфигурация сбора для GBuffer
+		// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃР±РѕСЂР° РґР»СЏ GBuffer
 		SceneGraphFetchConfig GBufferPassFetchConfig;
-		GBufferPassFetchConfig.fetch_priority_0 = true;	 // Обычная геометрия
-		GBufferPassFetchConfig.fetch_priority_1 = false; // Сложные материалы (потом)
-		GBufferPassFetchConfig.fetch_wallmarks = true;	 // Воллмарки
+		GBufferPassFetchConfig.fetch_priority_0 = true;	 // РћР±С‹С‡РЅР°СЏ РіРµРѕРјРµС‚СЂРёСЏ
+		GBufferPassFetchConfig.fetch_priority_1 = false; // РЎР»РѕР¶РЅС‹Рµ РјР°С‚РµСЂРёР°Р»С‹ (РїРѕС‚РѕРј)
+		GBufferPassFetchConfig.fetch_wallmarks = true;	 // Р’РѕР»Р»РјР°СЂРєРё
 		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
 
-		// Устанавливаем фазу (влияет на выбор шейдеров в rimp_select_sh_...)
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р°Р·Сѓ (РІР»РёСЏРµС‚ РЅР° РІС‹Р±РѕСЂ С€РµР№РґРµСЂРѕРІ РІ rimp_select_sh_...)
 		set_active_phase(PHASE_NORMAL);
 
-		// Сбор баундов для теней (только в основном проходе)
+		// РЎР±РѕСЂ Р±Р°СѓРЅРґРѕРІ РґР»СЏ С‚РµРЅРµР№ (С‚РѕР»СЊРєРѕ РІ РѕСЃРЅРѕРІРЅРѕРј РїСЂРѕС…РѕРґРµ)
 		if (m_need_render_sun)
 			SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
 		else
 			SceneGraph.SetCullingBoundsCollector(NULL);
 
-		// Сбор данных (запись в item.packet)
+		// РЎР±РѕСЂ РґР°РЅРЅС‹С… (Р·Р°РїРёСЃСЊ РІ item.packet)
 		render_main(item.view_projection, item.packet);
 
-		// Очистка состояния
+		// РћС‡РёСЃС‚РєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ
 		SceneGraph.SetCullingBoundsCollector(NULL);
 	}
 
@@ -255,25 +255,25 @@ void CRender::CalculateSceneVisibility()
 		MainSceneWorkItem& item = GetForwardWriteItem();
 		item.Clear();
 
-		// Сохраняем матрицы
+		// РЎРѕС…СЂР°РЅСЏРµРј РјР°С‚СЂРёС†С‹
 		item.view = Engine.RenderView.View;
 		item.projection = Engine.RenderView.Project;
 		item.view_projection = Engine.RenderView.ViewProjection;
 
-		// Конфигурация сбора для Forward
+		// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃР±РѕСЂР° РґР»СЏ Forward
 		SceneGraphFetchConfig ForwardPassFetchConfig;
-		ForwardPassFetchConfig.fetch_priority_0 = false; // Уже отрисовали в GBuffer
-		ForwardPassFetchConfig.fetch_priority_1 = true; // Геометрия со сложными шейдерами (Forward)
-		ForwardPassFetchConfig.fetch_wallmarks = false; // Уже собрали (или не нужны здесь)
+		ForwardPassFetchConfig.fetch_priority_0 = false; // РЈР¶Рµ РѕС‚СЂРёСЃРѕРІР°Р»Рё РІ GBuffer
+		ForwardPassFetchConfig.fetch_priority_1 = true; // Р“РµРѕРјРµС‚СЂРёСЏ СЃРѕ СЃР»РѕР¶РЅС‹РјРё С€РµР№РґРµСЂР°РјРё (Forward)
+		ForwardPassFetchConfig.fetch_wallmarks = false; // РЈР¶Рµ СЃРѕР±СЂР°Р»Рё (РёР»Рё РЅРµ РЅСѓР¶РЅС‹ Р·РґРµСЃСЊ)
 		SceneGraph.SetFetchConfig(ForwardPassFetchConfig);
 
 		set_active_phase(PHASE_NORMAL);
 
-		// Сбор данных (запись в item.packet)
+		// РЎР±РѕСЂ РґР°РЅРЅС‹С… (Р·Р°РїРёСЃСЊ РІ item.packet)
 		render_main(item.view_projection, item.packet);
 	}
 
-	// Восстанавливаем дефолтный конфиг на всякий случай
+	// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ РєРѕРЅС„РёРі РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 	SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
 }
 
@@ -293,8 +293,8 @@ void CRender::render_gbuffer_primary()
 {
 	PROFILE_FUNCTION();
 
-	// 1. Получаем данные для отрисовки (READ Item)
-	// Данные уже были собраны в CalculateSceneVisibility
+	// 1. РџРѕР»СѓС‡Р°РµРј РґР°РЅРЅС‹Рµ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё (READ Item)
+	// Р”Р°РЅРЅС‹Рµ СѓР¶Рµ Р±С‹Р»Рё СЃРѕР±СЂР°РЅС‹ РІ CalculateSceneVisibility
 	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
 	// 2. DRAW PHASE
@@ -307,7 +307,7 @@ void CRender::render_gbuffer_primary()
 		if (psDeviceFlags.test(rsWireframe))
 			RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-		// Используем пакет из readItem
+		// РСЃРїРѕР»СЊР·СѓРµРј РїР°РєРµС‚ РёР· readItem
 		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
 
 		if (Details)
@@ -325,11 +325,11 @@ void CRender::render_gbuffer_secondary()
 {
 	PROFILE_FUNCTION();
 
-	// Используем уже собранные данные из Read Item (GBuffer packet)
+	// РСЃРїРѕР»СЊР·СѓРµРј СѓР¶Рµ СЃРѕР±СЂР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РёР· Read Item (GBuffer packet)
 	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
-	// Примечание: Portal Traverser обновляется в render_main,
-	// поэтому он находится внутри readItem.packet.
+	// РџСЂРёРјРµС‡Р°РЅРёРµ: Portal Traverser РѕР±РЅРѕРІР»СЏРµС‚СЃСЏ РІ render_main,
+	// РїРѕСЌС‚РѕРјСѓ РѕРЅ РЅР°С…РѕРґРёС‚СЃСЏ РІРЅСѓС‚СЂРё readItem.packet.
 	readItem.packet.portal_traverser.RenderFade();
 
 	RenderBackendLegacy.enable_anisotropy_filtering();
@@ -340,11 +340,11 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackendLegacy.set_ZWriteEnable(FALSE);
 
-	// Рендерим из readItem.packet
+	// Р РµРЅРґРµСЂРёРј РёР· readItem.packet
 	// LODs
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::LOD, 0, true, true);
 
-	// HUD (оружие) обычно рисуется поверх или в GBuffer, если нужно
+	// HUD (РѕСЂСѓР¶РёРµ) РѕР±С‹С‡РЅРѕ СЂРёСЃСѓРµС‚СЃСЏ РїРѕРІРµСЂС… РёР»Рё РІ GBuffer, РµСЃР»Рё РЅСѓР¶РЅРѕ
 	set_active_phase(PHASE_HUD);
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
@@ -355,22 +355,59 @@ void CRender::render_gbuffer_secondary()
 	RenderBackendLegacy.disable_anisotropy_filtering();
 }
 
+static ref_shader g_Shader = nullptr;
+void CRender::debug_draw_light_volumes(const light_Package& package, const fmat4x4& VP)
+{
+	// РћС‚РєР»СЋС‡Р°РµРј Р·Р°РїРёСЃСЊ РІ РіР»СѓР±РёРЅСѓ Рё С‚РµСЃС‚ РіР»СѓР±РёРЅС‹, С‡С‚РѕР±С‹ РІРёРґРµС‚СЊ СЃРєРІРѕР·СЊ СЃС‚РµРЅС‹
+	RenderBackendLegacy.set_ZWriteEnable(FALSE);
+	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, FALSE);
+	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+
+	if(g_Shader == nullptr)
+		g_Shader.create("sun_occluder");
+
+	RenderBackendLegacy.set_Shader(g_Shader);
+
+	// РЎРѕР±РёСЂР°РµРј РІСЃРµ РёСЃС‚РѕС‡РЅРёРєРё РёР· Lights_LastFrame (РёР»Рё РёР· Lights.package)
+	auto draw_list = [&](const xr_vector<light*>& lights)
+	{
+		for (light* L : lights)
+		{
+			if (!L) continue;
+
+			RenderBackendLegacy.set_transform_world(L->get_transform());
+			RenderBackendLegacy.set_transform_view(Engine.RenderView.View);
+			RenderBackendLegacy.set_transform_project(Engine.RenderView.Project);
+
+			draw_volume(L);
+		}
+	};
+
+	draw_list(package.v_point);
+	draw_list(package.v_spot);
+	draw_list(package.v_shadowed);
+
+	RenderBackendLegacy.set_ZWriteEnable(TRUE);
+	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, TRUE);
+	RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
+}
+
 void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
 
-	// Берем данные из READ Item для Forward прохода
+	// Р‘РµСЂРµРј РґР°РЅРЅС‹Рµ РёР· READ Item РґР»СЏ Forward РїСЂРѕС…РѕРґР°
 	MainSceneWorkItem& readItem =
-		GetForwardWriteItem(); // ВНИМАНИЕ: Тут была ошибка в именовании в оригинале, должно быть GetForwardReadItem()
+		GetForwardWriteItem(); // Р’РќРРњРђРќРР•: РўСѓС‚ Р±С‹Р»Р° РѕС€РёР±РєР° РІ РёРјРµРЅРѕРІР°РЅРёРё РІ РѕСЂРёРіРёРЅР°Р»Рµ, РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ GetForwardReadItem()
 
-	// Исправляем на ReadItem:
+	// РСЃРїСЂР°РІР»СЏРµРј РЅР° ReadItem:
 	MainSceneWorkItem& currentReadItem = GetForwardReadItem();
 
-	// Используем queue_distortion из текущего пакета, проверка на пустоту (ассерт)
+	// РСЃРїРѕР»СЊР·СѓРµРј queue_distortion РёР· С‚РµРєСѓС‰РµРіРѕ РїР°РєРµС‚Р°, РїСЂРѕРІРµСЂРєР° РЅР° РїСѓСЃС‚РѕС‚Сѓ (Р°СЃСЃРµСЂС‚)
 	VERIFY(0 == currentReadItem.packet.queue_distortion.size());
 
-	// Reuse списки очищаются внутри SceneGraph::Render или вручную, если нужно,
-	// но здесь мы просто читаем.
+	// Reuse СЃРїРёСЃРєРё РѕС‡РёС‰Р°СЋС‚СЃСЏ РІРЅСѓС‚СЂРё SceneGraph::Render РёР»Рё РІСЂСѓС‡РЅСѓСЋ, РµСЃР»Рё РЅСѓР¶РЅРѕ,
+	// РЅРѕ Р·РґРµСЃСЊ РјС‹ РїСЂРѕСЃС‚Рѕ С‡РёС‚Р°РµРј.
 
 	RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackendLegacy.set_Depth_Buffer(HW.GetBaseZB());
@@ -386,7 +423,7 @@ void CRender::render_stage_forward()
 
 		set_active_phase(PHASE_NORMAL);
 
-		// Рендерим собранное (Priority 1)
+		// Р РµРЅРґРµСЂРёРј СЃРѕР±СЂР°РЅРЅРѕРµ (Priority 1)
 		SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);
 		SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Transparent);
 
@@ -397,7 +434,7 @@ void CRender::render_stage_forward()
 	// ============================================
 	// PASS 3: Sun Light (Reuse)
 	// ============================================
-	// Смена фазы
+	// РЎРјРµРЅР° С„Р°Р·С‹
 	set_active_phase(PHASE_SUN_LIGHTING);
 
 	RenderBackendLegacy.set_ColorWriteEnable();
@@ -418,6 +455,23 @@ void CRender::render_stage_forward()
 	// ============================================
 	if (m_SunOccluder && ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
 		m_SunOccluder->Render();
+
+	//debug_draw_light_volumes(Lights.package, Engine.RenderView.ViewProjection);
+	//CPUOCC.DrawDebug();
+	//CPUOCC.DebugRenderLightVolumes(Lights.package, Engine.RenderView.ViewProjection);
+}
+
+void CRender::render_sun()
+{
+	PROFILE_FUNCTION();
+
+	Engine.Statistic->RenderCALC_SUN.Begin();
+
+	RenderImplementation.stats.l_visible++;
+	render_sun_cascades();
+	dwLightMarkerID += 2;
+
+	Engine.Statistic->RenderCALC_SUN.End();
 }
 
 void CRender::render_hom()
@@ -434,22 +488,65 @@ void CRender::render_hom()
 	}
 }
 
+//#define DEBUG_LIGHTS_CULLING
+
 void CRender::render_stage_occlusion_culling()
 {
 	OPTICK_EVENT("render_stage_occlusion_culling");
 	PROFILE_FUNCTION();
 
-	float safe_area = 20;
-	float ps_r_light_distance_cull = 40;
+	const u32 frame = Engine.TimeManager.GetFrameCount();
+	const fvec3& cam_pos = Engine.RenderView.Position;
+	const float max_dist_sq = ps_r_light_distance_cull * ps_r_light_distance_cull;
+
+#ifdef DEBUG_LIGHTS_CULLING
+	Msg("[CPU-OCC] === Frame %d BEGIN ===", frame);
+	Msg("[CPU-OCC] Lights in package: point=%d spot=%d shadowed=%d",
+		Lights.package.v_point.size(), Lights.package.v_spot.size(), Lights.package.v_shadowed.size());
+#endif
 
 	// --------------------------------------------------------------------
-	// 0. Подготовка и сброс предыдущих результатов occlusion
+	// 0. РЎР±РѕСЂ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РєР°РґСЂР° (CPU occlusion)
 	// --------------------------------------------------------------------
 	{
-		OPTICK_EVENT("phase_occq");
-		phase_occq();
+		OPTICK_EVENT("collect_cpu_query_results");
+		if (CPUOCC.IsQueryReady())
+		{
+#ifdef DEBUG_LIGHTS_CULLING
+			Msg("[CPU-OCC] Query ready, processing %d pending lights", m_cpu_occ_pending_lights.size());
+#endif
+			for (light* L : m_cpu_occ_pending_lights)
+			{
+				if (!L || !L->VisibilityData.pending)
+					continue;
+
+				u32 samples = CPUOCC.GetVisibleSamples(L->VisibilityData.query_id);
+				if (samples != 0xfffffffe)
+				{
+					bool newVisible = (samples > ps_r_light_fragments_cull);
+					L->VisibilityData.visible = newVisible;
+					L->VisibilityData.pending = false;
+
+					if (newVisible)
+						L->VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
+					else
+						L->VisibilityData.frame2test = frame + ::Random.randI(5, 10);
+
+#ifdef DEBUG_LIGHTS_CULLING
+					Msg("[CPU-OCC]   Light %p (type %d) query_id=%u samples=%u -> %s",
+						L, L->LightFlags.type, L->VisibilityData.query_id, samples,
+						newVisible ? "VISIBLE" : "CULLED");
+#endif
+				}
+			}
+			CPUOCC.ResetPendingQuery();
+		}
+		m_cpu_occ_pending_lights.clear();
 	}
 
+	// --------------------------------------------------------------------
+	// 1. РћС‡РёСЃС‚РєР° РїР°РєРµС‚РѕРІ
+	// --------------------------------------------------------------------
 	{
 		OPTICK_EVENT("clear_packages");
 		LP_normal.clear();
@@ -462,85 +559,77 @@ void CRender::render_stage_occlusion_culling()
 	stats.l_unshadowed = LP.v_point.size() + LP.v_spot.size();
 	stats.l_total = stats.l_shadowed + stats.l_unshadowed;
 
-	const u32 frame = Engine.TimeManager.GetFrameCount();
-	const fvec3& cam_pos = Engine.RenderView.Position;
-
 	// --------------------------------------------------------------------
-	// Расчёт safe_area с использованием консольной переменной
+	// 2. Р—Р°РїРѕР»РЅРµРЅРёРµ depth buffer Рё РЅР°С‡Р°Р»Рѕ РЅРѕРІРѕРіРѕ occlusion query
 	// --------------------------------------------------------------------
 	{
-		float a0 = deg2rad(Engine.RenderView.Fov * Engine.RenderView.Aspect / 2.f);
-		float a1 = deg2rad(Engine.RenderView.Fov / 2.f);
-		float x0 = safe_area / _cos(a0);
-		float x1 = safe_area / _cos(a1);
-		float c = _sqrt(x0 * x0 + x1 * x1);
-		safe_area = _max(_max(safe_area, _max(x0, x1)), c);
+		OPTICK_EVENT("build_depth_and_begin_query");
+		//CPUOCC.DebugRenderLightVolumes(LP, Engine.RenderView.ViewProjection);
+		CPUOCC.BuildDepthBuffer(Engine.RenderView.ViewProjection);
+		SoftX::Viewport vp(0.0f, 0.0f, 512, 512, 0.0f, 1.0f);
+		CPUOCC.BeginOcclusionQueries(Engine.RenderView.ViewProjection, vp);
 	}
 
 	// --------------------------------------------------------------------
-	// Фильтр по расстоянию
+	// 3. РџРѕРґРіРѕС‚РѕРІРєР° РёСЃС‚РѕС‡РЅРёРєРѕРІ (РєР»Р°СЃСЃРёС„РёРєР°С†РёСЏ)
 	// --------------------------------------------------------------------
-	const float max_dist_sq = ps_r_light_distance_cull * ps_r_light_distance_cull;
-
-	// Вспомогательная структура для результата подготовки
 	struct LightPrepareResult
 	{
 		light* L;
-		bool needs_query;   // нужен occlusion query
-		bool pending;       // если true, будет ждать результата
+		bool needs_query;
+		bool pending;
 	};
 
-	xr_vector<LightPrepareResult> prepared_point;
-	xr_vector<LightPrepareResult> prepared_spot;
-	xr_vector<LightPrepareResult> prepared_shadowed;
-
+	xr_vector<LightPrepareResult> prepared_point, prepared_spot, prepared_shadowed;
 	prepared_point.reserve(LP.v_point.size());
 	prepared_spot.reserve(LP.v_spot.size());
 	prepared_shadowed.reserve(LP.v_shadowed.size());
 
-	const size_t total_lights = LP.v_point.size() + LP.v_spot.size() + LP.v_shadowed.size();
-
-	// Лямбда подготовки одного источника (с проверкой дистанции и safe_area)
 	auto prepare_one = [&](light* L) -> LightPrepareResult
 	{
-		// Проверка расстояния
 		float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
 		if (dist_sq > max_dist_sq)
 		{
 			L->VisibilityData.visible = false;
 			L->VisibilityData.pending = false;
-			L->VisibilityData.frame2test = frame + ::Random.randI(10, 20); // delay_large
+			L->VisibilityData.frame2test = frame + ::Random.randI(10, 20);
+#ifdef DEBUG_LIGHTS_CULLING
+			Msg("[CPU-OCC] PREP: light %p culled by distance (dist %.1f > max %.1f)",
+				L, sqrtf(dist_sq), sqrtf(max_dist_sq));
+#endif
 			return { L, false, false };
 		}
 
-		// Стандартная подготовка (теперь с переданным safe_area)
-		bool needs_q = L->vis_prepare_async(frame);
+#ifdef DEBUG_LIGHTS_CULLING
+		Msg("[CPU-OCC] PREP: light %p type %d dist %.1f frame2test %d (curr %d) shadow=%d",
+			L, L->LightFlags.type, sqrtf(dist_sq), L->VisibilityData.frame2test, frame, L->LightFlags.bShadow);
+#endif
+
+		bool needs_q = L->vis_prepare(frame);
+
+#ifdef DEBUG_LIGHTS_CULLING
+		Msg("[CPU-OCC]   -> needs_q=%d pending=%d visible=%d", needs_q, L->VisibilityData.pending, L->VisibilityData.visible);
+#endif
 		return { L, needs_q, L->VisibilityData.pending };
 	};
 
-	// --------------------------------------------------------------------
-	// ЭТАП 1: Параллельная / последовательная подготовка
-	// --------------------------------------------------------------------
+	const size_t total_lights = LP.v_point.size() + LP.v_spot.size() + LP.v_shadowed.size();
 	{
 		OPTICK_EVENT("Prepare lights (parallel/sequential)");
-
 		if (total_lights > 64)
 		{
 			concurrency::parallel_invoke(
 				[&]() {
 					OPTICK_EVENT("prepare_point");
-					for (light* L : LP.v_point)
-						prepared_point.push_back(prepare_one(L));
+					for (light* L : LP.v_point) prepared_point.push_back(prepare_one(L));
 				},
 				[&]() {
 					OPTICK_EVENT("prepare_spot");
-					for (light* L : LP.v_spot)
-						prepared_spot.push_back(prepare_one(L));
+					for (light* L : LP.v_spot) prepared_spot.push_back(prepare_one(L));
 				},
 					[&]() {
 					OPTICK_EVENT("prepare_shadowed");
-					for (light* L : LP.v_shadowed)
-						prepared_shadowed.push_back(prepare_one(L));
+					for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L));
 				}
 				);
 		}
@@ -554,45 +643,68 @@ void CRender::render_stage_occlusion_culling()
 	}
 
 	// --------------------------------------------------------------------
-	// ЭТАП 2: Последовательная выдача occlusion queries (главный поток)
+	// 4. Р’С‹РґР°С‡Р° CPU occlusion Р·Р°РїСЂРѕСЃРѕРІ
 	// --------------------------------------------------------------------
 	{
-		OPTICK_EVENT("Issue occlusion queries");
+		OPTICK_EVENT("Issue CPU occlusion queries");
 
-		auto issue_queries = [frame](xr_vector<LightPrepareResult>& prepared_list, const char* name)
+#ifdef DEBUG_LIGHTS_CULLING
+		u32 total_issued = 0;
+#endif
+
+		auto issue_queries = [&](xr_vector<LightPrepareResult>& prepared_list, const char* name)
 		{
-			OPTICK_EVENT(name);
+#ifdef DEBUG_LIGHTS_CULLING
+			u32 issued = 0, fallback = 0;
+#endif
 			for (auto& item : prepared_list)
 			{
 				if (!item.needs_query)
 					continue;
 
 				light* L = item.L;
-				RenderBackendLegacy.set_transform_world(L->get_transform());
-
-				const u32 order = RenderImplementation.occq_begin(L->VisibilityData.query_id);
-				if (order == 0 || L->VisibilityData.query_id == 0xffffffff)
-				{
-					// Пул пуст – считаем видимым и сбрасываем pending
-					L->VisibilityData.visible = true;
-					L->VisibilityData.pending = false;
-					L->VisibilityData.frame2test = frame + ::Random.randI(1, 3); // delay_small
-					continue;
-				}
-
-				L->VisibilityData.query_order = order;
-				RenderImplementation.draw_volume(L);
-				RenderImplementation.occq_end(L->VisibilityData.query_id);
+				u32 qid = (u32)CPUOCC.AddLightVolume(L);
+				L->VisibilityData.query_id = qid;
+#ifdef DEBUG_LIGHTS_CULLING
+				++issued;
+				if (qid == UINT32_MAX) ++fallback;
+#endif
 			}
+#ifdef DEBUG_LIGHTS_CULLING
+			Msg("[CPU-OCC]   %s: issued=%d, fallback=%d", name, issued, fallback);
+			total_issued += issued;
+#endif
 		};
 
-		issue_queries(prepared_point, "issue_point");
-		issue_queries(prepared_spot, "issue_spot");
-		issue_queries(prepared_shadowed, "issue_shadowed");
+		issue_queries(prepared_point, "point");
+		issue_queries(prepared_spot, "spot");
+		issue_queries(prepared_shadowed, "shadowed");
+
+#ifdef DEBUG_LIGHTS_CULLING
+		Msg("[CPU-OCC] Total queries issued: %d", total_issued);
+#endif
 	}
 
 	// --------------------------------------------------------------------
-	// ЭТАП 3: Распределение по LP_normal / LP_pending
+	// 5. Р—Р°РІРµСЂС€РµРЅРёРµ Р·Р°РїСЂРѕСЃР° Рё СЃРѕС…СЂР°РЅРµРЅРёРµ pending-РёСЃС‚РѕС‡РЅРёРєРѕРІ
+	// --------------------------------------------------------------------
+	{
+		OPTICK_EVENT("End occlusion queries");
+		CPUOCC.EndOcclusionQueries();
+
+		m_cpu_occ_pending_lights.clear();
+		auto gather_pending = [&](const auto& src) {
+			for (auto& item : src)
+				if (item.pending)
+					m_cpu_occ_pending_lights.push_back(item.L);
+		};
+		gather_pending(prepared_point);
+		gather_pending(prepared_spot);
+		gather_pending(prepared_shadowed);
+	}
+
+	// --------------------------------------------------------------------
+	// 6. Р Р°СЃРїСЂРµРґРµР»РµРЅРёРµ РїРѕ LP_normal / LP_pending
 	// --------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Distribute to normal/pending");
@@ -603,7 +715,7 @@ void CRender::render_stage_occlusion_culling()
 			{
 				if (item.pending)
 					pending_list.push_back(item.L);
-				else
+				else if (item.L->VisibilityData.visible)
 					normal_list.push_back(item.L);
 			}
 		};
@@ -613,107 +725,50 @@ void CRender::render_stage_occlusion_culling()
 		distribute(prepared_shadowed, LP_normal.v_shadowed, LP_pending.v_shadowed);
 	}
 
+#ifdef DEBUG_LIGHTS_CULLING
+	{
+		u32 total_visible = LP_normal.v_point.size() + LP_normal.v_spot.size() + LP_normal.v_shadowed.size();
+		u32 total_pending = LP_pending.v_point.size() + LP_pending.v_spot.size() + LP_pending.v_shadowed.size();
+		u32 total_prepared = prepared_point.size() + prepared_spot.size() + prepared_shadowed.size();
+		u32 total_invisible = total_prepared - total_visible - total_pending;
+		Msg("[CPU-OCC] END FRAME %d: visible=%d pending=%d culled=%d",
+			frame, total_visible, total_pending, total_invisible);
+	}
+#endif
+
 	// --------------------------------------------------------------------
-	// ЭТАП 4: Сортировка (опционально параллельная)
+	// 7. РЎРѕСЂС‚РёСЂРѕРІРєР° (РёСЃРїРѕР»СЊР·СѓРµРј С€С‚Р°С‚РЅС‹Р№ РјРµС‚РѕРґ РїР°РєРµС‚Р°)
 	// --------------------------------------------------------------------
 	{
 		OPTICK_EVENT("Sorting light arrays");
-
-		auto parallel_sort_if_large = [](auto& container, const char* name)
-		{
-			OPTICK_EVENT(name);
-			if (container.size() > 20)
-				concurrency::parallel_sort(container.begin(), container.end());
-			else if (!container.empty())
-				std::sort(container.begin(), container.end());
-		};
-
-		parallel_sort_if_large(LP_normal.v_point, "sort_normal_point");
-		parallel_sort_if_large(LP_normal.v_spot, "sort_normal_spot");
-		parallel_sort_if_large(LP_normal.v_shadowed, "sort_normal_shadowed");
-
-		parallel_sort_if_large(LP_pending.v_point, "sort_pending_point");
-		parallel_sort_if_large(LP_pending.v_spot, "sort_pending_spot");
-		parallel_sort_if_large(LP_pending.v_shadowed, "sort_pending_shadowed");
+		LP_normal.sort();
+		LP_pending.sort();
 	}
-}
-
-void CRender::render_sun()
-{
-	PROFILE_FUNCTION();
-
-	Engine.Statistic->RenderCALC_SUN.Begin();
-
-	RenderImplementation.stats.l_visible++;
-	render_sun_cascades();
-	dwLightMarkerID += 2;
-
-	Engine.Statistic->RenderCALC_SUN.End();
-}
-
-void CRender::query_wait()
-{
-	PROFILE_FUNCTION();
-
-	Engine.Statistic->RenderDUMP_Wait_S.Begin();
-
-	CTimer Timer;
-	Timer.Start();
-
-	BOOL result = FALSE;
-	HRESULT hr = S_FALSE;
-
-	while ((hr = q_sync_point[q_sync_count]->GetData(&result, sizeof(result), D3DGETDATA_FLUSH)) == S_FALSE)
-	{
-		if (!SwitchToThread())
-			Sleep(ps_r_thread_wait_sleep);
-
-		if (Timer.GetElapsed_ms() > 100)
-		{
-			result = FALSE;
-			break;
-		}
-	}
-
-	Engine.Statistic->RenderDUMP_Wait_S.End();
-
-	q_sync_count = (q_sync_count + 1) % HW.GetCaps().iGPUNum;
-	CHK_DX(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 }
 
 void CRender::update_shadow_map_visibility()
 {
 	PROFILE_FUNCTION();
 
-	if (Lights_LastFrame.empty())
-		return;
-
-	// 1. Снимаем копию, чтобы не зависеть от изменений оригинала во время работы
-	xr_vector<light*> lights_copy = Lights_LastFrame;
-
-	// 2. Строим новый список только с живыми источниками
-	xr_vector<light*> valid_lights;
-	valid_lights.reserve(lights_copy.size());
-
-	for (light* L : lights_copy)
+	auto process_list = [](xr_vector<light*>& list)
 	{
-		if (L == nullptr)
-			continue;
-
-		try
+		for (light* L : list)
 		{
-			L->get_smapvis().flushoccq();
-			valid_lights.push_back(L);
+			if (!L)
+				continue;
+			try
+			{
+				L->get_smapvis().flushoccq();
+			}
+			catch (...)
+			{
+				Msg("! Failed to flush-OCCq on light %p", L);
+			}
 		}
-		catch (...)
-		{
-			Msg("! Failed to flush-OCCq on light %p", L);
-			// просто пропускаем этот источник
-		}
-	}
+	};
 
-	// 3. Быстро заменяем оригинальный вектор (swap дешёвый)
-	Lights_LastFrame.swap(valid_lights);
+	process_list(LP_normal.v_shadowed);
+	process_list(LP_pending.v_shadowed);
 }
 
 void CRender::render_lights()
@@ -725,7 +780,7 @@ void CRender::render_lights()
 	//******* Occlusion testing of volume-limited light-sources
 	render_stage_occlusion_culling();
 
-	// Update incremental shadowmap-visibility solver
+	// Incremental shadow map visibility
 	update_shadow_map_visibility();
 
 	// Set render targets

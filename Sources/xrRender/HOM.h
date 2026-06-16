@@ -61,6 +61,11 @@ class CHOM
 	BOOL visible(sPoly& P);
 	BOOL visible(Fbox2& B, float depth); // viewport-space (0..1)
 
+	const CDB::MODEL* get_occluder_model() const
+	{
+		return m_pModel;
+	}
+
 	CHOM();
 	~CHOM();
 

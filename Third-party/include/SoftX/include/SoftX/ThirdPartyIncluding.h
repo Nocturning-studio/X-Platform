@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 // Math lib
-#include <AfterMath.h>
-using namespace AfterMath;
+#include <AfterMath/include/AfterMath.h>
 
 //#define ENABLE_PROFILER
 

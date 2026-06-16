@@ -24,6 +24,9 @@ public:
     void SetVertexShader(OcclusionVertexShader vs);
     void SetDepthBuffer(DepthBuffer& db);
     void SetViewport(const Viewport& vp);
+    void SetCullMode(CullMode mode);
+    void SetDepthFunc(ComparisonFunc func);
+    void SetDepthWriteEnable(bool enable);
 
     bool Validate() const;
 
@@ -60,6 +63,10 @@ private:
     float4x4 currentWorld;
     ConstantBuffer currentCB;
     OcclusionVertexShader currentVS;
+
+    CullMode cullMode = CullMode::Back;
+    ComparisonFunc depthFunc = ComparisonFunc::Less;
+    bool depthWriteEnable = false;
 
     std::vector<DrawCall> drawCalls;
     bool begun = false;

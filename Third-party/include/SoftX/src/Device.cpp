@@ -1,14 +1,21 @@
 ﻿#include "pch.h"
 
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>
 
 SOFTX_BEGIN
 
-Device::Device(const PresentParameters& params)
-    : presentParams(params), 
-    backBuffer(params.BackBufferSize), 
-    depthBuffer(params.BackBufferSize)
+Device::Device(const PresentParameters& params): presentParams(params), 
+                                                 backBuffer(params.BackBufferSize), 
+                                                 depthBuffer(params.BackBufferSize)
 {
+}
+
+Device Device::CreateHeadless(uint2 backBufferSize)
+{
+    PresentParameters params;
+    params.BackBufferSize = backBufferSize;
+    params.Headless = true;
+    return Device(params);
 }
 
 void Device::SetDeviceContext(DeviceContext ctx)
@@ -54,6 +61,9 @@ const PresentParameters& Device::GetPresentParams() const
 void Device::Present()
 {
     PROFILE_SCOPE("Device::Present");
+
+    if (presentParams.Headless || presentParams.hDeviceWindow == nullptr)
+        return;
 
     HDC hdc = GetDC(presentParams.hDeviceWindow);
     if (hdc)

@@ -30,7 +30,7 @@ public:
     {
         auto toByte = [](float f) -> uint8_t {
             int v = int(f * 255.0f + 0.5f);
-            return uint8_t(clamp(v, 0, 255));
+            return uint8_t(AfterMath::clamp(v, 0, 255));
         };
         uint8_t r = toByte(c.x);
         uint8_t g = toByte(c.y);

@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "RasterizerCommon.h"
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>
 
 SOFTX_BEGIN
 
@@ -44,6 +44,21 @@ void OcclusionQuery::SetDepthBuffer(DepthBuffer& db)
 void OcclusionQuery::SetViewport(const Viewport& vp)
 {
     viewport = vp;
+}
+
+void OcclusionQuery::SetCullMode(CullMode mode)
+{
+    cullMode = mode;
+}
+
+void OcclusionQuery::SetDepthFunc(ComparisonFunc func)
+{
+    depthFunc = func;
+}
+
+void OcclusionQuery::SetDepthWriteEnable(bool enable)
+{
+    depthWriteEnable = enable;
 }
 
 bool OcclusionQuery::Validate() const
@@ -207,9 +222,9 @@ void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
     PROFILE_SCOPE("OcclusionQuery::ProcessDrawCall");
 
     RasterizerState state;
-    state.cullMode = CullMode::Back;
-    state.depthFunc = ComparisonFunc::Less;
-    state.depthWriteEnable = false;
+    state.cullMode = cullMode;
+    state.depthFunc = depthFunc;
+    state.depthWriteEnable = depthWriteEnable;
 
     const auto& vbData = *dc.vb;
     const auto& ibData = dc.ib;

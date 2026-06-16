@@ -84,7 +84,7 @@ class XRCDB_API MODEL
 	MODEL();
 	~MODEL();
 
-	IC fvec3* get_verts()
+	IC fvec3* get_verts() const
 	{
 		return verts;
 	}
@@ -92,7 +92,7 @@ class XRCDB_API MODEL
 	{
 		return verts_count;
 	}
-	IC TRI* get_tris()
+	IC TRI* get_tris() const
 	{
 		return tris;
 	}

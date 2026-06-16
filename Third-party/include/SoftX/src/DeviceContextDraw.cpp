@@ -3,8 +3,8 @@
 #include <ppl.h>
 
 #include "RasterizerCommon.h"
-#include <SoftX/SoftX.h>
-#include <SoftX/ThreadPoolManager.h>
+#include <SoftX/include/SoftX/SoftX.h>
+#include <SoftX/include/SoftX/ThreadPoolManager.h>
 
 #define DEBUG_TILING
 

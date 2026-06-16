@@ -59,8 +59,8 @@ public:
 
     __m128 FetchRaw(int x, int y) const override
     {
-        x = clamp(x, 0, (int)resolution.x - 1);
-        y = clamp(y, 0, (int)resolution.y - 1);
+        x = AfterMath::clamp(x, 0, (int)resolution.x - 1);
+        y = AfterMath::clamp(y, 0, (int)resolution.y - 1);
         return pixels[uint(y) * resolution.x + uint(x)];
     }
 
@@ -162,10 +162,10 @@ public:
                 float rgba[4];
                 _mm_storeu_ps(rgba, color);
 
-                uint8_t b = static_cast<uint8_t>(clamp(rgba[2] * 255.0f, 0.0f, 255.0f)); // blue
-                uint8_t g = static_cast<uint8_t>(clamp(rgba[1] * 255.0f, 0.0f, 255.0f)); // green
-                uint8_t r = static_cast<uint8_t>(clamp(rgba[0] * 255.0f, 0.0f, 255.0f)); // red
-                uint8_t a = static_cast<uint8_t>(clamp(rgba[3] * 255.0f, 0.0f, 255.0f)); // alpha
+                uint8_t b = static_cast<uint8_t>(AfterMath::clamp(rgba[2] * 255.0f, 0.0f, 255.0f)); // blue
+                uint8_t g = static_cast<uint8_t>(AfterMath::clamp(rgba[1] * 255.0f, 0.0f, 255.0f)); // green
+                uint8_t r = static_cast<uint8_t>(AfterMath::clamp(rgba[0] * 255.0f, 0.0f, 255.0f)); // red
+                uint8_t a = static_cast<uint8_t>(AfterMath::clamp(rgba[3] * 255.0f, 0.0f, 255.0f)); // alpha
 
                 uint8_t pixel[4] = {b, g, r, a}; // TGA order: BGRA
                 file.write(reinterpret_cast<const char*>(pixel), 4);

@@ -160,6 +160,9 @@
     <Filter Include="Core\Scene Graph">
       <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Occlusion culling\CPU occlusion culling">
+      <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -393,6 +396,12 @@
     <ClInclude Include="..\xrEngine\du_sphere_part.h">
       <Filter>Render pipeline\Rendertargets</Filter>
     </ClInclude>
+    <ClInclude Include="CPUOcclusion.h">
+      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUOcclusionShaders.h">
+      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -450,9 +459,6 @@
       <Filter>Core\Lights</Filter>
     </ClCompile>
     <ClCompile Include="light_smapvis.cpp">
-      <Filter>Core\Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="light_vis.cpp">
       <Filter>Core\Lights</Filter>
     </ClCompile>
     <ClCompile Include="LightTrack.cpp">
@@ -527,22 +533,10 @@
     <ClCompile Include="r_render_stages_enable_scissor.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Core</Filter>
     </ClCompile>
-    <ClCompile Include="r_render_stages_light_accumulator_omnipart_geometry.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_point.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
-    <ClCompile Include="r_render_stages_light_accumulator_point_geometry.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_spot.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
-    <ClCompile Include="r_render_stages_light_accumulator_spot_geometry.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
-    <ClCompile Include="r_render_stages_draw_volume.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
     <ClCompile Include="r_occlusion.cpp">
@@ -658,6 +652,27 @@
     </ClCompile>
     <ClCompile Include="..\xrEngine\du_sphere_part.cpp">
       <Filter>Render pipeline\Rendertargets</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUOcclusion.cpp">
+      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUOcclusionVolumes.cpp">
+      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="r_render_stages_draw_volume.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+    </ClCompile>
+    <ClCompile Include="r_render_stages_light_accumulator_omnipart_geometry.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+    </ClCompile>
+    <ClCompile Include="r_render_stages_light_accumulator_point_geometry.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+    </ClCompile>
+    <ClCompile Include="r_render_stages_light_accumulator_spot_geometry.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUOcclusionQueries.cpp">
+      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

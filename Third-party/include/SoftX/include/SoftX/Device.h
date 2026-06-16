@@ -16,6 +16,8 @@ public:
     explicit Device(const PresentParameters& params);
     ~Device() = default;
 
+    Device CreateHeadless(uint2 backBufferSize);
+
     void SetDeviceContext(DeviceContext ctx);
     DeviceContext& GetDeviceContext();
     const DeviceContext& GetDeviceContext() const;

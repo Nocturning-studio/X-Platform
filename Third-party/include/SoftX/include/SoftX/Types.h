@@ -18,9 +18,10 @@ SOFTX_BEGIN
 // Presentation parameters
 struct PresentParameters
 {
-    uint2 BackBufferSize;
-    HWND hDeviceWindow;
-    bool Windowed;
+    uint2 BackBufferSize = uint2(1, 1);
+    HWND hDeviceWindow = nullptr;
+    bool Windowed = true;
+    bool Headless = false;
 };
 
 // Input vertex structure (model space)
@@ -173,7 +174,7 @@ struct SamplerState
         switch (mode)
         {
         case Wrap::Clamp:
-            return clamp(uv, 0.0f, 1.0f);
+            return AfterMath::clamp(uv, 0.0f, 1.0f);
         case Wrap::Mirror:
             {
                 float t = std::fmod(std::abs(uv), 2.0f);

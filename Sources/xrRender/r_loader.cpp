@@ -147,16 +147,15 @@ void CRender::level_Load(IReader* fs)
 	IReader local_fs(level_data_ptr, level_size);
 	LoadVisuals(&local_fs);
 
-	// --- ОПТИМИЗАЦИЯ СЕРВЕРА: Пропускаем загрузку тяжелых визуальных ресурсов ---
 	if (!g_dedicated_server)
 	{
+		// ЗАДАЧА A: HOM (Hierarchical Occlusion Culling) - только для рендеринга
+		run_task(tg_visuals, [this]() { HOM.Load(); CPUOCC.Load(HOM); });
+
 		// ЗАДАЧА B: Детейлы (Трава)
 		run_task(tg_visuals, [this]() { Details->Load(); });
 
-		// ЗАДАЧА C: HOM (Hierarchical Occlusion Culling) - только для рендеринга
-		run_task(tg_visuals, [this]() { HOM.Load(); });
-
-		// ЗАДАЧА D: Sun Occluder
+		// ЗАДАЧА C: Sun Occluder
 		run_task(tg_visuals, [this]() { m_SunOccluder->Load(); });
 	}
 	else
@@ -165,7 +164,6 @@ void CRender::level_Load(IReader* fs)
 		// хотя HOM.Load() грузит данные для рендера, структуры всё равно нужны валидные
 		// Но Load требует чтения файла, поэтому пропускаем, а если Unload вызовется - он должен быть безопасным
 	}
-	// ----------------------------------------------------------------------------
 
 	// === ACTIVE WAIT ===
 	while (active_tasks > 0)
@@ -220,6 +218,7 @@ void CRender::level_Unload()
 
 	// HOM
 	g_pGamePersistent->LoadTitle("st_unloading_hom");
+	CPUOCC.Unload();
 	HOM.Unload(); // HOM Unload безопасен даже если Load не вызывался, чистит вектора
 
 	// --- ОПТИМИЗАЦИЯ: Проверяем перед удалением ---

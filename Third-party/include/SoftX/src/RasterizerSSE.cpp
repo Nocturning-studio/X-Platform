@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>
 #include "RasterizerCommon.h"
 #include <xmmintrin.h>
 #include <smmintrin.h>

@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "RasterizerCommon.h"
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>
 #include <immintrin.h>
 #include <nmmintrin.h>
 

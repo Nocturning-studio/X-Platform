@@ -26,6 +26,8 @@
 
 #include "SunOccluder.h" 
 
+#include "CPUOcclusion.h"
+
 #include "EffectorsManager.h"
 
 struct MainSceneWorkItem
@@ -148,6 +150,7 @@ class CRender : public IRender_interface, public pureFrame
 	CDB::MODEL* rmPortals;
 	CHOM HOM;
 	R_occlusion HWOCC;
+	CPUOcclusion CPUOCC;
 
 	CSceneGraph SceneGraph;
 
@@ -173,6 +176,7 @@ class CRender : public IRender_interface, public pureFrame
 
 	CLight_DB Lights;
 	CLight_Compute_Transform_and_VIS LR;
+	xr_vector<light*> m_cpu_occ_pending_lights;
 	xr_vector<light*> Lights_LastFrame;
 	SMAP_Allocator LP_smap_pool;
 	light_Package LP_normal;
@@ -505,7 +509,6 @@ class CRender : public IRender_interface, public pureFrame
 	bool need_render_sun();
 	void render_main(fmat4x4& mCombined, SceneGraphPacket& dest);
 	void CalculateSceneVisibility();
-	void query_wait();
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);
 	void init_cacades();
@@ -517,9 +520,10 @@ class CRender : public IRender_interface, public pureFrame
 	void combine_scene();
 	void render_gbuffer_primary();
 	void render_gbuffer_secondary();
+	void debug_draw_light_volumes(const light_Package& package, const fmat4x4& VP);
 	void render_stage_occlusion_culling();
-	void render_stage_forward();
 	void update_shadow_map_visibility();
+	void render_stage_forward();
 	void render_sun();
 	void render_lights();
 	void create_hi_z_mip_chain();

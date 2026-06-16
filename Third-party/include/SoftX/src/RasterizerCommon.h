@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>
 
 SOFTX_BEGIN
 

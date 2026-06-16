@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "light.h"
 
 light::light(void) : ISpatial(g_SpatialSpace)
@@ -122,7 +122,7 @@ void light::get_sectors()
 
 void light::set_active(bool a)
 {
-	// ��������� ������� ���������� ��� ������������������
+	// Добавляем простую блокировку для потокобезопасности
 	static std::mutex active_mutex;
 	std::lock_guard<std::mutex> lock(active_mutex);
 
@@ -131,7 +131,7 @@ void light::set_active(bool a)
 		if (LightFlags.bActive)
 			return;
 
-		// �������� ���������� �������
+		// Проверка валидности позиции
 		fvec3 zero = {0, -1000, 0};
 		if (position.similar(zero, EPS_L))
 		{
@@ -142,7 +142,7 @@ void light::set_active(bool a)
 
 		LightFlags.bActive = true;
 
-		// ���������, ��� ���� ��������� ���������������
+		// Проверяем, что свет правильно инициализирован
 		if (spatial.sector == nullptr)
 		{
 			spatial_updatesector();
@@ -209,7 +209,7 @@ void light::spatial_move()
 {
 	DbgMsg("~ [Debug] spatial_move called for light at (%.1f,%.1f,%.1f)", position.x, position.y, position.z);
 
-	// �������� ���������� ������� ����� �����������
+	// Проверка валидности позиции перед обновлением
 	fvec3 zero = {0, -1000, 0};
 	if (position.similar(zero, EPS_L))
 	{
@@ -357,6 +357,108 @@ void light::transform_calc()
 		m_transform.identity();
 		break;
 	}
+}
+
+bool light::camera_inside_volume() const
+{
+	const fvec3& cam_pos = Engine.RenderView.Position;
+
+#ifdef DEBUG_LIGHTS_CULLING
+	Msg("[CPU-OCC] camera pos: pos=(%.1f,%.1f,%.1f)", cam_pos.x, cam_pos.y, cam_pos.x);
+#endif
+
+	switch (LightFlags.type)
+	{
+	case IRender_Light::POINT:
+	case IRender_Light::OMNIPART:
+	case IRender_Light::REFLECTED:
+	{
+		// Для point используем реальную позицию и радиус
+		float dist = cam_pos.distance_to(position);
+		bool inside = dist <= range;
+#ifdef DEBUG_LIGHTS_CULLING
+		Msg("[CPU-OCC] camera_inside_volume (POINT): pos=(%.1f,%.1f,%.1f) cam_dist=%.1f range=%.1f inside=%d",
+			position.x, position.y, position.z, dist, range, inside);
+#endif
+		return inside;
+	}
+
+	case IRender_Light::SPOT:
+	{
+		// Проверяем расстояние до источника (позиция, не сфера!)
+		float dist_to_source = cam_pos.distance_to(position);
+		if (dist_to_source > range)
+		{
+#ifdef DEBUG_LIGHTS_CULLING
+			Msg("[CPU-OCC] camera_inside_volume (SPOT): out of range (dist %.1f > range %.1f)", dist_to_source, range);
+#endif
+			return false;
+		}
+
+		// Вектор от источника к камере
+		fvec3 dir_to_cam;
+		dir_to_cam.sub(cam_pos, position).normalize_safe();
+
+		// Угол между направлением света и направлением на камеру
+		float cos_angle = dir_to_cam.dotproduct(direction);
+		float half_cone = cone * 0.5f; // cone – полный угол в радианах
+		bool inside_cone = cos_angle >= _cos(half_cone);
+
+#ifdef DEBUG_LIGHTS_CULLING
+		Msg("[CPU-OCC] camera_inside_volume (SPOT): pos=(%.1f,%.1f,%.1f) dist=%.1f range=%.1f "
+			"dir_to_cam=(%.2f,%.2f,%.2f) cos_angle=%.3f half_cone=%.3f cos_half=%.3f inside_cone=%d",
+			position.x, position.y, position.z,
+			dist_to_source, range,
+			dir_to_cam.x, dir_to_cam.y, dir_to_cam.z,
+			cos_angle, half_cone, _cos(half_cone), inside_cone);
+#endif
+		return inside_cone;
+	}
+
+	default:
+		return false;
+	}
+}
+
+bool light::vis_prepare(u32 frame)
+{
+	if (frame < VisibilityData.frame2test)
+		return false;
+
+	// 1. Камера внутри объёма — видим без запроса
+	if (camera_inside_volume())
+	{
+		VisibilityData.visible = true;
+		VisibilityData.pending = false;
+		VisibilityData.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
+		return false;
+	}
+
+	// 2. Камера рядом с источником — тоже считаем видимым
+	//    Используем bounding‑сферу с запасом NEAR_LIGHT_RADIUS_BIAS.
+	const float NEAR_LIGHT_RADIUS_BIAS = 10.0f;
+	float dist_to_sphere = Engine.RenderView.Position.distance_to(spatial.sphere.P);
+	if (dist_to_sphere <= spatial.sphere.R + NEAR_LIGHT_RADIUS_BIAS)
+	{
+		VisibilityData.visible = true;
+		VisibilityData.pending = false;
+		VisibilityData.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
+		return false;
+	}
+
+	// 3. Пропуск не-теневых источников (если флаг установлен)
+	if (ps_r_lighting_flags.test(RFLAG_EXP_DONT_TEST_UNSHADOWED) && !LightFlags.bShadow)
+	{
+		VisibilityData.visible = true;
+		VisibilityData.pending = false;
+		VisibilityData.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
+		return false;
+	}
+
+	// 4. Требуется occlusion query
+	VisibilityData.pending = true;
+	transform_calc();
+	return true;
 }
 
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z

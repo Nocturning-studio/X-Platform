@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include <SoftX/ThreadPoolManager.h>
+#include <SoftX/include/SoftX/ThreadPoolManager.h>
 
 SOFTX_BEGIN
 

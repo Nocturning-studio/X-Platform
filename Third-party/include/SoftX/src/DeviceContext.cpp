@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include <SoftX/SoftX.h>
+#include <SoftX/include/SoftX/SoftX.h>
 
 SOFTX_BEGIN
 

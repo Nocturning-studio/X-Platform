@@ -23,10 +23,6 @@ void CRender::RenderScene()
 	// HOM
 	render_hom();
 
-	//*******
-	// Sync point
-	query_wait();
-
 	PrepareToRender();
 
 	clear_gbuffer();
