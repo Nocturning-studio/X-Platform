@@ -950,6 +950,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\xrEngine\du_cone.h" />
+    <ClInclude Include="..\xrEngine\du_sphere.h" />
+    <ClInclude Include="..\xrEngine\du_sphere_part.h" />
     <ClInclude Include="Blender_bent_normals.h" />
     <ClInclude Include="Blender_hi_z.h" />
     <ClInclude Include="Blender_terrain.h" />
@@ -1030,6 +1033,9 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\xrEngine\du_cone.cpp" />
+    <ClCompile Include="..\xrEngine\du_sphere.cpp" />
+    <ClCompile Include="..\xrEngine\du_sphere_part.cpp" />
     <ClCompile Include="CPUOcclusion.cpp" />
     <ClCompile Include="CPUOcclusionQueries.cpp" />
     <ClCompile Include="CPUOcclusionVolumes.cpp" />
@@ -1102,6 +1108,7 @@
     <ClCompile Include="PSLibrary.cpp" />
     <ClCompile Include="r_portal.cpp" />
     <ClCompile Include="r_render_stages.cpp" />
+    <ClCompile Include="r_render_stages_light_accumulator_light_volumes.cpp" />
     <ClCompile Include="SceneGraphBuild.cpp" />
     <ClCompile Include="SceneGraphRender.cpp" />
     <ClCompile Include="r_occlusion.cpp" />
@@ -1142,13 +1149,9 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_direct.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_omnipart_geometry.cpp" />
     <ClCompile Include="r_render_stages_light_accumulator_point.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_point_geometry.cpp" />
     <ClCompile Include="r_render_stages_light_accumulator_spot.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_spot_geometry.cpp" />
     <ClCompile Include="r_render_stages_phase_antialiasing.cpp" />
-    <ClCompile Include="r_render_stages_draw_volume.cpp" />
     <ClCompile Include="r_render_stages_enable_scissor.cpp" />
     <ClCompile Include="r_render_stages_phase_distortion.cpp" />
     <ClCompile Include="r_render_stages_phase_motion_blur.cpp" />
@@ -1159,7 +1162,6 @@
     <ClCompile Include="r_render_stages_phase_depth_of_field.cpp" />
     <ClCompile Include="r_render_stages_phase_frame_overlay.cpp" />
     <ClCompile Include="r_render_stages_phase_autoexposure.cpp" />
-    <ClCompile Include="r_render_stages_phase_occlusion_culling.cpp" />
     <ClCompile Include="r_render_stages_phase_effectors.cpp" />
     <ClCompile Include="r_render_stages_phase_gbuffer.cpp" />
     <ClCompile Include="r_render_stages_phase_shadow_map_Direct.cpp" />

@@ -454,7 +454,6 @@ class CRender : public IRender_interface, public pureFrame
 	// Main
 	void clear_gbuffer();
 	void set_gbuffer();
-	void phase_occq();
 	void render_wallmarks();
 	void render_shadow_map_sun(light* L, u32 sub_phase);
 	void render_shadow_map_sun_transluent(light* L, u32 sub_phase);
