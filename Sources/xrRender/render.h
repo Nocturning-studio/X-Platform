@@ -519,7 +519,6 @@ class CRender : public IRender_interface, public pureFrame
 	void combine_scene();
 	void render_gbuffer_primary();
 	void render_gbuffer_secondary();
-	void debug_draw_light_volumes(const light_Package& package, const fmat4x4& VP);
 	void render_stage_occlusion_culling();
 	void update_shadow_map_visibility();
 	void render_stage_forward();
