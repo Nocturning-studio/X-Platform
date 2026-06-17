@@ -393,9 +393,6 @@
     <ClInclude Include="r_portal_traverser.h">
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrEngine\du_sphere_part.h">
-      <Filter>Render pipeline\Rendertargets</Filter>
-    </ClInclude>
     <ClInclude Include="CPUOcclusion.h">
       <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
     </ClInclude>
@@ -649,9 +646,6 @@
     </ClCompile>
     <ClCompile Include="r_sector_detect.cpp">
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrEngine\du_sphere_part.cpp">
-      <Filter>Render pipeline\Rendertargets</Filter>
     </ClCompile>
     <ClCompile Include="CPUOcclusion.cpp">
       <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>

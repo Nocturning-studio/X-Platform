@@ -436,7 +436,7 @@ bool light::vis_prepare(u32 frame)
 
 	// 2. Камера рядом с источником — тоже считаем видимым
 	//    Используем bounding‑сферу с запасом NEAR_LIGHT_RADIUS_BIAS.
-	const float NEAR_LIGHT_RADIUS_BIAS = 10.0f;
+	const float NEAR_LIGHT_RADIUS_BIAS = 2.0f;
 	float dist_to_sphere = Engine.RenderView.Position.distance_to(spatial.sphere.P);
 	if (dist_to_sphere <= spatial.sphere.R + NEAR_LIGHT_RADIUS_BIAS)
 	{

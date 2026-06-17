@@ -950,7 +950,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\xrEngine\du_sphere_part.h" />
     <ClInclude Include="Blender_bent_normals.h" />
     <ClInclude Include="Blender_hi_z.h" />
     <ClInclude Include="Blender_terrain.h" />
@@ -1031,7 +1030,6 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\xrEngine\du_sphere_part.cpp" />
     <ClCompile Include="CPUOcclusion.cpp" />
     <ClCompile Include="CPUOcclusionQueries.cpp" />
     <ClCompile Include="CPUOcclusionVolumes.cpp" />
