@@ -965,7 +965,6 @@
     <ClInclude Include="Blender_Screen_SET.h" />
     <ClInclude Include="Blender_multiple_usage.h" />
     <ClInclude Include="CPUOcclusion.h" />
-    <ClInclude Include="CPUOcclusionShaders.h" />
     <ClInclude Include="DetailManager.h" />
     <ClInclude Include="DetailModel.h" />
     <ClInclude Include="doug_lea_allocator_wrapper.h" />
@@ -997,6 +996,9 @@
     <ClInclude Include="r_render_pipeline.h" />
     <ClInclude Include="r_sector.h" />
     <ClInclude Include="shader_configurator.h" />
+    <ClInclude Include="SoftXLightVolumeOcclusion.h" />
+    <ClInclude Include="SoftXOcclusionCore.h" />
+    <ClInclude Include="SoftXOcclusionMapBuilder.h" />
     <ClInclude Include="SunOccluder.h" />
     <ClInclude Include="VertexCache.h" />
     <ClInclude Include="WallmarksEngine.h" />
@@ -1037,8 +1039,6 @@
     <ClCompile Include="..\xrEngine\du_sphere.cpp" />
     <ClCompile Include="..\xrEngine\du_sphere_part.cpp" />
     <ClCompile Include="CPUOcclusion.cpp" />
-    <ClCompile Include="CPUOcclusionQueries.cpp" />
-    <ClCompile Include="CPUOcclusionVolumes.cpp" />
     <ClCompile Include="DetailManager.cpp" />
     <ClCompile Include="DetailManager_VS.cpp" />
     <ClCompile Include="DetailModel.cpp" />
@@ -1108,7 +1108,8 @@
     <ClCompile Include="PSLibrary.cpp" />
     <ClCompile Include="r_portal.cpp" />
     <ClCompile Include="r_render_stages.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_light_volumes.cpp" />
+    <ClCompile Include="r_render_stages_light_accumulator_culling.cpp" />
+    <ClCompile Include="r_render_stages_light_accumulator_volumes.cpp" />
     <ClCompile Include="SceneGraphBuild.cpp" />
     <ClCompile Include="SceneGraphRender.cpp" />
     <ClCompile Include="r_occlusion.cpp" />
@@ -1121,6 +1122,9 @@
     <ClCompile Include="r_screenshot.cpp" />
     <ClCompile Include="r_sector.cpp" />
     <ClCompile Include="r_portal_traverser.cpp" />
+    <ClCompile Include="SoftXLightVolumeOcclusion.cpp" />
+    <ClCompile Include="SoftXOcclusionCore.cpp" />
+    <ClCompile Include="SoftXOcclusionMapBuilder.cpp" />
     <ClCompile Include="SunOccluder.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tga.cpp" />

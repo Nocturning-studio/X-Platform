@@ -9,7 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::render_stage_occlusion_culling()
 {
-	OPTICK_EVENT("render_stage_occlusion_culling");
 	PROFILE_FUNCTION();
 
 	const u32 frame = Engine.TimeManager.GetFrameCount();
