@@ -328,6 +328,12 @@ void CRender::OnFrame()
 
 	Models->DeleteQueue();
 
+	// Ожидание готовности depth-буфера и свап
+	CPUOCC.WaitForBuildAndSwap();
+
+	// Запускаем новое заполнение для следующего кадра
+	CPUOCC.BuildDepthBuffer(Engine.RenderView.ViewProjection);
+
 	if (Details && Details->dtFS)
 	{
 		// 1. Подготовка: Своп буферов (новые данные -> в рендер, старые -> на перезапись)

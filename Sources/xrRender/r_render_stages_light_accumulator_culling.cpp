@@ -79,15 +79,8 @@ void CRender::render_stage_occlusion_culling()
 	// 2. Заполнение depth buffer и начало нового occlusion query
 	// --------------------------------------------------------------------
 	{
-		OPTICK_EVENT("build_depth_and_begin_query");
+		OPTICK_EVENT("begin_query");
 
-		// Ожидание готовности depth-буфера и свап
-		CPUOCC.WaitForBuildAndSwap();
-
-		// Запускаем новое заполнение для следующего кадра
-		CPUOCC.BuildDepthBuffer(Engine.RenderView.ViewProjection);
-
-		// Теперь начинаем запросы (буфер уже актуален)
 		SoftX::Viewport vp(0.0f, 0.0f, 512, 512, 0.0f, 1.0f);
 		CPUOCC.BeginOcclusionQueries(Engine.RenderView.ViewProjection, vp);
 	}

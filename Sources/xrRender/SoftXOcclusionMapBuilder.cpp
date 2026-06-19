@@ -101,10 +101,7 @@ void SoftXOcclusionMapBuilder::Unload()
 void SoftXOcclusionMapBuilder::BuildAsync(const fmat4x4& viewProj)
 {
     if (!m_core || !m_loaded)
-    {
-        Msg("[OcclusionMap] BuildAsync skipped: core=%p loaded=%d", m_core, m_loaded);
         return;
-    }
 
     SoftXOcclusionCore* core = m_core;
     SoftX::VertexBuffer* vb = m_occluderVB.get();
@@ -114,6 +111,9 @@ void SoftXOcclusionMapBuilder::BuildAsync(const fmat4x4& viewProj)
 
     auto buildTask = [core, vb, ib, viewProj, depthResolution]()
     {
+        OPTICK_THREAD("Occlusion Map Build");
+        OPTICK_EVENT("BuildDepthBuffer");
+
         SoftX::DeviceContext& ctx = core->GetImmediateContext();
 
         // Полная настройка состояний перед рисованием окклюдеров

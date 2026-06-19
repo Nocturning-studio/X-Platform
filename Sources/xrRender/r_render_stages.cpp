@@ -46,7 +46,6 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	// -------------------------------------------------------------------------
 	// 1. Spatial Query (Пишем в dest)
 	// -------------------------------------------------------------------------
-	// Очистка не требуется, так как подразумевается, что dest.Clear() был вызван до render_main
 	g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED,
 							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
