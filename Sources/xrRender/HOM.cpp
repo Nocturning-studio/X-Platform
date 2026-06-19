@@ -3,6 +3,7 @@
 #include "occRasterizer.h"
 #include "../xrEngine/GameFont.h"
 #include <algorithm>
+#include "CPUOcclusion.h"
 
 float psOSSR = .001f;
 
@@ -346,81 +347,103 @@ IC BOOL _visible(Fbox& B, fmat4x4& m_transform_01, occRasterizer& raster)
 // Public Interface Implementation
 // =============================================================================
 
+//#define DEBUG_HOM_VISIBILITY
+
 BOOL CHOM::visible(Fbox3& B)
 {
-	if (!bEnabled)
-		return TRUE;
+	if (!bEnabled) return TRUE;
 	if (B.contains(Engine.RenderView.Position))
-		return TRUE;
-
-	// Читаем из ГОТОВОГО буфера (прошлый кадр)
-	return _visible(B, m_transform_01, m_Raster[m_idx_read]);
-}
-
-BOOL CHOM::visible(Fbox2& B, float depth)
-{
-	if (!bEnabled)
-		return TRUE;
-	return m_Raster[m_idx_read].test(B.min.x, B.min.y, B.max.x, B.max.y, depth);
-}
-
-BOOL CHOM::visible(vis_data& vis)
-{
-	if (Engine.TimeManager.GetFrameCount() < vis.hom_frame)
-		return TRUE;
-
-	if (!bEnabled)
-		return TRUE;
-
-	u32 frame_current = Engine.TimeManager.GetFrameCount();
-
-#ifdef DEBUG
-	Engine.Statistic->RenderCALC_HOM.Begin();
+	{
+#ifdef DEBUG_HOM_VISIBILITY
+		Msg("[HOM] AABB test: CAMERA INSIDE BOX -> VISIBLE");
 #endif
-
-	// Читаем из ГОТОВОГО буфера
-	BOOL result = _visible(vis.box, m_transform_01, m_Raster[m_idx_read]);
-
-	u32 delay = 1;
-	if (result)
-	{
-		delay = ::Random.randI(5 * 2, 5 * 5);
-	}
-	else
-	{
-		delay = 1;
+		return TRUE;
 	}
 
-	vis.hom_frame = frame_current + delay;
-	vis.hom_tested = frame_current;
+	BOOL result = RenderImplementation.CPUOCC.TestAABB(B);
 
-#ifdef DEBUG
-	Engine.Statistic->RenderCALC_HOM.End();
+#ifdef DEBUG_HOM_VISIBILITY
+	Msg("[HOM] AABB min=(%.1f,%.1f,%.1f) max=(%.1f,%.1f,%.1f) -> %s",
+		B.min.x, B.min.y, B.min.z,
+		B.max.x, B.max.y, B.max.z,
+		result ? "VISIBLE" : "CULLED");
 #endif
 
 	return result;
 }
 
+BOOL CHOM::visible(Fbox2& B, float depth)
+{
+	if (!bEnabled) return TRUE;
+
+	BOOL result = RenderImplementation.CPUOCC.TestRect(B.min.x, B.min.y, B.max.x, B.max.y, depth);
+
+#ifdef DEBUG_HOM_VISIBILITY
+	Msg("[HOM] Rect (%.3f,%.3f)-(%.3f,%.3f) depth=%.3f -> %s",
+		B.min.x, B.min.y, B.max.x, B.max.y, depth,
+		result ? "VISIBLE" : "CULLED");
+#endif
+
+	return result;
+}
 
 BOOL CHOM::visible(sPoly& P)
 {
-	if (!bEnabled)
-		return TRUE;
-
-	fvec2 min, max;
-	float z;
-
+	if (!bEnabled) return TRUE;
 	if (P.empty())
+	{
+#ifdef DEBUG_HOM_VISIBILITY
+		Msg("[HOM] Polygon test: EMPTY -> VISIBLE");
+#endif
 		return TRUE;
+	}
 
-	if (transform_b0(min, max, z, m_transform_01, P.front().x, P.front().y, P.front().z))
+	BOOL result = RenderImplementation.CPUOCC.TestPolygon(P);
+
+#ifdef DEBUG_HOM_VISIBILITY
+	fvec3 center = { 0,0,0 };
+	for (const auto& v : P) center.add(v);
+	center.div((float)P.size());
+	Msg("[HOM] Polygon (center=%.1f,%.1f,%.1f, verts=%d) -> %s",
+		center.x, center.y, center.z, P.size(),
+		result ? "VISIBLE" : "CULLED");
+#endif
+
+	return result;
+}
+
+BOOL CHOM::visible(vis_data& vis)
+{
+	if (Engine.TimeManager.GetFrameCount() < vis.hom_frame)
+	{
+#ifdef DEBUG_HOM_VISIBILITY
+		Msg("[HOM] vis_data: frame %d < hom_frame %d -> SKIP (VISIBLE)",
+			Engine.TimeManager.GetFrameCount(), vis.hom_frame);
+#endif
 		return TRUE;
+	}
 
-	for (u32 it = 1; it < P.size(); it++)
-		if (transform_b1(min, max, z, m_transform_01, P[it].x, P[it].y, P[it].z))
-			return TRUE;
+	if (!bEnabled) return TRUE;
 
-	return m_Raster[m_idx_read].test(min.x, min.y, max.x, max.y, z);
+	BOOL result = RenderImplementation.CPUOCC.TestAABB(vis.box);
+
+	u32 frame_current = Engine.TimeManager.GetFrameCount();
+	vis.hom_tested = frame_current;
+	if (result)
+		vis.hom_frame = frame_current + ::Random.randI(10, 25);
+	else
+		vis.hom_frame = frame_current + 1;
+
+#ifdef DEBUG_HOM_VISIBILITY
+	Msg("[HOM] vis_data box=(%.1f,%.1f,%.1f)-(%.1f,%.1f,%.1f) frame=%d -> %s (next test=%d)",
+		vis.box.min.x, vis.box.min.y, vis.box.min.z,
+		vis.box.max.x, vis.box.max.y, vis.box.max.z,
+		frame_current,
+		result ? "VISIBLE" : "CULLED",
+		vis.hom_frame);
+#endif
+
+	return result;
 }
 
 void CHOM::Disable()

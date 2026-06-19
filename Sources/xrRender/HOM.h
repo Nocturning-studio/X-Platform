@@ -4,7 +4,7 @@
 #pragma once
 
 #include "../xrEngine/IGame_Persistent.h"
-#include <occRasterizer.h>
+#include "occRasterizer.h"
 
 class occTri;
 

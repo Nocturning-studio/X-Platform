@@ -11,9 +11,11 @@ SoftXOcclusionCore::~SoftXOcclusionCore()
     Shutdown();
 }
 
-void SoftXOcclusionCore::Initialize(uint depthMapSize)
+void SoftXOcclusionCore::Initialize(uint2 depthMapSize)
 {
     Shutdown();
+
+    m_depth_resolution = depthMapSize;
 
     SoftX::PresentParameters params;
     params.BackBufferSize = uint2(1, 1);
@@ -24,8 +26,8 @@ void SoftXOcclusionCore::Initialize(uint depthMapSize)
     m_device = std::make_unique<SoftX::Device>(params);
 
     // Создаём два depth-буфера для двойной буферизации
-    m_depthBuffers[0] = std::make_unique<SoftX::DepthBuffer>(uint2(depthMapSize, depthMapSize));
-    m_depthBuffers[1] = std::make_unique<SoftX::DepthBuffer>(uint2(depthMapSize, depthMapSize));
+    m_depthBuffers[0] = std::make_unique<SoftX::DepthBuffer>(depthMapSize);
+    m_depthBuffers[1] = std::make_unique<SoftX::DepthBuffer>(depthMapSize);
 
     // Начальные настройки контекста (общие для всех пользователей)
     SoftX::DeviceContext& ctx = m_device->GetImmediateContext();
@@ -35,8 +37,10 @@ void SoftXOcclusionCore::Initialize(uint depthMapSize)
     ctx.SetFillMode(SoftX::FillMode::Solid);
     ctx.SetDepthFunc(SoftX::ComparisonFunc::Less);
     ctx.SetDepthWriteEnable(true);
-    ctx.SetViewport(SoftX::Viewport(0.0f, 0.0f, (float)depthMapSize, (float)depthMapSize, 0.0f, 1.0f));
+    ctx.SetViewport(SoftX::Viewport(0.0f, 0.0f, (float)depthMapSize.x, (float)depthMapSize.y, 0.0f, 1.0f));
     ctx.SetTileSize(64);
+
+    m_readBufferReady = false;
 }
 
 void SoftXOcclusionCore::Shutdown()
@@ -47,11 +51,13 @@ void SoftXOcclusionCore::Shutdown()
     m_depthBuffers[0].reset();
     m_depthBuffers[1].reset();
     m_device.reset();
+    m_readBufferReady = false;
 }
 
 void SoftXOcclusionCore::SwapBuffers()
 {
     std::swap(m_writeIdx, m_readIdx);
+    m_readBufferReady = true;
 }
 
 void SoftXOcclusionCore::WaitForBuildAndSwap()

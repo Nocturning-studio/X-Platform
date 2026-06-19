@@ -518,6 +518,8 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
 	light* sun = (light*)Lights.sun_adapted._get();
 
+	HOM.Disable();
+
 	// 1. Calculate view-frustum bounds in world space
 	// ---------------------------------------------------------------------
 	fmat4x4 ex_project, ex_full, ex_full_inverse;

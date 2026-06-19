@@ -9,6 +9,7 @@
 #include "SoftXOcclusionCore.h"
 #include "SoftXOcclusionMapBuilder.h"
 #include "SoftXLightVolumeOcclusion.h"
+#include "SoftXAABBOcclusion.h"
 ////////////////////////////////////////////////////////////////////////////////
 class CHOM;
 class light;
@@ -36,6 +37,36 @@ public:
     SoftX::OcclusionQuery::queryID AddLightVolume(light* L) { return m_lightOcc.AddVolume(L); }
     SoftX::OcclusionQuery* GetPendingQuery() const { return m_lightOcc.GetPendingQuery(); }
 
+    bool TestAABB(const Fbox3& box, const fmat4x4& VP = Engine.RenderView.ViewProjection) const
+    {
+        if (!m_core || !m_core->IsReadBufferReady()) return true;
+        uint2 resolution = m_core->GetDepthResolution();
+        return m_aabbOcc.TestAABB(box, VP, resolution);
+    }
+
+    bool TestAABB(const fvec3& min, const fvec3 max, const fmat4x4& VP = Engine.RenderView.ViewProjection) const
+    {
+        if (!m_core || !m_core->IsReadBufferReady()) return true;
+        uint2 resolution = m_core->GetDepthResolution();
+        Fbox3 AABB;
+        AABB.set(min, max);
+        return m_aabbOcc.TestAABB(AABB, VP, resolution);
+    }
+
+    bool TestRect(float x0, float y0, float x1, float y1, float depth) const
+    {
+        if (!m_core || !m_core->IsReadBufferReady()) return true;
+        uint2 resolution = m_core->GetDepthResolution();
+        return m_aabbOcc.TestRect(x0, y0, x1, y1, depth, resolution);
+    }
+
+    bool TestPolygon(const sPoly& worldPoly, const fmat4x4& viewProj = Engine.RenderView.ViewProjection) const
+    {
+        if (!m_core || !m_core->IsReadBufferReady()) return true;
+        uint2 resolution = m_core->GetDepthResolution();
+        return m_aabbOcc.TestPolygon(worldPoly, viewProj, resolution);
+    }
+
     void SaveDepthBuffer(const SoftX::DepthBuffer& buf, const char* fname);
     void SaveDepthBuffer();
 
@@ -51,6 +82,7 @@ private:
     std::unique_ptr<SoftXOcclusionCore> m_core;
     SoftXOcclusionMapBuilder m_occlusionMap;
     SoftXLightVolumeOcclusion m_lightOcc;
+    SoftXAABBOcclusion m_aabbOcc;
 
     void InitializeSoftX();
     void ShutdownSoftX();

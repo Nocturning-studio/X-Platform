@@ -125,13 +125,19 @@ void CPUOcclusion::Load(const CHOM& hom)
 
 void CPUOcclusion::Unload()
 {
+    m_occlusionMap.Unload();
+    m_aabbOcc.Shutdown();
+    m_lightOcc.Shutdown();
+
+    if (m_core)
+        m_core->Shutdown();
+    m_core.reset();
+
     m_geom.destroy();
     _RELEASE(m_IB);
     _RELEASE(m_VB);
     m_shader.destroy();
     m_loaded = false;
-
-    ShutdownSoftX();
 }
 
 // ---------------------------------------------------------------------------------------
@@ -162,10 +168,12 @@ void CPUOcclusion::InitializeSoftX()
 
     m_occlusionMap.SetCore(m_core.get());
     m_lightOcc.Initialize(m_core.get());
+    m_aabbOcc.Initialize(m_core.get());
 }
 
 void CPUOcclusion::ShutdownSoftX()
 {
+    m_aabbOcc.Shutdown();
     m_lightOcc.Shutdown();
     if (m_core) m_core->Shutdown();
     m_core.reset();

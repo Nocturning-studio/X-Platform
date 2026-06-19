@@ -160,11 +160,11 @@
     <Filter Include="Core\Scene Graph">
       <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Occlusion culling\CPU occlusion culling">
-      <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes">
       <UniqueIdentifier>{27c3fc1c-ba18-4597-a09f-0d9e4b7ca8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Occlusion culling\SoftX occlusion culling">
+      <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -253,9 +253,6 @@
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="HOM.h">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClInclude>
-    <ClInclude Include="occRasterizer.h">
       <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClInclude>
     <ClInclude Include="Blender_frame_overlay.h">
@@ -397,7 +394,7 @@
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="CPUOcclusion.h">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="..\xrEngine\du_cone.h">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
@@ -409,13 +406,19 @@
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClInclude>
     <ClInclude Include="SoftXOcclusionCore.h">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="SoftXOcclusionMapBuilder.h">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="SoftXLightVolumeOcclusion.h">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftXAABBOcclusion.h">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="occRasterizer.h">
+      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -516,12 +519,6 @@
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="HOM.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClCompile>
-    <ClCompile Include="occRasterizer.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClCompile>
-    <ClCompile Include="occRasterizer_core.cpp">
       <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_gbuffer.cpp">
@@ -663,7 +660,7 @@
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="CPUOcclusion.cpp">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="..\xrEngine\du_cone.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
@@ -681,13 +678,22 @@
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
     </ClCompile>
     <ClCompile Include="SoftXOcclusionCore.cpp">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="SoftXOcclusionMapBuilder.cpp">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="SoftXLightVolumeOcclusion.cpp">
-      <Filter>Core\Occlusion culling\CPU occlusion culling</Filter>
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftXAABBOcclusion.cpp">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="occRasterizer.cpp">
+      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
+    </ClCompile>
+    <ClCompile Include="occRasterizer_core.cpp">
+      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

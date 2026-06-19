@@ -996,6 +996,7 @@
     <ClInclude Include="r_render_pipeline.h" />
     <ClInclude Include="r_sector.h" />
     <ClInclude Include="shader_configurator.h" />
+    <ClInclude Include="SoftXAABBOcclusion.h" />
     <ClInclude Include="SoftXLightVolumeOcclusion.h" />
     <ClInclude Include="SoftXOcclusionCore.h" />
     <ClInclude Include="SoftXOcclusionMapBuilder.h" />
@@ -1122,6 +1123,7 @@
     <ClCompile Include="r_screenshot.cpp" />
     <ClCompile Include="r_sector.cpp" />
     <ClCompile Include="r_portal_traverser.cpp" />
+    <ClCompile Include="SoftXAABBOcclusion.cpp" />
     <ClCompile Include="SoftXLightVolumeOcclusion.cpp" />
     <ClCompile Include="SoftXOcclusionCore.cpp" />
     <ClCompile Include="SoftXOcclusionMapBuilder.cpp" />

@@ -14,7 +14,7 @@ public:
     ~SoftXOcclusionCore();
 
     // Инициализация / деинициализация
-    void Initialize(uint depthMapSize);
+    void Initialize(uint2 depthMapSize);
     void Shutdown();
 
     // Доступ к устройству (для создания буферов, запросов и т.д.)
@@ -27,17 +27,23 @@ public:
     void SwapBuffers();
     void WaitForBuildAndSwap(); // ждёт завершения асинхронной задачи и делает свап буфферов
 
+    bool IsReadBufferReady() const { return m_readBufferReady; }
+
     // Запускает переданную задачу асинхронно. Ожидается, что задача будет
     // заполнять write-буфер (GetWriteBuffer()) через GetImmediateContext().
     void StartBuildTask(std::function<void()> task);
 
     bool IsDeviceValid() const { return m_device != nullptr; }
 
+    uint2 GetDepthResolution() const { return m_depth_resolution; }
+
 private:
     std::unique_ptr<SoftX::Device> m_device;
     std::unique_ptr<SoftX::DepthBuffer> m_depthBuffers[2];
     int m_writeIdx = 0;
     int m_readIdx = 1;
+    uint2 m_depth_resolution = 512;
     std::future<void> m_buildFuture;
+    bool m_readBufferReady = false;
 };
 ////////////////////////////////////////////////////////////////////////////////
