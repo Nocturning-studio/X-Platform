@@ -981,7 +981,6 @@
     <ClInclude Include="ModelPool.h" />
     <ClInclude Include="NvTriStrip.h" />
     <ClInclude Include="NvTriStripObjects.h" />
-    <ClInclude Include="occRasterizer.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="ParticleEffectDef.h" />
     <ClInclude Include="ParticleGroup.h" />
@@ -1101,8 +1100,6 @@
     <ClCompile Include="ModelPool.cpp" />
     <ClCompile Include="NvTriStrip.cpp" />
     <ClCompile Include="NvTriStripObjects.cpp" />
-    <ClCompile Include="occRasterizer.cpp" />
-    <ClCompile Include="occRasterizer_core.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
     <ClCompile Include="ParticleEffectDef.cpp" />
     <ClCompile Include="ParticleGroup.cpp" />

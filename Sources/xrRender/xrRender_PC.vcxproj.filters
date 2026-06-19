@@ -417,9 +417,6 @@
     <ClInclude Include="SoftXAABBOcclusion.h">
       <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
-    <ClInclude Include="occRasterizer.h">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -688,12 +685,6 @@
     </ClCompile>
     <ClCompile Include="SoftXAABBOcclusion.cpp">
       <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
-    </ClCompile>
-    <ClCompile Include="occRasterizer.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClCompile>
-    <ClCompile Include="occRasterizer_core.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
