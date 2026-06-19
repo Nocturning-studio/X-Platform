@@ -108,6 +108,12 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	// -------------------------------------------------------------------------
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
+	dest.visible_sectors_map.clear();
+	for (const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
+	{
+		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
+	}
+
 	for (const auto& sec_vis : visible_sectors)
 	{
 		CSector* sector = sec_vis.sector;
@@ -153,6 +159,24 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 		IRenderable* renderable = spatial->dcast_Renderable();
 		if (!renderable)
 			continue;
+
+		auto it = dest.visible_sectors_map.find(sector);
+		if (it == dest.visible_sectors_map.end())
+			continue;
+
+		const CPortalTraverser::SectorVisibility* active_vis_data = it->second;
+
+		// Проверяем попадание объекта в подфрустумы сектора
+		bool bInFrustum = false;
+		for (const auto& frustum : active_vis_data->frustums)
+		{
+			if (frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+			{
+				bInFrustum = true;
+				break;
+			}
+		}
+		if (!bInFrustum) continue;
 
 		// 1. ФИЛЬТР HUD
 		if (!sector)

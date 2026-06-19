@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "..\xrEngine\render.h"
 #include "..\xrEngine\ispatial.h"
 #include "SceneGraphTypes.h"
@@ -69,6 +71,8 @@ struct SceneGraphPacket
 	xr_vector<ISpatial*> m_spatial_query_results;
 	xr_vector<IRender_Visual*, render_alloc<IRender_Visual*>> m_visuals_static_visible;
 
+	std::unordered_map<IRender_Sector*, const CPortalTraverser::SectorVisibility*> visible_sectors_map;
+
 	struct DReuseItem
 	{
 		IRender_Visual* visual;
@@ -99,6 +103,7 @@ struct SceneGraphPacket
 	void Clear()
 	{
 		portal_traverser.Reset();
+		visible_sectors_map.clear();
 		queue_static[0].clear();
 		queue_static[1].clear();
 		queue_dynamic[0].clear();
