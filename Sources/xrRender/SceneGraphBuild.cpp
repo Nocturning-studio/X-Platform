@@ -855,18 +855,13 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	if (!pVisual)
 		return;
 
-	// 1. Occlusion Culling (HOM)
-	// Даже если объект прошел проверку по порталам, он может быть закрыт стеной внутри сектора.
-	if (!RenderImplementation.HOM.visible(pVisual->vis))
-		return;
-
-	// 2. Проверка на значимость
+	// 1. Проверка на значимость
 	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx
 	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
-	// 3. Сохранение для Reuse
+	// 2. Сохранение для Reuse
 	if (ctx.render_phase == CRender::PHASE_NORMAL)
 	{
 		// Сохраняем в список переданного пакета (dest)
