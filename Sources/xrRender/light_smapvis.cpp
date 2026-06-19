@@ -88,6 +88,9 @@ void smapvis::flushoccq()
 	if (testQ_frame != Engine.TimeManager.GetFrameCount())
 		return;
 
+	if (testQ_id == 0)   // нет активного запроса
+		return;
+
 	// ѕроверка валидности query
 	if (testQ_id >= RenderImplementation.HWOCC.GetQuerySize() || testQ_id == 0xffffffff ||
 		RenderImplementation.HWOCC.GetUsedQueryByID(testQ_id) == nullptr)

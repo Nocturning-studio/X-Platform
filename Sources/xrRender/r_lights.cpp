@@ -30,22 +30,14 @@ void CRender::render_lights(light_Package& LP)
         [&](light* L) { return !is_valid_light(L); }), LP.v_spot.end());
 
     // ------------------------------------------------------------------------
-    // 1. ОБНОВЛЕНИЕ ВИДИМОСТИ И МАТРИЦ (без удаления)
+    // 1. ВЫЧИСЛЕНИЕ МАТРИЦ ДЛЯ ВИДИМЫХ ИСТОЧНИКОВ (без vis_update)
     {
-        OPTICK_EVENT("Update visibility and compute matrices");
+        OPTICK_EVENT("Compute matrices for visible shadowed lights");
 
         xr_vector<light*>& source = LP.v_shadowed;
 
-        // Последовательное обновление видимости (occlusion queries не параллелятся)
-        for (light* L : source)
-        {
-            L->vis_update(); // теперь неблокирующий!
-        }
-
-        // Параллельное вычисление матриц для ВИДИМЫХ источников (compute_xf_spot потокобезопасен)
-        // Включайте только если уверены, что внутри нет глобального состояния.
-        // Если сомневаетесь – оставьте последовательный цикл.
-#if 1 // переключите на 0 для отключения параллелизма
+        // Параллельное вычисление матриц для ВИДИМЫХ источников
+#if 1
         if (source.size() > 16)
         {
             concurrency::parallel_for_each(source.begin(), source.end(),
@@ -66,7 +58,7 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 2. УДАЛЕНИЕ НЕВИДИМЫХ ИСТОЧНИКОВ (быстро, без вызовов vis_update)
+    // 2. УДАЛЕНИЕ НЕВИДИМЫХ ИСТОЧНИКОВ
     {
         OPTICK_EVENT("Remove invisible");
 
@@ -77,7 +69,7 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 3. УПАКОВКА SHADOW MAPS (без изменений, кроме оптимизации сортировки)
+    // 3. УПАКОВКА SHADOW MAPS
     {
         OPTICK_EVENT("Pack shadow maps");
 
@@ -124,7 +116,7 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 4. РЕНДЕР ТЕНЕЙ (без изменений)
+    // 4. РЕНДЕР ТЕНЕЙ (без vis_update)
     HOM.Disable();
 
     while (!LP.v_shadowed.empty())
@@ -155,8 +147,7 @@ void CRender::render_lights(light_Package& LP)
         for (light* L : current_batch)
         {
             L->get_smapvis().begin();
-            SceneGraph.render_subspace(L->spatial.sector, L->TransformContext.ShadowContext.combine,
-                L->get_position(), TRUE, FALSE, SceneGraph.m_packet);
+            SceneGraph.render_subspace(L->spatial.sector, L->TransformContext.ShadowContext.combine, L->get_position(), TRUE, FALSE, SceneGraph.m_packet);
 
             bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
             bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() ||
@@ -192,7 +183,7 @@ void CRender::render_lights(light_Package& LP)
         }
 
         // --------------------------------------------------------------------
-        // 5. АККУМУЛЯЦИЯ СВЕТА (без изменений)
+        // 5. АККУМУЛЯЦИЯ СВЕТА (без vis_update)
         {
             OPTICK_EVENT("Accumulation");
             set_light_accumulator();
@@ -204,7 +195,7 @@ void CRender::render_lights(light_Package& LP)
                 for (size_t i = 0; i < LP.v_point.size();)
                 {
                     light* L = LP.v_point[i];
-                    L->vis_update();
+                    // vis_update() удалён, visible уже актуален
                     if (L->VisibilityData.visible)
                     {
                         accumulate_point_lights(L);
@@ -222,7 +213,7 @@ void CRender::render_lights(light_Package& LP)
                 for (size_t i = 0; i < LP.v_spot.size();)
                 {
                     light* L = LP.v_spot[i];
-                    L->vis_update();
+                    // vis_update() удалён
                     if (L->VisibilityData.visible)
                     {
                         LR.compute_xf_spot(L);
@@ -250,60 +241,48 @@ void CRender::render_lights(light_Package& LP)
     ProcessRemainingLightsOptimized(LP);
 }
 
-// Вспомогательная функция для обработки оставшихся источников
 void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
 {
-	OPTICK_EVENT("ProcessRemainingLightsOptimized");
+    OPTICK_EVENT("ProcessRemainingLightsOptimized");
 
-	// Point lights
-	if (!LP.v_point.empty())
-	{
-		OPTICK_EVENT("remaining point");
+    // Point lights
+    if (!LP.v_point.empty())
+    {
+        OPTICK_EVENT("remaining point");
 
-		// Пакетное обновление видимости
-		for (light* L : LP.v_point)
-		{
-			L->vis_update();
-		}
+        // Фильтрация и накопление без vis_update
+        LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(),
+            [this](light* L) {
+                if (L->VisibilityData.visible)
+                {
+                    accumulate_point_lights(L);
+                    return true;
+                }
+                return false;
+            }),
+            LP.v_point.end());
+    }
 
-		// Фильтрация и накопление в одном проходе
-		LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(),
-										[this](light* L) {
-											if (L->VisibilityData.visible)
-											{
-												accumulate_point_lights(L);
-												return true;
-											}
-											return false;
-										}),
-						 LP.v_point.end());
-	}
+    // Spot lights
+    if (!LP.v_spot.empty())
+    {
+        OPTICK_EVENT("remaining spot");
 
-	// Spot lights
-	if (!LP.v_spot.empty())
-	{
-		OPTICK_EVENT("remaining spot");
+        for (light* L : LP.v_spot)
+        {
+            if (L->VisibilityData.visible)
+                LR.compute_xf_spot(L);
+        }
 
-		// Предварительное вычисление матриц для видимых источников
-		for (light* L : LP.v_spot)
-		{
-			L->vis_update();
-			if (L->VisibilityData.visible)
-			{
-				LR.compute_xf_spot(L);
-			}
-		}
-
-		// Накопление
-		LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(),
-									   [this](light* L) {
-										   if (L->VisibilityData.visible)
-										   {
-											   accumulate_spot_lights(L);
-											   return true;
-										   }
-										   return false;
-									   }),
-						LP.v_spot.end());
-	}
+        LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(),
+            [this](light* L) {
+                if (L->VisibilityData.visible)
+                {
+                    accumulate_spot_lights(L);
+                    return true;
+                }
+                return false;
+            }),
+            LP.v_spot.end());
+    }
 }

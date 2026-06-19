@@ -59,5 +59,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLi
 		FATAL("stack overflow");
 	}
 
+	OPTICK_SHUTDOWN();
+
 	return (0);
 }

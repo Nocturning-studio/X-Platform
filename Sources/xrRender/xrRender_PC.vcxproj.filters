@@ -160,6 +160,12 @@
     <Filter Include="Core\Scene Graph">
       <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes">
+      <UniqueIdentifier>{27c3fc1c-ba18-4597-a09f-0d9e4b7ca8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Occlusion culling\SoftX occlusion culling">
+      <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -247,9 +253,6 @@
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="HOM.h">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClInclude>
-    <ClInclude Include="occRasterizer.h">
       <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClInclude>
     <ClInclude Include="Blender_frame_overlay.h">
@@ -390,8 +393,29 @@
     <ClInclude Include="r_portal_traverser.h">
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
+    <ClInclude Include="CPUOcclusion.h">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrEngine\du_cone.h">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrEngine\du_sphere.h">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+    </ClInclude>
     <ClInclude Include="..\xrEngine\du_sphere_part.h">
-      <Filter>Render pipeline\Rendertargets</Filter>
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftXOcclusionCore.h">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftXOcclusionMapBuilder.h">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftXLightVolumeOcclusion.h">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftXAABBOcclusion.h">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -452,9 +476,6 @@
     <ClCompile Include="light_smapvis.cpp">
       <Filter>Core\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="light_vis.cpp">
-      <Filter>Core\Lights</Filter>
-    </ClCompile>
     <ClCompile Include="LightTrack.cpp">
       <Filter>Core\Lights</Filter>
     </ClCompile>
@@ -497,20 +518,11 @@
     <ClCompile Include="HOM.cpp">
       <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
     </ClCompile>
-    <ClCompile Include="occRasterizer.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClCompile>
-    <ClCompile Include="occRasterizer_core.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_stages_phase_gbuffer.cpp">
       <Filter>Render pipeline\Render stages\Stages\GBuffer stage</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_combine.cpp">
       <Filter>Render pipeline\Render stages\Stages\Scene combine stage</Filter>
-    </ClCompile>
-    <ClCompile Include="r_render_stages_phase_occlusion_culling.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_direct.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Direct</Filter>
@@ -527,22 +539,10 @@
     <ClCompile Include="r_render_stages_enable_scissor.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Core</Filter>
     </ClCompile>
-    <ClCompile Include="r_render_stages_light_accumulator_omnipart_geometry.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_point.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
-    <ClCompile Include="r_render_stages_light_accumulator_point_geometry.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_spot.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
-    <ClCompile Include="r_render_stages_light_accumulator_spot_geometry.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
-    </ClCompile>
-    <ClCompile Include="r_render_stages_draw_volume.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
     <ClCompile Include="r_occlusion.cpp">
@@ -656,8 +656,35 @@
     <ClCompile Include="r_sector_detect.cpp">
       <Filter>Core\Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
+    <ClCompile Include="CPUOcclusion.cpp">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrEngine\du_cone.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrEngine\du_sphere.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+    </ClCompile>
     <ClCompile Include="..\xrEngine\du_sphere_part.cpp">
-      <Filter>Render pipeline\Rendertargets</Filter>
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="r_render_stages_light_accumulator_volumes.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+    </ClCompile>
+    <ClCompile Include="r_render_stages_light_accumulator_culling.cpp">
+      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftXOcclusionCore.cpp">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftXOcclusionMapBuilder.cpp">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftXLightVolumeOcclusion.cpp">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftXAABBOcclusion.cpp">
+      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

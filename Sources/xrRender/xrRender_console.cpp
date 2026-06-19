@@ -301,6 +301,9 @@ int ps_r_dhemi_count = 5;
 
 float ps_r_lt_smooth = 1.f;
 
+int ps_r_light_fragments_cull = 10.f;
+float ps_r_light_distance_cull = 100.f;
+
 float ps_r_slight_fade = 1.f;
 
 float ps_cas_contrast = 0.1f;
@@ -414,6 +417,19 @@ class CCC_ModelPoolStat : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		RenderImplementation.Models->dump();
+	}
+};
+///////////////////////////////////////////////////////////////////////////////////
+class CCC_SaveOcclusionDepthBuffer : public IConsole_Command
+{
+public:
+	CCC_SaveOcclusionDepthBuffer(LPCSTR N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = TRUE;
+	};
+	virtual void Execute(LPCSTR args)
+	{
+		RenderImplementation.CPUOCC.SaveDepthBuffer();
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////
@@ -620,6 +636,8 @@ void xrRender_initconsole()
 	//CMD4(CCC_Float, "r_wallmark_shift_v", &ps_r_WallmarkSHIFT_V, 0.0f, 1.f);
 	//CMD4(CCC_Float, "r_wallmark_ttl", &ps_r_WallmarkTTL, 1.0f, 5.f * 60.f);
 	CMD1(CCC_ModelPoolStat, "stat_models");
+	
+	CMD1(CCC_SaveOcclusionDepthBuffer, "save_occlusion_culling_depth_buffer");
 
 	CMD3(CCC_Token, "r_cubemap_size", &ps_r_cubemap_size, cubemap_size_token);
 	
@@ -727,6 +745,10 @@ void xrRender_initconsole()
 	CMD4(CCC_Integer, "r_dhemi_count", &ps_r_dhemi_count, 4, 25);
 	CMD4(CCC_Float, "r_dhemi_scale", &ps_r_dhemi_scale, .5f, 3.f);
 	CMD4(CCC_Float, "r_dhemi_smooth", &ps_r_lt_smooth, 0.f, 10.f);
+	
+
+	CMD4(CCC_Float, "r_lights_distance_culling", &ps_r_light_distance_cull, 10.f, 300.f);	
+	CMD4(CCC_Integer, "r_lights_fragments_culling", &ps_r_light_fragments_cull, 0u, 1000u);
 
 	CMD3(CCC_Token, "r_material_quality", &ps_r_material_quality, material_quality_token);
 

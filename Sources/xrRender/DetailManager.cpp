@@ -292,7 +292,6 @@ void CDetailManager::UpdateVisibility()
 							float scale = Item.scale_calculated;
 							fmat4x4& M = Item.mRotY;
 
-							// === SSE OPTIMIZATION (оставляем твой код как есть, он хорош) ===
 							__m128 S = _mm_set_ps(1.0f, scale, scale, scale);
 							__m128 R0 = _mm_loadu_ps(&M._11);
 							__m128 R1 = _mm_loadu_ps(&M._21);

@@ -22,6 +22,7 @@ void COptickCapture::Initialize()
 	m_end_capture_frame = 1;
 	m_need_capture = false;
 	m_switched_to_capturing = false;
+	OPTICK_STOP_CAPTURE();
 };
 
 void COptickCapture::Destroy()

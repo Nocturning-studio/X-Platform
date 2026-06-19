@@ -29,11 +29,11 @@ namespace implement
 {
 template <class T> inline T deg2rad(T val)
 {
-	return (val * T(PI) / T(180));
+	return (val * T(::PI) / T(180));
 };
 template <class T> inline T rad2deg(T val)
 {
-	return (val * T(180) / T(PI));
+	return (val * T(180) / T(::PI));
 };
 }; // namespace implement
 inline float deg2rad(float val)

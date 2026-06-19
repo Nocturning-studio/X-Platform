@@ -316,21 +316,21 @@ void CCameraManager::Update(const fvec3& P,
 	float dt = Engine.TimeManager.GetDeltaTime();
 	float adapt_inert = clampr(dt * 10.0f, 0.0f, 1.0f);
 
-	if (flags & CCameraBase::flPositionRigid)
+	//if (flags & CCameraBase::flPositionRigid)
 		m_cam_info.p.set(P);
-	else
-		m_cam_info.p.inertion(P, adapt_inert);
+	//else
+	//	m_cam_info.p.inertion(P, adapt_inert);
 
-	if (flags & CCameraBase::flDirectionRigid) 
+	//if (flags & CCameraBase::flDirectionRigid) 
 	{
 		m_cam_info.d.set(D);
 		m_cam_info.n.set(N);
 	}
-	else 
-	{
-		m_cam_info.d.inertion(D, adapt_inert);
-		m_cam_info.n.inertion(N, adapt_inert);
-	}
+	//else 
+	//{
+	//	m_cam_info.d.inertion(D, adapt_inert);
+	//	m_cam_info.n.inertion(N, adapt_inert);
+	//}
 
 	// Normalize
 	m_cam_info.d.normalize();

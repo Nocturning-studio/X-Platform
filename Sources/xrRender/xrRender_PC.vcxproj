@@ -950,6 +950,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\xrEngine\du_cone.h" />
+    <ClInclude Include="..\xrEngine\du_sphere.h" />
     <ClInclude Include="..\xrEngine\du_sphere_part.h" />
     <ClInclude Include="Blender_bent_normals.h" />
     <ClInclude Include="Blender_hi_z.h" />
@@ -962,6 +964,7 @@
     <ClInclude Include="Blender_Particle.h" />
     <ClInclude Include="Blender_Screen_SET.h" />
     <ClInclude Include="Blender_multiple_usage.h" />
+    <ClInclude Include="CPUOcclusion.h" />
     <ClInclude Include="DetailManager.h" />
     <ClInclude Include="DetailModel.h" />
     <ClInclude Include="doug_lea_allocator_wrapper.h" />
@@ -978,7 +981,6 @@
     <ClInclude Include="ModelPool.h" />
     <ClInclude Include="NvTriStrip.h" />
     <ClInclude Include="NvTriStripObjects.h" />
-    <ClInclude Include="occRasterizer.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="ParticleEffectDef.h" />
     <ClInclude Include="ParticleGroup.h" />
@@ -993,6 +995,10 @@
     <ClInclude Include="r_render_pipeline.h" />
     <ClInclude Include="r_sector.h" />
     <ClInclude Include="shader_configurator.h" />
+    <ClInclude Include="SoftXAABBOcclusion.h" />
+    <ClInclude Include="SoftXLightVolumeOcclusion.h" />
+    <ClInclude Include="SoftXOcclusionCore.h" />
+    <ClInclude Include="SoftXOcclusionMapBuilder.h" />
     <ClInclude Include="SunOccluder.h" />
     <ClInclude Include="VertexCache.h" />
     <ClInclude Include="WallmarksEngine.h" />
@@ -1029,7 +1035,10 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\xrEngine\du_cone.cpp" />
+    <ClCompile Include="..\xrEngine\du_sphere.cpp" />
     <ClCompile Include="..\xrEngine\du_sphere_part.cpp" />
+    <ClCompile Include="CPUOcclusion.cpp" />
     <ClCompile Include="DetailManager.cpp" />
     <ClCompile Include="DetailManager_VS.cpp" />
     <ClCompile Include="DetailModel.cpp" />
@@ -1091,14 +1100,14 @@
     <ClCompile Include="ModelPool.cpp" />
     <ClCompile Include="NvTriStrip.cpp" />
     <ClCompile Include="NvTriStripObjects.cpp" />
-    <ClCompile Include="occRasterizer.cpp" />
-    <ClCompile Include="occRasterizer_core.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
     <ClCompile Include="ParticleEffectDef.cpp" />
     <ClCompile Include="ParticleGroup.cpp" />
     <ClCompile Include="PSLibrary.cpp" />
     <ClCompile Include="r_portal.cpp" />
     <ClCompile Include="r_render_stages.cpp" />
+    <ClCompile Include="r_render_stages_light_accumulator_culling.cpp" />
+    <ClCompile Include="r_render_stages_light_accumulator_volumes.cpp" />
     <ClCompile Include="SceneGraphBuild.cpp" />
     <ClCompile Include="SceneGraphRender.cpp" />
     <ClCompile Include="r_occlusion.cpp" />
@@ -1111,6 +1120,10 @@
     <ClCompile Include="r_screenshot.cpp" />
     <ClCompile Include="r_sector.cpp" />
     <ClCompile Include="r_portal_traverser.cpp" />
+    <ClCompile Include="SoftXAABBOcclusion.cpp" />
+    <ClCompile Include="SoftXLightVolumeOcclusion.cpp" />
+    <ClCompile Include="SoftXOcclusionCore.cpp" />
+    <ClCompile Include="SoftXOcclusionMapBuilder.cpp" />
     <ClCompile Include="SunOccluder.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tga.cpp" />
@@ -1123,7 +1136,6 @@
     <ClCompile Include="Light_Render_Direct.cpp" />
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />
     <ClCompile Include="light_smapvis.cpp" />
-    <ClCompile Include="light_vis.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="r_blenders.cpp" />
     <ClCompile Include="r_loader.cpp" />
@@ -1140,13 +1152,9 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_direct.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_omnipart_geometry.cpp" />
     <ClCompile Include="r_render_stages_light_accumulator_point.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_point_geometry.cpp" />
     <ClCompile Include="r_render_stages_light_accumulator_spot.cpp" />
-    <ClCompile Include="r_render_stages_light_accumulator_spot_geometry.cpp" />
     <ClCompile Include="r_render_stages_phase_antialiasing.cpp" />
-    <ClCompile Include="r_render_stages_draw_volume.cpp" />
     <ClCompile Include="r_render_stages_enable_scissor.cpp" />
     <ClCompile Include="r_render_stages_phase_distortion.cpp" />
     <ClCompile Include="r_render_stages_phase_motion_blur.cpp" />
@@ -1157,7 +1165,6 @@
     <ClCompile Include="r_render_stages_phase_depth_of_field.cpp" />
     <ClCompile Include="r_render_stages_phase_frame_overlay.cpp" />
     <ClCompile Include="r_render_stages_phase_autoexposure.cpp" />
-    <ClCompile Include="r_render_stages_phase_occlusion_culling.cpp" />
     <ClCompile Include="r_render_stages_phase_effectors.cpp" />
     <ClCompile Include="r_render_stages_phase_gbuffer.cpp" />
     <ClCompile Include="r_render_stages_phase_shadow_map_Direct.cpp" />
@@ -1190,6 +1197,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Third-party\include\optick\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\SoftX\src\SoftX.vcxproj">
+      <Project>{ce2f84c9-34dd-436b-aff9-d3a84c290e0c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>

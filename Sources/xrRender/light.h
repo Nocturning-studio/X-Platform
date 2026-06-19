@@ -4,6 +4,12 @@
 #include "light_package.h"
 #include "light_smapvis.h"
 
+const u32 delay_small_min = 1;
+const u32 delay_small_max = 3;
+const u32 delay_large_min = 10;
+const u32 delay_large_max = 20;
+const u32 cullfragments = 4;
+
 class light : public IRender_Light, public ISpatial
 {
   private:
@@ -123,9 +129,8 @@ class light : public IRender_Light, public ISpatial
 	}
 
 	void transform_calc();
-	void vis_prepare();
-	bool vis_prepare_async(u32 frame);
-	void vis_update();
+	bool camera_inside_volume() const;
+	bool vis_prepare(u32 frame);
 	void _export(light_Package& dest);
 
 	float get_LOD();
