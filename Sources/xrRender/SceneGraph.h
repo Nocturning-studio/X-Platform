@@ -80,6 +80,8 @@ struct SceneGraphPacket
 	};
 	xr_vector<DReuseItem> m_visuals_dynamic_visible;
 
+	xr_vector<IRenderable*> m_culled_dynamics;
+
 	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
 
@@ -102,6 +104,7 @@ struct SceneGraphPacket
 
 	void Clear()
 	{
+		m_culled_dynamics.clear();
 		portal_traverser.Reset();
 		visible_sectors_map.clear();
 		queue_static[0].clear();
@@ -279,6 +282,8 @@ class CSceneGraph
 		m_feedback_interface = V;
 	}
 	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest);
+
+	void PrepareDynamicInstances(SceneGraphPacket& packet);
 
 	void get_Counters(u32& s, u32& d)
 	{

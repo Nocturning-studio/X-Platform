@@ -201,16 +201,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 		vis_orig.hom_tested = vis_temp.hom_tested;
 
 		if (bVisible)
-		{
-			// Рендерим
-			m_TraversalContext.frustum = &ViewBase;
-			set_Object(renderable);
-
-			// add_Visual внутри вызовется с использованием dest из TLS
-			renderable->renderable_Render();
-
-			set_Object(nullptr);
-		}
+			dest.m_culled_dynamics.push_back(renderable);
 	}
 
 	// Сброс контекста
@@ -264,6 +255,7 @@ void CRender::CalculateSceneVisibility()
 
 		// Сбор данных (запись в item.packet)
 		gather_visibility(item.view_projection, item.packet);
+		SceneGraph.PrepareDynamicInstances(item.packet);
 
 		// Очистка состояния
 		SceneGraph.SetCullingBoundsCollector(NULL);
@@ -292,6 +284,7 @@ void CRender::CalculateSceneVisibility()
 
 		// Сбор данных (запись в item.packet)
 		gather_visibility(item.view_projection, item.packet);
+		SceneGraph.PrepareDynamicInstances(item.packet);
 	}
 
 	// Восстанавливаем дефолтный конфиг на всякий случай
