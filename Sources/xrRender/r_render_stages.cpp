@@ -11,7 +11,7 @@ void CRender::PrepareToRender()
 	CalculateSceneVisibility();
 }
 
-void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
+void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest)
 {
 	PROFILE_FUNCTION();
 
@@ -263,7 +263,7 @@ void CRender::CalculateSceneVisibility()
 			SceneGraph.SetCullingBoundsCollector(NULL);
 
 		// Сбор данных (запись в item.packet)
-		render_main(item.view_projection, item.packet);
+		gather_visibility(item.view_projection, item.packet);
 
 		// Очистка состояния
 		SceneGraph.SetCullingBoundsCollector(NULL);
@@ -291,7 +291,7 @@ void CRender::CalculateSceneVisibility()
 		set_active_phase(PHASE_NORMAL);
 
 		// Сбор данных (запись в item.packet)
-		render_main(item.view_projection, item.packet);
+		gather_visibility(item.view_projection, item.packet);
 	}
 
 	// Восстанавливаем дефолтный конфиг на всякий случай
