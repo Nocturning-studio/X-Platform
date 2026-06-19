@@ -121,8 +121,6 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 		}
 	}
 
-	HOM.MT_SYNC();
-
 	// -------------------------------------------------------------------------
 	// 6. Dynamic Geometry & Lights (Берем из dest)
 	// -------------------------------------------------------------------------
@@ -434,20 +432,6 @@ void CRender::render_sun()
 	dwLightMarkerID += 2;
 
 	Engine.Statistic->RenderCALC_SUN.End();
-}
-
-void CRender::render_hom()
-{
-	PROFILE_FUNCTION();
-
-	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	View = 0;
-
-	if (!ps_render_flags.test(RFLAG_EXP_MT_CALC))
-	{
-		HOM.Enable();
-		HOM.Render(ViewBase);
-	}
 }
 
 void CRender::render_lights()

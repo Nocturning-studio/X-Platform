@@ -14,6 +14,9 @@
 
 #pragma warning(default : 4996)
 
+#define DEPRECATED
+
+/*
 #if defined(_MSC_VER)
 #define DEPRECATED __declspec(deprecated("This function/field is deprecated. Use new backend instead."))
 #elif defined(__GNUC__) || defined(__clang__)
@@ -21,3 +24,4 @@
 #else
 #define DEPRECATED
 #endif
+*/

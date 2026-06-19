@@ -343,14 +343,6 @@ void CRender::OnFrame()
 		// 2. Запуск задачи в параллель.
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
 	}
-
-	{
-		// 1. Меняем буферы
-		HOM.StartFrame();
-
-		// 2. Запускаем задачу, которая будет писать в НОВЫЙ буфер
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(&HOM, &CHOM::MT_RENDER));
-	}
 }
 
 // Implementation
@@ -598,7 +590,6 @@ void CRender::add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shad
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
-	HOM.occlude(bb_screenspace);
 }
 
 void CRender::set_render_mode(int mode)

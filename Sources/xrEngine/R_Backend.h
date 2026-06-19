@@ -447,7 +447,6 @@ class ENGINE_API CBackend
 	{
 		CHK_DX(HW.GetDevice()->SetSamplerState(sampler, type, value));
 	}
-#ifdef DEBUG
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
 	IC void dbg_DrawAABB(fvec3& T, float sx, float sy, float sz, u32 C)
@@ -466,7 +465,6 @@ class ENGINE_API CBackend
 	void dbg_DrawTRI(fmat4x4& T, fvec3& p1, fvec3& p2, fvec3& p3, u32 C);
 	void dbg_DrawLINE(fmat4x4& T, fvec3& p1, fvec3& p2, u32 C);
 	void dbg_DrawEllipse(fmat4x4& T, u32 C);
-#endif
 
 	CBackend()
 	{

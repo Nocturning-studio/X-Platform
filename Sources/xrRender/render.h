@@ -514,7 +514,6 @@ class CRender : public IRender_interface, public pureFrame
 	void gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
-	void render_hom();
 	void render_ambient_occlusion();
 	void combine_scene();
 	void render_gbuffer_primary();

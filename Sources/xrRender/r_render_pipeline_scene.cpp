@@ -20,8 +20,8 @@ void CRender::RenderScene()
 	// Configure
 	m_need_render_sun = need_render_sun();
 
-	// HOM
-	render_hom();
+	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	View = 0;
 
 	PrepareToRender();
 

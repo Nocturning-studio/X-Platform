@@ -20,7 +20,6 @@ void CRender::RenderDebug()
 	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
 	HOM.Enable();
-	HOM.Render(ViewBase);
 
 	render_stage_main_geometry();
 
