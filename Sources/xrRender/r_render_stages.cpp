@@ -11,7 +11,7 @@ void CRender::PrepareToRender()
 	CalculateSceneVisibility();
 }
 
-void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
+void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest)
 {
 	PROFILE_FUNCTION();
 
@@ -108,6 +108,12 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 	// -------------------------------------------------------------------------
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
+	dest.visible_sectors_map.clear();
+	for (const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
+	{
+		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
+	}
+
 	for (const auto& sec_vis : visible_sectors)
 	{
 		CSector* sector = sec_vis.sector;
@@ -141,7 +147,7 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 				// При полном выносе в поток это место потребует защиты мьютексом
 				// или своего буфера для lights. Пока оставляем как есть.
 				if (HOM.visible(pLight->get_homdata()))
-					Lights.add_light(pLight);
+					dest.m_culled_lights.push_back(pLight);
 			}
 			continue;
 		}
@@ -153,6 +159,24 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 		IRenderable* renderable = spatial->dcast_Renderable();
 		if (!renderable)
 			continue;
+
+		auto it = dest.visible_sectors_map.find(sector);
+		if (it == dest.visible_sectors_map.end())
+			continue;
+
+		const CPortalTraverser::SectorVisibility* active_vis_data = it->second;
+
+		// Проверяем попадание объекта в подфрустумы сектора
+		bool bInFrustum = false;
+		for (const auto& frustum : active_vis_data->frustums)
+		{
+			if (frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+			{
+				bInFrustum = true;
+				break;
+			}
+		}
+		if (!bInFrustum) continue;
 
 		// 1. ФИЛЬТР HUD
 		if (!sector)
@@ -177,24 +201,19 @@ void CRender::render_main(fmat4x4& view_projection, SceneGraphPacket& dest)
 		vis_orig.hom_tested = vis_temp.hom_tested;
 
 		if (bVisible)
-		{
-			// Рендерим
-			m_TraversalContext.frustum = &ViewBase;
-			set_Object(renderable);
-
-			// add_Visual внутри вызовется с использованием dest из TLS
-			renderable->renderable_Render();
-
-			set_Object(nullptr);
-		}
+			dest.m_culled_dynamics.push_back(renderable);
 	}
 
 	// Сброс контекста
 	m_TraversalContext.frustum = nullptr;
+}
 
-	// 7. HUD Rendering
-	if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
-		g_pGameLevel->pHUD->Render_Last();
+void CRender::MergeCulledLights(SceneGraphPacket& packet)
+{
+	if (packet.m_culled_lights.empty()) return;
+	for (light* L : packet.m_culled_lights)
+		Lights.add_light(L);
+	packet.m_culled_lights.clear();
 }
 
 void CRender::CalculateSceneVisibility()
@@ -209,6 +228,32 @@ void CRender::CalculateSceneVisibility()
 	// В синхронном режиме (пока нет многопоточности) читаем из того же буфера, в который пишем.
 	// При параллельном исполнении здесь будет: m_scene_read_ix = (m_scene_write_ix + 1) % 2;
 	m_scene_read_ix = m_scene_write_ix;
+
+	if (!pLastSector)
+	{
+		MainSceneWorkItem& gbuffer_item = GetGBufferWriteItem();
+		gbuffer_item.Clear();
+		gbuffer_item.view = Engine.RenderView.View;
+		gbuffer_item.projection = Engine.RenderView.Project;
+		gbuffer_item.view_projection = Engine.RenderView.ViewProjection;
+
+		{
+			SceneGraphFetchConfig hud_config(true, false, false);
+			SceneGraph.SetFetchConfig(hud_config);
+			set_active_phase(PHASE_NORMAL);
+
+			// Устанавливаем TLS для gbuffer_item.packet
+			CurrentRenderContext::Scope tls_scope(gbuffer_item.packet, m_TraversalContext);
+			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+				g_pGameLevel->pHUD->Render_Last();
+		}
+
+		// Forward-пакет оставляем пустым
+		MainSceneWorkItem& fwd_item = GetForwardWriteItem();
+		fwd_item.Clear();
+		SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
+		return;
+	}
 
 	// -------------------------------------------------------------------------
 	// PHASE A: GBuffer Gather (Priority 0 + Wallmarks)
@@ -239,7 +284,15 @@ void CRender::CalculateSceneVisibility()
 			SceneGraph.SetCullingBoundsCollector(NULL);
 
 		// Сбор данных (запись в item.packet)
-		render_main(item.view_projection, item.packet);
+		gather_visibility(item.view_projection, item.packet);
+		SceneGraph.PrepareDynamicInstances(item.packet);
+		MergeCulledLights(item.packet);
+
+		{
+			CurrentRenderContext::Scope tls_scope(item.packet, m_TraversalContext);
+			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+				g_pGameLevel->pHUD->Render_Last();
+		}
 
 		// Очистка состояния
 		SceneGraph.SetCullingBoundsCollector(NULL);
@@ -267,7 +320,9 @@ void CRender::CalculateSceneVisibility()
 		set_active_phase(PHASE_NORMAL);
 
 		// Сбор данных (запись в item.packet)
-		render_main(item.view_projection, item.packet);
+		gather_visibility(item.view_projection, item.packet);
+		SceneGraph.PrepareDynamicInstances(item.packet);
+		MergeCulledLights(item.packet);
 	}
 
 	// Восстанавливаем дефолтный конфиг на всякий случай

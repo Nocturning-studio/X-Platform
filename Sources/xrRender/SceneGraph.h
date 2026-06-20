@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "..\xrEngine\render.h"
 #include "..\xrEngine\ispatial.h"
 #include "SceneGraphTypes.h"
@@ -9,6 +11,7 @@
 
 class CRender;
 class IRender_Visual;
+class light;
 
 // Enum для типов рендеринга графа
 enum class SceneGraphRenderType
@@ -69,12 +72,17 @@ struct SceneGraphPacket
 	xr_vector<ISpatial*> m_spatial_query_results;
 	xr_vector<IRender_Visual*, render_alloc<IRender_Visual*>> m_visuals_static_visible;
 
+	std::unordered_map<IRender_Sector*, const CPortalTraverser::SectorVisibility*> visible_sectors_map;
+
 	struct DReuseItem
 	{
 		IRender_Visual* visual;
 		fmat4x4 matrix;
 	};
 	xr_vector<DReuseItem> m_visuals_dynamic_visible;
+
+	xr_vector<IRenderable*> m_culled_dynamics;
+	xr_vector<light*> m_culled_lights;
 
 	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
@@ -98,7 +106,10 @@ struct SceneGraphPacket
 
 	void Clear()
 	{
+		m_culled_lights.clear();
+		m_culled_dynamics.clear();
 		portal_traverser.Reset();
+		visible_sectors_map.clear();
 		queue_static[0].clear();
 		queue_static[1].clear();
 		queue_dynamic[0].clear();
@@ -274,6 +285,8 @@ class CSceneGraph
 		m_feedback_interface = V;
 	}
 	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest);
+
+	void PrepareDynamicInstances(SceneGraphPacket& packet);
 
 	void get_Counters(u32& s, u32& d)
 	{

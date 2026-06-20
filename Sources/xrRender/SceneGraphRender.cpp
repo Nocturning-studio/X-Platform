@@ -677,8 +677,13 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	// Он заполнит свой внутренний список GetVisibleSectors().
 	dest.portal_traverser.Traverse((CSector*)start_sector, *view_frustum, camera_pos, mCombined, 0);
 
-	// Получаем ссылку на результаты обхода (const reference, читать быстро)
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
+
+	dest.visible_sectors_map.clear();
+	for (const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
+	{
+		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
+	}
 
 	// -------------------------------------------------------------------------
 	// 4. Сбор СТАТИКИ (Static Geometry)

@@ -855,18 +855,13 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	if (!pVisual)
 		return;
 
-	// 1. Occlusion Culling (HOM)
-	// Даже если объект прошел проверку по порталам, он может быть закрыт стеной внутри сектора.
-	if (!RenderImplementation.HOM.visible(pVisual->vis))
-		return;
-
-	// 2. Проверка на значимость
+	// 1. Проверка на значимость
 	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx
 	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
-	// 3. Сохранение для Reuse
+	// 2. Сохранение для Reuse
 	if (ctx.render_phase == CRender::PHASE_NORMAL)
 	{
 		// Сохраняем в список переданного пакета (dest)
@@ -1318,4 +1313,31 @@ void CSceneGraph::SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>
 
 	if (m_culling_bounds_recorder)
 		m_culling_bounds_recorder->clear();
+}
+
+void CSceneGraph::PrepareDynamicInstances(SceneGraphPacket& packet)
+{
+	// Создаём временный контекст обхода для правильной работы add_Visual
+	SceneTraversalContext ctx;
+	ctx.is_hud_pass = FALSE;
+	ctx.is_invisible_mode = FALSE;
+	ctx.render_phase = CRender::PHASE_NORMAL; // актуальная фаза (подготовка происходит до рендеринга)
+	// Инкрементируем маркер, чтобы EnqueueDynamic разрешил повторное добавление в очереди
+	ctx.traversal_marker_id = m_traversal_marker.fetch_add(1) + 1;
+	ctx.current_transform = nullptr; // будет установлено внутри renderable_Render()
+	ctx.frustum = nullptr;           // не требуется, т.к. culling уже пройден
+
+	// Направляем TLS на наш пакет
+	CurrentRenderContext::Scope tls_scope(packet, ctx);
+
+	for (IRenderable* renderable : packet.m_culled_dynamics)
+	{
+		if (!renderable) continue;
+
+		// Устанавливаем владельца, чтобы он корректно пробрасывался в _MatrixItemS
+		ctx.current_owner = renderable;
+		// Вызывает set_Transform и add_Visual с актуальными матрицами
+		renderable->renderable_Render();
+	}
+	packet.m_culled_dynamics.clear();
 }
