@@ -11,6 +11,7 @@
 
 class CRender;
 class IRender_Visual;
+class light;
 
 // Enum для типов рендеринга графа
 enum class SceneGraphRenderType
@@ -81,6 +82,7 @@ struct SceneGraphPacket
 	xr_vector<DReuseItem> m_visuals_dynamic_visible;
 
 	xr_vector<IRenderable*> m_culled_dynamics;
+	xr_vector<light*> m_culled_lights;
 
 	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
@@ -104,6 +106,7 @@ struct SceneGraphPacket
 
 	void Clear()
 	{
+		m_culled_lights.clear();
 		m_culled_dynamics.clear();
 		portal_traverser.Reset();
 		visible_sectors_map.clear();

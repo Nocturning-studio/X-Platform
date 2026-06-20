@@ -507,6 +507,7 @@ class CRender : public IRender_interface, public pureFrame
 	void output_frame_to_screen();
 	bool need_render_sun();
 	void gather_visibility(fmat4x4& mCombined, SceneGraphPacket& dest);
+	void MergeCulledLights(SceneGraphPacket& packet);
 	void CalculateSceneVisibility();
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);

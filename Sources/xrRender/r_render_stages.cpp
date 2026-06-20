@@ -147,7 +147,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 				// При полном выносе в поток это место потребует защиты мьютексом
 				// или своего буфера для lights. Пока оставляем как есть.
 				if (HOM.visible(pLight->get_homdata()))
-					Lights.add_light(pLight);
+					dest.m_culled_lights.push_back(pLight);
 			}
 			continue;
 		}
@@ -206,10 +206,14 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 
 	// Сброс контекста
 	m_TraversalContext.frustum = nullptr;
+}
 
-	// 7. HUD Rendering
-	if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
-		g_pGameLevel->pHUD->Render_Last();
+void CRender::MergeCulledLights(SceneGraphPacket& packet)
+{
+	if (packet.m_culled_lights.empty()) return;
+	for (light* L : packet.m_culled_lights)
+		Lights.add_light(L);
+	packet.m_culled_lights.clear();
 }
 
 void CRender::CalculateSceneVisibility()
@@ -224,6 +228,32 @@ void CRender::CalculateSceneVisibility()
 	// В синхронном режиме (пока нет многопоточности) читаем из того же буфера, в который пишем.
 	// При параллельном исполнении здесь будет: m_scene_read_ix = (m_scene_write_ix + 1) % 2;
 	m_scene_read_ix = m_scene_write_ix;
+
+	if (!pLastSector)
+	{
+		MainSceneWorkItem& gbuffer_item = GetGBufferWriteItem();
+		gbuffer_item.Clear();
+		gbuffer_item.view = Engine.RenderView.View;
+		gbuffer_item.projection = Engine.RenderView.Project;
+		gbuffer_item.view_projection = Engine.RenderView.ViewProjection;
+
+		{
+			SceneGraphFetchConfig hud_config(true, false, false);
+			SceneGraph.SetFetchConfig(hud_config);
+			set_active_phase(PHASE_NORMAL);
+
+			// Устанавливаем TLS для gbuffer_item.packet
+			CurrentRenderContext::Scope tls_scope(gbuffer_item.packet, m_TraversalContext);
+			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+				g_pGameLevel->pHUD->Render_Last();
+		}
+
+		// Forward-пакет оставляем пустым
+		MainSceneWorkItem& fwd_item = GetForwardWriteItem();
+		fwd_item.Clear();
+		SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
+		return;
+	}
 
 	// -------------------------------------------------------------------------
 	// PHASE A: GBuffer Gather (Priority 0 + Wallmarks)
@@ -256,6 +286,13 @@ void CRender::CalculateSceneVisibility()
 		// Сбор данных (запись в item.packet)
 		gather_visibility(item.view_projection, item.packet);
 		SceneGraph.PrepareDynamicInstances(item.packet);
+		MergeCulledLights(item.packet);
+
+		{
+			CurrentRenderContext::Scope tls_scope(item.packet, m_TraversalContext);
+			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+				g_pGameLevel->pHUD->Render_Last();
+		}
 
 		// Очистка состояния
 		SceneGraph.SetCullingBoundsCollector(NULL);
@@ -285,6 +322,7 @@ void CRender::CalculateSceneVisibility()
 		// Сбор данных (запись в item.packet)
 		gather_visibility(item.view_projection, item.packet);
 		SceneGraph.PrepareDynamicInstances(item.packet);
+		MergeCulledLights(item.packet);
 	}
 
 	// Восстанавливаем дефолтный конфиг на всякий случай
