@@ -58,7 +58,7 @@ void CRender::render_screen_space_reflections()
 
 	clear_reflections();
 
-	if (ps_r_postprocess_flags.test(RFLAG_REFLECTIONS) && (ps_r_shading_mode != 0))
+	if (ps_r_postprocess_flags.test(RFLAG_REFLECTIONS) && (ps_r_shading_mode != SHADING_MODE_LEASHED))
 	{
 		ReflectionsTexIsCleared = false;
 		create_backbuffer_mip_chain();

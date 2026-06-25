@@ -641,9 +641,6 @@
     <ClCompile Include="r_render_pipeline_ui.cpp">
       <Filter>Render pipeline\Core\Rendering\Specific pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="r_render_pipeline_debug.cpp">
-      <Filter>Render pipeline\Core\Rendering\Specific pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_pipeline.cpp">
       <Filter>Render pipeline\Core\Rendering\Core</Filter>
     </ClCompile>

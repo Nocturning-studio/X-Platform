@@ -67,6 +67,7 @@ BOOL CHOM::visible(vis_data& vis)
 {
     if (Engine.TimeManager.GetFrameCount() < vis.hom_frame) return TRUE;
     if (!bEnabled) return TRUE;
+    if (vis.box.contains(Engine.RenderView.Position)) return TRUE;
 
     BOOL result = RenderImplementation.CPUOCC.TestAABB(vis.box);
     u32 frame_current = Engine.TimeManager.GetFrameCount();

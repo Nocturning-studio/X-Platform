@@ -17,7 +17,7 @@ xr_token qpreset_token[] =
 	{0, 0}
 };
 
-u32 ps_r_shading_mode = 1;
+u32 ps_r_shading_mode = SHADING_MODE_PBR;
 xr_token shading_mode_token[] = 
 {
 	{"st_opt_leashed_shading", 0}, 
@@ -313,8 +313,6 @@ float ps_cas_sharpening = 0.1f;
 Flags32 ps_r_lighting_flags = {RFLAG_SUN | RFLAG_EXP_DONT_TEST_UNSHADOWED};
 
 Flags32 ps_r_postprocess_flags = {RFLAG_DOF | RFLAG_MBLUR | RFLAG_AUTOEXPOSURE};
-
-Flags32 ps_r_shading_flags = {0};
 
 Flags32 ps_r_overlay_flags = {NULL};
 
@@ -778,6 +776,7 @@ void xrRender_initconsole()
 	CMD4(CCC_Float, "r_debug_reserved_3", &ps_r_debug_reserved_3, -1000, 1000);
 
 	CMD3(CCC_Mask, "r_draw_sun_occluders", &ps_r_debug_flags, RFLAG_DRAW_SUN_OCCLUDERS);
+	CMD3(CCC_Mask, "r_draw_hom_occluders", &ps_r_debug_flags, RFLAG_DRAW_HOM_OCCLUDERS);
 
 	CMD3(CCC_Token, "r_geometry_quality_mode", &ps_geometry_quality_mode, geometry_quality_mode_token);
 

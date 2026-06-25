@@ -261,7 +261,6 @@ class CRender : public IRender_interface, public pureFrame
 
   public:
 	void RenderScene();
-	void RenderDebug();
 	void RenderMenu();
 
   public:
@@ -508,7 +507,7 @@ class CRender : public IRender_interface, public pureFrame
 	bool need_render_sun();
 	void gather_visibility(fmat4x4& mCombined, SceneGraphPacket& dest);
 	void MergeCulledLights(SceneGraphPacket& packet);
-	void CalculateSceneVisibility();
+	void calculate_scene_culling();
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);
 	void init_cacades();
@@ -516,21 +515,20 @@ class CRender : public IRender_interface, public pureFrame
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_ambient_occlusion();
-	void combine_scene();
 	void render_gbuffer_primary();
 	void render_gbuffer_secondary();
-	void render_stage_occlusion_culling();
+	void render_stage_lights_culling();
 	void update_shadow_map_visibility();
 	void render_stage_forward();
+	void render_scene_to_gbuffer();
 	void render_sun();
 	void render_lights();
 	void create_hi_z_mip_chain();
 	void render_postprocess();
-	void render_stage_main_geometry();
 	void render_bent_normals();
 
 	virtual void Calculate();
-	void PrepareToRender();
+	void prepare_to_render();
 	virtual void Render();
 	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
 	virtual void OnFrame();

@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //#define DEBUG_LIGHTS_CULLING
 ////////////////////////////////////////////////////////////////////////////////
-void CRender::render_stage_occlusion_culling()
+void CRender::render_stage_lights_culling()
 {
 	PROFILE_FUNCTION();
 
@@ -142,7 +142,7 @@ void CRender::render_stage_occlusion_culling()
 					OPTICK_EVENT("prepare_spot");
 					for (light* L : LP.v_spot) prepared_spot.push_back(prepare_one(L));
 				},
-					[&]() {
+				[&]() {
 					OPTICK_EVENT("prepare_shadowed");
 					for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L));
 				}

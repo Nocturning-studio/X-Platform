@@ -78,11 +78,18 @@ bool SoftXAABBOcclusion::TestAABB(const Fbox3& worldAABB, const fmat4x4& viewPro
     int px1 = iCeil(maxX * depthResolution.x);
     int py1 = iCeil(maxY * depthResolution.y);
 
+    // Защита от вырожденных/нулевых прямоугольников (слишком мелкий объект)
+    if (px0 > px1 || py0 > py1)
+        return true;
+
     // Отсечение границ
     px0 = std::max(0, px0);
     py0 = std::max(0, py0);
     px1 = std::min((int)depthResolution.x - 1, px1);
     py1 = std::min((int)depthResolution.y - 1, py1);
+
+    // Зазор по глубине для устойчивости
+    const float depthEpsilon = 0.01f;
 
     // Консервативный тест: ищем хотя бы один пиксель, где AABB ближе
     for (int y = py0; y <= py1; ++y)
@@ -90,7 +97,7 @@ bool SoftXAABBOcclusion::TestAABB(const Fbox3& worldAABB, const fmat4x4& viewPro
         for (int x = px0; x <= px1; ++x)
         {
             float storedDepth = db->Read(int2(x, y));
-            if (minDepth < storedDepth + 0.001f) // стандартный Less: если объект ближе
+            if (minDepth < storedDepth + depthEpsilon) // стандартный Less: если объект ближе
                 return true;
         }
     }

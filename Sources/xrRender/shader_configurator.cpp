@@ -316,7 +316,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 	// Add extension to texture and check for null
 	Engine.ResourceManager->fix_texture_name(AlbedoTexture);
 
-	bool DisablePBR = ps_r_shading_mode == 0;
+	bool DisablePBR = ps_r_shading_mode == SHADING_MODE_LEASHED;
 	bool UseAlbedoOnly = bUseDepthOnly;
 	bool bUseLightMap = false;
 
@@ -1110,7 +1110,7 @@ void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeo
 	// Get  for base texture for material
 	safe_string::copy(AlbedoTexture, sizeof(AlbedoTexture), *C.L_textures[0]);
 
-	bool DisablePBR = ps_r_shading_mode == 0;
+	bool DisablePBR = ps_r_shading_mode == SHADING_MODE_LEASHED;
 
 	bool bUseConfigurator = false;
 	CInifile* MaterialConfiguration;

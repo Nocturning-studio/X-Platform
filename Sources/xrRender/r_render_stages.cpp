@@ -6,9 +6,13 @@
 #include "stdafx.h"
 #include "r_render_stages.h"
 ////////////////////////////////////////////////////////////////////////////////
-void CRender::PrepareToRender()
+void CRender::prepare_to_render()
 {
-	CalculateSceneVisibility();
+	// Configure
+	m_need_render_sun = need_render_sun();
+
+	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	View = 0;
 }
 
 void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest)
@@ -216,7 +220,7 @@ void CRender::MergeCulledLights(SceneGraphPacket& packet)
 	packet.m_culled_lights.clear();
 }
 
-void CRender::CalculateSceneVisibility()
+void CRender::calculate_scene_culling()
 {
 	PROFILE_FUNCTION();
 
@@ -346,7 +350,7 @@ void CRender::render_gbuffer_primary()
 	PROFILE_FUNCTION();
 
 	// 1. Получаем данные для отрисовки (READ Item)
-	// Данные уже были собраны в CalculateSceneVisibility
+	// Данные уже были собраны в calculate_scene_culling
 	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
 	// 2. DRAW PHASE
@@ -468,17 +472,39 @@ void CRender::render_stage_forward()
 	// ============================================
 	// PASS 4: Debug
 	// ============================================
-	if (m_SunOccluder && ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
+	if (ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
 		m_SunOccluder->Render();
 
-	//debug_draw_light_volumes(Lights.package, Engine.RenderView.ViewProjection);
-	//CPUOCC.DrawDebug();
-	//CPUOCC.DebugRenderLightVolumes(Lights.package, Engine.RenderView.ViewProjection);
+	if (ps_r_debug_flags.test(RFLAG_DRAW_HOM_OCCLUDERS))
+		CPUOCC.DrawDebug();
+}
+
+void CRender::render_scene_to_gbuffer()
+{
+	PROFILE_FUNCTION();
+
+	clear_gbuffer();
+
+	//******* Main render :: PART-0	-- first
+	render_gbuffer_primary();
+
+	//******* Main render :: PART-1 (second)
+	render_gbuffer_secondary();
+
+	// Wall marks
+	if (Wallmarks)
+	{
+		render_wallmarks();
+		Wallmarks->Render(); // wallmarks has priority as normal geometry
+	}
 }
 
 void CRender::render_sun()
 {
 	PROFILE_FUNCTION();
+
+	if (!m_need_render_sun)
+		return;
 
 	Engine.Statistic->RenderCALC_SUN.Begin();
 
@@ -496,7 +522,7 @@ void CRender::render_lights()
 	Engine.Statistic->RenderCALC_LIGHTS.Begin();
 
 	//******* Occlusion testing of volume-limited light-sources
-	render_stage_occlusion_culling();
+	render_stage_lights_culling();
 
 	// Incremental shadow map visibility
 	update_shadow_map_visibility();
@@ -511,32 +537,6 @@ void CRender::render_lights()
 	render_lights(LP_pending);
 
 	Engine.Statistic->RenderCALC_LIGHTS.End();
-}
-
-void CRender::combine_scene()
-{
-	PROFILE_FUNCTION();
-
-	if (ps_r_shading_mode == 1)
-		render_bent_normals();
-
-	if ((ps_r_shading_mode == 1) && ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
-	{
-		create_hi_z_mip_chain();
-
-		precombine_scene();
-
-		render_screen_space_reflections();
-	}
-
-	render_skybox();
-
-	combine_scene_lighting();
-
-	render_stage_forward();
-
-	//if (ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
-		combine_sun_shafts();
 }
 
 void CRender::render_postprocess()

@@ -173,6 +173,11 @@ extern ECORE_API u32 ps_r_aa_transluency;
 extern ECORE_API u32 ps_r_rt_format;
 
 extern ECORE_API u32 ps_r_shading_mode;
+enum
+{
+	SHADING_MODE_LEASHED = 0,
+	SHADING_MODE_PBR = 1
+};
 
 // R2/R2a/R2.5-specific flags
 extern ECORE_API Flags32 ps_r_lighting_flags;
@@ -184,12 +189,6 @@ enum
 	RFLAG_R1LIGHTS = (1 << 3),
 	RFLAG_EXP_DONT_TEST_UNSHADOWED = (1 << 4),
 	RFLAG_SUN_SHAFTS = (1 << 5)
-};
-
-extern ECORE_API Flags32 ps_r_shading_flags;
-enum
-{
-	RFLAG_ENABLE_PBR = (1 << 0)
 };
 
 extern ECORE_API Flags32 ps_r_postprocess_flags;
@@ -222,7 +221,8 @@ enum
 extern ECORE_API Flags32 ps_r_debug_flags;
 enum
 {
-	RFLAG_DRAW_SUN_OCCLUDERS = (1 << 0)
+	RFLAG_DRAW_SUN_OCCLUDERS = (1 << 0),
+	RFLAG_DRAW_HOM_OCCLUDERS = (1 << 1)
 };
 
 /*-------------------------------------------------------------------------------*/

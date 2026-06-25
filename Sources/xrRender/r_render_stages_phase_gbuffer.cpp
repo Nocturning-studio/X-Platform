@@ -9,7 +9,7 @@ void CRender::clear_gbuffer()
 {
 	////OPTICK_EVENT("CRenderTarget::clear_gbuffer");
 
-	if (ps_r_shading_mode == 0)
+	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
 		RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
 												RenderTarget->rt_GBuffer[1]);
 	else
@@ -27,7 +27,7 @@ void CRender::set_gbuffer()
 {
 	////OPTICK_EVENT("CRenderTarget::set_gbuffer");
 
-	if (ps_r_shading_mode == 0)
+	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
 		RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
 												RenderTarget->rt_GBuffer[1]);
 	else

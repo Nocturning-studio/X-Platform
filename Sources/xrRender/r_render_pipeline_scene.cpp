@@ -17,41 +17,44 @@ void CRender::RenderScene()
 		m_bFirstFrameAfterReset = false;
 	}
 
-	// Configure
-	m_need_render_sun = need_render_sun();
+	prepare_to_render();
 
-	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	View = 0;
+	HOM.Enable();
 
-	PrepareToRender();
+	calculate_scene_culling();
 
-	clear_gbuffer();
+	render_scene_to_gbuffer();
 
-	//******* Main render :: PART-0	-- first
-	render_gbuffer_primary();
-
-	//******* Main render :: PART-1 (second)
-	render_gbuffer_secondary();
-
-	// Wall marks
-	if (Wallmarks)
-	{
-		render_wallmarks();
-		Wallmarks->Render(); // wallmarks has priority as normal geometry
-	}
+	HOM.Disable();
 
 	// Directional light - sun
-	if (m_need_render_sun)
-		render_sun();
+	render_sun();
 
 	// Omni/Spot lights
 	render_lights();
 
-	HOM.Disable();
-
 	render_ambient_occlusion();
 
-	combine_scene();
+	if (ps_r_shading_mode == SHADING_MODE_PBR)
+		render_bent_normals();
+
+	if ((ps_r_shading_mode == SHADING_MODE_PBR) && ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
+	{
+		create_hi_z_mip_chain();
+
+		precombine_scene();
+
+		render_screen_space_reflections();
+	}
+
+	render_skybox();
+
+	combine_scene_lighting();
+
+	render_stage_forward();
+
+	//if (ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
+	combine_sun_shafts();
 
 	render_postprocess();
 
@@ -63,7 +66,5 @@ void CRender::RenderScene()
 
 	m_saved_viewproj.set(Engine.RenderView.ViewProjection);
 	m_saved_invview.invert(Engine.RenderView.View);
-
-	Details->ClearVisible();
 }
 ////////////////////////////////////////////////////////////////////////////////

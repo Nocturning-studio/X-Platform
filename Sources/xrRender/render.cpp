@@ -175,7 +175,7 @@ CShaderMacros CRender::FetchShaderMacros()
 
 	macros.add(o.forceskinw, "SKIN_COLOR", "1");
 
-	macros.add(ps_r_shading_mode == 1, "ENABLE_PBR", "1");
+	macros.add(ps_r_shading_mode == SHADING_MODE_PBR, "ENABLE_PBR", "1");
 
 	return macros;
 }
@@ -336,11 +336,13 @@ void CRender::OnFrame()
 
 	if (Details && Details->dtFS)
 	{
-		// 1. Подготовка: Своп буферов (новые данные -> в рендер, старые -> на перезапись)
+		Details->ClearVisible();
+
+		// Подготовка: Своп буферов (новые данные -> в рендер, старые -> на перезапись)
 		// и захват позиции камеры.
 		Details->PrepareToCalc();
 
-		// 2. Запуск задачи в параллель.
+		// Запуск задачи в параллель.
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
 	}
 }
