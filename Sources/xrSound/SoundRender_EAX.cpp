@@ -138,7 +138,14 @@ void CSoundRender_Core::commit_eax(SEAXEnvironmentData* EAXEnvData)
 	ep.dwFlags = env.dwFlags;
 
 	// Отладочный вывод
-	//Msg("[EAX COMMIT] Decay: %.2f, Room: %d, Refl: %d, Rev: %d", ep.flDecayTime, ep.lRoom, ep.lReflections, ep.lReverb);
+	/*
+	Msg("[EAX COMMIT] Room=%d, RoomHF=%d, RoomRolloff=%.2f, Decay=%.2f, DecayHF=%.2f, "
+		"Refl=%d, ReflDelay=%.2f, Reverb=%d, RevDelay=%.2f, EnvSize=%.2f, EnvDiff=%.2f, "
+		"AirAbs=%.2f, Flags=0x%08X",
+		ep.lRoom, ep.lRoomHF, ep.flRoomRolloffFactor, ep.flDecayTime, ep.flDecayHFRatio,
+		ep.lReflections, ep.flReflectionsDelay, ep.lReverb, ep.flReverbDelay,
+		ep.flEnvironmentSize, ep.flEnvironmentDiffusion, ep.flAirAbsorptionHF, ep.dwFlags);
+		*/
 
 	u32 deferred = bDeferredEAX ? DSPROPERTY_EAXLISTENER_DEFERRED : 0;
 

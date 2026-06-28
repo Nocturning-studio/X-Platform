@@ -2305,9 +2305,6 @@
     <Filter Include="Presence Audio Integration">
       <UniqueIdentifier>{fe0667fb-844d-446a-8e23-d4b52eb6f799}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Presence Audio Integration\PresenceAudio">
-      <UniqueIdentifier>{dbb48cde-144d-488d-8567-bcbefc981b3b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6584,18 +6581,6 @@
     </ClInclude>
     <ClInclude Include="PresenceAudioIntegration\Sound_environment_geometry_provider.h">
       <Filter>Presence Audio Integration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceAudioAPI.h">
-      <Filter>Presence Audio Integration\PresenceAudio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceDefines.h">
-      <Filter>Presence Audio Integration\PresenceAudio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceMath.h">
-      <Filter>Presence Audio Integration\PresenceAudio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceSystem.h">
-      <Filter>Presence Audio Integration\PresenceAudio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,9 +9,10 @@
 #undef GetVersionString
 #endif
 
-#include <PresenceAudioSDK/PresenceAudioAPI.h>
 #include "stdafx.h"
 #pragma hdrstop
+
+#include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
 
 #include "Sound_environment.h"
 #include "Sound_environment_geometry_provider.h"
@@ -100,7 +101,7 @@ void CSoundEnvironment::OnLevelLoad()
 
 	// Инициализация
 	m_pAudioSystem->Initialize(m_pGeometryAdapter, s);
-	Msg("[Presence Audio] Core Version: %s", m_pAudioSystem->GetVersionString());
+	Msg("[Presence Audio] Core Version: %s", Presence::GetVersionString());
 
 	m_bLoaded = true;
 	m_bEnabled = true;

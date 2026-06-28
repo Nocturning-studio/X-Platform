@@ -8,7 +8,7 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
-#include <PresenceAudioSDK/PresenceAudioAPI.h>
+#include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
 #include "../xrGame/PresenceAudioIntegration/Sound_environment_common.h"
 #pragma warning(pop)
 

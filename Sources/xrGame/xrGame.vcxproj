@@ -587,7 +587,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -706,7 +705,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -831,7 +829,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -908,7 +905,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -985,7 +981,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1063,7 +1058,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1140,7 +1134,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1526,7 +1519,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1644,7 +1636,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1767,7 +1758,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)PresenceAudioSDK.dll"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -1834,10 +1824,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceAudioAPI.h" />
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceDefines.h" />
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceMath.h" />
-    <ClInclude Include="..\..\Third-party\include\PresenceAudioSDK\PresenceSystem.h" />
     <ClInclude Include="abstract_location_selector.h" />
     <ClInclude Include="abstract_location_selector_inline.h" />
     <ClInclude Include="abstract_path_manager.h" />
@@ -16274,6 +16260,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\PresenceAudioSDK.dll" "$(OutDir)Pres
   <ItemGroup>
     <ProjectReference Include="..\..\Third-party\include\optick\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\PresenceAudioSDK\Source\PresenceAudioSDK.vcxproj">
+      <Project>{3069dde2-b851-484d-94bb-bc53146c8eee}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrMath\xrMath.vcxproj">
       <Project>{1eb3e3c6-68dd-428f-a764-f6a4db0ecdbb}</Project>

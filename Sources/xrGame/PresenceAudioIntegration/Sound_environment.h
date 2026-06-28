@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include <PresenceAudioSDK/PresenceAudioAPI.h>
+#include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
 #include "Sound_environment_common.h"
 
 class XRayGeometryAdapter;

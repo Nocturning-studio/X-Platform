@@ -4,7 +4,7 @@
   High-Performance Real-time Audio Path Tracing & EAX Simulation Library
 ====================================================================================================
 
-  Copyright (c) 2025 Presence Collaboratory, NSDeathman & Gemini 3
+  Copyright (c) 2026 Presence Collaboratory, NSDeathman & Gemini 3 & DeepSeek
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -35,4 +35,30 @@
 */
 #pragma once
 
-#include "PresenceSystem.h"
+#define PRESENCE_BEGIN namespace Presence {
+#define PRESENCE_END }
+
+// =================================================================================================
+// DLL EXPORT / IMPORT MACROS
+// =================================================================================================
+// Standard Windows DLL visibility control macros.
+// When building the library (PRESENCE_BUILD_DLL), symbols are exported.
+// When linking from game engine - symbols are imported.
+// =================================================================================================
+#ifdef PRESENCE_BUILD_DLL
+#define PRESENCE_API __declspec(dllexport)
+#else
+#define PRESENCE_API __declspec(dllimport)
+#endif
+
+// =================================================================================================
+// MEMORY ALIGNMENT MACRO
+// =================================================================================================
+// For efficient SSE operation, data must be aligned to 16-byte boundary.
+// If memory address is not multiple of 16, _mm_load_ps will cause crash (Access Violation).
+// =================================================================================================
+#if defined(_MSC_VER)
+#define PRESENCE_ALIGN(x) __declspec(align(x))
+#else
+#define PRESENCE_ALIGN(x) __attribute__((aligned(x)))
+#endif
