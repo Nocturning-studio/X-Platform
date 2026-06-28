@@ -215,6 +215,83 @@ template <class T> struct _vector4
 	}
 };
 
+template <class T>
+IC _vector4<T> operator-(const _vector4<T>& a) {
+	_vector4<T> r;
+	r.x = -a.x;
+	r.y = -a.y;
+	r.z = -a.z;
+	r.w = -a.w;
+	return r;
+}
+
+template <class T>
+IC _vector4<T> operator+(const _vector4<T>& a, const _vector4<T>& b) {
+	_vector4<T> r(a); r.add(b); return r;
+}
+template <class T>
+IC _vector4<T> operator+(const _vector4<T>& a, T s) {
+	_vector4<T> r(a); r.add(s); return r;
+}
+template <class T>
+IC _vector4<T> operator+(T s, const _vector4<T>& a) {
+	_vector4<T> r(a); r.add(s); return r;
+}
+
+template <class T>
+IC _vector4<T> operator-(const _vector4<T>& a, const _vector4<T>& b) {
+	_vector4<T> r(a); r.sub(b); return r;
+}
+template <class T>
+IC _vector4<T> operator-(const _vector4<T>& a, T s) {
+	_vector4<T> r(a); r.sub(s); return r;
+}
+template <class T>
+IC _vector4<T> operator-(T s, const _vector4<T>& a) {
+	_vector4<T> r; r.sub(a, s); return r;   // s - a = -(a - s)
+}
+
+template <class T>
+IC _vector4<T> operator*(const _vector4<T>& a, const _vector4<T>& b) {
+	_vector4<T> r(a); r.mul(b); return r;
+}
+template <class T>
+IC _vector4<T> operator*(const _vector4<T>& a, T s) {
+	_vector4<T> r(a); r.mul(s); return r;
+}
+template <class T>
+IC _vector4<T> operator*(T s, const _vector4<T>& a) {
+	_vector4<T> r(a); r.mul(s); return r;
+}
+
+template <class T>
+IC _vector4<T> operator/(const _vector4<T>& a, const _vector4<T>& b) {
+	_vector4<T> r(a); r.div(b); return r;
+}
+template <class T>
+IC _vector4<T> operator/(const _vector4<T>& a, T s) {
+	_vector4<T> r(a); r.div(s); return r;
+}
+
+template <class T>
+IC _vector4<T> operator/(T s, const _vector4<T>& a) {
+	_vector4<T> r;
+	r.x = s / a.x;
+	r.y = s / a.y;
+	r.z = s / a.z;
+	r.w = s / a.w;
+	return r;
+}
+
+template <class T>
+IC bool operator==(const _vector4<T>& a, const _vector4<T>& b) {
+	return a.similar(b);
+}
+template <class T>
+IC bool operator!=(const _vector4<T>& a, const _vector4<T>& b) {
+	return !a.similar(b);
+}
+
 typedef _vector4<float> fvec4;
 typedef _vector4<double> dvec4;
 typedef _vector4<s32> ivec4;

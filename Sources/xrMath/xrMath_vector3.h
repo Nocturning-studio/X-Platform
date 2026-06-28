@@ -1,4 +1,5 @@
 #pragma once
+
 #include "xrMath_common.h"
 #include "xrMath_constants.h"
 #include "xrMath_utils.h"
@@ -722,11 +723,24 @@ template <class T>
 IC _vector3<T> operator/(const _vector3<T>& a, T s) {
 	_vector3<T> r(a); r /= s; return r;
 }
-// ќбратите внимание: s / a Ч покомпонентное деление скал€ра на вектор
 template <class T>
 IC _vector3<T> operator/(T s, const _vector3<T>& a) {
 	_vector3<T> r; r.x = s / a.x; r.y = s / a.y; r.z = s / a.z;
 	return r;
+}
+
+template <class T>
+IC _vector3<T> operator-(const _vector3<T>& a) {
+	_vector3<T> r; r.invert(a); return r;
+}
+
+template <class T>
+IC bool operator==(const _vector3<T>& a, const _vector3<T>& b) {
+	return a.similar(b);
+}
+template <class T>
+IC bool operator!=(const _vector3<T>& a, const _vector3<T>& b) {
+	return !a.similar(b);
 }
 
 typedef _vector3<float> fvec3;

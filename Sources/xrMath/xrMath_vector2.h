@@ -1,5 +1,4 @@
-#ifndef __V2D__
-#define __V2D__
+#pragma once
 
 template <class T> struct _vector2
 {
@@ -130,6 +129,18 @@ template <class T> struct _vector2
 	{
 		x /= s;
 		y /= s;
+		return *this;
+	}
+	IC SelfRef invert()
+	{
+		x = -x;
+		y = -y;
+		return *this;
+	}
+	IC SelfRef invert(const Self& a)
+	{
+		x = -a.x;
+		y = -a.y;
 		return *this;
 	}
 	IC SelfRef rot90(void)
@@ -276,6 +287,63 @@ template <class T> struct _vector2
 	}
 };
 
+template <class T>
+IC _vector2<T> operator-(const _vector2<T>& a) {
+	_vector2<T> r(a); r.invert(); return r;
+}
+
+template <class T>
+IC _vector2<T> operator+(const _vector2<T>& a, const _vector2<T>& b) {
+	_vector2<T> r(a); r.add(b); return r;
+}
+template <class T>
+IC _vector2<T> operator+(const _vector2<T>& a, T s) {
+	_vector2<T> r(a); r.add(s); return r;
+}
+template <class T>
+IC _vector2<T> operator+(T s, const _vector2<T>& a) {
+	_vector2<T> r(a); r.add(s); return r;
+}
+
+template <class T>
+IC _vector2<T> operator-(const _vector2<T>& a, const _vector2<T>& b) {
+	_vector2<T> r(a); r.sub(b); return r;
+}
+template <class T>
+IC _vector2<T> operator-(const _vector2<T>& a, T s) {
+	_vector2<T> r(a); r.sub(s); return r;
+}
+template <class T>
+IC _vector2<T> operator-(T s, const _vector2<T>& a) {
+	_vector2<T> r; r.sub(a, s); return r;   // s - a = -(a - s)
+}
+
+template <class T>
+IC _vector2<T> operator*(const _vector2<T>& a, const _vector2<T>& b) {
+	_vector2<T> r(a); r.mul(b); return r;
+}
+template <class T>
+IC _vector2<T> operator*(const _vector2<T>& a, T s) {
+	_vector2<T> r(a); r.mul(s); return r;
+}
+template <class T>
+IC _vector2<T> operator*(T s, const _vector2<T>& a) {
+	_vector2<T> r(a); r.mul(s); return r;
+}
+
+template <class T>
+IC _vector2<T> operator/(const _vector2<T>& a, const _vector2<T>& b) {
+	_vector2<T> r(a); r.div(b); return r;
+}
+template <class T>
+IC _vector2<T> operator/(const _vector2<T>& a, T s) {
+	_vector2<T> r(a); r.div(s); return r;
+}
+template <class T>
+IC _vector2<T> operator/(T s, const _vector2<T>& a) {
+	_vector2<T> r; r.x = s / a.x; r.y = s / a.y; return r;
+}
+
 typedef _vector2<float> fvec2;
 typedef _vector2<double> dvec2;
 typedef _vector2<int> ivec2;
@@ -284,5 +352,3 @@ template <class T> BOOL _valid(const _vector2<T>& v)
 {
 	return _valid((T)v.x) && _valid((T)v.y);
 }
-
-#endif
