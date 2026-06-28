@@ -71,10 +71,126 @@ D3DFORMAT CRenderBackendDX9::SelectDepthStencilFormat(D3DFORMAT backBufferFmt) c
 	return D3DFMT_UNKNOWN;
 }
 
-bool CRenderBackendDX9::CreateDevice(HWND hWnd, bool windowed, int width, int height, int presentInterval)
+bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(const RHIPresentationParams& params,
+	D3DFORMAT& outBackBufferFmt,
+	D3DFORMAT& outDepthStencilFmt,
+	bool autoFromDesktop)
+{
+	// --- Формат бэкбуфера ---
+	if (params.BackBufferFormat != RHI_Format::Unknown)
+	{
+		outBackBufferFmt = RHIToD3DFormat(params.BackBufferFormat);
+		if (outBackBufferFmt == D3DFMT_UNKNOWN)
+		{
+			Print("! [DX9] Unsupported backbuffer format %d, falling back", (int)params.BackBufferFormat);
+			outBackBufferFmt = autoFromDesktop ? m_BackBufferFmt : m_BackBufferFmt; // в Reset сохраняем текущий
+		}
+	}
+	else
+	{
+		// Если формат не задан – берём сохранённый (m_BackBufferFmt), он был определён при CreateDevice.
+		// Для CreateDevice autoFromDesktop == true, там мы временно определим его ниже,
+		// поэтому здесь полагаемся на ранее установленный m_BackBufferFmt.
+		outBackBufferFmt = m_BackBufferFmt;
+	}
+
+	// --- Формат глубины/стенсила ---
+	outDepthStencilFmt = D3DFMT_UNKNOWN;
+	if (params.EnableAutoDepthStencil)
+	{
+		if (params.DepthStencilFormat != RHI_Format::Unknown)
+		{
+			outDepthStencilFmt = RHIToD3DFormat(params.DepthStencilFormat);
+			if (outDepthStencilFmt == D3DFMT_UNKNOWN)
+				Print("! [DX9] Unsupported depth/stencil format %d, trying auto select", (int)params.DepthStencilFormat);
+		}
+		if (outDepthStencilFmt == D3DFMT_UNKNOWN)
+			outDepthStencilFmt = SelectDepthStencilFormat(outBackBufferFmt);
+
+		if (outDepthStencilFmt == D3DFMT_UNKNOWN)
+		{
+			Print("! [DX9] No suitable depth-stencil format found");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void CRenderBackendDX9::FillPresentParams(const RHIPresentationParams& params,
+	D3DFORMAT backBufferFmt,
+	D3DFORMAT depthStencilFmt,
+	UINT fullscreenRefreshHz)
+{
+	ZeroMemory(&m_PP, sizeof(m_PP));
+	m_PP.BackBufferWidth = params.BackBufferWidth;
+	m_PP.BackBufferHeight = params.BackBufferHeight;
+	m_PP.BackBufferFormat = backBufferFmt;
+	m_PP.BackBufferCount = std::max(1u, std::min(3u, params.BackBufferCount));
+	m_PP.MultiSampleType = D3DMULTISAMPLE_NONE;
+	m_PP.MultiSampleQuality = 0;
+
+	// SwapEffect
+	switch (params.SwapEffect)
+	{
+	case RHI_SwapEffect::Flip:
+		m_PP.SwapEffect = D3DSWAPEFFECT_FLIPEX;  // только для D3D9Ex
+		break;
+	case RHI_SwapEffect::Discard:
+	default:
+		if (params.SwapEffect != RHI_SwapEffect::Discard)
+			Print("! [DX9] Swap effect not supported, falling back to Discard");
+		m_PP.SwapEffect = D3DSWAPEFFECT_DISCARD;
+		break;
+	}
+
+	m_PP.hDeviceWindow = m_hWnd;
+	m_PP.Windowed = params.Windowed;
+
+	m_PP.EnableAutoDepthStencil = params.EnableAutoDepthStencil;
+	if (params.EnableAutoDepthStencil)
+		m_PP.AutoDepthStencilFormat = depthStencilFmt;
+
+	m_PP.Flags = 0;
+
+	// Fullscreen refresh
+	if (!params.Windowed)
+	{
+		m_PP.FullScreen_RefreshRateInHz = (fullscreenRefreshHz > 0) ? fullscreenRefreshHz : 60;
+	}
+	else
+	{
+		m_PP.FullScreen_RefreshRateInHz = 0;
+	}
+
+	// Presentation interval
+	m_PP.PresentationInterval = (params.SyncInterval == 0)
+		? D3DPRESENT_INTERVAL_IMMEDIATE
+		: D3DPRESENT_INTERVAL_ONE;
+}
+
+DWORD CRenderBackendDX9::SelectVertexProcessing()
+{
+	DWORD vertexProcessing = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+	D3DCAPS9 caps;
+	if (m_pD3D && SUCCEEDED(m_pD3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &caps)))
+	{
+		if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
+		{
+			if (caps.DevCaps & D3DDEVCAPS_PUREDEVICE)
+				vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE;
+			else
+				vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+		}
+	}
+	return vertexProcessing;
+}
+
+bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHIPresentationParams& params)
 {
 	m_hWnd = hWnd;
 
+	// --- 1. D3D9Ex ---
 	HRESULT hr = Direct3DCreate9Ex(D3D_SDK_VERSION, &m_pD3D);
 	if (FAILED(hr) || !m_pD3D)
 	{
@@ -82,82 +198,57 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, bool windowed, int width, int he
 		return false;
 	}
 
+	// --- 2. Информация об адаптере ---
 	D3DADAPTER_IDENTIFIER9 adapterID;
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &adapterID);
 	Print("* [DX9] GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
 
+	// Текущий режим дисплея (используем для автоформата)
 	D3DDISPLAYMODE d3ddm;
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
-	m_BackBufferFmt = d3ddm.Format;
+	m_BackBufferFmt = d3ddm.Format;            // сохраняем как "родной" формат рабочего стола
+	m_DesktopRefreshRate = d3ddm.RefreshRate;  // сохраняем частоту
 
-	D3DFORMAT depthStencilFormat = SelectDepthStencilFormat(m_BackBufferFmt);
-	if (depthStencilFormat == D3DFMT_UNKNOWN)
-	{
-		Print("! [DX9] No suitable depth-stencil format found");
+	// --- 3. Определяем форматы (авто-определение разрешено) ---
+	D3DFORMAT backBufferFmt = D3DFMT_UNKNOWN;
+	D3DFORMAT depthStencilFmt = D3DFMT_UNKNOWN;
+	if (!DetermineDepthAndBackBufferFormatsFromPresentParams(params, backBufferFmt, depthStencilFmt, true))
 		return false;
-	}
 
-	ZeroMemory(&m_PP, sizeof(m_PP));
-	m_PP.BackBufferWidth = width;
-	m_PP.BackBufferHeight = height;
-	m_PP.BackBufferFormat = m_BackBufferFmt;
-	m_PP.BackBufferCount = 2; // как в оригинальном CHW
-	m_PP.MultiSampleType = D3DMULTISAMPLE_NONE;
-	m_PP.MultiSampleQuality = 0;
-	m_PP.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	m_PP.hDeviceWindow = hWnd;
-	m_PP.Windowed = windowed;
-	m_PP.EnableAutoDepthStencil = TRUE;
-	m_PP.AutoDepthStencilFormat = depthStencilFormat;
-	m_PP.Flags = 0;
+	m_BackBufferFmt = backBufferFmt; // обновляем на случай, если формат был задан явно
 
-	if (!windowed)
-	{
-		m_PP.FullScreen_RefreshRateInHz = d3ddm.RefreshRate;
-		if (m_PP.FullScreen_RefreshRateInHz == 0)
-			m_PP.FullScreen_RefreshRateInHz = 60;
-	}
-	else
-	{
-		m_PP.FullScreen_RefreshRateInHz = 0;
-	}
+	// --- 4. Заполняем Presentation Parameters ---
+	UINT refreshHz = params.FullscreenRefreshHz ? params.FullscreenRefreshHz : m_DesktopRefreshRate;
+	FillPresentParams(params, backBufferFmt, depthStencilFmt, refreshHz);
 
-	// Используем переданный интервал презентации
-	m_PP.PresentationInterval = (presentInterval == 0) ? D3DPRESENT_INTERVAL_IMMEDIATE : (UINT)presentInterval;
+	// --- 5. Vertex processing ---
+	DWORD vertexProcessing = SelectVertexProcessing();
 
-	DWORD vertexProcessing = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-	D3DCAPS9 caps;
-	m_pD3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &caps);
-	if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-	{
-		if (caps.DevCaps & D3DDEVCAPS_PUREDEVICE)
-			vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE;
-		else
-			vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING;
-	}
-
+	// --- 6. Display Mode Ex (полноэкранный) ---
 	D3DDISPLAYMODEEX ModeEx;
 	D3DDISPLAYMODEEX* pModeEx = nullptr;
-	if (!windowed)
+	if (!params.Windowed)
 	{
 		ZeroMemory(&ModeEx, sizeof(ModeEx));
 		ModeEx.Size = sizeof(ModeEx);
-		ModeEx.Width = width;
-		ModeEx.Height = height;
-		ModeEx.Format = m_BackBufferFmt;
+		ModeEx.Width = params.BackBufferWidth;
+		ModeEx.Height = params.BackBufferHeight;
+		ModeEx.Format = backBufferFmt;
 		ModeEx.RefreshRate = m_PP.FullScreen_RefreshRateInHz;
 		ModeEx.ScanLineOrdering = D3DSCANLINEORDERING_PROGRESSIVE;
 		pModeEx = &ModeEx;
 	}
 
-	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing | D3DCREATE_MULTITHREADED,
-								&m_PP, pModeEx, &m_pDevice);
-
+	// --- 7. Создание устройства ---
+	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+		vertexProcessing | D3DCREATE_MULTITHREADED,
+		&m_PP, pModeEx, &m_pDevice);
 	if (FAILED(hr))
 	{
 		Print("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
-		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx,
-									&m_pDevice);
+		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+			vertexProcessing,
+			&m_PP, pModeEx, &m_pDevice);
 		if (FAILED(hr))
 		{
 			Print("! [DX9] Second attempt failed (0x%08x)", hr);
@@ -165,9 +256,13 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, bool windowed, int width, int he
 		}
 	}
 
+	// --- 8. Кэшируем Caps ---
 	m_pDevice->GetDeviceCaps(&m_Caps);
-	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", width, height,
-		windowed ? "windowed" : "fullscreen", presentInterval);
+
+	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d",
+		params.BackBufferWidth, params.BackBufferHeight,
+		params.Windowed ? "windowed" : "fullscreen",
+		params.SyncInterval);
 	return true;
 }
 
@@ -181,15 +276,35 @@ void CRenderBackendDX9::DestroyDevice()
 	m_pD3D = nullptr;
 }
 
-bool CRenderBackendDX9::Reset(HWND /* hWnd */)
+bool CRenderBackendDX9::Reset(const RHIPresentationParams& params)
 {
 	if (!m_pDevice)
 		return false;
 
-	// На всякий случай обновляем параметры (можно пересоздать m_PP при необходимости)
-	// Здесь можно добавить логику из CHW::Reset, но пока простой вызов
+	// Определяем форматы без авто-определения с рабочего стола (autoFromDesktop = false)
+	D3DFORMAT backBufferFmt = m_BackBufferFmt;
+	D3DFORMAT depthStencilFmt = D3DFMT_UNKNOWN;
+
+	if (!DetermineDepthAndBackBufferFormatsFromPresentParams(params, backBufferFmt, depthStencilFmt, false))
+		return false;
+
+	// Частота обновления: приоритет у params, иначе сохранённая с рабочего стола
+	UINT refreshHz = params.FullscreenRefreshHz ? params.FullscreenRefreshHz : m_DesktopRefreshRate;
+
+	FillPresentParams(params, backBufferFmt, depthStencilFmt, refreshHz);
+
 	HRESULT hr = m_pDevice->Reset(&m_PP);
-	return SUCCEEDED(hr);
+	if (FAILED(hr))
+	{
+		Print("! [DX9] Reset failed (0x%08x)", hr);
+		return false;
+	}
+
+	Print("* [DX9] Device reset successfully: %dx%d %s, interval=%d",
+		params.BackBufferWidth, params.BackBufferHeight,
+		params.Windowed ? "windowed" : "fullscreen",
+		params.SyncInterval);
+	return true;
 }
 
 void CRenderBackendDX9::Present()

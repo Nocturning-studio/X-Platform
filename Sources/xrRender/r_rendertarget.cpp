@@ -45,13 +45,12 @@ void CRenderTarget::create_textures()
 	{
 		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
 		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
-		rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, RHI_Format::R16_FLOAT);
-		rt_GBuffer[3].create(r_RT_GBuffer_4, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
+		rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	}
 
 	rt_Hi_z.create(r_RT_Hi_z, dwWidth, dwHeight, RHI_Format::R16_FLOAT, 9);
 
-	rt_Bent_Normals.create(r_RT_Bent_Normals, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
+	//rt_Bent_Normals.create(r_RT_Bent_Normals, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	
 	// DOF Resources
 	// G16R16F: R = Real CoC, G = Dilated (Max) CoC
@@ -182,7 +181,7 @@ void CRenderTarget::delete_textures()
 		rt_GBuffer[i].destroy();
 
 	rt_Hi_z.destroy();
-	rt_Bent_Normals.destroy();
+	//rt_Bent_Normals.destroy();
 
 	// DOF
 	rt_dof_coc.destroy();

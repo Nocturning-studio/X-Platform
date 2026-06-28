@@ -1,4 +1,7 @@
 ﻿#pragma once
+
+#include <algorithm>
+
 #include "framework.h"
 #include "xrRHI_Internal.h"
 #include "../xrCore/xrCoreCommon.h"

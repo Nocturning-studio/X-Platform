@@ -11,12 +11,11 @@ void CRender::clear_gbuffer()
 
 	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
 		RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1]);
+													  RenderTarget->rt_GBuffer[1]);
 	else
 		RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1], 
-												RenderTarget->rt_GBuffer[2], 
-												RenderTarget->rt_GBuffer[3]);
+													  RenderTarget->rt_GBuffer[1], 
+													  RenderTarget->rt_GBuffer[2]);
 
 	RenderBackendLegacy.set_Depth_Buffer(HW.GetBaseZB());
 
@@ -29,12 +28,11 @@ void CRender::set_gbuffer()
 
 	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
 		RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1]);
+													  RenderTarget->rt_GBuffer[1]);
 	else
 		RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1], 
-												RenderTarget->rt_GBuffer[2], 
-												RenderTarget->rt_GBuffer[3]);
+													  RenderTarget->rt_GBuffer[1], 
+													  RenderTarget->rt_GBuffer[2]);
 
 	RenderBackendLegacy.set_Depth_Buffer(HW.GetBaseZB());
 

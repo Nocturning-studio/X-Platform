@@ -14,9 +14,9 @@ class XRRHI_API IRenderBackend
 	}
 
 	// Создание и уничтожение устройства
-	virtual bool CreateDevice(HWND hWnd, bool windowed, int width, int height, int presentInterval) = 0;
+	virtual bool CreateDevice(HWND hWnd, const RHIPresentationParams& params) = 0;
 	virtual void DestroyDevice() = 0;
-	virtual bool Reset(HWND hWnd) = 0;
+	virtual bool Reset(const RHIPresentationParams& params) = 0;
 	virtual void Present() = 0;
 
 	virtual void* GetDeviceHandle() = 0;

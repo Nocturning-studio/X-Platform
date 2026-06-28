@@ -219,4 +219,29 @@ struct SamplerDesc
 struct RHISamplerImpl;
 typedef RHISamplerImpl* RHISampler;
 
+// =========================================================================
+// Параметры SwapChain (Presentation Params)
+// =========================================================================
+enum class RHI_SwapEffect : u32
+{
+	Discard = 0,    // D3DSWAPEFFECT_DISCARD / VK_SWAPCHAIN_CREATE_MODE_*
+	Flip,           // Для DXGI / Vulkan (Flip Model)
+};
+
+struct RHIPresentationParams
+{
+	u32 BackBufferWidth = 0;
+	u32 BackBufferHeight = 0;
+	bool Windowed = true;
+	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;			// Базовый формат бэкбуфера
+	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;	// Формат для авто-буфера глубины
+	u32 BackBufferCount = 2;										// Количество буферов в своп-цепи (1-3)
+	u32 SyncInterval = 1;											// 0 - немедленно, 1 - вертикальная синхронизация
+	u32 FullscreenRefreshHz = 60;									// Частота обновления (для полноэкранного режима)
+	RHI_SwapEffect SwapEffect = RHI_SwapEffect::Discard;
+	u32 MultisampleCount = 1;										// Количество сэмплов (1 = MSAA выключен)
+	u32 MultisampleQuality = 0;
+	bool EnableAutoDepthStencil = true;								// Создавать ли автоматический Depth/Stencil буфер
+};
+
 RHI_END

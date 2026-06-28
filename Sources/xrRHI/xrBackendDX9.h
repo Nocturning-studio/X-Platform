@@ -29,9 +29,9 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual ~CRenderBackendDX9();
 
 	// IRenderBackend
-	virtual bool CreateDevice(HWND hWnd, bool windowed, int width, int height, int presentInterval) override;
+	virtual bool CreateDevice(HWND hWnd, const RHIPresentationParams& params) override;
 	virtual void DestroyDevice() override;
-	virtual bool Reset(HWND hWnd) override;
+	virtual bool Reset(const RHIPresentationParams& params) override;
 	virtual void Present() override;
 	DEPRECATED  virtual void* GetDeviceHandle() override
 	{
@@ -58,9 +58,22 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	D3DCAPS9 m_Caps;		   // кэш возможностей
 	D3DFORMAT m_BackBufferFmt; // формат бэкбуфера
 	HWND m_hWnd;			   // сохраняем для Reset
+	UINT m_DesktopRefreshRate = 60;
 
 	D3DFORMAT RHIToD3DFormat(RHI_Format fmt) const;
 	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
+
+	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHIPresentationParams& params,
+		D3DFORMAT& outBackBufferFmt,
+		D3DFORMAT& outDepthStencilFmt,
+		bool autoFromDesktop);
+
+	void FillPresentParams(const RHIPresentationParams& params,
+		D3DFORMAT backBufferFmt,
+		D3DFORMAT depthStencilFmt,
+		UINT fullscreenRefreshHz);
+
+	DWORD SelectVertexProcessing();
 
 	void ApplySampler(u32 slot, RHISampler sampler);
 };

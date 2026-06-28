@@ -449,18 +449,18 @@ class ENGINE_API CBackend
 	}
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
-	IC void dbg_DrawAABB(fvec3& T, float sx, float sy, float sz, u32 C)
+	IC void dbg_DrawAABB(fvec3& Translation, float sx, float sy, float sz, u32 Color)
 	{
 		fvec3 half_dim;
 		half_dim.set(sx, sy, sz);
 		fmat4x4 TM;
-		TM.translate(T);
-		dbg_DrawOBB(TM, half_dim, C);
+		TM.translate(Translation);
+		dbg_DrawOBB(TM, half_dim, Color);
 	}
 	void dbg_DrawOBB(fmat4x4& T, fvec3& half_dim, u32 C);
-	IC void dbg_DrawTRI(fmat4x4& T, fvec3* p, u32 C)
+	IC void dbg_DrawTRI(fmat4x4& Transform, fvec3* p, u32 Color)
 	{
-		dbg_DrawTRI(T, p[0], p[1], p[2], C);
+		dbg_DrawTRI(Transform, p[0], p[1], p[2], Color);
 	}
 	void dbg_DrawTRI(fmat4x4& T, fvec3& p1, fvec3& p2, fvec3& p3, u32 C);
 	void dbg_DrawLINE(fmat4x4& T, fvec3& p1, fvec3& p2, u32 C);

@@ -438,10 +438,10 @@ void CRenderDevice::Reset(bool precache)
 
 	Engine.ResourceManager->reset_begin();
 	Memory.mem_compact();
-	HW.Reset(Engine.WindowManager.GetHandle());
-	dwWidth = HW.GetDevPP().BackBufferWidth;
-	dwHeight = HW.GetDevPP().BackBufferHeight;
-	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
+	HW.Reset();
+	_SetupStates();
+	dwWidth = Engine.WindowManager.GetWidth();
+	dwHeight = Engine.WindowManager.GetHeight();
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
 	Engine.ResourceManager->reset_end();
@@ -450,7 +450,6 @@ void CRenderDevice::Reset(bool precache)
 	{
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
-	_SetupStates();
 
 #ifndef DEDICATED_SERVER
 	ShowCursor(FALSE);

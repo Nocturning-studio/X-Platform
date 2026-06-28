@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #pragma hdrstop
 
 #pragma warning(disable : 4995)
@@ -6,7 +6,7 @@
 #pragma warning(default : 4995)
 #include "HW.h"
 #include "xr_IOconsole.h"
-#include "../xrRHI/xrRHI.h" // ËÌÚÂÙÂÈÒ˚ RHI
+#include "../xrRHI/xrRHI.h" // –∏–Ω—Ç–µ—Ä—Ñ–µ–π—Å—ã RHI
 
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
@@ -63,155 +63,259 @@ void CHW::DestroyDevice()
 }
 
 //-----------------------------------------------------------------------------
-void CHW::Reset(HWND hwnd)
+void CHW::Reset()
 {
 #ifdef DEBUG
-	_RELEASE(dwDebugSB);
+    _RELEASE(dwDebugSB);
 #endif
-	_RELEASE(pBaseZB);
-	_RELEASE(pBaseRT);
+    _RELEASE(pBaseZB);
+    _RELEASE(pBaseRT);
 
-	if (pBackend)
-	{
-		// Œ·ÌÓ‚ÎˇÂÏ Ô‡‡ÏÂÚ˚ DevPP ‚ ÒÓÓÚ‚ÂÚÒÚ‚ËË Ò ÚÂÍÛ˘ËÏË Ì‡ÒÚÓÈÍ‡ÏË ‰‚ËÊÍ‡
+    if (!pBackend)
+        return;
+
 #ifndef DEDICATED_SERVER
-		BOOL bWindowed = strstr(Core.Params, "-windowed") ? TRUE : !psDeviceFlags.is(rsFullscreen);
+    BOOL bWindowed = strstr(Core.Params, "-windowed") ? TRUE : !psDeviceFlags.is(rsFullscreen);
 #else
-		BOOL bWindowed = TRUE;
+    BOOL bWindowed = TRUE;
 #endif
 
-		selectResolution(DevPP.BackBufferWidth, DevPP.BackBufferHeight, bWindowed);
-		DevPP.Windowed = bWindowed;
-		DevPP.PresentationInterval = selectPresentInterval();
-		DevPP.BackBufferCount = 1;
-		DevPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    // --- 1. –í—ã–±–∏—Ä–∞–µ–º –∂–µ–ª–∞–µ–º—ã–µ –ø–∞—Ä–∞–º–µ—Ç—Ä—ã —ç–∫—Ä–∞–Ω–∞ ---
+    u32 width, height;
+    selectResolution(width, height, bWindowed);
 
-		if (!bWindowed)
-			DevPP.FullScreen_RefreshRateInHz =
-				selectRefresh(DevPP.BackBufferWidth, DevPP.BackBufferHeight, Caps.fTarget);
-		else
-			DevPP.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+    u32 presentInterval = selectPresentInterval();
+    u32 refreshHz = bWindowed ? 0 : selectRefresh(width, height, Caps.fTarget);
 
-		// ¬˚Á˚‚‡ÂÏ Ò·ÓÒ ÛÒÚÓÈÒÚ‚‡ ˜ÂÂÁ ·ÂÍÂÌ‰
-		if (!pBackend->Reset(hwnd))
-		{
-			Msg("! RHI Reset failed");
-		}
-		else
-		{
-			R_CHK(pDevice->GetRenderTarget(0, &pBaseRT));
-			R_CHK(pDevice->GetDepthStencilSurface(&pBaseZB));
-		}
+    // --- 2. –ù–∞—Å—Ç—Ä–∞–∏–≤–∞–µ–º –æ–∫–æ–Ω–Ω—ã–π –º–µ–Ω–µ–¥–∂–µ—Ä ---
+    CWindowManager& wm = Engine.WindowManager;
+    wm.SetWindowed(bWindowed);
+    wm.SetResolution(width, height);
+    wm.SetRefreshRate(refreshHz);
+    wm.Apply();
+
+    HWND hWnd = wm.GetHandle();
+
+    // –ü—Ä–∏–Ω—É–¥–∏—Ç–µ–ª—å–Ω–æ –≤—ã—Å—Ç–∞–≤–ª—è–µ–º –æ–∫–Ω—É —Ç–æ—á–Ω—ã–π —Ä–∞–∑–º–µ—Ä (–∫–ª–∏–µ–Ω—Ç—Å–∫–∞—è –æ–±–ª–∞—Å—Ç—å)
+    SetWindowPos(hWnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    UpdateWindow(hWnd);
+
+    RECT rcClient;
+    GetClientRect(hWnd, &rcClient);
+    LONG clientW = rcClient.right - rcClient.left;
+    LONG clientH = rcClient.bottom - rcClient.top;
+
+    if (clientW != width || clientH != height)
+    {
+        Msg("! Window client size mismatch: expected %dx%d, got %dx%d. Forcing resize.", width, height, clientW, clientH);
+        SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+        SetWindowPos(hWnd, HWND_TOP, 0, 0, width, height, SWP_NOMOVE | SWP_SHOWWINDOW);
+        UpdateWindow(hWnd);
+        GetClientRect(hWnd, &rcClient);
+        clientW = rcClient.right - rcClient.left;
+        clientH = rcClient.bottom - rcClient.top;
+    }
+
+    // --- 3. –ó–∞–ø–æ–ª–Ω—è–µ–º RHIPresentationParams —Ç–æ—á–Ω—ã–º–∏ —Ä–∞–∑–º–µ—Ä–∞–º–∏ ---
+    xrRHI::RHIPresentationParams params;
+    params.BackBufferWidth = clientW;
+    params.BackBufferHeight = clientH;
+    params.Windowed = bWindowed;
+    params.BackBufferFormat = xrRHI::RHI_Format::RGBA8_UNORM;   // –∏–ª–∏ D3DFMT_X8R8G8B8, –ø—Ä–µ–æ–±—Ä–∞–∑—É–µ—Ç—Å—è –≤ –±—ç–∫–µ–Ω–¥–µ
+    params.DepthStencilFormat = xrRHI::RHI_Format::D24_UNORM_S8_UINT;
+    params.BackBufferCount = 1;                                 // –∫–∞–∫ –≤ —Å—Ç–∞—Ä–æ–º Reset
+    params.SyncInterval = (presentInterval == 0) ? 0 : 1;
+    params.FullscreenRefreshHz = refreshHz;
+    params.SwapEffect = xrRHI::RHI_SwapEffect::Discard;
+    params.EnableAutoDepthStencil = true;
+
+    // --- 4. –°–±—Ä–∞—Å—ã–≤–∞–µ–º —É—Å—Ç—Ä–æ–π—Å—Ç–≤–æ ---
+    if (!pBackend->Reset(params))
+    {
+        Msg("! RHI Reset failed");
+        return;
+    }
+
+    // --- 5. –í–æ—Å—Å—Ç–∞–Ω–∞–≤–ª–∏–≤–∞–µ–º –±–∞–∑–æ–≤—ã–µ –ø–æ–≤–µ—Ä—Ö–Ω–æ—Å—Ç–∏ ---
+    R_CHK(pDevice->GetRenderTarget(0, &pBaseRT));
+    R_CHK(pDevice->GetDepthStencilSurface(&pBaseZB));
+
+    D3DSURFACE_DESC desc;
+    pBaseRT->GetDesc(&desc);
+    Msg("* Backbuffer real size: %dx%d", desc.Width, desc.Height);
+
+    D3DVIEWPORT9 vp;
+    vp.X = 0; vp.Y = 0;
+    vp.Width = desc.Width;
+    vp.Height = desc.Height;
+    vp.MinZ = 0.0f; vp.MaxZ = 1.0f;
+    R_CHK(pDevice->SetViewport(&vp));
+
+    // –û–±–Ω–æ–≤–ª—è–µ–º DevPP –¥–ª—è —Å–æ–≤–º–µ—Å—Ç–∏–º–æ—Å—Ç–∏
+    DevPP.BackBufferWidth = desc.Width;
+    DevPP.BackBufferHeight = desc.Height;
+    DevPP.BackBufferFormat = D3DFMT_X8R8G8B8;  // –≤ —Ä–µ–∞–ª—å–Ω–æ—Å—Ç–∏ –º–æ–∂–µ—Ç –æ—Ç–ª–∏—á–∞—Ç—å—Å—è, –Ω–æ —É –Ω–∞—Å —Ç–∞–∫
+    DevPP.Windowed = bWindowed;
+    DevPP.PresentationInterval = presentInterval;
+    DevPP.BackBufferCount = 1;
+    DevPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    DevPP.FullScreen_RefreshRateInHz = refreshHz;
 
 #ifdef DEBUG
-		// ¬ÓÒÒÚ‡Ì‡‚ÎË‚‡ÂÏ debug-ÒÚÂÈÚ·ÎÓÍ (ÂÒÎË ÌÛÊÂÌ)
-		if (pDevice)
-			R_CHK(pDevice->CreateStateBlock(D3DSBT_ALL, &dwDebugSB));
+    if (pDevice)
+        R_CHK(pDevice->CreateStateBlock(D3DSBT_ALL, &dwDebugSB));
 #endif
-		return;
-	}
 }
 
 //-----------------------------------------------------------------------------
 void CHW::CreateDevice(HWND m_hWnd)
 {
-	// «‡„ÛÊ‡ÂÏ ·Ë·ÎËÓÚÂÍÛ xrRHI.dll
-	m_hRHI_DLL = LoadLibrary("xrRHI.dll");
-	if (!m_hRHI_DLL)
-	{
-		Msg("! Failed to load xrRHI.dll");
-		FlushLog();
-		MessageBox(NULL, "Failed to load xrRHI.dll", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
+    // –ó–∞–≥—Ä—É–∂–∞–µ–º –±–∏–±–ª–∏–æ—Ç–µ–∫—É xrRHI.dll
+    m_hRHI_DLL = LoadLibrary("xrRHI.dll");
+    if (!m_hRHI_DLL)
+    {
+        Msg("! Failed to load xrRHI.dll");
+        FlushLog();
+        MessageBox(NULL, "Failed to load xrRHI.dll", "Fatal Error", MB_OK | MB_ICONERROR);
+        TerminateProcess(GetCurrentProcess(), 0);
+        return;
+    }
 
-	// œÓÎÛ˜‡ÂÏ ‡‰ÂÒ Ù‡·Ë˜ÌÓÈ ÙÛÌÍˆËË
-	typedef xrRHI::IRenderBackend* (*CreateBackendFunc)(xrRHI::BackendType);
-	CreateBackendFunc createBackend = (CreateBackendFunc)GetProcAddress(m_hRHI_DLL, "CreateRenderBackend");
-	if (!createBackend)
-	{
-		Msg("! Failed to get CreateRenderBackend function from xrRHI.dll");
-		FlushLog();
-		MessageBox(NULL, "Invalid xrRHI.dll", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
+    typedef xrRHI::IRenderBackend* (*CreateBackendFunc)(xrRHI::BackendType);
+    CreateBackendFunc createBackend = (CreateBackendFunc)GetProcAddress(m_hRHI_DLL, "CreateRenderBackend");
+    if (!createBackend)
+    {
+        Msg("! Failed to get CreateRenderBackend function from xrRHI.dll");
+        FlushLog();
+        MessageBox(NULL, "Invalid xrRHI.dll", "Fatal Error", MB_OK | MB_ICONERROR);
+        TerminateProcess(GetCurrentProcess(), 0);
+        return;
+    }
 
-	// —ÓÁ‰‡∏Ï ˝ÍÁÂÏÔÎˇ ·ÂÍÂÌ‰‡
-	xrRHI::BackendType desiredType = xrRHI::BackendType::DirectX9;
-	pBackend = createBackend(desiredType);
-	if (!pBackend)
-	{
-		Msg("! Failed to create render backend of requested type");
-		FlushLog();
-		MessageBox(NULL, "Failed to create render backend", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
+    xrRHI::BackendType desiredType = xrRHI::BackendType::DirectX9;
+    pBackend = createBackend(desiredType);
+    if (!pBackend)
+    {
+        Msg("! Failed to create render backend of requested type");
+        FlushLog();
+        MessageBox(NULL, "Failed to create render backend", "Fatal Error", MB_OK | MB_ICONERROR);
+        TerminateProcess(GetCurrentProcess(), 0);
+        return;
+    }
 
-	// ŒÔÂ‰ÂÎˇÂÏ ÂÊËÏ ÓÍÌ‡
+    // --- 1. –û–ø—Ä–µ–¥–µ–ª—è–µ–º —Ä–µ–∂–∏–º –æ–∫–Ω–∞ ---
 #ifdef DEDICATED_SERVER
-	BOOL bWindowed = TRUE;
+    BOOL bWindowed = TRUE;
 #else
-	BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
+    BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
 #endif
 
-	// ¬˚·Ë‡ÂÏ ‡ÁÂ¯ÂÌËÂ (·ÂÁ ÔÓ‚ÂÍË ÒÔËÒÍ‡, Ú.Í. ÒÔËÒÓÍ Â˘∏ ÌÂ Á‡ÔÓÎÌÂÌ)
-	u32 width, height;
-	selectResolution(width, height, bWindowed);
+    u32 width, height;
+    selectResolution(width, height, bWindowed);
+    u32 presentInterval = selectPresentInterval();
+    u32 refreshHz = bWindowed ? 0 : selectRefresh(width, height, D3DFMT_X8R8G8B8); // –ø–æ–∫–∞ —Ñ–æ—Ä–º–∞—Ç —Ñ–∏–∫—Å–∏—Ä–æ–≤–∞–Ω
 
-	u32 presentInterval = selectPresentInterval();
+    // --- 2. –ù–∞—Å—Ç—Ä–æ–π–∫–∞ –æ–∫–Ω–∞ –î–û —Å–æ–∑–¥–∞–Ω–∏—è —É—Å—Ç—Ä–æ–π—Å—Ç–≤–∞ ---
+    CWindowManager& wm = Engine.WindowManager;
+    wm.SetWindowed(bWindowed);
+    wm.SetResolution(width, height);
+    wm.SetRefreshRate(refreshHz);
+    wm.Apply();
 
-	// —ÓÁ‰‡∏Ï ÛÒÚÓÈÒÚ‚Ó ˜ÂÂÁ ·ÂÍÂÌ‰
-	if (!pBackend->CreateDevice(m_hWnd, bWindowed, width, height, presentInterval))
-	{
-		Msg("! Failed to create device via RHI backend");
-		delete pBackend;
-		pBackend = nullptr;
-		FreeLibrary(m_hRHI_DLL);
-		m_hRHI_DLL = nullptr;
-		FlushLog();
-		MessageBox(NULL, "Failed to create graphics device", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
+    // –ü—Ä–∏–Ω—É–¥–∏—Ç–µ–ª—å–Ω–æ –≤—ã—Å—Ç–∞–≤–ª—è–µ–º —Ä–∞–∑–º–µ—Ä –∫–ª–∏–µ–Ω—Ç—Å–∫–æ–π –æ–±–ª–∞—Å—Ç–∏
+    SetWindowPos(m_hWnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    UpdateWindow(m_hWnd);
 
-	// «‡ÔÓÎÌˇÂÏ ÒÚ‡˚Â ÔÓÎˇ ‰Îˇ ÒÓ‚ÏÂÒÚËÏÓÒÚË (ÓÌË ÔÓÏÂ˜ÂÌ˚ DEPRECATED)
-	pDevice = (IDirect3DDevice9Ex*)pBackend->GetDeviceHandle();
-	pD3D = (IDirect3D9Ex*)pBackend->GetD3DHandle();
+    RECT rcClient;
+    GetClientRect(m_hWnd, &rcClient);
+    LONG clientW = rcClient.right - rcClient.left;
+    LONG clientH = rcClient.bottom - rcClient.top;
 
-	DevAdapter = D3DADAPTER_DEFAULT;
-	DevT = D3DDEVTYPE_HAL; 
-	Msg("[RHI] DevAdapter=%d, DevT=%d", DevAdapter, DevT);
+    if (clientW != width || clientH != height)
+    {
+        Msg("! Window client size mismatch: expected %dx%d, got %dx%d. Forcing resize.", width, height, clientW, clientH);
+        SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+        SetWindowPos(m_hWnd, HWND_TOP, 0, 0, width, height, SWP_NOMOVE | SWP_SHOWWINDOW);
+        UpdateWindow(m_hWnd);
+        GetClientRect(m_hWnd, &rcClient);
+        clientW = rcClient.right - rcClient.left;
+        clientH = rcClient.bottom - rcClient.top;
+    }
 
-	Caps.fTarget = D3DFMT_X8R8G8B8;
+    // --- 3. –ó–∞–ø–æ–ª–Ω—è–µ–º RHIPresentationParams —Ç–æ—á–Ω—ã–º–∏ —Ä–∞–∑–º–µ—Ä–∞–º–∏ ---
+    xrRHI::RHIPresentationParams params;
+    params.BackBufferWidth = clientW;
+    params.BackBufferHeight = clientH;
+    params.Windowed = bWindowed;
+    params.BackBufferFormat = xrRHI::RHI_Format::RGBA8_UNORM;   // —Å–æ–æ—Ç–≤–µ—Ç—Å—Ç–≤—É–µ—Ç D3DFMT_X8R8G8B8
+    params.DepthStencilFormat = xrRHI::RHI_Format::D24_UNORM_S8_UINT;
+    params.BackBufferCount = 2;                                 // –æ—Ä–∏–≥–∏–Ω–∞–ª—å–Ω–æ–µ –∑–Ω–∞—á–µ–Ω–∏–µ
+    params.SyncInterval = (presentInterval == 0) ? 0 : 1;
+    params.FullscreenRefreshHz = refreshHz;
+    params.SwapEffect = xrRHI::RHI_SwapEffect::Discard;
+    params.EnableAutoDepthStencil = true;
 
-	Caps.fDepth = D3DFMT_D24S8;
+    // --- 4. –°–æ–∑–¥–∞—ë–º —É—Å—Ç—Ä–æ–π—Å—Ç–≤–æ ---
+    if (!pBackend->CreateDevice(m_hWnd, params))
+    {
+        Msg("! Failed to create device via RHI backend");
+        delete pBackend;
+        pBackend = nullptr;
+        FreeLibrary(m_hRHI_DLL);
+        m_hRHI_DLL = nullptr;
+        FlushLog();
+        MessageBox(NULL, "Failed to create graphics device", "Fatal Error", MB_OK | MB_ICONERROR);
+        TerminateProcess(GetCurrentProcess(), 0);
+        return;
+    }
 
-	// Œ·ÌÓ‚ÎˇÂÏ Caps
-	Caps.Update();
+    // --- 5. –ü–æ–ª—É—á–∞–µ–º –Ω–∞—Ç–∏–≤–Ω—ã–µ —É–∫–∞–∑–∞—Ç–µ–ª–∏ –¥–ª—è —Å–æ–≤–º–µ—Å—Ç–∏–º–æ—Å—Ç–∏ ---
+    pDevice = (IDirect3DDevice9Ex*)pBackend->GetDeviceHandle();
+    pD3D = (IDirect3D9Ex*)pBackend->GetD3DHandle();
 
-	// «‡ÔÓÎÌˇÂÏ DevPP (ÔË·ÎËÁËÚÂÎ¸ÌÓ, ‰Îˇ ÒÓ‚ÏÂÒÚËÏÓÒÚË)
-	DevPP.BackBufferWidth = width;
-	DevPP.BackBufferHeight = height;
-	DevPP.BackBufferFormat = D3DFMT_X8R8G8B8;
-	DevPP.Windowed = bWindowed;
-	DevPP.PresentationInterval = presentInterval;
-	DevPP.BackBufferCount = 2;
-	DevPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	DevPP.FullScreen_RefreshRateInHz = bWindowed ? 0 : 60; // ÛÔÓ˘∏ÌÌÓ
+    DevAdapter = D3DADAPTER_DEFAULT;
+    DevT = D3DDEVTYPE_HAL;
+    Msg("[RHI] DevAdapter=%d, DevT=%d", DevAdapter, DevT);
 
-	R_CHK(pDevice->GetRenderTarget(0, &pBaseRT));
-	R_CHK(pDevice->GetDepthStencilSurface(&pBaseZB));
+    Caps.fTarget = D3DFMT_X8R8G8B8;
+    Caps.fDepth = D3DFMT_D24S8;
+    Caps.Update();
 
-	// Œ·ÌÓ‚ÎˇÂÏ Ò‚ÓÈÒÚ‚‡ ÓÍÌ‡ (ˆÂÌÚËÓ‚‡ÌËÂ, ÒÚËÎË)
-	updateWindowProps(m_hWnd);
+    // –ü–æ–ª—É—á–∞–µ–º —Ä–µ–∞–ª—å–Ω—ã–π —Ä–∞–∑–º–µ—Ä –±—ç–∫–±—É—Ñ–µ—Ä–∞ (–º–æ–∂–µ—Ç –Ω–µ–∑–Ω–∞—á–∏—Ç–µ–ª—å–Ω–æ –æ—Ç–ª–∏—á–∞—Ç—å—Å—è)
+    R_CHK(pDevice->GetRenderTarget(0, &pBaseRT));
+    R_CHK(pDevice->GetDepthStencilSurface(&pBaseZB));
 
-	// «‡ÔÓÎÌˇÂÏ ÒÔËÒÓÍ ‚Ë‰ÂÓÂÊËÏÓ‚ (ÚÂÔÂ¸ pD3D ÒÛ˘ÂÒÚ‚ÛÂÚ)
-	fill_vid_mode_list(this);
+    D3DSURFACE_DESC desc;
+    pBaseRT->GetDesc(&desc);
+    Msg("* Backbuffer real size: %dx%d", desc.Width, desc.Height);
 
-	Msg("* RHI backend initialized successfully.");
+    // –£—Å—Ç–∞–Ω–∞–≤–ª–∏–≤–∞–µ–º –≤—å—é–ø–æ—Ä—Ç
+    D3DVIEWPORT9 vp;
+    vp.X = 0; vp.Y = 0;
+    vp.Width = desc.Width;
+    vp.Height = desc.Height;
+    vp.MinZ = 0.0f; vp.MaxZ = 1.0f;
+    R_CHK(pDevice->SetViewport(&vp));
+
+    // –ó–∞–ø–æ–ª–Ω—è–µ–º DevPP –¥–ª—è —Å–æ–≤–º–µ—Å—Ç–∏–º–æ—Å—Ç–∏ —Å–æ —Å—Ç–∞—Ä—ã–º –∫–æ–¥–æ–º
+    DevPP.BackBufferWidth = desc.Width;
+    DevPP.BackBufferHeight = desc.Height;
+    DevPP.BackBufferFormat = D3DFMT_X8R8G8B8;
+    DevPP.Windowed = bWindowed;
+    DevPP.PresentationInterval = presentInterval;
+    DevPP.BackBufferCount = 2;
+    DevPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    DevPP.FullScreen_RefreshRateInHz = refreshHz;
+
+    // --- 6. –î–æ–ø–æ–ª–Ω–∏—Ç–µ–ª—å–Ω—ã–µ –∏–Ω–∏—Ü–∏–∞–ª–∏–∑–∞—Ü–∏–∏ ---
+#ifndef DEDICATED_SERVER
+    ShowCursor(FALSE);
+    SetForegroundWindow(m_hWnd);
+#endif
+
+    fill_vid_mode_list(this);
+
+    Msg("* RHI backend initialized successfully.");
 }
 
 //-----------------------------------------------------------------------------

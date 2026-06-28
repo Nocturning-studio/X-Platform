@@ -614,6 +614,31 @@ class CCC_DetailQuality : public CCC_Token
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////
+class CCC_tf_Aniso : public CCC_Integer
+{
+public:
+	void apply()
+	{
+		if (0 == HW.GetDevice())
+			return;
+		int val = *value;
+		clamp(val, 2, 16);
+
+		RenderBackendLegacy.set_anisotropy_filtering(val);
+	}
+	CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 2, 16) {};
+	virtual void Execute(LPCSTR args)
+	{
+		CCC_Integer::Execute(args);
+		apply();
+	}
+	virtual void Status(TStatus& S)
+	{
+		CCC_Integer::Status(S);
+		apply();
+	}
+};
+///////////////////////////////////////////////////////////////////////////////////
 void xrRender_initconsole()
 {
 	fvec3 tw_min, tw_max;
@@ -759,6 +784,7 @@ void xrRender_initconsole()
 	CMD4(CCC_Float, "r_detalization_distance", &ps_r_detalization_distance, 10.0f, 100.0f);
 
 	CMD2(CCC_tf_MipBias, "r_tf_mipbias", &ps_r_tf_Mipbias);
+	CMD2(CCC_tf_Aniso, "rs_anisothropy", &psAnisotropic); //	{1..16}
 
 	//CMD3(CCC_Mask, "r_use_nvdbt", &ps_r_ls_flags, RFLAG_USE_NVDBT);
 

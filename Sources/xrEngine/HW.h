@@ -27,7 +27,7 @@ class ENGINE_API CHW
 
 	void CreateDevice(HWND hw);
 	void DestroyDevice();
-	void Reset(HWND hw);
+	void Reset();
 
 	void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
 	u32 selectPresentInterval();

@@ -548,8 +548,8 @@ void CRender::render_postprocess()
 	dummy_exposure();
 
 	// Generic1 -> Generic0 -> Generic1
-	//if (ps_r_postprocess_flags.test(RFLAG_AUTOEXPOSURE))
-	//	render_autoexposure();
+	if (ps_r_postprocess_flags.test(RFLAG_AUTOEXPOSURE))
+		render_autoexposure();
 
 	create_distortion_mask();
 

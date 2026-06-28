@@ -246,8 +246,6 @@ void CRender::create()
 	HWOCC.occq_create(occq_size);
 
 	SceneGraph.m_traversal_marker = 0;
-	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
-	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 
 	xrRender_apply_tf();
 	SceneGraph.m_packet.portal_traverser.CreateResources();
@@ -265,8 +263,6 @@ void CRender::destroy()
 	m_sun_cascades_buffer[0].Destroy();
 	m_sun_cascades_buffer[1].Destroy();
 	SceneGraph.m_packet.portal_traverser.DestroyResources();
-	_RELEASE(q_sync_point[1]);
-	_RELEASE(q_sync_point[0]);
 	HWOCC.occq_destroy();
 	xr_delete(Models);
 	xr_delete(RenderTarget);
@@ -300,14 +296,10 @@ void CRender::reset_begin()
 
 	xr_delete(RenderTarget);
 	HWOCC.occq_destroy();
-	_RELEASE(q_sync_point[1]);
-	_RELEASE(q_sync_point[0]);
 }
 
 void CRender::reset_end()
 {
-	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[0]));
-	R_CHK(HW.GetDevice()->CreateQuery(D3DQUERYTYPE_EVENT, &q_sync_point[1]));
 	HWOCC.occq_create(occq_size);
 
 	update_options();

@@ -35,8 +35,8 @@ void CRender::RenderScene()
 
 	render_ambient_occlusion();
 
-	if (ps_r_shading_mode == SHADING_MODE_PBR)
-		render_bent_normals();
+	//if (ps_r_shading_mode == SHADING_MODE_PBR)
+		//render_bent_normals();
 
 	if ((ps_r_shading_mode == SHADING_MODE_PBR) && ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
 	{
