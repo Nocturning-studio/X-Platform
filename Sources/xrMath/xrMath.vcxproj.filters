@@ -91,7 +91,9 @@
     <ClInclude Include="xrMath_sphere.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_vector3.h" />
+    <ClInclude Include="xrMath_vector3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

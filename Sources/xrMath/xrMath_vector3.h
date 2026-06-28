@@ -1,5 +1,8 @@
 #pragma once
 #include "xrMath_common.h"
+#include "xrMath_constants.h"
+#include "xrMath_utils.h"
+#include "xrMath_random.h"
 
 template <class T> struct _vector3
 {
@@ -739,7 +742,7 @@ template <class T> BOOL _valid(const _vector3<T>& v)
 #pragma warning(disable : 4244)
 ICF double rsqrt(double v)
 {
-	return 1.0 / std::sqrt(v);
+	return 1.0 / sqrt(v);
 }
 IC BOOL exact_normalize(float* a)
 {

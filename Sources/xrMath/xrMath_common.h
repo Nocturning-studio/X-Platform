@@ -1,5 +1,8 @@
 #pragma once
 
+#include <math.h>
+#include <algorithm>
+
 #ifdef _MSC_VER
 #define MSVC_COMPILER
 #endif
