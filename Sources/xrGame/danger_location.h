@@ -16,7 +16,7 @@ class CDangerLocation : public intrusive_base
 {
   public:
 	typedef MemorySpace::squad_mask_type squad_mask_type;
-	typedef _flags<squad_mask_type> flags;
+	typedef template_flags<squad_mask_type> flags;
 
   public:
 	u32 m_level_time;

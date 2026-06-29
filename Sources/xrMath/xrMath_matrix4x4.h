@@ -28,14 +28,16 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct _matrix4x4
+template <class T> struct template_quaternion;
+
+template <class T> struct template_matrix4x4
 {
   public:
 	typedef T TYPE;
-	typedef _matrix4x4<T> Self;
+	typedef template_matrix4x4<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
-	typedef _vector3<T> Tvector;
+	typedef template_vector3<T> Tvector;
 
   public:
 	union {
@@ -119,8 +121,8 @@ template <class T> struct _matrix4x4
 		_44 = 1;
 		return *this;
 	}
-	IC SelfRef rotation(const _quaternion<T>& Q);
-	ICF SelfRef mk_transform(const _quaternion<T>& Q, const Tvector& V);
+	IC SelfRef rotation(const template_quaternion<T>& Q);
+	ICF SelfRef mk_transform(const template_quaternion<T>& Q, const Tvector& V);
 
 	// Multiply RES = A[4x4]*B[4x4] (WITH projection)
 	ICF SelfRef mul(const Self& A, const Self& B)
@@ -880,9 +882,9 @@ template <class T> struct _matrix4x4
 	}
 };
 
-typedef _matrix4x4<float> fmat4x4;
+typedef template_matrix4x4<float> fmat4x4;
 
-template <class T> BOOL _valid(const _matrix4x4<T>& m)
+template <class T> BOOL _valid(const template_matrix4x4<T>& m)
 {
 	return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) &&
 		   _valid(m.c) && _valid(m._44_);

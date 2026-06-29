@@ -3,14 +3,14 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> class _box2
+template <class T> class template_box2D
 {
   public:
 	typedef T TYPE;
-	typedef _box2<T> Self;
+	typedef template_box2D<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
-	typedef _vector2<T> Tvector;
+	typedef template_vector2<T> Tvector;
 
   public:
 	union {
@@ -382,10 +382,10 @@ template <class T> class _box2
 	};
 };
 
-typedef _box2<float> Fbox2;
-typedef _box2<double> Dbox2;
+typedef template_box2D<float> Fbox2;
+typedef template_box2D<double> Dbox2;
 
-template <class T> BOOL _valid(const _box2<T>& c)
+template <class T> BOOL _valid(const template_box2D<T>& c)
 {
 	return _valid(c.min) && _valid(c.max);
 }

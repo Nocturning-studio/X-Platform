@@ -1,10 +1,10 @@
 #pragma once
 
-template <class T> struct _flags
+template <class T> struct template_flags
 {
   public:
 	typedef T TYPE;
-	typedef _flags<T> Self;
+	typedef template_flags<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
@@ -100,11 +100,11 @@ template <class T> struct _flags
 	}
 };
 
-typedef _flags<u8> Flags8;
-typedef _flags<u8> flags8;
-typedef _flags<u16> Flags16;
-typedef _flags<u16> flags16;
-typedef _flags<u32> Flags32;
-typedef _flags<u32> flags32;
-typedef _flags<u64> Flags64;
-typedef _flags<u64> flags64;
+typedef template_flags<u8> Flags8;
+typedef template_flags<u8> flags8;
+typedef template_flags<u16> Flags16;
+typedef template_flags<u16> flags16;
+typedef template_flags<u32> Flags32;
+typedef template_flags<u32> flags32;
+typedef template_flags<u64> Flags64;
+typedef template_flags<u64> flags64;

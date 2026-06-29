@@ -3,13 +3,13 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct _matrix3x3
+template <class T> struct template_matrix3x3
 {
   public:
-	typedef _matrix3x3<T> Self;
+	typedef template_matrix3x3<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
-	typedef _vector3<T> Tvector;
+	typedef template_vector3<T> Tvector;
 
   public:
 	union {
@@ -28,7 +28,7 @@ template <class T> struct _matrix3x3
 		float m[3][3]; // Array
 	};
 	// Class members
-	IC SelfRef set_rapid(const _matrix4x4<T>& a)
+	IC SelfRef set_rapid(const template_matrix4x4<T>& a)
 	{
 		m[0][0] = a.m[0][0];
 		m[0][1] = a.m[0][1];
@@ -46,7 +46,7 @@ template <class T> struct _matrix3x3
 		CopyMemory(this, &a, 9 * sizeof(float));
 		return *this;
 	}
-	IC SelfRef set(const _matrix4x4<T>& a)
+	IC SelfRef set(const template_matrix4x4<T>& a)
 	{
 		_11 = a._11;
 		_12 = a._12;
@@ -86,7 +86,7 @@ template <class T> struct _matrix3x3
 		_33 = matSource._33;
 		return *this;
 	}
-	IC SelfRef transpose(const _matrix4x4<T>& matSource) // faster version of transpose
+	IC SelfRef transpose(const template_matrix4x4<T>& matSource) // faster version of transpose
 	{
 		_11 = matSource._11;
 		_12 = matSource._21;
@@ -101,7 +101,7 @@ template <class T> struct _matrix3x3
 	}
 	IC SelfRef transpose(void) // self transpose - slower
 	{
-		_matrix3x3 a;
+		template_matrix3x3 a;
 		CopyMemory(&a, this, 9 * sizeof(float)); // save matrix
 		transpose(a);
 		return *this;
@@ -148,7 +148,7 @@ template <class T> struct _matrix3x3
 		int nrot;
 		Tvector b;
 		Tvector z;
-		_matrix3x3 v;
+		template_matrix3x3 v;
 		Tvector d;
 
 		v.identity();
@@ -385,15 +385,15 @@ template <class T> struct _matrix3x3
 		R.z = (m[2][0] * V1.x + m[2][1] * V1.y + m[2][2] * V1.z);
 		return *this;
 	}
-	IC void transform_dir(_vector2<T>& dest, const _vector2<T>& v) const // preferred to use
+	IC void transform_dir(template_vector2<T>& dest, const template_vector2<T>& v) const // preferred to use
 	{
 		dest.x = v.x * _11 + v.y * _21;
 		dest.y = v.x * _12 + v.y * _22;
 		dest.z = v.x * _13 + v.y * _23;
 	}
-	IC void transform_dir(_vector2<T>& v) const
+	IC void transform_dir(template_vector2<T>& v) const
 	{
-		_vector2<T> res;
+		template_vector2<T> res;
 		transform_dir(res, v);
 		v.set(res);
 	}
@@ -406,9 +406,9 @@ template <class T> struct _matrix3x3
 	}
 };
 
-typedef _matrix3x3<float> fmat3x3;
+typedef template_matrix3x3<float> fmat3x3;
 
-template <class T> BOOL _valid(const _matrix3x3<T>& m)
+template <class T> BOOL _valid(const template_matrix3x3<T>& m)
 {
 	return _valid(m.i) && _valid(m.j) && _valid(m.k);
 }

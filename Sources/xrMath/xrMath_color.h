@@ -54,10 +54,10 @@ ICF u32 rgb2bgr(u32 rgb)
 	return bgr2rgb(rgb);
 }
 
-template <class T> struct _color
+template <class T> struct template_color
 {
   public:
-	typedef _color Self;
+	typedef template_color Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
@@ -147,7 +147,7 @@ template <class T> struct _color
 		b = grey + s * (in.b - grey);
 		return *this;
 	};
-	IC SelfRef modulate(_color& in)
+	IC SelfRef modulate(template_color& in)
 	{
 		r *= in.r;
 		g *= in.g;
@@ -287,10 +287,10 @@ template <class T> struct _color
 	};
 };
 
-typedef _color<float> Fcolor;
-typedef _color<double> Dcolor;
+typedef template_color<float> Fcolor;
+typedef template_color<double> Dcolor;
 
-template <class T> BOOL _valid(const _color<T>& c)
+template <class T> BOOL _valid(const template_color<T>& c)
 {
 	return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a);
 }

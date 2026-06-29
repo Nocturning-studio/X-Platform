@@ -137,11 +137,11 @@
 #define AA_QZERO_TOLERANCE 0.0001f
 #define QEPSILON 0.00001f
 
-template <class T> struct /*XRMATH_API*/ _quaternion
+template <class T> struct /*XRMATH_API*/ template_quaternion
 {
   public:
 	typedef T TYPE;
-	typedef _quaternion<T> Self;
+	typedef template_quaternion<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
@@ -180,7 +180,7 @@ template <class T> struct /*XRMATH_API*/ _quaternion
 		return *this;
 	}
 
-	IC SelfRef set(const _matrix4x4<T>& m);
+	IC SelfRef set(const template_matrix4x4<T>& m);
 
 	// multiplies q1 * q2, and places the result in *this.
 	// no failure. 	renormalization not automatic
@@ -458,9 +458,9 @@ template <class T> struct /*XRMATH_API*/ _quaternion
 	}
 };
 
-typedef _quaternion<float> Fquaternion;
+typedef template_quaternion<float> Fquaternion;
 
-template <class T> BOOL _valid(const _quaternion<T>& s)
+template <class T> BOOL _valid(const template_quaternion<T>& s)
 {
 	return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);
 }

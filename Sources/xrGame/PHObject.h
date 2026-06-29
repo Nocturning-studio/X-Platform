@@ -35,7 +35,7 @@ class CPHObject : public ISpatial
 	CPHIsland m_island;
 	CLBits m_collide_bits;
 	u8 m_check_count;
-	_flags<CLClassBits> m_collide_class_bits;
+	template_flags<CLClassBits> m_collide_class_bits;
 
   public:
 	enum ECastType
@@ -184,7 +184,7 @@ class CPHObject : public ISpatial
 	{
 		return m_collide_bits;
 	}
-	IC _flags<CLClassBits>& collide_class_bits()
+	IC template_flags<CLClassBits>& collide_class_bits()
 	{
 		return m_collide_class_bits;
 	}
@@ -192,7 +192,7 @@ class CPHObject : public ISpatial
 	{
 		return m_collide_bits;
 	}
-	IC const _flags<CLClassBits>& collide_class_bits() const
+	IC const template_flags<CLClassBits>& collide_class_bits() const
 	{
 		return m_collide_class_bits;
 	}

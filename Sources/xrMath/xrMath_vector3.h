@@ -5,11 +5,11 @@
 #include "xrMath_utils.h"
 #include "xrMath_random.h"
 
-template <class T> struct _vector3
+template <class T> struct template_vector3
 {
   public:
 	typedef T TYPE;
-	typedef _vector3<T> Self;
+	typedef template_vector3<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
@@ -33,14 +33,14 @@ template <class T> struct _vector3
 		z = _z;
 		return *this;
 	};
-	ICF SelfRef set(const _vector3<float>& v)
+	ICF SelfRef set(const template_vector3<float>& v)
 	{
 		x = T(v.x);
 		y = T(v.y);
 		z = T(v.z);
 		return *this;
 	};
-	ICF SelfRef set(const _vector3<double>& v)
+	ICF SelfRef set(const template_vector3<double>& v)
 	{
 		x = T(v.x);
 		y = T(v.y);
@@ -531,7 +531,7 @@ template <class T> struct _vector3
 
 	IC SelfRef mknormal_non_normalized(const Self& p0, const Self& p1, const Self& p2)
 	{
-		_vector3<T> v01, v12;
+		template_vector3<T> v01, v12;
 		v01.sub(p1, p0);
 		v12.sub(p2, p1);
 		crossproduct(v01, v12);
@@ -620,7 +620,7 @@ template <class T> struct _vector3
 	{ // non normalized
 		return mad(dir, norm, -dir.dotproduct(norm));
 	}
-	IC static void generate_orthonormal_basis(const _vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
+	IC static void generate_orthonormal_basis(const template_vector3<T>& dir, template_vector3<T>& up, template_vector3<T>& right)
 	{
 		T fInvLength;
 
@@ -643,7 +643,7 @@ template <class T> struct _vector3
 
 		right.crossproduct(up, dir); //. <->
 	}
-	IC static void generate_orthonormal_basis_normalized(_vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
+	IC static void generate_orthonormal_basis_normalized(template_vector3<T>& dir, template_vector3<T>& up, template_vector3<T>& right)
 	{
 		T fInvLength;
 		dir.normalize();
@@ -677,76 +677,76 @@ template <class T> struct _vector3
 };
 
 template <class T>
-IC _vector3<T> operator+(const _vector3<T>& a, const _vector3<T>& b) {
-	_vector3<T> r(a); r += b; return r;
+IC template_vector3<T> operator+(const template_vector3<T>& a, const template_vector3<T>& b) {
+	template_vector3<T> r(a); r += b; return r;
 }
 template <class T>
-IC _vector3<T> operator+(const _vector3<T>& a, T s) {
-	_vector3<T> r(a); r += s; return r;
+IC template_vector3<T> operator+(const template_vector3<T>& a, T s) {
+	template_vector3<T> r(a); r += s; return r;
 }
 template <class T>
-IC _vector3<T> operator+(T s, const _vector3<T>& a) {
-	_vector3<T> r(a); r += s; return r;
-}
-
-template <class T>
-IC _vector3<T> operator-(const _vector3<T>& a, const _vector3<T>& b) {
-	_vector3<T> r(a); r -= b; return r;
-}
-template <class T>
-IC _vector3<T> operator-(const _vector3<T>& a, T s) {
-	_vector3<T> r(a); r -= s; return r;
-}
-template <class T>
-IC _vector3<T> operator-(T s, const _vector3<T>& a) {
-	_vector3<T> r; r.sub(a, s); return r;   // эквивалентно: s - a = -(a - s)
+IC template_vector3<T> operator+(T s, const template_vector3<T>& a) {
+	template_vector3<T> r(a); r += s; return r;
 }
 
 template <class T>
-IC _vector3<T> operator*(const _vector3<T>& a, const _vector3<T>& b) {
-	_vector3<T> r(a); r *= b; return r;
+IC template_vector3<T> operator-(const template_vector3<T>& a, const template_vector3<T>& b) {
+	template_vector3<T> r(a); r -= b; return r;
 }
 template <class T>
-IC _vector3<T> operator*(const _vector3<T>& a, T s) {
-	_vector3<T> r(a); r *= s; return r;
+IC template_vector3<T> operator-(const template_vector3<T>& a, T s) {
+	template_vector3<T> r(a); r -= s; return r;
 }
 template <class T>
-IC _vector3<T> operator*(T s, const _vector3<T>& a) {
-	_vector3<T> r(a); r *= s; return r;
+IC template_vector3<T> operator-(T s, const template_vector3<T>& a) {
+	template_vector3<T> r; r.sub(a, s); return r;   // эквивалентно: s - a = -(a - s)
 }
 
 template <class T>
-IC _vector3<T> operator/(const _vector3<T>& a, const _vector3<T>& b) {
-	_vector3<T> r(a); r /= b; return r;
+IC template_vector3<T> operator*(const template_vector3<T>& a, const template_vector3<T>& b) {
+	template_vector3<T> r(a); r *= b; return r;
 }
 template <class T>
-IC _vector3<T> operator/(const _vector3<T>& a, T s) {
-	_vector3<T> r(a); r /= s; return r;
+IC template_vector3<T> operator*(const template_vector3<T>& a, T s) {
+	template_vector3<T> r(a); r *= s; return r;
 }
 template <class T>
-IC _vector3<T> operator/(T s, const _vector3<T>& a) {
-	_vector3<T> r; r.x = s / a.x; r.y = s / a.y; r.z = s / a.z;
+IC template_vector3<T> operator*(T s, const template_vector3<T>& a) {
+	template_vector3<T> r(a); r *= s; return r;
+}
+
+template <class T>
+IC template_vector3<T> operator/(const template_vector3<T>& a, const template_vector3<T>& b) {
+	template_vector3<T> r(a); r /= b; return r;
+}
+template <class T>
+IC template_vector3<T> operator/(const template_vector3<T>& a, T s) {
+	template_vector3<T> r(a); r /= s; return r;
+}
+template <class T>
+IC template_vector3<T> operator/(T s, const template_vector3<T>& a) {
+	template_vector3<T> r; r.x = s / a.x; r.y = s / a.y; r.z = s / a.z;
 	return r;
 }
 
 template <class T>
-IC _vector3<T> operator-(const _vector3<T>& a) {
-	_vector3<T> r; r.invert(a); return r;
+IC template_vector3<T> operator-(const template_vector3<T>& a) {
+	template_vector3<T> r; r.invert(a); return r;
 }
 
 template <class T>
-IC bool operator==(const _vector3<T>& a, const _vector3<T>& b) {
+IC bool operator==(const template_vector3<T>& a, const template_vector3<T>& b) {
 	return a.similar(b);
 }
 template <class T>
-IC bool operator!=(const _vector3<T>& a, const _vector3<T>& b) {
+IC bool operator!=(const template_vector3<T>& a, const template_vector3<T>& b) {
 	return !a.similar(b);
 }
 
-typedef _vector3<float> fvec3;
-typedef _vector3<s32> ivec3;
+typedef template_vector3<float> fvec3;
+typedef template_vector3<s32> ivec3;
 
-template <class T> BOOL _valid(const _vector3<T>& v)
+template <class T> BOOL _valid(const template_vector3<T>& v)
 {
 	return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z);
 }

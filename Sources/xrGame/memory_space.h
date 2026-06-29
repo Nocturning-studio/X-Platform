@@ -129,7 +129,7 @@ template <typename T> struct CMemoryObject : public SMemoryObject
 	const T* m_object;
 	CObjectParams<T> m_object_params;
 	CObjectParams<T> m_self_params;
-	_flags<squad_mask_type> m_squad_mask;
+	template_flags<squad_mask_type> m_squad_mask;
 
 	IC CMemoryObject();
 	IC bool operator==(u16 id) const;
@@ -139,7 +139,7 @@ template <typename T> struct CMemoryObject : public SMemoryObject
 struct CVisibleObject : CMemoryObject<CGameObject>
 {
 	typedef CMemoryObject<CGameObject> inherited;
-	_flags<squad_mask_type> m_visible;
+	template_flags<squad_mask_type> m_visible;
 
   public:
 	IC CVisibleObject()

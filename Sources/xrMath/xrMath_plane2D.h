@@ -1,15 +1,15 @@
 #pragma once
 
-template <class T> class _plane
+template <class T> class template_plane2D
 {
   public:
 	typedef T TYPE;
-	typedef _plane<T> Self;
+	typedef template_plane2D<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
   public:
-	_vector3<T> n;
+	template_vector2<T> n;
 	T d;
 
   public:
@@ -23,37 +23,17 @@ template <class T> class _plane
 	{
 		return (n.similar(P.n, eps_n) && (_abs(d - P.d) < eps_d));
 	}
-	ICF SelfRef build(const _vector3<T>& v1, const _vector3<T>& v2, const _vector3<T>& v3)
-	{
-		_vector3<T> t1, t2;
-		n.crossproduct(t1.sub(v1, v2), t2.sub(v1, v3)).normalize();
-		d = -n.dotproduct(v1);
-		return *this;
-	}
-	ICF SelfRef build_precise(const _vector3<T>& v1, const _vector3<T>& v2, const _vector3<T>& v3)
-	{
-		_vector3<T> t1, t2;
-		n.crossproduct(t1.sub(v1, v2), t2.sub(v1, v3));
-		exact_normalize(n);
-		d = -n.dotproduct(v1);
-		return *this;
-	}
-	ICF SelfRef build(const _vector3<T>& _p, const _vector3<T>& _n)
+	IC SelfRef build(const template_vector2<T>& _p, const template_vector2<T>& _n)
 	{
 		d = -n.normalize(_n).dotproduct(_p);
 		return *this;
 	}
-	ICF SelfRef build_unit_normal(const _vector3<T>& _p, const _vector3<T>& _n)
-	{
-		d = -n.set(_n).dotproduct(_p);
-		return *this;
-	}
-	IC SelfRef project(_vector3<T>& pdest, _vector3<T>& psrc)
+	IC SelfRef project(template_vector2<T>& pdest, template_vector2<T>& psrc)
 	{
 		pdest.mad(psrc, n, -classify(psrc));
 		return *this;
 	}
-	ICF T classify(const _vector3<T>& v) const
+	IC T classify(const template_vector2<T>& v) const
 	{
 		return n.dotproduct(v) + d;
 	}
@@ -64,11 +44,11 @@ template <class T> class _plane
 		d *= denom;
 		return *this;
 	}
-	IC T distance(const _vector3<T>& v)
+	IC T distance(const template_vector2<T>& v)
 	{
 		return _abs(classify(v));
 	}
-	IC BOOL intersectRayDist(const _vector3<T>& P, const _vector3<T>& D, T& dist)
+	IC BOOL intersectRayDist(const template_vector2<T>& P, const template_vector2<T>& D, T& dist)
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
@@ -79,7 +59,7 @@ template <class T> class _plane
 		dist = -(numer / denom);
 		return ((dist > 0.f) || fis_zero(dist));
 	}
-	ICF BOOL intersectRayPoint(const _vector3<T>& P, const _vector3<T>& D, _vector3<T>& dest)
+	IC BOOL intersectRayPoint(const template_vector2<T>& P, const template_vector2<T>& D, template_vector2<T>& dest)
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
@@ -93,11 +73,11 @@ template <class T> class _plane
 			return ((dist > 0.f) || fis_zero(dist));
 		}
 	}
-	IC BOOL intersect(const _vector3<T>& u, const _vector3<T>& v, // segment
-					  _vector3<T>& isect)						  // intersection point
+	IC BOOL intersect(const template_vector2<T>& u, const template_vector2<T>& v, // segment
+					  template_vector2<T>& isect)						  // intersection point
 	{
 		T denom, dist;
-		_vector3<T> t;
+		template_vector2<T> t;
 
 		t.sub(v, u);
 		denom = n.dotproduct(t);
@@ -111,11 +91,11 @@ template <class T> class _plane
 		return true;
 	}
 
-	IC BOOL intersect_2(const _vector3<T>& u, const _vector3<T>& v, // segment
-						_vector3<T>& isect)							// intersection point
+	IC BOOL intersect_2(const template_vector2<T>& u, const template_vector2<T>& v, // segment
+						template_vector2<T>& isect)							// intersection point
 	{
 		T dist1, dist2;
-		_vector3<T> t;
+		template_vector2<T> t;
 
 		dist1 = n.dotproduct(u) + d;
 		dist2 = n.dotproduct(v) + d;
@@ -128,20 +108,12 @@ template <class T> class _plane
 
 		return true;
 	}
-	IC SelfRef transform(_matrix4x4<T>& M)
-	{
-		// rotate the normal
-		M.transform_dir(n);
-		// slide the offset
-		d -= M.c.dotproduct(n);
-		return *this;
-	}
 };
 
-typedef _plane<float> Fplane;
-typedef _plane<double> Dplane;
+typedef template_plane2D<float> Fplane2;
+typedef template_plane2D<double> Dplane2;
 
-template <class T> BOOL _valid(const _plane<T>& s)
+template <class T> BOOL _valid(const template_plane2D<T>& s)
 {
 	return _valid(s.n) && _valid(s.d);
 }

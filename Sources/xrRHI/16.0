@@ -1,3 +1,0 @@
-﻿  pch.cpp
-  unity_V2A415N52X1ZA00Z.cpp
-LINK : fatal error LNK1104: не удается открыть файл "H:\Indev\X-Platform\Build\libraries\Debug-Win32\xrMath.lib"

@@ -109,9 +109,9 @@ class CPHCollideValidator
 	}
 
 	static CGID freeGroupID;
-	static _flags<CLClassBits> ClassFlags;
-	static _flags<CLClassBits> ClassNCFlags;
-	static _flags<CLClassBits> NonTypeFlags;
+	static template_flags<CLClassBits> ClassFlags;
+	static template_flags<CLClassBits> ClassNCFlags;
+	static template_flags<CLClassBits> NonTypeFlags;
 };
 
 #endif

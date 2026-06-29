@@ -3,15 +3,15 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> class _box3
+template <class T> class template_box3D
 {
   public:
 	typedef T TYPE;
-	typedef _box3<T> Self;
+	typedef template_box3D<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
-	typedef _vector3<T> Tvector;
-	typedef _matrix4x4<T> Tmatrix;
+	typedef template_vector3<T> Tvector;
+	typedef template_matrix4x4<T> Tmatrix;
 
   public:
 	union {
@@ -157,7 +157,7 @@ template <class T> class _box3
 	}
 	ICF SelfRef modify(T x, T y, T z)
 	{
-		_vector3<T> tmp = {x, y, z};
+		template_vector3<T> tmp = {x, y, z};
 		return modify(tmp);
 	}
 	IC SelfRef merge(SelfCRef b)
@@ -549,10 +549,10 @@ template <class T> class _box3
 	}
 };
 
-typedef _box3<float> Fbox;
-typedef _box3<float> Fbox3;
+typedef template_box3D<float> Fbox;
+typedef template_box3D<float> Fbox3;
 
-template <class T> BOOL _valid(const _box3<T>& c)
+template <class T> BOOL _valid(const template_box3D<T>& c)
 {
 	return _valid(c.min) && _valid(c.max);
 }

@@ -765,7 +765,7 @@ typedef FlagValue<Flags8> Flag8Value;
 typedef FlagValue<Flags16> Flag16Value;
 typedef FlagValue<Flags32> Flag32Value;
 //------------------------------------------------------------------------------
-template <class T> bool operator==(_flags<T> const& A, _flags<T> const& B)
+template <class T> bool operator==(template_flags<T> const& A, template_flags<T> const& B)
 {
 	return A.flags == B.flags;
 }

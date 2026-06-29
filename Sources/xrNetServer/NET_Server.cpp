@@ -185,10 +185,10 @@ static HRESULT WINAPI Handler(PVOID pvUserContext, DWORD dwMessageType, PVOID pM
 
 //------------------------------------------------------------------------------
 
-void IClient::_SendTo_LL(const void* data, u32 _size, u32 _flags, u32 _timeout)
+void IClient::_SendTo_LL(const void* data, u32 _size, u32 template_flags, u32 _timeout)
 {
 	R_ASSERT(server);
-	server->IPureServer::SendTo_LL(ID, const_cast<void*>(data), _size, _flags, _timeout);
+	server->IPureServer::SendTo_LL(ID, const_cast<void*>(data), _size, template_flags, _timeout);
 }
 
 //------------------------------------------------------------------------------

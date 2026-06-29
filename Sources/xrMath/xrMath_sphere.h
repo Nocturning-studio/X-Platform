@@ -4,18 +4,18 @@
 #include "xrMath_types.h"
 #include "xrMath_vector3.h"
 
-template <class T> struct _sphere
+template <class T> struct template_sphere
 {
-	_vector3<T> P;
+	template_vector3<T> P;
 	T R;
 
   public:
-	IC void set(const _vector3<T>& _P, T _R)
+	IC void set(const template_vector3<T>& _P, T _R)
 	{
 		P.set(_P);
 		R = _R;
 	}
-	IC void set(const _sphere<T>& S)
+	IC void set(const template_sphere<T>& S)
 	{
 		P.set(S.P);
 		R = S.R;
@@ -26,9 +26,9 @@ template <class T> struct _sphere
 		R = 1;
 	}
 
-	ICF BOOL intersect(const _vector3<T>& S, const _vector3<T>& D) const
+	ICF BOOL intersect(const template_vector3<T>& S, const template_vector3<T>& D) const
 	{
-		_vector3<T> Q;
+		template_vector3<T> Q;
 		Q.sub(P, S);
 
 		T c = Q.magnitude();
@@ -36,7 +36,7 @@ template <class T> struct _sphere
 		T d = R * R - (c * c - v * v);
 		return (d > 0);
 	}
-	ICF BOOL intersect(const _sphere<T>& S) const
+	ICF BOOL intersect(const template_sphere<T>& S) const
 	{
 		T SumR = R + S.R;
 		return P.distance_to_sqr(S.P) < SumR * SumR;
@@ -51,10 +51,10 @@ template <class T> struct _sphere
 	};
 
 	// Ray-sphere intersection
-	ICF ERP_Result intersect(const _vector3<T>& S, const _vector3<T>& D, T range, int& quantity, T afT[2]) const
+	ICF ERP_Result intersect(const template_vector3<T>& S, const template_vector3<T>& D, T range, int& quantity, T afT[2]) const
 	{
 		// set up quadratic Q(t) = a*t^2 + 2*b*t + c
-		_vector3<T> kDiff;
+		template_vector3<T> kDiff;
 		kDiff.sub(S, P);
 		T fA = range * range;
 		T fB = kDiff.dotproduct(D) * range;
@@ -100,20 +100,20 @@ template <class T> struct _sphere
 		return result;
 	}
 
-	ICF typename _sphere<T>::ERP_Result intersect_full(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+	ICF typename template_sphere<T>::ERP_Result intersect_full(const template_vector3<T>& start, const template_vector3<T>& dir, T& dist) const
 	{
 		int quantity;
 		float afT[2];
-		typename _sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
+		typename template_sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
 
-		if (result == _sphere<T>::rpOriginInside || ((result == _sphere<T>::rpOriginOutside) && (afT[0] < dist)))
+		if (result == template_sphere<T>::rpOriginInside || ((result == template_sphere<T>::rpOriginOutside) && (afT[0] < dist)))
 		{
 			switch (result)
 			{
-			case _sphere<T>::rpOriginInside:
+			case template_sphere<T>::rpOriginInside:
 				dist = afT[0] < dist ? afT[0] : dist;
 				break;
-			case _sphere<T>::rpOriginOutside:
+			case template_sphere<T>::rpOriginOutside:
 				dist = afT[0];
 				break;
 			}
@@ -121,11 +121,11 @@ template <class T> struct _sphere
 		return result;
 	}
 
-	ICF typename _sphere<T>::ERP_Result intersect(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+	ICF typename template_sphere<T>::ERP_Result intersect(const template_vector3<T>& start, const template_vector3<T>& dir, T& dist) const
 	{
 		int quantity;
 		T afT[2];
-		typename _sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
+		typename template_sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
 		if (rpNone != result)
 		{
 			if (afT[0] < dist)
@@ -137,9 +137,9 @@ template <class T> struct _sphere
 		return rpNone;
 	}
 
-	ICF typename _sphere<T>::ERP_Result intersect2(const _vector3<T>& S, const _vector3<T>& D, T& range) const
+	ICF typename template_sphere<T>::ERP_Result intersect2(const template_vector3<T>& S, const template_vector3<T>& D, T& range) const
 	{
-		_vector3<T> Q;
+		template_vector3<T> Q;
 		Q.sub(P, S);
 
 		T R2 = R * R;
@@ -158,13 +158,13 @@ template <class T> struct _sphere
 		}
 		return rpNone;
 	}
-	IC BOOL contains(const _vector3<T>& PT) const
+	IC BOOL contains(const template_vector3<T>& PT) const
 	{
 		return P.distance_to_sqr(PT) <= (R * R + EPS_S);
 	}
 
 	// returns true if this wholly contains the argument sphere
-	IC BOOL contains(const _sphere<T>& S) const
+	IC BOOL contains(const template_sphere<T>& S) const
 	{
 		// can't contain a sphere that's bigger than me !
 		const T RDiff = R - S.R;
@@ -181,10 +181,9 @@ template <class T> struct _sphere
 	}
 };
 
-typedef _sphere<float> Fsphere;
-typedef _sphere<double> Dsphere;
+typedef template_sphere<float> Fsphere;
 
-template <class T> BOOL _valid(const _sphere<T>& s)
+template <class T> BOOL _valid(const template_sphere<T>& s)
 {
 	return _valid(s.P) && _valid(s.R);
 }

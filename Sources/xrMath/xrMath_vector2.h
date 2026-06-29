@@ -1,10 +1,10 @@
 #pragma once
 
-template <class T> struct _vector2
+template <class T> struct template_vector2
 {
   public:
 	typedef T TYPE;
-	typedef _vector2<T> Self;
+	typedef template_vector2<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
@@ -288,67 +288,67 @@ template <class T> struct _vector2
 };
 
 template <class T>
-IC _vector2<T> operator-(const _vector2<T>& a) {
-	_vector2<T> r(a); r.invert(); return r;
+IC template_vector2<T> operator-(const template_vector2<T>& a) {
+	template_vector2<T> r(a); r.invert(); return r;
 }
 
 template <class T>
-IC _vector2<T> operator+(const _vector2<T>& a, const _vector2<T>& b) {
-	_vector2<T> r(a); r.add(b); return r;
+IC template_vector2<T> operator+(const template_vector2<T>& a, const template_vector2<T>& b) {
+	template_vector2<T> r(a); r.add(b); return r;
 }
 template <class T>
-IC _vector2<T> operator+(const _vector2<T>& a, T s) {
-	_vector2<T> r(a); r.add(s); return r;
+IC template_vector2<T> operator+(const template_vector2<T>& a, T s) {
+	template_vector2<T> r(a); r.add(s); return r;
 }
 template <class T>
-IC _vector2<T> operator+(T s, const _vector2<T>& a) {
-	_vector2<T> r(a); r.add(s); return r;
+IC template_vector2<T> operator+(T s, const template_vector2<T>& a) {
+	template_vector2<T> r(a); r.add(s); return r;
 }
 
 template <class T>
-IC _vector2<T> operator-(const _vector2<T>& a, const _vector2<T>& b) {
-	_vector2<T> r(a); r.sub(b); return r;
+IC template_vector2<T> operator-(const template_vector2<T>& a, const template_vector2<T>& b) {
+	template_vector2<T> r(a); r.sub(b); return r;
 }
 template <class T>
-IC _vector2<T> operator-(const _vector2<T>& a, T s) {
-	_vector2<T> r(a); r.sub(s); return r;
+IC template_vector2<T> operator-(const template_vector2<T>& a, T s) {
+	template_vector2<T> r(a); r.sub(s); return r;
 }
 template <class T>
-IC _vector2<T> operator-(T s, const _vector2<T>& a) {
-	_vector2<T> r; r.sub(a, s); return r;   // s - a = -(a - s)
+IC template_vector2<T> operator-(T s, const template_vector2<T>& a) {
+	template_vector2<T> r; r.sub(a, s); return r;   // s - a = -(a - s)
 }
 
 template <class T>
-IC _vector2<T> operator*(const _vector2<T>& a, const _vector2<T>& b) {
-	_vector2<T> r(a); r.mul(b); return r;
+IC template_vector2<T> operator*(const template_vector2<T>& a, const template_vector2<T>& b) {
+	template_vector2<T> r(a); r.mul(b); return r;
 }
 template <class T>
-IC _vector2<T> operator*(const _vector2<T>& a, T s) {
-	_vector2<T> r(a); r.mul(s); return r;
+IC template_vector2<T> operator*(const template_vector2<T>& a, T s) {
+	template_vector2<T> r(a); r.mul(s); return r;
 }
 template <class T>
-IC _vector2<T> operator*(T s, const _vector2<T>& a) {
-	_vector2<T> r(a); r.mul(s); return r;
+IC template_vector2<T> operator*(T s, const template_vector2<T>& a) {
+	template_vector2<T> r(a); r.mul(s); return r;
 }
 
 template <class T>
-IC _vector2<T> operator/(const _vector2<T>& a, const _vector2<T>& b) {
-	_vector2<T> r(a); r.div(b); return r;
+IC template_vector2<T> operator/(const template_vector2<T>& a, const template_vector2<T>& b) {
+	template_vector2<T> r(a); r.div(b); return r;
 }
 template <class T>
-IC _vector2<T> operator/(const _vector2<T>& a, T s) {
-	_vector2<T> r(a); r.div(s); return r;
+IC template_vector2<T> operator/(const template_vector2<T>& a, T s) {
+	template_vector2<T> r(a); r.div(s); return r;
 }
 template <class T>
-IC _vector2<T> operator/(T s, const _vector2<T>& a) {
-	_vector2<T> r; r.x = s / a.x; r.y = s / a.y; return r;
+IC template_vector2<T> operator/(T s, const template_vector2<T>& a) {
+	template_vector2<T> r; r.x = s / a.x; r.y = s / a.y; return r;
 }
 
-typedef _vector2<float> fvec2;
-typedef _vector2<double> dvec2;
-typedef _vector2<int> ivec2;
+typedef template_vector2<float> fvec2;
+typedef template_vector2<double> dvec2;
+typedef template_vector2<int> ivec2;
 
-template <class T> BOOL _valid(const _vector2<T>& v)
+template <class T> BOOL _valid(const template_vector2<T>& v)
 {
 	return _valid((T)v.x) && _valid((T)v.y);
 }

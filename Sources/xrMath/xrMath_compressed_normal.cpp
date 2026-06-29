@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "xrMath_compressed_normal.h"
-#include <cmath>
 
 // Definition of the lookup table
 XRMATH_API float pvUVAdjustment[0x2000];

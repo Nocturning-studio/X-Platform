@@ -3,14 +3,14 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct _rect
+template <class T> struct template_rect
 {
   public:
 	typedef T TYPE;
-	typedef _rect<T> Self;
+	typedef template_rect<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
-	typedef _vector2<T> Tvector;
+	typedef template_vector2<T> Tvector;
 
   public:
 	union {
@@ -138,11 +138,11 @@ template <class T> struct _rect
 	{
 		return (p.x >= x1) && (p.x <= x2) && (p.y >= y1) && (p.y <= y2);
 	};
-	IC BOOL cmp(_rect<int>& r)
+	IC BOOL cmp(template_rect<int>& r)
 	{
 		return x1 == r.x1 && y1 == r.y1 && x2 == r.x2 && y2 == r.y2;
 	};
-	IC BOOL cmp(_rect<float>& r)
+	IC BOOL cmp(template_rect<float>& r)
 	{
 		return fsimilar(x1, r.x1) && fsimilar(y1, r.y1) && fsimilar(x2, r.x2) && fsimilar(y2, r.y2);
 	};
@@ -205,11 +205,11 @@ template <class T> struct _rect
 	}
 };
 
-typedef _rect<float> Frect;
-typedef _rect<double> Drect;
-typedef _rect<int> Irect;
+typedef template_rect<float> Frect;
+typedef template_rect<double> Drect;
+typedef template_rect<int> Irect;
 
-template <class T> BOOL _valid(const _rect<T>& m)
+template <class T> BOOL _valid(const template_rect<T>& m)
 {
 	return m.lt._valid() && m.rb._valid();
 }

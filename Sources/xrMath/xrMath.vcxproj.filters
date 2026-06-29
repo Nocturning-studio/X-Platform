@@ -5,8 +5,11 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Math">
+    <Filter Include="Implementation">
       <UniqueIdentifier>{bc7de5b5-6c2d-4c2b-bbab-7950682c0538}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{0842ede1-859a-496e-adb7-8805cf397ca0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -17,82 +20,82 @@
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_bitwise.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_color.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_compressed_normal.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_cylinder.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_fbox.h">
-      <Filter>Math</Filter>
+    <ClInclude Include="xrMath_box3D.h">
+      <Filter>Implementation</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_fbox2.h">
-      <Filter>Math</Filter>
+    <ClInclude Include="xrMath_box2D.h">
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_flags.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_matrix4x4.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_matrix3x3.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_obb.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_plane.h">
-      <Filter>Math</Filter>
+    <ClInclude Include="xrMath_plane3D.h">
+      <Filter>Implementation</Filter>
     </ClInclude>
-    <ClInclude Include="xrMath_plane2.h">
-      <Filter>Math</Filter>
+    <ClInclude Include="xrMath_plane2D.h">
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_quaternion.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_random.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_rect.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_vector2.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_vector4.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_constants.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_implementation.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_splines.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_types.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_utils.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="xrMath.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="xrMath_common.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_sphere.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClInclude>
     <ClInclude Include="xrMath_vector3.h">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
+    </ClInclude>
+    <ClInclude Include="xrMath.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="xrMath_common.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -103,13 +106,13 @@
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="xrMath_compressed_normal.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMath.cpp">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
     </ClCompile>
     <ClCompile Include="xrMath_sphere.cpp">
-      <Filter>Math</Filter>
+      <Filter>Implementation</Filter>
+    </ClCompile>
+    <ClCompile Include="xrMath.cpp">
+      <Filter>Include</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,13 +1,13 @@
 #pragma once
 
-template <class T> struct _obb
+template <class T> struct template_obb
 {
   public:
-	typedef _obb<T> Self;
+	typedef template_obb<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
-	typedef _vector3<T> Tvector;
-	typedef _matrix4x4<T> Tmatrix;
+	typedef template_vector3<T> Tvector;
+	typedef template_matrix4x4<T> Tmatrix;
 
   protected:
 	static bool clip(T fDenom, T fNumer, T& rfT0, T& rfT1)
@@ -50,7 +50,7 @@ template <class T> struct _obb
 	}
 
   public:
-	_matrix3x3<T> m_rotate;
+	template_matrix3x3<T> m_rotate;
 	Tvector m_translate;
 	Tvector m_halfsize;
 
@@ -141,10 +141,10 @@ template <class T> struct _obb
 	}
 };
 
-typedef _obb<float> Fobb;
-typedef _obb<double> Dobb;
+typedef template_obb<float> Fobb;
+typedef template_obb<double> Dobb;
 
-template <class T> BOOL _valid(const _obb<T>& m)
+template <class T> BOOL _valid(const template_obb<T>& m)
 {
 	return _valid(m.m_rotate) && _valid(m.m_translate) && _valid(m.m_halfsize);
 }

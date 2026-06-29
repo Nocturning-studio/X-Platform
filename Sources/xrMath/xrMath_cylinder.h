@@ -1,16 +1,16 @@
 #pragma once
 
-template <class T> class _cylinder
+template <class T> class template_cylinder
 {
   public:
 	typedef T TYPE;
-	typedef _cylinder<T> Self;
+	typedef template_cylinder<T> Self;
 	typedef Self& SelfRef;
 	typedef const Self& SelfCRef;
 
   public:
-	_vector3<T> m_center;
-	_vector3<T> m_direction;
+	template_vector3<T> m_center;
+	template_vector3<T> m_direction;
 	T m_height;
 	T m_radius;
 
@@ -23,14 +23,14 @@ template <class T> class _cylinder
 		m_radius = 0;
 		return *this;
 	}
-	IC int intersect(const _vector3<T>& start, const _vector3<T>& dir, T afT[2]) const
+	IC int intersect(const template_vector3<T>& start, const template_vector3<T>& dir, T afT[2]) const
 	{
 		T fEpsilon = 1e-12f;
 
 		// set up quadratic Q(t) = a*t^2 + 2*b*t + c
-		_vector3<T> kU, kV, kW = m_direction;
-		_vector3<T>::generate_orthonormal_basis(kW, kU, kV);
-		_vector3<T> kD;
+		template_vector3<T> kU, kV, kW = m_direction;
+		template_vector3<T>::generate_orthonormal_basis(kW, kU, kV);
+		template_vector3<T> kD;
 		kD.set(kU.dotproduct(dir), kV.dotproduct(dir), kW.dotproduct(dir));
 #ifdef DEBUG
 		if (kD.square_magnitude() <= std::numeric_limits<T>::min())
@@ -44,9 +44,9 @@ template <class T> class _cylinder
 #endif
 		T fDLength = kD.normalize_magn();
 		T fInvDLength = 1.0f / fDLength;
-		_vector3<T> kDiff;
+		template_vector3<T> kDiff;
 		kDiff.sub(start, m_center);
-		_vector3<T> kP;
+		template_vector3<T> kP;
 		kP.set(kU.dotproduct(kDiff), kV.dotproduct(kDiff), kW.dotproduct(kDiff));
 		T fHalfHeight = 0.5f * m_height;
 		T fRadiusSqr = m_radius * m_radius;
@@ -197,7 +197,7 @@ template <class T> class _cylinder
 		rpOriginOutside = 2,
 		fcv_forcedword = u32(-1)
 	};
-	IC ERP_Result intersect(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+	IC ERP_Result intersect(const template_vector3<T>& start, const template_vector3<T>& dir, T& dist) const
 	{
 		T afT[2];
 		int cnt;
@@ -229,9 +229,9 @@ template <class T> class _cylinder
 	//----------------------------------------------------------------------------
 };
 
-typedef _cylinder<float> Fcylinder;
+typedef template_cylinder<float> Fcylinder;
 
-template <class T> BOOL _valid(const _cylinder<T>& c)
+template <class T> BOOL _valid(const template_cylinder<T>& c)
 {
 	return _valid(c.m_center) && _valid(c.m_direction) && _valid(c.m_height) && _valid(c.m_height);
 }
