@@ -1747,7 +1747,6 @@
     <ClInclude Include="GameFont.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="HW.h" />
-    <ClInclude Include="HWCaps.h" />
     <ClInclude Include="ICollidable.h" />
     <ClInclude Include="IGame_Level.h" />
     <ClInclude Include="IGame_ObjectPool.h" />
@@ -1975,7 +1974,6 @@
     <ClCompile Include="GameFont.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="HW.cpp" />
-    <ClCompile Include="HWCaps.cpp" />
     <ClCompile Include="ICollidable.cpp" />
     <ClCompile Include="IGame_Level.cpp" />
     <ClCompile Include="IGame_Level_check_textures.cpp" />

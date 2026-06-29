@@ -183,7 +183,7 @@ void CSkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
 void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 {
 	// Create HW VB in case this is possible
-	BOOL bSoft = HW.GetCaps().geometry.bSoftware;
+	BOOL bSoft = false;//HW.GetCaps().geometry.bSoftware;
 	u32 dwUsage =
 		/*D3DUSAGE_WRITEONLY |*/ (bSoft ? D3DUSAGE_SOFTWAREPROCESSING : 0); // VB may be read by wallmarks code
 	switch (RenderMode)

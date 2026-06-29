@@ -390,9 +390,6 @@
     <ClInclude Include="HW.h">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
     </ClInclude>
-    <ClInclude Include="HWCaps.h">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClInclude>
     <ClInclude Include="xr_effgamma.h">
       <Filter>Render\Execution &amp; 3D\Gamma</Filter>
     </ClInclude>
@@ -813,9 +810,6 @@
       <Filter>Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="HW.cpp">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="HWCaps.cpp">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
     </ClCompile>
     <ClCompile Include="xr_effgamma.cpp">

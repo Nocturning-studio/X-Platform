@@ -124,7 +124,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 			vCount = data->r_u32();
 			u32 vStride = D3DXGetFVFVertexSize(fvf);
 
-			BOOL bSoft = HW.GetCaps().geometry.bSoftware || (dwFlags & VLOAD_FORCESOFTWARE);
+			BOOL bSoft = false;//HW.GetCaps().geometry.bSoftware || (dwFlags & VLOAD_FORCESOFTWARE);
 			u32 dwUsage = D3DUSAGE_WRITEONLY | (bSoft ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 			BYTE* bytes = 0;
 			VERIFY(NULL == p_rm_Vertices);
@@ -158,7 +158,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 			iCount = data->r_u32();
 			dwPrimitives = iCount / 3;
 
-			BOOL bSoft = HW.GetCaps().geometry.bSoftware || (dwFlags & VLOAD_FORCESOFTWARE);
+			BOOL bSoft = false;//HW.GetCaps().geometry.bSoftware || (dwFlags & VLOAD_FORCESOFTWARE);
 			u32 dwUsage = /*D3DUSAGE_WRITEONLY |*/ (bSoft ? D3DUSAGE_SOFTWAREPROCESSING
 														  : 0); // indices are read in model-wallmarks code
 			BYTE* bytes = 0;

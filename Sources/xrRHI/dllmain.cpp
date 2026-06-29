@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 
 BOOL APIENTRY DllMain(HMODULE /* hModule 8 */, DWORD ul_reason_for_call, LPVOID /* lpReserved */
 )

@@ -129,26 +129,7 @@ static class cl_is_hud_render_phase : public R_constant_setup
 //////////////////////////////////////////////////////////////////////////
 void CRender::CheckHWRenderSupporting()
 {
-	R_ASSERT2(CAP_VERSION(HW.GetCaps().raster_major, HW.GetCaps().raster_minor) >= CAP_VERSION(3, 0),
-			  make_string("Your graphics accelerator don`t meet minimal mod system requirements (DX9.0c supporting)"));
 
-	R_ASSERT2(HW.GetCaps().raster.dwInstructions >= 512, 
-		make_string("Your graphics accelerator don`t meet minimal mod system requirements (Instructions count less than 512)"));
-
-	R_ASSERT2(HW.GetCaps().raster.dwMRT_count >= 3,
-		make_string("Your graphics accelerator don`t meet minimal mod system requirements (Multiple render targets)"));
-
-	R_ASSERT2(HW.GetCaps().raster.b_MRT_mixdepth, 
-		make_string("Your graphics accelerator don`t meet minimal mod system requirements (Multiple render targets independent depths)"));
-
-	R_ASSERT2(HW.support(D3DFMT_D24X8, D3DRTYPE_TEXTURE, D3DUSAGE_DEPTHSTENCIL), 
-		make_string("Your graphics accelerator don`t meet minimal mod system requirements (D24X8 rendertarget format)"));
-
-	R_ASSERT2(HW.support(D3DFMT_A16B16G16R16F, D3DRTYPE_TEXTURE, D3DUSAGE_QUERY_FILTER),
-			  make_string("Your graphics accelerator don`t meet minimal mod system requirements (Floating point 16-bits rendertarget format)"));
-
-	R_ASSERT2(HW.support(D3DFMT_A16B16G16R16F, D3DRTYPE_TEXTURE, D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING),
-			  make_string("Your graphics accelerator don`t meet minimal mod system requirements (Post-Pixel Shader blending)"));
 }
 //////////////////////////////////////////////////////////////////////////
 // update with vid_restart
@@ -156,7 +137,7 @@ void CRender::update_options()
 {
 	o.smapsize = 1024;
 
-	o.nvdbt = HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
+	o.nvdbt = false;//HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
 	if (o.nvdbt)
 		Msg("- Nvidia Depth Bounds supported");
 }

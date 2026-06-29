@@ -101,9 +101,6 @@ public:
 	void Clear();
 	void End();
 
-	void overdrawBegin();
-	void overdrawEnd();
-
 	// Mode control
 	void DumpFlags();
 

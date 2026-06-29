@@ -357,7 +357,7 @@ ICF void CBackend::set_CullMode(u32 _mode)
 
 ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
 {
-	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
+	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
 
@@ -365,13 +365,13 @@ ENGINE_API extern int psAnisotropic;
 
 ICF void CBackend::enable_anisotropy_filtering()
 {
-	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
+	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
 ICF void CBackend::disable_anisotropy_filtering()
 {
-	for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
+	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }
 

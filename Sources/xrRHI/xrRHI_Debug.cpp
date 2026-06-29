@@ -12,7 +12,7 @@ XRRHI_API std::string WinErrorToString(long code)
 	if (result == 0)
 		return "Unknown error";
 
-	// Óäàëÿåì çàâåðøàþùèå ïðîáåëû/ïåðåâîäû ñòðîê
+	// Ð£Ð´Ð°Ð»ÑÐµÐ¼ Ð·Ð°Ð²ÐµÑ€ÑˆÐ°ÑŽÑ‰Ð¸Ðµ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹/Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ñ‹ ÑÑ‚Ñ€Ð¾Ðº
 	while (result > 0 && (buffer[result - 1] == '\n' || buffer[result - 1] == '\r' || buffer[result - 1] == ' '))
 	{
 		buffer[--result] = '\0';
@@ -30,6 +30,9 @@ XRRHI_API void __cdecl Print(const char* format, ...)
 	buf[sizeof(buf) - 1] = 0;
 	va_end(mark);
 	if (sz)
+	{
+		OutputDebugStringA(buf);
 		printf("%s\n", buf);
+	}
 }
 RHI_END

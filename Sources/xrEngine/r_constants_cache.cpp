@@ -11,7 +11,6 @@ u32 R_constant_array::getFrame()
 
 void R_constants::flush_cache()
 {
-	// ВРЕМЕННО: ДЕБАГ ВЫВОД
 #ifdef DEBUG
 	static u32 lastDebugFrame = 0;
 	if (Engine.TimeManager.GetFrameCount() - lastDebugFrame > 60) // Раз в секунду
@@ -22,7 +21,6 @@ void R_constants::flush_cache()
 	}
 #endif
 
-	// ВРЕМЕННО: используем старую логику для стабильности
 	if (a_pixel.b_dirty)
 	{
 		R_constant_array::t_f& F = a_pixel.c_f;
@@ -40,7 +38,6 @@ void R_constants::flush_cache()
 		}
 		a_pixel.b_dirty = FALSE;
 
-		// ТЕСТИРУЕМ новую систему параллельно
 		a_pixel.mark_flushed();
 	}
 
@@ -51,24 +48,14 @@ void R_constants::flush_cache()
 			u32 count = F.r_hi() - F.r_lo();
 			if (count)
 			{
-#ifdef DEBUG
-				if (F.r_hi() > HW.GetCaps().geometry.dwRegisters)
-				{
-					Debug.fatal(DEBUG_INFO, "Internal error setting VS-constants: overflow\nregs[%d],hi[%d]",
-								HW.GetCaps().geometry.dwRegisters, F.r_hi());
-				}
-#endif
 				CHK_DX(HW.GetDevice()->SetVertexShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
 				F.flush();
 			}
 		}
 		a_vertex.b_dirty = FALSE;
-
-		// ТЕСТИРУЕМ новую систему параллельно
 		a_vertex.mark_flushed();
 	}
 
-	// ДОПОЛНИТЕЛЬНО: проверяем работу новой системы
 	if (a_pixel.needs_flush() || a_vertex.needs_flush())
 	{
 		Msg("! CONSTANTS WARNING: New dirty system detected unflushed constants!");

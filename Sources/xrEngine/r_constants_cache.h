@@ -3,7 +3,7 @@
 #pragma once
 
 #include "r_constants.h"
-#include "device.h" // Теперь Device доступен
+#include "device.h"
 
 template <class T, u32 limit> class R_constant_cache
 {
@@ -53,19 +53,16 @@ class ENGINE_API R_constant_array
 	BOOL b_dirty;
 
   private:
-	// ДОБАВЛЯЕМ: Dirty-система
 	u32 m_dirtyFrame;
 	u32 m_lastFlushFrame;
 
 	u32 getFrame();
 
   public:
-	// ДОБАВЛЯЕМ: Конструктор для инициализации
 	R_constant_array() : b_dirty(FALSE), m_dirtyFrame(0), m_lastFlushFrame(0)
 	{
 	}
 
-	// ДОБАВЛЯЕМ: Dirty-методы
 	ICF void mark_dirty()
 	{
 		m_dirtyFrame = getFrame();
@@ -74,7 +71,6 @@ class ENGINE_API R_constant_array
 
 	ICF bool needs_flush() const
 	{
-		// ИСПРАВЛЕНИЕ: проверяем что dirty frame больше last flush frame
 		return b_dirty && (m_dirtyFrame > m_lastFlushFrame);
 	}
 
@@ -101,7 +97,6 @@ class ENGINE_API R_constant_array
 		return c_f;
 	}
 
-	// МОДИФИЦИРУЕМ существующие методы - добавляем mark_dirty()
 	void set(R_constant* C, R_constant_load& L, const fmat4x4& A)
 	{
 		VERIFY(RC_float == C->type);
@@ -203,7 +198,6 @@ class ENGINE_API R_constants
 	ALIGN(16) R_constant_array a_pixel;
 	ALIGN(16) R_constant_array a_vertex;
 
-	// ДОБАВЛЯЕМ: Конструктор
 	R_constants()
 	{
 	}
@@ -211,18 +205,17 @@ class ENGINE_API R_constants
 	void flush_cache();
 
   public:
-	// ВРЕМЕННО ВОЗВРАЩАЕМ старую логику для отладки
 	ICF void set(R_constant* C, const fmat4x4& A)
 	{
 		if (C->destination & 1)
 		{
 			a_pixel.set(C, C->ps, A);
-			a_pixel.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_pixel.b_dirty = TRUE;
 		}
 		if (C->destination & 2)
 		{
 			a_vertex.set(C, C->vs, A);
-			a_vertex.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_vertex.b_dirty = TRUE;
 		}
 	}
 
@@ -231,12 +224,12 @@ class ENGINE_API R_constants
 		if (C->destination & 1)
 		{
 			a_pixel.set(C, C->ps, A);
-			a_pixel.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_pixel.b_dirty = TRUE;
 		}
 		if (C->destination & 2)
 		{
 			a_vertex.set(C, C->vs, A);
-			a_vertex.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_vertex.b_dirty = TRUE;
 		}
 	}
 
@@ -252,12 +245,12 @@ class ENGINE_API R_constants
 		if (C->destination & 1)
 		{
 			a_pixel.seta(C, C->ps, e, A);
-			a_pixel.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_pixel.b_dirty = TRUE;
 		}
 		if (C->destination & 2)
 		{
 			a_vertex.seta(C, C->vs, e, A);
-			a_vertex.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_vertex.b_dirty = TRUE;
 		}
 	}
 
@@ -266,12 +259,12 @@ class ENGINE_API R_constants
 		if (C->destination & 1)
 		{
 			a_pixel.seta(C, C->ps, e, A);
-			a_pixel.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_pixel.b_dirty = TRUE;
 		}
 		if (C->destination & 2)
 		{
 			a_vertex.seta(C, C->vs, e, A);
-			a_vertex.b_dirty = TRUE; // ВРЕМЕННО ОСТАВЛЯЕМ
+			a_vertex.b_dirty = TRUE;
 		}
 	}
 

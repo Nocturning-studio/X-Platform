@@ -132,30 +132,23 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
 void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
 {
 	s_bones_array_const = "sbones_array";
-#pragma todo("container is created in stack!")
 	xr_vector<u16> bids;
 
-	// Load vertices
+	// Загружаем вершины
 	R_ASSERT(data->find_chunk(OGF_VERTICES));
-
-	u16 hw_bones = u16((HW.GetCaps().geometry.dwRegisters - 22) / 3);
-	u16 sw_bones = 0;
-#ifdef _EDITOR
-	hw_bones = 0;
-#endif
 
 	u32 dwVertType, size, it, crc;
 	dwVertType = data->r_u32();
 	dwVertCount = data->r_u32();
 
-	RenderMode = RM_SKINNING_SOFT;
-	Render->shader_option_skinning(-1);
 	switch (dwVertType)
 	{
-	case OGF_VERTETXFORMAT_FVF_1L: // 1-Link
+	case OGF_VERTETXFORMAT_FVF_1L:
 	{
 		size = dwVertCount * sizeof(vertBoned1W);
 		vertBoned1W* VO = (vertBoned1W*)data->pointer();
+
+		u16 sw_bones = 0;
 		for (it = 0; it < dwVertCount; it++)
 		{
 			u16 mid = (u16)VO[it].matrix;
@@ -164,39 +157,28 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
 			if (mid > sw_bones)
 				sw_bones = mid;
 		}
-#ifdef _EDITOR
-		// software
-		crc = crc32(data->pointer(), size);
-		Vertices1W.create(crc, dwVertCount, (vertBoned1W*)data->pointer());
-#else
-		if (1 == bids.size())
+
+		if (bids.size() == 1)
 		{
-			// HW- single bone
 			RenderMode = RM_SINGLE;
 			RMS_boneid = *bids.begin();
 			Render->shader_option_skinning(0);
 		}
-		else if (sw_bones <= hw_bones)
+		else
 		{
-			// HW- one weight
 			RenderMode = RM_SKINNING_1B;
 			RMS_bonecount = sw_bones + 1;
 			Render->shader_option_skinning(1);
 		}
-		else
-		{
-			// software
-			crc = crc32(data->pointer(), size);
-			Vertices1W.create(crc, dwVertCount, (vertBoned1W*)data->pointer());
-			Render->shader_option_skinning(-1);
-		}
-#endif
 	}
 	break;
-	case OGF_VERTETXFORMAT_FVF_2L: // 2-Link
+
+	case OGF_VERTETXFORMAT_FVF_2L:
 	{
 		size = dwVertCount * sizeof(vertBoned2W);
 		vertBoned2W* VO = (vertBoned2W*)data->pointer();
+
+		u16 sw_bones = 0;
 		for (it = 0; it < dwVertCount; it++)
 		{
 			if (VO[it].matrix0 > sw_bones)
@@ -208,31 +190,19 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
 			if (bids.end() == std::find(bids.begin(), bids.end(), VO[it].matrix1))
 				bids.push_back(VO[it].matrix1);
 		}
-		if (sw_bones <= hw_bones)
-		{
-			// HW- two weights
-			RenderMode = RM_SKINNING_2B;
-			RMS_bonecount = sw_bones + 1;
-			Render->shader_option_skinning(2);
-		}
-		else
-		{
-			// software
-			crc = crc32(data->pointer(), size);
-			Vertices2W.create(crc, dwVertCount, (vertBoned2W*)data->pointer());
-			Render->shader_option_skinning(-1);
-		}
+
+		RenderMode = RM_SKINNING_2B;
+		RMS_bonecount = sw_bones + 1;
+		Render->shader_option_skinning(2);
 	}
 	break;
+
 	default:
 		Debug.fatal(DEBUG_INFO, "Invalid vertex type in skinned model '%s'", N);
 		break;
 	}
-#ifdef _EDITOR
-	if (bids.size() > 0)
-#else
+
 	if (bids.size() > 1)
-#endif
 	{
 		crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
 		BonesUsed.create(crc, bids.size(), &*bids.begin());

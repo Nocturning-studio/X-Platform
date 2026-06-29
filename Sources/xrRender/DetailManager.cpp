@@ -852,12 +852,10 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			if (y < D.vis.box.min.y)
 				continue;
 
-			// === »—œŒÀ‹«”≈Ã Õ¿—“–Œ… » ===
-			Item_P.y = y + ps_r_Detail_height; // ¬˚ÒÓÚ‡
+			Item_P.y = y - 0.17f; // ¬˚ÒÓÚ‡
 
-			float base_scale = r_scale.randF(Dobj->m_fMinScale * 0.5f, Dobj->m_fMaxScale * 0.9f);
+			float base_scale = r_scale.randF(Dobj->m_fMinScale, Dobj->m_fMaxScale);
 			Item.scale = base_scale * ps_r_Detail_scale; // Ã‡Ò¯Ú‡·
-			// ============================
 
 			fmat4x4 mScale, mTransform;
 			Fbox ItemBB;

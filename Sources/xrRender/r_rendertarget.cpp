@@ -31,7 +31,7 @@ void CRenderTarget::create_textures()
 	Msg("Creating render target textures");
 
 	// SCREENSHOT
-	R_CHK(HW.GetDevice()->CreateOffscreenPlainSurface(dwWidth, dwHeight, HW.GetCaps().fTarget, D3DPOOL_SYSTEMMEM, &surf_screenshot_normal, NULL));
+	R_CHK(HW.GetDevice()->CreateOffscreenPlainSurface(dwWidth, dwHeight, D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &surf_screenshot_normal, NULL));
 	R_CHK(HW.GetDevice()->CreateTexture(128, 128, 1, NULL, D3DFMT_DXT5, D3DPOOL_SYSTEMMEM, &tex_screenshot_gamesave, NULL));
 	R_CHK(tex_screenshot_gamesave->GetSurfaceLevel(0, &surf_screenshot_gamesave));
 

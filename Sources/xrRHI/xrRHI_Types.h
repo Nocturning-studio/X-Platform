@@ -9,14 +9,14 @@ RHI_BEGIN
 enum class BackendType : u32
 {
 	DirectX9 = 0, // Direct3D9Ex
-	DirectX11,	   // Direct3D11 (для будущего)
+	DirectX11,	   // Direct3D11 (РґР»СЏ Р±СѓРґСѓС‰РµРіРѕ)
 	DirectX12,	   // Direct3D12
 	Vulkan,		   // Vulkan
 	OpenGL,		   // OpenGL / OpenGL ES
 };
 
 // =========================================================================
-// Форматы данных (Resources)
+// Р¤РѕСЂРјР°С‚С‹ РґР°РЅРЅС‹С… (Resources)
 // =========================================================================
 enum class RHI_Format : u32
 {
@@ -25,7 +25,7 @@ enum class RHI_Format : u32
 
 	// --- Color Formats ---
 	RGBA8_UNORM, // D3DFMT_A8R8G8B8
-	A8_UNORM,	 // D3DFMT_A8 (или L8 в зависимости от контекста)
+	A8_UNORM,	 // D3DFMT_A8 (РёР»Рё L8 РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РєРѕРЅС‚РµРєСЃС‚Р°)
 	R8_UNORM,	 // D3DFMT_L8
 
 	RGBA16_FLOAT, // D3DFMT_A16B16G16R16F
@@ -53,7 +53,7 @@ enum class RHI_Format : u32
 };
 
 // =========================================================================
-// Топология (Input Assembly)
+// РўРѕРїРѕР»РѕРіРёСЏ (Input Assembly)
 // =========================================================================
 enum class RHI_Topology : u32
 {
@@ -66,7 +66,7 @@ enum class RHI_Topology : u32
 };
 
 // =========================================================================
-// Растеризация (Rasterizer State)
+// Р Р°СЃС‚РµСЂРёР·Р°С†РёСЏ (Rasterizer State)
 // =========================================================================
 enum class RHI_CullMode : u32
 {
@@ -83,7 +83,7 @@ enum class RHI_FillMode : u32
 };
 
 // =========================================================================
-// Тест глубины и трафарета (Depth Stencil State)
+// РўРµСЃС‚ РіР»СѓР±РёРЅС‹ Рё С‚СЂР°С„Р°СЂРµС‚Р° (Depth Stencil State)
 // =========================================================================
 enum class RHI_CmpFunc : u32
 {
@@ -110,7 +110,7 @@ enum class RHI_StencilOp : u32
 };
 
 // =========================================================================
-// Смешивание цветов (Blend State)
+// РЎРјРµС€РёРІР°РЅРёРµ С†РІРµС‚РѕРІ (Blend State)
 // =========================================================================
 enum class RHI_Blend : u32
 {
@@ -137,7 +137,7 @@ enum class RHI_BlendOp : u32
 };
 
 // =========================================================================
-// Текстурирование и Семплеры (Samplers)
+// РўРµРєСЃС‚СѓСЂРёСЂРѕРІР°РЅРёРµ Рё РЎРµРјРїР»РµСЂС‹ (Samplers)
 // =========================================================================
 enum class RHI_TextureAddress : u32
 {
@@ -159,7 +159,7 @@ enum class RHI_Filter : u32
 };
 
 // =========================================================================
-// Вспомогательные флаги
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„Р»Р°РіРё
 // =========================================================================
 enum RHI_ClearFlags : u32
 {
@@ -168,7 +168,7 @@ enum RHI_ClearFlags : u32
 	RHI_CLEAR_STENCIL = 0x00000004L	 // D3DCLEAR_STENCIL
 };
 
-// Описание вьюпорта
+// РћРїРёСЃР°РЅРёРµ РІСЊСЋРїРѕСЂС‚Р°
 struct RHI_Viewport
 {
 	u32 X;
@@ -179,7 +179,7 @@ struct RHI_Viewport
 	float MaxZ;
 };
 
-// Описание прямоугольника (Scissor Rect)
+// РћРїРёСЃР°РЅРёРµ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° (Scissor Rect)
 struct RHI_Rect
 {
 	s32 left;
@@ -200,9 +200,6 @@ struct TextureDesc
 	bool isCubeMap;
 };
 
-struct RHITextureImpl;
-typedef RHITextureImpl* RHITexture;
-
 struct SamplerDesc
 {
 	RHI_Filter minFilter;
@@ -216,16 +213,13 @@ struct SamplerDesc
 	fvec4 borderColor;
 };
 
-struct RHISamplerImpl;
-typedef RHISamplerImpl* RHISampler;
-
 // =========================================================================
-// Параметры SwapChain (Presentation Params)
+// РџР°СЂР°РјРµС‚СЂС‹ SwapChain (Presentation Params)
 // =========================================================================
 enum class RHI_SwapEffect : u32
 {
 	Discard = 0,    // D3DSWAPEFFECT_DISCARD / VK_SWAPCHAIN_CREATE_MODE_*
-	Flip,           // Для DXGI / Vulkan (Flip Model)
+	Flip,           // Р”Р»СЏ DXGI / Vulkan (Flip Model)
 };
 
 struct RHIPresentationParams
@@ -233,15 +227,15 @@ struct RHIPresentationParams
 	u32 BackBufferWidth = 0;
 	u32 BackBufferHeight = 0;
 	bool Windowed = true;
-	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;			// Базовый формат бэкбуфера
-	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;	// Формат для авто-буфера глубины
-	u32 BackBufferCount = 2;										// Количество буферов в своп-цепи (1-3)
-	u32 SyncInterval = 1;											// 0 - немедленно, 1 - вертикальная синхронизация
-	u32 FullscreenRefreshHz = 60;									// Частота обновления (для полноэкранного режима)
+	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;			// Р‘Р°Р·РѕРІС‹Р№ С„РѕСЂРјР°С‚ Р±СЌРєР±СѓС„РµСЂР°
+	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;	// Р¤РѕСЂРјР°С‚ РґР»СЏ Р°РІС‚Рѕ-Р±СѓС„РµСЂР° РіР»СѓР±РёРЅС‹
+	u32 BackBufferCount = 2;										// РљРѕР»РёС‡РµСЃС‚РІРѕ Р±СѓС„РµСЂРѕРІ РІ СЃРІРѕРї-С†РµРїРё (1-3)
+	u32 SyncInterval = 1;											// 0 - РЅРµРјРµРґР»РµРЅРЅРѕ, 1 - РІРµСЂС‚РёРєР°Р»СЊРЅР°СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ
+	u32 FullscreenRefreshHz = 60;									// Р§Р°СЃС‚РѕС‚Р° РѕР±РЅРѕРІР»РµРЅРёСЏ (РґР»СЏ РїРѕР»РЅРѕСЌРєСЂР°РЅРЅРѕРіРѕ СЂРµР¶РёРјР°)
 	RHI_SwapEffect SwapEffect = RHI_SwapEffect::Discard;
-	u32 MultisampleCount = 1;										// Количество сэмплов (1 = MSAA выключен)
+	u32 MultisampleCount = 1;										// РљРѕР»РёС‡РµСЃС‚РІРѕ СЃСЌРјРїР»РѕРІ (1 = MSAA РІС‹РєР»СЋС‡РµРЅ)
 	u32 MultisampleQuality = 0;
-	bool EnableAutoDepthStencil = true;								// Создавать ли автоматический Depth/Stencil буфер
+	bool EnableAutoDepthStencil = true;								// РЎРѕР·РґР°РІР°С‚СЊ Р»Рё Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёР№ Depth/Stencil Р±СѓС„РµСЂ
 };
 
 RHI_END

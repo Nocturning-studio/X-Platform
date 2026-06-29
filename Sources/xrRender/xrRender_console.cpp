@@ -374,7 +374,7 @@ class CCC_tf_MipBias : public CCC_Float
 	{
 		if (0 == HW.GetDevice())
 			return;
-		for (u32 i = 0; i < HW.GetCaps().raster.dwStages; i++)
+		for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 			CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
 	}
 

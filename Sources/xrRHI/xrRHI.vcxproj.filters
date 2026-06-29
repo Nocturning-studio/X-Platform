@@ -8,14 +8,14 @@
     <Filter Include="Core">
       <UniqueIdentifier>{798aced2-22af-427e-96b3-796a82f0c115}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Implementation">
-      <UniqueIdentifier>{80cb4af7-79ac-41f6-98f4-3562fcb26472}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Implementation\DirectX9">
-      <UniqueIdentifier>{c20eee90-4c4d-434d-a548-b7609b644ce4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Fabric">
       <UniqueIdentifier>{713c8ec5-1929-45ad-a05b-415002361e02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backends Implementation">
+      <UniqueIdentifier>{80cb4af7-79ac-41f6-98f4-3562fcb26472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backends Implementation\DirectX9">
+      <UniqueIdentifier>{c20eee90-4c4d-434d-a548-b7609b644ce4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -25,19 +25,28 @@
     <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\xrRHI\xrRHI.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\xrRHI\xrRHI_Types.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrRHI_Internal.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="xrBackendDX9.h">
-      <Filter>Implementation\DirectX9</Filter>
-    </ClInclude>
     <ClInclude Include="xrRHI_Debug.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_Types.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_Handles.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Backends\DirectX9\xrBackendDX9.h">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="Backends\DirectX9\xrBackendDX9_Internal.h">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_Caps.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,11 +60,23 @@
     <ClCompile Include="Fabric.cpp">
       <Filter>Fabric</Filter>
     </ClCompile>
-    <ClCompile Include="xrBackendDX9.cpp">
-      <Filter>Implementation\DirectX9</Filter>
-    </ClCompile>
     <ClCompile Include="xrRHI_Debug.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Internal.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Sampler.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Texture.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Caps.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

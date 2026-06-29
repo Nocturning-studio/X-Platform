@@ -549,7 +549,7 @@ template <typename T> T* CResourceManager::CreateShader(const char* _name, const
 	// select target
 	const char* type = ShaderTypeTraits<T>::GetShaderType(); // Возвращает "ps" или "vs"
 	string32 c_target;
-	sprintf_s(c_target, sizeof c_target, "%s_%u_%u", type, HW.GetCaps().raster_major, HW.GetCaps().raster_minor);
+	sprintf_s(c_target, sizeof c_target, "%s_%u_%u", type, RHI()->GetDeviceCaps().PixelShaderMajor, RHI()->GetDeviceCaps().PixelShaderMinor);
 
 #ifdef DEBUG_SHADER_COMPILATION
 	Msg("* Compiling shader: target=%s, source=%s.%s, entry=%s", c_target, _name, ext, actual_entry);

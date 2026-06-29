@@ -11,7 +11,7 @@
 void CBackend::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
-	for (u32 stage = 0; stage < HW.GetCaps().raster.dwStages; stage++)
+	for (u32 stage = 0; stage < RHI()->GetDeviceCaps().MaxSimultaneousTextures; stage++)
 		CHK_DX(HW.GetDevice()->SetTexture(0, 0));
 	CHK_DX(HW.GetDevice()->SetStreamSource(0, 0, 0, 0));
 	CHK_DX(HW.GetDevice()->SetIndices(0));
@@ -101,8 +101,6 @@ void CBackend::RestoreRenderState()
 
 void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
 {
-	if (0 == HW.GetCaps().geometry.dwClipPlanes)
-		return;
 	if (!_enable)
 	{
 		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
@@ -111,8 +109,8 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 
 	// Enable and setup planes
 	VERIFY(_planes && count);
-	if (count > HW.GetCaps().geometry.dwClipPlanes)
-		count = HW.GetCaps().geometry.dwClipPlanes;
+	if (count > 15)
+		count = 15;
 
 	D3DXMATRIX worldToClipMatrixIT;
 	D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIX*)&Engine.RenderView.ViewProjection);
@@ -134,8 +132,6 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
 #ifndef DEDICATED_SREVER
 void CBackend::set_ClipPlanes(u32 _enable, fmat4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
 {
-	if (0 == HW.GetCaps().geometry.dwClipPlanes)
-		return;
 	if (!_enable)
 	{
 		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
@@ -622,7 +618,7 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTURE
 }
 
 // Версия с указанием конкретных областей
-void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter = D3DTEXF_LINEAR)
+void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if (!source || !destination || !source->valid() || !destination->valid())
 		return;
@@ -685,7 +681,7 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 }
 
 // Версия с указанием областей
-void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter = D3DTEXF_NONE)
+void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if (!source || !destination)
 		return;

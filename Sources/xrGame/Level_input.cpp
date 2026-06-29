@@ -258,8 +258,8 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 
 	case DIK_BACK:
-		if (GameID() == GAME_SINGLE)
-			HW.GetCaps().SceneMode = (HW.GetCaps().SceneMode + 1) % 3;
+		//if (GameID() == GAME_SINGLE)
+			//HW.GetCaps().SceneMode = (HW.GetCaps().SceneMode + 1) % 3;
 		return;
 
 	case DIK_F4: {

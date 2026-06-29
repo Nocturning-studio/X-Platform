@@ -1,5 +1,4 @@
 #pragma once
-#include "hwcaps.h"
 #include <xrRHI/xrRHI.h>
 
 class ENGINE_API CHW
@@ -10,8 +9,6 @@ class ENGINE_API CHW
 
 	IDirect3DSurface9* pBaseRT;
 	IDirect3DSurface9* pBaseZB;
-
-	CHWCaps Caps;
 
 	UINT DevAdapter;
 	D3DDEVTYPE DevT;
@@ -31,10 +28,6 @@ class ENGINE_API CHW
 
 	void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
 	u32 selectPresentInterval();
-	u32 selectGPU();
-	u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
-	void updateWindowProps(HWND hw);
-	BOOL support(D3DFORMAT fmt, DWORD type, DWORD usage);
 
 	DEPRECATED IDirect3D9Ex* GetD3D() const
 	{
@@ -51,10 +44,6 @@ class ENGINE_API CHW
 	DEPRECATED IDirect3DSurface9* GetBaseZB() const
 	{
 		return pBaseZB;
-	}
-	DEPRECATED CHWCaps GetCaps()
-	{
-		return Caps;
 	}
 	DEPRECATED UINT GetDevAdapter()
 	{
