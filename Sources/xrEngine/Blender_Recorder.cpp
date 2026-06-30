@@ -95,8 +95,6 @@ void CBlender_Compile::PassBegin()
 {
 	RS.Invalidate();
 	passTextures.clear();
-	passMatrices.clear();
-	passConstants.clear();
 	strcpy_s(pass_ps, "null");
 	strcpy_s(pass_vs, "null");
 	strcpy_s(pass_ps_entry, "main");
@@ -139,10 +137,8 @@ void CBlender_Compile::PassEnd()
 	SetMapping();
 	ref_ctable ct = Engine.ResourceManager->_CreateConstantTable(ctable);
 	ref_texture_list T = Engine.ResourceManager->_CreateTextureList(passTextures);
-	ref_matrix_list M = Engine.ResourceManager->_CreateMatrixList(passMatrices);
-	ref_constant_list C = Engine.ResourceManager->_CreateConstantList(passConstants);
 
-	ref_pass _pass_ = Engine.ResourceManager->_CreatePass(state, ps, vs, ct, T, M, C);
+	ref_pass _pass_ = Engine.ResourceManager->_CreatePass(state, ps, vs, ct, T);
 	SH->passes.push_back(_pass_);
 }
 
@@ -187,81 +183,13 @@ void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
 	RS.SetRS(D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
 }
 
-void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
-{
-	clamp(aRef, 0u, 255u);
-	RS.SetRS(D3DRS_ALPHATESTENABLE, BC(bATest));
-	if (bATest)
-		RS.SetRS(D3DRS_ALPHAREF, u32(aRef));
-}
-
-void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
+void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST)
 {
 	PassSET_ablend_mode(bABlend, abSRC, abDST);
-#ifdef DEBUG
-	if (strstr(Core.Params, "-noaref"))
-	{
-		bATest = FALSE;
-		aRef = 0;
-	}
-#endif
-	PassSET_ablend_aref(bATest, aRef);
-}
-
-void CBlender_Compile::StageBegin()
-{
-	StageSET_Address(D3DTADDRESS_WRAP); // Wrapping enabled by default
-}
-
-void CBlender_Compile::StageEnd()
-{
-	dwStage++;
-}
-void CBlender_Compile::StageSET_Address(u32 adr)
-{
-	RS.SetSAMP(Stage(), D3DSAMP_ADDRESSU, adr);
-	RS.SetSAMP(Stage(), D3DSAMP_ADDRESSV, adr);
-}
-
-void CBlender_Compile::StageSET_TMC(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel)
-{
-	Stage_Texture(T);
-	Stage_Matrix(M, UVW_channel);
-	Stage_Constant(C);
-}
-
-void CBlender_Compile::Stage_Texture(LPCSTR name, u32, u32 fmin, u32 fmip, u32 fmag)
-{
-	sh_list& lst = L_textures;
-	int id = ParseName(name);
-	LPCSTR N = name;
-	if (id >= 0)
-	{
-		if (id >= int(lst.size()))
-			Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
-		N = *lst[id];
-	}
-	passTextures.push_back(mk_pair(Stage(), ref_texture(Engine.ResourceManager->_CreateTexture(N))));
-	//	i_Address				(Stage(),address);
-	i_Filter(Stage(), fmin, fmip, fmag);
-}
-
-void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
-{
-	sh_list& lst = L_matrices;
-	int id = ParseName(name);
-	CMatrix* M = Engine.ResourceManager->_CreateMatrix((id >= 0) ? *lst[id] : name);
-	passMatrices.push_back(M);
-}
-void CBlender_Compile::Stage_Constant(LPCSTR name)
-{
-	sh_list& lst = L_constants;
-	int id = ParseName(name);
-	passConstants.push_back(Engine.ResourceManager->_CreateConstant((id >= 0) ? *lst[id] : name));
 }
 
 void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCSTR _ps_entry, bool bFog, BOOL bZtest,
-								  BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
+								  BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST)
 {
 	// 1. Ñíà÷àëà êîïèğóåì èìåíà. Åñëè ïğèøëè NULL - ñòàâèì "null".
 	strcpy_s(pass_vs, _vs ? _vs : "null");
@@ -277,7 +205,7 @@ void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCS
 	// 3. ÏĞÈÌÅÍßÅÌ ÍÀÑÒĞÎÉÊÈ ÑÒÅÉÒÎÂ ÏÎÑËÅ ÊÎÌÌÈÒÀ
 	// Òåïåğü îíè ëÿãóò â ÷èñòûé RS è íå ñîòğóòñÿ.
 	PassSET_ZB(bZtest, bZwrite);
-	PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
+	PassSET_Blend(bABlend, abSRC, abDST);
 }
 
 void CBlender_Compile::commit_Pass()
@@ -382,8 +310,7 @@ void CBlender_Compile::i_Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
 	i_Filter_Mag(s, _mag);
 }
 
-u32 CBlender_Compile::set_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, u32 address, u32 fmin,
-								u32 fmip, u32 fmag, bool b_srgb)
+u32 CBlender_Compile::set_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, u32 address, u32 fmin, u32 fmip, u32 fmag, bool b_srgb)
 {
 	dwStage = i_Sampler(_name);
 	if (u32(-1) != dwStage)
@@ -411,20 +338,17 @@ u32 CBlender_Compile::set_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_Proj
 
 void CBlender_Compile::set_Sampler_point(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, bool b_SRGB)
 {
-	set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT,
-			  b_SRGB);
+	set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT, b_SRGB);
 }
 
 void CBlender_Compile::set_Sampler_linear(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, bool b_SRGB)
 {
-	set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR,
-			  b_SRGB);
+	set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR, b_SRGB);
 }
 
 void CBlender_Compile::set_Sampler_linear_wrap(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, bool b_SRGB)
 {
-	u32 s = set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE,
-					  D3DTEXF_LINEAR, b_SRGB);
+	u32 s = set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR, b_SRGB);
 	if (u32(-1) != s)
 		RS.SetSAMP(s, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
 }
@@ -444,14 +368,9 @@ void CBlender_Compile::end_Pass()
 	dest.constants = Engine.ResourceManager->_CreateConstantTable(ctable);
 	dest.state = Engine.ResourceManager->_CreateState(RS.GetContainer());
 	dest.T = Engine.ResourceManager->_CreateTextureList(passTextures);
-	dest.C = 0;
 
-	ref_matrix_list temp(0);
-	SH->passes.push_back(
-		Engine.ResourceManager->_CreatePass(dest.state, dest.ps, dest.vs, dest.constants, dest.T, temp, dest.C));
+	SH->passes.push_back(Engine.ResourceManager->_CreatePass(dest.state, dest.ps, dest.vs, dest.constants, dest.T));
 
 	ctable.clear();
 	passTextures.clear();
-	passMatrices.clear();
-	passConstants.clear();
 }

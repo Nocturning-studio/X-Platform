@@ -62,15 +62,11 @@ class CBlender_Model_EbB : public IBlender
 		if (oBlend.value)
 		{
 			// forward
-			LPCSTR vsname = 0;
-			LPCSTR psname = 0;
 			switch (C.iElement)
 			{
 			case 0:
 			case 1:
-				vsname = psname = "model_env_lq";
-				C.begin_Pass(vsname, psname, "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA,
-							 D3DBLEND_INVSRCALPHA, TRUE, 0);
+				C.begin_Pass("model_env_lq", "model_env_lq", "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 				C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 				C.set_Sampler("s_env", oT2_Name, false, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_POINT, D3DTEXF_LINEAR, true);
 				C.end_Pass();
@@ -89,14 +85,12 @@ class CBlender_Model_EbB : public IBlender
 				configure_shader(C, false, "dynamic_mesh", "static_mesh", false);
 				break;
 			case SE_SHADOW_DEPTH: // smap
-				C.begin_Pass("shadow_depth_stage_dynamic_mesh", "shadow_depth_stage_static_mesh", "main", "main", FALSE,
-							 TRUE, TRUE, FALSE);
+				C.begin_Pass("shadow_depth_stage_dynamic_mesh", "shadow_depth_stage_static_mesh", "main", "main", FALSE, TRUE, TRUE, FALSE);
 				C.set_Sampler("s_base", C.L_textures[0]);
 				C.end_Pass();
 				break;
 			case SE_DEPTH_PREPASS:
-				C.begin_Pass("depth_prepass_stage_dynamic_mesh", "depth_prepass_stage_static_mesh", "main", "main",
-							 FALSE, TRUE, TRUE, FALSE);
+				C.begin_Pass("depth_prepass_stage_dynamic_mesh", "depth_prepass_stage_static_mesh", "main", "main", FALSE, TRUE, TRUE, FALSE);
 				C.set_Sampler("s_base", C.L_textures[0]);
 				C.end_Pass();
 				break;

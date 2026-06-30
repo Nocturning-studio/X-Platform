@@ -337,12 +337,6 @@ class adopt_compiler
 		return *this;
 	}
 
-	adopt_compiler& _aref(bool _aref, u32 aref)
-	{
-		C->PassSET_ablend_aref(_aref, aref);
-		return *this;
-	}
-
 	adopt_sampler _sampler(LPCSTR _name)
 	{
 		u32 s = C->set_Sampler(_name, 0);
@@ -486,7 +480,6 @@ void CResourceManager::LS_Load()
 					 .def("fog", &adopt_compiler::_fog, return_reference_to(_1))
 					 .def("zb", &adopt_compiler::_ZB, return_reference_to(_1))
 					 .def("blend", &adopt_compiler::_blend, return_reference_to(_1))
-					 .def("aref", &adopt_compiler::_aref, return_reference_to(_1))
 					 .def("sampler", &adopt_compiler::_sampler)
 					 .def("commit", &adopt_compiler::_commit_pass),
 

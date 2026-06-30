@@ -438,12 +438,6 @@
     <ClInclude Include="SH_Atomic.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="SH_Constant.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_Matrix.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="SH_Texture.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
@@ -864,12 +858,6 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Atomic.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_Constant.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_Matrix.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Texture.cpp">

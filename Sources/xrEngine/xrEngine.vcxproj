@@ -1793,8 +1793,6 @@
     <ClInclude Include="ShaderResourceTraits.h" />
     <ClInclude Include="Shader_xrLC.h" />
     <ClInclude Include="SH_Atomic.h" />
-    <ClInclude Include="SH_Constant.h" />
-    <ClInclude Include="SH_Matrix.h" />
     <ClInclude Include="SH_Texture.h" />
     <ClInclude Include="SkeletonAnimated.h" />
     <ClInclude Include="SkeletonCustom.h" />
@@ -2043,17 +2041,6 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderMacros.cpp" />
     <ClCompile Include="SH_Atomic.cpp" />
-    <ClCompile Include="SH_Constant.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
-    <ClCompile Include="SH_Matrix.cpp" />
     <ClCompile Include="SH_Texture.cpp" />
     <ClCompile Include="SkeletonAnimated.cpp" />
     <ClCompile Include="SkeletonCustom.cpp" />

@@ -79,40 +79,6 @@ void CResourceManager::reset_end()
 		}
 	}
 
-	// create RTs in the same order as them was first created
-	if (0)
-	{
-		// RT
-#pragma todo("container is created in stack!")
-		xr_vector<CRT*> rt;
-		for (map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
-			rt.push_back(rt_it->second);
-		concurrency::parallel_sort(rt.begin(), rt.end(), cmp_rt);
-		for (u32 _it = 0; _it < rt.size(); _it++)
-			rt[_it]->reset_end();
-	}
-
-	if (0)
-	{
-		// RTc
-#pragma todo("container is created in stack!")
-		xr_vector<CRTC*> rt;
-		for (map_RTCIt rt_it = m_rtargets_c.begin(); rt_it != m_rtargets_c.end(); rt_it++)
-			rt.push_back(rt_it->second);
-		concurrency::parallel_sort(rt.begin(), rt.end(), cmp_rtc);
-		for (u32 _it = 0; _it < rt.size(); _it++)
-			rt[_it]->reset_end();
-	}
-
-	// create state-blocks
-	if (0)
-	{
-		for (u32 _it = 0; _it < v_states.size(); _it++)
-			v_states[_it]->state = v_states[_it]->state_code.record();
-	}
-
-	//DeferredUpload();
-
 	// create everything, renderer may use
 	::Render->reset_end();
 }
@@ -141,8 +107,6 @@ void CResourceManager::Dump(bool bBrief)
 	Msg("* RM_Dump: dcl       : %d", v_declarations.size());
 	Msg("* RM_Dump: states    : %d", v_states.size());
 	Msg("* RM_Dump: tex_list  : %d", lst_textures.size());
-	Msg("* RM_Dump: matrices  : %d", lst_matrices.size());
-	Msg("* RM_Dump: lst_constants: %d", lst_constants.size());
 	Msg("* RM_Dump: v_passes  : %d", v_passes.size());
 	Msg("* RM_Dump: v_elements: %d", v_elements.size());
 	Msg("* RM_Dump: v_shaders : %d", v_shaders.size());

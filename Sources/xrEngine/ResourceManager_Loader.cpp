@@ -11,22 +11,6 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 
 	m_textures_description.UnLoad();
 
-	// Matrices
-	for (map_Matrix::iterator m = m_matrices.begin(); m != m_matrices.end(); m++)
-	{
-		R_ASSERT(1 == m->second->dwReference);
-		xr_delete(m->second);
-	}
-	m_matrices.clear();
-
-	// Constants
-	for (map_Constant::iterator c = m_constants.begin(); c != m_constants.end(); c++)
-	{
-		R_ASSERT(1 == c->second->dwReference);
-		xr_delete(c->second);
-	}
-	m_constants.clear();
-
 	// Release blenders
 	for (map_BlenderIt b = m_blenders.begin(); b != m_blenders.end(); b++)
 	{
@@ -55,38 +39,11 @@ void CResourceManager::OnDeviceCreate(IReader* F)
 	if (!Device.b_is_Ready)
 		return;
 
-	string256 name;
-
 #ifndef _EDITOR
 	// scripting
 	LS_Load();
 #endif
 	IReader* fs = 0;
-	// Load constants
-	fs = F->open_chunk(0);
-	if (fs)
-	{
-		while (!fs->eof())
-		{
-			fs->r_stringZ(name, sizeof(name));
-			CConstant* C = _CreateConstant(name);
-			C->Load(fs);
-		}
-		fs->close();
-	}
-
-	// Load matrices
-	fs = F->open_chunk(1);
-	if (fs)
-	{
-		while (!fs->eof())
-		{
-			fs->r_stringZ(name, sizeof(name));
-			CMatrix* M = _CreateMatrix(name);
-			M->Load(fs);
-		}
-		fs->close();
-	}
 
 	// Load blenders
 	fs = F->open_chunk(2);

@@ -60,8 +60,7 @@ class CBlender_LmEbB : public IBlender
 	void Compile(CBlender_Compile& C)
 	{
 		if (oBlend.value)
-			C.begin_Pass("lmapE", "lmapE", "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA,
-						 D3DBLEND_INVSRCALPHA, TRUE, 0);
+			C.begin_Pass("lmapE", "lmapE", "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 		else
 			C.begin_Pass("lmapE", "lmapE", "main", "main", TRUE, TRUE, TRUE);
 

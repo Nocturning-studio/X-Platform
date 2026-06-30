@@ -76,5 +76,7 @@ ENGINE_API void throw_exception(const std::exception& A);
 #include <xmmintrin.h>
 #pragma warning(default : 4995)
 
+#include <optick/optick.h>
+
 #endif // !M_BORLAND
 #endif // !defined STDAFX_3DA

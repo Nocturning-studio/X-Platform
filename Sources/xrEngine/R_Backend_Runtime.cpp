@@ -56,8 +56,6 @@ void CBackend::Invalidate()
 	ctable = NULL;
 
 	T = NULL;
-	M = NULL;
-	C = NULL;
 
 	colorwrite_mask = u32(-1);
 
@@ -65,10 +63,6 @@ void CBackend::Invalidate()
 		textures_ps[ps_it++] = 0;
 	for (u32 vs_it = 0; vs_it < 5;)
 		textures_vs[vs_it++] = 0;
-#ifdef _EDITOR
-	for (u32 m_it = 0; m_it < 8;)
-		matrices[m_it++] = 0;
-#endif
 }
 
 void CBackend::SaveRenderState()
@@ -99,49 +93,7 @@ void CBackend::RestoreRenderState()
 	HW.GetDevice()->SetViewport(&saved_state.viewport);
 }
 
-void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
-{
-	if (!_enable)
-	{
-		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
-		return;
-	}
-
-	// Enable and setup planes
-	VERIFY(_planes && count);
-	if (count > 15)
-		count = 15;
-
-	D3DXMATRIX worldToClipMatrixIT;
-	D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIX*)&Engine.RenderView.ViewProjection);
-	D3DXMatrixTranspose(&worldToClipMatrixIT, &worldToClipMatrixIT);
-	for (u32 it = 0; it < count; it++)
-	{
-		Fplane& P = _planes[it];
-		D3DXPLANE planeWorld(-P.n.x, -P.n.y, -P.n.z, -P.d), planeClip;
-		D3DXPlaneNormalize(&planeWorld, &planeWorld);
-		D3DXPlaneTransform(&planeClip, &planeWorld, &worldToClipMatrixIT);
-		CHK_DX(HW.GetDevice()->SetClipPlane(it, planeClip));
-	}
-
-	// Enable them
-	u32 e_mask = (1 << count) - 1;
-	SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask);
-}
-
 #ifndef DEDICATED_SREVER
-void CBackend::set_ClipPlanes(u32 _enable, fmat4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
-{
-	if (!_enable)
-	{
-		SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
-		return;
-	}
-	VERIFY(_transform && fmask);
-	CFrustum F;
-	F.CreateFromMatrix(*_transform, fmask);
-	set_ClipPlanes(_enable, F.planes, F.p_count);
-}
 
 void CBackend::set_Textures(STextureList* _T)
 {
@@ -213,58 +165,55 @@ void CBackend::set_Textures(STextureList* _T)
 }
 #else
 
-void CBackend::set_ClipPlanes(u32 _enable, fmat4x4* _transform /*=NULL */, u32 fmask /* =0xff */)
-{
-}
 void CBackend::set_Textures(STextureList* _T)
 {
 }
 
 #endif
 
-void CBackend::set_Render_Target_Surface(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4)
+void CBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
-	R_ASSERT2(_1, "Rendertarget must have minimum one target surface (ref_rt& _1)");
+	R_ASSERT2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
 
-	RenderBackendLegacy.setRenderTarget(_1->pRT, 0);
+	RenderBackendLegacy.setRenderTarget(rt_1->pRT, 0);
 
-	if (_2)
-		RenderBackendLegacy.setRenderTarget(_2->pRT, 1);
+	if (rt_2)
+		RenderBackendLegacy.setRenderTarget(rt_2->pRT, 1);
 	else
 		RenderBackendLegacy.setRenderTarget(NULL, 1);
 
-	if (_3)
-		RenderBackendLegacy.setRenderTarget(_3->pRT, 2);
+	if (rt_3)
+		RenderBackendLegacy.setRenderTarget(rt_3->pRT, 2);
 	else
 		RenderBackendLegacy.setRenderTarget(NULL, 2);
 
-	if (_4)
-		RenderBackendLegacy.setRenderTarget(_4->pRT, 3);
+	if (rt_4)
+		RenderBackendLegacy.setRenderTarget(rt_4->pRT, 3);
 	else
 		RenderBackendLegacy.setRenderTarget(NULL, 3);
 }
 
-void CBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IDirect3DSurface9* _4)
+void CBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
 {
-	R_ASSERT2(_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* _1)");
+	R_ASSERT2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
 
 	//dwWidth = W;
 	//dwHeight = H;
 
-	RenderBackendLegacy.setRenderTarget(_1, 0);
+	RenderBackendLegacy.setRenderTarget(rt_1, 0);
 
-	if (_2)
-		RenderBackendLegacy.setRenderTarget(_2, 1);
+	if (rt_2)
+		RenderBackendLegacy.setRenderTarget(rt_2, 1);
 	else
 		RenderBackendLegacy.setRenderTarget(NULL, 1);
 
-	if (_3)
-		RenderBackendLegacy.setRenderTarget(_3, 2);
+	if (rt_3)
+		RenderBackendLegacy.setRenderTarget(rt_3, 2);
 	else
 		RenderBackendLegacy.setRenderTarget(NULL, 2);
 
-	if (_4)
-		RenderBackendLegacy.setRenderTarget(_4, 3);
+	if (rt_4)
+		RenderBackendLegacy.setRenderTarget(rt_4, 3);
 	else
 		RenderBackendLegacy.setRenderTarget(NULL, 3);
 }
@@ -451,36 +400,36 @@ void CBackend::RenderViewportSurface()
 	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
-void CBackend::RenderViewportSurface(const ref_rt& _1, IDirect3DSurface9* zb)
+void CBackend::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
 {
-	set_Render_Target_Surface(_1);
+	set_Render_Target_Surface(rt_1);
 	set_Depth_Buffer(zb);
-	render_viewport_geometry(_1->dwWidth, _1->dwHeight);
+	render_viewport_geometry(rt_1->dwWidth, rt_1->dwHeight);
 }
 
-void CBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* _1, IDirect3DSurface9* zb)
+void CBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
 {
-	set_Render_Target_Surface(w, h, _1);
+	set_Render_Target_Surface(w, h, rt_1);
 	set_Depth_Buffer(zb);
 	render_viewport_geometry(w, h);
 }
 
-void CBackend::RenderViewportSurface(IDirect3DSurface9* _1)
+void CBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
 {
 	D3DSURFACE_DESC desc;
-	HRESULT hr = _1->GetDesc(&desc);
+	HRESULT hr = rt_1->GetDesc(&desc);
 
 	if (FAILED(hr))
 		return;
 
-	set_Render_Target_Surface(desc.Width, desc.Height, _1);
+	set_Render_Target_Surface(desc.Width, desc.Height, rt_1);
 	set_Depth_Buffer(NULL);
 	render_viewport_geometry(desc.Width, desc.Height);
 }
 
-void CBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4)
+void CBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
-	set_Render_Target_Surface(_1, _2, _3, _4);
+	set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
 	set_Depth_Buffer(NULL);
 	render_viewport_geometry(w, h);
 }
@@ -694,26 +643,26 @@ void CBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR C
 	CHK_DX(HW.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
 }
 
-void CBackend::ClearTexture(const ref_rt& _1, u32 color)
+void CBackend::ClearTexture(const ref_rt& rt_1, u32 color)
 {
-	set_Render_Target_Surface(_1, NULL, NULL, NULL);
+	set_Render_Target_Surface(rt_1, NULL, NULL, NULL);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
-void CBackend::ClearTexture(const ref_rt& _1, const ref_rt& _2, u32 color)
+void CBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, u32 color)
 {
-	set_Render_Target_Surface(_1, _2, NULL, NULL);
+	set_Render_Target_Surface(rt_1, rt_2, NULL, NULL);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
-void CBackend::ClearTexture(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, u32 color)
+void CBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, u32 color)
 {
-	set_Render_Target_Surface(_1, _2, _3, NULL);
+	set_Render_Target_Surface(rt_1, rt_2, rt_3, NULL);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
-void CBackend::ClearTexture(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, u32 color)
+void CBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4, u32 color)
 {
-	set_Render_Target_Surface(_1, _2, _3, _4);
+	set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }

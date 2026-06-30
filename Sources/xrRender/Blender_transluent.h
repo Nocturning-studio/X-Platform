@@ -65,8 +65,7 @@ class CBlender_transluent : public IBlender
 			case SE_NORMAL_LQ:
 				if (lmapped)
 				{
-					C.begin_Pass("alpha_blend_lightmap_lighted", "alpha_blend_lightmap_lighted", "main", "main", TRUE,
-								 TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
+					C.begin_Pass("alpha_blend_lightmap_lighted", "alpha_blend_lightmap_lighted", "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 					C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 					C.set_Sampler("s_lmap", C.L_textures[1]);
 					C.set_Sampler_linear("s_hemi", *C.L_textures[2]);
@@ -75,8 +74,7 @@ class CBlender_transluent : public IBlender
 				}
 				else
 				{
-					C.begin_Pass("alpha_blend_vertex_lighted", "alpha_blend_vertex_lighted", "main", "main", TRUE, TRUE,
-								 FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
+					C.begin_Pass("alpha_blend_vertex_lighted", "alpha_blend_vertex_lighted", "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 					C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 					C.end_Pass();
 				}

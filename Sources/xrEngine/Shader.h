@@ -11,8 +11,6 @@
 
 #include "sh_atomic.h"
 #include "sh_texture.h"
-#include "sh_matrix.h"
-#include "sh_constant.h"
 #include "R_Backend_RenderTarget.h"
 
 typedef xr_vector<shared_str> sh_list;
@@ -45,19 +43,6 @@ struct ENGINE_API STextureList : public xr_resource_flagged, public xr_vector<st
 	virtual void clear_not_free();
 };
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API SMatrixList : public xr_resource_flagged, public svector<ref_matrix, 4>
-{
-	~SMatrixList();
-};
-typedef resptr_core<SMatrixList, resptr_base<SMatrixList>> ref_matrix_list;
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API SConstantList : public xr_resource_flagged, public svector<ref_constant_obsolette, 4>
-{
-	~SConstantList();
-};
-typedef resptr_core<SConstantList, resptr_base<SConstantList>> ref_constant_list;
-
 //////////////////////////////////////////////////////////////////////////
 struct ENGINE_API SGeometry : public xr_resource_flagged
 {
@@ -92,14 +77,9 @@ struct ENGINE_API SPass : public xr_resource_flagged
 	ref_ctable constants; // may be NULL
 
 	ref_texture_list T;
-	ref_constant_list C;
-#ifdef _EDITOR
-	ref_matrix_list M;
-#endif
 
 	~SPass();
-	BOOL equal(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T,
-			   ref_matrix_list& _M, ref_constant_list& _C);
+	BOOL equal(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T);
 };
 typedef resptr_core<SPass, resptr_base<SPass>> ref_pass;
 
@@ -138,8 +118,8 @@ struct ENGINE_API Shader : public xr_resource_flagged
 };
 struct ENGINE_API resptrcode_shader : public resptr_base<Shader>
 {
-	void create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-	void create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+	void create(LPCSTR s_shader = 0, LPCSTR s_textures = 0);
+	void create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0);
 	void destroy()
 	{
 		_set(NULL);

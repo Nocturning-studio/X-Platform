@@ -35,8 +35,6 @@ class ENGINE_API CResourceManager
   public:
 	DEFINE_MAP_PRED(const char*, IBlender*, map_Blender, map_BlenderIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CTexture*, map_Texture, map_TextureIt, str_pred);
-	DEFINE_MAP_PRED(const char*, CMatrix*, map_Matrix, map_MatrixIt, str_pred);
-	DEFINE_MAP_PRED(const char*, CConstant*, map_Constant, map_ConstantIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CRT*, map_RT, map_RTIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CRTC*, map_RTC, map_RTCIt, str_pred);
 	DEFINE_MAP_PRED(const char*, SVS*, map_VS, map_VSIt, str_pred);
@@ -47,8 +45,6 @@ class ENGINE_API CResourceManager
 	// data
 	map_Blender m_blenders;
 	map_Texture m_textures;
-	map_Matrix m_matrices;
-	map_Constant m_constants;
 	map_RT m_rtargets;
 	map_RTC m_rtargets_c;
 	map_VS m_vs;
@@ -62,8 +58,6 @@ class ENGINE_API CResourceManager
 
 	// lists
 	xr_vector<STextureList*> lst_textures;
-	xr_vector<SMatrixList*> lst_matrices;
-	xr_vector<SConstantList*> lst_constants;
 
 	// main shader-array
 	xr_vector<SPass*> v_passes;
@@ -96,26 +90,12 @@ class ENGINE_API CResourceManager
 		return m_blenders;
 	}
 
-	// Editor cooperation
-	void ED_UpdateBlender(LPCSTR Name, IBlender* data);
-	void ED_UpdateMatrix(LPCSTR Name, CMatrix* data);
-	void ED_UpdateConstant(LPCSTR Name, CConstant* data);
-#ifdef _EDITOR
-	void ED_UpdateTextures(AStringVec* names);
-#endif
-
 	CTexture* m_LoadedTexture;
 	LPCSTR m_loadingTextureName;
 
 	// Low level resource creation
 	CTexture* _CreateTexture(LPCSTR _Name);
 	void _DeleteTexture(const CTexture* T);
-
-	CMatrix* _CreateMatrix(LPCSTR Name);
-	void _DeleteMatrix(const CMatrix* M);
-
-	CConstant* _CreateConstant(LPCSTR Name);
-	void _DeleteConstant(const CConstant* C);
 
 	R_constant_table* _CreateConstantTable(R_constant_table& C);
 	void _DeleteConstantTable(const R_constant_table* C);
@@ -126,8 +106,7 @@ class ENGINE_API CResourceManager
 	CRTC* _CreateRTC(LPCSTR Name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
 	void _DeleteRTC(const CRTC* RT);
 
-	SPass* _CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T,
-					   ref_matrix_list& _M, ref_constant_list& _C);
+	SPass* _CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T);
 	void _DeletePass(const SPass* P);
 
 	// Shader compiling / optimizing
@@ -140,18 +119,11 @@ class ENGINE_API CResourceManager
 	STextureList* _CreateTextureList(STextureList& L);
 	void _DeleteTextureList(const STextureList* L);
 
-	SMatrixList* _CreateMatrixList(SMatrixList& L);
-	void _DeleteMatrixList(const SMatrixList* L);
-
-	SConstantList* _CreateConstantList(SConstantList& L);
-	void _DeleteConstantList(const SConstantList* L);
-
 	ShaderElement* _CreateElement(ShaderElement& L);
 	void _DeleteElement(const ShaderElement* L);
 
-	Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-	Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0,
-						LPCSTR s_matrices = 0);
+	Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0);
+	Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0);
 	Shader* _lua_Create(LPCSTR s_shader, LPCSTR s_textures);
 	BOOL _lua_HasShader(LPCSTR s_shader);
 
@@ -168,9 +140,8 @@ class ENGINE_API CResourceManager
 	void reset_end();
 
 	// Creation/Destroying
-	Shader* Create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-	Shader* Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0,
-				   LPCSTR s_matrices = 0);
+	Shader* Create(LPCSTR s_shader = 0, LPCSTR s_textures = 0);
+	Shader* Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0);
 	void Delete(const Shader* S);
 	void RegisterConstantSetup(LPCSTR name, R_constant_setup* s)
 	{

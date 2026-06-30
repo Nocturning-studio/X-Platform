@@ -17,8 +17,6 @@ class ENGINE_API CBlender_Compile
 {
   public:
 	sh_list L_textures;
-	sh_list L_constants;
-	sh_list L_matrices;
 
 	LPCSTR detail_texture;
 	R_constant_setup* detail_scaler;
@@ -40,8 +38,6 @@ class ENGINE_API CBlender_Compile
 	R_constant_table ctable;
 
 	STextureList passTextures;
-	SMatrixList passMatrices;
-	SConstantList passConstants;
 	u32 dwStage;
 
 	string128 pass_vs;
@@ -74,8 +70,6 @@ class ENGINE_API CBlender_Compile
 		BOOL EnableAlphaBlend = FALSE;
 		D3DBLEND BlendSRC = D3DBLEND_ONE;
 		D3DBLEND BlendDST = D3DBLEND_ZERO;
-		BOOL EnableAlphaTest = FALSE;
-		u32 AlphaRef = 0;
 	};
 
 	CShaderMacros macros_common; // Для обоих (по умолчанию)
@@ -98,50 +92,31 @@ class ENGINE_API CBlender_Compile
 	}
 	void PassSET_ZB(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest = FALSE);
 	void PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST);
-	void PassSET_ablend_aref(BOOL aTest, u32 aRef);
-	void PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL aTest, u32 aRef);
+	void PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST);
 	void PassSET_Blend_BLEND(BOOL bAref = FALSE, u32 ref = 0)
 	{
-		PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, bAref, ref);
+		PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 	}
 	void PassSET_Blend_SET(BOOL bAref = FALSE, u32 ref = 0)
 	{
-		PassSET_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO, bAref, ref);
+		PassSET_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
 	}
 	void PassSET_Blend_ADD(BOOL bAref = FALSE, u32 ref = 0)
 	{
-		PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, bAref, ref);
+		PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 	}
 	void PassSET_Blend_MUL(BOOL bAref = FALSE, u32 ref = 0)
 	{
-		PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, bAref, ref);
+		PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
 	}
 	void PassSET_Blend_MUL2X(BOOL bAref = FALSE, u32 ref = 0)
 	{
-		PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, bAref, ref);
+		PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR);
 	}
 	void PassEnd();
 
 	void PassSET_PS(LPCSTR name, LPCSTR entry);
 	void PassSET_VS(LPCSTR name, LPCSTR entry);
-
-	void StageBegin();
-	u32 Stage()
-	{
-		return dwStage;
-	}
-	void StageTemplate_LMAP0();
-	void StageSET_Address(u32 adr);
-	void StageSET_Transform(u32 tf, u32 tc);
-	void StageSET_Color(u32 a1, u32 op, u32 a2);
-	void StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3);
-	void StageSET_Alpha(u32 a1, u32 op, u32 a2);
-	void StageSET_TMC(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel);
-	void Stage_Texture(LPCSTR name, u32 address = D3DTADDRESS_WRAP, u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR);
-	void Stage_Matrix(LPCSTR name, int UVW_channel);
-	void Stage_Constant(LPCSTR name);
-	void UpdateShaderAndConstants();
-	void StageEnd();
 
 	// R1/R2-compiler	[programmable]
 	u32 i_Sampler(LPCSTR name);
@@ -222,9 +197,7 @@ private:
 					BOOL bZwrite = FALSE,
 					BOOL bABlend = FALSE,
 					D3DBLEND abSRC = D3DBLEND_ONE, 
-					D3DBLEND abDST = D3DBLEND_ZERO, 
-					BOOL aTest = FALSE, 
-					u32 aRef = 0);
+					D3DBLEND abDST = D3DBLEND_ZERO);
 	void commit_Pass();
 	
 
@@ -239,9 +212,7 @@ private:
 					PassDescription.EnableZWrite,
 					PassDescription.EnableAlphaBlend, 
 					PassDescription.BlendSRC, 
-					PassDescription.BlendDST,
-					PassDescription.EnableAlphaTest, 
-					PassDescription.AlphaRef );
+					PassDescription.BlendDST);
 	};
 
 	void SetVertexShader(LPCSTR name)

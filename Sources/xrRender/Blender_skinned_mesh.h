@@ -84,10 +84,8 @@ class CBlender_skinned_mesh : public IBlender
 			case 0:
 			case 1:
 				vsname = psname = "model_def_lq";
-				C.begin_Pass(vsname, psname, "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA,
-							 D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
-				C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-							D3DTEXF_ANISOTROPIC, true);
+				C.begin_Pass(vsname, psname, "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA);
+				C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 				C.end_Pass();
 				break;
 			default:
@@ -127,8 +125,7 @@ class CBlender_skinned_mesh : public IBlender
 			case SE_DEPTH_PREPASS:
 				if (bAref)
 				{
-					C.begin_Pass("depth_prepass_stage_dynamic_mesh_alphatest",
-								 "depth_prepass_stage_static_mesh_alphatest", "main", "main", FALSE, TRUE, TRUE, FALSE);
+					C.begin_Pass("depth_prepass_stage_dynamic_mesh_alphatest", "depth_prepass_stage_static_mesh_alphatest", "main", "main", FALSE, TRUE, TRUE, FALSE);
 					C.set_Sampler("s_base", C.L_textures[0]);
 					jitter(C);
 					C.end_Pass();
@@ -136,8 +133,7 @@ class CBlender_skinned_mesh : public IBlender
 				}
 				else
 				{
-					C.begin_Pass("depth_prepass_stage_dynamic_mesh", "depth_prepass_stage_static_mesh", "main", "main",
-								 FALSE, TRUE, TRUE, FALSE);
+					C.begin_Pass("depth_prepass_stage_dynamic_mesh", "depth_prepass_stage_static_mesh", "main", "main", FALSE, TRUE, TRUE, FALSE);
 					C.set_Sampler("s_base", C.L_textures[0]);
 					C.end_Pass();
 					break;

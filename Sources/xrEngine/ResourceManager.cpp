@@ -53,22 +53,6 @@ IBlender* CResourceManager::_FindBlender(LPCSTR Name)
 		return I->second;
 }
 
-void CResourceManager::ED_UpdateBlender(LPCSTR Name, IBlender* data)
-{
-	LPSTR N = LPSTR(Name);
-	map_Blender::iterator I = m_blenders.find(N);
-	if (I != m_blenders.end())
-	{
-		R_ASSERT(data->getDescription().CLS == I->second->getDescription().CLS);
-		xr_delete(I->second);
-		I->second = data;
-	}
-	else
-	{
-		m_blenders.insert(mk_pair(xr_strdup(Name), data));
-	}
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -136,8 +120,7 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
 	Msg("! ERROR: Failed to find compiled 'shader-element'");
 }
 
-Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants,
-									  LPCSTR s_matrices)
+Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures)
 {
 	CBlender_Compile C;
 	Shader S;
@@ -157,8 +140,6 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 
 	// Parse names
 	_ParseList(C.L_textures, s_textures);
-	_ParseList(C.L_constants, s_constants);
-	_ParseList(C.L_matrices, s_matrices);
 
 	// Compile element	(LOD0 - HQ)
 	{
@@ -226,25 +207,25 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	return N;
 }
 
-Shader* CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader* CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures)
 {
 #ifndef DEDICATED_SERVER
-	return _cpp_Create(_GetBlender(s_shader ? s_shader : "null"), s_shader, s_textures, s_constants, s_matrices);
+	return _cpp_Create(_GetBlender(s_shader ? s_shader : "null"), s_shader, s_textures);
 #else
 	return NULL;
 #endif
 }
 
-Shader* CResourceManager::Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader* CResourceManager::Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures)
 {
 #ifndef DEDICATED_SERVER
-	return _cpp_Create(B, s_shader, s_textures, s_constants, s_matrices);
+	return _cpp_Create(B, s_shader, s_textures);
 #else
 	return NULL;
 #endif
 }
 
-Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures)
 {
 #ifndef DEDICATED_SERVER
 #ifndef _EDITOR
@@ -252,7 +233,7 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
 		return _lua_Create(s_shader, s_textures);
 	else
 #endif
-		return _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
+		return _cpp_Create(s_shader, s_textures);
 #else
 	return NULL;
 #endif

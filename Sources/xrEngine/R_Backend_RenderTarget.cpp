@@ -7,54 +7,6 @@
 
 using namespace xrRHI;
 
-// Хелпер для конвертации в D3D9
-static D3DFORMAT RHIFormat_To_D3D9(RHI_Format fmt)
-{
-	switch (fmt)
-	{
-	case RHI_Format::NULLRT:
-		return (D3DFORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
-
-	case RHI_Format::RGBA8_UNORM:
-		return D3DFMT_A8R8G8B8;
-	case RHI_Format::A8_UNORM:
-		return D3DFMT_A8;
-	case RHI_Format::R8_UNORM:
-		return D3DFMT_L8; // Часто используется как R8 в DX9
-
-	case RHI_Format::RGBA16_FLOAT:
-		return D3DFMT_A16B16G16R16F;
-	case RHI_Format::RG16_FLOAT:
-		return D3DFMT_G16R16F;
-	case RHI_Format::R16_FLOAT:
-		return D3DFMT_R16F;
-
-	case RHI_Format::D16_UNORM:
-		return D3DFMT_D16;
-	case RHI_Format::D24_UNORM_S8_UINT:
-		return D3DFMT_D24S8;
-	case RHI_Format::D32_FLOAT:
-		return D3DFMT_D32F_LOCKABLE;
-
-	case RHI_Format::D15S1:
-		return D3DFMT_D15S1;
-	case RHI_Format::D24X8:
-		return D3DFMT_D24X8;
-	case RHI_Format::D32_LOCKABLE:
-		return D3DFMT_D32;
-
-	case RHI_Format::D24S8_Shadow:
-		return (D3DFORMAT)MAKEFOURCC('I', 'N', 'T', 'Z');
-	case RHI_Format::D16_Shadow:
-		return (D3DFORMAT)MAKEFOURCC('D', 'F', '1', '6');
-	case RHI_Format::D24X4S4:
-		return D3DFMT_D24X4S4;
-
-	default:
-		return D3DFMT_UNKNOWN;
-	}
-}
-
 // Хелпер для определения Usage
 static bool IsDepthStencilFormat(RHI_Format fmt)
 {

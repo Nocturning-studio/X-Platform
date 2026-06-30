@@ -13,14 +13,6 @@ STextureList::~STextureList()
 {
 	Engine.ResourceManager->_DeleteTextureList(this);
 }
-SMatrixList::~SMatrixList()
-{
-	Engine.ResourceManager->_DeleteMatrixList(this);
-}
-SConstantList::~SConstantList()
-{
-	Engine.ResourceManager->_DeleteConstantList(this);
-}
 SPass::~SPass()
 {
 	Engine.ResourceManager->_DeletePass(this);
@@ -39,13 +31,13 @@ Shader::~Shader()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void resptrcode_shader::create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+void resptrcode_shader::create(LPCSTR s_shader, LPCSTR s_textures)
 {
-	_set(Engine.ResourceManager->Create(s_shader, s_textures, s_constants, s_matrices));
+	_set(Engine.ResourceManager->Create(s_shader, s_textures));
 }
-void resptrcode_shader::create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+void resptrcode_shader::create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures)
 {
-	_set(Engine.ResourceManager->Create(B, s_shader, s_textures, s_constants, s_matrices));
+	_set(Engine.ResourceManager->Create(B, s_shader, s_textures));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -61,8 +53,7 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-BOOL SPass::equal(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T,
-				  ref_matrix_list& _M, ref_constant_list& _C)
+BOOL SPass::equal(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T)
 {
 	if (state != _state)
 		return FALSE;
@@ -75,12 +66,7 @@ BOOL SPass::equal(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctab
 
 	if (T != _T)
 		return FALSE;
-	if (C != _C)
-		return FALSE;
-#ifdef _EDITOR
-	if (M != _M)
-		return FALSE;
-#endif
+
 	return TRUE;
 }
 

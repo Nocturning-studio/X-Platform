@@ -2,10 +2,7 @@
 #define R_BACKEND_RUNTIMEH
 #pragma once
 
-#include "../xrEngine/optick_include.h"
 #include "sh_texture.h"
-#include "sh_matrix.h"
-#include "sh_constant.h"
 #include "R_Backend_RenderTarget.h"
 
 IC void R_transforms::set_c_World(R_constant* C)
@@ -105,30 +102,6 @@ ICF void CBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 	CHK_DX(HW.GetDevice()->SetRenderState(State, Value));
 };
 
-#ifdef _EDITOR
-IC void CBackend::set_Matrices(SMatrixList* _M)
-{
-	if (M != _M)
-	{
-		M = _M;
-		if (M)
-		{
-			for (u32 it = 0; it < M->size(); it++)
-			{
-				CMatrix* mat = &*((*M)[it]);
-				if (mat && matrices[it] != mat)
-				{
-					matrices[it] = mat;
-					mat->Calculate();
-					set_transform(D3DTS_TEXTURE0 + it, mat->transform);
-					stat.matrices++;
-				}
-			}
-		}
-	}
-}
-#endif
-
 IC void CBackend::set_Constants(R_constant_table* ConstTable)
 {
 	// caching
@@ -160,9 +133,6 @@ IC void CBackend::set_Element(ShaderElement* S, u32 pass)
 	set_Vertex_Shader(P.vs);
 	set_Constants(P.constants);
 	set_Textures(P.T);
-#ifdef _EDITOR
-	set_Matrices(P.M);
-#endif
 }
 
 ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)

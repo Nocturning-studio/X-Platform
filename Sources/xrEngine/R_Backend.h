@@ -111,15 +111,10 @@ class ENGINE_API CBackend
 
 	// Lists
 	STextureList* T;
-	SMatrixList* M;
-	SConstantList* C;
 
 	// Lists-expanded
 	CTexture* textures_ps[16]; // stages
 	CTexture* textures_vs[5];  // dmap + 4 vs
-#ifdef _EDITOR
-	CMatrix* matrices[8]; // matrices are supported only for FFP
-#endif
 
 	void Invalidate();
 
@@ -137,8 +132,6 @@ class ENGINE_API CBackend
 		u32 ib;
 		u32 states;	   // Number of times the shader-state changes
 		u32 textures;  // Number of times the shader-tex changes
-		u32 matrices;  // Number of times the shader-transform changes
-		u32 constants; // Number of times the shader-consts changes
 #endif
 		u32 transforms;
 		u32 target_rt;
@@ -189,14 +182,6 @@ class ENGINE_API CBackend
 	{
 		set_Textures(&*TexList);
 	}
-
-#ifdef _EDITOR
-	IC void set_Matrices(SMatrixList* M);
-	IC void set_Matrices(ref_matrix_list& M)
-	{
-		set_Matrices(&*M);
-	}
-#endif
 
 	IC void set_Element(ShaderElement* S, u32 pass = 0);
 	IC void set_Element(ref_selement& S, u32 pass = 0)
@@ -250,8 +235,6 @@ class ENGINE_API CBackend
 	{
 		return cull_mode;
 	}
-	void set_ClipPlanes(u32 _enable, Fplane* _planes = NULL, u32 count = 0);
-	void set_ClipPlanes(u32 _enable, fmat4x4* _transform = NULL, u32 fmask = 0xff);
 	IC void set_Scissor(Irect* rect = NULL);
 
 	void enable_anisotropy_filtering();
