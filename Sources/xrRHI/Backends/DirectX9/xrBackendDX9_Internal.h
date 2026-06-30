@@ -1,5 +1,7 @@
 #pragma once
+
 #include "../../xrRHI.h"
+
 #include <d3d9.h>
 #include <d3dx9.h>
 
@@ -20,6 +22,28 @@ struct DX9Texture
 struct DX9Sampler
 {
     SamplerDesc desc;
+};
+
+struct DX9Shader
+{
+    union
+    {
+        IDirect3DVertexShader9* vs = nullptr;
+        IDirect3DPixelShader9* ps;
+    };
+    ShaderType type;
+    std::vector<u8> bytecode;
+
+    void Release()
+    {
+        if (type == ShaderType::Vertex && vs) { vs->Release(); vs = nullptr; }
+        if (type == ShaderType::Pixel && ps) { ps->Release(); ps = nullptr; }
+    }
+};
+
+struct DX9ConstantBuffer
+{
+    std::vector<float> data;
 };
 
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);

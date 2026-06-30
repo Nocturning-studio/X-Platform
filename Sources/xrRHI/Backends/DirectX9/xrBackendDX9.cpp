@@ -251,6 +251,27 @@ void CRenderBackendDX9::ReleaseAllResources()
 	m_Samplers.clear();
 	while (!m_FreeSamplerIndices.empty())
 		m_FreeSamplerIndices.pop();
+
+	for (size_t i = 0; i < m_Shaders.size(); ++i) {
+		DX9Shader* shader = m_Shaders[i];
+		if (shader) {
+			shader->Release();
+			delete shader;
+			m_Shaders[i] = nullptr;
+		}
+	}
+	m_Shaders.clear();
+	while (!m_FreeShaderIndices.empty()) m_FreeShaderIndices.pop();
+
+	for (size_t i = 0; i < m_ConstantBuffers.size(); ++i) {
+		DX9ConstantBuffer* cb = m_ConstantBuffers[i];
+		if (cb) {
+			delete cb;
+			m_ConstantBuffers[i] = nullptr;
+		}
+	}
+	m_ConstantBuffers.clear();
+	while (!m_FreeConstantBufferIndices.empty()) m_FreeConstantBufferIndices.pop();
 }
 
 bool CRenderBackendDX9::Reset(const RHIPresentationParams& params)
@@ -278,6 +299,18 @@ bool CRenderBackendDX9::Reset(const RHIPresentationParams& params)
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &m_AdapterID);
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
+
+	for (size_t i = 0; i < m_Shaders.size(); ++i) {
+		DX9Shader* shader = m_Shaders[i];
+		if (!shader) continue;
+
+		shader->Release();
+
+		if (shader->type == ShaderType::Vertex)
+			m_pDevice->CreateVertexShader(reinterpret_cast<const DWORD*>(shader->bytecode.data()), &shader->vs);
+		else if (shader->type == ShaderType::Pixel)
+			m_pDevice->CreatePixelShader(reinterpret_cast<const DWORD*>(shader->bytecode.data()), &shader->ps);
+	}
 
 	Print("* [DX9] Device reset successfully: %dx%d %s, interval=%d",
 		params.BackBufferWidth, params.BackBufferHeight,

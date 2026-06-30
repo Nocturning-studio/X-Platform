@@ -47,6 +47,16 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	SamplerHandle CreateSampler(const SamplerDesc& desc) override;
 	void DestroySampler(SamplerHandle handle) override;
 
+	virtual ShaderHandle CreateShader(ShaderType type, const void* bytecode, size_t bytecodeSize) override;
+	virtual void DestroyShader(ShaderHandle handle) override;
+	virtual void SetShader(ShaderType type, ShaderHandle handle) override;
+
+	virtual ConstantBufferHandle CreateConstantBuffer(u32 size) override;
+	virtual void DestroyConstantBuffer(ConstantBufferHandle handle) override;
+	virtual void UpdateConstantBuffer(ConstantBufferHandle handle, u32 offset, const void* data, u32 size) override;
+	virtual void SetShaderConstantBuffer(ShaderType type, u32 startRegister, ConstantBufferHandle handle) override;
+	virtual ShaderConstantLayout ReflectConstantLayout(ShaderHandle handle) override;
+
   private:
 	IDirect3D9Ex* m_pD3D;
 	IDirect3DDevice9Ex* m_pDevice;
@@ -64,6 +74,11 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	std::vector<DX9Sampler*> m_Samplers;
 	std::stack<u32> m_FreeSamplerIndices;
 
+	std::vector<DX9Shader*> m_Shaders;
+	std::stack<u32> m_FreeShaderIndices;
+	std::vector<DX9ConstantBuffer*> m_ConstantBuffers;
+	std::stack<u32> m_FreeConstantBufferIndices;
+
 	void CacheDeviceCapsFromD3D();
 
 	TextureHandle AllocTextureHandle(DX9Texture* tex);
@@ -76,6 +91,14 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 
 	void ApplySampler(u32 slot, const SamplerDesc& desc);
 	void ApplyDefaultSampler(u32 slot);
+
+	ShaderHandle AllocShaderHandle(DX9Shader* shader);
+	DX9Shader* GetShader(ShaderHandle handle);
+	void FreeShaderHandle(ShaderHandle handle);
+
+	ConstantBufferHandle AllocConstantBufferHandle(DX9ConstantBuffer* cb);
+	DX9ConstantBuffer* GetConstantBuffer(ConstantBufferHandle handle);
+	void FreeConstantBufferHandle(ConstantBufferHandle handle);
 
 	void ReleaseAllResources();
 

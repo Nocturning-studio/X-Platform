@@ -1,4 +1,5 @@
 #pragma once
+
 #include "framework.h"
 #include "xrRHI_Internal.h"
 
@@ -211,6 +212,63 @@ struct SamplerDesc
 	float mipLODBias;
 	u32 maxAnisotropy;
 	fvec4 borderColor;
+};
+
+enum class ShaderType : u32
+{
+	Vertex = 0,
+	Pixel = 1
+};
+
+enum class ConstantType : u8
+{
+	Float = 0,
+	Int = 1,
+	Bool = 2,
+	Sampler = 99
+};
+
+enum class ConstantClass : u8
+{
+	Scalar = 0,
+	Vector,
+	MatrixRows_2x4,
+	MatrixRows_3x4,
+	MatrixRows_4x4,
+	MatrixColumns_2x4,
+	MatrixColumns_3x4,
+	MatrixColumns_4x4,
+	Struct,
+	Object,
+	Unknown
+};
+
+struct ConstantDesc
+{
+	std::string name;
+	ConstantType type;
+	ConstantClass cls;
+	u16 registerIndex;  // номер регистра в DX9-терминах (слот)
+	u16 registerCount;  // сколько регистров занимает
+	u32 bufferOffset;   // смещение в байтах внутри ConstantBuffer (вычисляется)
+	u32 sizeInBytes;    // размер данных (обычно registerCount * 16)
+};
+
+struct ShaderConstantLayout
+{
+	struct Field
+	{
+		std::string     name;
+		u32             offset;       // смещение в байтах от начала буфера
+		u32             size;         // размер в байтах
+		ConstantType    type;         // Float, Int, Bool
+		ConstantClass   cls;          // Scalar, Vector, MatrixRows_4x4...
+		u16             registerIndex; // для отладки
+		u16             registerCount;
+	};
+	std::vector<Field> fields;
+	u32             totalSize = 0;     // общий размер буфера в байтах (выровнен)
+	u32             registerBase = 0;  // c0
 };
 
 // =========================================================================

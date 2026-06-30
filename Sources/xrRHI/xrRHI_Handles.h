@@ -1,4 +1,5 @@
 #pragma once
+
 #include "framework.h"
 #include "xrRHI_Internal.h"
 
@@ -18,6 +19,20 @@ struct SamplerHandle
     u32 id = InvalidHandleId;
     bool IsValid() const { return id != InvalidHandleId; }
     bool operator==(const SamplerHandle& other) const { return id == other.id; }
+};
+
+struct ShaderHandle
+{
+    u32 id = InvalidHandleId;
+    bool IsValid() const { return id != InvalidHandleId; }
+    bool operator==(const ShaderHandle& other) const { return id == other.id; }
+};
+
+struct ConstantBufferHandle
+{
+    u32 id = InvalidHandleId;
+    bool IsValid() const { return id != InvalidHandleId; }
+    bool operator==(const ConstantBufferHandle& other) const { return id == other.id; }
 };
 
 RHI_END
