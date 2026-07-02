@@ -8,7 +8,7 @@
 IC void R_transforms::set_c_World(R_constant* C)
 {
 	c_World = C;
-	RenderBackendLegacy.set_Constant(C, m_World);
+	RenderBackend.set_Constant(C, m_World);
 };
 IC void R_transforms::set_c_InvWorld(R_constant* C)
 {
@@ -18,54 +18,54 @@ IC void R_transforms::set_c_InvWorld(R_constant* C)
 IC void R_transforms::set_c_View(R_constant* C)
 {
 	c_View = C;
-	RenderBackendLegacy.set_Constant(C, m_View);
+	RenderBackend.set_Constant(C, m_View);
 };
 IC void R_transforms::set_c_Project(R_constant* C)
 {
 	c_Project = C;
-	RenderBackendLegacy.set_Constant(C, m_Project);
+	RenderBackend.set_Constant(C, m_Project);
 };
 IC void R_transforms::set_c_WorldView(R_constant* C)
 {
 	c_WorldView = C;
-	RenderBackendLegacy.set_Constant(C, m_WorldView);
+	RenderBackend.set_Constant(C, m_WorldView);
 };
 IC void R_transforms::set_c_ViewProject(R_constant* C)
 {
 	c_ViewProject = C;
-	RenderBackendLegacy.set_Constant(C, m_ViewProject);
+	RenderBackend.set_Constant(C, m_ViewProject);
 };
 IC void R_transforms::set_c_WorldViewProject(R_constant* C)
 {
 	c_WorldViewProject = C;
-	RenderBackendLegacy.set_Constant(C, m_WorldViewProject);
+	RenderBackend.set_Constant(C, m_WorldViewProject);
 };
-IC void CBackend::set_transform_world(const fmat4x4& Matrix)
+IC void CRenderBackend::set_transform_world(const fmat4x4& Matrix)
 {
 	transforms.set_World(Matrix);
 }
-IC void CBackend::set_transform_view(const fmat4x4& Matrix)
+IC void CRenderBackend::set_transform_view(const fmat4x4& Matrix)
 {
 	transforms.set_View(Matrix);
 }
-IC void CBackend::set_transform_project(const fmat4x4& Matrix)
+IC void CRenderBackend::set_transform_project(const fmat4x4& Matrix)
 {
 	transforms.set_Project(Matrix);
 }
-IC const fmat4x4& CBackend::get_transform_world()
+IC const fmat4x4& CRenderBackend::get_transform_world()
 {
 	return transforms.get_World();
 }
-IC const fmat4x4& CBackend::get_transform_view()
+IC const fmat4x4& CRenderBackend::get_transform_view()
 {
 	return transforms.get_View();
 }
-IC const fmat4x4& CBackend::get_transform_project()
+IC const fmat4x4& CRenderBackend::get_transform_project()
 {
 	return transforms.get_Project();
 }
 
-IC void CBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
+IC void CRenderBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
 {		
 	if (RT != pRT[ID])
 	{
@@ -75,7 +75,7 @@ IC void CBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
 	}
 }
 
-IC void CBackend::setDepthBuffer(IDirect3DSurface9* ZB)
+IC void CRenderBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 {
 	if (ZB != pZB)
 	{
@@ -85,7 +85,7 @@ IC void CBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 	}
 }
 
-ICF void CBackend::set_States(IDirect3DStateBlock9* _state)
+ICF void CRenderBackend::set_States(IDirect3DStateBlock9* _state)
 {
 	if (state != _state)
 	{
@@ -97,12 +97,12 @@ ICF void CBackend::set_States(IDirect3DStateBlock9* _state)
 	}
 }
 
-ICF void CBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
+ICF void CRenderBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 {
 	CHK_DX(HW.GetDevice()->SetRenderState(State, Value));
 };
 
-IC void CBackend::set_Constants(R_constant_table* ConstTable)
+IC void CRenderBackend::set_Constants(R_constant_table* ConstTable)
 {
 	// caching
 	if (ctable == ConstTable)
@@ -125,7 +125,7 @@ IC void CBackend::set_Constants(R_constant_table* ConstTable)
 	}
 }
 
-IC void CBackend::set_Element(ShaderElement* S, u32 pass)
+IC void CRenderBackend::set_Element(ShaderElement* S, u32 pass)
 {
 	SPass& P = *(S->passes[pass]);
 	set_States(P.state);
@@ -135,7 +135,7 @@ IC void CBackend::set_Element(ShaderElement* S, u32 pass)
 	set_Textures(P.T);
 }
 
-ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
+ICF void CRenderBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 {
 	if (decl != _decl)
 	{
@@ -147,7 +147,7 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 	}
 }
 
-ICF void CBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
+ICF void CRenderBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
 {
 	if (ps != _ps)
 	{
@@ -160,7 +160,7 @@ ICF void CBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
 	}
 }
 
-ICF void CBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n)
+ICF void CRenderBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n)
 {
 	if (vs != _vs)
 	{
@@ -173,7 +173,7 @@ ICF void CBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n)
 	}
 }
 
-ICF void CBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride)
+ICF void CRenderBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride)
 {
 	if ((vb != _vb) || (vb_stride != _vb_stride))
 	{
@@ -186,7 +186,7 @@ ICF void CBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride)
 	}
 }
 
-ICF void CBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
+ICF void CRenderBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
 {
 	if (ib != _ib)
 	{
@@ -198,9 +198,9 @@ ICF void CBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
 	}
 }
 
-ICF void CBackend::Apply(u32 countV, u32 PC)
+ICF void CRenderBackend::Apply(u32 countV, u32 PC)
 {
-	//OPTICK_EVENT("CBackend::Apply");
+	//OPTICK_EVENT("CRenderBackend::Apply");
 
 	stat.calls++;
 	stat.verts += countV;
@@ -208,14 +208,14 @@ ICF void CBackend::Apply(u32 countV, u32 PC)
 	constants.flush();
 }
 
-ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
+ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
 	Apply(countV, PC);
 
 	CHK_DX(HW.GetDevice()->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
 }
 
-ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
+ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
 {
 	stat.calls++;
 	stat.verts += 3 * PC;
@@ -224,19 +224,19 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
 	CHK_DX(HW.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
 }
 
-ICF void CBackend::set_Shader(Shader* S, u32 pass)
+ICF void CRenderBackend::set_Shader(Shader* S, u32 pass)
 {
 	set_Element(S->E[0], pass);
 }
 
-IC void CBackend::set_Geometry(SGeometry* _geom)
+IC void CRenderBackend::set_Geometry(SGeometry* _geom)
 {
 	set_Format(_geom->dcl._get()->dcl);
 	set_Vertices(_geom->vb, _geom->vb_stride);
 	set_Indices(_geom->ib);
 }
 
-IC void CBackend::set_Scissor(Irect* R)
+IC void CRenderBackend::set_Scissor(Irect* R)
 {
 	if (R)
 	{
@@ -250,7 +250,7 @@ IC void CBackend::set_Scissor(Irect* R)
 	}
 }
 
-IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass,
+IC void CRenderBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass,
 							  u32 _zfail)
 {
 	// Simple filter
@@ -297,7 +297,7 @@ IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _
 		SetRenderState(D3DRS_STENCILZFAIL, _zfail);
 	}
 }
-IC void CBackend::set_ColorWriteEnable(u32 _mask)
+IC void CRenderBackend::set_ColorWriteEnable(u32 _mask)
 {
 	if (colorwrite_mask != _mask)
 	{
@@ -308,7 +308,7 @@ IC void CBackend::set_ColorWriteEnable(u32 _mask)
 		SetRenderState(D3DRS_COLORWRITEENABLE3, _mask);
 	}
 }
-IC void CBackend::set_ZWriteEnable(bool write_state)
+IC void CRenderBackend::set_ZWriteEnable(bool write_state)
 {
 	if (zwrite != write_state)
 	{
@@ -316,7 +316,7 @@ IC void CBackend::set_ZWriteEnable(bool write_state)
 		SetRenderState(D3DRS_ZWRITEENABLE, write_state);
 	}
 }
-ICF void CBackend::set_CullMode(u32 _mode)
+ICF void CRenderBackend::set_CullMode(u32 _mode)
 {
 	if (cull_mode != _mode)
 	{
@@ -325,7 +325,7 @@ ICF void CBackend::set_CullMode(u32 _mode)
 	}
 }
 
-ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
+ICF void CRenderBackend::set_anisotropy_filtering(int max_anisothropy)
 {
 	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
@@ -333,13 +333,13 @@ ICF void CBackend::set_anisotropy_filtering(int max_anisothropy)
 
 ENGINE_API extern int psAnisotropic;
 
-ICF void CBackend::enable_anisotropy_filtering()
+ICF void CRenderBackend::enable_anisotropy_filtering()
 {
 	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
-ICF void CBackend::disable_anisotropy_filtering()
+ICF void CRenderBackend::disable_anisotropy_filtering()
 {
 	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));

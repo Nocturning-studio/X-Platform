@@ -48,8 +48,8 @@ BOOL CRenderDevice::Begin()
 
 	CHK_DX(HW.GetDevice()->BeginScene());
 
-	RenderBackendLegacy.OnFrameBegin();
-	RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
+	RenderBackend.OnFrameBegin();
+	RenderBackend.set_CullMode(CULL_BACKFACE);
 
 	g_bRendering = TRUE;
 #endif
@@ -101,7 +101,7 @@ void CRenderDevice::End(void)
 
 	g_bRendering = FALSE;
 	// end scene
-	RenderBackendLegacy.OnFrameEnd();
+	RenderBackend.OnFrameEnd();
 	Memory.dbg_check();
 	CHK_DX(HW.GetDevice()->EndScene());
 
@@ -311,18 +311,18 @@ void CRenderDevice::_SetupStates()
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
 		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
 	}
-	RenderBackendLegacy.SetRenderState(D3DRS_DITHERENABLE, TRUE);
-	RenderBackendLegacy.SetRenderState(D3DRS_COLORVERTEX, TRUE);
-	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, TRUE);
-	RenderBackendLegacy.SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-	RenderBackendLegacy.SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	RenderBackendLegacy.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	RenderBackendLegacy.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
+	RenderBackend.SetRenderState(D3DRS_DITHERENABLE, TRUE);
+	RenderBackend.SetRenderState(D3DRS_COLORVERTEX, TRUE);
+	RenderBackend.SetRenderState(D3DRS_ZENABLE, TRUE);
+	RenderBackend.SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
+	RenderBackend.SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	RenderBackend.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	RenderBackend.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
 
-	RenderBackendLegacy.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
-	RenderBackendLegacy.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+	RenderBackend.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+	RenderBackend.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
-	RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
 
 void CRenderDevice::_Create(LPCSTR shName)
@@ -334,7 +334,7 @@ void CRenderDevice::_Create(LPCSTR shName)
 	_SetupStates();
 
 	// Signal everyone - device created
-	RenderBackendLegacy.OnDeviceCreate();
+	RenderBackend.OnDeviceCreate();
 	Gamma.Update();
 	Engine.ResourceManager->OnDeviceCreate(shName);
 	::Render->create();
@@ -387,9 +387,9 @@ void CRenderDevice::_Destroy(BOOL bKeepTextures)
 	b_is_Ready = FALSE;
 	Engine.Statistic->OnDeviceDestroy();
 	::Render->destroy();
-	RenderBackendLegacy.DeleteResources();
+	RenderBackend.DeleteResources();
 	Engine.ResourceManager->OnDeviceDestroy(bKeepTextures);
-	RenderBackendLegacy.OnDeviceDestroy();
+	RenderBackend.OnDeviceDestroy();
 
 	Memory.mem_compact();
 }
@@ -422,7 +422,7 @@ void CRenderDevice::Reset(bool precache)
 
 	ShowCursor(TRUE);
 
-	RenderBackendLegacy.reset_begin();
+	RenderBackend.reset_begin();
 
 	Engine.ResourceManager->reset_begin();
 	Memory.mem_compact();
@@ -445,7 +445,7 @@ void CRenderDevice::Reset(bool precache)
 
 	Engine.Events.DeviceReset.Process(rp_DeviceReset);
 
-	RenderBackendLegacy.reset_end();
+	RenderBackend.reset_end();
 
 	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 	if (b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
@@ -501,5 +501,5 @@ void CRenderDevice::SetNearer(BOOL enabled)
 		m_bNearer = FALSE;
 		Engine.RenderView.Project._43 += EPS_L;
 	}
-	RenderBackendLegacy.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }

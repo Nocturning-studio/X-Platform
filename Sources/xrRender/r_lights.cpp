@@ -157,9 +157,9 @@ void CRender::render_lights(light_Package& LP)
             {
                 stats.s_merged++;
                 render_shadow_map_spot(L);
-                RenderBackendLegacy.set_transform_world(Fidentity);
-                RenderBackendLegacy.set_transform_view(L->TransformContext.ShadowContext.view);
-                RenderBackendLegacy.set_transform_project(L->TransformContext.ShadowContext.project);
+                RenderBackend.set_transform_world(Fidentity);
+                RenderBackend.set_transform_view(L->TransformContext.ShadowContext.view);
+                RenderBackend.set_transform_project(L->TransformContext.ShadowContext.project);
 
                 if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
                     Details->Render(DetailsRenderMode::DepthOnly, &L->TransformContext.ShadowContext.combine);

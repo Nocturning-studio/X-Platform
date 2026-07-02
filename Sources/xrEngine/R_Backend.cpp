@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-ENGINE_API CBackend RenderBackendLegacy;
+ENGINE_API CRenderBackend RenderBackend;
 
 // Create Quad-IB
-void CBackend::CreateQuadIB()
+void CRenderBackend::CreateQuadIB()
 {
-	//OPTICK_EVENT("CBackend::CreateQuadIB");
+	//OPTICK_EVENT("CRenderBackend::CreateQuadIB");
 
 	const u32 dwTriCount = 4 * 1024;
 	const u32 dwIdxCount = dwTriCount * 2 * 3;
@@ -34,9 +34,9 @@ void CBackend::CreateQuadIB()
 }
 
 // Device dependance
-void CBackend::OnDeviceCreate()
+void CRenderBackend::OnDeviceCreate()
 {
-	//OPTICK_EVENT("CBackend::OnDeviceCreate");
+	//OPTICK_EVENT("CRenderBackend::OnDeviceCreate");
 
 	CreateQuadIB();
 
@@ -52,9 +52,9 @@ void CBackend::OnDeviceCreate()
 	g_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
 }
 
-void CBackend::OnDeviceDestroy()
+void CRenderBackend::OnDeviceDestroy()
 {
-	//OPTICK_EVENT("CBackend::OnDeviceDestroy");
+	//OPTICK_EVENT("CRenderBackend::OnDeviceDestroy");
 
 	// streams
 	Index.Destroy();
@@ -66,17 +66,17 @@ void CBackend::OnDeviceDestroy()
 	_RELEASE(QuadIB);
 }
 
-void CBackend::reset_begin()
+void CRenderBackend::reset_begin()
 {
 	constants.force_dirty();
 }
 
-void CBackend::reset_end()
+void CRenderBackend::reset_end()
 {
 	constants.reset_dirty();
 }
 
-void CBackend::DeleteResources()
+void CRenderBackend::DeleteResources()
 {
 	g_viewport.destroy();
 }

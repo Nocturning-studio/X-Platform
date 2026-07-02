@@ -61,7 +61,7 @@ CHUDTarget::CHUDTarget()
 {
 	fuzzyShowInfo = 0.f;
 	RQ.range = 0.f;
-	hGeom.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
+	hGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 	hShader.create("hud\\cursor", "ui\\cursor");
 
 	RQ.set(NULL, 0.f, -1);
@@ -269,7 +269,7 @@ void CHUDTarget::Render()
 		/*
 				// actual rendering
 				u32			vOffset;
-				FVF::TL*	pv		= (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4,hGeom.stride(),vOffset);
+				FVF::TL*	pv		= (FVF::TL*)RenderBackend.Vertex.Lock(4,hGeom.stride(),vOffset);
 
 				fvec2		scr_size;
 		//.		scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
@@ -292,10 +292,10 @@ void CHUDTarget::Render()
 				pv->set				(cx + size_x, cy - size_y, C, 1, 0); ++pv;
 
 				// unlock VB and Render it as triangle LIST
-				RenderBackendLegacy.Vertex.Unlock(4,hGeom.stride());
-				RenderBackendLegacy.set_Shader	(hShader);
-				RenderBackendLegacy.set_Geometry	(hGeom);
-				RenderBackendLegacy.Render		(D3DPT_TRIANGLELIST,vOffset,0,4,0,2);
+				RenderBackend.Vertex.Unlock(4,hGeom.stride());
+				RenderBackend.set_Shader	(hShader);
+				RenderBackend.set_Geometry	(hGeom);
+				RenderBackend.Render		(D3DPT_TRIANGLELIST,vOffset,0,4,0,2);
 		*/
 	}
 	else

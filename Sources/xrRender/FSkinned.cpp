@@ -190,7 +190,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 	{
 	case RM_SKINNING_SOFT:
 		// Msg					("skinning: software");
-		V.rm_geom.create(vertRenderFVF, RenderBackendLegacy.Vertex.Buffer(), V.p_rm_Indices);
+		V.rm_geom.create(vertRenderFVF, RenderBackend.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
 	case RM_SKINNING_1B: {

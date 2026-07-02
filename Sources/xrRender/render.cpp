@@ -55,7 +55,7 @@ static class cl_sun_far : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float fValue = ps_r_sun_far;
-		RenderBackendLegacy.set_Constant(C, fValue, fValue, fValue, 0);
+		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
 	}
 } binder_sun_far;
 //////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ static class cl_sun_dir : public R_constant_setup
 		Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
 		L_dir.normalize();
 
-		RenderBackendLegacy.set_Constant(C, L_dir.x, L_dir.y, L_dir.z, 0);
+		RenderBackend.set_Constant(C, L_dir.x, L_dir.y, L_dir.z, 0);
 	}
 } binder_sun_dir;
 //////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ static class cl_sun_normal_bias : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackendLegacy.set_Constant(C, ps_r_sun_depth_normal_bias, 0, 0, 0);
+		RenderBackend.set_Constant(C, ps_r_sun_depth_normal_bias, 0, 0, 0);
 	}
 } binder_sun_normal_bias;
 //////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ static class cl_sun_directional_bias : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackendLegacy.set_Constant(C, ps_r_sun_depth_directional_bias, 0, 0, 0);
+		RenderBackend.set_Constant(C, ps_r_sun_depth_directional_bias, 0, 0, 0);
 	}
 } binder_sun_directional_bias;
 //////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ static class cl_sun_color : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
-		RenderBackendLegacy.set_Constant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
+		RenderBackend.set_Constant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
 	}
 } binder_sun_color;
 //////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ static class cl_debug_reserved : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackendLegacy.set_Constant("debug_reserved", ps_r_debug_reserved_0, ps_r_debug_reserved_1, ps_r_debug_reserved_2, ps_r_debug_reserved_3);
+		RenderBackend.set_Constant("debug_reserved", ps_r_debug_reserved_0, ps_r_debug_reserved_1, ps_r_debug_reserved_2, ps_r_debug_reserved_3);
 	}
 } binder_debug_reserved;
 //////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ static class cl_ao_brightness : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackendLegacy.set_Constant("ao_brightness", ps_r_ao_brightness);
+		RenderBackend.set_Constant("ao_brightness", ps_r_ao_brightness);
 	}
 } binder_ao_brightness;
 //////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ static class cl_is_hud_render_phase : public R_constant_setup
 		if (RenderImplementation.active_phase() == CRender::PHASE_HUD)
 			is_hud_render_phase = 1;
 
-		RenderBackendLegacy.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0, 0, 0);
+		RenderBackend.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0, 0, 0);
 	}
 } binder_is_hud_render_phase;
 //////////////////////////////////////////////////////////////////////////
@@ -663,9 +663,9 @@ BOOL CRender::u_DBT_enable(float zMin, float zMax)
 		return FALSE;
 
 	// enable cheat
-	RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
-	RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
-	RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
+	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
+	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
+	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
 
 	return TRUE;
 }
@@ -673,7 +673,7 @@ BOOL CRender::u_DBT_enable(float zMin, float zMax)
 void CRender::u_DBT_disable()
 {
 	if (RenderImplementation.o.nvdbt && ps_r_ls_flags.test(RFLAG_USE_NVDBT))
-		RenderBackendLegacy.SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
+		RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
 }
 
 float CRender::hclip(float v, float dim)

@@ -1289,18 +1289,18 @@ void CUIMainIngameWnd::draw_adjust_mode()
 			fire_mat.transform_tiny(SP, sp);
 			parent.transform_tiny(SP);
 
-			RenderBackendLegacy.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
-			RenderBackendLegacy.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
-			RenderBackendLegacy.dbg_DrawAABB(SP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 255, 0));
+			RenderBackend.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
+			RenderBackend.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
+			RenderBackend.dbg_DrawAABB(SP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 255, 0));
 		}
 		else
 		{
 			fvec3 FP = m_pWeapon->get_CurrentFirePoint();
 			fvec3 FP2 = m_pWeapon->get_CurrentFirePoint2();
 			fvec3 SP = m_pWeapon->get_LastSP();
-			RenderBackendLegacy.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
-			RenderBackendLegacy.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
-			RenderBackendLegacy.dbg_DrawAABB(SP, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 255, 0));
+			RenderBackend.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
+			RenderBackend.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
+			RenderBackend.dbg_DrawAABB(SP, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 255, 0));
 		}
 	}
 }

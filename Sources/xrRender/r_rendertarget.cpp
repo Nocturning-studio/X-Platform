@@ -73,8 +73,8 @@ void CRenderTarget::create_textures()
 	rt_Generic[0].create(r_RT_generic0, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	rt_Generic[1].create(r_RT_generic1, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
-	RenderBackendLegacy.ClearTexture(rt_Generic[0], color_rgba_f(0.5f, 0.5f, 0.5f, 1.0f));
-	RenderBackendLegacy.ClearTexture(rt_Generic[1], color_rgba_f(0.5f, 0.5f, 0.5f, 1.0f));
+	RenderBackend.ClearTexture(rt_Generic[0], color_rgba_f(0.5f, 0.5f, 0.5f, 1.0f));
+	RenderBackend.ClearTexture(rt_Generic[1], color_rgba_f(0.5f, 0.5f, 0.5f, 1.0f));
 
 	rt_Motion_Blur_Previous_Frame_Depth.create(r_RT_mblur_previous_frame_depth, dwWidth, dwHeight, RHI_Format::R16_FLOAT);
 	rt_Motion_Blur_Dilation_Map_0.create(r_RT_mblur_dilation_map_0, u32(dwWidth * 0.5f), u32(dwHeight * 0.5f), RHI_Format::RG16_FLOAT);
@@ -94,9 +94,9 @@ void CRenderTarget::create_textures()
 	rt_SceneLuminance.create(r_RT_autoexposure_luminance, 1, 1, RHI_Format::RGBA16_FLOAT);
 	rt_SceneLuminancePrevious.create(r_RT_autoexposure_luminance_previous, 1, 1, RHI_Format::RGBA16_FLOAT);
 
-	RenderBackendLegacy.ClearTexture(rt_LUM_Mip_Chain, color_rgba_f(0.18f, 0.18f, 0.18f, 1.0f));
-	RenderBackendLegacy.ClearTexture(rt_SceneLuminance, color_rgba_f(0.18f, 0.18f, 0.18f, 1.0f));
-	RenderBackendLegacy.ClearTexture(rt_SceneLuminancePrevious, color_rgba_f(0.18f, 0.18f, 0.18f, 1.0f));
+	RenderBackend.ClearTexture(rt_LUM_Mip_Chain, color_rgba_f(0.18f, 0.18f, 0.18f, 1.0f));
+	RenderBackend.ClearTexture(rt_SceneLuminance, color_rgba_f(0.18f, 0.18f, 0.18f, 1.0f));
+	RenderBackend.ClearTexture(rt_SceneLuminancePrevious, color_rgba_f(0.18f, 0.18f, 0.18f, 1.0f));
 
 	t_irradiance_map_0.create(r_T_irradiance0);
 	t_irradiance_map_1.create(r_T_irradiance1);
@@ -273,9 +273,9 @@ CRenderTarget::CRenderTarget()
 	g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
 
 	// PP
-	g_effectors.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
+	g_effectors.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 
-	g_cuboid.create(FVF::F_L, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
+	g_cuboid.create(FVF::F_L, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
 
 	if (g_dedicated_server)
 		return;

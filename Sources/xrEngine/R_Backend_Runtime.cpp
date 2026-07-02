@@ -8,7 +8,7 @@
 
 #include "frustum.h"
 
-void CBackend::OnFrameEnd()
+void CRenderBackend::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
 	for (u32 stage = 0; stage < RHI()->GetDeviceCaps().MaxSimultaneousTextures; stage++)
@@ -21,7 +21,7 @@ void CBackend::OnFrameEnd()
 #endif
 }
 
-void CBackend::OnFrameBegin()
+void CRenderBackend::OnFrameBegin()
 {
 #ifndef DEDICATED_SERVER
 	std::memset(&stat, 0, sizeof(stat));
@@ -31,9 +31,9 @@ void CBackend::OnFrameBegin()
 #endif
 }
 
-void CBackend::Invalidate()
+void CRenderBackend::Invalidate()
 {
-	//OPTICK_EVENT("CBackend::Invalidate");
+	//OPTICK_EVENT("CRenderBackend::Invalidate");
 
 	bBlend = FALSE;
 	srcBlend = D3DBLEND_ONE;
@@ -65,7 +65,7 @@ void CBackend::Invalidate()
 		textures_vs[vs_it++] = 0;
 }
 
-void CBackend::SaveRenderState()
+void CRenderBackend::SaveRenderState()
 {
 	for (int i = 0; i < 4; i++)
 		HW.GetDevice()->GetRenderTarget(i, &saved_state.rt[i]);
@@ -73,7 +73,7 @@ void CBackend::SaveRenderState()
 	HW.GetDevice()->GetViewport(&saved_state.viewport);
 }
 
-void CBackend::RestoreRenderState()
+void CRenderBackend::RestoreRenderState()
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -95,7 +95,7 @@ void CBackend::RestoreRenderState()
 
 #ifndef DEDICATED_SREVER
 
-void CBackend::set_Textures(STextureList* _T)
+void CRenderBackend::set_Textures(STextureList* _T)
 {
 	if (T == _T)
 		return;
@@ -165,71 +165,71 @@ void CBackend::set_Textures(STextureList* _T)
 }
 #else
 
-void CBackend::set_Textures(STextureList* _T)
+void CRenderBackend::set_Textures(STextureList* _T)
 {
 }
 
 #endif
 
-void CBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+void CRenderBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
 	R_ASSERT2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
 
-	RenderBackendLegacy.setRenderTarget(rt_1->pRT, 0);
+	RenderBackend.setRenderTarget(rt_1->pRT, 0);
 
 	if (rt_2)
-		RenderBackendLegacy.setRenderTarget(rt_2->pRT, 1);
+		RenderBackend.setRenderTarget(rt_2->pRT, 1);
 	else
-		RenderBackendLegacy.setRenderTarget(NULL, 1);
+		RenderBackend.setRenderTarget(NULL, 1);
 
 	if (rt_3)
-		RenderBackendLegacy.setRenderTarget(rt_3->pRT, 2);
+		RenderBackend.setRenderTarget(rt_3->pRT, 2);
 	else
-		RenderBackendLegacy.setRenderTarget(NULL, 2);
+		RenderBackend.setRenderTarget(NULL, 2);
 
 	if (rt_4)
-		RenderBackendLegacy.setRenderTarget(rt_4->pRT, 3);
+		RenderBackend.setRenderTarget(rt_4->pRT, 3);
 	else
-		RenderBackendLegacy.setRenderTarget(NULL, 3);
+		RenderBackend.setRenderTarget(NULL, 3);
 }
 
-void CBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
+void CRenderBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
 {
 	R_ASSERT2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
 
 	//dwWidth = W;
 	//dwHeight = H;
 
-	RenderBackendLegacy.setRenderTarget(rt_1, 0);
+	RenderBackend.setRenderTarget(rt_1, 0);
 
 	if (rt_2)
-		RenderBackendLegacy.setRenderTarget(rt_2, 1);
+		RenderBackend.setRenderTarget(rt_2, 1);
 	else
-		RenderBackendLegacy.setRenderTarget(NULL, 1);
+		RenderBackend.setRenderTarget(NULL, 1);
 
 	if (rt_3)
-		RenderBackendLegacy.setRenderTarget(rt_3, 2);
+		RenderBackend.setRenderTarget(rt_3, 2);
 	else
-		RenderBackendLegacy.setRenderTarget(NULL, 2);
+		RenderBackend.setRenderTarget(NULL, 2);
 
 	if (rt_4)
-		RenderBackendLegacy.setRenderTarget(rt_4, 3);
+		RenderBackend.setRenderTarget(rt_4, 3);
 	else
-		RenderBackendLegacy.setRenderTarget(NULL, 3);
+		RenderBackend.setRenderTarget(NULL, 3);
 }
 
-void CBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
+void CRenderBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
 {
-	RenderBackendLegacy.setDepthBuffer(zb);
+	RenderBackend.setDepthBuffer(zb);
 }
 
-void CBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
+void CRenderBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
 {
-	RenderBackendLegacy.setDepthBuffer(zb);
+	RenderBackend.setDepthBuffer(zb);
 	CHK_DX(HW.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
 }
 
-void CBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
+void CRenderBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 {
 	// Check if state actually changed to avoid redundant API calls
 	if (bBlend != enable || srcBlend != src || dstBlend != dest)
@@ -251,49 +251,49 @@ void CBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 	}
 }
 
-void CBackend::set_Blend_Alpha()
+void CRenderBackend::set_Blend_Alpha()
 {
 	set_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 }
 
-void CBackend::set_Blend_Add()
+void CRenderBackend::set_Blend_Add()
 {
 	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 }
 
-void CBackend::set_Blend_Multiply()
+void CRenderBackend::set_Blend_Multiply()
 {
 	set_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
 }
 
-void CBackend::set_Blend_Default()
+void CRenderBackend::set_Blend_Default()
 {
 	set_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
 }
 
 // Также добавим методы для других распространенных blend режимов
-void CBackend::set_Blend_Subtract()
+void CRenderBackend::set_Blend_Subtract()
 {
 	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 	SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
 }
 
-void CBackend::set_Blend_Screen()
+void CRenderBackend::set_Blend_Screen()
 {
 	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
 }
 
-void CBackend::set_Blend_LightAdd()
+void CRenderBackend::set_Blend_LightAdd()
 {
 	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 }
 
-void CBackend::set_Blend_ColorAdd()
+void CRenderBackend::set_Blend_ColorAdd()
 {
 	set_Blend(TRUE, D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
 }
 
-void CBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
+void CRenderBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
 {
 	if (bBlend != enable || srcBlend != src || dstBlend != dest)
 	{
@@ -315,7 +315,7 @@ void CBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP 
 }
 
 // 2D texgen (texture adjustment matrix)
-void CBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
+void CRenderBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
 {
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
@@ -325,10 +325,10 @@ void CBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
 							 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 
 							 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
-	m_Texgen.mul(m_TexelAdjust, RenderBackendLegacy.transforms.m_WorldViewProject);
+	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
 }
 
-void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
+void CRenderBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
 {
 	// Constants
 	u32 Color = color_rgba(0, 0, 0, 255);
@@ -341,7 +341,7 @@ void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	p1.set((w + 0.5f) / w, (h + 0.5f) / h);
 
 	// Fill vertex buffer
-	FVF::TL* pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4, geometry->vb_stride, vOffset);
+	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, geometry->vb_stride, vOffset);
 	pv->set_position(0, (float)h, d_Z, d_W);
 	pv->set_color(Color);
 	pv->set_uv(p0.x, p1.y);
@@ -361,60 +361,60 @@ void CBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	pv->set_color(Color);
 	pv->set_uv(p1.x, p0.y);
 	pv++;
-	RenderBackendLegacy.Vertex.Unlock(4, geometry->vb_stride);
+	RenderBackend.Vertex.Unlock(4, geometry->vb_stride);
 
 	// Set geometry
-	RenderBackendLegacy.set_Geometry(geometry);
+	RenderBackend.set_Geometry(geometry);
 }
 
-void CBackend::set_viewport_geometry(u32 w, u32 h, u32& vOffset)
+void CRenderBackend::set_viewport_geometry(u32 w, u32 h, u32& vOffset)
 {
 	set_viewport_geometry(w, h, g_viewport, vOffset);
 }
 
-void CBackend::set_viewport_geometry(ref_geom geometry, u32& vOffset)
+void CRenderBackend::set_viewport_geometry(ref_geom geometry, u32& vOffset)
 {
 	u32 w = Device.dwWidth;
 	u32 h = Device.dwHeight;
 	set_viewport_geometry(w, h, geometry, vOffset);
 }
 
-void CBackend::set_viewport_geometry(u32& vOffset)
+void CRenderBackend::set_viewport_geometry(u32& vOffset)
 {
 	u32 w = Device.dwWidth;
 	u32 h = Device.dwHeight;
 	set_viewport_geometry(w, h, g_viewport, vOffset);
 }
 
-void CBackend::render_viewport_geometry(u32 w, u32 h)
+void CRenderBackend::render_viewport_geometry(u32 w, u32 h)
 {
 	u32 vOffset;
 	set_viewport_geometry(w, h, g_viewport, vOffset);
-	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
+	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
 }
 
-void CBackend::RenderViewportSurface()
+void CRenderBackend::RenderViewportSurface()
 {
 	u32 Offset = 0;
 	set_viewport_geometry(Offset);
-	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
-void CBackend::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
+void CRenderBackend::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
 {
 	set_Render_Target_Surface(rt_1);
 	set_Depth_Buffer(zb);
 	render_viewport_geometry(rt_1->dwWidth, rt_1->dwHeight);
 }
 
-void CBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
+void CRenderBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
 {
 	set_Render_Target_Surface(w, h, rt_1);
 	set_Depth_Buffer(zb);
 	render_viewport_geometry(w, h);
 }
 
-void CBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
+void CRenderBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
 {
 	D3DSURFACE_DESC desc;
 	HRESULT hr = rt_1->GetDesc(&desc);
@@ -427,25 +427,25 @@ void CBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
 	render_viewport_geometry(desc.Width, desc.Height);
 }
 
-void CBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+void CRenderBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
 	set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
 	set_Depth_Buffer(NULL);
 	render_viewport_geometry(w, h);
 }
 
-void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
+void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 {
 	 if (!target || !target->valid())
 	 {
-		 Msg("!CBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
+		 Msg("!CRenderBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
 		 return;
 	 }
 
 	 IDirect3DSurface9* mip_surface = target->get_surface_level(mip_level);
 	 if (!mip_surface)
 	 {
-		 Msg("!CBackend::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
+		 Msg("!CRenderBackend::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
 		 return;
 	 }
 
@@ -464,7 +464,7 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 	 mip_surface->Release();
  }
 
-void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass)
+void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass)
 {
 	if (!target || !target->valid())
 		return;
@@ -492,7 +492,7 @@ void CBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* sha
 }
 
 // Генерация mip-цепочки
-void CBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
+void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
 {
 	if (!source || !mip_chain || !source->valid() || !mip_chain->valid())
 		return;
@@ -517,7 +517,7 @@ void CBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* 
 }
 
 // Копирование содержимого из одного ref_rt в другой
-void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
+void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 {
 	if (!source || !destination || !source->valid() || !destination->valid())
 	{
@@ -549,7 +549,7 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 }
 
 // Версия с указанием фильтра
-void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
 {
 	if (!source || !destination || !source->valid() || !destination->valid())
 		return;
@@ -567,7 +567,7 @@ void CBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTURE
 }
 
 // Версия с указанием конкретных областей
-void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if (!source || !destination || !source->valid() || !destination->valid())
 		return;
@@ -581,7 +581,7 @@ void CBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destinat
 	HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
-void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
+void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
 {
 	if (!source || !destination)
 	{
@@ -614,7 +614,7 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 }
 
 // Версия с фильтром
-void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
 {
 	if (!source || !destination)
 		return;
@@ -630,7 +630,7 @@ void CBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destina
 }
 
 // Версия с указанием областей
-void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if (!source || !destination)
 		return;
@@ -638,30 +638,30 @@ void CBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSu
 	HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
-void CBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
+void CRenderBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
 {
 	CHK_DX(HW.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
 }
 
-void CBackend::ClearTexture(const ref_rt& rt_1, u32 color)
+void CRenderBackend::ClearTexture(const ref_rt& rt_1, u32 color)
 {
 	set_Render_Target_Surface(rt_1, NULL, NULL, NULL);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
-void CBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, u32 color)
+void CRenderBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, u32 color)
 {
 	set_Render_Target_Surface(rt_1, rt_2, NULL, NULL);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
-void CBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, u32 color)
+void CRenderBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, u32 color)
 {
 	set_Render_Target_Surface(rt_1, rt_2, rt_3, NULL);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
-void CBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4, u32 color)
+void CRenderBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4, u32 color)
 {
 	set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
 	Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);

@@ -164,11 +164,11 @@ void CSunOccluder::Render()
 	if (!m_Loaded)
 		return;
 
-	RenderBackendLegacy.set_Geometry(m_Geom);
-	RenderBackendLegacy.set_transform_world(Fidentity);
-	RenderBackendLegacy.set_Shader(m_Shader);
+	RenderBackend.set_Geometry(m_Geom);
+	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.set_Shader(m_Shader);
 
 	u32 primCount = m_IndexCount / 3;
-	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, 0, 0, m_VertexCount, 0, primCount);
+	RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, m_VertexCount, 0, primCount);
 }
 ////////////////////////////////////////////////////////////////////////////////

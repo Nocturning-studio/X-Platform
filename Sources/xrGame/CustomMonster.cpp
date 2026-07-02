@@ -1071,7 +1071,7 @@ void CCustomMonster::OnRender()
 {
 	//PROFILE_FUNCTION();
 
-	RenderBackendLegacy.OnFrameEnd();
+	RenderBackend.OnFrameEnd();
 
 	for (int i = 0; i < 1; ++i)
 	{

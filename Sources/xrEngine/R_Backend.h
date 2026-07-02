@@ -48,7 +48,7 @@ struct R_statistics
 	R_statistics_element s_dynamic_2B;
 };
 
-class ENGINE_API CBackend
+class ENGINE_API CRenderBackend
 {
   public:
 	// Dynamic geometry streams
@@ -449,7 +449,7 @@ class ENGINE_API CBackend
 	void dbg_DrawLINE(fmat4x4& T, fvec3& p1, fvec3& p2, u32 C);
 	void dbg_DrawEllipse(fmat4x4& T, u32 C);
 
-	CBackend()
+	CRenderBackend()
 	{
 		Invalidate();
 	};
@@ -520,7 +520,7 @@ class ENGINE_API CBackend
 	void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
 };
 
-extern ENGINE_API CBackend RenderBackendLegacy;
+extern ENGINE_API CRenderBackend RenderBackend;
 
 #ifndef _EDITOR
 #include "D3DUtils.h"

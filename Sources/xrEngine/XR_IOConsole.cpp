@@ -425,15 +425,15 @@ void CConsole::DrawBackgrounds(bool bGame)
 	Frect r;
 	r.set(0.0f, 0.0f, float(Device.dwWidth), ky * float(Device.dwHeight));
 
-	RenderBackendLegacy.set_Shader(m_hShader_back);
+	RenderBackend.set_Shader(m_hShader_back);
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
 	const u32 max_verts = 6 + 12 + (VIEW_TIPS_COUNT + 1) * 6 + 12;
 
 	if (!m_hGeom_con)
-		m_hGeom_con.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), 0);
+		m_hGeom_con.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
 
 	u32 vOffset;
-	FVF::TL* TL_start_pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(max_verts, m_hGeom_con.stride(), vOffset);
+	FVF::TL* TL_start_pv = (FVF::TL*)RenderBackend.Vertex.Lock(max_verts, m_hGeom_con.stride(), vOffset);
 	FVF::TL* TL_pv = TL_start_pv;
 
 	const auto flushPrimitive = [&TL_pv, &TL_start_pv, &vOffset, max_verts](ref_geom& m_hGeom_con) {
@@ -443,13 +443,13 @@ void CConsole::DrawBackgrounds(bool bGame)
 		p_cnt = TL_pv - TL_start_pv;
 		VERIFY(u32(p_cnt) <= max_verts);
 
-		RenderBackendLegacy.Vertex.Unlock(u32(p_cnt), m_hGeom_con.stride());
-		RenderBackendLegacy.set_Geometry(m_hGeom_con);
+		RenderBackend.Vertex.Unlock(u32(p_cnt), m_hGeom_con.stride());
+		RenderBackend.set_Geometry(m_hGeom_con);
 
 		primCount = (u32)(p_cnt / 3);
 
 		if (primCount > 0)
-			RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, primCount);
+			RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, primCount);
 	};
 
 	DrawRect(TL_pv, r, back_color);

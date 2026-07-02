@@ -79,7 +79,7 @@ void CLevelGraph::draw_nodes()
 	fvec3 DUP;
 	DUP.set(0, 1, 0);
 
-	RenderBackendLegacy.set_Shader(sh_debug);
+	RenderBackend.set_Shader(sh_debug);
 	F->SetColor(color_rgba(255, 255, 255, 255));
 
 	// если включён ai_dbg_frustum раскрасить ноды по light
@@ -171,8 +171,8 @@ void CLevelGraph::draw_nodes()
 			v4.mad(v4, PL.n, tt); // minX,maxZ
 
 			// render quad
-			RenderBackendLegacy.dbg_DrawTRI(Fidentity, v3, v2, v1, CT);
-			RenderBackendLegacy.dbg_DrawTRI(Fidentity, v1, v4, v3, CT);
+			RenderBackend.dbg_DrawTRI(Fidentity, v3, v2, v1, CT);
+			RenderBackend.dbg_DrawTRI(Fidentity, v1, v4, v3, CT);
 
 			// render center
 			Level().debug_renderer().draw_aabb(PC, sc, sc, sc, CC);

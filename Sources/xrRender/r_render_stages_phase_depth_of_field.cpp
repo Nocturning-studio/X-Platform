@@ -23,7 +23,7 @@ void CRender::render_depth_of_field()
 {
 	////OPTICK_EVENT("CRender::render_depth_of_field");
 
-	RenderBackendLegacy.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
+	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
 
 	// Params
 	fvec3 DofParams;
@@ -41,38 +41,38 @@ void CRender::render_depth_of_field()
 	float SensorHeight = 24.0f;
 	float PPM = (float(Device.dwHeight) / SensorHeight);
 
-	RenderBackendLegacy.set_CullMode(CULL_DISABLE);
-	RenderBackendLegacy.set_Stencil(FALSE);
+	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.set_Stencil(FALSE);
 
 	// PHASE 1: Calc CoC
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_CALC_COC]);
-	RenderBackendLegacy.set_Constant("dof_coc_params", FocusDist, FocalLen, Aperture, PPM);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_dof_coc);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_CALC_COC]);
+	RenderBackend.set_Constant("dof_coc_params", FocusDist, FocalLen, Aperture, PPM);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_dof_coc);
 
 	// PHASE 2: Tile Dilation (Low Res)
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_TILE_DILATION]);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_dof_dilation);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_TILE_DILATION]);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_dof_dilation);
 
 	// PHASE 3: Separate (Half Res)
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_SEPARATE]);
-	RenderBackendLegacy.set_Constant("dof_layer_select", 0.0f, 0.0f, 0.0f, 0.0f);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_dof_far);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_SEPARATE]);
+	RenderBackend.set_Constant("dof_layer_select", 0.0f, 0.0f, 0.0f, 0.0f);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_dof_far);
 
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_SEPARATE]);
-	RenderBackendLegacy.set_Constant("dof_layer_select", 1.0f, 0.0f, 0.0f, 0.0f);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_dof_near);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_SEPARATE]);
+	RenderBackend.set_Constant("dof_layer_select", 1.0f, 0.0f, 0.0f, 0.0f);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_dof_near);
 
 	// PHASE 4: Blur Far
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_FAR]);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
-	RenderBackendLegacy.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_far);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_FAR]);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_far);
 
 	// PHASE 5: Blur Near (ñ Dilation map)
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_NEAR]);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
-	RenderBackendLegacy.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_near);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_NEAR]);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_near);
 
 	// PHASE 6: Composite
-	RenderBackendLegacy.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_COMPOSITE]);
-	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_COMPOSITE]);
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }

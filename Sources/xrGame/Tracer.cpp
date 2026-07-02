@@ -17,7 +17,7 @@ const float TRACER_SIZE = 0.13f;
 CTracer::CTracer()
 {
 	sh_Tracer.create("effects\\bullet_tracer", "fx\\fx_tracer");
-	sh_Geom.create(FVF::F_LIT, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
+	sh_Geom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 	m_aColors.clear();
 	for (u8 i = 0; i < 255; i++)
 	{

@@ -148,13 +148,13 @@ void CPUOcclusion::DrawDebug()
     OPTICK_EVENT("CPUOcclusion::DrawDebug()");
     if (!m_loaded) return;
 
-    RenderBackendLegacy.set_Geometry(m_geom);
-    RenderBackendLegacy.set_transform_world(Fidentity);
-    RenderBackendLegacy.set_Shader(m_shader);
-    RenderBackendLegacy.set_CullMode(CULL_DISABLE);
+    RenderBackend.set_Geometry(m_geom);
+    RenderBackend.set_transform_world(Fidentity);
+    RenderBackend.set_Shader(m_shader);
+    RenderBackend.set_CullMode(CULL_DISABLE);
 
     const u32 primCount = m_indexCount / 3;
-    RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, primCount);
+    RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, primCount);
 }
 
 // ---------------------------------------------------------------------------------------

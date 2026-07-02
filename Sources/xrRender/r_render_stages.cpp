@@ -356,12 +356,12 @@ void CRender::render_gbuffer_primary()
 	// 2. DRAW PHASE
 	{
 		Engine.Statistic->RenderCALC_GBuffer.Begin();
-		RenderBackendLegacy.enable_anisotropy_filtering();
+		RenderBackend.enable_anisotropy_filtering();
 
 		set_gbuffer();
 
 		if (psDeviceFlags.test(rsWireframe))
-			RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+			RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 		// Используем пакет из readItem
 		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
@@ -370,9 +370,9 @@ void CRender::render_gbuffer_primary()
 			Details->Render(DetailsRenderMode::Default);
 
 		if (psDeviceFlags.test(rsWireframe))
-			RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+			RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-		RenderBackendLegacy.disable_anisotropy_filtering();
+		RenderBackend.disable_anisotropy_filtering();
 		Engine.Statistic->RenderCALC_GBuffer.End();
 	}
 }
@@ -388,13 +388,13 @@ void CRender::render_gbuffer_secondary()
 	// поэтому он находится внутри readItem.packet.
 	readItem.packet.portal_traverser.RenderFade();
 
-	RenderBackendLegacy.enable_anisotropy_filtering();
+	RenderBackend.enable_anisotropy_filtering();
 	set_gbuffer();
 
 	if (psDeviceFlags.test(rsWireframe))
-		RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	RenderBackendLegacy.set_ZWriteEnable(FALSE);
+	RenderBackend.set_ZWriteEnable(FALSE);
 
 	// Рендерим из readItem.packet
 	// LODs
@@ -406,9 +406,9 @@ void CRender::render_gbuffer_secondary()
 	set_active_phase(PHASE_NORMAL);
 
 	if (psDeviceFlags.test(rsWireframe))
-		RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-	RenderBackendLegacy.disable_anisotropy_filtering();
+	RenderBackend.disable_anisotropy_filtering();
 }
 
 void CRender::render_stage_forward()
@@ -428,17 +428,17 @@ void CRender::render_stage_forward()
 	// Reuse списки очищаются внутри SceneGraph::Render или вручную, если нужно,
 	// но здесь мы просто читаем.
 
-	RenderBackendLegacy.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
-	RenderBackendLegacy.set_Depth_Buffer(HW.GetBaseZB());
-	RenderBackendLegacy.set_CullMode(CULL_BACKFACE);
-	RenderBackendLegacy.set_Stencil(FALSE);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
+	RenderBackend.set_Depth_Buffer(HW.GetBaseZB());
+	RenderBackend.set_CullMode(CULL_BACKFACE);
+	RenderBackend.set_Stencil(FALSE);
 
 	// ============================================
 	// PASS 1: Base Pass (Ambient + Texture + Hemi)
 	// ============================================
 	{
-		RenderBackendLegacy.set_ColorWriteEnable();
-		RenderBackendLegacy.set_ZWriteEnable(TRUE);
+		RenderBackend.set_ColorWriteEnable();
+		RenderBackend.set_ZWriteEnable(TRUE);
 
 		set_active_phase(PHASE_NORMAL);
 
@@ -456,9 +456,9 @@ void CRender::render_stage_forward()
 	// Смена фазы
 	set_active_phase(PHASE_SUN_LIGHTING);
 
-	RenderBackendLegacy.set_ColorWriteEnable();
-	RenderBackendLegacy.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-	RenderBackendLegacy.set_ZWriteEnable(FALSE);
+	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+	RenderBackend.set_ZWriteEnable(FALSE);
 
 	SceneTraversalContext reuse_ctx = m_TraversalContext;
 	reuse_ctx.render_phase = PHASE_SUN_LIGHTING;

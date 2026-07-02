@@ -624,7 +624,7 @@ public:
 		int val = *value;
 		clamp(val, 2, 16);
 
-		RenderBackendLegacy.set_anisotropy_filtering(val);
+		RenderBackend.set_anisotropy_filtering(val);
 	}
 	CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 2, 16) {};
 	virtual void Execute(LPCSTR args)

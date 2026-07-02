@@ -13,7 +13,7 @@ class cl_dt_scaler : public R_constant_setup
 	cl_dt_scaler(float s) : scale(s){};
 	virtual void setup(R_constant* C)
 	{
-		RenderBackendLegacy.set_Constant(C, scale, scale, scale, 1 / r_dtex_range);
+		RenderBackend.set_Constant(C, scale, scale, scale, 1 / r_dtex_range);
 	}
 };
 

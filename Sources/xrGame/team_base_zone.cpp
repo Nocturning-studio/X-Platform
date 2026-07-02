@@ -158,7 +158,7 @@ void CTeamBaseZone::OnRender()
 		return;
 	if (!(dbg_net_Draw_Flags.is_any((1 << 3))))
 		return;
-	//	RenderBackendLegacy.OnFrameEnd();
+	//	RenderBackend.OnFrameEnd();
 	fvec3 l_half;
 	l_half.set(.5f, .5f, .5f);
 	fmat4x4 l_ball, l_box;
