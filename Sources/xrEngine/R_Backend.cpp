@@ -6,6 +6,8 @@
 #include "xr_IOconsole.h"
 #include <ppl.h>
 
+ENGINE_API extern int psAnisotropic;
+
 ENGINE_API CRenderBackend RenderBackend;
 
 xr_token* vid_mode_token = NULL;
@@ -399,4 +401,125 @@ void CRenderBackend::reset_end()
 void CRenderBackend::DeleteResources()
 {
     g_viewport.destroy();
+}
+
+// ---------------------------------------------------------------------------
+// State cache delegations
+// ---------------------------------------------------------------------------
+void CRenderBackend::SaveRenderState()
+{
+    m_stateCache.SaveRenderState(GetDevice());
+}
+
+void CRenderBackend::RestoreRenderState()
+{
+    m_stateCache.RestoreRenderState(GetDevice(), *this);
+}
+
+void CRenderBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
+{
+    m_stateCache.SetBlend(GetDevice(), enable, src, dest);
+}
+
+void CRenderBackend::set_Blend_Alpha()
+{
+    set_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+}
+
+void CRenderBackend::set_Blend_Add()
+{
+    set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+}
+
+void CRenderBackend::set_Blend_Multiply()
+{
+    set_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
+}
+
+void CRenderBackend::set_Blend_Default()
+{
+    set_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
+}
+
+void CRenderBackend::set_Blend_Subtract()
+{
+    set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+    SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
+}
+
+void CRenderBackend::set_Blend_Screen()
+{
+    set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
+}
+
+void CRenderBackend::set_Blend_LightAdd()
+{
+    set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+}
+
+void CRenderBackend::set_Blend_ColorAdd()
+{
+    set_Blend(TRUE, D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
+}
+
+void CRenderBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
+{
+    m_stateCache.SetBlendEx(GetDevice(), enable, src, dest, op);
+}
+
+BOOL CRenderBackend::get_BlendState() const
+{
+    return m_stateCache.GetBlendEnable();
+}
+
+D3DBLEND CRenderBackend::get_SrcBlend() const
+{
+    return m_stateCache.GetSrcBlend();
+}
+
+D3DBLEND CRenderBackend::get_DstBlend() const
+{
+    return m_stateCache.GetDstBlend();
+}
+
+void CRenderBackend::enable_anisotropy_filtering()
+{
+    for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
+        CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
+}
+
+void CRenderBackend::disable_anisotropy_filtering()
+{
+    for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
+        CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
+}
+
+void CRenderBackend::set_anisotropy_filtering(int max_anisothropy)
+{
+    for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
+        CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
+}
+
+void CRenderBackend::Invalidate()
+{
+    m_stateCache.Invalidate(*this);
+
+    decl = NULL;
+    vb = NULL;
+    ib = NULL;
+    vb_stride = 0;
+
+    state = NULL;
+    ps = NULL;
+    vs = NULL;
+    ctable = NULL;
+    T = NULL;
+
+#ifdef DEBUG
+    ps_name = nullptr;
+    vs_name = nullptr;
+#endif
+
+    for (u32 i = 0; i < 16; ++i) textures_ps[i] = nullptr;
+    for (u32 i = 0; i < 5; ++i) textures_vs[i] = nullptr;
 }

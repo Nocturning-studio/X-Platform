@@ -66,23 +66,13 @@ IC const fmat4x4& CRenderBackend::get_transform_project()
 }
 
 IC void CRenderBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
-{		
-	if (RT != pRT[ID])
-	{
-		stat.target_rt++;
-		pRT[ID] = RT;
-		CHK_DX(RenderBackend.GetDevice()->SetRenderTarget(ID, RT));
-	}
+{
+	m_stateCache.SetRenderTarget(*this, RT, ID);
 }
 
 IC void CRenderBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 {
-	if (ZB != pZB)
-	{
-		stat.target_zb++;
-		pZB = ZB;
-		CHK_DX(RenderBackend.GetDevice()->SetDepthStencilSurface(ZB));
-	}
+	m_stateCache.SetDepthStencil(*this, ZB);
 }
 
 ICF void CRenderBackend::set_States(IDirect3DStateBlock9* _state)
@@ -99,8 +89,8 @@ ICF void CRenderBackend::set_States(IDirect3DStateBlock9* _state)
 
 ICF void CRenderBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 {
-	CHK_DX(RenderBackend.GetDevice()->SetRenderState(State, Value));
-};
+	m_stateCache.SetRawRenderState(GetDevice(), State, Value);
+}
 
 IC void CRenderBackend::set_Constants(R_constant_table* ConstTable)
 {
@@ -238,111 +228,25 @@ IC void CRenderBackend::set_Geometry(SGeometry* _geom)
 
 IC void CRenderBackend::set_Scissor(Irect* R)
 {
-	if (R)
-	{
-		SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
-		RECT* clip = (RECT*)R;
-		CHK_DX(RenderBackend.GetDevice()->SetScissorRect(clip));
-	}
-	else
-	{
-		SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-	}
+	m_stateCache.SetScissor(GetDevice(), (const RECT*)R);
 }
 
-IC void CRenderBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass,
-							  u32 _zfail)
+IC void CRenderBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
 {
-	// Simple filter
-	if (stencil_enable != _enable)
-	{
-		stencil_enable = _enable;
-		SetRenderState(D3DRS_STENCILENABLE, _enable);
-	}
-	if (!stencil_enable)
-		return;
-	if (stencil_func != _func)
-	{
-		stencil_func = _func;
-		SetRenderState(D3DRS_STENCILFUNC, _func);
-	}
-	if (stencil_ref != _ref)
-	{
-		stencil_ref = _ref;
-		SetRenderState(D3DRS_STENCILREF, _ref);
-	}
-	if (stencil_mask != _mask)
-	{
-		stencil_mask = _mask;
-		SetRenderState(D3DRS_STENCILMASK, _mask);
-	}
-	if (stencil_writemask != _writemask)
-	{
-		stencil_writemask = _writemask;
-		SetRenderState(D3DRS_STENCILWRITEMASK, _writemask);
-	}
-	if (stencil_fail != _fail)
-	{
-		stencil_fail = _fail;
-		SetRenderState(D3DRS_STENCILFAIL, _fail);
-	}
-	if (stencil_pass != _pass)
-	{
-		stencil_pass = _pass;
-		SetRenderState(D3DRS_STENCILPASS, _pass);
-	}
-	if (stencil_zfail != _zfail)
-	{
-		stencil_zfail = _zfail;
-		SetRenderState(D3DRS_STENCILZFAIL, _zfail);
-	}
+	m_stateCache.SetStencil(GetDevice(), _enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
 }
+
 IC void CRenderBackend::set_ColorWriteEnable(u32 _mask)
 {
-	if (colorwrite_mask != _mask)
-	{
-		colorwrite_mask = _mask;
-		SetRenderState(D3DRS_COLORWRITEENABLE, _mask);
-		SetRenderState(D3DRS_COLORWRITEENABLE1, _mask);
-		SetRenderState(D3DRS_COLORWRITEENABLE2, _mask);
-		SetRenderState(D3DRS_COLORWRITEENABLE3, _mask);
-	}
+	m_stateCache.SetColorWriteEnable(GetDevice(), _mask);
 }
 IC void CRenderBackend::set_ZWriteEnable(bool write_state)
 {
-	if (zwrite != write_state)
-	{
-		zwrite = write_state;
-		SetRenderState(D3DRS_ZWRITEENABLE, write_state);
-	}
+	m_stateCache.SetZWriteEnable(GetDevice(), write_state);
 }
 ICF void CRenderBackend::set_CullMode(u32 _mode)
 {
-	if (cull_mode != _mode)
-	{
-		cull_mode = _mode;
-		SetRenderState(D3DRS_CULLMODE, _mode);
-	}
-}
-
-ICF void CRenderBackend::set_anisotropy_filtering(int max_anisothropy)
-{
-	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
-}
-
-ENGINE_API extern int psAnisotropic;
-
-ICF void CRenderBackend::enable_anisotropy_filtering()
-{
-	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
-}
-
-ICF void CRenderBackend::disable_anisotropy_filtering()
-{
-	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
+	m_stateCache.SetCullMode(GetDevice(), _mode);
 }
 
 #endif

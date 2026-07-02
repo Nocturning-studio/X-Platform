@@ -12,11 +12,11 @@ void CRenderBackend::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
 	for (u32 stage = 0; stage < RHI()->GetDeviceCaps().MaxSimultaneousTextures; stage++)
-		CHK_DX(RenderBackend.GetDevice()->SetTexture(0, 0));
-	CHK_DX(RenderBackend.GetDevice()->SetStreamSource(0, 0, 0, 0));
-	CHK_DX(RenderBackend.GetDevice()->SetIndices(0));
-	CHK_DX(RenderBackend.GetDevice()->SetVertexShader(0));
-	CHK_DX(RenderBackend.GetDevice()->SetPixelShader(0));
+		CHK_DX(GetDevice()->SetTexture(0, 0));
+	CHK_DX(GetDevice()->SetStreamSource(0, 0, 0, 0));
+	CHK_DX(GetDevice()->SetIndices(0));
+	CHK_DX(GetDevice()->SetVertexShader(0));
+	CHK_DX(GetDevice()->SetPixelShader(0));
 	Invalidate();
 #endif
 }
@@ -29,68 +29,6 @@ void CRenderBackend::OnFrameBegin()
 	Index.Flush();
 	set_Stencil(FALSE);
 #endif
-}
-
-void CRenderBackend::Invalidate()
-{
-	//OPTICK_EVENT("CRenderBackend::Invalidate");
-
-	bBlend = FALSE;
-	srcBlend = D3DBLEND_ONE;
-	dstBlend = D3DBLEND_ZERO;
-
-	pRT[0] = NULL;
-	pRT[1] = NULL;
-	pRT[2] = NULL;
-	pRT[3] = NULL;
-	pZB = NULL;
-
-	decl = NULL;
-	vb = NULL;
-	ib = NULL;
-	vb_stride = 0;
-
-	state = NULL;
-	ps = NULL;
-	vs = NULL;
-	ctable = NULL;
-
-	T = NULL;
-
-	colorwrite_mask = u32(-1);
-
-	for (u32 ps_it = 0; ps_it < 16;)
-		textures_ps[ps_it++] = 0;
-	for (u32 vs_it = 0; vs_it < 5;)
-		textures_vs[vs_it++] = 0;
-}
-
-void CRenderBackend::SaveRenderState()
-{
-	for (int i = 0; i < 4; i++)
-		RenderBackend.GetDevice()->GetRenderTarget(i, &saved_state.rt[i]);
-	RenderBackend.GetDevice()->GetDepthStencilSurface(&saved_state.zb);
-	RenderBackend.GetDevice()->GetViewport(&saved_state.viewport);
-}
-
-void CRenderBackend::RestoreRenderState()
-{
-	for (int i = 0; i < 4; i++)
-	{
-		if (saved_state.rt[i])
-		{
-			setRenderTarget(saved_state.rt[i], i);
-			saved_state.rt[i]->Release();
-		}
-	}
-
-	if (saved_state.zb)
-	{
-		setDepthBuffer(saved_state.zb);
-		saved_state.zb->Release();
-	}
-
-	RenderBackend.GetDevice()->SetViewport(&saved_state.viewport);
 }
 
 #ifndef DEDICATED_SREVER
@@ -173,7 +111,7 @@ void CRenderBackend::set_Textures(STextureList* _T)
 
 void CRenderBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
-	R_ASSERT2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
+	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
 
 	RenderBackend.setRenderTarget(rt_1->pRT, 0);
 
@@ -195,10 +133,7 @@ void CRenderBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt&
 
 void CRenderBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
 {
-	R_ASSERT2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
-
-	//dwWidth = W;
-	//dwHeight = H;
+	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
 
 	RenderBackend.setRenderTarget(rt_1, 0);
 
@@ -227,91 +162,6 @@ void CRenderBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
 {
 	RenderBackend.setDepthBuffer(zb);
 	CHK_DX(RenderBackend.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
-}
-
-void CRenderBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
-{
-	// Check if state actually changed to avoid redundant API calls
-	if (bBlend != enable || srcBlend != src || dstBlend != dest)
-	{
-		bBlend = enable;
-		srcBlend = src;
-		dstBlend = dest;
-
-		SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
-
-		if (enable)
-		{
-			SetRenderState(D3DRS_SRCBLEND, src);
-			SetRenderState(D3DRS_DESTBLEND, dest);
-
-			// Также установим правильные состояния для альфа-тестинга если нужно
-			SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-		}
-	}
-}
-
-void CRenderBackend::set_Blend_Alpha()
-{
-	set_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
-}
-
-void CRenderBackend::set_Blend_Add()
-{
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
-}
-
-void CRenderBackend::set_Blend_Multiply()
-{
-	set_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
-}
-
-void CRenderBackend::set_Blend_Default()
-{
-	set_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
-}
-
-// Также добавим методы для других распространенных blend режимов
-void CRenderBackend::set_Blend_Subtract()
-{
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
-	SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
-}
-
-void CRenderBackend::set_Blend_Screen()
-{
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
-}
-
-void CRenderBackend::set_Blend_LightAdd()
-{
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
-}
-
-void CRenderBackend::set_Blend_ColorAdd()
-{
-	set_Blend(TRUE, D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
-}
-
-void CRenderBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
-{
-	if (bBlend != enable || srcBlend != src || dstBlend != dest)
-	{
-		bBlend = enable;
-		srcBlend = src;
-		dstBlend = dest;
-
-		SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
-
-		if (enable)
-		{
-			SetRenderState(D3DRS_SRCBLEND, src);
-			SetRenderState(D3DRS_DESTBLEND, dest);
-			SetRenderState(D3DRS_BLENDOP, op);
-
-			SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-		}
-	}
 }
 
 // 2D texgen (texture adjustment matrix)

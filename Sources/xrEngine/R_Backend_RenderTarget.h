@@ -1,9 +1,7 @@
-#ifndef R_BACKEND_RENDERTARGET_H
-#define R_BACKEND_RENDERTARGET_H
 #pragma once
 
 #include "xr_resource.h"
-#include "SH_Texture.h" // Необходимо для ref_texture
+#include "SH_Texture.h"
 #include "../xrRHI/xrRHI_Types.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -193,5 +191,3 @@ struct ENGINE_API resptrcode_crtc : public resptr_base<CRTC>
 	}
 };
 typedef resptr_core<CRTC, resptrcode_crtc> ref_rtc;
-
-#endif // R_BACKEND_RENDERTARGET_H
