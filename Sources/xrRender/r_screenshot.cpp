@@ -37,7 +37,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	if (!Device.b_is_Ready)
 		return;
 
-	R_CHK(HW.GetDevice()->GetRenderTargetData(HW.GetBaseRT(), RenderTarget->surf_screenshot_normal));
+	R_CHK(RenderBackend.GetDevice()->GetRenderTargetData(RenderBackend.GetBaseRT(), RenderTarget->surf_screenshot_normal));
 
 	D3DLOCKED_RECT rect;
 	R_CHK(RenderTarget->surf_screenshot_normal->LockRect(&rect, 0, D3DLOCK_NOSYSLOCK));
@@ -131,7 +131,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		sprintf_s(file_name, sizeof(string_path), "level_map_%s_%s.dds", g_pGameLevel->name().c_str(), timestamp(t_stemp));
 		
 		IDirect3DTexture9* texture;
-		R_CHK(HW.GetDevice()->CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, NULL));
+		R_CHK(RenderBackend.GetDevice()->CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, NULL));
 
 		IDirect3DSurface9* surface;
 		R_CHK(texture->GetSurfaceLevel(0, &surface));
@@ -167,7 +167,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		// begin
 		if (id == 0)
 		{
-			HW.GetDevice()->CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, NULL);
+			RenderBackend.GetDevice()->CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, NULL);
 		}
 
 		D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)id;

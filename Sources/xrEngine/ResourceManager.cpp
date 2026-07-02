@@ -404,5 +404,5 @@ void CResourceManager::fix_texture_name(LPSTR fn)
 
 void CResourceManager::Evict()
 {
-	CHK_DX(HW.GetDevice()->EvictManagedResources());
+	CHK_DX(RenderBackend.GetDevice()->EvictManagedResources());
 }

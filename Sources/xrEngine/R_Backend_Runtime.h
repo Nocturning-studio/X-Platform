@@ -71,7 +71,7 @@ IC void CRenderBackend::setRenderTarget(IDirect3DSurface9* RT, u32 ID)
 	{
 		stat.target_rt++;
 		pRT[ID] = RT;
-		CHK_DX(HW.GetDevice()->SetRenderTarget(ID, RT));
+		CHK_DX(RenderBackend.GetDevice()->SetRenderTarget(ID, RT));
 	}
 }
 
@@ -81,7 +81,7 @@ IC void CRenderBackend::setDepthBuffer(IDirect3DSurface9* ZB)
 	{
 		stat.target_zb++;
 		pZB = ZB;
-		CHK_DX(HW.GetDevice()->SetDepthStencilSurface(ZB));
+		CHK_DX(RenderBackend.GetDevice()->SetDepthStencilSurface(ZB));
 	}
 }
 
@@ -99,7 +99,7 @@ ICF void CRenderBackend::set_States(IDirect3DStateBlock9* _state)
 
 ICF void CRenderBackend::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 {
-	CHK_DX(HW.GetDevice()->SetRenderState(State, Value));
+	CHK_DX(RenderBackend.GetDevice()->SetRenderState(State, Value));
 };
 
 IC void CRenderBackend::set_Constants(R_constant_table* ConstTable)
@@ -143,7 +143,7 @@ ICF void CRenderBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 		stat.decl++;
 #endif
 		decl = _decl;
-		CHK_DX(HW.GetDevice()->SetVertexDeclaration(decl));
+		CHK_DX(RenderBackend.GetDevice()->SetVertexDeclaration(decl));
 	}
 }
 
@@ -153,7 +153,7 @@ ICF void CRenderBackend::set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n)
 	{
 		stat.ps++;
 		ps = _ps;
-		CHK_DX(HW.GetDevice()->SetPixelShader(ps));
+		CHK_DX(RenderBackend.GetDevice()->SetPixelShader(ps));
 #ifdef DEBUG
 		ps_name = _n;
 #endif
@@ -166,7 +166,7 @@ ICF void CRenderBackend::set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _
 	{
 		stat.vs++;
 		vs = _vs;
-		CHK_DX(HW.GetDevice()->SetVertexShader(vs));
+		CHK_DX(RenderBackend.GetDevice()->SetVertexShader(vs));
 #ifdef DEBUG
 		vs_name = _n;
 #endif
@@ -182,7 +182,7 @@ ICF void CRenderBackend::set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_strid
 #endif
 		vb = _vb;
 		vb_stride = _vb_stride;
-		CHK_DX(HW.GetDevice()->SetStreamSource(0, vb, 0, vb_stride));
+		CHK_DX(RenderBackend.GetDevice()->SetStreamSource(0, vb, 0, vb_stride));
 	}
 }
 
@@ -194,7 +194,7 @@ ICF void CRenderBackend::set_Indices(IDirect3DIndexBuffer9* _ib)
 		stat.ib++;
 #endif
 		ib = _ib;
-		CHK_DX(HW.GetDevice()->SetIndices(ib));
+		CHK_DX(RenderBackend.GetDevice()->SetIndices(ib));
 	}
 }
 
@@ -212,7 +212,7 @@ ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 s
 {
 	Apply(countV, PC);
 
-	CHK_DX(HW.GetDevice()->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
+	CHK_DX(RenderBackend.GetDevice()->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
 }
 
 ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
@@ -221,7 +221,7 @@ ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 
 	stat.verts += 3 * PC;
 	stat.polys += PC;
 	constants.flush();
-	CHK_DX(HW.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
+	CHK_DX(RenderBackend.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
 }
 
 ICF void CRenderBackend::set_Shader(Shader* S, u32 pass)
@@ -242,7 +242,7 @@ IC void CRenderBackend::set_Scissor(Irect* R)
 	{
 		SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
 		RECT* clip = (RECT*)R;
-		CHK_DX(HW.GetDevice()->SetScissorRect(clip));
+		CHK_DX(RenderBackend.GetDevice()->SetScissorRect(clip));
 	}
 	else
 	{
@@ -328,7 +328,7 @@ ICF void CRenderBackend::set_CullMode(u32 _mode)
 ICF void CRenderBackend::set_anisotropy_filtering(int max_anisothropy)
 {
 	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
+		CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
 
 ENGINE_API extern int psAnisotropic;
@@ -336,13 +336,13 @@ ENGINE_API extern int psAnisotropic;
 ICF void CRenderBackend::enable_anisotropy_filtering()
 {
 	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
+		CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
 ICF void CRenderBackend::disable_anisotropy_filtering()
 {
 	for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
+		CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }
 
 #endif

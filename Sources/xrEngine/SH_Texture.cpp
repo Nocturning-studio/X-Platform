@@ -98,9 +98,9 @@ void CTexture::apply_theora(u32 dwStage)
 		pTheora->DecompressFrame((u32*)R.pBits, _w - rect.right, _pos);
 		VERIFY(u32(_pos) == rect.bottom * _w);
 		R_CHK(T2D->UnlockRect(0));
-		R_CHK(HW.GetDevice()->UpdateTexture(pTempSurface, pSurface));
+		R_CHK(RenderBackend.GetDevice()->UpdateTexture(pTempSurface, pSurface));
 	}
-	CHK_DX(HW.GetDevice()->SetTexture(dwStage, pSurface));
+	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
 void CTexture::apply_avi(u32 dwStage)
 {
@@ -118,9 +118,9 @@ void CTexture::apply_avi(u32 dwStage)
 		CopyMemory(R.pBits, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
 
 		R_CHK(T2D->UnlockRect(0));
-		R_CHK(HW.GetDevice()->UpdateTexture(pTempSurface, pSurface));
+		R_CHK(RenderBackend.GetDevice()->UpdateTexture(pTempSurface, pSurface));
 	}
-	CHK_DX(HW.GetDevice()->SetTexture(dwStage, pSurface));
+	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
 void CTexture::apply_seq(u32 dwStage)
 {
@@ -139,11 +139,11 @@ void CTexture::apply_seq(u32 dwStage)
 		u32 frame_id = frame % frame_data;
 		pSurface = seqDATA[frame_id];
 	}
-	CHK_DX(HW.GetDevice()->SetTexture(dwStage, pSurface));
+	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
 void CTexture::apply_normal(u32 dwStage)
 {
-	CHK_DX(HW.GetDevice()->SetTexture(dwStage, pSurface));
+	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
 
 void CTexture::Preload()
@@ -195,9 +195,9 @@ void CTexture::Load()
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
 
-            const auto hr = HW.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
+            const auto hr = RenderBackend.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
 														reinterpret_cast<IDirect3DTexture9**>(&pSurface), nullptr);
-			const auto hr2 = HW.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM,
+			const auto hr2 = RenderBackend.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM,
 														reinterpret_cast<IDirect3DTexture9**>(&pTempSurface), nullptr);
 
             if (FAILED(hr) || FAILED(hr2))
@@ -226,10 +226,10 @@ void CTexture::Load()
 
 			// Now create texture
 			const auto hr =
-				HW.GetDevice()->CreateTexture(pAVI->m_dwWidth, pAVI->m_dwHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
+				RenderBackend.GetDevice()->CreateTexture(pAVI->m_dwWidth, pAVI->m_dwHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
 										  reinterpret_cast<IDirect3DTexture9**>(&pSurface), nullptr);
 			const auto hr2 =
-				HW.GetDevice()->CreateTexture(pAVI->m_dwWidth, pAVI->m_dwHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM,
+				RenderBackend.GetDevice()->CreateTexture(pAVI->m_dwWidth, pAVI->m_dwHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM,
 										  reinterpret_cast<IDirect3DTexture9**>(&pTempSurface), nullptr);
 
 			if (FAILED(hr) || FAILED(hr2))

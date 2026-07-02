@@ -128,7 +128,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 			u32 dwUsage = D3DUSAGE_WRITEONLY | (bSoft ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 			BYTE* bytes = 0;
 			VERIFY(NULL == p_rm_Vertices);
-			R_CHK(HW.GetDevice()->CreateVertexBuffer(vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &p_rm_Vertices, 0));
+			R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &p_rm_Vertices, 0));
 			R_CHK(p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
 			CopyMemory(bytes, data->pointer(), vCount * vStride);
 			p_rm_Vertices->Unlock();
@@ -165,7 +165,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 			VERIFY(NULL == p_rm_Indices);
 			R_CHK(
-				HW.GetDevice()->CreateIndexBuffer(iCount * 2, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &p_rm_Indices, 0));
+				RenderBackend.GetDevice()->CreateIndexBuffer(iCount * 2, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &p_rm_Indices, 0));
 			R_CHK(p_rm_Indices->Lock(0, 0, (void**)&bytes, 0));
 			CopyMemory(bytes, data->pointer(), iCount * 2);
 			p_rm_Indices->Unlock();

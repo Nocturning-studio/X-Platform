@@ -589,7 +589,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 
 void CConsole::DrawRect(FVF::TL*& TL_pv, Frect const& r, u32 color)
 {
-	VERIFY(HW.GetDevice());
+	VERIFY(RenderBackend.GetDevice());
 
 	const auto pushPoint = [&TL_pv](float x, float y, float z, u32 C, float u, float v) {
 		TL_pv->set(x, y, C, u, v);
@@ -597,7 +597,7 @@ void CConsole::DrawRect(FVF::TL*& TL_pv, Frect const& r, u32 color)
 	};
 
 	// D3DRECT R = { r.x1, r.y1, r.x2, r.y2 };
-	// CHK_DX(HW.GetDevice()->Clear(1, &R, D3DCLEAR_TARGET, color, 1, 0));
+	// CHK_DX(RenderBackend.GetDevice()->Clear(1, &R, D3DCLEAR_TARGET, color, 1, 0));
 
 	pushPoint(r.x1, r.y1, 0.0f, color, 0.0f, 0.0f);
 	pushPoint(r.x2, r.y1, 0.0f, color, 1.0f, 0.0f);

@@ -115,7 +115,7 @@ void CRender::combine_scene_lighting()
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	// stencil should be >= 1, we don't touch sky pixels
 	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], HW.GetBaseZB());
+	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], RenderBackend.GetBaseZB());
 	//
 //#ifdef DEBUG
 //	RenderBackend.set_CullMode(CULL_BACKFACE);

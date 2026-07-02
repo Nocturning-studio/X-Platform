@@ -121,7 +121,7 @@ void CSunOccluder::Load()
 	// --- Создание буферов ---
 
 	u32 vSize = sizeof(v_occluder);
-	R_CHK(HW.GetDevice()->CreateVertexBuffer(m_VertexCount * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, 0));
+	R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(m_VertexCount * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, 0));
 
 	v_occluder* pV;
 	R_CHK(m_VB->Lock(0, 0, (void**)&pV, 0));
@@ -132,7 +132,7 @@ void CSunOccluder::Load()
 	R_CHK(m_VB->Unlock());
 
 	R_CHK(
-		HW.GetDevice()->CreateIndexBuffer(m_IndexCount * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, 0));
+		RenderBackend.GetDevice()->CreateIndexBuffer(m_IndexCount * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, 0));
 
 	u16* pI;
 	R_CHK(m_IB->Lock(0, 0, (void**)&pI, 0));

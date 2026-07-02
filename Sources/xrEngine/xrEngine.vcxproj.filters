@@ -76,9 +76,6 @@
     <Filter Include="Render\Execution &amp; 3D">
       <UniqueIdentifier>{946f3834-1a8d-4340-b065-f9cfad44a1f7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\HW">
-      <UniqueIdentifier>{edaec3cd-e08f-4acf-afac-cbf70123392c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\Gamma">
       <UniqueIdentifier>{a7d0f8c2-0c91-43b0-a8b1-81d52569f9ec}</UniqueIdentifier>
     </Filter>
@@ -386,9 +383,6 @@
     </ClInclude>
     <ClInclude Include="Stats.h">
       <Filter>Render\Execution &amp; 3D</Filter>
-    </ClInclude>
-    <ClInclude Include="HW.h">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
     </ClInclude>
     <ClInclude Include="xr_effgamma.h">
       <Filter>Render\Execution &amp; 3D\Gamma</Filter>
@@ -802,9 +796,6 @@
     </ClCompile>
     <ClCompile Include="Stats.cpp">
       <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="HW.cpp">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
     </ClCompile>
     <ClCompile Include="xr_effgamma.cpp">
       <Filter>Render\Execution &amp; 3D\Gamma</Filter>

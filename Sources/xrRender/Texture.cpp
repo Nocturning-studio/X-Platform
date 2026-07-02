@@ -125,7 +125,7 @@ _DDS : {
 
 _DDS_CUBE : {
 	HRESULT const result_cube = D3DXCreateCubeTextureFromFileInMemoryEx(
-		HW.GetDevice(), S->pointer(), S->length(), D3DX_DEFAULT, IMG.MipLevels, 0, IMG.Format, D3DPOOL_DEFAULT,
+		RenderBackend.GetDevice(), S->pointer(), S->length(), D3DX_DEFAULT, IMG.MipLevels, 0, IMG.Format, D3DPOOL_DEFAULT,
 		D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, 0, &pTextureCUBE);
 	FS.r_close(S);
 
@@ -150,7 +150,7 @@ _DDS_CUBE : {
 _DDS_2D : {
 	// Load texture directly with all mip levels using D3DPOOL_DEFAULT
 	HRESULT const result_2D =
-		D3DXCreateTextureFromFileInMemoryEx(HW.GetDevice(), S->pointer(), S->length(), D3DX_DEFAULT, D3DX_DEFAULT,
+		D3DXCreateTextureFromFileInMemoryEx(RenderBackend.GetDevice(), S->pointer(), S->length(), D3DX_DEFAULT, D3DX_DEFAULT,
 											D3DX_DEFAULT, // Use all mip levels
 											0, IMG.Format,
 											D3DPOOL_DEFAULT, // Use DEFAULT pool

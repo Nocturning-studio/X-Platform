@@ -16,14 +16,14 @@ void CRenderBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 
 void CRenderBackend::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 	OnFrameEnd();
-	CHK_DX(HW.GetDevice()->SetFVF(FVF::F_L));
-	CHK_DX(HW.GetDevice()->DrawIndexedPrimitiveUP(PrimType, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
+	CHK_DX(RenderBackend.GetDevice()->SetFVF(FVF::F_L));
+	CHK_DX(RenderBackend.GetDevice()->DrawIndexedPrimitiveUP(PrimType, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
 }
 void CRenderBackend::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int pcnt)
 {
 	OnFrameEnd();
-	CHK_DX(HW.GetDevice()->SetFVF(FVF::F_L));
-	CHK_DX(HW.GetDevice()->DrawPrimitiveUP(PrimType, pcnt, pVerts, sizeof(FVF::L)));
+	CHK_DX(RenderBackend.GetDevice()->SetFVF(FVF::F_L));
+	CHK_DX(RenderBackend.GetDevice()->DrawPrimitiveUP(PrimType, pcnt, pVerts, sizeof(FVF::L)));
 }
 
 #define RGBA_GETALPHA(rgb) ((rgb) >> 24)

@@ -198,7 +198,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 		VERIFY(vStride == sizeof(vertHW_1W));
 		BYTE* bytes = nullptr;
 		VERIFY(!V.p_rm_Vertices);
-		R_CHK(HW.GetDevice()->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
+		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
 		R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
 
 		vertHW_1W* dst = (vertHW_1W*)bytes;
@@ -219,7 +219,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 		VERIFY(vStride == sizeof(vertHW_2W));
 		BYTE* bytes = nullptr;
 		VERIFY(!V.p_rm_Vertices);
-		R_CHK(HW.GetDevice()->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
+		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(V.vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &V.p_rm_Vertices, 0));
 		R_CHK(V.p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
 
 		vertHW_2W* dst = (vertHW_2W*)bytes;

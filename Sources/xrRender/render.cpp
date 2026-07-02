@@ -590,7 +590,7 @@ void CRender::set_render_mode(int mode)
 
 	IRender_Target* T = getTarget();
 	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), ZMin, ZMax};
-	CHK_DX(HW.GetDevice()->SetViewport(&VP));
+	CHK_DX(RenderBackend.GetDevice()->SetViewport(&VP));
 }
 
 #include "..\xrEngine\GameFont.h"

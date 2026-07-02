@@ -372,10 +372,10 @@ class CCC_tf_MipBias : public CCC_Float
   public:
 	void apply()
 	{
-		if (0 == HW.GetDevice())
+		if (0 == RenderBackend.GetDevice())
 			return;
 		for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-			CHK_DX(HW.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
+			CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
 	}
 
 	CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -0.5f, +0.5f){};
@@ -619,7 +619,7 @@ class CCC_tf_Aniso : public CCC_Integer
 public:
 	void apply()
 	{
-		if (0 == HW.GetDevice())
+		if (0 == RenderBackend.GetDevice())
 			return;
 		int val = *value;
 		clamp(val, 2, 16);

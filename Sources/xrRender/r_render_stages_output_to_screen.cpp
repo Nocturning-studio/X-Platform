@@ -11,6 +11,6 @@ void CRender::output_frame_to_screen()
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_Element(RenderTarget->s_output_to_screen->E[0]);
-	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, HW.GetBaseRT(), HW.GetBaseZB());
+	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, RenderBackend.GetBaseRT(), RenderBackend.GetBaseZB());
 }
 ///////////////////////////////////////////////////////////////////////////////////

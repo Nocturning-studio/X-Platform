@@ -9,7 +9,6 @@
 class ENGINE_API CGammaControl;
 
 #include "pure.h"
-#include "hw.h"
 #include "ftimer.h"
 #include "stats.h"
 #include "xr_effgamma.h"

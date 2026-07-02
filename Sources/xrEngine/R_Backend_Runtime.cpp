@@ -12,11 +12,11 @@ void CRenderBackend::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
 	for (u32 stage = 0; stage < RHI()->GetDeviceCaps().MaxSimultaneousTextures; stage++)
-		CHK_DX(HW.GetDevice()->SetTexture(0, 0));
-	CHK_DX(HW.GetDevice()->SetStreamSource(0, 0, 0, 0));
-	CHK_DX(HW.GetDevice()->SetIndices(0));
-	CHK_DX(HW.GetDevice()->SetVertexShader(0));
-	CHK_DX(HW.GetDevice()->SetPixelShader(0));
+		CHK_DX(RenderBackend.GetDevice()->SetTexture(0, 0));
+	CHK_DX(RenderBackend.GetDevice()->SetStreamSource(0, 0, 0, 0));
+	CHK_DX(RenderBackend.GetDevice()->SetIndices(0));
+	CHK_DX(RenderBackend.GetDevice()->SetVertexShader(0));
+	CHK_DX(RenderBackend.GetDevice()->SetPixelShader(0));
 	Invalidate();
 #endif
 }
@@ -68,9 +68,9 @@ void CRenderBackend::Invalidate()
 void CRenderBackend::SaveRenderState()
 {
 	for (int i = 0; i < 4; i++)
-		HW.GetDevice()->GetRenderTarget(i, &saved_state.rt[i]);
-	HW.GetDevice()->GetDepthStencilSurface(&saved_state.zb);
-	HW.GetDevice()->GetViewport(&saved_state.viewport);
+		RenderBackend.GetDevice()->GetRenderTarget(i, &saved_state.rt[i]);
+	RenderBackend.GetDevice()->GetDepthStencilSurface(&saved_state.zb);
+	RenderBackend.GetDevice()->GetViewport(&saved_state.viewport);
 }
 
 void CRenderBackend::RestoreRenderState()
@@ -90,7 +90,7 @@ void CRenderBackend::RestoreRenderState()
 		saved_state.zb->Release();
 	}
 
-	HW.GetDevice()->SetViewport(&saved_state.viewport);
+	RenderBackend.GetDevice()->SetViewport(&saved_state.viewport);
 }
 
 #ifndef DEDICATED_SREVER
@@ -154,13 +154,13 @@ void CRenderBackend::set_Textures(STextureList* _T)
 	for (++_last_ps; _last_ps < 16 && textures_ps[_last_ps]; _last_ps++)
 	{
 		textures_ps[_last_ps] = 0;
-		CHK_DX(HW.GetDevice()->SetTexture(_last_ps, NULL));
+		CHK_DX(RenderBackend.GetDevice()->SetTexture(_last_ps, NULL));
 	}
 	// clear remaining stages (VS)
 	for (++_last_vs; _last_vs < 5 && textures_vs[_last_vs]; _last_vs++)
 	{
 		textures_vs[_last_vs] = 0;
-		CHK_DX(HW.GetDevice()->SetTexture(_last_vs + 256, NULL));
+		CHK_DX(RenderBackend.GetDevice()->SetTexture(_last_vs + 256, NULL));
 	}
 }
 #else
@@ -226,7 +226,7 @@ void CRenderBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
 void CRenderBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
 {
 	RenderBackend.setDepthBuffer(zb);
-	CHK_DX(HW.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
+	CHK_DX(RenderBackend.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
 }
 
 void CRenderBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
@@ -505,7 +505,7 @@ void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderEle
 	{
 		RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 		RECT dst_rect = {0, 0, 64, 64};
-		HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
+		RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
 		dst_level0->Release();
 	}
 
@@ -540,7 +540,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
 	// Выполняем копирование
-	HRESULT hr = HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
+	HRESULT hr = RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
 
 	if (FAILED(hr))
 	{
@@ -563,7 +563,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DT
 	RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
-	HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+	RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
 // Версия с указанием конкретных областей
@@ -578,7 +578,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt de
 	if (!src_surface || !dst_surface)
 		return;
 
-	HW.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+	RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
 void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
@@ -605,7 +605,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
 	// Выполняем копирование
-	HRESULT hr = HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
+	HRESULT hr = RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
 
 	if (FAILED(hr))
 	{
@@ -626,7 +626,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 	RECT src_rect = {0, 0, (LONG)src_desc.Width, (LONG)src_desc.Height};
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
-	HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+	RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
 // Версия с указанием областей
@@ -635,12 +635,12 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDire
 	if (!source || !destination)
 		return;
 
-	HW.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+	RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
 void CRenderBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
 {
-	CHK_DX(HW.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
+	CHK_DX(RenderBackend.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
 }
 
 void CRenderBackend::ClearTexture(const ref_rt& rt_1, u32 color)

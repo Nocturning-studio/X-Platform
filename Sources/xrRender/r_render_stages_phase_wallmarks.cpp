@@ -11,7 +11,7 @@ void CRender::render_wallmarks()
 
 	// Targets
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0]);
-	RenderBackend.set_Depth_Buffer(HW.GetBaseZB());
+	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
 
 	// Stencil	- draw only where stencil >= 0x1
 	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);

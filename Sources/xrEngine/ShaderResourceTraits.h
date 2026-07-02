@@ -29,7 +29,7 @@ template <> struct ShaderTypeTraits<SVS>
 	static inline ID3DShader* D3DCreateShader(DWORD const* buffer, size_t size)
 	{
 		ID3DShader* s = 0;
-		R_CHK(HW.GetDevice()->CreateVertexShader(buffer, &s));
+		R_CHK(RenderBackend.GetDevice()->CreateVertexShader(buffer, &s));
 		return s;
 	}
 };
@@ -59,7 +59,7 @@ template <> struct ShaderTypeTraits<SPS>
 	static inline ID3DShader* D3DCreateShader(DWORD const* buffer, size_t size)
 	{
 		ID3DShader* s = 0;
-		R_CHK(HW.GetDevice()->CreatePixelShader(buffer, &s));
+		R_CHK(RenderBackend.GetDevice()->CreatePixelShader(buffer, &s));
 		return s;
 	}
 };

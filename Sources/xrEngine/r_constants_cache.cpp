@@ -31,7 +31,7 @@ void R_constants::flush_cache()
 				if (count)
 				{
 					count = (count > 31) ? 31 : count;
-					CHK_DX(HW.GetDevice()->SetPixelShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
+					CHK_DX(RenderBackend.GetDevice()->SetPixelShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
 					F.flush();
 				}
 			}
@@ -48,7 +48,7 @@ void R_constants::flush_cache()
 			u32 count = F.r_hi() - F.r_lo();
 			if (count)
 			{
-				CHK_DX(HW.GetDevice()->SetVertexShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
+				CHK_DX(RenderBackend.GetDevice()->SetVertexShaderConstantF(F.r_lo(), (float*)F.access(F.r_lo()), count));
 				F.flush();
 			}
 		}

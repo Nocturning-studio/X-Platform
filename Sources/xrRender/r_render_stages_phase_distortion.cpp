@@ -10,7 +10,7 @@ void CRender::create_distortion_mask()
 	////OPTICK_EVENT("CRender::create_distortion_mask");
 
 	RenderBackend.ClearTexture(RenderTarget->rt_Distortion_Mask, color_rgba(127, 127, 0, 127));
-	RenderBackend.setDepthBuffer(HW.GetBaseZB());
+	RenderBackend.setDepthBuffer(RenderBackend.GetBaseZB());
 
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);

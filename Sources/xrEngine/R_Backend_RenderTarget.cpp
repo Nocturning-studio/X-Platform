@@ -53,7 +53,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
 	if (pSurface) return;
 
-	R_ASSERT(HW.GetDevice() && Name && Name[0] && w && h);
+	R_ASSERT(RenderBackend.GetDevice() && Name && Name[0] && w && h);
 	_order = CPU::GetCLK();
 
 	dwWidth = w;
@@ -185,7 +185,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 {
 	if (pSurface) return;
 
-	R_ASSERT(HW.GetDevice() && Name && Name[0] && size && btwIsPow2(size));
+	R_ASSERT(RenderBackend.GetDevice() && Name && Name[0] && size && btwIsPow2(size));
 	_order = CPU::GetCLK();
 
 	dwSize = size;

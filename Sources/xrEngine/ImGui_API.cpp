@@ -24,7 +24,7 @@ void CImguiAPI::Initialize()
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(Engine.WindowManager.GetHandle());
-	ImGui_ImplDX9_Init(HW.GetDevice());
+	ImGui_ImplDX9_Init(RenderBackend.GetDevice());
 
 	// Load Fonts
 	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use

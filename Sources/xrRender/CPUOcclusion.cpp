@@ -97,7 +97,7 @@ void CPUOcclusion::Load(const CHOM& hom)
     // D3D9 отладка
     {
         const u32 vbSize = m_vertexCount * sizeof(fvec3);
-        R_CHK(HW.GetDevice()->CreateVertexBuffer(vbSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, nullptr));
+        R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(vbSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, nullptr));
         fvec3* pData = nullptr;
         R_CHK(m_VB->Lock(0, 0, (void**)&pData, 0));
         std::memcpy(pData, vertices.data(), vbSize);
@@ -105,7 +105,7 @@ void CPUOcclusion::Load(const CHOM& hom)
     }
     {
         const u32 ibSize = m_indexCount * sizeof(u16);
-        R_CHK(HW.GetDevice()->CreateIndexBuffer(ibSize, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, nullptr));
+        R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(ibSize, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, nullptr));
         u16* pData = nullptr;
         R_CHK(m_IB->Lock(0, 0, (void**)&pData, 0));
         std::memcpy(pData, indices.data(), ibSize);

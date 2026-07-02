@@ -429,7 +429,7 @@ void CRender::render_stage_forward()
 	// но здесь мы просто читаем.
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
-	RenderBackend.set_Depth_Buffer(HW.GetBaseZB());
+	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 
