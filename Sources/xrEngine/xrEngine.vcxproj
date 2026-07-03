@@ -1780,6 +1780,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="R_Backend.h" />
     <ClInclude Include="R_Backend_RenderTarget.h" />
+    <ClInclude Include="R_Backend_ResourceBinder.h" />
     <ClInclude Include="R_Backend_Runtime.h" />
     <ClInclude Include="R_Backend_StateCache.h" />
     <ClInclude Include="R_Backend_tree.h" />
@@ -2022,6 +2023,7 @@
     <ClCompile Include="R_Backend.cpp" />
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_RenderTarget.cpp" />
+    <ClCompile Include="R_Backend_ResourceBinder.cpp" />
     <ClCompile Include="R_Backend_Runtime.cpp" />
     <ClCompile Include="R_Backend_StateCache.cpp" />
     <ClCompile Include="R_Backend_tree.cpp" />

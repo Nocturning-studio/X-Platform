@@ -636,6 +636,9 @@
     <ClInclude Include="R_Backend_StateCache.h">
       <Filter>Render\Backend</Filter>
     </ClInclude>
+    <ClInclude Include="R_Backend_ResourceBinder.h">
+      <Filter>Render\Backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">
@@ -1056,6 +1059,9 @@
       <Filter>xrBind PSGP</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_StateCache.cpp">
+      <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="R_Backend_ResourceBinder.cpp">
       <Filter>Render\Backend</Filter>
     </ClCompile>
   </ItemGroup>

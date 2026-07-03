@@ -57,7 +57,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		p0.set(.5f / _w, .5f / _h);
 		p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 
-		FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, RenderBackend.g_viewport->vb_stride, Offset);
+		FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, RenderBackend.m_viewport->vb_stride, Offset);
 		pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
 		pv++;
 		pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -66,8 +66,8 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		pv++;
 		pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
 		pv++;
-		RenderBackend.Vertex.Unlock(4, RenderBackend.g_viewport->vb_stride);
-		RenderBackend.set_Geometry(RenderBackend.g_viewport);
+		RenderBackend.Vertex.Unlock(4, RenderBackend.m_viewport->vb_stride);
+		RenderBackend.set_Geometry(RenderBackend.m_viewport);
 
 		// draw
 		RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

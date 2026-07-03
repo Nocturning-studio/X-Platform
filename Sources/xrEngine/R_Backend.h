@@ -1,6 +1,7 @@
 #pragma once
 
 #include "R_Backend_StateCache.h"
+#include "R_Backend_ResourceBinder.h"
 #include "R_Backend_Data_Streams.h"
 #include "r_constants_cache.h"
 #include "r_backend_transform.h"
@@ -64,32 +65,14 @@ public:
     R_transforms transforms;
     R_tree tree;
 
-    ref_geom g_viewport;
+    ref_geom m_viewport;
 
-    // New state cache
+    // New state cache and resource binder
     CBackendStateCache m_stateCache;
+    CBackendResourceBinder m_resBinder;
 
 private:
-    // Resource binding cache (will be moved to separate class later)
-    IDirect3DVertexDeclaration9* decl;
-    IDirect3DVertexBuffer9* vb;
-    IDirect3DIndexBuffer9* ib;
-    u32 vb_stride;
-
-    ALIGN(16) R_constants constants;
-    R_constant_table* ctable;
-
-    IDirect3DStateBlock9* state;
-    IDirect3DPixelShader9* ps;
-    IDirect3DVertexShader9* vs;
-#ifdef DEBUG
-    LPCSTR ps_name;
-    LPCSTR vs_name;
-#endif
-
-    STextureList* T;
-    CTexture* textures_ps[16];
-    CTexture* textures_vs[5];
+    ALIGN(16) R_constants constants; // will be moved to CConstantManager later
 
     void Invalidate();
 
@@ -141,15 +124,12 @@ public:
     // Active texture info
     IC CTexture* get_ActiveTexture(u32 stage)
     {
-        if (stage >= 256)
-            return textures_vs[stage - 256];
-        else
-            return textures_ps[stage];
+        return m_resBinder.GetActiveTexture(stage);
     }
     IC R_constant_array& get_ConstantCache_Vertex() { return constants.a_vertex; }
     IC R_constant_array& get_ConstantCache_Pixel() { return constants.a_pixel; }
 
-    // Transform API
+    // Transform API (implementations remain in R_Backend_Runtime.h or .cpp)
     IC void set_transform_world(const fmat4x4& M);
     IC void set_transform_view(const fmat4x4& M);
     IC void set_transform_project(const fmat4x4& M);
@@ -157,20 +137,43 @@ public:
     IC const fmat4x4& get_transform_view();
     IC const fmat4x4& get_transform_project();
 
-    // Pipeline state setters (delegated to m_stateCache)
-    IC void setRenderTarget(IDirect3DSurface9* RT, u32 ID = 0);
-    IC void setDepthBuffer(IDirect3DSurface9* ZB);
-
+    // --- Pipeline state (delegated to m_stateCache) ---
+    IC void setRenderTarget(IDirect3DSurface9* RT, u32 ID = 0)
+    {
+        m_stateCache.SetRenderTarget(*this, RT, ID);
+    }
+    IC void setDepthBuffer(IDirect3DSurface9* ZB)
+    {
+        m_stateCache.SetDepthStencil(*this, ZB);
+    }
     IC void set_Stencil(u32 _enable, u32 _func = D3DCMP_ALWAYS, u32 _ref = 0x00, u32 _mask = 0x00,
         u32 _writemask = 0x00, u32 _fail = D3DSTENCILOP_KEEP, u32 _pass = D3DSTENCILOP_KEEP,
-        u32 _zfail = D3DSTENCILOP_KEEP);
-    IC void set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
-    IC void set_ZWriteEnable(bool state);
-    IC void set_CullMode(u32 _mode);
-    IC void set_Scissor(Irect* rect = NULL);
+        u32 _zfail = D3DSTENCILOP_KEEP)
+    {
+        m_stateCache.SetStencil(GetDevice(), _enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
+    }
+    IC void set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN |
+        D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA)
+    {
+        m_stateCache.SetColorWriteEnable(GetDevice(), _mask);
+    }
+    IC void set_ZWriteEnable(bool state)
+    {
+        m_stateCache.SetZWriteEnable(GetDevice(), state);
+    }
+    IC void set_CullMode(u32 _mode)
+    {
+        m_stateCache.SetCullMode(GetDevice(), _mode);
+    }
+    IC void set_Scissor(Irect* rect = NULL)
+    {
+        m_stateCache.SetScissor(GetDevice(), (const RECT*)rect);
+    }
 
-    // Raw render state (used by debug and anisotropy)
-    ICF void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value);
+    ICF void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
+    {
+        m_stateCache.SetRawRenderState(GetDevice(), State, Value);
+    }
 
     // Blend helpers (delegated)
     void set_Blend(BOOL enable, D3DBLEND src = D3DBLEND_ONE, D3DBLEND dest = D3DBLEND_ZERO);
@@ -187,43 +190,68 @@ public:
     D3DBLEND get_SrcBlend() const;
     D3DBLEND get_DstBlend() const;
 
-    // Anisotropy (still uses raw SetRenderState)
+    // Anisotropy (will be moved to sampler state manager later)
     void enable_anisotropy_filtering();
     void disable_anisotropy_filtering();
     void set_anisotropy_filtering(int max_anisothropy);
 
-    // Constants API
-    IC void set_Constants(R_constant_table* C);
+    // --- Resource binding (delegated to m_resBinder) ---
+    IC void set_Constants(R_constant_table* C)
+    {
+        m_resBinder.SetConstantTable(*this, C, transforms);
+    }
     IC void set_Constants(ref_ctable& CTable) { set_Constants(&*CTable); }
 
     void set_Textures(STextureList* T);
     IC void set_Textures(ref_texture_list& TexList) { set_Textures(&*TexList); }
 
-    IC void set_Element(ShaderElement* S, u32 pass = 0);
+    IC void set_Element(ShaderElement* S, u32 pass = 0)
+    {
+        SPass& P = *(S->passes[pass]);
+        set_States(P.state);
+        set_Pixel_Shader(P.ps);
+        set_Vertex_Shader(P.vs);
+        set_Constants(P.constants);
+        set_Textures(P.T);
+    }
     IC void set_Element(ref_selement& S, u32 pass = 0) { set_Element(&*S, pass); }
 
-    IC void set_Shader(Shader* S, u32 pass = 0);
+    IC void set_Shader(Shader* S, u32 pass = 0) { set_Element(S->E[0], pass); }
     IC void set_Shader(ref_shader& S, u32 pass = 0) { set_Shader(&*S, pass); }
 
-    ICF void set_States(IDirect3DStateBlock9* _state);
+    ICF void set_States(IDirect3DStateBlock9* _state) { m_resBinder.SetStates(*this, _state); }
     ICF void set_States(ref_state& _state) { set_States(_state->state); }
 
-    ICF void set_Format(IDirect3DVertexDeclaration9* _decl);
+    ICF void set_Format(IDirect3DVertexDeclaration9* _decl) { m_resBinder.SetVertexDeclaration(*this, _decl); }
 
-    ICF void set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n = 0);
+    ICF void set_Pixel_Shader(IDirect3DPixelShader9* _ps, LPCSTR _n = 0) { m_resBinder.SetPixelShader(*this, _ps, _n); }
     ICF void set_Pixel_Shader(ref_ps& _ps) { set_Pixel_Shader(_ps->sh, _ps->cName.c_str()); }
 
-    ICF void set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n = 0);
+    ICF void set_Vertex_Shader(IDirect3DVertexShader9* _vs, LPCSTR _n = 0) { m_resBinder.SetVertexShader(*this, _vs, _n); }
     ICF void set_Vertex_Shader(ref_vs& _vs) { set_Vertex_Shader(_vs->sh, _vs->cName.c_str()); }
 
-    ICF void set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride);
-    ICF void set_Indices(IDirect3DIndexBuffer9* _ib);
-    ICF void set_Geometry(SGeometry* _geom);
+    ICF void set_Vertices(IDirect3DVertexBuffer9* _vb, u32 _vb_stride) { m_resBinder.SetVertexBuffer(*this, _vb, _vb_stride); }
+    ICF void set_Indices(IDirect3DIndexBuffer9* _ib) { m_resBinder.SetIndexBuffer(*this, _ib); }
+
+    ICF void set_Geometry(SGeometry* _geom)
+    {
+        set_Format(_geom->dcl._get()->dcl);
+        set_Vertices(_geom->vb, _geom->vb_stride);
+        set_Indices(_geom->ib);
+    }
     ICF void set_Geometry(ref_geom& _geom) { set_Geometry(&*_geom); }
 
-    // Constant setters (remain unchanged until constant manager is extracted)
-    ICF ref_constant get_Constant(LPCSTR n) { if (ctable) return ctable->get(n); return 0; }
-    ICF ref_constant get_Constant(shared_str& n) { if (ctable) return ctable->get(n); return 0; }
+    // Constant setters (still using internal R_constants, will be extracted to CConstantManager)
+    ICF ref_constant get_Constant(LPCSTR n)
+    {
+        R_constant_table* ctable = m_resBinder.GetConstantTable();
+        return ctable ? ctable->get(n) : 0;
+    }
+    ICF ref_constant get_Constant(shared_str& n)
+    {
+        R_constant_table* ctable = m_resBinder.GetConstantTable();
+        return ctable ? ctable->get(n) : 0;
+    }
 
     ICF void set_Constant(R_constant* Const, const fmat4x4& A) { if (Const) constants.set(Const, A); }
     ICF void set_Constant(R_constant* Const, const fvec4& A) { if (Const) constants.set(Const, A); }
@@ -232,23 +260,24 @@ public:
     ICF void set_Array_Constant(R_constant* Const, u32 e, const fvec4& A) { if (Const) constants.seta(Const, e, A); }
     ICF void set_Array_Constant(R_constant* Const, u32 e, float x, float y, float z, float w) { if (Const) constants.seta(Const, e, x, y, z, w); }
 
-    ICF void set_Constant(LPCSTR n, const fmat4x4& A) { if (ctable) set_Constant(&*ctable->get(n), A); }
-    ICF void set_Constant(LPCSTR n, const fvec4& A) { if (ctable) set_Constant(&*ctable->get(n), A); }
-    ICF void set_Constant(LPCSTR n, float x) { if (ctable) set_Constant(&*ctable->get(n), x, 0, 0, 0); }
-    ICF void set_Constant(LPCSTR n, float x, float y) { if (ctable) set_Constant(&*ctable->get(n), x, y, 0, 0); }
-    ICF void set_Constant(LPCSTR n, float x, float y, float z) { if (ctable) set_Constant(&*ctable->get(n), x, y, z, 0); }
-    ICF void set_Constant(LPCSTR n, float x, float y, float z, float w) { if (ctable) set_Constant(&*ctable->get(n), x, y, z, w); }
-    ICF void set_Array_Constant(LPCSTR n, u32 e, const fmat4x4& A) { if (ctable) set_Array_Constant(&*ctable->get(n), e, A); }
-    ICF void set_Array_Constant(LPCSTR n, u32 e, const fvec4& A) { if (ctable) set_Array_Constant(&*ctable->get(n), e, A); }
-    ICF void set_Array_Constant(LPCSTR n, u32 e, float x, float y, float z, float w) { if (ctable) set_Array_Constant(&*ctable->get(n), e, x, y, z, w); }
+    // Slow lookups via ctable
+    ICF void set_Constant(LPCSTR n, const fmat4x4& A) { set_Constant(get_Constant(n)._get(), A); }
+    ICF void set_Constant(LPCSTR n, const fvec4& A) { set_Constant(get_Constant(n)._get(), A); }
+    ICF void set_Constant(LPCSTR n, float x) { set_Constant(get_Constant(n)._get(), x, 0, 0, 0); }
+    ICF void set_Constant(LPCSTR n, float x, float y) { set_Constant(get_Constant(n)._get(), x, y, 0, 0); }
+    ICF void set_Constant(LPCSTR n, float x, float y, float z) { set_Constant(get_Constant(n)._get(), x, y, z, 0); }
+    ICF void set_Constant(LPCSTR n, float x, float y, float z, float w) { set_Constant(get_Constant(n)._get(), x, y, z, w); }
+    ICF void set_Array_Constant(LPCSTR n, u32 e, const fmat4x4& A) { set_Array_Constant(get_Constant(n)._get(), e, A); }
+    ICF void set_Array_Constant(LPCSTR n, u32 e, const fvec4& A) { set_Array_Constant(get_Constant(n)._get(), e, A); }
+    ICF void set_Array_Constant(LPCSTR n, u32 e, float x, float y, float z, float w) { set_Array_Constant(get_Constant(n)._get(), e, x, y, z, w); }
 
-    ICF void set_Constant(shared_str& n, const fmat4x4& A) { if (ctable) set_Constant(&*ctable->get(n), A); }
-    ICF void set_Constant(shared_str& n, const fvec4& A) { if (ctable) set_Constant(&*ctable->get(n), A); }
-    ICF void set_Constant(shared_str& n, const fvec3& A) { if (ctable) set_Constant(&*ctable->get(n), fvec4().set(A.x, A.y, A.z, 0.0f)); }
-    ICF void set_Constant(shared_str& n, float x, float y, float z, float w) { if (ctable) set_Constant(&*ctable->get(n), x, y, z, w); }
-    ICF void set_Array_Constant(shared_str& n, u32 e, const fmat4x4& A) { if (ctable) set_Array_Constant(&*ctable->get(n), e, A); }
-    ICF void set_Array_Constant(shared_str& n, u32 e, const fvec4& A) { if (ctable) set_Array_Constant(&*ctable->get(n), e, A); }
-    ICF void set_Array_Constant(shared_str& n, u32 e, float x, float y, float z, float w) { if (ctable) set_Array_Constant(&*ctable->get(n), e, x, y, z, w); }
+    ICF void set_Constant(shared_str& n, const fmat4x4& A) { set_Constant(get_Constant(n)._get(), A); }
+    ICF void set_Constant(shared_str& n, const fvec4& A) { set_Constant(get_Constant(n)._get(), A); }
+    ICF void set_Constant(shared_str& n, const fvec3& A) { set_Constant(get_Constant(n)._get(), fvec4().set(A.x, A.y, A.z, 0.0f)); }
+    ICF void set_Constant(shared_str& n, float x, float y, float z, float w) { set_Constant(get_Constant(n)._get(), x, y, z, w); }
+    ICF void set_Array_Constant(shared_str& n, u32 e, const fmat4x4& A) { set_Array_Constant(get_Constant(n)._get(), e, A); }
+    ICF void set_Array_Constant(shared_str& n, u32 e, const fvec4& A) { set_Array_Constant(get_Constant(n)._get(), e, A); }
+    ICF void set_Array_Constant(shared_str& n, u32 e, float x, float y, float z, float w) { set_Array_Constant(get_Constant(n)._get(), e, x, y, z, w); }
 
     // Drawing
     ICF void Apply(u32 countV, u32 PC);
@@ -265,7 +294,7 @@ public:
     void reset_begin();
     void reset_end();
 
-    // Debug (still uses D3D directly, will be moved to CDebugRenderer)
+    // Debug (temporary direct D3D calls, will be moved to CDebugRenderer)
     void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
     void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
     IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) { CHK_DX(m_pDevice->SetRenderState(p1, p2)); }

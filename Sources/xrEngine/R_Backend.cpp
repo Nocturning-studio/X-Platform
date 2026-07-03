@@ -377,7 +377,7 @@ void CRenderBackend::OnDeviceCreate()
     Index.Create();
     Invalidate();
     constants.reset_dirty();
-    g_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
+    m_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
 }
 
 void CRenderBackend::OnDeviceDestroy()
@@ -400,7 +400,7 @@ void CRenderBackend::reset_end()
 
 void CRenderBackend::DeleteResources()
 {
-    g_viewport.destroy();
+    m_viewport.destroy();
 }
 
 // ---------------------------------------------------------------------------
@@ -503,23 +503,5 @@ void CRenderBackend::set_anisotropy_filtering(int max_anisothropy)
 void CRenderBackend::Invalidate()
 {
     m_stateCache.Invalidate(*this);
-
-    decl = NULL;
-    vb = NULL;
-    ib = NULL;
-    vb_stride = 0;
-
-    state = NULL;
-    ps = NULL;
-    vs = NULL;
-    ctable = NULL;
-    T = NULL;
-
-#ifdef DEBUG
-    ps_name = nullptr;
-    vs_name = nullptr;
-#endif
-
-    for (u32 i = 0; i < 16; ++i) textures_ps[i] = nullptr;
-    for (u32 i = 0; i < 5; ++i) textures_vs[i] = nullptr;
+    m_resBinder.Invalidate(*this);
 }
