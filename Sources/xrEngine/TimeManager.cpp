@@ -18,6 +18,8 @@ CTimeManager::CTimeManager()
 	m_dwTimeGlobal = 0;
 	m_dwTimeContinual = 0;
 	m_psTimeFactor = 1.0f;
+	m_dwTimeGlobalFixed = 0;
+	m_fTimeGlobalFixed = 0.0f;
 }
 
 CTimeManager::~CTimeManager()
@@ -126,6 +128,10 @@ void CTimeManager::OnFrameStart()
 {
 	// Запоминаем время начала кадра для лимитера
 	m_FrameStartTime = GetGlobalTimeMs();
+
+	// Обновляем специфичные тайм значения
+	m_dwTimeGlobalFixed = m_TimerGlobal.GetElapsed_ms();
+	m_fTimeGlobalFixed = m_TimerGlobal.GetElapsed_sec();
 }
 
 u32 CTimeManager::CalculateFrameLimitDelay(u32 targetFPS)

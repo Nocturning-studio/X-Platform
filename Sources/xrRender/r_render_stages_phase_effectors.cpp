@@ -193,6 +193,9 @@ void CRender::render_effectors_pass_combine()
 
 	RenderBackend.set_Constant("actor_health", get_actor_health());
 
+	CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
+	RenderBackend.set_Constant("vignette_power", E->m_VignettePower);
+
 	RenderBackend.set_Geometry(RenderTarget->g_effectors);
 
 	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

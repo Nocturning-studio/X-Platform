@@ -57,6 +57,15 @@ class ENGINE_API CTimeManager
 		return m_dwTimeContinual;
 	}
 
+	IC u32 GetGlobalTimeMsFixed() const 
+	{ 
+		return m_dwTimeGlobalFixed; 
+	}
+	IC float GetGlobalTimeFixed() const 
+	{ 
+		return m_fTimeGlobalFixed; 
+	}
+
 	// Сброс счетчика кадров (например, при смене уровня)
 	void ResetFrameCount()
 	{
@@ -112,4 +121,8 @@ class ENGINE_API CTimeManager
 	// Ограничение количества кадров
 	u32 m_FrameStartTime;
 	u32 m_FrameEndTime;
+
+	// Время, обновляемое один раз за кадр
+	u32 m_dwTimeGlobalFixed;
+	float m_fTimeGlobalFixed;
 };

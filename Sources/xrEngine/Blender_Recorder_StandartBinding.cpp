@@ -166,21 +166,6 @@ static class cl_fog_sky_influence final : public R_constant_setup
 	}
 } binder_fog_sky_influence;
 
-static class cl_vertical_fog_intensity final : public R_constant_setup
-{
-	u32 marker;
-	fvec4 VerticalFogIntensity;
-	void setup(R_constant* C) override
-	{
-		if (marker != Engine.TimeManager.GetFrameCount())
-		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
-			VerticalFogIntensity.set(desc->vertical_fog_intensity, 0, 0, 0);
-		}
-		RenderBackend.set_Constant(C, VerticalFogIntensity);
-	}
-} binder_vertical_fog_intensity;
-
 static class cl_vertical_fog_density final : public R_constant_setup
 {
 	u32 marker;
@@ -221,16 +206,6 @@ static class cl_rain_density : public R_constant_setup
 	}
 } binder_rain_density;
 
-static class cl_far_plane : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E->far_plane;
-		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
-	}
-} binder_far_plane;
-
 static class cl_water_intensity : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
@@ -251,53 +226,12 @@ static class cl_pos_decompress_params : public R_constant_setup
 	}
 } binder_pos_decompress_params;
 
-extern ENGINE_API float psHUD_FOV;
-static class cl_pos_decompress_params_hud : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		float VertTan = -1.0f * tanf(deg2rad(psHUD_FOV / 2.0f));
-		float HorzTan = -VertTan / Engine.RenderView.Aspect;
-
-		RenderBackend.set_Constant(C, HorzTan, VertTan, (2.0f * HorzTan) / Device.dwWidth, (2.0f * VertTan) / Device.dwHeight);
-	}
-} binder_pos_decompress_params_hud;
-
-static class cl_fov : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		RenderBackend.set_Constant(C, Engine.RenderView.Fov, 0, 0, 0);
-	}
-} binder_fov;
-
-static class cl_sepia_params : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
-		fvec3 SepiaColor = E->m_SepiaColor;
-		float SepiaPower = E->m_SepiaPower;
-		RenderBackend.set_Constant(C, sRgbToLinear(SepiaColor.x), sRgbToLinear(SepiaColor.y), sRgbToLinear(SepiaColor.z), SepiaPower);
-	}
-} binder_sepia_params;
-
-static class cl_vignette_power : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E->m_VignettePower;
-		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
-	}
-} binder_vignette_power;
-
 // times
 class cl_times : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		float t = Engine.TimeManager.GetGlobalTime();
+		float t = Engine.TimeManager.GetGlobalTimeFixed();
 		RenderBackend.set_Constant(C, t, t * 10, t / 10, _sin(t));
 	}
 };
@@ -324,17 +258,6 @@ class cl_eye_D : public R_constant_setup
 	}
 };
 static cl_eye_D binder_eye_D;
-
-// eye-params
-class cl_eye_N : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		fvec3& V = Engine.RenderView.Top;
-		RenderBackend.set_Constant(C, V.x, V.y, V.z, 0);
-	}
-};
-static cl_eye_N binder_eye_N;
 
 // D-Light0
 class cl_sun0_color : public R_constant_setup
@@ -505,7 +428,7 @@ class cl_wind_turbulence : public R_constant_setup
 		// fWindTime += Engine.TimeManager.GetDeltaTime() * current_velocity;
 		// Но для простоты пока умножим, при плавном переходе погоды скачок будет сглажен интерполяцией.
 		clamp(velocity, 0.0f, 0.5f);
-		float anim_time = Engine.TimeManager.GetGlobalTime() * velocity;
+		float anim_time = Engine.TimeManager.GetGlobalTimeFixed() * velocity;
 
 		RenderBackend.set_Constant(C, intensity, desc->wind_turbulence, anim_time, desc->wind_strength);
 	}
@@ -545,7 +468,6 @@ void CBlender_Compile::SetMapping()
 	set_Constant("fog_color", &binder_fog_color);
 	set_Constant("fog_density", &binder_fog_density);
 	set_Constant("fog_sky_influence", &binder_fog_sky_influence);
-	set_Constant("vertical_fog_intensity", &binder_vertical_fog_intensity);
 	set_Constant("vertical_fog_density", &binder_vertical_fog_density);
 	set_Constant("vertical_fog_height", &binder_vertical_fog_height);
 #endif
@@ -553,15 +475,7 @@ void CBlender_Compile::SetMapping()
 	set_Constant("water_intensity", &binder_water_intensity);
 	set_Constant("rain_density", &binder_rain_density);
 
-	set_Constant("sepia_params", &binder_sepia_params);
-	set_Constant("vignette_power", &binder_vignette_power);
-
-	set_Constant("far_plane", &binder_far_plane);
-
 	set_Constant("pos_decompression_params", &binder_pos_decompress_params);
-	set_Constant("pos_decompression_params_hud", &binder_pos_decompress_params_hud);
-
-	set_Constant("fov", &binder_fov);
 	
 	// env-params
 	set_Constant("env_color", &binder_env_color);
@@ -572,13 +486,11 @@ void CBlender_Compile::SetMapping()
 	// eye-params
 	set_Constant("eye_position", &binder_eye_P);
 	set_Constant("eye_direction", &binder_eye_D);
-	set_Constant("eye_normal", &binder_eye_N);
 
 #ifndef _EDITOR
 	// global-lighting (env params)
 	set_Constant("L_sun_color", &binder_sun0_color);
 	set_Constant("L_sun_dir_w", &binder_sun0_dir_w);
-	set_Constant("L_sun_dir_e", &binder_sun0_dir_e);
 	set_Constant("L_hemi_color", &binder_hemi_color);
 	set_Constant("L_ambient", &binder_amb_color);
 	set_Constant("ambient_brightness", &binder_ambient_brightness);
