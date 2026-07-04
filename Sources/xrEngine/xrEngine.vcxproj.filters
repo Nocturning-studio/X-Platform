@@ -564,9 +564,6 @@
     <ClInclude Include="R_Backend_Data_Streams.h">
       <Filter>Render\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="R_Backend_Runtime.h">
-      <Filter>Render\Backend</Filter>
-    </ClInclude>
     <ClInclude Include="R_Backend_tree.h">
       <Filter>Render\Backend</Filter>
     </ClInclude>
@@ -980,9 +977,6 @@
     <ClCompile Include="R_Backend_DBG.cpp">
       <Filter>Render\Backend</Filter>
     </ClCompile>
-    <ClCompile Include="R_Backend_Runtime.cpp">
-      <Filter>Render\Backend</Filter>
-    </ClCompile>
     <ClCompile Include="R_Backend_tree.cpp">
       <Filter>Render\Backend</Filter>
     </ClCompile>
@@ -1082,5 +1076,11 @@
     <Image Include="ui_splash3.bmp">
       <Filter>General\Kernel\Resources</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="R_Backend.inl">
+      <Filter>Render\Backend</Filter>
+    </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

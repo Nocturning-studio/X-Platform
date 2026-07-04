@@ -80,4 +80,33 @@ ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 
     CHK_DX(RenderBackend.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
 }
 
+ICF void CRenderBackend::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
+{
+    CHK_DX(RenderBackend.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
+}
+
+ICF void CRenderBackend::ClearTexture(const ref_rt& rt_1, u32 color)
+{
+    set_Render_Target_Surface(rt_1, NULL, NULL, NULL);
+    Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
+}
+
+ICF void CRenderBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, u32 color)
+{
+    set_Render_Target_Surface(rt_1, rt_2, NULL, NULL);
+    Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
+}
+
+ICF void CRenderBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, u32 color)
+{
+    set_Render_Target_Surface(rt_1, rt_2, rt_3, NULL);
+    Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
+}
+
+ICF void CRenderBackend::ClearTexture(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4, u32 color)
+{
+    set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
+    Clear(0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L);
+}
+
 #endif

@@ -12,8 +12,6 @@ int rsDIB_Size = 1024 * 8;
 //////////////////////////////////////////////////////////////////////
 void VertexStream::Create()
 {
-	//OPTICK_EVENT("VertexStream::Create");
-
 	Engine.ResourceManager->Evict();
 
 	mSize = rsDVB_Size * 1024;
@@ -28,8 +26,6 @@ void VertexStream::Create()
 
 void VertexStream::Destroy()
 {
-	//OPTICK_EVENT("VertexStream::Destroy");
-
 	_RELEASE(pVB);
 	_clear();
 }
@@ -87,23 +83,17 @@ void VertexStream::Unlock(u32 Count, u32 Stride)
 
 void VertexStream::reset_begin()
 {
-	//OPTICK_EVENT("VertexStream::reset_begin");
-
 	old_pVB = pVB;
 	Destroy();
 }
 void VertexStream::reset_end()
 {
-	//OPTICK_EVENT("VertexStream::reset_end");
-
 	Create();
 }
 
 //////////////////////////////////////////////////////////////////////////
 void IndexStream::Create()
 {
-	//OPTICK_EVENT("IndexStream::Create");
-
 	Engine.ResourceManager->Evict();
 
 	mSize = rsDIB_Size * 1024;
@@ -118,8 +108,6 @@ void IndexStream::Create()
 
 void IndexStream::Destroy()
 {
-	//OPTICK_EVENT("IndexStream::Destroy");
-
 	_RELEASE(pIB);
 	_clear();
 }
@@ -159,16 +147,11 @@ void IndexStream::Unlock(u32 RealCount)
 
 void IndexStream::reset_begin()
 {
-	//OPTICK_EVENT("IndexStream::reset_begin");
-
 	old_pIB = pIB;
 	Destroy();
 }
 void IndexStream::reset_end()
 {
-	//OPTICK_EVENT("IndexStream::reset_end");
-
 	Create();
-	// old_pIB				= NULL;
 }
 //////////////////////////////////////////////////////////////////////

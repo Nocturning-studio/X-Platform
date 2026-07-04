@@ -1781,7 +1781,6 @@
     <ClInclude Include="R_Backend.h" />
     <ClInclude Include="R_Backend_RenderTarget.h" />
     <ClInclude Include="R_Backend_ResourceBinder.h" />
-    <ClInclude Include="R_Backend_Runtime.h" />
     <ClInclude Include="R_Backend_StateCache.h" />
     <ClInclude Include="R_Backend_tree.h" />
     <ClInclude Include="R_Backend_transform.h" />
@@ -2024,7 +2023,6 @@
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_RenderTarget.cpp" />
     <ClCompile Include="R_Backend_ResourceBinder.cpp" />
-    <ClCompile Include="R_Backend_Runtime.cpp" />
     <ClCompile Include="R_Backend_StateCache.cpp" />
     <ClCompile Include="R_Backend_tree.cpp" />
     <ClCompile Include="R_Backend_transform.cpp">
@@ -2174,6 +2172,10 @@
       <Project>{ccca7859-eb86-493e-9b53-c4235f45b3c5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+    <None Include="R_Backend.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

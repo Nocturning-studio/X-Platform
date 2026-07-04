@@ -333,11 +333,11 @@ public:
     void CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination);
     void CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter);
     void CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter);
-    void Clear(DWORD Count, const D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
-    void ClearTexture(const ref_rt& _1, u32 color = color_rgba(0, 0, 0, 0));
-    void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, u32 color = color_rgba(0, 0, 0, 0));
-    void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, u32 color = color_rgba(0, 0, 0, 0));
-    void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
+    ICF void Clear(DWORD Count, const D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
+    ICF void ClearTexture(const ref_rt& _1, u32 color = color_rgba(0, 0, 0, 0));
+    ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, u32 color = color_rgba(0, 0, 0, 0));
+    ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, u32 color = color_rgba(0, 0, 0, 0));
+    ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
 };
 
 extern ENGINE_API CRenderBackend RenderBackend;
@@ -346,6 +346,8 @@ inline xrRHI::IRenderBackend* RHI()
 {
     return RenderBackend.GetRHI();
 }
+
+#include "R_Backend.inl"
 
 #ifndef _EDITOR
 #include "D3DUtils.h"

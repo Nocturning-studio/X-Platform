@@ -505,3 +505,419 @@ void CRenderBackend::Invalidate()
     m_stateCache.Invalidate(*this);
     m_resBinder.Invalidate(*this);
 }
+
+void CRenderBackend::OnFrameEnd()
+{
+#ifndef DEDICATED_SERVER
+    for (u32 stage = 0; stage < RHI()->GetDeviceCaps().MaxSimultaneousTextures; stage++)
+        CHK_DX(GetDevice()->SetTexture(0, 0));
+    CHK_DX(GetDevice()->SetStreamSource(0, 0, 0, 0));
+    CHK_DX(GetDevice()->SetIndices(0));
+    CHK_DX(GetDevice()->SetVertexShader(0));
+    CHK_DX(GetDevice()->SetPixelShader(0));
+    Invalidate();
+#endif
+}
+
+void CRenderBackend::OnFrameBegin()
+{
+#ifndef DEDICATED_SERVER
+    std::memset(&stat, 0, sizeof(stat));
+    Vertex.Flush();
+    Index.Flush();
+    set_Stencil(FALSE);
+#endif
+}
+
+#ifndef DEDICATED_SERVER
+
+void CRenderBackend::set_Textures(STextureList* _T)
+{
+    m_resBinder.SetTextures(*this, _T);
+}
+#else
+
+void CRenderBackend::set_Textures(STextureList* _T)
+{
+}
+
+#endif
+
+void CRenderBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+{
+    VERIFY2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
+
+    RenderBackend.setRenderTarget(rt_1->pRT, 0);
+
+    if (rt_2)
+        RenderBackend.setRenderTarget(rt_2->pRT, 1);
+    else
+        RenderBackend.setRenderTarget(NULL, 1);
+
+    if (rt_3)
+        RenderBackend.setRenderTarget(rt_3->pRT, 2);
+    else
+        RenderBackend.setRenderTarget(NULL, 2);
+
+    if (rt_4)
+        RenderBackend.setRenderTarget(rt_4->pRT, 3);
+    else
+        RenderBackend.setRenderTarget(NULL, 3);
+}
+
+void CRenderBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
+{
+    VERIFY2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
+
+    RenderBackend.setRenderTarget(rt_1, 0);
+
+    if (rt_2)
+        RenderBackend.setRenderTarget(rt_2, 1);
+    else
+        RenderBackend.setRenderTarget(NULL, 1);
+
+    if (rt_3)
+        RenderBackend.setRenderTarget(rt_3, 2);
+    else
+        RenderBackend.setRenderTarget(NULL, 2);
+
+    if (rt_4)
+        RenderBackend.setRenderTarget(rt_4, 3);
+    else
+        RenderBackend.setRenderTarget(NULL, 3);
+}
+
+void CRenderBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
+{
+    RenderBackend.setDepthBuffer(zb);
+}
+
+void CRenderBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
+{
+    RenderBackend.setDepthBuffer(zb);
+    CHK_DX(RenderBackend.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
+}
+
+// 2D texgen (texture adjustment matrix)
+void CRenderBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
+{
+    float _w = float(Device.dwWidth);
+    float _h = float(Device.dwHeight);
+    float o_w = (.5f / _w);
+    float o_h = (.5f / _h);
+    fmat4x4 m_TexelAdjust = { 0.5f, 0.0f, 0.0f, 0.0f,
+                             0.0f, -0.5f, 0.0f, 0.0f,
+                             0.0f, 0.0f, 1.0f, 0.0f,
+                             0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f };
+    m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
+}
+
+void CRenderBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
+{
+    // Constants
+    u32 Color = color_rgba(0, 0, 0, 255);
+
+    float d_Z = EPS_S;
+    float d_W = 1.f;
+
+    fvec2 p0, p1;
+    p0.set(0.5f / w, 0.5f / h);
+    p1.set((w + 0.5f) / w, (h + 0.5f) / h);
+
+    // Fill vertex buffer
+    FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, geometry->vb_stride, vOffset);
+    pv->set_position(0, (float)h, d_Z, d_W);
+    pv->set_color(Color);
+    pv->set_uv(p0.x, p1.y);
+    pv++;
+
+    pv->set_position(0, 0, d_Z, d_W);
+    pv->set_color(Color);
+    pv->set_uv(p0.x, p0.y);
+    pv++;
+
+    pv->set_position((float)w, (float)h, d_Z, d_W);
+    pv->set_color(Color);
+    pv->set_uv(p1.x, p1.y);
+    pv++;
+
+    pv->set_position((float)w, 0, d_Z, d_W);
+    pv->set_color(Color);
+    pv->set_uv(p1.x, p0.y);
+    pv++;
+    RenderBackend.Vertex.Unlock(4, geometry->vb_stride);
+
+    // Set geometry
+    RenderBackend.set_Geometry(geometry);
+}
+
+void CRenderBackend::set_viewport_geometry(u32 w, u32 h, u32& vOffset)
+{
+    set_viewport_geometry(w, h, m_viewport, vOffset);
+}
+
+void CRenderBackend::set_viewport_geometry(ref_geom geometry, u32& vOffset)
+{
+    u32 w = Device.dwWidth;
+    u32 h = Device.dwHeight;
+    set_viewport_geometry(w, h, geometry, vOffset);
+}
+
+void CRenderBackend::set_viewport_geometry(u32& vOffset)
+{
+    u32 w = Device.dwWidth;
+    u32 h = Device.dwHeight;
+    set_viewport_geometry(w, h, m_viewport, vOffset);
+}
+
+void CRenderBackend::render_viewport_geometry(u32 w, u32 h)
+{
+    u32 vOffset;
+    set_viewport_geometry(w, h, m_viewport, vOffset);
+    RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
+}
+
+void CRenderBackend::RenderViewportSurface()
+{
+    u32 Offset = 0;
+    set_viewport_geometry(Offset);
+    RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+}
+
+void CRenderBackend::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
+{
+    set_Render_Target_Surface(rt_1);
+    set_Depth_Buffer(zb);
+    render_viewport_geometry(rt_1->dwWidth, rt_1->dwHeight);
+}
+
+void CRenderBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
+{
+    set_Render_Target_Surface(w, h, rt_1);
+    set_Depth_Buffer(zb);
+    render_viewport_geometry(w, h);
+}
+
+void CRenderBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
+{
+    D3DSURFACE_DESC desc;
+    HRESULT hr = rt_1->GetDesc(&desc);
+
+    if (FAILED(hr))
+        return;
+
+    set_Render_Target_Surface(desc.Width, desc.Height, rt_1);
+    set_Depth_Buffer(NULL);
+    render_viewport_geometry(desc.Width, desc.Height);
+}
+
+void CRenderBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+{
+    set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
+    set_Depth_Buffer(NULL);
+    render_viewport_geometry(w, h);
+}
+
+void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
+{
+    if (!target || !target->valid())
+    {
+        Msg("!CRenderBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
+        return;
+    }
+
+    IDirect3DSurface9* mip_surface = target->get_surface_level(mip_level);
+    if (!mip_surface)
+    {
+        Msg("!CRenderBackend::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
+        return;
+    }
+
+    u32 width, height;
+    target->get_level_desc(mip_level, width, height);
+
+    // Сохраняем состояние
+    SaveRenderState();
+
+    // Рендерим
+    RenderViewportSurface(width, height, mip_surface);
+
+    // Восстанавливаем состояние
+    RestoreRenderState();
+
+    mip_surface->Release();
+}
+
+void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass)
+{
+    if (!target || !target->valid())
+        return;
+
+    IDirect3DSurface9* mip_surface = target->get_surface_level(mip_level);
+    if (!mip_surface)
+        return;
+
+    u32 width, height;
+    target->get_level_desc(mip_level, width, height);
+
+    // Сохраняем состояние
+    SaveRenderState();
+
+    // Устанавливаем шейдер
+    set_Element(shader, pass);
+
+    // Рендерим
+    RenderViewportSurface(width, height, mip_surface);
+
+    // Восстанавливаем состояние
+    RestoreRenderState();
+
+    mip_surface->Release();
+}
+
+// Генерация mip-цепочки
+void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
+{
+    if (!source || !mip_chain || !source->valid() || !mip_chain->valid())
+        return;
+
+    // Копируем исходное изображение в уровень 0
+    IDirect3DSurface9* src_surface = source->pRT;
+    IDirect3DSurface9* dst_level0 = mip_chain->get_surface_level(0);
+
+    if (src_surface && dst_level0)
+    {
+        RECT src_rect = { 0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight };
+        RECT dst_rect = { 0, 0, 64, 64 };
+        RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
+        dst_level0->Release();
+    }
+
+    // Генерируем остальные mip-уровни
+    for (u32 i = 1; i < mip_chain->get_levels_count(); i++)
+    {
+        RenderToMipLevel(mip_chain, i, downsample_shader, pass);
+    }
+}
+
+// Копирование содержимого из одного ref_rt в другой
+void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
+{
+    if (!source || !destination || !source->valid() || !destination->valid())
+    {
+        Msg("! ERROR: CopyViewportSurface - invalid source or destination");
+        return;
+    }
+
+    // Получаем поверхности
+    IDirect3DSurface9* src_surface = source->pRT;
+    IDirect3DSurface9* dst_surface = destination->pRT;
+
+    if (!src_surface || !dst_surface)
+    {
+        Msg("! ERROR: CopyViewportSurface - failed to get surfaces");
+        return;
+    }
+
+    // Определяем области копирования
+    RECT src_rect = { 0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight };
+    RECT dst_rect = { 0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight };
+
+    // Выполняем копирование
+    HRESULT hr = RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
+
+    if (FAILED(hr))
+    {
+        Msg("! ERROR: CopyViewportSurface - StretchRect failed (0x%08x)", hr);
+    }
+}
+
+// Версия с указанием фильтра
+void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
+{
+    if (!source || !destination || !source->valid() || !destination->valid())
+        return;
+
+    IDirect3DSurface9* src_surface = source->pRT;
+    IDirect3DSurface9* dst_surface = destination->pRT;
+
+    if (!src_surface || !dst_surface)
+        return;
+
+    RECT src_rect = { 0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight };
+    RECT dst_rect = { 0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight };
+
+    RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+}
+
+// Версия с указанием конкретных областей
+void CRenderBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
+{
+    if (!source || !destination || !source->valid() || !destination->valid())
+        return;
+
+    IDirect3DSurface9* src_surface = source->pRT;
+    IDirect3DSurface9* dst_surface = destination->pRT;
+
+    if (!src_surface || !dst_surface)
+        return;
+
+    RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+}
+
+void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
+{
+    if (!source || !destination)
+    {
+        Msg("! ERROR: CopySurface - invalid source or destination surface");
+        return;
+    }
+
+    // Получаем описания поверхностей для проверки
+    D3DSURFACE_DESC src_desc, dst_desc;
+    HRESULT hr1 = source->GetDesc(&src_desc);
+    HRESULT hr2 = destination->GetDesc(&dst_desc);
+
+    if (FAILED(hr1) || FAILED(hr2))
+    {
+        Msg("! ERROR: CopySurface - failed to get surface descriptions");
+        return;
+    }
+
+    // Определяем области копирования
+    RECT src_rect = { 0, 0, (LONG)src_desc.Width, (LONG)src_desc.Height };
+    RECT dst_rect = { 0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height };
+
+    // Выполняем копирование
+    HRESULT hr = RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
+
+    if (FAILED(hr))
+    {
+        Msg("! ERROR: CopySurface - StretchRect failed (0x%08x)", hr);
+    }
+}
+
+// Версия с фильтром
+void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
+{
+    if (!source || !destination)
+        return;
+
+    D3DSURFACE_DESC src_desc, dst_desc;
+    if (FAILED(source->GetDesc(&src_desc)) || FAILED(destination->GetDesc(&dst_desc)))
+        return;
+
+    RECT src_rect = { 0, 0, (LONG)src_desc.Width, (LONG)src_desc.Height };
+    RECT dst_rect = { 0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height };
+
+    RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+}
+
+// Версия с указанием областей
+void CRenderBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
+{
+    if (!source || !destination)
+        return;
+
+    RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+}

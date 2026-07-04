@@ -116,6 +116,4 @@ public:
 
 extern ENGINE_API CRenderDevice Device;
 
-#include "R_Backend_Runtime.h"
-
 #endif
