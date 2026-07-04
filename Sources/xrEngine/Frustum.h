@@ -90,8 +90,12 @@ class ENGINE_API CFrustum
 
 	EFC_Visible testSphere(fvec3& c, float r, u32& test_mask) const;
 	BOOL testSphere_dirty(fvec3& c, float r) const;
+
 	EFC_Visible testAABB(const float* mM, u32& test_mask) const;
 	EFC_Visible testSAABB(fvec3& c, float r, const float* mM, u32& test_mask) const;
+	BOOL testAABB_dirty(const float* mM) const;
+	BOOL testAABB_dirty(const Fbox& box) const;
+
 	BOOL testPolyInside_dirty(fvec3* p, int count) const;
 
 	IC BOOL testPolyInside(sPoly& src) const

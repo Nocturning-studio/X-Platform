@@ -26,7 +26,6 @@
 	};                                                                                                                 \
 	static cl_transform_##xf binder_##xf
 BIND_DECLARE(World);
-BIND_DECLARE(InvWorld);
 BIND_DECLARE(View);
 BIND_DECLARE(Project);
 BIND_DECLARE(WorldView);
@@ -378,37 +377,12 @@ static class cl_screen_res : public R_constant_setup
 	}
 } binder_screen_res;
 
-static class cl_InvProject final : public R_constant_setup
-{
-	void setup(R_constant* C) override
-	{
-		fmat4x4 m_invProject;
-		m_invProject.invert(Engine.RenderView.Project);
-		RenderBackend.set_Constant(C, m_invProject);
-	}
-} binder_InvProject;
-
 class cl_wind_params : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
-
-		// Считаем 3D направление (Сферические координаты)
-		// Yaw = wind_direction, Pitch = wind_tilt
-
-		float yaw = desc->wind_direction;
-		float pitch = desc->wind_tilt;
-
-		// X-Ray использует Y-Up систему координат
-		float dirX = _cos(yaw) * _cos(pitch); // X
-		float dirY = _sin(pitch);			  // Y (Вертикаль)
-		float dirZ = _sin(yaw) * _cos(pitch); // Z
-
-		// W - передадим масштаб волны (Scale), если захотим, или оставим Strength
-		// Но лучше Strength передавать отдельно, а тут вектор и Gusting
-
-		RenderBackend.set_Constant(C, dirX, dirY, dirZ, desc->wind_gusting);
+		RenderBackend.set_Constant(C, desc->wind_direction3D.x, desc->wind_direction3D.y, desc->wind_direction3D.z, desc->wind_gusting);
 	}
 };
 static cl_wind_params binder_wind_params;
@@ -419,18 +393,11 @@ class cl_wind_turbulence : public R_constant_setup
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 
-		float intensity = desc->wind_turbulence;
 		float velocity = desc->wind_velocity; // Берем скорость из конфига
-
-		// Умножаем время на скорость из конфига
-		// ВАЖНО: Просто умножать fTimeGlobal на velocity нельзя, если velocity меняется динамически (будут скачки).
-		// Для идеальной плавности время нужно накапливать в CEnvironment::OnFrame:
-		// fWindTime += Engine.TimeManager.GetDeltaTime() * current_velocity;
-		// Но для простоты пока умножим, при плавном переходе погоды скачок будет сглажен интерполяцией.
 		clamp(velocity, 0.0f, 0.5f);
 		float anim_time = Engine.TimeManager.GetGlobalTimeFixed() * velocity;
 
-		RenderBackend.set_Constant(C, intensity, desc->wind_turbulence, anim_time, desc->wind_strength);
+		RenderBackend.set_Constant(C, desc->wind_turbulence, desc->wind_turbulence, anim_time, desc->wind_strength);
 	}
 };
 static cl_wind_turbulence binder_wind_turbulence;
@@ -440,11 +407,9 @@ void CBlender_Compile::SetMapping()
 {
 	// matrices
 	set_Constant("m_World", &binder_World);
-	set_Constant("m_invWorld", &binder_InvWorld);
 	set_Constant("m_View", &binder_View);
 	set_Constant("m_invView", &binder_InvView);
 	set_Constant("m_Project", &binder_Project);
-	set_Constant("m_invProject", &binder_InvProject);
 	set_Constant("m_WorldView", &binder_WorldView);
 	set_Constant("m_ViewProject", &binder_ViewProject);
 	set_Constant("m_WorldViewProject", &binder_WorldViewProject);

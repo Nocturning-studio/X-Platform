@@ -38,6 +38,7 @@ class ENGINE_API CEnvDescriptor
 	float wind_turbulence;
 	float wind_strength;
 	float wind_direction;
+	fvec3 wind_direction3D;
 	float wind_gusting;
 	float wind_velocity;
 	float wind_tilt;

@@ -81,8 +81,6 @@ u32 frustum_aabb_remap[8][6] = {{FRUSTUM_MX2, FRUSTUM_MY2, FRUSTUM_MZ2, FRUSTUM_
 //////////////////////////////////////////////////////////////////////
 EFC_Visible CFrustum::testSphere(fvec3& c, float r, u32& test_mask) const
 {
-	//OPTICK_EVENT("CFrustum::testSphere");
-
 	u32 bit = 1;
 	for (int i = 0; i < p_count; i++, bit <<= 1)
 	{
@@ -103,8 +101,6 @@ EFC_Visible CFrustum::testSphere(fvec3& c, float r, u32& test_mask) const
 
 BOOL CFrustum::testSphere_dirty(fvec3& c, float r) const
 {
-	//OPTICK_EVENT("CFrustum::testSphere_dirty");
-
 	switch (p_count)
 	{
 	case 12:
@@ -153,8 +149,6 @@ BOOL CFrustum::testSphere_dirty(fvec3& c, float r) const
 
 EFC_Visible CFrustum::testAABB(const float* mM, u32& test_mask) const
 {
-	//OPTICK_EVENT("CFrustum::testAABB");
-
 	// go for trivial rejection or acceptance using "faster overlap test"
 	u32 bit = 1;
 
@@ -177,8 +171,6 @@ EFC_Visible CFrustum::testAABB(const float* mM, u32& test_mask) const
 
 EFC_Visible CFrustum::testSAABB(fvec3& c, float r, const float* mM, u32& test_mask) const
 {
-	//OPTICK_EVENT("CFrustum::testSAABB");
-
 	u32 bit = 1;
 	for (int i = 0; i < p_count; i++, bit <<= 1)
 	{
@@ -208,10 +200,35 @@ EFC_Visible CFrustum::testSAABB(fvec3& c, float r, const float* mM, u32& test_ma
 	return test_mask ? fcvPartial : fcvFully;
 }
 
+BOOL CFrustum::testAABB_dirty(const float* mM) const
+{
+	for (int i = 0; i < p_count; i++)
+	{
+		const fplane& P = planes[i];
+		u32* id = frustum_aabb_remap[P.aabb_overlap_id];
+
+		// Ближайшая к плоскости точка AABB по направлению нормали
+		fvec3 Neg;
+		Neg.set(mM[id[3]], mM[id[4]], mM[id[5]]);
+
+		// Если даже эта ближайшая точка лежит снаружи, бокс полностью вне
+		if (P.classify(Neg) > 0)
+			return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL CFrustum::testAABB_dirty(const Fbox& box) const
+{
+	float mM[6] = {
+		box.min.x, box.min.y, box.min.z,
+		box.max.x, box.max.y, box.max.z
+	};
+	return testAABB_dirty(mM);
+}
+
 BOOL CFrustum::testPolyInside_dirty(fvec3* p, int count) const
 {
-	//OPTICK_EVENT("CFrustum::testPolyInside_dirty");
-
 	fvec3* e = p + count;
 	for (int i = 0; i < p_count; i++)
 	{
@@ -226,8 +243,6 @@ BOOL CFrustum::testPolyInside_dirty(fvec3* p, int count) const
 //////////////////////////////////////////////////////////////////////
 void CFrustum::CreateFromPoints(fvec3* p, int count, fvec3& COP)
 {
-	//OPTICK_EVENT("CFrustum::CreateFromPoints");
-
 	VERIFY(count < FRUSTUM_MAXPLANES);
 	VERIFY(count >= 3);
 
@@ -239,8 +254,6 @@ void CFrustum::CreateFromPoints(fvec3* p, int count, fvec3& COP)
 
 void CFrustum::CreateFromPlanes(Fplane* p, int count)
 {
-	//OPTICK_EVENT("CFrustum::CreateFromPlanes");
-
 	for (int k = 0; k < count; k++)
 		planes[k].set(p[k]);
 
@@ -259,8 +272,6 @@ void CFrustum::CreateFromPlanes(Fplane* p, int count)
 
 void CFrustum::CreateFromPortal(sPoly* poly, fvec3& vPN, fvec3& vBase, fmat4x4& mFullTransform)
 {
-	//OPTICK_EVENT("CFrustum::CreateFromPortal");
-
 	Fplane P;
 	P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
 
@@ -300,8 +311,6 @@ void CFrustum::CreateFromPortal(sPoly* poly, fvec3& vPN, fvec3& vBase, fmat4x4& 
 
 void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
 {
-	//OPTICK_EVENT("CFrustum::SimplifyPoly_AABB");
-
 	fmat4x4 mView, mInv;
 	fvec3 from, up, right, y;
 	from.set((*poly)[0]);
@@ -343,8 +352,6 @@ void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
 
 void CFrustum::CreateOccluder(fvec3* p, int count, fvec3& vBase, CFrustum& clip)
 {
-	//OPTICK_EVENT("CFrustum::CreateOccluder");
-
 	VERIFY(count < FRUSTUM_SAFE);
 	VERIFY(count >= 3);
 
@@ -392,8 +399,6 @@ void CFrustum::CreateOccluder(fvec3* p, int count, fvec3& vBase, CFrustum& clip)
 
 sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 {
-	//OPTICK_EVENT("CFrustum::ClipPoly");
-
 	sPoly* src = &D;
 	sPoly* dest = &S;
 	for (int i = 0; i < p_count; i++)
@@ -462,8 +467,6 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
 BOOL CFrustum::CreateFromClipPoly(fvec3* p, int count, fvec3& vBase, CFrustum& clip)
 {
-	//OPTICK_EVENT("CFrustum::CreateFromClipPoly");
-
 	VERIFY(count < FRUSTUM_MAXPLANES);
 	VERIFY(count >= 3);
 
@@ -481,8 +484,6 @@ BOOL CFrustum::CreateFromClipPoly(fvec3* p, int count, fvec3& vBase, CFrustum& c
 
 void CFrustum::CreateFromMatrix(fmat4x4& M, u32 mask)
 {
-	//OPTICK_EVENT("CFrustum::CreateFromMatrix");
-
 	VERIFY(_valid(M));
 	p_count = 0;
 

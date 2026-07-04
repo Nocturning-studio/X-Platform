@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_ambient_occlusion()
 {
-	////OPTICK_EVENT("CRender::render_ambient_occlusion");
+	OPTICK_EVENT("CRender::render_ambient_occlusion");
 
 	Engine.Statistic->RenderCALC_AO.Begin();
 

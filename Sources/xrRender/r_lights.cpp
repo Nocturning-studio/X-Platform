@@ -161,8 +161,8 @@ void CRender::render_lights(light_Package& LP)
                 RenderBackend.set_transform_view(L->TransformContext.ShadowContext.view);
                 RenderBackend.set_transform_project(L->TransformContext.ShadowContext.project);
 
-                if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-                    Details->Render(DetailsRenderMode::DepthOnly, &L->TransformContext.ShadowContext.combine);
+                //if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
+                //    Details->Render(DetailsRenderMode::DepthOnly, &L->TransformContext.ShadowContext.combine);
 
                 SceneGraph.Render(SceneGraph.m_packet, SceneGraphRenderType::Opaque, 0);
                 L->TransformContext.ShadowContext.transluent = FALSE;

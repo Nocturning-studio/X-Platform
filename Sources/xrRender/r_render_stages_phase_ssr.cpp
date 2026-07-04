@@ -54,7 +54,7 @@ void CRender::render_reflections()
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_screen_space_reflections()
 {
-	////OPTICK_EVENT("CRender::render_screen_space_reflections");
+	OPTICK_EVENT("CRender::render_screen_space_reflections");
 
 	clear_reflections();
 

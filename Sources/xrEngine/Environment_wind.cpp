@@ -74,4 +74,12 @@ void CEnvironment::CalcWindValues()
 	CurrentEnv->wind_turbulence = BaseStrength + (GustStrength * GustFactor);
 
 	clamp(CurrentEnv->wind_turbulence, 0.0f, 5.0f);
+
+	float yaw = CurrentEnv->wind_direction;
+	float pitch = CurrentEnv->wind_tilt;
+
+	// X-Ray использует Y-Up систему координат
+	CurrentEnv->wind_direction3D.x = _cos(yaw) * _cos(pitch);
+	CurrentEnv->wind_direction3D.y = _sin(pitch);
+	CurrentEnv->wind_direction3D.z = _sin(yaw) * _cos(pitch);
 }

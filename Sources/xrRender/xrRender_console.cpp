@@ -583,9 +583,9 @@ class CCC_DetailQuality : public CCC_Token
 		switch (*value)
 		{
 		case 1: // Low
-			ps_r_Detail_density = 0.60f;
-			ps_r_Detail_radius = 35.0f;
-			ps_r_Detail_scale = 1.0f;
+			ps_r_Detail_density = 0.50f;
+			ps_r_Detail_radius = 30.0f;
+			ps_r_Detail_scale = 1.00f;
 			ps_r_Detail_height = 0.00f;
 			break;
 		case 2: // Medium
@@ -596,13 +596,13 @@ class CCC_DetailQuality : public CCC_Token
 			break;
 		case 3: // High
 			ps_r_Detail_density = 0.45f;
-			ps_r_Detail_radius = 75.0f;
+			ps_r_Detail_radius = 60.0f;
 			ps_r_Detail_scale = 1.00f;
 			ps_r_Detail_height = 0.00f;
 			break;
 		case 4: // Ultra
-			ps_r_Detail_density = 0.3f;
-			ps_r_Detail_radius = 200.0f;
+			ps_r_Detail_density = 0.40f;
+			ps_r_Detail_radius = 75.0f;
 			ps_r_Detail_scale = 1.00f;
 			ps_r_Detail_height = 0.00f;
 			break;

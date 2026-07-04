@@ -66,6 +66,8 @@ CDetailManager::CDetailManager()
 	m_vis_calc_id = 1;
 	m_vCameraPos_calc = Engine.RenderView.Position;
 	m_mFullTransform_calc = Engine.RenderView.ViewProjection;
+	hw_CurrentVB = 0;
+	for (int i = 0; i < 3; ++i) hw_InstanceVB[i] = 0;
 }
 
 CDetailManager::~CDetailManager()
@@ -178,7 +180,6 @@ void CDetailManager::UpdateVisibility()
 	float fade_range = fade_limit - fade_start;
 	float r_ssaCHEAP = 16 * r_ssaDISCARD;
 
-	vis_list* working_vis = m_visibles[m_vis_calc_id];
 	u32 current_frame = Engine.TimeManager.GetFrameCount();
 
 	Engine.Statistic->RenderDUMP_DT_VIS.Begin();
@@ -261,30 +262,27 @@ void CDetailManager::UpdateVisibility()
 					}
 				}
 
-				// === 2. ЗАПОЛНЕНИЕ ДАННЫХ ДЛЯ GPU (всегда, В ПАРАЛЛЕЛЬНОМ ПОТОКЕ) ===
+				// === 2. ЗАПОЛНЕНИЕ ДАННЫХ ДЛЯ GPU (прямо в глобальные батчи) ===
 				for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 				{
 					SlotPart& sp = S.G[sp_id];
 					if (sp.id == DetailSlot::ID_Empty)
 						continue;
 
-					auto& buffer_static = sp.r_items[m_vis_calc_id][0];
-					auto& buffer_wave1 = sp.r_items[m_vis_calc_id][1];
-					auto& buffer_wave2 = sp.r_items[m_vis_calc_id][2];
-
-					buffer_static.clear_not_free();
-					buffer_wave1.clear_not_free();
-					buffer_wave2.clear_not_free();
+					// Прямые ссылки на батчи в буфере видимости (calc_id)
+					DetailBatch& batch_static = m_visibles[m_vis_calc_id][DVL_Static][sp.id];
+					DetailBatch& batch_wave1 = m_visibles[m_vis_calc_id][DVL_Wave1][sp.id];
+					DetailBatch& batch_wave2 = m_visibles[m_vis_calc_id][DVL_Wave2][sp.id];
 
 					for (auto& Item : sp.items)
 					{
-						// Прямой доступ через точку
 						if (Item.scale_calculated > EPS && Item.vis_ID != 0xff)
 						{
 							u32 v_id = (Item.vis_ID > 2) ? 0 : Item.vis_ID;
+							DetailBatch& destBatch = (v_id == DVL_Wave2) ? batch_wave2 :
+								(v_id == DVL_Wave1) ? batch_wave1 : batch_static;
 
-							DetailBatch& destBatch = sp.r_items[m_vis_calc_id][v_id];
-							destBatch.positions.push_back(Item.mRotY.c);
+							destBatch.bbox.modify(Item.mRotY.c);
 
 							destBatch.instances.resize(destBatch.instances.size() + 1);
 							InstanceData& inst = destBatch.instances.back();
@@ -313,14 +311,6 @@ void CDetailManager::UpdateVisibility()
 							inst.Color.set(s, s, s, h);
 						}
 					}
-
-					// Добавляем указатели в список видимости, если батч не пустой
-					if (!buffer_static.empty())
-						working_vis[0][sp.id].push_back(&buffer_static);
-					if (!buffer_wave1.empty())
-						working_vis[1][sp.id].push_back(&buffer_wave1);
-					if (!buffer_wave2.empty())
-						working_vis[2][sp.id].push_back(&buffer_wave2);
 				}
 			}
 		}
@@ -338,29 +328,10 @@ void CDetailManager::PrepareToCalc()
 	// То, что рисовали (render_id), теперь становится буфером для нового расчета.
 	std::swap(m_vis_render_id, m_vis_calc_id);
 
-	// 2. Очистка буфера, в который будем писать (бывший render_id).
-	// Буфер m_vis_render_id НЕ трогаем, он сейчас пойдет на отрисовку.
-	for (int i = 0; i < 3; ++i)
-	{
-		for (u32 j = 0; j < m_visibles[m_vis_calc_id][i].size(); ++j)
-		{
-			// Быстрая очистка векторов (оставляет capacity)
-			m_visibles[m_vis_calc_id][i][j].clear_not_free();
-		}
-		// Очищаем сам список списков, но не удаляем вектора внутри (они переиспользуются)
-		// На самом деле, m_visibles - это вектор векторов указателей.
-		// Нам нужно очистить только верхний уровень, так как мы будем push_back-ать заново.
-
-		// ВАЖНО: В реализации X-Ray m_visibles[i] это vector<vector<SlotItemVec*>>.
-		// Нам нужно очистить списки для каждого слота.
-		// Но структура данных X-Ray здесь хитрая: m_visibles[0] имеет размер objects.size().
-		// Внутри каждого объекта лежит список видимых слотов.
-
-		for (auto& vec : m_visibles[m_vis_calc_id][i])
-		{
-			vec.clear_not_free();
-		}
-	}
+	// 2. Очистка буфера, в который будем писать
+	for (int wave = 0; wave < 3; ++wave)
+		for (u32 obj = 0; obj < objects.size(); ++obj)
+			m_visibles[m_vis_calc_id][wave][obj].clear_not_free();
 
 	// 3. Захват состояния камеры для потока
 	m_vCameraPos_calc = Engine.RenderView.Position;
@@ -616,6 +587,7 @@ void CDetailManager::InvalidateCache()
 
 	cache_task.clear();
 
+	// Очистка всех слотов и перезапуск их декомпрессии
 	for (int z = 0; z < dm_cache_line; z++)
 	{
 		for (int x = 0; x < dm_cache_line; x++)
@@ -625,22 +597,12 @@ void CDetailManager::InvalidateCache()
 			{
 				for (u32 i = 0; i < dm_obj_in_slot; i++)
 				{
-					// Очищаем основной пул айтемов
 					S->G[i].items.clear();
-
-					// === FIX: Очищаем ОБА буфера рендера ===
-					// Чтобы не осталось висячих ссылок при смене уровня или настроек
-					for (int buf = 0; buf < 2; ++buf)
-					{
-						S->G[i].r_items[buf][0].clear_not_free();
-						S->G[i].r_items[buf][1].clear_not_free();
-						S->G[i].r_items[buf][2].clear_not_free();
-					}
+					// r_items удалены, больше ничего не чистим здесь
 				}
 				S->vis.clear();
 			}
 
-			// Перезапускаем слот в очередь задач
 			int gx = w2cg_X(S->sx);
 			int gz = w2cg_Z(S->sz);
 			if (gx >= 0 && gx < dm_cache_line && gz >= 0 && gz < dm_cache_line)
@@ -651,12 +613,24 @@ void CDetailManager::InvalidateCache()
 	}
 
 	// Сброс видимости 1 уровня
-	for (int _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
+	for (int mz = 0; mz < dm_cache1_line; mz++)
 	{
-		for (int _mx1 = 0; _mx1 < dm_cache1_line; _mx1++)
+		for (int mx = 0; mx < dm_cache1_line; mx++)
 		{
-			cache_level1[_mz1][_mx1].empty = TRUE;
-			cache_level1[_mz1][_mx1].vis.clear();
+			cache_level1[mz][mx].empty = TRUE;
+			cache_level1[mz][mx].vis.clear();
+		}
+	}
+
+	// Очистка централизованных буферов видимости (оба буфера, все волны)
+	for (int buf = 0; buf < 2; ++buf)
+	{
+		for (int wave = 0; wave < 3; ++wave)
+		{
+			for (u32 obj_id = 0; obj_id < m_visibles[buf][wave].size(); ++obj_id)
+			{
+				m_visibles[buf][wave][obj_id].clear_not_free();
+			}
 		}
 	}
 

@@ -104,13 +104,13 @@ class CDetailManager
 
 	struct DetailBatch
 	{
-		xr_vector<fvec3> positions;	   // Для CPU (Culling)
 		xr_vector<InstanceData> instances; // Для GPU (Memcpy)
+		Fbox bbox;
 
 		void clear_not_free()
 		{
-			positions.clear_not_free();
 			instances.clear_not_free();
+			bbox.invalidate();
 		}
 
 		bool empty() const
@@ -124,10 +124,7 @@ class CDetailManager
 	{
 		u32 id;
 		SlotItemVec items;			   // Исходные айтемы (для логики)
-		DetailRenderVec r_items[2][3]; // Готовые данные [buffer][wave]
 	};
-
-	typedef xr_vector<xr_vector<DetailRenderVec*>> vis_list;
 
 	enum SlotType
 	{
@@ -172,7 +169,8 @@ class CDetailManager
 	// === ИЗМЕНЕНИЕ: Двойной буфер ===
 	// [2] - два набора данных
 	// [3] - три волны (Static, Wave1, Wave2)
-	vis_list m_visibles[2][3];
+	using vis_per_wave = xr_vector<DetailRenderVec>;
+	vis_per_wave m_visibles[2][3];
 
 	u32 m_vis_render_id; // Индекс буфера, который сейчас рисуем
 	u32 m_vis_calc_id;	 // Индекс буфера, который сейчас считаем
@@ -191,7 +189,7 @@ class CDetailManager
 						EDetailShaderType shaderType);
 
 	// Хелпер для отрисовки батча
-	void FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset, u32& iOffset);
+	void FlushBatch(CDetail& Object, u32 instanceCount, u32 vOffset, u32 iOffset, u32 baseInstanceOffset);
 
 	// Хелпер для выбора шейдера
 	ref_selement SelectShader(CDetail& Object, DetailsRenderMode mode, EDetailShaderType shaderType);
@@ -205,7 +203,9 @@ class CDetailManager
 
 	DetailVec objects;
 
-	IDirect3DVertexBuffer9* hw_InstanceVB;
+	IDirect3DVertexBuffer9* hw_InstanceVB[3];
+	u32 hw_CurrentVB;
+
 	u32 hw_MaxInstances;
 	u32 hw_BatchOffset;
 

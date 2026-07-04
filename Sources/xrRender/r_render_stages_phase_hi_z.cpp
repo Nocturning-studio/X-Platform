@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::create_hi_z_mip_chain()
 {
-	////OPTICK_EVENT("CRender::create_hi_z_mip_chain");
+	OPTICK_EVENT("CRender::create_hi_z_mip_chain");
 	RenderBackend.set_ColorWriteEnable();
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);

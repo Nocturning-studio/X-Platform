@@ -50,6 +50,7 @@ void CDetailManager::hw_Load()
 	// без частых сбросов (DISCARD), что уберет "фризы" CPU.
 	hw_MaxInstances = 128 * 1024;
 	hw_BatchOffset = 0; // Сброс оффсета в начало
+	hw_CurrentVB = 0;
 
 	// Pre-process objects
 	u32 dwVerts = 0;
@@ -70,8 +71,12 @@ void CDetailManager::hw_Load()
 	R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
 
 	// Create Instance VB (DYNAMIC !!!)
-	R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
-										 0, D3DPOOL_DEFAULT, &hw_InstanceVB, 0));
+	for (int i = 0; i < 3; ++i)
+	{
+		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData),
+															D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
+															0, D3DPOOL_DEFAULT, &hw_InstanceVB[i], 0));
+	}
 
 	// Заполнение геометрии (без изменений)
 	{
@@ -129,8 +134,9 @@ void CDetailManager::hw_Unload()
 	hw_Geom.destroy();
 	_RELEASE(hw_IB);
 	_RELEASE(hw_VB);
-	// Освобождаем буфер инстансов
-	_RELEASE(hw_InstanceVB);
+	// Освобождаем буферы инстансов
+	for (int i = 0; i < 3; ++i)
+		_RELEASE(hw_InstanceVB[i]);
 }
 
 void CalculateCullAABB(const fmat4x4& viewProj, float& minX, float& maxX, float& minZ, float& maxZ)
@@ -274,200 +280,139 @@ ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mod
 }
 
 void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
-									EDetailShaderType shaderType)
+	EDetailShaderType shaderType)
 {
-	// Сбрасываем счетчик статистики
 	Engine.Statistic->RenderDUMP_DT_Count = 0;
+	vis_per_wave& list = m_visibles[m_vis_render_id][visListType];
 
-	vis_list& list = m_visibles[m_vis_render_id][visListType];
+	// ------------------ ПРОХОД 1: сбор видимых моделей и подсчёт инстансов ------------------
+	struct ModelBatch
+	{
+		CDetail* object;
+		DetailBatch* batch;
+		u32 vOffset;
+		u32 iOffset;
+		u32 instanceOffset;  // будет заполнен во время копирования
+		u32 instanceCount;
+		ref_selement shader;
+	};
+	xr_vector<ModelBatch> visibleModels;
+	visibleModels.reserve(objects.size());
+
 	u32 vOffset = 0;
 	u32 iOffset = 0;
+	u32 totalInstances = 0;
 
 	for (u32 O = 0; O < objects.size(); O++)
 	{
 		CDetail& Object = *objects[O];
-		u32 primCount = Object.number_indices / 3;
-		xr_vector<DetailBatch*>& vis = list[O];
+		DetailBatch& batch = list[O];
 
-		if (primCount == 0 || vis.empty())
+		if (Object.number_indices == 0 || batch.empty())
 		{
 			vOffset += Object.number_vertices;
 			iOffset += Object.number_indices;
 			continue;
 		}
 
-		// Установка шейдера
-		RenderBackend.set_Element(SelectShader(Object, ctx.mode, shaderType));
-		RenderImplementation.apply_lmaterial();
-
-		// Переменные для батчинга внутри одного объекта
-		u32 currentBatchCount = 0;
-		InstanceData* pLockedData = nullptr;
-		bool bLocked = false;
-
-		// --- ЦИКЛ ПО БАТЧАМ ---
-		for (auto slotIt = vis.begin(); slotIt != vis.end(); ++slotIt)
+		// CPU куллинг целой модели (теневой проход)
+		if (ctx.useAABB)
 		{
-			DetailBatch* batch = *slotIt;
-			if (batch->empty())
+			// используем агрегированный bbox батча
+			if (batch.bbox.max.x < ctx.minX || batch.bbox.min.x > ctx.maxX ||
+				batch.bbox.max.z < ctx.minZ || batch.bbox.min.z > ctx.maxZ)
+			{
+				vOffset += Object.number_vertices;
+				iOffset += Object.number_indices;
 				continue;
-
-			// 1. AABB/Frustum Culling (CPU)
-			// Читаем из отдельного вектора positions, чтобы не грузить в кэш лишние данные
-			if (ctx.useAABB)
-			{
-				const fvec3& pos = batch->positions[0];
-				if (pos.x < ctx.minX || pos.x > ctx.maxX || pos.z < ctx.minZ || pos.z > ctx.maxZ)
-					continue;
-
-				// Точный Frustum тест (если передан внешний фрустум)
-				if (ctx.cullFrustum && !ctx.cullFrustum->testSphere_dirty(const_cast<fvec3&>(pos), 2.0f))
-					continue;
 			}
-
-			u32 itemsInBatch = (u32)batch->instances.size();
-			const InstanceData* srcData = batch->instances.data();
-			u32 processed = 0;
-
-			// Обработка данных (копирование частями, если батч огромен или мы у края буфера)
-			while (processed < itemsInBatch)
+			if (ctx.cullFrustum && !ctx.cullFrustum->testAABB_dirty(batch.bbox))
 			{
-				// Логика блокировки буфера: Dynamic Buffer Pattern
-				if (!bLocked)
-				{
-					// Проверяем, влезем ли мы в остаток буфера?
-					// Если мы у края буфера — сбрасываем в начало.
-					if (hw_BatchOffset >= hw_MaxInstances)
-					{
-						hw_BatchOffset = 0;
-					}
-
-					// Если пишем в начало - DISCARD (говорим драйверу "старое не нужно, дай новую память").
-					// Если пишем дальше - NOOVERWRITE (говорим "мы пишем в конец, не трогая то, что GPU рисует из
-					// начала").
-					u32 dwLockFlags = (hw_BatchOffset == 0) ? D3DLOCK_DISCARD : D3DLOCK_NOOVERWRITE;
-
-					// Лочим "хвост" буфера.
-					void* ptr = nullptr;
-					HRESULT hr = hw_InstanceVB->Lock(hw_BatchOffset * sizeof(InstanceData),
-													 (hw_MaxInstances - hw_BatchOffset) * sizeof(InstanceData), &ptr,
-													 dwLockFlags);
-
-					if (FAILED(hr))
-						return; // Критическая ошибка
-
-					pLockedData = (InstanceData*)ptr;
-					bLocked = true;
-					currentBatchCount = 0; // Сколько мы записали за этот конкретный Lock
-				}
-
-				// Сколько места есть до конца физического буфера?
-				u32 availableSpace = hw_MaxInstances - (hw_BatchOffset + currentBatchCount);
-				u32 toCopy = (itemsInBatch - processed);
-
-				if (toCopy > availableSpace)
-				{
-					// Если места не хватает даже для части данных — нужно сбросить буфер и начать сначала.
-
-					// 1. Анлок и отрисовка того, что уже накопили (если есть)
-					if (currentBatchCount > 0)
-					{
-						hw_InstanceVB->Unlock();
-						// Рисуем накопленное
-						FlushBatch(Object, currentBatchCount, vOffset, iOffset);
-						// Сдвигаем глобальный оффсет, чтобы следующий Lock был корректным
-						hw_BatchOffset += currentBatchCount;
-					}
-					else
-					{
-						// Если мы только что залочили и места нет (странная ситуация, но возможная), просто анлочим
-						hw_InstanceVB->Unlock();
-					}
-
-					// 2. Сброс состояния для следующей итерации (начнет с D3DLOCK_DISCARD)
-					hw_BatchOffset = 0;
-					bLocked = false;
-					pLockedData = nullptr;
-					currentBatchCount = 0;
-
-					// Переходим на следующую итерацию while, где сработает if (!bLocked) с флагом DISCARD
-					continue;
-				}
-
-				// InstanceData = 64 байта (4 вектора по 16 байт). Идеально для SSE.
-				// Используем _mm_stream_si128 для записи мимо кэша CPU.
-
-				const __m128i* pSrcSimd = (const __m128i*)(srcData + processed);
-				__m128i* pDestSimd = (__m128i*)(pLockedData + currentBatchCount);
-
-				// Разворачиваем цикл для скорости
-				u32 i = 0;
-				// Обрабатываем по 1 инстансу (64 байта) за итерацию,
-				// внутри 4 инструкции stream.
-				for (; i < toCopy; ++i)
-				{
-					// Загружаем из обычной памяти (cached)
-					__m128i r0 = _mm_loadu_si128(pSrcSimd + 0);
-					__m128i r1 = _mm_loadu_si128(pSrcSimd + 1);
-					__m128i r2 = _mm_loadu_si128(pSrcSimd + 2);
-					__m128i r3 = _mm_loadu_si128(pSrcSimd + 3);
-
-					// Стримим в видеопамять (write-combined, bypass cache)
-					_mm_stream_si128(pDestSimd + 0, r0);
-					_mm_stream_si128(pDestSimd + 1, r1);
-					_mm_stream_si128(pDestSimd + 2, r2);
-					_mm_stream_si128(pDestSimd + 3, r3);
-
-					pSrcSimd += 4; // Сдвиг на 4 регистра (64 байта)
-					pDestSimd += 4;
-				}
-
-				// Барьер памяти не обязателен на x86 для видимости GPU после Unlock,
-				// но _mm_sfence() желателен перед Unlock, если мы используем WC память.
-				_mm_sfence();
-
-				currentBatchCount += toCopy;
-				processed += toCopy;
+				vOffset += Object.number_vertices;
+				iOffset += Object.number_indices;
+				continue;
 			}
 		}
 
-		// Завершаем работу с объектом (рисуем остаток накопленного)
-		if (bLocked)
-		{
-			hw_InstanceVB->Unlock();
+		ModelBatch mb;
+		mb.object = &Object;
+		mb.batch = &batch;
+		mb.vOffset = vOffset;
+		mb.iOffset = iOffset;
+		mb.instanceCount = (u32)batch.instances.size();
+		mb.instanceOffset = totalInstances; // начало в будущем непрерывном массиве
+		mb.shader = SelectShader(Object, ctx.mode, shaderType);
+		visibleModels.push_back(mb);
 
-			if (currentBatchCount > 0)
-			{
-				FlushBatch(Object, currentBatchCount, vOffset, iOffset);
-				// Сдвигаем глобальный оффсет для следующего объекта
-				hw_BatchOffset += currentBatchCount;
-			}
-		}
-
+		totalInstances += mb.instanceCount;
 		vOffset += Object.number_vertices;
 		iOffset += Object.number_indices;
 	}
-}
 
-void CDetailManager::FlushBatch(CDetail& Object, u32 instanceCount, u32& vOffset, u32& iOffset)
-{
-	RenderBackend.set_Geometry(hw_Geom);
+	if (visibleModels.empty()) return;
 
-	// Устанавливаем стрим инстансинга.
-	// Stream 1 (Instance Data) стартует с байтового смещения hw_BatchOffset.
-	// hw_BatchOffset указывает на начало данных, которые мы только что скопировали для этого вызова.
-	u32 offsetInBytes = hw_BatchOffset * sizeof(InstanceData);
+	// ------------------ ПРОХОД 2: заливка буфера инстансов ------------------
+	// Если буфер не вмещает всё, потребуется несколько циклов (для простоты предположим, что вмещает)
+	VERIFY(totalInstances <= hw_MaxInstances); // при необходимости добавить обработку
 
-	RenderBackend.GetDevice()->SetStreamSource(1, hw_InstanceVB, offsetInBytes, sizeof(InstanceData));
+	// Один Lock (DISCARD) на всю волну
+	hw_CurrentVB = (hw_CurrentVB + 1) % 3;
+	IDirect3DVertexBuffer9* pCurrentVB = hw_InstanceVB[hw_CurrentVB];
+	hw_BatchOffset = 0; // начинаем с начала
+	void* ptr = nullptr;
+	HRESULT hr = pCurrentVB->Lock(0, totalInstances * sizeof(InstanceData), &ptr, D3DLOCK_DISCARD);
+	if (FAILED(hr)) return;
 
-	// Настройка Hardware Instancing для DX9
-	RenderBackend.GetDevice()->SetStreamSourceFreq(0, (D3DSTREAMSOURCE_INDEXEDDATA | instanceCount));
-	RenderBackend.GetDevice()->SetStreamSourceFreq(1, (D3DSTREAMSOURCE_INSTANCEDATA | 1));
+	InstanceData* pDest = (InstanceData*)ptr;
 
-	u32 primCount = Object.number_indices / 3;
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, Object.number_vertices, iOffset, primCount);
+	// Копирование всех инстансов подряд с использованием non-temporal writes
+	for (u32 i = 0; i < visibleModels.size(); i++)
+	{
+		ModelBatch& mb = visibleModels[i];
+		const InstanceData* src = mb.batch->instances.data();
+		u32 count = mb.instanceCount;
+		mb.instanceOffset = u32(pDest - (InstanceData*)ptr); // актуальное смещение
 
-	// Обновляем статистику
-	Engine.Statistic->RenderDUMP_DT_Count += instanceCount;
-	RenderBackend.stat.r.s_details.add(instanceCount * Object.number_vertices);
+		// SSE2 streaming copy (разворачиваем по 4 инстанса за цикл)
+		const __m128i* pSrc = (const __m128i*)src;
+		__m128i* pDst = (__m128i*)pDest;
+		u32 simdCount = count * 4; // 4 регистра на инстанс (64 байта)
+
+		for (u32 j = 0; j < simdCount; j += 4)
+		{
+			_mm_stream_si128(pDst + 0, _mm_loadu_si128(pSrc + 0));
+			_mm_stream_si128(pDst + 1, _mm_loadu_si128(pSrc + 1));
+			_mm_stream_si128(pDst + 2, _mm_loadu_si128(pSrc + 2));
+			_mm_stream_si128(pDst + 3, _mm_loadu_si128(pSrc + 3));
+			pSrc += 4;
+			pDst += 4;
+		}
+
+		pDest += count;
+	}
+
+	_mm_sfence(); // гарантируем видимость записи GPU
+	pCurrentVB->Unlock();
+
+	// ------------------ ПРОХОД 3: отрисовка ------------------
+	for (u32 i = 0; i < visibleModels.size(); i++)
+	{
+		ModelBatch& mb = visibleModels[i];
+		RenderBackend.set_Element(mb.shader);
+
+		// Установка stream source с нужным смещением
+		u32 offsetInBytes = mb.instanceOffset * sizeof(InstanceData);
+		RenderBackend.GetDevice()->SetStreamSource(1, pCurrentVB, offsetInBytes, sizeof(InstanceData));
+		RenderBackend.GetDevice()->SetStreamSourceFreq(0, D3DSTREAMSOURCE_INDEXEDDATA | mb.instanceCount);
+		RenderBackend.GetDevice()->SetStreamSourceFreq(1, D3DSTREAMSOURCE_INSTANCEDATA | 1);
+
+		u32 primCount = mb.object->number_indices / 3;
+		RenderBackend.Render(D3DPT_TRIANGLELIST, mb.vOffset, 0, mb.object->number_vertices,
+			mb.iOffset, primCount);
+
+		Engine.Statistic->RenderDUMP_DT_Count += mb.instanceCount;
+		RenderBackend.stat.r.s_details.add(mb.instanceCount * mb.object->number_vertices);
+	}
+
+	// Сброс буфера не требуется, следующий проход начнёт с DISCARD
 }

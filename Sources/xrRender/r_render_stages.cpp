@@ -384,10 +384,6 @@ void CRender::render_gbuffer_secondary()
 	// Используем уже собранные данные из Read Item (GBuffer packet)
 	MainSceneWorkItem& readItem = GetGBufferReadItem();
 
-	// Примечание: Portal Traverser обновляется в render_main,
-	// поэтому он находится внутри readItem.packet.
-	readItem.packet.portal_traverser.RenderFade();
-
 	RenderBackend.enable_anisotropy_filtering();
 	set_gbuffer();
 
@@ -400,7 +396,7 @@ void CRender::render_gbuffer_secondary()
 	// LODs
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::LOD, 0, true, true);
 
-	// HUD (оружие) обычно рисуется поверх или в GBuffer, если нужно
+	// HUD (оружие)
 	set_active_phase(PHASE_HUD);
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
@@ -416,17 +412,10 @@ void CRender::render_stage_forward()
 	PROFILE_FUNCTION();
 
 	// Берем данные из READ Item для Forward прохода
-	MainSceneWorkItem& readItem =
-		GetForwardWriteItem(); // ВНИМАНИЕ: Тут была ошибка в именовании в оригинале, должно быть GetForwardReadItem()
-
-	// Исправляем на ReadItem:
 	MainSceneWorkItem& currentReadItem = GetForwardReadItem();
 
 	// Используем queue_distortion из текущего пакета, проверка на пустоту (ассерт)
 	VERIFY(0 == currentReadItem.packet.queue_distortion.size());
-
-	// Reuse списки очищаются внутри SceneGraph::Render или вручную, если нужно,
-	// но здесь мы просто читаем.
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
