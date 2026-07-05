@@ -3,8 +3,6 @@
 
 #include "xrdebug.h"
 
-#include <dxerr.h>
-
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <malloc.h>
@@ -14,15 +12,10 @@
 extern bool shared_str_initialized;
 
 #define USE_OWN_ERROR_MESSAGE_WINDOW
-//#define USE_BUG_TRAP
 #define DEBUG_INVOKE __asm int 3
 static BOOL bException = FALSE;
 
 #include <dbghelp.h> // MiniDump flags
-
-#ifdef USE_BUG_TRAP
-#include "../bugtrap/bugtrap.h" // for BugTrap functionality
-#endif // USE_BUG_TRAP
 
 #include <new.h>	// for _set_new_mode
 #include <signal.h> // for signals
@@ -284,19 +277,9 @@ void xrDebug::backend(const char* expression, const char* description, const cha
 
 LPCSTR xrDebug::error2string(long code)
 {
-	LPCSTR result = 0;
 	static string1024 desc_storage;
-
-#ifdef _M_AMD64
-#else
-	result = DXGetErrorDescription(code);
-#endif
-	if (0 == result)
-	{
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, code, 0, desc_storage, sizeof(desc_storage) - 1, 0);
-		result = desc_storage;
-	}
-	return result;
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, code, 0, desc_storage, sizeof(desc_storage) - 1, 0);
+	return desc_storage;
 }
 
 void xrDebug::error(long hr, const char* expr, const char* file, int line, const char* function, bool& ignore_always)
@@ -401,53 +384,6 @@ void CALLBACK PreErrorHandler(INT_PTR)
 	BT_AddLogFile(log_name());
 #endif // USE_BUG_TRAP
 }
-
-#ifdef USE_BUG_TRAP
-void SetupExceptionHandler(const bool& dedicated)
-{
-	BT_InstallSehFilter();
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
-	if (!dedicated && !strstr(GetCommandLine(), "-silent_error_mode"))
-		BT_SetActivityType(BTA_SHOWUI);
-	else
-		BT_SetActivityType(BTA_SAVEREPORT);
-#else  // USE_OWN_ERROR_MESSAGE_WINDOW
-	BT_SetActivityType(BTA_SAVEREPORT);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-	BT_SetDialogMessage(BTDM_INTRO2, "\
-This is XRay Engine crash reporting client. \
-To help the development process, \
-please Submit Bug or save report and email it manually (button More...).\
-\r\nMany thanks in advance and sorry for the inconvenience.");
-
-	BT_SetPreErrHandler(PreErrorHandler, 0);
-	BT_SetAppName("XRay Engine");
-	BT_SetReportFormat(BTRF_TEXT);
-	BT_SetFlags(BTF_DETAILEDMODE | /**BTF_EDIETMAIL | /**/
-				BTF_ATTACHREPORT /**| BTF_LISTPROCESSES /**| BTF_SHOWADVANCEDUI /**| BTF_SCREENCAPTURE/**/);
-	BT_SetDumpType(MiniDumpWithDataSegs |
-//		MiniDumpWithFullMemory |
-//		MiniDumpWithHandleData |
-//		MiniDumpFilterMemory |
-//		MiniDumpScanMemory |
-//		MiniDumpWithUnloadedModules |
-#ifndef _EDITOR
-				   MiniDumpWithIndirectlyReferencedMemory |
-#endif			   // _EDITOR
-				   //		MiniDumpFilterModulePaths |
-				   //		MiniDumpWithProcessThreadData |
-				   //		MiniDumpWithPrivateReadWriteMemory |
-				   //		MiniDumpWithoutOptionalData |
-				   //		MiniDumpWithFullMemoryInfo |
-				   //		MiniDumpWithThreadInfo |
-				   //		MiniDumpWithCodeSegs |
-				   0);
-	BT_SetSupportEMail("crash-report@stalker-game.com");
-	//	BT_SetSupportServer		("localhost", 9999);
-	//	BT_SetSupportURL		("www.gsc-game.com");
-}
-#endif // USE_BUG_TRAP
 
 #if 1
 extern void BuildStackTrace(struct _EXCEPTION_POINTERS* pExceptionInfo);

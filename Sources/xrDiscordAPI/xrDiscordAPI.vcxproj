@@ -227,7 +227,7 @@
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(SolutionDir)..\Build\libraries\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
@@ -269,35 +269,35 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Benchmark|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release profiling|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
@@ -311,7 +311,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Third-party\include\DXSDK\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Third-party\lib\;$(SolutionDir)..\Build\libraries\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
