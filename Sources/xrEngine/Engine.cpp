@@ -83,13 +83,13 @@ bool CEngine::Initialize()
 
 	// 2. Настройка Debug систем
 #ifndef DEDICATED_SERVER
-	Debug._initialize(false);
+	Debug.Initialize(false);
 #else  // DEDICATED_SERVER
-	Debug._initialize(true);
+	Debug.Initialize(true);
 	g_dedicated_server = true;
 #endif // DEDICATED_SERVER
 
-	// 3. Декодер ресурсов (Anti-piracy stub logic)
+	// 3. Декодер ресурсов
 	Msg("[CEngine]: Initializing Universal Resource Auto-Decoder...");
 	g_temporary_stuff = &DecodeGameResources;
 

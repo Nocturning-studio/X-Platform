@@ -16,8 +16,6 @@ XRCORE_API xrCore Core;
 
 static u32 init_counter = 0;
 
-extern char g_application_path[256];
-
 void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
 	strcpy_s(ApplicationName, _ApplicationName);
@@ -44,9 +42,6 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 		GetModuleFileName(GetModuleHandle(MODULE_NAME), fn, sizeof(fn));
 		_splitpath(fn, dr, di, 0, 0);
 		strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
-#ifndef _EDITOR
-		strcpy_s(g_application_path, sizeof(g_application_path), ApplicationPath);
-#endif
 
 		// working path
 		if (strstr(Params, "-wf"))
