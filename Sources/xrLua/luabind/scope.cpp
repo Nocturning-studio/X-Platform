@@ -47,7 +47,7 @@ namespace luabind { namespace detail {
     {
     }
     
-    scope::scope(std::auto_ptr<detail::registration> reg)
+    scope::scope(std::unique_ptr<detail::registration> reg)
         : m_chain(reg.release())
     {
     }
