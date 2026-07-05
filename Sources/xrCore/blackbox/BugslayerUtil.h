@@ -265,22 +265,7 @@ extern "C"
 		0  - The function failed.  To get extended error information,
 			 call GetLastError
 	----------------------------------------------------------------------*/
-	DWORD __stdcall BSUGetModuleFileNameEx(DWORD dwPID, HANDLE hProcess, HMODULE hModule, LPTSTR szFilename,
-										   DWORD nSize);
-
-	/*----------------------------------------------------------------------
-	FUNCTION        :   IsNT
-	DISCUSSION      :
-		Returns TRUE if the operating system is NT.  I simply got tired of
-	always having to call GetVersionEx each time I needed to check.
-	Additionally, I also need to check the OS inside loops so this function
-	caches the results so it is faster.
-	PARAMETERS      :
-		None.
-	RETURNS         :
-
-	----------------------------------------------------------------------*/
-	BOOL __stdcall IsNT(void);
+	DWORD __stdcall BSUGetModuleFileNameEx(DWORD dwPID, HANDLE hProcess, HMODULE hModule, LPTSTR szFilename, DWORD nSize);
 
 	/*----------------------------------------------------------------------
 	FUNCTION        :   BSUSymInitialize

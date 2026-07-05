@@ -4,5 +4,3 @@
 
 #define ENGINE_API
 #include "opcode.h"
-
-#include "..\xrEngine\optick_include.h"

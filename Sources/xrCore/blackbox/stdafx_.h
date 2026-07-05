@@ -25,8 +25,6 @@ long atol(const char* nptr);
 
 }; // namespace BlackBox
 
-#include "..\..\xrEngine\optick_include.h"
-
 #ifdef _EDITOR
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #endif // _EDITOR

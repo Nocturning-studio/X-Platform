@@ -16,8 +16,6 @@
 #include <DPlay\dplay8.h>
 #pragma warning(pop)
 
-#include "..\xrEngine\optick_include.h"
-
 #include "NET_Shared.h"
 
 #define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }

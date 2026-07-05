@@ -80,11 +80,7 @@ void MODEL::build(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void
 	P->BC = bc;
 	P->BCP = bcp;
 
-	// Используем PPL
 	concurrency::create_task([P]() {
-		OPTICK_THREAD("xrCDB Build Thread");
-		OPTICK_FRAME("xrCDB Build Thread");
-
 		P->M->cs.Enter();
 		P->M->build_internal(P->V, P->Vcnt, P->T, P->Tcnt, P->BC, P->BCP);
 		P->M->status = S_READY;

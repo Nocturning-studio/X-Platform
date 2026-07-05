@@ -10,6 +10,39 @@
 /////////////////////////////////////////////////////////////////////
 DISCORDAPI_API CDiscordAPI DiscordAPI;
 /////////////////////////////////////////////////////////////////////
+namespace Detail
+{
+	void Log(const char* format, ...)
+	{
+		va_list mark;
+		char buf[1024];
+		va_start(mark, format);
+		int sz = _vsnprintf(buf, sizeof(buf) - 1, format, mark);
+		buf[sizeof(buf) - 1] = 0;
+		va_end(mark);
+		if (sz)
+			printf(buf);
+	}
+
+	std::string ANSIToUTF8(const std::string& string)
+	{
+		wchar_t* wcs{};
+		int Lenght_ = MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, 0);
+		wcs = new wchar_t[Lenght_ + 1];
+		MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, Lenght_);
+		wcs[Lenght_] = L'\0';
+		char* u8s = nullptr;
+		Lenght_ = WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, 0, nullptr, nullptr);
+		u8s = new char[Lenght_ + 1];
+		WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, Lenght_, nullptr, nullptr);
+		u8s[Lenght_] = '\0';
+		std::string result(u8s);
+		delete[] wcs;
+		delete[] u8s;
+		return result;
+	}
+}
+
 CDiscordAPI::~CDiscordAPI()
 {
 	delete m_DiscordCore;
@@ -18,15 +51,15 @@ CDiscordAPI::~CDiscordAPI()
 
 void CDiscordAPI::Init()
 {
-	Msg("\nInitializing DiscordAPI...");
+	Detail::Log("\nInitializing DiscordAPI...");
 	auto ResultSDK_ = discord::Core::Create(m_AppID, DiscordCreateFlags_NoRequireDiscord, &m_DiscordCore);
 
 	if (!m_DiscordCore)
 	{
 		int ErrorCode = static_cast<int>(ResultSDK_);
-		Msg("! DiscordAPI: error while initializing");
-		Msg("! Error Code: [%d]", ErrorCode);
-		Msg("! Error Assotiation:");
+		Detail::Log("! DiscordAPI: error while initializing");
+		Detail::Log("! Error Code: [%d]", ErrorCode);
+		Detail::Log("! Error Assotiation:");
 		AssotiateError(ErrorCode);
 		return;
 	}
@@ -47,139 +80,139 @@ void CDiscordAPI::AssotiateError(int ErrorCode)
 	switch (ErrorCode)
 	{
 	case 0:
-		Msg("- DiscordResult: Ok");
+		Detail::Log("- DiscordResult: Ok");
 		break;
 	case 1:
-		Msg("! DiscordResult: Service Unavailable");
+		Detail::Log("! DiscordResult: Service Unavailable");
 		break;
 	case 2:
-		Msg("! DiscordResult: Invalid Version");
+		Detail::Log("! DiscordResult: Invalid Version");
 		break;
 	case 3:
-		Msg("! DiscordResult: Lock Failed");
+		Detail::Log("! DiscordResult: Lock Failed");
 		break;
 	case 4:
-		Msg("! DiscordResult: Internal Error");
+		Detail::Log("! DiscordResult: Internal Error");
 		break;
 	case 5:
-		Msg("! DiscordResult: Invalid Payload");
+		Detail::Log("! DiscordResult: Invalid Payload");
 		break;
 	case 6:
-		Msg("! DiscordResult: Invalid Command");
+		Detail::Log("! DiscordResult: Invalid Command");
 		break;
 	case 7:
-		Msg("! DiscordResult: Invalid Permissions");
+		Detail::Log("! DiscordResult: Invalid Permissions");
 		break;
 	case 8:
-		Msg("! DiscordResult: Not Fetched");
+		Detail::Log("! DiscordResult: Not Fetched");
 		break;
 	case 9:
-		Msg("! DiscordResult: Not Found");
+		Detail::Log("! DiscordResult: Not Found");
 		break;
 	case 10:
-		Msg("! DiscordResult: Conflict");
+		Detail::Log("! DiscordResult: Conflict");
 		break;
 	case 11:
-		Msg("! DiscordResult: Invalid Secret");
+		Detail::Log("! DiscordResult: Invalid Secret");
 		break;
 	case 12:
-		Msg("! DiscordResult: Invalid Join Secret");
+		Detail::Log("! DiscordResult: Invalid Join Secret");
 		break;
 	case 13:
-		Msg("! DiscordResult: No Eligible Activity");
+		Detail::Log("! DiscordResult: No Eligible Activity");
 		break;
 	case 14:
-		Msg("! DiscordResult: Invalid Invite");
+		Detail::Log("! DiscordResult: Invalid Invite");
 		break;
 	case 15:
-		Msg("! DiscordResult: Not Authenticated");
+		Detail::Log("! DiscordResult: Not Authenticated");
 		break;
 	case 16:
-		Msg("! DiscordResult: Invalid Access Token");
+		Detail::Log("! DiscordResult: Invalid Access Token");
 		break;
 	case 17:
-		Msg("! DiscordResult: Application Mismatch");
+		Detail::Log("! DiscordResult: Application Mismatch");
 		break;
 	case 18:
-		Msg("! DiscordResult: Invalid Data Url");
+		Detail::Log("! DiscordResult: Invalid Data Url");
 		break;
 	case 19:
-		Msg("! DiscordResult: Invalid Base 64");
+		Detail::Log("! DiscordResult: Invalid Base 64");
 		break;
 	case 20:
-		Msg("! DiscordResult: Not Filtered");
+		Detail::Log("! DiscordResult: Not Filtered");
 		break;
 	case 21:
-		Msg("! DiscordResult: Lobby Full");
+		Detail::Log("! DiscordResult: Lobby Full");
 		break;
 	case 22:
-		Msg("! DiscordResult: Invalid Lobby Secret");
+		Detail::Log("! DiscordResult: Invalid Lobby Secret");
 		break;
 	case 23:
-		Msg("! DiscordResult: Invalid Filename");
+		Detail::Log("! DiscordResult: Invalid Filename");
 		break;
 	case 24:
-		Msg("! DiscordResult: Invalid File Size");
+		Detail::Log("! DiscordResult: Invalid File Size");
 		break;
 	case 25:
-		Msg("! DiscordResult: Invalid Entitlement");
+		Detail::Log("! DiscordResult: Invalid Entitlement");
 		break;
 	case 26:
-		Msg("! DiscordResult: Not Installed");
+		Detail::Log("! DiscordResult: Not Installed");
 		break;
 	case 27:
-		Msg("! DiscordResult: Not Running");
+		Detail::Log("! DiscordResult: Not Running");
 		break;
 	case 28:
-		Msg("! DiscordResult: Insufficient Buffer");
+		Detail::Log("! DiscordResult: Insufficient Buffer");
 		break;
 	case 29:
-		Msg("! DiscordResult: Purchase Canceled");
+		Detail::Log("! DiscordResult: Purchase Canceled");
 		break;
 	case 30:
-		Msg("! DiscordResult: Invalid Guild");
+		Detail::Log("! DiscordResult: Invalid Guild");
 		break;
 	case 31:
-		Msg("! DiscordResult: Invalid Event");
+		Detail::Log("! DiscordResult: Invalid Event");
 		break;
 	case 32:
-		Msg("! DiscordResult: Invalid Channel");
+		Detail::Log("! DiscordResult: Invalid Channel");
 		break;
 	case 33:
-		Msg("! DiscordResult: Invalid Origin");
+		Detail::Log("! DiscordResult: Invalid Origin");
 		break;
 	case 34:
-		Msg("! DiscordResult: Rate Limited");
+		Detail::Log("! DiscordResult: Rate Limited");
 		break;
 	case 35:
-		Msg("! DiscordResult: OAuth2 Error");
+		Detail::Log("! DiscordResult: OAuth2 Error");
 		break;
 	case 36:
-		Msg("! DiscordResult: Select Channel Timeout");
+		Detail::Log("! DiscordResult: Select Channel Timeout");
 		break;
 	case 37:
-		Msg("! DiscordResult: Get Guild Timeout");
+		Detail::Log("! DiscordResult: Get Guild Timeout");
 		break;
 	case 38:
-		Msg("! DiscordResult: Select Voice Force Required");
+		Detail::Log("! DiscordResult: Select Voice Force Required");
 		break;
 	case 39:
-		Msg("! DiscordResult: Capture Shortcut Already Listening");
+		Detail::Log("! DiscordResult: Capture Shortcut Already Listening");
 		break;
 	case 40:
-		Msg("! DiscordResult: Unauthorized For Achievement");
+		Detail::Log("! DiscordResult: Unauthorized For Achievement");
 		break;
 	case 41:
-		Msg("! DiscordResult: Invalid Gift Codet");
+		Detail::Log("! DiscordResult: Invalid Gift Codet");
 		break;
 	case 42:
-		Msg("! DiscordResult: Purchase Error");
+		Detail::Log("! DiscordResult: Purchase Error");
 		break;
 	case 43:
-		Msg("! DiscordResult: Transaction Aborted");
+		Detail::Log("! DiscordResult: Transaction Aborted");
 		break;
 	case 44:
-		Msg("! DiscordResult: Drawing Init Failed");
+		Detail::Log("! DiscordResult: Drawing Init Failed");
 		break;
     }
 }
@@ -197,25 +230,25 @@ void CDiscordAPI::Update()
 
 void CDiscordAPI::UpdateActivity()
 {
-	m_ActivityDiscord->SetState(ANSIToUTF8(m_PhaseDiscord).c_str());
-	m_ActivityDiscord->SetDetails(ANSIToUTF8(m_StatusDiscord).c_str());
+	m_ActivityDiscord->SetState(Detail::ANSIToUTF8(m_PhaseDiscord).c_str());
+	m_ActivityDiscord->SetDetails(Detail::ANSIToUTF8(m_StatusDiscord).c_str());
 
 	m_DiscordCore->ActivityManager().UpdateActivity(*m_ActivityDiscord, [](discord::Result result)
 	{
 		if (result != discord::Result::Ok)
-			Msg("! DiscordAPI: Invalid UpdateActivity");
+			Detail::Log("! DiscordAPI: Invalid UpdateActivity");
 	});
 
 	m_NeedUpdateActivity = false;
 }
 
-void CDiscordAPI::SetPhase(const xr_string& phase)
+void CDiscordAPI::SetPhase(const LPCSTR phase)
 {
 	m_PhaseDiscord = phase;
 	m_NeedUpdateActivity = true;
 }
 
-void CDiscordAPI::SetStatus(const xr_string& status)
+void CDiscordAPI::SetStatus(const LPCSTR status)
 {
 	m_StatusDiscord = status;
 	m_NeedUpdateActivity = true;

@@ -2,7 +2,7 @@
 
 #ifdef ENABLE_PROFILING
 #define USE_OPTICK
-#include <optick/optick.h>
+#include <optick/include/optick.h>
 #else
 #define OPTICK_EVENT(...)
 #define OPTICK_CATEGORY(NAME, CATEGORY)

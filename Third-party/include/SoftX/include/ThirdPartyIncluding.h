@@ -15,7 +15,7 @@ using namespace AfterMath;
 
 // Your custom profiler
 #ifdef ENABLE_PROFILING
-#include <optick/optick.h>
+#include <optick/include/optick.h>
 #define PROFILE_FRAME(x) OPTICK_FRAME(x)
 #define PROFILE_SCOPE(x) OPTICK_EVENT(x)
 #define PROFILE_THREAD(x) OPTICK_THREAD(x)

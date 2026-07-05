@@ -11,7 +11,6 @@
 #pragma warning(disable : 4995)
 #include <malloc.h>
 #include "dxerr.h"
-#include "../xrEngine/optick_include.h"
 #include <thread>
 // #pragma warning(pop)
 
@@ -1131,17 +1130,12 @@ void IPureClient::net_Syncronize()
 	net_Syncronised = FALSE;
 	net_DeltaArray.clear();
 
-	// Используем shared_ptr для безопасного доступа к объекту
 	auto self = std::shared_ptr<IPureClient>(this, [](IPureClient*) {});
 
 	std::thread t([self]() {
-		OPTICK_THREAD("X-Ray Network-Time-Sync thread");
-		OPTICK_FRAME("X-Ray Network-Time-Sync thread");
-
 #ifdef _WIN32
 		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
 #endif
-
 		self->Sync_Thread();
 	});
 

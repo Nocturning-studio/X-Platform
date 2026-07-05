@@ -91,7 +91,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -100,7 +100,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -108,7 +108,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
@@ -116,14 +116,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
@@ -131,7 +131,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <EnableUnitySupport>true</EnableUnitySupport>
@@ -199,7 +199,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release profiling|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -207,7 +207,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -215,7 +215,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -223,7 +223,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
@@ -231,7 +231,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <EnableUnitySupport>true</EnableUnitySupport>
@@ -580,9 +580,6 @@
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -698,9 +695,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -822,9 +816,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -898,9 +889,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -974,9 +962,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -1051,9 +1036,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -1127,9 +1109,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -1512,9 +1491,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -1629,9 +1605,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -1751,9 +1724,6 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
 copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrDiscordAPI.dll" "$(OutDir)xrDiscordAPI.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrGameSpy.dll" "$(OutDir)xrGameSpy.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\xrLua.dll" "$(OutDir)xrLua.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
@@ -16258,7 +16228,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Third-party\include\optick\OptickCore.vcxproj">
+    <ProjectReference Include="..\..\Third-party\include\Optick\include\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Third-party\include\PresenceAudioSDK\Source\PresenceAudioSDK.vcxproj">

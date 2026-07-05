@@ -15,13 +15,7 @@ void CLocatorAPI::auth_generate(xr_vector<xr_string>& ignore, xr_vector<xr_strin
 	_o->ignore = ignore;
 	_o->important = important;
 
-		// Асинхронный запуск с помощью PPL
 	concurrency::create_task([_o]() {
-		// Устанавливаем имя потока для профилировщика
-		OPTICK_THREAD("X-Ray LocatorAPI Checksum thread");
-		OPTICK_FRAME("X-Ray LocatorAPI Checksum thread");
-
-		// Запускаем основную функцию
 		FS.auth_runtime(_o);
 	});
 }
