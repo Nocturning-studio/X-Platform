@@ -587,7 +587,7 @@
       <MapExports>false</MapExports>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
@@ -697,7 +697,7 @@
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <FixedBaseAddress>false</FixedBaseAddress>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -1054,7 +1054,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -1093,7 +1093,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
@@ -1122,7 +1122,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -1161,7 +1161,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
@@ -1190,7 +1190,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -1229,7 +1229,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
@@ -1258,7 +1258,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -1297,7 +1297,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
@@ -1326,7 +1326,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -1365,7 +1365,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
@@ -1482,6 +1482,7 @@
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <FixedBaseAddress>false</FixedBaseAddress>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>if exist $(SolutionDir)..\gamefilesystem ( echo Gamefilesystem folder alredy exist! Skipping...) else (mkdir $(SolutionDir)..\gamefilesystem)</Command>
@@ -1591,6 +1592,7 @@
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <FixedBaseAddress>false</FixedBaseAddress>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>if exist $(SolutionDir)..\gamefilesystem ( echo Gamefilesystem folder alredy exist! Skipping...) else (mkdir $(SolutionDir)..\gamefilesystem)</Command>
@@ -1706,6 +1708,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <FixedBaseAddress>false</FixedBaseAddress>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>if exist $(SolutionDir)..\gamefilesystem ( echo Gamefilesystem folder alredy exist! Skipping...) else (mkdir $(SolutionDir)..\gamefilesystem)</Command>

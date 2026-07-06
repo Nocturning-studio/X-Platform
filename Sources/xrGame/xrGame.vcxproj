@@ -609,7 +609,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -625,6 +625,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -641,7 +642,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       </MapFileName>
       <MapExports>false</MapExports>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -725,7 +726,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -742,6 +743,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -754,7 +756,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -1147,9 +1149,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1168,6 +1170,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OrderInUnityFile>100</OrderInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1186,7 +1189,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Benchmark|x64'">
@@ -1212,9 +1215,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1233,6 +1236,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OrderInUnityFile>100</OrderInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1251,7 +1255,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release profiling|x64'">
@@ -1277,9 +1281,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1298,6 +1302,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OrderInUnityFile>100</OrderInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1316,7 +1321,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">
@@ -1342,9 +1347,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1363,6 +1368,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OrderInUnityFile>100</OrderInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1381,7 +1387,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">
@@ -1407,9 +1413,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1428,6 +1434,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OrderInUnityFile>100</OrderInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1446,7 +1453,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">
@@ -1533,7 +1540,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1548,6 +1555,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1564,7 +1572,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       </MapFileName>
       <MapExports>false</MapExports>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|Win32'">
@@ -1648,7 +1656,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1665,6 +1673,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1677,7 +1686,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">
@@ -1772,9 +1781,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -1791,6 +1800,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1809,7 +1819,7 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

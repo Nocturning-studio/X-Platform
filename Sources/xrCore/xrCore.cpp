@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#pragma comment(lib, "winmm.lib")
+
 #include <mmsystem.h>
 #include <objbase.h>
 #include "xrCore.h"
