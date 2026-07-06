@@ -2,7 +2,8 @@
 #define xrTheora_StreamH
 #pragma once
 
-#include <theora/theora.h>
+#include <libtheora/include/theora/theora.h>
+#include <libogg/include/ogg/ogg.h>
 #include "../xrCore/Stream_Reader.h"
 
 class ENGINE_API CTheoraStream
@@ -16,11 +17,8 @@ class ENGINE_API CTheoraStream
 	theora_comment t_comment;
 	theora_state t_state;
 
-#ifdef _EDITOR
-	IReader* source;
-#else
 	CStreamReader* source;
-#endif
+
 	yuv_buffer t_yuv_buffer;
 
 	ogg_int64_t d_frame;
@@ -28,11 +26,11 @@ class ENGINE_API CTheoraStream
 	u32 key_rate; // theora have const key rate
 	float fpms;
 
-  protected:
+protected:
 	int ReadData();
 	BOOL ParseHeaders();
 
-  public:
+public:
 	CTheoraStream();
 	virtual ~CTheoraStream();
 
@@ -42,10 +40,7 @@ class ENGINE_API CTheoraStream
 
 	BOOL Decode(u32 tm_play);
 
-	yuv_buffer* CurrentFrame()
-	{
-		return &t_yuv_buffer;
-	}
+	yuv_buffer* CurrentFrame() { return &t_yuv_buffer; }
 };
 
-#endif // xrTheora_StreamH
+#endif //xrTheora_StreamH

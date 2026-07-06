@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
-#ifndef _EDITOR
+
 #include "xrTheora_Surface_mmx.h"
-#endif
 
 CTheoraSurface::CTheoraSurface()
 {
@@ -118,8 +117,7 @@ BOOL CTheoraSurface::Load(const char* fname)
 			VERIFY(m_rgb->t_info.pixelformat == m_alpha->t_info.pixelformat);
 		}
 #endif
-		//.		VERIFY3			(btwIsPow2(m_rgb->t_info.frame_width)&&btwIsPow2(m_rgb->t_info.frame_height),"Invalid
-		//size.",fname);
+		//.		VERIFY3			(btwIsPow2(m_rgb->t_info.frame_width)&&btwIsPow2(m_rgb->t_info.frame_height),"Invalid size.",fname);
 		tm_total = m_rgb->tm_total;
 		VERIFY(0 != tm_total);
 		// reset playback
@@ -137,9 +135,7 @@ BOOL CTheoraSurface::Load(const char* fname)
 	}
 	if (res)
 	{
-		//u32 v_dev = CAP_VERSION(HW.GetCaps().raster_major, HW.GetCaps().raster_minor);
-		//u32 v_need = CAP_VERSION(2, 0);
-		bShaderYUV2RGB = true;//(v_dev >= v_need);
+		bShaderYUV2RGB = true;
 	}
 	return res;
 }
@@ -165,9 +161,7 @@ u32 CTheoraSurface::Height(bool bRealSize)
 	;
 }
 
-#ifndef _EDITOR
 #define MMX_TV_YUV2ARGB
-#endif
 
 #undef MMX_TV_YUV2ARGB
 
@@ -247,14 +241,17 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 #else
 		if (!bShaderYUV2RGB)
 		{
-			tv_yuv2argb((lp_tv_uchar)data, width, height, yuv.y, yuv.y_width, yuv.y_height, yuv.y_stride, yuv.u, yuv.v,
-						yuv.uv_width, yuv.uv_height, yuv.uv_stride, 0);
+			tv_yuv2argb((lp_tv_uchar)data, width, height,
+				yuv.y, yuv.y_width, yuv.y_height, yuv.y_stride,
+				yuv.u, yuv.v,
+				yuv.uv_width, yuv.uv_height, yuv.uv_stride, 0);
 		}
 		else
 		{
 			u32 pos = 0;
 			for (u32 h = 0; h < height; ++h)
 			{
+
 				u8* Y = yuv.y + yuv.y_stride * h;
 				u8* U = yuv.u + yuv.uv_stride * (h / uv_h);
 				u8* V = yuv.v + yuv.uv_stride * (h / uv_h);
@@ -342,15 +339,12 @@ void CTheoraSurface::write_sdl_video()
 	// and crop input properly, respecting the encoded frame rect
 	crop_offset = t_info.offset_x + t_yuv_buffer.y_stride * t_info.offset_y;
 	for (i = 0; i < sdl_yuv_overlay->h; i++)
-		mem_copy(sdl_yuv_overlay->pixels[0] + sdl_yuv_overlay->pitches[0] * i,
-				 t_yuv_buffer.y + crop_offset + t_yuv_buffer.y_stride * i, sdl_yuv_overlay->w);
+		mem_copy(sdl_yuv_overlay->pixels[0] + sdl_yuv_overlay->pitches[0] * i, t_yuv_buffer.y + crop_offset + t_yuv_buffer.y_stride * i, sdl_yuv_overlay->w);
 	crop_offset = (t_info.offset_x / 2) + (t_yuv_buffer.uv_stride) * (t_info.offset_y / 2);
 	for (i = 0; i < sdl_yuv_overlay->h / 2; i++)
 	{
-		mem_copy(sdl_yuv_overlay->pixels[1] + sdl_yuv_overlay->pitches[1] * i,
-				 t_yuv_buffer.v + crop_offset + t_yuv_buffer.uv_stride * i, sdl_yuv_overlay->w / 2);
-		mem_copy(sdl_yuv_overlay->pixels[2] + sdl_yuv_overlay->pitches[2] * i,
-				 t_yuv_buffer.u + crop_offset + t_yuv_buffer.uv_stride * i, sdl_yuv_overlay->w / 2);
+		mem_copy(sdl_yuv_overlay->pixels[1] + sdl_yuv_overlay->pitches[1] * i, t_yuv_buffer.v + crop_offset + t_yuv_buffer.uv_stride * i, sdl_yuv_overlay->w / 2);
+		mem_copy(sdl_yuv_overlay->pixels[2] + sdl_yuv_overlay->pitches[2] * i, t_yuv_buffer.u + crop_offset + t_yuv_buffer.uv_stride * i, sdl_yuv_overlay->w / 2);
 	}
 	// Unlock SDL_yuv_overlay
 	if (SDL_MUSTLOCK(sdl_screen))

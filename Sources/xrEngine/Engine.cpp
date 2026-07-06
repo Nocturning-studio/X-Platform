@@ -20,7 +20,6 @@
 #include "ispatial.h"
 #include "Text_Console.h"
 #include <process.h>
-#include "../xrDiscordAPI/DiscordAPI.h"
 #include "build_identificator.h"
 #include "LogoWindow.h"
 #include "LevelLoadingScreen.h"

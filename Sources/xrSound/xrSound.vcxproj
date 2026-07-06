@@ -235,7 +235,7 @@
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(SolutionDir)..\Build\libraries\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -277,35 +277,35 @@
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Benchmark|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release profiling|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Demo|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -319,7 +319,7 @@
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include\;$(SolutionDir)\Sources\xrEngine\;$(SolutionDir)\Sources\xrCore\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Third-party\lib\;$(SolutionDir)..\Build\libraries\;$(LibraryPath)$(SolutionDir)..\Build\libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(SolutionDir)Third-party\lib\x64\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\binaries\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -350,7 +350,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static_d.lib;ogg_static_d.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -398,7 +398,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static_d.lib;ogg_static_d.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -440,7 +440,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -488,7 +488,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -538,7 +538,7 @@
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -587,7 +587,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -636,7 +636,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -690,7 +690,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -739,7 +739,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -788,7 +788,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -837,7 +837,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -886,7 +886,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -924,7 +924,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;eax.lib;xrCore.lib;xrCDB.lib;legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
@@ -969,7 +969,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
@@ -1061,6 +1061,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Third-party\include\libogg\win32\libogg_static.vcxproj">
       <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\libvorbis\win32\VS2010\libvorbisfile\libvorbisfile_static.vcxproj">
+      <Project>{cebde98b-a6aa-46e6-bc79-faaf823db9ec}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\libvorbis\win32\VS2010\libvorbis\libvorbis_static.vcxproj">
+      <Project>{3a214e06-b95e-4d61-a291-1f8df2ec10fd}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Third-party\include\PresenceAudioSDK\Source\PresenceAudioSDK.vcxproj">
       <Project>{3069dde2-b851-484d-94bb-bc53146c8eee}</Project>

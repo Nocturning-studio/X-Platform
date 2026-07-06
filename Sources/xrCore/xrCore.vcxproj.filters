@@ -94,16 +94,16 @@
     <Filter Include="Ini">
       <UniqueIdentifier>{42eca798-aadd-4f3b-beb3-183d90d4c842}</UniqueIdentifier>
     </Filter>
-    <Filter Include="STL">
+    <Filter Include="Extensions">
       <UniqueIdentifier>{664e636f-935c-49c8-999e-af304ee213a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="STL\STLext">
+    <Filter Include="Extensions\STLext">
       <UniqueIdentifier>{1d61846a-2fb8-4f40-93f6-fc70e2870688}</UniqueIdentifier>
     </Filter>
-    <Filter Include="STL\Extensions">
+    <Filter Include="Extensions\Extensions">
       <UniqueIdentifier>{afee05d9-605d-4575-af83-9724ef1dbdfe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="STL\Extensions\buffer_vector">
+    <Filter Include="Extensions\Extensions\buffer_vector">
       <UniqueIdentifier>{f785f078-dc46-42cc-86d3-e4e60b09ee46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -118,13 +118,13 @@
       <Filter>CPUID</Filter>
     </ClCompile>
     <ClCompile Include="_std_extensions.cpp">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClCompile>
     <ClCompile Include="clsid.cpp">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClCompile>
     <ClCompile Include="xr_trims.cpp">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClCompile>
     <ClCompile Include="FileSystem.cpp">
       <Filter>FS</Filter>
@@ -285,31 +285,31 @@
       <Filter>CPUID</Filter>
     </ClInclude>
     <ClInclude Include="FixedMap.h">
-      <Filter>STL\STLext</Filter>
+      <Filter>Extensions\STLext</Filter>
     </ClInclude>
     <ClInclude Include="FixedSet.h">
-      <Filter>STL\STLext</Filter>
+      <Filter>Extensions\STLext</Filter>
     </ClInclude>
     <ClInclude Include="FixedVector.h">
-      <Filter>STL\STLext</Filter>
+      <Filter>Extensions\STLext</Filter>
     </ClInclude>
     <ClInclude Include="xrPool.h">
-      <Filter>STL\STLext</Filter>
+      <Filter>Extensions\STLext</Filter>
     </ClInclude>
     <ClInclude Include="_std_extensions.h">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="_stl_extensions.h">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="_type_traits.h">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="clsid.h">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="xr_trims.h">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="FS.h">
       <Filter>FS</Filter>
@@ -432,10 +432,10 @@
       <Filter>Clipboard</Filter>
     </ClInclude>
     <ClInclude Include="buffer_vector.h">
-      <Filter>STL\Extensions\buffer_vector</Filter>
+      <Filter>Extensions\Extensions\buffer_vector</Filter>
     </ClInclude>
     <ClInclude Include="buffer_vector_inline.h">
-      <Filter>STL\Extensions\buffer_vector</Filter>
+      <Filter>Extensions\Extensions\buffer_vector</Filter>
     </ClInclude>
     <ClInclude Include="string_concatenations.h">
       <Filter>shared memory/string library\string concat</Filter>
@@ -444,7 +444,7 @@
       <Filter>shared memory/string library\string concat</Filter>
     </ClInclude>
     <ClInclude Include="xr_smart_pointers.h">
-      <Filter>STL\Extensions</Filter>
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="Noncopyable.hpp">
       <Filter>Common</Filter>
@@ -487,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="xrDebugSupport.h">
       <Filter>Debug core</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_narrow_cast.h">
+      <Filter>Extensions\Extensions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

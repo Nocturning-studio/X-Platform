@@ -5,7 +5,7 @@
 #include "soundrender.h"
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include <vorbis/vorbisfile.h>
+#include <libvorbis/include/vorbis/vorbisfile.h>
 
 class CSoundRender_Target
 {

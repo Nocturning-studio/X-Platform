@@ -513,7 +513,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static_d.lib;theora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;ogg_static_d.lib;theora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -630,7 +630,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;openAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;openAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -689,7 +689,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;openAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;openAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -747,7 +747,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -812,7 +812,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -878,7 +878,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -944,7 +944,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1010,7 +1010,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1080,7 +1080,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1148,7 +1148,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1216,7 +1216,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1284,7 +1284,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1352,7 +1352,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1412,7 +1412,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static_d.lib;theora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;ogg_static_d.lib;theora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -1524,7 +1524,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1582,7 +1582,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1635,7 +1635,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;xrDiscordAPI.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dinput8.lib;dxguid.lib;Imgui.lib;xrParticles.lib;xrCore.lib;xrCDB.lib;xrSound.lib;xrLUA.lib;winmm.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1696,7 +1696,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -2174,11 +2174,20 @@
     <Image Include="ui_splash3.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-party\include\libogg\win32\libogg_static.vcxproj">
+      <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\libtheora\win32\VS2010\libtheora_static.vcxproj">
+      <Project>{653f3841-3f26-49b9-afcf-091db4b67031}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\libvorbis\win32\VS2010\libvorbisfile\libvorbisfile_static.vcxproj">
+      <Project>{cebde98b-a6aa-46e6-bc79-faaf823db9ec}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\libvorbis\win32\VS2010\libvorbis\libvorbis_static.vcxproj">
+      <Project>{3a214e06-b95e-4d61-a291-1f8df2ec10fd}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Third-party\include\Optick\include\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\xrDiscordAPI\xrDiscordAPI.vcxproj">
-      <Project>{f4b26665-46b9-4e39-8c2c-d302b095ec14}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrLua\xrLua.vcxproj">
       <Project>{9ace5473-6d68-4b96-ac42-b39eaba0fe1f}</Project>

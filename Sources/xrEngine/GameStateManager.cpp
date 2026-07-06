@@ -13,7 +13,6 @@
 #include "ispatial.h"
 #include "Text_Console.h"
 #include <process.h>
-#include "../xrDiscordAPI/DiscordAPI.h"
 #include "LevelLoadingScreen.h"
 
 void CGameStateManager::Initialize()
@@ -24,8 +23,6 @@ void CGameStateManager::Initialize()
 	eDisconnect = Engine.Event.Handler_Attach("KERNEL:disconnect", this);
 
 	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 1000);
-
-	DiscordAPI.Init();
 
 #ifdef ENABLE_PROFILING
 	OptickCapture.Initialize();
@@ -110,10 +107,6 @@ void CGameStateManager::OnFrame()
 	// Звуковые события уровня
 	if (g_pGameLevel)
 		g_pGameLevel->SoundEvent_Dispatch();
-
-	// Discord API update
-	if (!g_dedicated_server)
-		DiscordAPI.Update();
 
 	// Для выделенного сервера обновление консоли здесь
 	if (g_dedicated_server)

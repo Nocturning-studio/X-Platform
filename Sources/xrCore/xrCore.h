@@ -106,6 +106,7 @@
 #include "string_concatenations.h"
 #include "Noncopyable.hpp"
 #include "xr_smart_pointers.h"
+#include "xr_narrow_cast.h"
 
 // stl ext
 struct XRCORE_API xr_rtoken

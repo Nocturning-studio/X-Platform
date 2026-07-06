@@ -1225,6 +1225,7 @@
     <ClInclude Include="xrSyncronize.h" />
     <ClInclude Include="xrXMLParser.h" />
     <ClInclude Include="xr_ini.h" />
+    <ClInclude Include="xr_narrow_cast.h" />
     <ClInclude Include="xr_resource.h" />
     <ClInclude Include="xr_shared.h" />
     <ClInclude Include="xr_smart_pointers.h" />

@@ -16,11 +16,13 @@ typedef tv_sshort tv_sshort_tables[256][4];
 
 		u32 pos = 0;
 		for (u32 h=0; h<height; ++h){
+
 			u8* Y		= yuv.y+yuv.y_stride*h;
 			u8* U		= yuv.u+yuv.uv_stride*(h/uv_h);
 			u8* V		= yuv.v+yuv.uv_stride*(h/uv_h);
 
 			for (u32 w=0; w<width; ++w){
+
 				u8 y	= Y[w];
 				u8 u	= U[w/uv_w];
 				u8 v	= V[w/uv_w];
@@ -41,16 +43,28 @@ typedef tv_sshort tv_sshort_tables[256][4];
 		}
 */
 
-lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong argb_height, lp_tv_uchar y_plane,
-						tv_slong y_width, tv_slong y_height, tv_slong y_stride, lp_tv_uchar u_plane,
-						lp_tv_uchar v_plane, tv_slong uv_width, tv_slong uv_height, tv_slong uv_stride,
-						tv_slong width_diff)
+#ifndef _WIN64
+
+lp_tv_uchar tv_yuv2argb(
+	lp_tv_uchar argb_plane,
+	tv_slong argb_width,
+	tv_slong argb_height,
+	lp_tv_uchar y_plane,
+	tv_slong y_width,
+	tv_slong y_height,
+	tv_slong y_stride,
+	lp_tv_uchar u_plane,
+	lp_tv_uchar v_plane,
+	tv_slong uv_width,
+	tv_slong uv_height,
+	tv_slong uv_stride,
+	tv_slong width_diff)
 {
 	tv_sshort_tables ttl;
 
 	__asm {
 		push  ebx
-			   // helper constants
+		// helper constants
 		mov   esi, -14487936
 		mov   edi, -5822464
 		mov   ecx, -2785792
@@ -58,7 +72,7 @@ lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong ar
 
 		lea   ebx, DWORD PTR[ttl + 2]
 
-		   // building helper tables
+		// building helper tables
 		ALIGN 4
 		_tb_loop:
 		mov   eax, esi
@@ -182,7 +196,7 @@ lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong ar
 					paddsw mm3, mm1; mm3 = P6.B | P5.B | P2.B | P1.B
 					paddsw mm0, mm2; mm0 = P8.B | P7.B | P4.B | P3.B
 
-				// we have
+					// we have
 					; mm4 = P6.R | P5.R | P2.R | P1.R
 					; mm6 = P6.G | P5.G | P2.G | P1.G
 					; mm3 = P6.B | P5.B | P2.B | P1.B
@@ -191,23 +205,23 @@ lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong ar
 					; mm7 = P8.G | P7.G | P4.G | P3.G
 					; mm0 = P8.B | P7.B | P4.B | P3.B
 
-						  // saturation
+					// saturation
 					packuswb mm4, mm5; mm4 = P8.R | P7.R | P4.R | P3.R | P6.R | P5.R | P2.R | P1.R
 					packuswb mm6, mm7; mm6 = P8.G | P7.G | P4.G | P3.G | P6.G | P5.G | P2.G | P1.G
 					packuswb mm3, mm0; mm3 = P8.B | P7.B | P4.B | P3.B | P6.B | P5.B | P2.B | P1.B
 
-						  // calculating effective store address
+					// calculating effective store address
 					mov  esi, DWORD PTR line1; esi = line1
 					mov  edi, DWORD PTR line2; edi = line2
 
-				// we want
+					// we want
 					; px1 = 00 | P2.R | P2.G | P2.B | 00 | P1.R | P1.G | P1.B |
 					; px2 = 00 | P4.R | P4.G | P4.B | 00 | P3.R | P3.G | P3.B |
 
 					; px3 = 00 | P6.R | P6.G | P6.B | 00 | P5.R | P5.G | P5.B |
 					; px4 = 00 | P8.R | P8.G | P8.B | 00 | P7.R | P7.G | P7.B |
 
-						// Oh, real sex!
+					// Oh, real sex!
 					pcmpeqd mm0, mm0; mm0 = 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1
 
 					movq mm5, mm6; mm5 = P8.G | P7.G | P4.G | P3.G | P6.G | P5.G | P2.G | P1.G
@@ -219,9 +233,9 @@ lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong ar
 					movq  mm1, mm7; mm1 = P6.R | P6.B | P5.R | P5.B | P2.R | P2.B | P1.R | P1.B
 
 					punpcklbw mm7, mm5; mm7 = 0 | P2.R | P2.G | P2.B | 0 | P1.R | P1.G | P1.B
-						  // px1
+					// px1
 					punpckhbw mm1, mm5; mm1 = 0 | P6.R | P6.G | P6.B | 0 | P5.R | P5.G | P5.B
-						  // px3
+					// px3
 
 					movq  mm2, mm6; mm2 = P8.G | P7.G | P4.G | P3.G | P6.G | P5.G | P2.G | P1.G
 					movq  mm5, mm3; mm5 = P8.B | P7.B | P4.B | P3.B | P6.B | P5.B | P2.B | P1.B
@@ -232,11 +246,11 @@ lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong ar
 					movq  mm0, mm5; mm0 = P8.R | P8.B | P7.R | P7.B | P4.R | P4.B | P3.R | P3.B
 
 					punpckhbw mm5, mm2; mm5 = 0 | P8.R | P8.G | P8.B | 0 | P7.R | P7.G | P7.B
-						  // px4
+					// px4
 					punpcklbw mm0, mm2; mm0 = 0 | P4.R | P4.G | P4.B | 0 | P3.R | P3.G | P3.B
-						  // px2
+					// px2
 
-						  // storing using non-temporal hint
+					// storing using non-temporal hint
 					movntq  MMWORD PTR[esi + 0], mm7;
 				movntq  MMWORD PTR[esi + 8], mm0;
 
@@ -268,5 +282,7 @@ lp_tv_uchar tv_yuv2argb(lp_tv_uchar argb_plane, tv_slong argb_width, tv_slong ar
 
 	return argb_plane;
 } // tv_yuv2argb
+
+#endif
 
 #pragma warning(default : 4731)

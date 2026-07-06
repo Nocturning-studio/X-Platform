@@ -27,18 +27,18 @@ class ENGINE_API CTheoraSurface
 	BOOL ready;
 	BOOL bShaderYUV2RGB;
 
-  public:
+public:
 	BOOL playing;
 	BOOL looped;
 
-  protected:
+protected:
 	void Reset();
 
 #ifdef SDL_OUTPUT
 	void open_sdl_video();
 	void write_sdl_video();
 #endif
-  public:
+public:
 	CTheoraSurface();
 	virtual ~CTheoraSurface();
 
@@ -49,22 +49,16 @@ class ENGINE_API CTheoraSurface
 	void DecompressFrame(u32* dst, u32 _width, int& count);
 
 	void Play(BOOL _looped, u32 _time);
-	void Pause(BOOL _pause)
-	{
-		playing = !_pause;
-	}
+	void Pause(BOOL _pause) { playing = !_pause; }
 	void Stop()
 	{
 		playing = FALSE;
 		Reset();
 	}
-	BOOL IsPlaying()
-	{
-		return playing;
-	}
+	BOOL IsPlaying() { return playing; }
 
 	u32 Width(bool bRealSize);
 	u32 Height(bool bRealSize);
 };
 
-#endif // xrTheora_SurfaceH
+#endif //xrTheora_SurfaceH
