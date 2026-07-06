@@ -34,8 +34,8 @@ IC _associative_vector::associative_vector(const key_compare& predicate) : value
 TEMPLATE_SPECIALIZATION
 template <typename _iterator_type>
 IC _associative_vector::associative_vector(_iterator_type first, _iterator_type last,
-										   const key_compare& predicate = key_compare(),
-										   const allocator_type& allocator = allocator_type())
+										   const key_compare& predicate,
+										   const allocator_type& allocator)
 	: //	inherited			(first,last,allocator),
 	  inherited(first, last), value_compare(predicate)
 {

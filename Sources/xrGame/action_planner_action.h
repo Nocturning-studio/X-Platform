@@ -41,8 +41,8 @@ class CActionPlannerAction : public CActionPlanner<_object_type>, public CAction
 	virtual void execute();
 	virtual void finalize();
 	virtual bool completed() const;
-	IC void add_condition(_world_operator* action, _condition_type condition_id, _value_type condition_value);
-	IC void add_effect(_world_operator* action, _condition_type condition_id, _value_type condition_value);
+	IC void add_condition(typename inherited_planner::_world_operator* action, _condition_type condition_id, _value_type condition_value);
+	IC void add_effect(typename inherited_planner::_world_operator* action, _condition_type condition_id, _value_type condition_value);
 
 	virtual void save(NET_Packet& packet)
 	{

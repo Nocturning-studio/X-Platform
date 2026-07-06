@@ -44,20 +44,20 @@ IC bool CSolverPathManager::is_goal_reached(const _index_type& vertex_id) const
 }
 
 TEMPLATE_SPECIALIZATION
-IC const _index_type& CSolverPathManager::get_value(const_iterator& i, bool reverse_search) const
+IC const _index_type& CSolverPathManager::get_value(typename inherited::const_iterator& i, bool reverse_search) const
 {
 	return (graph->value(*best_node_index, i, reverse_search));
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CSolverPathManager::_edge_type& CSolverPathManager::edge(const_iterator& i) const
+IC const typename CSolverPathManager::_edge_type& CSolverPathManager::edge(typename inherited::const_iterator& i) const
 {
 	return ((*i).m_operator_id);
 }
 
 TEMPLATE_SPECIALIZATION
 IC _dist_type CSolverPathManager::evaluate(const _index_type& node_index1, const _index_type& node_index2,
-										   const const_iterator& i) const
+										   const typename inherited::const_iterator& i) const
 {
 	VERIFY(graph);
 	return (graph->get_edge_weight(node_index1, node_index2, i));
