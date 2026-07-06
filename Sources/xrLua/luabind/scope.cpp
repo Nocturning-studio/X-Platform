@@ -185,7 +185,7 @@ namespace luabind {
     };
 
     namespace_::namespace_(char const* name)
-        : scope(std::auto_ptr<detail::registration>(
+        : scope(std::unique_ptr<detail::registration>(
               m_registration = new registration_(name)))
     {
     }
