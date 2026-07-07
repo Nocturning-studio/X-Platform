@@ -49,7 +49,7 @@
 #include "../../object_handler_space.h"
 #include "../../debug_renderer.h"
 #include "../../CharacterPhysicsSupport.h"
-#include "../../../xrEngine/xrScheduler.h
+#include"../../../xrEngine/xrSheduler.h"
 
 CActor* g_debug_actor = 0;
 

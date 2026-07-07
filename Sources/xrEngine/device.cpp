@@ -20,6 +20,7 @@
 #include "resourcemanager.h"
 #include "optick_include.h"
 #include "IGame_Persistent.h"
+#include "CustomHUD.h"
 #include "debug_ui.h"
 #include "xr_ioc_cmd.h"
 #include "resource.h"

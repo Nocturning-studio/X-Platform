@@ -96,7 +96,7 @@ template <bool _debug> class FixedConvexVolume
 		compute_planes();
 
 		for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
-			VERIFY(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
+			VERIFY(light_cuboid_polys[i].plane.classify(light_ray.Position) > 0);
 
 		int align_planes[2];
 		int align_planes_count = 0;
@@ -242,7 +242,7 @@ template <bool _debug> class FixedConvexVolume
 			dest.push_back(light_cuboid_polys[i].plane);
 			dest.back().n.mul(-1);
 			dest.back().d *= -1;
-			VERIFY(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
+			VERIFY(light_cuboid_polys[i].plane.classify(light_ray.Position) > 0);
 		}
 
 		// Compute ray intersection with light model, this is needed to next cascade to start it's placement.

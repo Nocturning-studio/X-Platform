@@ -75,7 +75,7 @@ class CBlender_multiple_usage : public IBlender
 		bool bUseCustomWeight = false;
 		string_path CustomWeightTexture;
 
-		#pragma todo(NSDeathman to NSDeathman : Rewrite)
+		#pragma todo("NSDeathman to NSDeathman : Rewrite")
 		bool bUseConfigurator = false;
 		CInifile* MaterialConfiguration;
 		string_path MaterialConfiguratorSearchPath;

@@ -18,6 +18,10 @@
 
 // #define DBG_DISABLE_SCRIPTS
 
+#ifdef DEBUG_MEMORY_MANAGER
+extern XRCORE_API BOOL g_bMEMO;
+#endif
+
 CScriptBinder::CScriptBinder()
 {
 	init();

@@ -547,8 +547,8 @@ BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 
 Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 {
-	CBlender_Compile C;
-	Shader S;
+	CBlender_Compile C = {};
+	Shader S = {};
 
 	// undecorate
 	string256 undercorated;

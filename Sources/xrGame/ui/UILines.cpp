@@ -286,7 +286,7 @@ void CUILines::ParseText()
 			{
 				bool b_last_ch = (idx == sub_len - 1);
 
-				if (isspace(sbl.m_text[idx]))
+				if (std::isspace(static_cast<unsigned char>(sbl.m_text[idx])))
 					last_space_idx = idx;
 
 				float w1 = get_str_width(m_pFont, sbl.m_text[idx]);

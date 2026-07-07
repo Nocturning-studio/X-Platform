@@ -611,8 +611,8 @@ BOOL IPureClient::Connect(LPCSTR options)
 						Msg("! IPureClient : port %d is BUSY!", c_port);
 
 					//				const char* x = DXGetErrorString9(res);
-					string1024 tmp = "";
-					DXTRACE_ERR(tmp, res);
+					string1024 tmpstr = "";
+					DXTRACE_ERR(tmpstr, res);
 #endif
 					c_port++;
 				}
@@ -659,8 +659,8 @@ BOOL IPureClient::Connect(LPCSTR options)
 			_RELEASE(pHostAddress);
 #ifdef DEBUG
 			//		const char* x = DXGetErrorString9(res);
-			string1024 tmp = "";
-			DXTRACE_ERR(tmp, res);
+			string1024 tmpstr = "";
+			DXTRACE_ERR(tmpstr, res);
 #endif
 			switch (res)
 			{

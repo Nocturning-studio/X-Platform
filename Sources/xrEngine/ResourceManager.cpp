@@ -61,7 +61,7 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 	if (0 == names)
 		names = "$null";
 
-	ZeroMemory(&dest, sizeof(dest));
+	dest.clear();
 	char* P = (char*)names;
 	svector<char, 128> N;
 
@@ -129,6 +129,8 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	C.BT = B;
 	C.bEditor = FALSE;
 	C.bDetail = FALSE;
+	C.detail_texture = nullptr;
+	C.detail_scaler = nullptr;
 #ifdef _EDITOR
 	if (!C.BT)
 	{
@@ -141,10 +143,19 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	// Parse names
 	_ParseList(C.L_textures, s_textures);
 
+	bool noTextures = false;
+	if (C.L_textures.empty())
+	{
+		noTextures = true;
+		C.L_textures.push_back("$null");
+	}
+
 	// Compile element	(LOD0 - HQ)
 	{
 		C.iElement = 0;
-		C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+		C.detail_texture = nullptr;
+		C.detail_scaler = nullptr;
+		C.bDetail = noTextures ? false : m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 		ShaderElement E;
 		C._cpp_Compile(&E);
 		S.E[0] = _CreateElement(E);
@@ -153,7 +164,9 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	// Compile element	(LOD1)
 	{
 		C.iElement = 1;
-		C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+		C.detail_texture = nullptr;
+		C.detail_scaler = nullptr;
+		C.bDetail = noTextures ? false : m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 		ShaderElement E;
 		C._cpp_Compile(&E);
 		S.E[1] = _CreateElement(E);

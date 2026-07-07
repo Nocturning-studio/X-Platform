@@ -249,8 +249,7 @@ void CStats::Show()
 		F.OutSkip();
 		F.OutNext("mapped:      %d", g_file_mapped_memory);
 		F.OutSkip();
-		F.OutNext("SH/T/M/C:    %d/%d/%d/%d", RenderBackend.stat.states, RenderBackend.stat.textures, RenderBackend.stat.matrices,
-				  RenderBackend.stat.constants);
+		F.OutNext("S/T:    %d/%d", RenderBackend.stat.states, RenderBackend.stat.textures);
 		F.OutNext("RT/PS/VS:    %d/%d/%d", RenderBackend.stat.target_rt, RenderBackend.stat.ps, RenderBackend.stat.vs);
 		F.OutNext("DCL/VB/IB:   %d/%d/%d", RenderBackend.stat.decl, RenderBackend.stat.vb, RenderBackend.stat.ib);
 #endif

@@ -72,6 +72,8 @@ BOOL SimulatorStates::equal(SimulatorStates& S)
 {
 	if (States.size() != S.States.size())
 		return FALSE;
+	if (States.empty())
+		return TRUE;
 	if (0 != memcmp(&*States.begin(), &*S.States.begin(), States.size() * sizeof(State)))
 		return FALSE;
 	return TRUE;

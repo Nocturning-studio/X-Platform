@@ -80,6 +80,7 @@ void mem_alloc_clear_stats()
 	stats.clear();
 }
 
+/*
 __declspec(noinline) void save_stack_trace()
 {
 	if (!g_mem_alloc_gather_stats)
@@ -141,4 +142,5 @@ __declspec(noinline) void save_stack_trace()
 
 	stats.insert(std::make_pair(crc, std::make_pair(string, 1)));
 }
+*/
 #endif // DEBUG

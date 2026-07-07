@@ -102,7 +102,7 @@ using namespace Opcode;
 		max = x2;
 
 //! TO BE DOCUMENTED
-ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox)
+bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox)
 {
 	Point vmin, vmax;
 	for (udword q = 0; q <= 2; q++)

@@ -49,6 +49,14 @@ void CRenderBackend::dbg_DrawOBB(fmat4x4& Transform, fvec3& half_dim, u32 Color)
 	set_transform_world(mL2W_Transform);
 	dbg_Draw(D3DPT_LINELIST, aabb, 8, aabb_id, 12);
 }
+IC void CRenderBackend::dbg_DrawAABB(fvec3& Translation, float sx, float sy, float sz, u32 Color)
+{
+	fvec3 half_dim;
+	half_dim.set(sx, sy, sz);
+	fmat4x4 TM;
+	TM.translate(Translation);
+	dbg_DrawOBB(TM, half_dim, Color);
+}
 void CRenderBackend::dbg_DrawTRI(fmat4x4& Transform, fvec3& p1, fvec3& p2, fvec3& p3, u32 Color)
 {
 	FVF::L tri[3];

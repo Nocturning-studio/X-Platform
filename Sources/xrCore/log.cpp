@@ -70,12 +70,13 @@ void Log(const char* s)
 {
 	int i, j;
 	char split[1024];
+	const size_t max_len = sizeof(split) - 1;
 
 	for (i = 0, j = 0; s[i] != 0; i++)
 	{
 		if (s[i] == '\n')
 		{
-			split[j] = 0; // end of line
+			split[j] = 0;
 			if (split[0] == 0)
 			{
 				split[0] = ' ';
@@ -86,38 +87,42 @@ void Log(const char* s)
 		}
 		else
 		{
-			split[j++] = s[i];
+			if (j < max_len)
+				split[j++] = s[i];
 		}
 	}
-	split[j] = 0;
-	AddOne(split);
+	if (j > 0)
+	{
+		split[j] = 0;
+		AddOne(split);
+	}
 
 	printf("%s\n", s);
 }
 
-void __cdecl Msg(const char* format, ...)
+void Msg(const char* format, ...)
 {
 	va_list mark;
-	string1024 buf;
 	va_start(mark, format);
-	int sz = _vsnprintf(buf, sizeof(buf) - 1, format, mark);
-	buf[sizeof(buf) - 1] = 0;
+	xr_string buf;
+	buf.resize(4096);
+	int sz = _vsnprintf_s(&buf[0], buf.size(), _TRUNCATE, format, mark);
 	va_end(mark);
-	if (sz)
-		Log(buf);
+	if (sz > 0)
+		Log(buf.c_str());
 }
 
-void __cdecl DbgMsg(const char* format, ...)
+void DbgMsg(const char* format, ...)
 {
 #ifdef DEBUG
 	va_list mark;
-	string1024 buf;
 	va_start(mark, format);
-	int sz = _vsnprintf(buf, sizeof(buf) - 1, format, mark);
-	buf[sizeof(buf) - 1] = 0;
+	xr_string buf;
+	buf.resize(4096);
+	int sz = _vsnprintf_s(&buf[0], buf.size(), _TRUNCATE, format, mark);
 	va_end(mark);
-	if (sz)
-		Log(buf);
+	if (sz > 0)
+		Log(buf.c_str());
 #endif
 }
 

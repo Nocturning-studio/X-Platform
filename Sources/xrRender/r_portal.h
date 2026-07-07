@@ -63,8 +63,4 @@ class CPortal : public IRender_Portal
 	{
 		return (m_plane.classify(v) > 0) ? m_back_sector : m_front_sector;
 	}
-
-#ifdef DEBUG
-	virtual void OnRender(); // Debug draw
-#endif
 };

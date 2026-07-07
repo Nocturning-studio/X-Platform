@@ -89,7 +89,7 @@ class CCC_MemStat : public IConsole_Command
 		if (args && args[0])
 			sprintf_s(fn, sizeof(fn), "%s.dump", args);
 		else
-			strcpy_s_s(fn, sizeof(fn), "x:\\$memory$.dump");
+			strcpy_s(fn, sizeof(fn), "x:\\$memory$.dump");
 		Memory.mem_statistic(fn);
 		//		g_pStringContainer->dump			();
 		//		g_pSharedMemoryContainer->dump		();

@@ -93,7 +93,7 @@ void* xrMemory::mem_alloc(size_t size, const char* _name
 	else
 	{
 #ifdef DEBUG_MEMORY_MANAGER
-		save_stack_trace();
+		//save_stack_trace();
 #endif // DEBUG
 	   //	accelerated
 	   //	Igor: Reserve 1 byte for xrMemory header

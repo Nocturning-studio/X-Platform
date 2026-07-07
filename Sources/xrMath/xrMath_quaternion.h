@@ -381,7 +381,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	{
 		T Scale0, Scale1, sign;
 
-#ifdef DEBUG
+#ifdef DEBUG0
 		if (!((T(0) <= tm) && (tm <= T(1))))
 			Debug.fatal(DEBUG_INFO, "Quaternion::slerp - invalid 'tm' arrived: %f", tm);
 #endif

@@ -37,8 +37,12 @@ static int ParseName(LPCSTR N)
 //////////////////////////////////////////////////////////////////////
 
 CBlender_Compile::CBlender_Compile()
-{
-}
+	: detail_texture(nullptr), detail_scaler(nullptr),
+	bEditor(FALSE), bDetail(FALSE),
+	bDetail_Diffuse(FALSE), bDetail_Bump(FALSE),
+	bSteepParallax(FALSE), iElement(0),
+	BT(nullptr), SH(nullptr), dwStage(0)
+{ }
 CBlender_Compile::~CBlender_Compile()
 {
 }
@@ -272,7 +276,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 
 void CBlender_Compile::i_Texture(u32 s, LPCSTR name)
 {
-	if (name)
+	if (name && xr_strcmp(name, "$null") != 0)
 		passTextures.push_back(mk_pair(s, ref_texture(Engine.ResourceManager->_CreateTexture(name))));
 }
 

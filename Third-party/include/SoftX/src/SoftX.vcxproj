@@ -109,37 +109,37 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Third-party\lib\x86\</OutDir>
+    <OutDir>$(SolutionDir)Third-party\lib\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Third-party\lib\x86\</OutDir>
+    <OutDir>$(SolutionDir)Third-party\lib\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Third-party\lib\x86\</OutDir>
+    <OutDir>$(SolutionDir)Third-party\lib\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Third-party\lib\x64\</OutDir>
+    <OutDir>$(SolutionDir)Third-party\lib\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Third-party\lib\x64\</OutDir>
+    <OutDir>$(SolutionDir)Third-party\lib\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Third-party\include\SoftX\include\;$(SolutionDir)Third-party\include\AfterMath\include\;$(SolutionDir)Third-party\include\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Third-party\lib\x64\</OutDir>
+    <OutDir>$(SolutionDir)Third-party\lib\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)..\Build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -366,7 +366,7 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\optick\OptickCore.vcxproj">
+    <ProjectReference Include="..\..\Optick\include\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
     </ProjectReference>
   </ItemGroup>

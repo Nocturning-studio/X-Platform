@@ -32,7 +32,7 @@ template <class T> class template_cylinder
 		template_vector3<T>::generate_orthonormal_basis(kW, kU, kV);
 		template_vector3<T> kD;
 		kD.set(kU.dotproduct(dir), kV.dotproduct(dir), kW.dotproduct(dir));
-#ifdef DEBUG
+#ifdef DEBUG0
 		if (kD.square_magnitude() <= std::numeric_limits<T>::min())
 		{
 			Msg("dir :%f,%f,%f", dir.x, dir.y, dir.z);

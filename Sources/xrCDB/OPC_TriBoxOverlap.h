@@ -12,7 +12,7 @@
 		max = x2;
 
 //! TO BE DOCUMENTED
-inline_ bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox);
+bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox);
 
 //! TO BE DOCUMENTED
 #define AXISTEST_X01(a, b, fa, fb)                                                                                     \

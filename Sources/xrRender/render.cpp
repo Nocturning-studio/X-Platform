@@ -619,9 +619,6 @@ void CRender::Statistics(CGameFont* _F)
 	stats.ic_total = 0;
 	F.OutNext(" culled : %2d", stats.ic_culled);
 	stats.ic_culled = 0;
-#ifdef DEBUG
-	HOM.stats();
-#endif
 }
 
 void CRender::enable_dbt_bounds(light* L)

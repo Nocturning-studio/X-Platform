@@ -10,6 +10,10 @@
 #include "../xrEngine/xr_object.h"
 #include "../xrEngine/IGame_Persistent.h"
 
+#ifdef DEBUG_MEMORY_MANAGER
+extern XRCORE_API BOOL g_bMEMO;
+#endif
+
 void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
 	// Begin analysis

@@ -150,13 +150,13 @@ LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type& id)
 	{
 		CObject* obj = Level().Objects.net_Find(obj_id);
 		if (obj)
-			xr_strcpy(S, sizeof(m_temp_string), *obj->cName());
+			strcpy_s(S, sizeof(m_temp_string), *obj->cName());
 		else
-			xr_strcpy(S, sizeof(m_temp_string), "no_items");
+			strcpy_s(S, sizeof(m_temp_string), "no_items");
 	}
 	else
 	{
-		xr_strcpy(S, sizeof(m_temp_string), "no_items");
+		strcpy_s(S, sizeof(m_temp_string), "no_items");
 	}
 
 	safe_cat(S, ":", sizeof(m_temp_string));
@@ -278,13 +278,13 @@ LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
 	{
 		CObject* obj = Level().Objects.net_Find(obj_id);
 		if (obj)
-			xr_strcpy(S, sizeof(m_temp_string), *obj->cName());
+			strcpy_s(S, sizeof(m_temp_string), *obj->cName());
 		else
-			xr_strcpy(S, sizeof(m_temp_string), "no_items");
+			strcpy_s(S, sizeof(m_temp_string), "no_items");
 	}
 	else
 	{
-		xr_strcpy(S, sizeof(m_temp_string), "no_items");
+		strcpy_s(S, sizeof(m_temp_string), "no_items");
 	}
 
 	safe_cat(S, ":", sizeof(m_temp_string));

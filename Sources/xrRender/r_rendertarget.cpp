@@ -145,8 +145,8 @@ void CRenderTarget::CompileShaders()
 	s_occq.create(b_occq);
 	s_accum_mask.create(b_accum_mask);
 	s_accum_direct_cascade.create(b_accum_direct_cascade);
-	s_accum_point.create(b_accum_point);
-	s_accum_spot.create(b_accum_spot, "r\\accum_spot_s", "lights\\lights_spot01");
+	s_accum_point.create(b_accum_point, "r\\accum_point", "lights\\lights_point01");
+	s_accum_spot.create(b_accum_spot, "r\\accum_spot", "lights\\lights_spot01");
 	s_effectors.create(b_effectors);
 	s_output_to_screen.create(b_output_to_screen);
 

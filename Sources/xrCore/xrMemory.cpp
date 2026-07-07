@@ -40,7 +40,7 @@ xrMemory::xrMemory()
 }
 
 #ifdef DEBUG_MEMORY_MANAGER
-BOOL g_bMEMO = FALSE;
+XRCORE_API BOOL g_bMEMO = FALSE;
 #endif
 
 void xrMemory::_initialize(BOOL bDebug)

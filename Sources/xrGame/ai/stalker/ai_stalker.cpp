@@ -71,6 +71,10 @@
 
 using namespace StalkerSpace;
 
+#ifdef DEBUG_MEMORY_MANAGER
+extern XRCORE_API BOOL g_bMEMO;
+#endif
+
 extern int g_AI_inactive_time;
 
 CAI_Stalker::CAI_Stalker()
