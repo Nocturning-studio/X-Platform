@@ -123,7 +123,7 @@ static class cl_is_hud_render_phase : public R_constant_setup
 		if (RenderImplementation.active_phase() == CRender::PHASE_HUD)
 			is_hud_render_phase = 1;
 
-		RenderBackend.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0, 0, 0);
+		RenderBackend.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0.0f, 0.0f, 0.0f);
 	}
 } binder_is_hud_render_phase;
 //////////////////////////////////////////////////////////////////////////

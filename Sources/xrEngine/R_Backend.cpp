@@ -391,6 +391,8 @@ void CRenderBackend::OnDeviceDestroy()
 void CRenderBackend::reset_begin()
 {
     constants.force_dirty();
+    m_stateCache.Invalidate(*this);
+    m_resBinder.Invalidate(*this);
 }
 
 void CRenderBackend::reset_end()

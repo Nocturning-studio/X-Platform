@@ -79,7 +79,6 @@ void CRenderDevice::End(void)
     {
         ::Sound->set_master_volume(psSoundVFactor);
         dwPrecacheFrame--;
-        Engine.LoadingScreen->ForceRender();
         if (0 == dwPrecacheFrame)
         {
             Gamma.Update();

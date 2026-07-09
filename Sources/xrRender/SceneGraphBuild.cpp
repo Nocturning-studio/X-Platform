@@ -192,17 +192,18 @@ ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cd
 //    ctx           - Текущий контекст обхода (матрицы, флаги, владелец).
 //    dest          - Целевой пакет данных (куда записывать результат).
 // ===============================================================================================
-void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, const SceneTraversalContext& ctx,
-								 SceneGraphPacket& dest)
+void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
+	if (!pVisual || !pVisual->shader._get())
+		return;
+
 	// -------------------------------------------------------------------------
 	// 1. Проверка уникальности (Traversal Marker)
 	// -------------------------------------------------------------------------
 	// Предотвращает дублирование объекта, если он виден через несколько порталов.
 	// atomic_exchange возвращает старое значение.
 	// Если старое значение уже равно текущему, значит другой поток успел нас опередить.
-	if (pVisual->vis.m_traversal_marker.exchange(ctx.traversal_marker_id, std::memory_order_acq_rel) ==
-		ctx.traversal_marker_id)
+	if (pVisual->vis.m_traversal_marker.exchange(ctx.traversal_marker_id, std::memory_order_acq_rel) == ctx.traversal_marker_id)
 		return;
 	pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
@@ -225,21 +226,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 
 	if (shader_distortion && shader_distortion->flags.bDistort)
 	{
-		// Проверка приоритета в конфиге (Fetch Config)
-		bool is_priority_allowed = (shader_distortion->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0
-																				 : m_fetch_config.fetch_priority_1;
+		// Пишем в dest (пакет), берем данные из ctx
+		auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
 
-		if (is_priority_allowed)
-		{
-			// Пишем в dest (пакет), берем данные из ctx
-			auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
-
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = ctx.current_owner;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = ctx.current_transform;
-			node->val.se = shader_distortion;
-		}
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = ctx.current_owner;
+		node->val.pVisual = pVisual;
+		node->val.pMatrix = ctx.current_transform;
+		node->val.se = shader_distortion;
 	}
 
 	// -------------------------------------------------------------------------
@@ -259,6 +253,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 		return;
 	if (priority == 1 && !m_fetch_config.fetch_priority_1)
 		return;
+
+	if (priority > 1)
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] shader priority %d > 1, clamped to 1", priority);
+#endif
+		priority = 1;
+	}
 
 	// Проверка флага из контекста
 	if (ctx.is_invisible_mode)
@@ -333,6 +335,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// Создаем узел, используя данные из ctx
 	DynamicRenderNode item = {screen_space_area, ctx.current_owner, pVisual, ctx.current_transform};
 
+	if (shader_element->passes.empty())
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] shader_element has no passes, skipping visual [%s]", pVisual->dbg_name.c_str());
+#endif
+		return;
+	}
+
 	SPass& pass = *shader_element->passes.front();
 
 	// Выбираем очередь из переданного пакета dest
@@ -341,15 +351,46 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// Иерархическая вставка (State Sorting):
 	// VS -> PS -> Constants -> States -> Textures -> Items
 #ifdef USE_RESOURCE_DEBUGGER
-	auto* node_vs = target_map.insert(pass.vs);
-	auto* node_ps = node_vs->val.insert(pass.ps);
+	target_map.insert(pass.vs);
+	auto* node_vs = target_map.find(pass.vs);
+	VERIFY(node_vs);
+
+	node_vs->val.insert(pass.ps);
+	auto* node_ps = node_vs->val.find(pass.ps);
+	VERIFY(node_ps);
 #else
-	auto* node_vs = target_map.insert(pass.vs->sh);
-	auto* node_ps = node_vs->val.insert(pass.ps->sh);
+	target_map.insert(pass.vs->sh);
+	auto* node_vs = target_map.find(pass.vs->sh);
+	if (!node_vs)
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] Failed to find vertex shader node");
 #endif
-	auto* node_cs = node_ps->val.insert(pass.constants._get());
-	auto* node_state = node_cs->val.insert(pass.state->state);
-	auto* node_tex = node_state->val.insert(pass.T._get());
+		return;
+	}
+
+	node_vs->val.insert(pass.ps->sh);
+	auto* node_ps = node_vs->val.find(pass.ps->sh);
+	if (!node_ps)
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] Failed to find pixel shader node");
+#endif
+		return;
+	}
+#endif
+
+	node_ps->val.insert(pass.constants._get());
+	auto* node_cs = node_ps->val.find(pass.constants._get());
+	if (!node_cs) return;
+
+	node_cs->val.insert(pass.state->state);
+	auto* node_state = node_cs->val.find(pass.state->state);
+	if (!node_state) return;
+
+	node_state->val.insert(pass.T._get());
+	auto* node_tex = node_state->val.find(pass.T._get());
+	if (!node_tex) return;
 
 	// Добавляем объект в конечный лист
 	node_tex->val.push_back(item);
@@ -398,12 +439,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 // ===============================================================================================
 void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
+	if (!pVisual || !pVisual->shader._get())
+		return;
+
 	// 1. Проверка уникальности
 	// Предотвращает дублирование объекта, если он виден через несколько порталов.
 	// atomic_exchange возвращает старое значение.
 	// Если старое значение уже равно текущему, значит другой поток успел нас опередить.
-	if (pVisual->vis.m_traversal_marker.exchange(ctx.traversal_marker_id, std::memory_order_acq_rel) ==
-		ctx.traversal_marker_id)
+	if (pVisual->vis.m_traversal_marker.exchange(ctx.traversal_marker_id, std::memory_order_acq_rel) == ctx.traversal_marker_id)
 		return;
 	pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
@@ -419,18 +462,13 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	if (shader_distortion && shader_distortion->flags.bDistort)
 	{
-		bool is_priority_allowed = (shader_distortion->flags.iPriority / 2 == 0) ? m_fetch_config.fetch_priority_0
-																				 : m_fetch_config.fetch_priority_1;
+		auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
 
-		if (is_priority_allowed)
-		{
-			auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = nullptr; // У статики нет владельца
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = &Fidentity; // У статики Identity матрица
-			node->val.se = shader_distortion;
-		}
+		node->val.ScreenSpaceArea = screen_space_area;
+		node->val.pObject = ctx.current_owner;
+		node->val.pVisual = pVisual;
+		node->val.pMatrix = ctx.current_transform;
+		node->val.se = shader_distortion;
 	}
 
 	// 4. Выбор шейдера
@@ -446,6 +484,14 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		return;
 	if (priority == 1 && !m_fetch_config.fetch_priority_1)
 		return;
+
+	if (priority > 1)
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] shader priority %d > 1, clamped to 1", priority);
+#endif
+		priority = 1;
+	}
 
 	// 6. Маршрутизация
 
@@ -493,6 +539,14 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	// 8. Opaque Geometry
 	counter_S++;
 
+	if (shader_element->passes.empty())
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] shader_element has no passes, skipping visual [%s]", pVisual->dbg_name.c_str());
+#endif
+		return;
+	}
+
 	SPass& pass = *shader_element->passes.front();
 
 	// Выбираем очередь из переданного пакета dest
@@ -500,15 +554,46 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	// Иерархическая вставка
 #ifdef USE_RESOURCE_DEBUGGER
-	auto* node_vs = target_map.insert(pass.vs);
-	auto* node_ps = node_vs->val.insert(pass.ps);
+	target_map.insert(pass.vs);
+	auto* node_vs = target_map.find(pass.vs);
+	VERIFY(node_vs);
+
+	node_vs->val.insert(pass.ps);
+	auto* node_ps = node_vs->val.find(pass.ps);
+	VERIFY(node_ps);
 #else
-	auto* node_vs = target_map.insert(pass.vs->sh);
-	auto* node_ps = node_vs->val.insert(pass.ps->sh);
+	target_map.insert(pass.vs->sh);
+	auto* node_vs = target_map.find(pass.vs->sh);
+	if (!node_vs)
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] Failed to find vertex shader node");
 #endif
-	auto* node_cs = node_ps->val.insert(pass.constants._get());
-	auto* node_state = node_cs->val.insert(pass.state->state);
-	auto* node_tex = node_state->val.insert(pass.T._get());
+		return;
+	}
+
+	node_vs->val.insert(pass.ps->sh);
+	auto* node_ps = node_vs->val.find(pass.ps->sh);
+	if (!node_ps)
+	{
+#ifdef DEBUG
+		Msg("! [SceneGraph] Failed to find pixel shader node");
+#endif
+		return;
+	}
+#endif
+
+	node_ps->val.insert(pass.constants._get());
+	auto* node_cs = node_ps->val.find(pass.constants._get());
+	if (!node_cs) return;
+
+	node_cs->val.insert(pass.state->state);
+	auto* node_state = node_cs->val.find(pass.state->state);
+	if (!node_state) return;
+
+	node_state->val.insert(pass.T._get());
+	auto* node_tex = node_state->val.find(pass.T._get());
+	if (!node_tex) return;
 
 	StaticRenderNode item = {screen_space_area, pVisual};
 	node_tex->val.push_back(item);

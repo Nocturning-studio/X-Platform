@@ -134,6 +134,13 @@ class ENGINE_API R_constant_array
 	void set(R_constant* C, R_constant_load& L, const fvec4& A)
 	{
 		VERIFY(RC_float == C->type);
+		if (L.cls == RC_1x1)
+		{
+			c_f.access(L.index)->set(A.x, 0.0f, 0.0f, 0.0f);
+			c_f.dirty(L.index, L.index + 1);
+			mark_dirty();
+			return;
+		}
 		VERIFY(RC_1x4 == L.cls);
 		c_f.access(L.index)->set(A);
 		c_f.dirty(L.index, L.index + 1);

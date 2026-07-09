@@ -128,6 +128,9 @@ template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
 template <typename MapTextures, typename VecTypes>
 void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_map, BOOL bUseSSA)
 {
+	if (textures_map.size() == 0)
+		return;
+
 	int texture_count = textures_map.begin()->key->size();
 
 	if (bUseSSA)

@@ -32,31 +32,38 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 	void Realloc()
 	{
 		u32 newLimit = limit + SG_REALLOC_ADVANCE;
-		VERIFY(newLimit % SG_REALLOC_ADVANCE == 0);
 		TNode* newNodes = (TNode*)allocator::alloc(sizeof(TNode) * newLimit);
-		VERIFY(newNodes);
 
 		ZeroMemory(newNodes, Size(newLimit));
-		if (limit)
-			CopyMemory(newNodes, nodes, Size(limit));
 
-		for (u32 I = 0; I < pool; I++)
-		{
-			VERIFY(nodes);
-			TNode* Nold = nodes + I;
-			TNode* Nnew = newNodes + I;
+		for (u32 i = 0; i < pool; ++i) {
+			TNode* oldNode = nodes + i;
+			TNode* newNode = newNodes + i;
 
-			if (Nold->left)
-			{
-				size_t Lid = Nold->left - nodes;
-				Nnew->left = newNodes + Lid;
+			new (&newNode->key) K(std::move(oldNode->key));
+			new (&newNode->val) T(std::move(oldNode->val));
+
+			oldNode->val.~T();
+			oldNode->key.~K();
+
+			newNode->left = nullptr;
+			newNode->right = nullptr;
+		}
+
+		for (u32 i = 0; i < pool; ++i) {
+			TNode* oldNode = nodes + i;
+			TNode* newNode = newNodes + i;
+
+			if (oldNode->left) {
+				size_t lid = oldNode->left - nodes;
+				newNode->left = newNodes + lid;
 			}
-			if (Nold->right)
-			{
-				size_t Rid = Nold->right - nodes;
-				Nnew->right = newNodes + Rid;
+			if (oldNode->right) {
+				size_t rid = oldNode->right - nodes;
+				newNode->right = newNodes + rid;
 			}
 		}
+
 		if (nodes)
 			allocator::dealloc(nodes);
 
@@ -66,19 +73,21 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 
 	IC TNode* Alloc(const K& key)
 	{
-		if (pool == limit)
-			Realloc();
+		if (pool == limit) Realloc();
+
 		TNode* node = nodes + pool;
-		node->key = key;
-		node->right = node->left = 0;
-		pool++;
+		new (&node->key) K(key);
+		new (&node->val) T();
+		node->left = node->right = nullptr;
+		++pool;
 		return node;
 	}
+
 	IC TNode* CreateChild(TNode*& parent, const K& key)
 	{
-		size_t PID = size_t(parent - nodes);
+		size_t parentIdx = parent - nodes;
 		TNode* N = Alloc(key);
-		parent = nodes + PID;
+		parent = nodes + parentIdx;
 		return N;
 	}
 
@@ -138,59 +147,64 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 		limit = 0;
 		nodes = 0;
 	}
+	FixedMAP(FixedMAP&& other) noexcept : nodes(other.nodes), pool(other.pool), limit(other.limit)
+	{
+		other.nodes = nullptr;
+		other.pool = 0;
+		other.limit = 0;
+	}
+	FixedMAP& operator=(FixedMAP&& other) noexcept
+	{
+		if (this != &other)
+		{
+			destroy();
+			nodes = other.nodes;
+			pool = other.pool;
+			limit = other.limit;
+			other.nodes = nullptr;
+			other.pool = 0;
+			other.limit = 0;
+		}
+		return *this;
+	}
 	~FixedMAP()
 	{
 		destroy();
 	}
 	void destroy()
 	{
-		if (nodes)
-		{
-			for (TNode* cur = begin(); cur != last(); cur++)
-				cur->~TNode();
+		if (nodes) {
+			clear();
 			allocator::dealloc(nodes);
+			nodes = nullptr;
+			pool = 0;
+			limit = 0;
 		}
 	}
 	IC TNode* insert(const K& k)
 	{
-		if (pool)
-		{
+		if (pool) {
 			TNode* node = nodes;
-
 		once_more:
-			if (k < node->key)
-			{
-				if (node->left)
-				{
-					node = node->left;
-					goto once_more;
-				}
-				else
-				{
+			if (k < node->key) {
+				if (node->left) { node = node->left; goto once_more; }
+				else {
 					TNode* N = CreateChild(node, k);
 					node->left = N;
 					return N;
 				}
 			}
-			else if (k > node->key)
-			{
-				if (node->right)
-				{
-					node = node->right;
-					goto once_more;
-				}
-				else
-				{
+			else if (node->key < k) {
+				if (node->right) { node = node->right; goto once_more; }
+				else {
 					TNode* N = CreateChild(node, k);
 					node->right = N;
 					return N;
 				}
 			}
-			else
-				return node;
+			else return node;
 		}
-		else
-		{
+		else {
 			return Alloc(k);
 		}
 	}
@@ -261,6 +275,11 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 	}
 	IC void clear()
 	{
+		TNode* it = begin();
+		for (u32 i = 0; i < pool; ++i, ++it) {
+			it->val.~T();
+			it->key.~K();
+		}
 		pool = 0;
 	}
 	IC TNode* begin()
@@ -274,7 +293,7 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 	IC TNode* last()
 	{
 		return nodes + limit;
-	} // for setup only
+	}
 	IC u32 size()
 	{
 		return pool;
@@ -330,16 +349,16 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 	IC void getANY_P(xr_vector<TNode*, typename allocator::template helper<TNode*>::result>& D)
 	{
 		D.resize(size());
-		TNode** _it = &*D.begin();
-		TNode* _end = end();
+		TNode** _it = D.data();
+		TNode* _end = nodes + pool;
 		for (TNode* cur = begin(); cur != _end; cur++, _it++)
 			*_it = cur;
 	}
 	IC void getANY_P(xr_vector<void*, typename allocator::template helper<void*>::result>& D)
 	{
 		D.resize(size());
-		void** _it = &*D.begin();
-		TNode* _end = end();
+		TNode** _it = D.data();
+		TNode* _end = nodes + pool;
 		for (TNode* cur = begin(); cur != _end; cur++, _it++)
 			*_it = cur;
 	}
@@ -347,6 +366,23 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 	{
 		for (int i = 0; i < limit; i++)
 			CB(nodes + i);
+	}
+	IC TNode* find(const K& k)
+	{
+		if (pool == 0)
+			return nullptr;
+
+		TNode* node = nodes;
+		while (node)
+		{
+			if (k < node->key)
+				node = node->left;
+			else if (node->key < k)
+				node = node->right;
+			else
+				return node;
+		}
+		return nullptr;
 	}
 };
 #endif

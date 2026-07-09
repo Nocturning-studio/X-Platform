@@ -12,8 +12,7 @@ class ENGINE_API ISheduled
 	} shedule;
 
 #ifdef DEBUG
-	u32 dbg_startframe;
-	u32 dbg_update_shedule;
+	u32 dbg_update_frame = 0;
 #endif
 
 	ISheduled();

@@ -94,6 +94,19 @@ void CSheduler::internal_Registration()
 void CSheduler::internal_Register(ISheduled* O, BOOL RT)
 {
 	VERIFY(!O->shedule.b_locked);
+
+	// Гарантируем, что объект находится только в одной очереди
+	if (RT)
+	{
+		// Удаляем из обычной очереди, если он там был
+		internal_Unregister(O, FALSE, false);
+	}
+	else
+	{
+		// Удаляем из RT-очереди, если он там был
+		internal_Unregister(O, TRUE, false);
+	}
+
 	if (RT)
 	{
 		// Fill item structure
@@ -103,7 +116,6 @@ void CSheduler::internal_Register(ISheduled* O, BOOL RT)
 		TNext.Object = O;
 		TNext.scheduled_name = O->shedule_Name();
 		O->shedule.b_RT = TRUE;
-
 		ItemsRT.push_back(TNext);
 	}
 	else
@@ -115,8 +127,6 @@ void CSheduler::internal_Register(ISheduled* O, BOOL RT)
 		TNext.Object = O;
 		TNext.scheduled_name = O->shedule_Name();
 		O->shedule.b_RT = FALSE;
-
-		// Insert into priority Queue
 		Push(TNext);
 	}
 }
@@ -359,7 +369,6 @@ void CSheduler::ProcessStep()
 		{
 #endif // DEBUG
 #ifdef DEBUG
-			T.Object->dbg_startframe = Engine.TimeManager.GetFrameCount();
 			eTimer.Start();
 			LPCSTR _obj_name = T.Object->shedule_Name().c_str();
 #endif // DEBUG

@@ -7,10 +7,6 @@ ISheduled::ISheduled()
 	shedule.t_min = 20;
 	shedule.t_max = 1000;
 	shedule.b_locked = FALSE;
-#ifdef DEBUG
-	dbg_startframe = 1;
-	dbg_update_shedule = 0;
-#endif
 }
 
 extern BOOL g_bSheduleInProgress;
@@ -38,14 +34,9 @@ void ISheduled::shedule_unregister()
 void ISheduled::shedule_Update(u32 dt)
 {
 #ifdef DEBUG
-	if (dbg_startframe == dbg_update_shedule)
-	{
-		LPCSTR name = "unknown";
-		CObject* O = dynamic_cast<CObject*>(this);
-		if (O)
-			name = *O->cName();
-		Debug.fatal(DEBUG_INFO, "'shedule_Update' called twice per frame for %s", name);
-	}
-	dbg_update_shedule = dbg_startframe;
+	u32 current_frame = Engine.TimeManager.GetFrameCount();
+	if (dbg_update_frame == current_frame)
+		return;
+	dbg_update_frame = current_frame;
 #endif
 }

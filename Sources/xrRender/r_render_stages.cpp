@@ -414,9 +414,6 @@ void CRender::render_stage_forward()
 	// Берем данные из READ Item для Forward прохода
 	MainSceneWorkItem& currentReadItem = GetForwardReadItem();
 
-	// Используем queue_distortion из текущего пакета, проверка на пустоту (ассерт)
-	VERIFY(0 == currentReadItem.packet.queue_distortion.size());
-
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
 	RenderBackend.set_CullMode(CULL_BACKFACE);

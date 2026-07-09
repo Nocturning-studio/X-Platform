@@ -2,6 +2,8 @@
 #define xrCoreH
 #pragma once
 
+#define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
+
 #if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
 // "debug" or "mixed"
 #if !defined(_CPPUNWIND)

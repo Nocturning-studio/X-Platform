@@ -183,11 +183,11 @@ class rq_results
 	}
 	IC rq_result* r_begin()
 	{
-		return &*results.begin();
+		return results.data();
 	}
 	IC rq_result* r_end()
 	{
-		return &*results.end();
+		return results.data() + results.size();
 	}
 	IC void r_clear()
 	{

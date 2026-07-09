@@ -26,6 +26,9 @@ void CObject::cNameSect_set(shared_str N)
 #include "SkeletonCustom.h"
 void CObject::cNameVisual_set(shared_str N)
 {
+	if (getDestroy())
+		return;
+
 	// check if equal
 	if (*N && *NameVisual)
 		if (N == NameVisual)
@@ -125,6 +128,7 @@ const Fbox& CObject::BoundingBox() const
 CObject::CObject() : ISpatial(g_SpatialSpace)
 {
 	// Transform
+	renderable.transform.identity();
 	Props.storage = 0;
 
 	Parent = NULL;
@@ -134,7 +138,6 @@ CObject::CObject() : ISpatial(g_SpatialSpace)
 	NameVisual = NULL;
 
 #ifdef DEBUG
-	dbg_update_shedule = u32(-1) / 2;
 	dbg_update_cl = u32(-1) / 2;
 #endif
 }

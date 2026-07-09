@@ -91,7 +91,6 @@ template <class T, class U> inline bool operator!=(const xalloc<T>&, const xallo
 	return false;
 }
 
-// Вспомогательная структура (используется где-то ещё)
 struct xr_allocator
 {
 	template <typename T> struct helper
@@ -110,7 +109,6 @@ struct xr_allocator
 	}
 };
 
-// Расширение пространства имён std для совместимости со старым кодом
 namespace std
 {
 template <class Tp1, class Tp2> inline xalloc<Tp2>& __stl_alloc_rebind(xalloc<Tp1>& a, const Tp2*)
@@ -386,7 +384,6 @@ class xr_multimap : public std::multimap<K, V, Pred, Alloc>
 	}
 };
 
-// Вспомогательная функция mk_pair
 template <class Ty1, class Ty2> inline std::pair<Ty1, Ty2> mk_pair(Ty1 val1, Ty2 val2)
 {
 	return std::pair<Ty1, Ty2>(val1, val2);
@@ -410,7 +407,6 @@ struct pred_stri
 };
 
 // Макросы для удобного объявления типов контейнеров
-// (сохранены для обратной совместимости)
 #define DEF_VECTOR(N, T)                                                                                               \
 	typedef xr_vector<T> N;                                                                                            \
 	typedef N::iterator N##_it;
@@ -457,7 +453,7 @@ struct pred_stri
 #include "FixedVector.h"
 #include "buffer_vector.h"
 
-// Стандартные определения типов (оставлены как в оригинале)
+// Стандартные определения типов
 DEFINE_VECTOR(bool, boolVec, boolIt);
 DEFINE_VECTOR(BOOL, BOOLVec, BOOLIt);
 DEFINE_VECTOR(BOOL*, LPBOOLVec, LPBOOLIt);

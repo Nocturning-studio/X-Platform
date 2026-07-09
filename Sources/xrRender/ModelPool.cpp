@@ -340,14 +340,6 @@ void CModelPool::Delete(IRender_Visual*& V, BOOL bDiscard)
 	if (NULL == V)
 		return;
 
-	// ƒл€ эффектов частиц и групп частиц удал€ем немедленно
-	if (V->Type == MT_PARTICLE_EFFECT || V->Type == MT_PARTICLE_GROUP)
-	{
-		DeleteInternal(V, bDiscard);
-		V = NULL;
-		return;
-	}
-
 	// ƒл€ всех остальных типов Ц стандартное поведение
 	if (g_bRendering)
 	{

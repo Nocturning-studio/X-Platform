@@ -58,8 +58,15 @@ class NET_Event
 	}
 	void implication(NET_Packet& P) const
 	{
-		CopyMemory(P.B.data, &*data.begin(), (u32)data.size());
-		P.B.count = (u32)data.size();
+		if (!data.empty())
+		{
+			CopyMemory(P.B.data, &data[0], (u32)data.size());
+			P.B.count = (u32)data.size();
+		}
+		else
+		{
+			P.B.count = 0;
+		}
 		P.r_pos = 0;
 	}
 };

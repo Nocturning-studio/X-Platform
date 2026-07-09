@@ -117,14 +117,14 @@ void CAttachmentOwner::detach(CInventoryItem* inventory_item)
 	{
 		if ((*I)->item().object().ID() == inventory_item->object().ID())
 		{
+			CAttachableItem* item = *I;
 			m_attached_objects.erase(I);
-			(*I)->afterDetach();
+			item->afterDetach();
 			if (m_attached_objects.empty())
 			{
 				CGameObject* game_object = smart_cast<CGameObject*>(this);
 				VERIFY(game_object && game_object->Visual());
 				game_object->remove_visual_callback(AttachmentCallback);
-
 				inventory_item->object().setVisible(false);
 			}
 			break;

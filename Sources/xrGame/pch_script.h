@@ -9,6 +9,8 @@
 #ifndef PCH_SCRIPT_H
 #define PCH_SCRIPT_H
 
+#define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
+
 #include "stdafx.h"
 
 // #pragma warning(disable:4244)

@@ -180,11 +180,11 @@ class XRCDB_API COLLIDER
 
 	ICF RESULT* r_begin()
 	{
-		return &*rd.begin();
+		return rd.data();
 	};
 	ICF RESULT* r_end()
 	{
-		return &*rd.end();
+		return rd.data() + rd.size();
 	};
 	RESULT& r_add();
 	void r_free();

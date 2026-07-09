@@ -121,35 +121,36 @@ extern "C" void dMessage (int num, const char *msg, ...)
 #include "windows.h"
 
 //#ifdef _DEBUG_
-void _cdecl dError (int num, const char *msg, ...)
+void _cdecl dError(int num, const char* msg, ...)
 {
-  va_list ap;
-  va_start (ap,msg);
-  if (error_function) error_function (num,msg,ap);
-  else {
-    char s[1000],title[100];
-    _snprintf (title,sizeof(title),"ODE Error %d",num);
-    _vsnprintf (s,sizeof(s),msg,ap);
-    s[sizeof(s)-1] = 0;
-    MessageBox(0,s,title,MB_OK | MB_ICONWARNING);
-  }
-  exit (1);
+    va_list ap;
+    va_start(ap, msg);
+    if (error_function)
+        error_function(num, msg, ap);
+    else {
+        char s[1000], title[100];
+        snprintf(title, sizeof(title), "ODE Error %d", num);
+        vsnprintf(s, sizeof(s), msg, ap);
+        MessageBox(0, s, title, MB_OK | MB_ICONWARNING);
+    }
+    va_end(ap);          // добавлен va_end
+    exit(1);
 }
 
-
-void _cdecl dDebug (int num, const char *msg, ...)
+void _cdecl dDebug(int num, const char* msg, ...)
 {
-  va_list ap;
-  va_start (ap,msg);
-  if (debug_function) debug_function (num,msg,ap);
-  else {
-    char s[1000],title[100];
-    _snprintf	(title,sizeof(title),"ODE INTERNAL ERROR %d",num);
-    _vsnprintf	(s,sizeof(s),msg,ap);
-    s[sizeof(s)-1] = 0;
-    MessageBox(0,s,title,MB_OK | MB_ICONSTOP);
-  }
-  abort();
+    va_list ap;
+    va_start(ap, msg);
+    if (debug_function)
+        debug_function(num, msg, ap);
+    else {
+        char s[1000], title[100];
+        snprintf(title, sizeof(title), "ODE INTERNAL ERROR %d", num);
+        vsnprintf(s, sizeof(s), msg, ap);
+        MessageBox(0, s, title, MB_OK | MB_ICONSTOP);
+    }
+    va_end(ap);          // добавлен va_end
+    abort();
 }
 
 void _cdecl dMessage (int num, const char *msg, ...)

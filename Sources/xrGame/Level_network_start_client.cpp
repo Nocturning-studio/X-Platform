@@ -97,9 +97,9 @@ bool CLevel::net_start_client4()
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled
-		Engine.ThreadManager.LegacyFrameMT.Add(g_pNetProcessor);
+		Engine.ThreadManager.LegacyFrameMT.Remove(g_pNetProcessor);
 		Engine.Events.Frame.Remove(g_pNetProcessor);
-		Engine.ThreadManager.LegacyFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH + 2);
+		Engine.ThreadManager.LegacyFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH);
 
 		if (!psNET_direct_connect)
 		{

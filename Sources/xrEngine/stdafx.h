@@ -4,6 +4,7 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
+#define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
 
 #ifdef _EDITOR
 #include "..\editors\ECore\stdafx.h"
