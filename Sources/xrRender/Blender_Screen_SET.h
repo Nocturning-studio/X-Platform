@@ -132,7 +132,7 @@ class CBlender_Screen_SET : public IBlender
 
 			VERIFY(C.L_textures.size() > 0);
 			C.set_Sampler_linear("s_base", C.L_textures[0].c_str());
-			u32 iSmp = C.i_Sampler("s_base");
+			u32 iSmp = C.i_Sampler("s_base"); // Получаем stage текстуры
 			if (oClamp.value)
 				C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 		}

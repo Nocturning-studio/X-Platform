@@ -4,7 +4,7 @@
 
 class R_tree
 {
-  public:
+public:
 	R_constant* c_m_transform_v;
 	R_constant* c_m_transform;
 	R_constant* c_consts;
@@ -12,7 +12,7 @@ class R_tree
 	R_constant* c_c_bias;
 	R_constant* c_c_sun;
 
-  public:
+public:
 	R_tree();
 	void unmap();
 

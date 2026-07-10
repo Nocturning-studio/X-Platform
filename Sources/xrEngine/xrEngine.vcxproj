@@ -1795,13 +1795,13 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="R_Backend.h" />
+    <ClInclude Include="R_Backend_ConstantManager.h" />
     <ClInclude Include="R_Backend_RenderTarget.h" />
     <ClInclude Include="R_Backend_ResourceBinder.h" />
     <ClInclude Include="R_Backend_StateCache.h" />
-    <ClInclude Include="R_Backend_tree.h" />
     <ClInclude Include="R_Backend_transform.h" />
+    <ClInclude Include="R_Backend_tree.h" />
     <ClInclude Include="r_constants.h" />
-    <ClInclude Include="r_constants_cache.h" />
     <ClInclude Include="R_Backend_Data_Streams.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCompile.h" />
@@ -1830,6 +1830,7 @@
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="xrBind_PSGP.h" />
+    <ClInclude Include="xr_engine_common.h" />
     <ClInclude Include="xrHemisphere.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrLevel.h" />
@@ -2036,11 +2037,11 @@
     <ClCompile Include="ResourceManager_Resources.cpp" />
     <ClCompile Include="ResourceManager_Scripting.cpp" />
     <ClCompile Include="R_Backend.cpp" />
+    <ClCompile Include="R_Backend_ConstantManager.cpp" />
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_RenderTarget.cpp" />
     <ClCompile Include="R_Backend_ResourceBinder.cpp" />
     <ClCompile Include="R_Backend_StateCache.cpp" />
-    <ClCompile Include="R_Backend_tree.cpp" />
     <ClCompile Include="R_Backend_transform.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
@@ -2051,8 +2052,8 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
+    <ClCompile Include="R_Backend_tree.cpp" />
     <ClCompile Include="r_constants.cpp" />
-    <ClCompile Include="r_constants_cache.cpp" />
     <ClCompile Include="R_Backend_Data_Streams.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderMacros.cpp" />

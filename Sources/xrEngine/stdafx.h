@@ -21,13 +21,7 @@
 #include <DPlay\dplay8.h>
 #pragma warning(default : 4995)
 
-#ifdef ENGINE_BUILD
-#define DLL_API __declspec(dllimport)
-#define ENGINE_API __declspec(dllexport)
-#else
-#define DLL_API __declspec(dllexport)
-#define ENGINE_API __declspec(dllimport)
-#endif
+#include "xr_engine_common.h"
 
 // Our headers
 #include "Engine.h"

@@ -1,9 +1,10 @@
 #pragma once
 
+#include "xr_engine_common.h"
 #include "R_Backend_StateCache.h"
 #include "R_Backend_ResourceBinder.h"
+#include "R_Backend_ConstantManager.h"
 #include "R_Backend_Data_Streams.h"
-#include "r_constants_cache.h"
 #include "r_backend_transform.h"
 #include "r_backend_tree.h"
 #include "fvf.h"
@@ -67,13 +68,11 @@ public:
 
     ref_geom m_viewport;
 
-    // New state cache and resource binder
+    CConstantManager m_constantMgr;
     CBackendStateCache m_stateCache;
     CBackendResourceBinder m_resBinder;
 
 private:
-    ALIGN(16) R_constants constants; // will be moved to CConstantManager later
-
     void Invalidate();
 
 public:
@@ -127,8 +126,6 @@ public:
     {
         return m_resBinder.GetActiveTexture(stage);
     }
-    IC R_constant_array& get_ConstantCache_Vertex() { return constants.a_vertex; }
-    IC R_constant_array& get_ConstantCache_Pixel() { return constants.a_pixel; }
 
     // Transform API (implementations remain in R_Backend_Runtime.h or .cpp)
     IC void set_transform_world(const fmat4x4& M);
@@ -153,8 +150,7 @@ public:
     {
         m_stateCache.SetStencil(GetDevice(), _enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
     }
-    IC void set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN |
-        D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA)
+    IC void set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA)
     {
         m_stateCache.SetColorWriteEnable(GetDevice(), _mask);
     }
@@ -254,12 +250,12 @@ public:
         return ctable ? ctable->get(n) : 0;
     }
 
-    ICF void set_Constant(R_constant* Const, const fmat4x4& A) { if (Const) constants.set(Const, A); }
-    ICF void set_Constant(R_constant* Const, const fvec4& A) { if (Const) constants.set(Const, A); }
-    ICF void set_Constant(R_constant* Const, float x, float y = NULL, float z = NULL, float w = NULL) { if (Const) constants.set(Const, x, y, z, w); }
-    ICF void set_Array_Constant(R_constant* Const, u32 e, const fmat4x4& A) { if (Const) constants.seta(Const, e, A); }
-    ICF void set_Array_Constant(R_constant* Const, u32 e, const fvec4& A) { if (Const) constants.seta(Const, e, A); }
-    ICF void set_Array_Constant(R_constant* Const, u32 e, float x, float y, float z, float w) { if (Const) constants.seta(Const, e, x, y, z, w); }
+    ICF void CRenderBackend::set_Constant(R_constant* Const, const fmat4x4& A) { if (Const) m_constantMgr.SetConstant(Const, A); }
+    ICF void CRenderBackend::set_Constant(R_constant* Const, const fvec4& A) { if (Const) m_constantMgr.SetConstant(Const, A); }
+    ICF void CRenderBackend::set_Constant(R_constant* Const, float x, float y = 0.0f, float z = 0.0f, float w = 0.0f) { if (Const) m_constantMgr.SetConstant(Const, x, y, z, w); }
+    ICF void CRenderBackend::set_Array_Constant(R_constant* Const, u32 e, const fmat4x4& A) { if (Const) m_constantMgr.SetArrayConstant(Const, e, A); }
+    ICF void CRenderBackend::set_Array_Constant(R_constant* Const, u32 e, const fvec4& A) { if (Const) m_constantMgr.SetArrayConstant(Const, e, A); }
+    ICF void CRenderBackend::set_Array_Constant(R_constant* Const, u32 e, float x, float y, float z, float w) { if (Const) m_constantMgr.SetArrayConstant(Const, e, x, y, z, w); }
 
     // Slow lookups via ctable
     ICF void set_Constant(LPCSTR n, const fmat4x4& A) { set_Constant(get_Constant(n)._get(), A); }

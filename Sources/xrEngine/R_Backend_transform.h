@@ -1,6 +1,6 @@
-#ifndef r_backend_transformH
-#define r_backend_transformH
 #pragma once
+
+#include <xrMath/xrMath.h>
 
 class ENGINE_API R_transforms
 {
@@ -53,5 +53,3 @@ class ENGINE_API R_transforms
   private:
 	void apply_InvWorld();
 };
-
-#endif

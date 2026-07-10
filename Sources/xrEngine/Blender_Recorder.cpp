@@ -269,7 +269,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 	if (!C)
 		return u32(-1);
 	R_ASSERT(C->type == RC_sampler);
-	u32 stage = C->samp.index;
+	u32 stage = C->samp.offset;
 
 	return stage;
 }

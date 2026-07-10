@@ -385,7 +385,7 @@ void CRenderBackend::OnDeviceCreate()
     Vertex.Create();
     Index.Create();
     Invalidate();
-    constants.reset_dirty();
+    m_constantMgr.ResetDirty();
     m_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
 }
 
@@ -393,20 +393,20 @@ void CRenderBackend::OnDeviceDestroy()
 {
     Index.Destroy();
     Vertex.Destroy();
-    constants.reset_dirty();
+    m_constantMgr.ResetDirty();
     _RELEASE(QuadIB);
 }
 
 void CRenderBackend::reset_begin()
 {
-    constants.force_dirty();
+    m_constantMgr.ForceDirty();
     m_stateCache.Invalidate(*this);
     m_resBinder.Invalidate(*this);
 }
 
 void CRenderBackend::reset_end()
 {
-    constants.reset_dirty();
+    m_constantMgr.ResetDirty();
 }
 
 void CRenderBackend::DeleteResources()

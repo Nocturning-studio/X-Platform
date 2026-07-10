@@ -6,6 +6,7 @@
 #include "R_Backend_ResourceBinder.h"
 #include "sh_texture.h"
 #include "R_Backend_RenderTarget.h"
+#include "R_Backend_transform.h"
 
 // ------------------------------------------------------------
 // Transform helpers
@@ -61,7 +62,7 @@ ICF void CRenderBackend::Apply(u32 countV, u32 PC)
     stat.calls++;
     stat.verts += countV;
     stat.polys += PC;
-    constants.flush();               // will be delegated later to CConstantManager
+    m_constantMgr.Flush();
 }
 
 ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV,
@@ -76,7 +77,7 @@ ICF void CRenderBackend::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 
     stat.calls++;
     stat.verts += 3 * PC;
     stat.polys += PC;
-    constants.flush();
+    m_constantMgr.Flush();
     CHK_DX(RenderBackend.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
 }
 

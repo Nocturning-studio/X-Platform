@@ -6,258 +6,271 @@
 #pragma warning(default : 4995)
 
 #include "ResourceManager.h"
-
-#include "xrPool.h"
 #include "r_constants.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
+bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination)
+{
+    D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)bytecode;
+    if (!desc) return false;
 
-// pool
-//.static	poolSS<R_constant,512>			g_constant_allocator;
+    D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)(LPBYTE(desc) + desc->ConstantInfo);
+    LPBYTE ptr = LPBYTE(desc);
+
+    for (u32 i = 0; i < desc->Constants; i++, it++)
+    {
+        LPCSTR name = LPCSTR(ptr + it->Name);
+
+        // ќпредел€ем базовый тип
+        u16 type = RC_float;
+        if (D3DXRS_BOOL == it->RegisterSet) type = RC_bool;
+        if (D3DXRS_INT4 == it->RegisterSet) type = RC_int;
+
+        u16 r_index = it->RegisterIndex;
+        u16 r_class = u16(-1);
+        bool bSkip = false;
+
+        D3DXSHADER_TYPEINFO* T = (D3DXSHADER_TYPEINFO*)(ptr + it->TypeInfo);
+        switch (T->Class)
+        {
+        case D3DXPC_SCALAR:
+            r_class = RC_1x1;
+            break;
+        case D3DXPC_VECTOR:
+            r_class = RC_1x4;
+            break;
+        case D3DXPC_MATRIX_ROWS:
+            switch (T->Columns)
+            {
+            case 4:
+                switch (T->Rows)
+                {
+                case 3:
+                    if (it->RegisterCount == 2) r_class = RC_2x4;
+                    else if (it->RegisterCount == 3) r_class = RC_3x4;
+                    else FATAL("MATRIX_ROWS: unsupported RegisterCount");
+                    break;
+                case 4:
+                    r_class = RC_4x4;
+                    VERIFY(it->RegisterCount == 4);
+                    break;
+                default: FATAL("MATRIX_ROWS: unsupported Rows");
+                }
+                break;
+            default: FATAL("MATRIX_ROWS: unsupported Columns");
+            }
+            break;
+        case D3DXPC_MATRIX_COLUMNS:
+            FATAL("MATRIX_COLUMNS unsupported");
+            break;
+        case D3DXPC_STRUCT:
+            FATAL("D3DXPC_STRUCT unsupported");
+            break;
+        case D3DXPC_OBJECT:
+            if (T->Type >= D3DXPT_SAMPLER && T->Type <= D3DXPT_SAMPLERCUBE)
+            {
+                // Ёто сэмплер Ц обрабатываем отдельно
+                ParamDesc sampParam;
+                sampParam.name = name;
+                sampParam.type = RC_sampler;
+                sampParam.destination = RC_dest_sampler;
+                sampParam.samp.offset = r_index + ((destination & 1) ? 0 : D3DVERTEXTEXTURESAMPLER0);
+                sampParam.samp.size_class = RC_sampler;
+                sampParam.handler = nullptr;
+
+                // ѕровер€ем, нет ли уже такого
+                bool exists = false;
+                for (auto& p : m_params)
+                {
+                    if (p.name == name)
+                    {
+                        VERIFY(p.destination == RC_dest_sampler);
+                        VERIFY(p.type == RC_sampler);
+                        VERIFY(p.samp.offset == sampParam.samp.offset);
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists)
+                    m_params.push_back(sampParam);
+            }
+            else
+            {
+                FATAL("D3DXPC_OBJECT - not a sampler");
+            }
+            bSkip = true;
+            break;
+        default:
+            bSkip = true;
+            break;
+        }
+
+        if (bSkip) continue;
+
+        // ќбычна€ константа
+        ParamDesc param;
+        param.name = name;
+        param.type = type;
+        param.destination = destination;
+        param.handler = nullptr;
+
+        R_constant_load& load = (destination & 1) ? param.ps : param.vs;
+        load.offset = r_index;
+        load.size_class = r_class;
+
+        // »щем, есть ли уже така€ (могла быть объ€влена в другом шейдере)
+        bool exists = false;
+        for (auto& p : m_params)
+        {
+            if (p.name == name)
+            {
+                p.destination |= destination;
+                VERIFY(p.type == type);
+                R_constant_load& existingLoad = (destination & 1) ? p.ps : p.vs;
+                existingLoad.offset = r_index;
+                existingLoad.size_class = r_class;
+                exists = true;
+                break;
+            }
+        }
+        if (!exists)
+            m_params.push_back(param);
+    }
+
+    // —ортируем по имени (дл€ детерминированности)
+    std::sort(m_params.begin(), m_params.end(), [](const ParamDesc& a, const ParamDesc& b) { return xr_strcmp(a.name.c_str(), b.name.c_str()) < 0; });
+
+    return true;
+}
+
+const CShaderConstantLayout::ParamDesc* CShaderConstantLayout::FindParam(const char* name) const
+{
+    auto it = std::lower_bound(m_params.begin(), m_params.end(), name, [](const ParamDesc& p, const char* s) { return xr_strcmp(p.name.c_str(), s) < 0; });
+    if (it != m_params.end() && xr_strcmp(it->name.c_str(), name) == 0)
+        return &(*it);
+    return nullptr;
+}
+
+const CShaderConstantLayout::ParamDesc* CShaderConstantLayout::FindParam(const shared_str& name) const
+{
+    for (auto& p : m_params)
+        if (p.name.equal(name)) return &p;
+    return nullptr;
+}
+
+void CShaderConstantLayout::Merge(const CShaderConstantLayout& other)
+{
+    for (const auto& src : other.m_params)
+    {
+        auto it = std::find_if(m_params.begin(), m_params.end(),
+            [&](const ParamDesc& p) { return p.name == src.name; });
+        if (it == m_params.end())
+        {
+            m_params.push_back(src);
+        }
+        else
+        {
+            it->destination |= src.destination;
+            VERIFY(it->type == src.type);
+            if (src.destination & RC_dest_pixel)  it->ps = src.ps;
+            if (src.destination & RC_dest_vertex) it->vs = src.vs;
+            if (src.destination & RC_dest_sampler) it->samp = src.samp;
+        }
+    }
+    std::sort(m_params.begin(), m_params.end(), [](const ParamDesc& a, const ParamDesc& b) { return xr_strcmp(a.name.c_str(), b.name.c_str()) < 0; });
+}
+
+void CShaderConstantLayout::Clear()
+{
+    m_params.clear();
+}
+
+bool CShaderConstantLayout::Equal(const CShaderConstantLayout& other) const
+{
+    if (m_params.size() != other.m_params.size()) return false;
+    for (size_t i = 0; i < m_params.size(); ++i)
+    {
+        const auto& a = m_params[i];
+        const auto& b = other.m_params[i];
+        if (a.name != b.name || a.type != b.type || a.destination != b.destination ||
+            !a.ps.equal(b.ps) || !a.vs.equal(b.vs) || !a.samp.equal(b.samp) || a.handler != b.handler)
+            return false;
+    }
+    return true;
+}
 
 R_constant_table::~R_constant_table()
 {
-	Engine.ResourceManager->_DeleteConstantTable(this);
-}
-
-void R_constant_table::fatal(LPCSTR S)
-{
-	FATAL(S);
-}
-
-// predicates
-IC bool p_search(ref_constant C, LPCSTR S)
-{
-	return xr_strcmp(*C->name, S) < 0;
-}
-IC bool p_sort(ref_constant C1, ref_constant C2)
-{
-	return xr_strcmp(C1->name, C2->name) < 0;
-}
-
-ref_constant R_constant_table::get(LPCSTR S)
-{
-	// assumption - sorted by name
-	c_table::iterator I = std::lower_bound(table.begin(), table.end(), S, p_search);
-	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))
-		return 0;
-	else
-		return *I;
-}
-ref_constant R_constant_table::get(shared_str& S)
-{
-	// linear search, but only ptr-compare
-	c_table::iterator I = table.begin();
-	c_table::iterator E = table.end();
-	for (; I != E; ++I)
-	{
-		ref_constant C = *I;
-		if (C->name.equal(S))
-			return C;
-	}
-	return 0;
-}
-BOOL R_constant_table::parse(void* _desc, u16 destination)
-{
-	D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)_desc;
-	D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)(LPBYTE(desc) + desc->ConstantInfo);
-	LPBYTE ptr = LPBYTE(desc);
-	for (u32 dwCount = desc->Constants; dwCount; dwCount--, it++)
-	{
-		// Name
-		LPCSTR name = LPCSTR(ptr + it->Name);
-
-		// Type
-		u16 type = RC_float;
-		if (D3DXRS_BOOL == it->RegisterSet)
-			type = RC_bool;
-		if (D3DXRS_INT4 == it->RegisterSet)
-			type = RC_int;
-
-		// Rindex,Rcount
-		u16 r_index = it->RegisterIndex;
-		u16 r_type = u16(-1);
-
-		// TypeInfo + class
-		D3DXSHADER_TYPEINFO* T = (D3DXSHADER_TYPEINFO*)(ptr + it->TypeInfo);
-		BOOL bSkip = FALSE;
-		switch (T->Class)
-		{
-		case D3DXPC_SCALAR:
-			r_type = RC_1x1;
-			break;
-		case D3DXPC_VECTOR:
-			r_type = RC_1x4;
-			break;
-		case D3DXPC_MATRIX_ROWS: {
-			switch (T->Columns)
-			{
-			case 4:
-				switch (T->Rows)
-				{
-				case 3:
-					switch (it->RegisterCount)
-					{
-					case 2:
-						r_type = RC_2x4;
-						break;
-					case 3:
-						r_type = RC_3x4;
-						break;
-					default:
-						fatal("MATRIX_ROWS: unsupported number of RegisterCount");
-						break;
-					}
-					break;
-				case 4:
-					r_type = RC_4x4;
-					VERIFY(4 == it->RegisterCount);
-					break;
-				default:
-					fatal("MATRIX_ROWS: unsupported number of Rows");
-					break;
-				}
-				break;
-			default:
-				fatal("MATRIX_ROWS: unsupported number of Columns");
-				break;
-			}
-		}
-		break;
-		case D3DXPC_MATRIX_COLUMNS:
-			fatal("Pclass MATRIX_COLUMNS unsupported");
-			break;
-		case D3DXPC_STRUCT:
-			fatal("Pclass D3DXPC_STRUCT unsupported");
-			break;
-		case D3DXPC_OBJECT: {
-			switch (T->Type)
-			{
-			case D3DXPT_SAMPLER:
-			case D3DXPT_SAMPLER1D:
-			case D3DXPT_SAMPLER2D:
-			case D3DXPT_SAMPLER3D:
-			case D3DXPT_SAMPLERCUBE: {
-				// ***Register sampler***
-				// We have determined all valuable info, search if constant already created
-				ref_constant C = get(name);
-				if (!C)
-				{
-					C = xr_new<R_constant>(); //.g_constant_allocator.create();
-					C->name = name;
-					C->destination = RC_dest_sampler;
-					C->type = RC_sampler;
-					R_constant_load& L = C->samp;
-					L.index = u16(r_index + ((destination & 1) ? 0 : D3DVERTEXTEXTURESAMPLER0));
-					L.cls = RC_sampler;
-					table.push_back(C);
-				}
-				else
-				{
-					R_ASSERT(C->destination == RC_dest_sampler);
-					R_ASSERT(C->type == RC_sampler);
-					R_constant_load& L = C->samp;
-					R_ASSERT(L.index == r_index);
-					R_ASSERT(L.cls == RC_sampler);
-				}
-			}
-			break;
-			default:
-				fatal("Pclass D3DXPC_OBJECT - object isn't of 'sampler' type");
-				break;
-			}
-		}
-			bSkip = TRUE;
-			break;
-		default:
-			bSkip = TRUE;
-			break;
-		}
-		if (bSkip)
-			continue;
-
-		// We have determined all valuable info, search if constant already created
-		ref_constant C = get(name);
-		if (!C)
-		{
-			C = xr_new<R_constant>(); //.g_constant_allocator.create();
-			C->name = name;
-			C->destination = destination;
-			C->type = type;
-			R_constant_load& L = (destination & 1) ? C->ps : C->vs;
-			L.index = r_index;
-			L.cls = r_type;
-			table.push_back(C);
-		}
-		else
-		{
-			C->destination |= destination;
-			VERIFY(C->type == type);
-			R_constant_load& L = (destination & 1) ? C->ps : C->vs;
-			L.index = r_index;
-			L.cls = r_type;
-		}
-	}
-	concurrency::parallel_sort(table.begin(), table.end(), p_sort);
-	return TRUE;
-}
-
-void R_constant_table::merge(R_constant_table* T)
-{
-	if (0 == T)
-		return;
-
-	// Real merge
-	for (u32 it = 0; it < T->table.size(); it++)
-	{
-		ref_constant src = T->table[it];
-		ref_constant C = get(*src->name);
-		if (!C)
-		{
-			C = xr_new<R_constant>(); //.g_constant_allocator.create();
-			C->name = src->name;
-			C->destination = src->destination;
-			C->type = src->type;
-			C->ps = src->ps;
-			C->vs = src->vs;
-			C->samp = src->samp;
-			table.push_back(C);
-		}
-		else
-		{
-			C->destination |= src->destination;
-			VERIFY(C->type == src->type);
-			R_constant_load& sL = (src->destination & 4) ? src->samp : ((src->destination & 1) ? src->ps : src->vs);
-			R_constant_load& dL = (src->destination & 4) ? C->samp : ((src->destination & 1) ? C->ps : C->vs);
-			dL.index = sL.index;
-			dL.cls = sL.cls;
-		}
-	}
-
-	// Sort
-	concurrency::parallel_sort(table.begin(), table.end(), p_sort);
+    Engine.ResourceManager->_DeleteConstantTable(this);
 }
 
 void R_constant_table::clear()
 {
-	//.
-	for (u32 it = 0; it < table.size(); it++)
-		table[it] = 0; //.g_constant_allocator.destroy(table[it]);
-	table.clear();
+    m_layout.Clear();
+    table.clear();
+}
+
+BOOL R_constant_table::parse(void* desc, u16 destination)
+{
+    if (!m_layout.LoadFromD3D9Bytecode(desc, destination))
+        return FALSE;
+
+    table.clear();
+    for (const auto& p : m_layout.GetParams())
+    {
+        ref_constant C = xr_new<R_constant>();
+        C->name = p.name;
+        C->type = p.type;
+        C->destination = p.destination;
+        C->ps = p.ps;
+        C->vs = p.vs;
+        C->samp = p.samp;
+        C->handler = p.handler;
+        table.push_back(C);
+    }
+
+    return TRUE;
+}
+
+void R_constant_table::merge(R_constant_table* T)
+{
+    if (!T) return;
+    m_layout.Merge(T->m_layout);
+
+    table.clear();
+    for (const auto& p : m_layout.GetParams())
+    {
+        ref_constant C = xr_new<R_constant>();
+        C->name = p.name;
+        C->type = p.type;
+        C->destination = p.destination;
+        C->ps = p.ps;
+        C->vs = p.vs;
+        C->samp = p.samp;
+        C->handler = p.handler;
+        table.push_back(C);
+    }
+}
+
+ref_constant R_constant_table::get(LPCSTR name)
+{
+    auto* p = m_layout.FindParam(name);
+    if (!p) return nullptr;
+
+    for (auto& C : table)
+        if (C->name == name) return C;
+    return nullptr;
+}
+
+ref_constant R_constant_table::get(shared_str& name)
+{
+    auto* p = m_layout.FindParam(name);
+    if (!p) return nullptr;
+    for (auto& C : table)
+        if (C->name.equal(name)) return C;
+    return nullptr;
 }
 
 BOOL R_constant_table::equal(R_constant_table& C)
 {
-	if (table.size() != C.table.size())
-		return FALSE;
-	u32 size = table.size();
-	for (u32 it = 0; it < size; it++)
-	{
-		if (!table[it]->equal(&*C.table[it]))
-			return FALSE;
-	}
-	return TRUE;
+    return m_layout.Equal(C.m_layout);
 }
