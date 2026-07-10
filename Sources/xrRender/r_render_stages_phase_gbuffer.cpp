@@ -7,15 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::clear_gbuffer()
 {
-	////OPTICK_EVENT("CRenderTarget::clear_gbuffer");
-
-	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1]);
-	else
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1], 
-												RenderTarget->rt_GBuffer[2]);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
+											RenderTarget->rt_GBuffer[1], 
+											RenderTarget->rt_GBuffer[2]);
 
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
 
@@ -26,13 +20,9 @@ void CRender::set_gbuffer()
 {
 	////OPTICK_EVENT("CRenderTarget::set_gbuffer");
 
-	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1]);
-	else
-		RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-												RenderTarget->rt_GBuffer[1], 
-												RenderTarget->rt_GBuffer[2]);
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
+											RenderTarget->rt_GBuffer[1], 
+											RenderTarget->rt_GBuffer[2]);
 
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
 

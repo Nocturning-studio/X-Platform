@@ -36,17 +36,9 @@ void CRenderTarget::create_textures()
 	R_CHK(tex_screenshot_gamesave->GetSurfaceLevel(0, &surf_screenshot_gamesave));
 
 	// G-Buffer
-	if (ps_r_shading_mode == SHADING_MODE_LEASHED)
-	{
-		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
-		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
-	}
-	else
-	{
-		rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
-		rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
-		rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
-	}
+	rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
+	rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
+	rt_GBuffer[2].create(r_RT_GBuffer_3, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
 	rt_Hi_z.create(r_RT_Hi_z, dwWidth, dwHeight, RHI_Format::R16_FLOAT, 9);
 

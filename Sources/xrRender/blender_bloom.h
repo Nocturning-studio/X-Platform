@@ -70,21 +70,13 @@ class CBlender_bloom : public IBlender
 			// Pass 3: Blades Filter
 
 			// Step 1
-			C.set_Define("FILTER_STEP", "1");
 			C.begin_Pass("screen_quad", sh_name, "main", "FilterBlades");
 			C.set_Sampler_gaussian("s_bloom_blades", r_RT_bloom_blades1);
 			C.end_Pass();
 
 			// Step 2
-			C.set_Define("FILTER_STEP", "2");
 			C.begin_Pass("screen_quad", sh_name, "main", "FilterBlades");
 			C.set_Sampler_gaussian("s_bloom_blades", r_RT_bloom_blades2);
-			C.end_Pass();
-
-			// Step 3
-			C.set_Define("FILTER_STEP", "3");
-			C.begin_Pass("screen_quad", sh_name, "main", "FilterBlades");
-			C.set_Sampler_gaussian("s_bloom_blades", r_RT_bloom_blades1);
 			C.end_Pass();
 			break;
 		case SE_PASS_APPLY_BLOOM:

@@ -156,8 +156,6 @@ CShaderMacros CRender::FetchShaderMacros()
 
 	macros.add(o.forceskinw, "SKIN_COLOR", "1");
 
-	macros.add(ps_r_shading_mode == SHADING_MODE_PBR, "ENABLE_PBR", "1");
-
 	return macros;
 }
 //////////////////////////////////////////////////////////////////////

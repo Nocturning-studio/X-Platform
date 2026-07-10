@@ -35,16 +35,19 @@ void CRender::RenderScene()
 
 	render_ambient_occlusion();
 
-	//if (ps_r_shading_mode == SHADING_MODE_PBR)
-		//render_bent_normals();
+	//render_bent_normals();
 
-	if ((ps_r_shading_mode == SHADING_MODE_PBR) && ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
+	if (ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
 	{
 		create_hi_z_mip_chain();
 
 		precombine_scene();
 
 		render_screen_space_reflections();
+	}
+	else
+	{
+		clear_reflections();
 	}
 
 	render_skybox();

@@ -316,7 +316,6 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 	// Add extension to texture and check for null
 	Engine.ResourceManager->fix_texture_name(AlbedoTexture);
 
-	bool DisablePBR = ps_r_shading_mode == SHADING_MODE_LEASHED;
 	bool UseAlbedoOnly = bUseDepthOnly;
 	bool bUseLightMap = false;
 
@@ -643,38 +642,35 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 		// Create lightmapped shader if need
 		C.set_Define(bUseLightMap, "USE_LIGHTMAP", "1");
 
-		// [НОВОЕ] Логика поиска ARMD и ARM
-		if (!DisablePBR)
+		// Логика поиска ARMD и ARM
+		// 1. Проверяем наличие ARMD (AO, Roughness, Metallic, Displacement)
+		// Сначала ищем путь в конфигураторе (armd_path)
+		if (bUseConfigurator)
 		{
-			// 1. Проверяем наличие ARMD (AO, Roughness, Metallic, Displacement)
-			// Сначала ищем путь в конфигураторе (armd_path)
+			bUseARMDMap = CheckAndApplyManualTexturePath("material_configuration", "armd_path", ARMDTexture,
+															MaterialConfiguration, AlbedoTexture);
+		}
+
+		// Если в конфигураторе нет, ищем по стандартному суффиксу _armd
+		if (!bUseARMDMap)
+		{
+			bUseARMDMap = ConcatAndFindTexture(ARMDTexture, AlbedoTexture, "_armd");
+		}
+
+		// 2. Если ARMD не найдена, ищем обычную ARM (AO, Roughness, Metallic)
+		if (!bUseARMDMap)
+		{
+			// Сначала ищем путь в конфигураторе (arm_path)
 			if (bUseConfigurator)
 			{
-				bUseARMDMap = CheckAndApplyManualTexturePath("material_configuration", "armd_path", ARMDTexture,
-															 MaterialConfiguration, AlbedoTexture);
+				bUseARMMap = CheckAndApplyManualTexturePath("material_configuration", "arm_path", ARMTexture,
+															MaterialConfiguration, AlbedoTexture);
 			}
 
-			// Если в конфигураторе нет, ищем по стандартному суффиксу _armd
-			if (!bUseARMDMap)
+			// Если в конфигураторе нет, ищем по стандартному суффиксу _arm
+			if (!bUseARMMap)
 			{
-				bUseARMDMap = ConcatAndFindTexture(ARMDTexture, AlbedoTexture, "_armd");
-			}
-
-			// 2. Если ARMD не найдена, ищем обычную ARM (AO, Roughness, Metallic)
-			if (!bUseARMDMap)
-			{
-				// Сначала ищем путь в конфигураторе (arm_path)
-				if (bUseConfigurator)
-				{
-					bUseARMMap = CheckAndApplyManualTexturePath("material_configuration", "arm_path", ARMTexture,
-																MaterialConfiguration, AlbedoTexture);
-				}
-
-				// Если в конфигураторе нет, ищем по стандартному суффиксу _arm
-				if (!bUseARMMap)
-				{
-					bUseARMMap = ConcatAndFindTexture(ARMTexture, AlbedoTexture, "_arm");
-				}
+				bUseARMMap = ConcatAndFindTexture(ARMTexture, AlbedoTexture, "_arm");
 			}
 		}
 
@@ -682,7 +678,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 		C.set_Define(bUseARMMap, "USE_ARM_MAP", "1", CBlender_Compile::ShaderScope::Pixel);
 
 		// Get Empty-Roughness-Metallic texture if needed
-		bUseERMMap = ConcatAndFindTexture(ERMTexture, AlbedoTexture, "_erm") && !DisablePBR;
+		bUseERMMap = ConcatAndFindTexture(ERMTexture, AlbedoTexture, "_erm");
 		C.set_Define(bUseERMMap, "USE_ERM_MAP", "1", CBlender_Compile::ShaderScope::Pixel);
 
 		// Custom Material Logic
@@ -734,142 +730,130 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 			DefineCustomChannel(C, alpha_type, "A");
 		}
 
-		if (!DisablePBR)
+		// Если используются ARMD или ARM, не ищем отдельные текстуры
+		if (!bUseARMDMap && !bUseARMMap && !bUseERMMap)
 		{
-			// [ИСПРАВЛЕНИЕ] Если используются ARMD или ARM, не ищем отдельные текстуры
-			if (!bUseARMDMap && !bUseARMMap && !bUseERMMap)
-			{
-				if (bUseConfigurator)
-				{
-					bUseBakedAO = CheckAndApplyManualTexturePath("material_configuration", "ao_path", BakedAOTexture,
-																 MaterialConfiguration, AlbedoTexture);
-
-					if (LineIsExist("material_configuration", "gloss_path", MaterialConfiguration))
-						bUseCustomGloss =
-							CheckAndApplyManualTexturePath("material_configuration", "gloss_path", CustomGlossTexture,
-														   MaterialConfiguration, AlbedoTexture);
-					else
-						bUseCustomRoughness = CheckAndApplyManualTexturePath("material_configuration", "roughness_path",
-																			 CustomRoughnessTexture,
-																			 MaterialConfiguration, AlbedoTexture);
-
-					bUseCustomMetallic =
-						CheckAndApplyManualTexturePath("material_configuration", "metallic_path", CustomMetallicTexture,
-													   MaterialConfiguration, AlbedoTexture);
-				}
-
-				if (!bUseBakedAO)
-					bUseBakedAO = ConcatAndFindTexture(BakedAOTexture, AlbedoTexture, "_ao");
-
-				if (!bUseCustomGloss)
-					bUseCustomGloss = ConcatAndFindTexture(CustomGlossTexture, AlbedoTexture, "_gloss");
-
-				if (!bUseCustomRoughness && !bUseCustomGloss)
-					bUseCustomRoughness = ConcatAndFindTexture(CustomRoughnessTexture, AlbedoTexture, "_roughness");
-
-				if (!bUseCustomMetallic)
-					bUseCustomMetallic = ConcatAndFindTexture(CustomMetallicTexture, AlbedoTexture, "_metallic");
-
-				C.set_Define(bUseBakedAO, "USE_BAKED_AO", "1", CBlender_Compile::ShaderScope::Pixel);
-				C.set_Define(bUseCustomRoughness, "USE_CUSTOM_ROUGHNESS", "1", CBlender_Compile::ShaderScope::Pixel);
-				C.set_Define(bUseCustomGloss, "USE_CUSTOM_GLOSS", "1", CBlender_Compile::ShaderScope::Pixel);
-				C.set_Define(bUseCustomMetallic, "USE_CUSTOM_METALLIC", "1", CBlender_Compile::ShaderScope::Pixel);
-			}
-
 			if (bUseConfigurator)
 			{
-				bUseCustomNormal = CheckAndApplyManualTexturePath(
-					"material_configuration", "normal_path", CustomNormalTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomSubsurfacePower =
-					CheckAndApplyManualTexturePath("material_configuration", "subsurface_power_path",
-												   CustomSubsurfacePowerTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomCavity = CheckAndApplyManualTexturePath(
-					"material_configuration", "cavity_path", CustomCavityTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomSpecularTint =
-					CheckAndApplyManualTexturePath("material_configuration", "specular_tint_path",
-												   CustomSpecularTintTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomSheenIntensity =
-					CheckAndApplyManualTexturePath("material_configuration", "sheen_intensity_path",
-												   CustomSheenIntensityTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomSheenRoughness =
-					CheckAndApplyManualTexturePath("material_configuration", "sheen_roughness_path",
-												   CustomSheenRoughnessTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomCoatIntensity =
-					CheckAndApplyManualTexturePath("material_configuration", "coat_intensity_path",
-												   CustomCoatIntensityTexture, MaterialConfiguration, AlbedoTexture);
-				bUseCustomCoatRoughness =
-					CheckAndApplyManualTexturePath("material_configuration", "coat_roughness_path",
-												   CustomCoatRoughnessTexture, MaterialConfiguration, AlbedoTexture);
+				bUseBakedAO = CheckAndApplyManualTexturePath("material_configuration", "ao_path", BakedAOTexture, MaterialConfiguration, AlbedoTexture);
+
+				if (LineIsExist("material_configuration", "gloss_path", MaterialConfiguration))
+					bUseCustomGloss = CheckAndApplyManualTexturePath("material_configuration", "gloss_path", CustomGlossTexture,
+														MaterialConfiguration, AlbedoTexture);
+				else
+					bUseCustomRoughness = CheckAndApplyManualTexturePath("material_configuration", "roughness_path",
+																			CustomRoughnessTexture,
+																			MaterialConfiguration, AlbedoTexture);
+
+				bUseCustomMetallic = CheckAndApplyManualTexturePath("material_configuration", "metallic_path", CustomMetallicTexture,
+													MaterialConfiguration, AlbedoTexture);
 			}
 
-			if (!bUseCustomNormal)
-				bUseCustomNormal = ConcatAndFindTexture(CustomNormalTexture, AlbedoTexture, "_normal");
+			if (!bUseBakedAO)
+				bUseBakedAO = ConcatAndFindTexture(BakedAOTexture, AlbedoTexture, "_ao");
 
-			// [НОВОЕ] Если обычной нормали нет, ищем упакованную
-			if (!bUseCustomNormal)
-			{
-				if (bUseConfigurator)
-				{
-					bUsePackedNormal =
-						CheckAndApplyManualTexturePath("material_configuration", "packed_normal_path",
-													   PackedNormalTexture, MaterialConfiguration, AlbedoTexture);
-				}
+			if (!bUseCustomGloss)
+				bUseCustomGloss = ConcatAndFindTexture(CustomGlossTexture, AlbedoTexture, "_gloss");
 
-				if (!bUsePackedNormal)
-				{
-					bUsePackedNormal = ConcatAndFindTexture(PackedNormalTexture, AlbedoTexture, "_packed_normal");
-				}
-			}
+			if (!bUseCustomRoughness && !bUseCustomGloss)
+				bUseCustomRoughness = ConcatAndFindTexture(CustomRoughnessTexture, AlbedoTexture, "_roughness");
 
-			C.set_Define(bUseCustomNormal, "USE_CUSTOM_NORMAL", "1", CBlender_Compile::ShaderScope::Pixel);
-			C.set_Define(bUsePackedNormal, "USE_PACKED_NORMAL", "1", CBlender_Compile::ShaderScope::Pixel);
+			if (!bUseCustomMetallic)
+				bUseCustomMetallic = ConcatAndFindTexture(CustomMetallicTexture, AlbedoTexture, "_metallic");
 
-			if (!bUseCustomSubsurfacePower)
-				bUseCustomSubsurfacePower =
-					ConcatAndFindTexture(CustomSubsurfacePowerTexture, AlbedoTexture, "_subsurface_power");
-
-			C.set_Define(bUseCustomSubsurfacePower, "USE_CUSTOM_SUBSURFACE_POWER", "1",
-						 CBlender_Compile::ShaderScope::Pixel);
-
-			if (!bUseCustomCavity)
-				bUseCustomCavity = ConcatAndFindTexture(CustomCavityTexture, AlbedoTexture, "_cavity");
-
-			C.set_Define(bUseCustomCavity, "USE_CUSTOM_CAVITY", "1", CBlender_Compile::ShaderScope::Pixel);
-
-			if (!bUseCustomSpecularTint)
-				bUseCustomSpecularTint =
-					ConcatAndFindTexture(CustomSpecularTintTexture, AlbedoTexture, "_specular_tint");
-
-			C.set_Define(bUseCustomSpecularTint, "USE_CUSTOM_SPECULAR_TINT", "1", CBlender_Compile::ShaderScope::Pixel);
-
-			if (!bUseCustomSheenIntensity)
-				bUseCustomSheenIntensity =
-					ConcatAndFindTexture(CustomSheenIntensityTexture, AlbedoTexture, "_sheen_intensity");
-
-			C.set_Define(bUseCustomSheenIntensity, "USE_CUSTOM_SHEEN_INTENSITY", "1",
-						 CBlender_Compile::ShaderScope::Pixel);
-
-			if (!bUseCustomSheenRoughness)
-				bUseCustomSheenRoughness =
-					ConcatAndFindTexture(CustomSheenRoughnessTexture, AlbedoTexture, "_sheen_roughness");
-
-			C.set_Define(bUseCustomSheenRoughness, "USE_CUSTOM_SHEEN_ROUGHNESS", "1",
-						 CBlender_Compile::ShaderScope::Pixel);
-
-			if (!bUseCustomCoatIntensity)
-				bUseCustomCoatIntensity =
-					ConcatAndFindTexture(CustomCoatIntensityTexture, AlbedoTexture, "_coat_intensity");
-
-			C.set_Define(bUseCustomCoatIntensity, "USE_CUSTOM_COAT_INTENSITY", "1",
-						 CBlender_Compile::ShaderScope::Pixel);
-
-			if (!bUseCustomCoatRoughness)
-				bUseCustomCoatRoughness =
-					ConcatAndFindTexture(CustomCoatRoughnessTexture, AlbedoTexture, "_coat_roughness");
-
-			C.set_Define(bUseCustomCoatRoughness, "USE_CUSTOM_COAT_ROUGHNESS", "1",
-						 CBlender_Compile::ShaderScope::Pixel);
+			C.set_Define(bUseBakedAO, "USE_BAKED_AO", "1", CBlender_Compile::ShaderScope::Pixel);
+			C.set_Define(bUseCustomRoughness, "USE_CUSTOM_ROUGHNESS", "1", CBlender_Compile::ShaderScope::Pixel);
+			C.set_Define(bUseCustomGloss, "USE_CUSTOM_GLOSS", "1", CBlender_Compile::ShaderScope::Pixel);
+			C.set_Define(bUseCustomMetallic, "USE_CUSTOM_METALLIC", "1", CBlender_Compile::ShaderScope::Pixel);
 		}
+
+		if (bUseConfigurator)
+		{
+			bUseCustomNormal = CheckAndApplyManualTexturePath(
+				"material_configuration", "normal_path", CustomNormalTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomSubsurfacePower = CheckAndApplyManualTexturePath("material_configuration", "subsurface_power_path",
+												CustomSubsurfacePowerTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomCavity = CheckAndApplyManualTexturePath(
+				"material_configuration", "cavity_path", CustomCavityTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomSpecularTint = CheckAndApplyManualTexturePath("material_configuration", "specular_tint_path",
+												CustomSpecularTintTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomSheenIntensity = CheckAndApplyManualTexturePath("material_configuration", "sheen_intensity_path",
+												CustomSheenIntensityTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomSheenRoughness = CheckAndApplyManualTexturePath("material_configuration", "sheen_roughness_path",
+												CustomSheenRoughnessTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomCoatIntensity = CheckAndApplyManualTexturePath("material_configuration", "coat_intensity_path",
+												CustomCoatIntensityTexture, MaterialConfiguration, AlbedoTexture);
+			bUseCustomCoatRoughness = CheckAndApplyManualTexturePath("material_configuration", "coat_roughness_path",
+												CustomCoatRoughnessTexture, MaterialConfiguration, AlbedoTexture);
+		}
+
+		if (!bUseCustomNormal)
+			bUseCustomNormal = ConcatAndFindTexture(CustomNormalTexture, AlbedoTexture, "_normal");
+
+		// Если обычной нормали нет, ищем упакованную
+		if (!bUseCustomNormal)
+		{
+			if (bUseConfigurator)
+			{
+				bUsePackedNormal =
+					CheckAndApplyManualTexturePath("material_configuration", "packed_normal_path",
+													PackedNormalTexture, MaterialConfiguration, AlbedoTexture);
+			}
+
+			if (!bUsePackedNormal)
+			{
+				bUsePackedNormal = ConcatAndFindTexture(PackedNormalTexture, AlbedoTexture, "_packed_normal");
+			}
+		}
+
+		C.set_Define(bUseCustomNormal, "USE_CUSTOM_NORMAL", "1", CBlender_Compile::ShaderScope::Pixel);
+		C.set_Define(bUsePackedNormal, "USE_PACKED_NORMAL", "1", CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomSubsurfacePower)
+			bUseCustomSubsurfacePower =
+				ConcatAndFindTexture(CustomSubsurfacePowerTexture, AlbedoTexture, "_subsurface_power");
+
+		C.set_Define(bUseCustomSubsurfacePower, "USE_CUSTOM_SUBSURFACE_POWER", "1",
+						CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomCavity)
+			bUseCustomCavity = ConcatAndFindTexture(CustomCavityTexture, AlbedoTexture, "_cavity");
+
+		C.set_Define(bUseCustomCavity, "USE_CUSTOM_CAVITY", "1", CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomSpecularTint)
+			bUseCustomSpecularTint =
+				ConcatAndFindTexture(CustomSpecularTintTexture, AlbedoTexture, "_specular_tint");
+
+		C.set_Define(bUseCustomSpecularTint, "USE_CUSTOM_SPECULAR_TINT", "1", CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomSheenIntensity)
+			bUseCustomSheenIntensity =
+				ConcatAndFindTexture(CustomSheenIntensityTexture, AlbedoTexture, "_sheen_intensity");
+
+		C.set_Define(bUseCustomSheenIntensity, "USE_CUSTOM_SHEEN_INTENSITY", "1",
+						CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomSheenRoughness)
+			bUseCustomSheenRoughness =
+				ConcatAndFindTexture(CustomSheenRoughnessTexture, AlbedoTexture, "_sheen_roughness");
+
+		C.set_Define(bUseCustomSheenRoughness, "USE_CUSTOM_SHEEN_ROUGHNESS", "1",
+						CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomCoatIntensity)
+			bUseCustomCoatIntensity =
+				ConcatAndFindTexture(CustomCoatIntensityTexture, AlbedoTexture, "_coat_intensity");
+
+		C.set_Define(bUseCustomCoatIntensity, "USE_CUSTOM_COAT_INTENSITY", "1",
+						CBlender_Compile::ShaderScope::Pixel);
+
+		if (!bUseCustomCoatRoughness)
+			bUseCustomCoatRoughness =
+				ConcatAndFindTexture(CustomCoatRoughnessTexture, AlbedoTexture, "_coat_roughness");
+
+		C.set_Define(bUseCustomCoatRoughness, "USE_CUSTOM_COAT_ROUGHNESS", "1",
+						CBlender_Compile::ShaderScope::Pixel);
 
 		if (bUseConfigurator)
 		{
@@ -1110,8 +1094,6 @@ void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeo
 	// Get  for base texture for material
 	safe_string::copy(AlbedoTexture, sizeof(AlbedoTexture), *C.L_textures[0]);
 
-	bool DisablePBR = ps_r_shading_mode == SHADING_MODE_LEASHED;
-
 	bool bUseConfigurator = false;
 	CInifile* MaterialConfiguration;
 	string_path MaterialConfiguratorSearchPath = {0};
@@ -1154,32 +1136,32 @@ void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeo
 	// Get BakedAO texture
 	bool bUseBakedAO = false;
 	string_path BakedAOTexture = {0};
-	bUseBakedAO = ConcatAndFindLevelTexture(BakedAOTexture, AlbedoTexture, "_ao") && !DisablePBR;
+	bUseBakedAO = ConcatAndFindLevelTexture(BakedAOTexture, AlbedoTexture, "_ao");
 	C.set_Define(bUseBakedAO, "USE_BAKED_AO", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get normal texture
 	bool bUseCustomNormal = false;
 	string_path CustomNormalTexture = {0};
-	bUseCustomNormal = ConcatAndFindLevelTexture(CustomNormalTexture, AlbedoTexture, "_normal") && !DisablePBR;
+	bUseCustomNormal = ConcatAndFindLevelTexture(CustomNormalTexture, AlbedoTexture, "_normal");
 	C.set_Define(bUseCustomNormal, "USE_CUSTOM_NORMAL", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get roughness texture
 	bool bUseCustomRoughness = false;
 	string_path CustomRoughnessTexture = {0};
-	bUseCustomRoughness = ConcatAndFindLevelTexture(CustomRoughnessTexture, AlbedoTexture, "_roughness") && !DisablePBR;
+	bUseCustomRoughness = ConcatAndFindLevelTexture(CustomRoughnessTexture, AlbedoTexture, "_roughness");
 	C.set_Define(bUseCustomRoughness, "USE_CUSTOM_ROUGHNESS", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get metallic texture
 	bool bUseCustomMetallic = false;
 	string_path CustomMetallicTexture = {0};
-	bUseCustomMetallic = ConcatAndFindLevelTexture(CustomMetallicTexture, AlbedoTexture, "_metallic") && !DisablePBR;
+	bUseCustomMetallic = ConcatAndFindLevelTexture(CustomMetallicTexture, AlbedoTexture, "_metallic");
 	C.set_Define(bUseCustomMetallic, "USE_CUSTOM_METALLIC", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get subsurface_power power texture
 	bool bUseCustomSubsurfacePower = false;
 	string_path CustomSubsurfacePowerTexture = {0};
 	bUseCustomSubsurfacePower =
-		ConcatAndFindLevelTexture(CustomSubsurfacePowerTexture, AlbedoTexture, "_subsurface_power") && !DisablePBR;
+		ConcatAndFindLevelTexture(CustomSubsurfacePowerTexture, AlbedoTexture, "_subsurface_power");
 	C.set_Define(bUseCustomSubsurfacePower, "USE_CUSTOM_SUBSURFACE_POWER", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get emission power texture
@@ -1192,13 +1174,13 @@ void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeo
 	bool bUseCustomDisplacement = false;
 	string_path CustomDisplacementTexture = {0};
 	bUseCustomDisplacement =
-		ConcatAndFindLevelTexture(CustomDisplacementTexture, AlbedoTexture, "_displacement") && !DisablePBR;
+		ConcatAndFindLevelTexture(CustomDisplacementTexture, AlbedoTexture, "_displacement");
 	C.set_Define(bUseCustomDisplacement, "USE_CUSTOM_DISPLACEMENT", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get cavity texture
 	bool bUseCustomCavity = false;
 	string_path CustomCavityTexture = {0};
-	bUseCustomCavity = ConcatAndFindLevelTexture(CustomCavityTexture, AlbedoTexture, "_cavity") && !DisablePBR;
+	bUseCustomCavity = ConcatAndFindLevelTexture(CustomCavityTexture, AlbedoTexture, "_cavity");
 	C.set_Define(bUseCustomCavity, "USE_CUSTOM_CAVITY", "1", CBlender_Compile::ShaderScope::Pixel);
 
 	// Get weight texture

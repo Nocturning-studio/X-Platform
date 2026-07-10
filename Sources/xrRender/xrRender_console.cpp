@@ -17,14 +17,6 @@ xr_token qpreset_token[] =
 	{0, 0}
 };
 
-u32 ps_r_shading_mode = SHADING_MODE_PBR;
-xr_token shading_mode_token[] = 
-{
-	{"st_opt_leashed_shading", 0}, 
-	{"st_opt_physically_based_shading", 1}, 
-	{0, 0}
-};
-
 u32 ps_EffPreset = 2;
 xr_token qeffpreset_token[] = 
 {
@@ -663,8 +655,6 @@ void xrRender_initconsole()
 	CMD1(CCC_SaveOcclusionDepthBuffer, "save_occlusion_culling_depth_buffer");
 
 	CMD3(CCC_Token, "r_cubemap_size", &ps_r_cubemap_size, cubemap_size_token);
-	
-	CMD3(CCC_Token, "r_shading_mode", &ps_r_shading_mode, shading_mode_token);
 
 	CMD4(CCC_Float, "r_geometry_lod", &ps_r_LOD, 0.1f, 1.2f);
 

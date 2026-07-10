@@ -24,7 +24,6 @@ class CBlender_accum_direct_cascade : public IBlender
 		switch (C.iElement)
 		{
 		case SE_SUN_NEAR: // near pass - enable Z-test to perform depth-clipping
-			C.set_Define("NEAR_CASCADE", CBlender_Compile::ShaderScope::Pixel);
 		case SE_SUN_MIDDLE:
 			C.set_Define("SMAP_SIZE", (int)RenderImplementation.o.smapsize, CBlender_Compile::ShaderScope::Pixel);
 			C.set_Define("SHADOW_FILTER_QUALITY", (int)ps_r_shadow_filtering, CBlender_Compile::ShaderScope::Pixel);
@@ -53,7 +52,6 @@ class CBlender_accum_direct_cascade : public IBlender
 			C.end_Pass();
 			break;
 		case SE_SUN_VOL_NEAR: // near pass - enable Z-test to perform depth-clipping
-			C.set_Define("NEAR_CASCADE", CBlender_Compile::ShaderScope::Pixel);
 		case SE_SUN_VOL_MIDDLE:
 			C.set_Define("SUN_SHAFTS_QUALITY", (int)ps_r_sun_shafts_quality, CBlender_Compile::ShaderScope::Pixel);
 			C.set_Define("SMAP_SIZE", (int)RenderImplementation.o.smapsize, CBlender_Compile::ShaderScope::Pixel);

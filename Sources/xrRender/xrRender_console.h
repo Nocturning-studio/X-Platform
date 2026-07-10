@@ -170,15 +170,6 @@ extern u32 ps_r_material_quality;
 
 extern u32 ps_r_aa_transluency;
 
-extern u32 ps_r_rt_format;
-
-extern u32 ps_r_shading_mode;
-enum
-{
-	SHADING_MODE_LEASHED = 0,
-	SHADING_MODE_PBR = 1
-};
-
 // R2/R2a/R2.5-specific flags
 extern Flags32 ps_r_lighting_flags;
 enum
