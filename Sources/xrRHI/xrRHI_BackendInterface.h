@@ -17,6 +17,9 @@ public:
 	virtual bool Reset(const RHIPresentationParams& params) = 0;
 	virtual void Present() = 0;
 
+	virtual void OnFrameBegin() = 0;
+	virtual void OnFrameEnd() = 0;
+
 	virtual void* GetDeviceHandle() = 0;
 	virtual void* GetD3DHandle()
 	{

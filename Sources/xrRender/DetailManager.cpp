@@ -154,7 +154,7 @@ void CDetailManager::Unload()
 	dtFS = NULL; // Хорошая практика обнулять указатель
 }
 
-extern ECORE_API float r_ssaDISCARD;
+extern float r_ssaDISCARD;
 
 void CDetailManager::UpdateVisibility()
 {

@@ -53,7 +53,7 @@ struct SFrame
 	}
 };
 
-class ECORE_API CPEDef
+class CPEDef
 {
   public:
 	enum

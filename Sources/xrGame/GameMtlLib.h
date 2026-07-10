@@ -61,7 +61,7 @@ DEFINE_VECTOR(shared_str, PSVec, PSIt);
 DEFINE_VECTOR(ref_shader, ShaderVec, ShaderIt);
 #endif
 
-struct ECORE_API SGameMtl
+struct SGameMtl
 {
 	friend class CGameMtlLibrary;
 
@@ -140,7 +140,7 @@ struct ECORE_API SGameMtl
 };
 DEFINE_VECTOR(SGameMtl*, GameMtlVec, GameMtlIt);
 
-struct ECORE_API SGameMtlPair
+struct SGameMtlPair
 {
 	friend class CGameMtlLibrary;
 	CGameMtlLibrary* m_Owner;
@@ -232,7 +232,7 @@ struct ECORE_API SGameMtlPair
 
 DEFINE_VECTOR(SGameMtlPair*, GameMtlPairVec, GameMtlPairIt);
 
-class ECORE_API CGameMtlLibrary
+class CGameMtlLibrary
 {
 	int material_index;
 	int material_pair_index;
@@ -402,5 +402,5 @@ class ECORE_API CGameMtlLibrary
 		_res_.clone(GET_RANDOM(_mtl_pair_##->_a_vector_), st_Effect, sg_SourceType);                                   \
 	}
 
-extern ECORE_API CGameMtlLibrary GMLib;
+extern CGameMtlLibrary GMLib;
 #endif

@@ -148,13 +148,12 @@ void CLevelLoadingScreen::SetTitle(LPCSTR str)
 
 void CLevelLoadingScreen::ForceRender()
 {
-	if (!bIsActive || g_appLoaded)
+	if (!bIsActive)
 		return;
 
 	Engine.TimeManager.IncreaseFrameCount();
 
-	if (!Device.Begin())
-		return;
+	Device.Begin();
 
 	if (g_dedicated_server)
 		Console->OnRender();

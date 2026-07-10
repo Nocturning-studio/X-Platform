@@ -22,6 +22,10 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual void DestroyDevice() override;
 	virtual bool Reset(const RHIPresentationParams& params) override;
 	virtual void Present() override;
+
+	virtual void OnFrameBegin() override;
+	virtual void OnFrameEnd() override;
+
 	DEPRECATED  virtual void* GetDeviceHandle() override
 	{
 		return m_pDevice;

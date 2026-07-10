@@ -3,8 +3,8 @@
 
 typedef void __stdcall xrHemisphereIterator(float x, float y, float z, float energy, LPVOID param);
 
-void ECORE_API xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* it, LPVOID param);
-int ECORE_API xrHemisphereVertices(int quality, const fvec3*& verts);
-int ECORE_API xrHemisphereIndices(int quality, const u16*& indices);
+void xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* it, LPVOID param);
+int xrHemisphereVertices(int quality, const fvec3*& verts);
+int xrHemisphereIndices(int quality, const u16*& indices);
 
 #endif // xrHemisphereH

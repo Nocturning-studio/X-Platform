@@ -400,7 +400,7 @@ void CEngine::ProcessEventLoop()
 {
 	Msg("Preparing event loop...");
 	Events.AppStart.Process(rp_AppStart);
-	Device.PrepareEventLoop();
+	Engine.SetUnloaded();
 
 	// Основной цикл теперь выглядит так:
 	while (true)
@@ -413,7 +413,7 @@ void CEngine::ProcessEventLoop()
 		ProcessFrame();
 	}
 
-	Device.EndEventLoop();
+	Engine.Events.AppEnd.Process(rp_AppEnd);
 }
 
 void CEngine::Destroy()

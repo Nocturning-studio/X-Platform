@@ -8,7 +8,6 @@
 #define MMNOMIXER
 #define MMNOJOY
 #include <mmsystem.h>
-#include <d3dx9.h>
 #pragma warning(default : 4995)
 
 #include "Engine.h"
@@ -32,40 +31,18 @@ ENGINE_API BOOL g_bRendering = FALSE;
 
 ref_light precache_light = 0;
 
-BOOL CRenderDevice::Begin()
+void CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
-    HRESULT _hr = RenderBackend.GetDevice()->TestCooperativeLevel();
-    if (FAILED(_hr) && D3DERR_DEVICENOTRESET == _hr)
+    if (RenderBackend.NeedReset())
         Reset();
+
+    RenderBackend.OnFrameBegin();
 
     Engine.DebugUI.OnFrameBegin();
 
-    CHK_DX(RenderBackend.GetDevice()->BeginScene());
-
-    RenderBackend.OnFrameBegin();
-    RenderBackend.set_CullMode(CULL_BACKFACE);
-
     g_bRendering = TRUE;
 #endif
-    return TRUE;
-}
-
-void CRenderDevice::Clear()
-{
-    CHK_DX(RenderBackend.GetDevice()->Clear(
-        0, 0,
-        D3DCLEAR_ZBUFFER | (psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) | D3DCLEAR_STENCIL,
-        D3DCOLOR_XRGB(0, 0, 0), 1, 0));
-}
-
-void Present()
-{
-    PROFILE_FUNCTION();
-
-    Engine.Statistic->RenderPresentation.Begin();
-    HRESULT _hr = RenderBackend.GetDevice()->PresentEx(NULL, NULL, NULL, NULL, NULL);
-    Engine.Statistic->RenderPresentation.End();
 }
 
 void CRenderDevice::End(void)
@@ -96,21 +73,15 @@ void CRenderDevice::End(void)
 
     g_bRendering = FALSE;
     RenderBackend.OnFrameEnd();
-    Memory.dbg_check();
-    CHK_DX(RenderBackend.GetDevice()->EndScene());
-
     Engine.DebugUI.OnFrameEnd();
+    Memory.dbg_check();
 
-    BOOL needsPresent = TRUE;
     if (dwPrecacheFrame || !b_is_Active || IsIconic(Engine.WindowManager.GetHandle()))
-        needsPresent = FALSE;
+        return;
 
-    if (needsPresent)
-    {
-        Engine.Statistic->RenderTOTAL_Real.End();
-        Engine.Statistic->RenderTOTAL_Real.FrameEnd();
-        Present();
-    }
+    Engine.Statistic->RenderPresentation.Begin();
+    RenderBackend.Present();
+    Engine.Statistic->RenderPresentation.End();
 #endif
 }
 
@@ -147,18 +118,6 @@ void CRenderDevice::PreCache()
 
 int g_frametime = 166;
 
-void ProcessLoading(RP_FUNC* f)
-{
-    Engine.Events.Frame.Process(rp_Frame);
-    Engine.SetLoaded();
-}
-
-void CRenderDevice::PrepareEventLoop()
-{
-    Engine.SetUnloaded();
-    CHK_DX(RenderBackend.GetDevice()->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
-}
-
 void CRenderDevice::RenderFrame()
 {
     PROFILE_FUNCTION();
@@ -169,25 +128,19 @@ void CRenderDevice::RenderFrame()
     Engine.Statistic->RenderTOTAL_Real.FrameStart();
     Engine.Statistic->RenderTOTAL_Real.Begin();
 
-    if (Begin())
-    {
-        Engine.DebugUI.DrawUI();
-        Engine.Events.Render.Process(rp_Render);
+    Begin();
 
-        if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Engine.Statistic->errors.size())
-            Engine.Statistic->Show();
+    Engine.Events.Render.Process(rp_Render);
 
-        End();
-    }
+    if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Engine.Statistic->errors.size())
+        Engine.Statistic->Show();
+
+    Engine.DebugUI.DrawUI();
+
+    End();
 
     Engine.Statistic->RenderTOTAL_Real.End();
     Engine.Statistic->RenderTOTAL_Real.FrameEnd();
-}
-
-void CRenderDevice::EndEventLoop()
-{
-    Msg("Ending event loop...");
-    Engine.Events.AppEnd.Process(rp_AppEnd);
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;

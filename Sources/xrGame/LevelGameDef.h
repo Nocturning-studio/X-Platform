@@ -51,8 +51,8 @@ enum EEnvModUsedParams
 	eVerticalFogHeight = (1 << 9)
 };
 
-extern ECORE_API xr_token rpoint_type[];
-extern ECORE_API xr_token rpoint_game_type[];
+extern xr_token rpoint_type[];
+extern xr_token rpoint_game_type[];
 
 // BASE offset
 #define WAY_BASE 0x1000

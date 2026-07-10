@@ -96,8 +96,7 @@ public:
 	// Scene control
 	void PreCache(u32 frames);
 	void PreCache();
-	BOOL Begin();
-	void Clear();
+	void Begin();
 	void End();
 
 	// Mode control
@@ -105,9 +104,7 @@ public:
 
 	// Creation & Destroying
 	void Create(void);
-	void PrepareEventLoop();
 	void RenderFrame();
-	void EndEventLoop();
 	void Destroy(void);
 	void Reset(bool precache = true);
 

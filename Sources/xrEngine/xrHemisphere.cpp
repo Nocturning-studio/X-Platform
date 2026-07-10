@@ -135,7 +135,7 @@ const fvec3 hemi_3[HEMI3_VERTS] = {
 };
 #pragma warning(default : 4305)
 
-void ECORE_API xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)
+void xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)
 {
 	const fvec3* hemi = 0;
 	int h_count = xrHemisphereVertices(quality, hemi);
@@ -158,7 +158,7 @@ void ECORE_API xrHemisphereBuild(int quality, float energy, xrHemisphereIterator
 	}
 }
 
-int ECORE_API xrHemisphereVertices(int quality, const fvec3*& verts)
+int xrHemisphereVertices(int quality, const fvec3*& verts)
 {
 	// SELECT table
 	int h_count = 0;
@@ -182,7 +182,7 @@ int ECORE_API xrHemisphereVertices(int quality, const fvec3*& verts)
 	return h_count;
 }
 
-int ECORE_API xrHemisphereIndices(int quality, const u16*& indices)
+int xrHemisphereIndices(int quality, const u16*& indices)
 {
 	// SELECT table
 	int h_count = 0;

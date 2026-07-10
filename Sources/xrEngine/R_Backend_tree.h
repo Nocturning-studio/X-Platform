@@ -2,7 +2,7 @@
 #define r_backend_treeH
 #pragma once
 
-class ECORE_API R_tree
+class R_tree
 {
   public:
 	R_constant* c_m_transform_v;

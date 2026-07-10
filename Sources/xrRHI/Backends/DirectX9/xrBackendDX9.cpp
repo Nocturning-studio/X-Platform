@@ -20,14 +20,11 @@ CRenderBackendDX9::~CRenderBackendDX9()
 
 D3DFORMAT CRenderBackendDX9::SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const
 {
-	if (SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL,
-											D3DRTYPE_SURFACE, D3DFMT_D24S8)))
+	if (SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24S8)))
 		return D3DFMT_D24S8;
-	if (SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL,
-											D3DRTYPE_SURFACE, D3DFMT_D24X8)))
+	if (SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24X8)))
 		return D3DFMT_D24X8;
-	if (SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL,
-											D3DRTYPE_SURFACE, D3DFMT_D16)))
+	if (SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D16)))
 		return D3DFMT_D16;
 	return D3DFMT_UNKNOWN;
 }
@@ -323,6 +320,22 @@ void CRenderBackendDX9::Present()
 {
 	if (m_pDevice)
 		m_pDevice->PresentEx(nullptr, nullptr, nullptr, nullptr, 0);
+}
+
+void CRenderBackendDX9::OnFrameBegin()
+{
+	for (u32 stage = 0; stage < m_DeviceCaps.MaxSimultaneousTextures; stage++)
+		m_pDevice->SetTexture(0, 0);
+	m_pDevice->SetStreamSource(0, 0, 0, 0);
+	m_pDevice->SetIndices(0);
+	m_pDevice->SetVertexShader(0);
+	m_pDevice->SetPixelShader(0);
+	m_pDevice->BeginScene();
+}
+
+void CRenderBackendDX9::OnFrameEnd()
+{
+	m_pDevice->EndScene();
 }
 
 void CRenderBackendDX9::Clear(u32 clearFlags, const fvec4 color, float depth, u8 stencil)

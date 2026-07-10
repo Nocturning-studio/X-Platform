@@ -224,7 +224,7 @@ class ENGINE_API CSMotion : public CCustomMotion
 };
 #endif
 
-struct ECORE_API SAnimParams
+struct SAnimParams
 {
 	float t;
 	float min_t;

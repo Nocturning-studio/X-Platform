@@ -234,7 +234,7 @@ int ps_r_thread_wait_sleep = 0;
 // Render common flags
 Flags32 ps_render_flags = {RFLAG_LENS_FLARES | RFLAG_EXP_MT_CALC | RFLAG_EXP_HW_OCC};
 
-ECORE_API Flags32 ps_r_debug_flags = {NULL};
+Flags32 ps_r_debug_flags = {NULL};
 
 /*-------------------------------------------------------------------------------*/
 // R2/R2a/R2.5-specific values

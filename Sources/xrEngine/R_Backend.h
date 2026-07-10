@@ -113,6 +113,7 @@ public:
     void Create(HWND hWnd);
     void Destroy();
     void Reset();
+    bool NeedReset();
 
     void selectResolution(u32& w, u32& h, BOOL bWindowed);
     u32  selectPresentInterval();
@@ -287,6 +288,7 @@ public:
     // Device & frame
     void CreateQuadIB();
     void OnFrameBegin();
+    void Present();
     void OnFrameEnd();
     void OnDeviceCreate();
     void OnDeviceDestroy();

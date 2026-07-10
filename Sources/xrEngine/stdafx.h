@@ -10,7 +10,6 @@
 #include "..\editors\ECore\stdafx.h"
 #else
 
-#define USE_LOG_IMPL
 #include "../xrCore/xrCore.h"
 
 #ifdef _DEBUG
@@ -22,9 +21,6 @@
 #include <DPlay\dplay8.h>
 #pragma warning(default : 4995)
 
-// you must define ENGINE_BUILD then building the engine itself
-// and not define it if you are about to build DLL
-#if !defined(NO_ENGINE_API)
 #ifdef ENGINE_BUILD
 #define DLL_API __declspec(dllimport)
 #define ENGINE_API __declspec(dllexport)
@@ -32,12 +28,6 @@
 #define DLL_API __declspec(dllexport)
 #define ENGINE_API __declspec(dllimport)
 #endif
-#else
-#define ENGINE_API
-#define DLL_API
-#endif // NO_ENGINE_API
-
-#define ECORE_API
 
 // Our headers
 #include "Engine.h"

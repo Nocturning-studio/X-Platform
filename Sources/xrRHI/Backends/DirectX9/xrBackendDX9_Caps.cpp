@@ -13,8 +13,7 @@ XRRHI_API std::string DecodeShaderVersion(u32 version)
     unsigned int major = (low >> 8) & 0xFF;
     unsigned int minor = low & 0xFF;
 
-    const char* type = (high == 0xFFFE) ? "vs" :
-        (high == 0xFFFF) ? "ps" : "unknown";
+    const char* type = (high == 0xFFFE) ? "vs" : (high == 0xFFFF) ? "ps" : "unknown";
 
     std::stringstream ss;
     ss << type << "_" << major << "_" << minor;

@@ -321,6 +321,15 @@ void CRenderBackend::Reset()
     m_DevPP.FullScreen_RefreshRateInHz = refreshHz;
 }
 
+bool CRenderBackend::NeedReset()
+{
+    HRESULT _hr = RenderBackend.GetDevice()->TestCooperativeLevel();
+    if (FAILED(_hr) && D3DERR_DEVICENOTRESET == _hr)
+        return true;
+    else
+        return false;
+}
+
 void CRenderBackend::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 {
 #ifdef DEDICATED_SERVER
@@ -508,19 +517,6 @@ void CRenderBackend::Invalidate()
     m_resBinder.Invalidate(*this);
 }
 
-void CRenderBackend::OnFrameEnd()
-{
-#ifndef DEDICATED_SERVER
-    for (u32 stage = 0; stage < RHI()->GetDeviceCaps().MaxSimultaneousTextures; stage++)
-        CHK_DX(GetDevice()->SetTexture(0, 0));
-    CHK_DX(GetDevice()->SetStreamSource(0, 0, 0, 0));
-    CHK_DX(GetDevice()->SetIndices(0));
-    CHK_DX(GetDevice()->SetVertexShader(0));
-    CHK_DX(GetDevice()->SetPixelShader(0));
-    Invalidate();
-#endif
-}
-
 void CRenderBackend::OnFrameBegin()
 {
 #ifndef DEDICATED_SERVER
@@ -528,7 +524,23 @@ void CRenderBackend::OnFrameBegin()
     Vertex.Flush();
     Index.Flush();
     set_Stencil(FALSE);
+    RHI()->OnFrameBegin();
 #endif
+}
+
+void CRenderBackend::OnFrameEnd()
+{
+#ifndef DEDICATED_SERVER
+    RHI()->OnFrameEnd();
+    Invalidate();
+#endif
+}
+
+void CRenderBackend::Present()
+{
+    PROFILE_FUNCTION();
+
+    RHI()->Present();
 }
 
 #ifndef DEDICATED_SERVER

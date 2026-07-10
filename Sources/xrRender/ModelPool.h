@@ -12,7 +12,7 @@ struct ENGINE_API SEmitter;
 };
 
 // defs
-class ECORE_API CModelPool
+class CModelPool
 {
   private:
 	friend class CRender;

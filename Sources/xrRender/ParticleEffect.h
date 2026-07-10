@@ -7,7 +7,7 @@
 
 namespace PS
 {
-class ECORE_API CParticleEffect : public IParticleCustom
+class CParticleEffect : public IParticleCustom
 {
 	friend class CPEDef;
 
