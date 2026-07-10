@@ -9,7 +9,6 @@
 #include <boost/crc.hpp>
 #include "../xrCore/build_identificator.h"
 
-// Вспомогательная функция для получения времени модификации файла
 static time_t GetFileModTime(const char* filename)
 {
 	string_path full_path;
@@ -21,7 +20,6 @@ static time_t GetFileModTime(const char* filename)
 		return fileStat.st_mtime;
 	}
 
-	// Если не нашли по относительному пути, попробуем абсолютный
 	if (_stat(filename, &fileStat) == 0)
 	{
 		return fileStat.st_mtime;
@@ -31,30 +29,21 @@ static time_t GetFileModTime(const char* filename)
 	return 0;
 }
 
-// Вспомогательная функция для показа диалога с ошибкой
 static void ShowShaderErrorDialog(const char* title, const std::string& message, bool isWarning = false)
 {
-	// В режиме MASTER_GOLD не показываем диалоги
-#ifdef MASTER_GOLD
-	return;
-#else
-	// Форматируем сообщение для диалога (убираем лишние символы форматирования)
 	std::string dialogMessage = message;
 
-	// Заменяем символы форматирования лога на более читаемые для диалога
 	size_t pos = 0;
 	while ((pos = dialogMessage.find("~", pos)) != std::string::npos)
 	{
 		dialogMessage.replace(pos, 1, "");
 	}
 
-	// Убираем лишние переносы в начале
 	while (!dialogMessage.empty() && (dialogMessage[0] == '\n' || dialogMessage[0] == '!'))
 	{
 		dialogMessage.erase(0, 1);
 	}
 
-	// Обрезаем слишком длиные сообщения
 	if (dialogMessage.length() > 2000)
 	{
 		dialogMessage = dialogMessage.substr(0, 2000) + "\n\n... (message truncated)";
@@ -67,17 +56,15 @@ static void ShowShaderErrorDialog(const char* title, const std::string& message,
 	}
 
 	MessageBoxA(NULL, dialogMessage.c_str(), title, type);
-#endif
 }
 
-// Структура для хранения метаданных кеша (должна быть POD и выровнена)
 #pragma pack(push, 1)
 struct ShaderCacheMetadata
 {
 	u32 crc;
 	time_t sourceModTime;
 	u32 buildId;
-	u32 dependencyCount; // Количество зависимостей
+	u32 dependencyCount;
 };
 #pragma pack(pop)
 
@@ -88,29 +75,21 @@ struct ShaderDependencyInfo
 	u32 crc;
 };
 
-// Менеджер зависимостей шейдеров
 class CShaderDependencyManager
 {
   private:
 	static const u32 DEPENDENCY_VERSION = 1;
 
   public:
-	static bool WriteDependencyInfo(const std::string& cacheFilePath,
-									const std::vector<ShaderDependencyInfo>& dependencies)
+	static bool WriteDependencyInfo(const std::string& cacheFilePath, const std::vector<ShaderDependencyInfo>& dependencies)
 	{
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Starting WriteDependencyInfo");
-#endif
-
-		// БЕЗОПАСНОЕ формирование пути к INI файлу
 		string_path iniPath;
 
-		// Копируем базовый путь без расширения
 		const char* xrcache_ext = strstr(cacheFilePath.c_str(), ".xrcache");
 		if (xrcache_ext)
 		{
 			size_t base_len = xrcache_ext - cacheFilePath.c_str();
-			if (base_len < sizeof(iniPath) - 5) // Оставляем место для ".xrdep" + null
+			if (base_len < sizeof(iniPath) - 5)
 			{
 				strncpy_s(iniPath, cacheFilePath.c_str(), base_len);
 				strcat_s(iniPath, ".xrdep");
@@ -127,12 +106,6 @@ class CShaderDependencyManager
 			return false;
 		}
 
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Writing dependency info to: %s", iniPath);
-		Msg("* [DEPS] Number of dependencies to write: %d", dependencies.size());
-#endif
-
-		// Используем относительный путь для записи
 		IWriter* file = FS.w_open("$app_data_root$", iniPath);
 		if (!file)
 		{
@@ -140,43 +113,25 @@ class CShaderDependencyManager
 			return false;
 		}
 
-		// Записываем версию
 		file->w_u32(DEPENDENCY_VERSION);
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Written version: %d", DEPENDENCY_VERSION);
-#endif
 
-		// Записываем количество зависимостей
 		u32 depCount = (u32)dependencies.size();
 		file->w_u32(depCount);
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Written dependency count: %d", depCount);
-#endif
 
-		// Записываем каждую зависимость
 		for (u32 i = 0; i < depCount; i++)
 		{
 			const auto& dep = dependencies[i];
 
-			// Длина пути + данные
 			u16 pathLen = (u16)dep.filePath.length();
 			file->w_u16(pathLen);
 			file->w(dep.filePath.c_str(), pathLen);
 			file->w_u64((u64)dep.modTime);
 			file->w_u32(dep.crc);
-
-#ifdef DEBUG_SHADER_COMPILATION
-			Msg("* [DEPS] Written dependency %d: %s (modTime: %lld, CRC: %u)", i, dep.filePath.c_str(),
-				(long long)dep.modTime, dep.crc);
-#endif
 		}
 
 		u32 fileSize = file->tell();
 		FS.w_close(file);
 
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Successfully wrote dependency file: %s (%d bytes)", iniPath, fileSize);
-#endif
 		return true;
 	}
 
@@ -185,11 +140,9 @@ class CShaderDependencyManager
 		string_path iniPath;
 		strcpy_s(iniPath, cacheFilePath.c_str());
 
-		// БЕЗОПАСНАЯ замена расширения
 		char* ext = strstr(iniPath, ".xrcache");
 		if (ext)
 		{
-			// Вычисляем сколько места осталось в буфере
 			size_t remaining_size = sizeof(iniPath) - (ext - iniPath);
 			if (remaining_size >= 6) // ".xrdep" + null terminator
 			{
@@ -201,23 +154,11 @@ class CShaderDependencyManager
 				return false;
 			}
 		}
-		else
-		{
-			// Если не нашли .xrcache, попробуем как есть (для обратной совместимости)
-#ifdef DEBUG_SHADER_COMPILATION
-			Msg("* [DEPS] No .xrcache extension found, using path as-is: %s", iniPath);
-#endif
-		}
 
 		// Используем относительный путь для чтения
 		IReader* file = FS.r_open("$app_data_root$", iniPath);
 		if (!file)
-		{
-#ifdef DEBUG_SHADER_COMPILATION
-			Msg("* [DEPS] Cannot open dependency file for reading: %s", iniPath);
-#endif
 			return false;
-		}
 
 		if (file->length() < sizeof(u32) + sizeof(u32))
 		{
@@ -236,13 +177,8 @@ class CShaderDependencyManager
 			return false;
 		}
 
-		// Читаем количество зависимостей
 		u32 depCount = file->r_u32();
 		dependencies.clear();
-
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Reading %d dependencies from: %s", depCount, iniPath);
-#endif
 
 		for (u32 i = 0; i < depCount; i++)
 		{
@@ -262,28 +198,19 @@ class CShaderDependencyManager
 				break;
 			}
 
-			// Читаем путь
 			char* pathBuf = (char*)alloca(pathLen + 1);
 			file->r(pathBuf, pathLen);
 			pathBuf[pathLen] = 0;
 			dep.filePath = pathBuf;
 
-			// Читаем время модификации и CRC
 			dep.modTime = (time_t)file->r_u64();
 			dep.crc = file->r_u32();
 
 			dependencies.push_back(dep);
-
-#ifdef DEBUG_SHADER_COMPILATION
-			Msg("* [DEPS] Read dependency %d: %s (modTime: %lld, CRC: %u)", i, dep.filePath.c_str(),
-				(long long)dep.modTime, dep.crc);
-#endif
 		}
 
 		FS.r_close(file);
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [DEPS] Successfully read %d dependencies from: %s", dependencies.size(), iniPath);
-#endif
+
 		return true;
 	}
 
@@ -297,19 +224,16 @@ class CShaderDependencyManager
 			time_t currentModTime = GetFileModTime(full_path);
 			if (currentModTime == 0)
 			{
-				// Файл не найден - считаем зависимость невалидной
 				Msg("! Dependency file not found: %s", dep.filePath.c_str());
 				return false;
 			}
 
 			if (currentModTime != dep.modTime)
 			{
-				Msg("! Dependency changed: %s (was: %lld, now: %lld)", dep.filePath.c_str(), (long long)dep.modTime,
-					(long long)currentModTime);
+				Msg("! Dependency changed: %s (was: %lld, now: %lld)", dep.filePath.c_str(), (long long)dep.modTime, (long long)currentModTime);
 				return false;
 			}
 
-			// Дополнительная проверка CRC для важных файлов
 			if (ShouldCheckCRC(dep.filePath))
 			{
 				u32 currentCRC = CalculateFileCRC(dep.filePath.c_str());
@@ -331,7 +255,6 @@ class CShaderDependencyManager
 		IReader* file = FS.r_open(full_path);
 		if (!file)
 		{
-			// Попробуем открыть как относительный путь
 			file = FS.r_open("$game_shaders$", filePath);
 			if (!file)
 			{
@@ -352,7 +275,8 @@ class CShaderDependencyManager
 	{
 		// Проверяем CRC только для .h и .xrh файлов (шейдерные заголовки)
 		const char* ext = strrchr(filePath.c_str(), '.');
-		return ext && (strcmp(ext, ".h") == 0 || strcmp(ext, ".hlsl") == 0 || strcmp(ext, ".xrh") == 0 ||
+		return ext && (strcmp(ext, ".h") == 0 || 
+					   strcmp(ext, ".hlsl") == 0 || strcmp(ext, ".xrh") == 0 ||
 					   strcmp(ext, ".xrps") == 0 || strcmp(ext, ".xrvs") == 0);
 	}
 };
@@ -366,7 +290,6 @@ class CShaderIncluder : public ID3DXInclude
 	static const u32 max_guard_size = 1;
 	char data[max_size * 1024];
 
-	// Отслеживание зависимостей
 	std::vector<std::string> includedFiles;
 	std::string currentShaderName;
 
@@ -390,7 +313,6 @@ class CShaderIncluder : public ID3DXInclude
 		static string_path full_path;
 		sprintf_s(full_path, "%s%s", shaders_path, pName);
 
-		// Добавляем файл в список зависимостей
 		includedFiles.push_back(full_path);
 
 		IReader* R = FS.r_open("$game_shaders$", full_path);
@@ -434,12 +356,6 @@ class CShaderIncluder : public ID3DXInclude
 		*ppData = data;
 		*pBytes = (UINT)strlen(data);
 
-#ifdef DEBUG_SHADER_COMPILATION
-		//Msg("*   includer open: (id:%u): %s", counter, pName);
-		Log(data);
-		//Msg("*   guard                  _%s_included", hash);
-#endif
-
 		counter++;
 
 		return D3D_OK;
@@ -469,7 +385,6 @@ template <typename T> T* CResourceManager::FindShader(const char* _name)
 	if (I != sh_map.end())
 		return I->second;
 
-	// if the shader is not supported or not exist
 	if (!ShaderTypeTraits<T>::IsSupported() ||
 		(xr_strlen(_name) >= 4 && _name[0] == 'n' && _name[1] == 'u' && _name[2] == 'l' && _name[3] == 'l'))
 	{
@@ -481,50 +396,26 @@ template <typename T> T* CResourceManager::FindShader(const char* _name)
 	return NULL;
 }
 
-#ifdef DEBUG_SHADER_COMPILATION
-void print_macros(CShaderMacros& macros)
-{
-	if (macros.get_name().length() < 1)
-		return;
-
-	Msg("*   macro count: %d", macros.get_name().length());
-
-	for (u32 i = 0; i < macros.get_impl().size(); ++i)
-	{
-		CShaderMacros::MacroImpl m = macros.get_impl()[i];
-		Msg("*   macro: (%s : %s : %c)", m.Name, m.Definition, m.State);
-	}
-}
-#endif
-
 template <typename T> T* CResourceManager::CreateShader(const char* _name, const char* _entry, CShaderMacros& _macros)
 {
-	// get shader macros
 	CShaderMacros macros;
 	CShaderMacros fetched = ::Render->FetchShaderMacros();
 	macros.add(fetched);
 	macros.add(_macros);
 	macros.add(TRUE, NULL, NULL);
 
-	// Нормализуем входное имя функции
 	LPCSTR actual_entry = (_entry && _entry[0]) ? _entry : "main";
 
-	// make the unique shader name
-	// [ИЗМЕНЕНО] Уникальное имя теперь включает имя функции (entry point),
-	// чтобы различать test.ps(main) и test.ps(MainPS)
 	string_path name;
 	sprintf_s(name, sizeof name, "%s_%s%s", _name, actual_entry, macros.get_name().c_str());
 
-	// if the shader is already exist, return it
 	T* sh = FindShader<T>(name);
 
 	if (sh)
 		return sh;
 
-	// create a new shader
 	sh = RegisterShader<T>(name);
 
-	// open file
 	string_path file_source;
 	const char* ext = ShaderTypeTraits<T>::GetShaderExt();
 	sprintf_s(file_source, sizeof file_source, "%s%s.%s", ::Render->getShaderPath(), _name, ext);
@@ -533,35 +424,22 @@ template <typename T> T* CResourceManager::CreateShader(const char* _name, const
 
 	if (!file)
 	{
-		std::string errorMsg =
-			make_string("Cannot open shader file:\n%s\n\nShader will not be available.", file_source);
+		std::string errorMsg = make_string("Cannot open shader file:\n%s\n\nShader will not be available.", file_source);
 		Msg("! %s", errorMsg.c_str());
 
-		// Показываем диалог об ошибке
 		std::string dialogTitle = make_string("Shader File Error - %s.%s", _name, ext);
 		ShowShaderErrorDialog(dialogTitle.c_str(), errorMsg, false);
 
-		// Возвращаем шейдер с NULL указателем вместо ассерта
 		sh->sh = NULL;
 		return sh;
 	}
 
-	// select target
-	const char* type = ShaderTypeTraits<T>::GetShaderType(); // Возвращает "ps" или "vs"
+	const char* type = ShaderTypeTraits<T>::GetShaderType();
 	string32 c_target;
 	sprintf_s(c_target, sizeof c_target, "%s_%u_%u", type, RHI()->GetDeviceCaps().PixelShaderMajor, RHI()->GetDeviceCaps().PixelShaderMinor);
 
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* Compiling shader: target=%s, source=%s.%s, entry=%s", c_target, _name, ext, actual_entry);
-	print_macros(_macros);
-#endif
+	HRESULT _hr = CompileShader(_name, ext, (LPCSTR)file->pointer(), file->length(), c_target, actual_entry, macros, (T*&)sh);
 
-	// [НОВАЯ ЛОГИКА] Попытка компиляции с fallback
-	// 1. Пробуем с запрошенным именем (обычно "main" или пользовательское)
-	HRESULT _hr =
-		CompileShader(_name, ext, (LPCSTR)file->pointer(), file->length(), c_target, actual_entry, macros, (T*&)sh);
-
-	// 2. Если не вышло И мы пробовали стандартный "main", пробуем альтернативы MainPS/MainVS
 	if (FAILED(_hr) && (0 == xr_strcmp(actual_entry, "main")))
 	{
 		string32 alt_entry;
@@ -583,7 +461,6 @@ template <typename T> T* CResourceManager::CreateShader(const char* _name, const
 
 	FS.r_close(file);
 
-	// Если компиляция не удалась, все равно возвращаем шейдер (с NULL указателем)
 	return sh;
 }
 
@@ -595,49 +472,30 @@ template <typename T> HRESULT CResourceManager::ReadShaderCache(string_path name
 
 	if (file && file->length() > sizeof(ShaderCacheMetadata))
 	{
-		// Читаем метаданные
 		ShaderCacheMetadata metadata;
 		file->r(&metadata, sizeof(ShaderCacheMetadata));
 
-#ifdef DEBUG_SHADER_COMPILATION
-		// Отладочная информация
-		Msg("* Cache check: buildId=%d (expected %d), modTime=%lld (expected %lld)", metadata.buildId, GlobalBuildInfo.ID,
-			(long long)metadata.sourceModTime, (long long)sourceModTime);
-#endif
-
-		// Проверяем актуальность кеша
 		if (metadata.buildId == GlobalBuildInfo.ID && metadata.sourceModTime == sourceModTime)
 		{
-			// ВРЕМЕННО: Отключаем систему зависимостей для отладки
 			bool bEnableDependencySystem = false;
 #ifndef MASTER_GOLD
 			bEnableDependencySystem = true; // strstr(Core.Params, "-use_shader_dependencies") != nullptr;
 #endif
 
-			// Проверяем зависимости только если система включена
 			std::vector<ShaderDependencyInfo> dependencies;
 			if (bEnableDependencySystem && CShaderDependencyManager::ReadDependencyInfo(name, dependencies))
 			{
 				if (CShaderDependencyManager::AreDependenciesValid(dependencies))
 				{
-					// Вычисляем CRC оставшихся данных (сам шейдер)
 					u32 data_size = file->elapsed();
 					boost::crc_32_type processor;
 					processor.process_block(((char*)file->pointer()), ((char*)file->pointer()) + data_size);
 					u32 const real_crc = processor.checksum();
 
 					if (real_crc == metadata.crc)
-					{
-#ifdef DEBUG_SHADER_COMPILATION
-						Msg("* Cache CRC valid: %u, all dependencies valid", real_crc);
-#endif
 						cache_result = ReflectShader((DWORD*)(file->pointer()), data_size, result);
-					}
 					else
-					{
-						Msg("! Shader cache CRC mismatch for: %s (expected: %u, got: %u)", name, metadata.crc,
-							real_crc);
-					}
+						Msg("! Shader cache CRC mismatch for: %s (expected: %u, got: %u)", name, metadata.crc, real_crc);
 				}
 				else
 				{
@@ -646,34 +504,21 @@ template <typename T> HRESULT CResourceManager::ReadShaderCache(string_path name
 			}
 			else
 			{
-				// Пропускаем проверку зависимостей
-#ifdef DEBUG_SHADER_COMPILATION
-				Msg("* Skipping dependency check (system disabled or no info)");
-#endif
-				// Проверяем только CRC основного шейдера
 				u32 data_size = file->elapsed();
 				boost::crc_32_type processor;
 				processor.process_block(((char*)file->pointer()), ((char*)file->pointer()) + data_size);
 				u32 const real_crc = processor.checksum();
 
 				if (real_crc == metadata.crc)
-				{
-#ifdef DEBUG_SHADER_COMPILATION
-					Msg("* Cache CRC valid: %u", real_crc);
-#endif
 					cache_result = ReflectShader((DWORD*)(file->pointer()), data_size, result);
-				}
 				else
-				{
 					Msg("! Shader cache CRC mismatch for: %s (expected: %u, got: %u)", name, metadata.crc, real_crc);
-				}
 			}
 		}
 		else
 		{
 			if (metadata.buildId != GlobalBuildInfo.ID)
-				Msg("! Shader cache build ID mismatch for: %s (expected: %d, got: %d)", name, GlobalBuildInfo.ID,
-					metadata.buildId);
+				Msg("! Shader cache build ID mismatch for: %s (expected: %d, got: %d)", name, GlobalBuildInfo.ID, metadata.buildId);
 			else
 				Msg("! Shader source file modified for: %s", name);
 		}
@@ -694,10 +539,6 @@ template <typename T> HRESULT CResourceManager::ReadShaderCache(string_path name
 
 template <typename T> HRESULT CResourceManager::ReflectShader(DWORD const* src, UINT size, T*& result)
 {
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [REFLECT] Starting ReflectShader");
-#endif
-
 	result->sh = ShaderTypeTraits<T>::D3DCreateShader(src, size);
 
 	if (result->sh == NULL)
@@ -706,22 +547,12 @@ template <typename T> HRESULT CResourceManager::ReflectShader(DWORD const* src, 
 		return E_FAIL;
 	}
 
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [REFLECT] Shader created successfully");
-#endif
-
 	const void* pReflection = 0;
 	HRESULT _hr = D3DXFindShaderComment(src, MAKEFOURCC('C', 'T', 'A', 'B'), &pReflection, NULL);
 
 	if (SUCCEEDED(_hr) && pReflection)
 	{
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [REFLECT] Parsing constants...");
-#endif
 		result->constants.parse((void*)pReflection, (u16)ShaderTypeTraits<T>::GetShaderDest());
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [REFLECT] Constants parsed successfully");
-#endif
 		return _hr;
 	}
 	else
@@ -734,20 +565,17 @@ template <typename T> HRESULT CResourceManager::ReflectShader(DWORD const* src, 
 
 static CTimer shader_compilation_timer;
 
-// Функция для создания директорий
 static bool EnsureCacheDirectoryExists(const char* cachePath)
 {
 	string_path directory;
 	strcpy_s(directory, cachePath);
 
-	// Находим последний слэш
 	char* lastSlash = strrchr(directory, '\\');
 	if (!lastSlash)
-		return true; // Нет директорий для создания
+		return true;
 
-	*lastSlash = 0; // Обрезаем до директории
+	*lastSlash = 0;
 
-	// Проверяем существование и создаем если нужно
 	if (!FS.path_exist(directory))
 	{
 		Msg("* Creating cache directory: %s", directory);
@@ -762,8 +590,7 @@ static bool EnsureCacheDirectoryExists(const char* cachePath)
 }
 
 template <typename T>
-HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UINT size, LPCSTR target, LPCSTR entry,
-										CShaderMacros& macros, T*& result)
+HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UINT size, LPCSTR target, LPCSTR entry, CShaderMacros& macros, T*& result)
 {
 	bool bUseShaderCache = true;
 	bool bDisassebleShader = true;
@@ -784,21 +611,13 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 
 	HRESULT _result = E_FAIL;
 
-	// ФОРМИРУЕМ ОТНОСИТЕЛЬНЫЙ путь к кешу (без FS.update_path)
 	string_path cache_dest;
-	sprintf_s(cache_dest, sizeof cache_dest, "shaders_cache\\%s%s.%s\\%s_%s_%d.xrcache", ::Render->getShaderPath(),
-			  name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
+	sprintf_s(cache_dest, sizeof cache_dest, "shaders_cache\\%s%s.%s\\%s_%s_%d.xrcache", ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
 
-	// Получаем время модификации исходного файла шейдера
 	string_path source_file_path;
 	sprintf_s(source_file_path, sizeof source_file_path, "%s%s.%s", ::Render->getShaderPath(), name, ext);
 	FS.update_path(source_file_path, "$game_shaders$", source_file_path);
 	time_t sourceModTime = GetFileModTime(source_file_path);
-
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [COMPILE] Source file: %s, mod time: %lld", source_file_path, (long long)sourceModTime);
-	Msg("* [COMPILE] Cache file: %s", cache_dest);
-#endif
 
 	// Try to find and read cache file - используем ОТНОСИТЕЛЬНЫЙ путь
 	if (FS.exist("$app_data_root$", cache_dest) && bUseShaderCache)
@@ -823,7 +642,6 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 	ID3DXBuffer* pErrorBuf = NULL;
 	ID3DXConstantTable* pConstants = NULL;
 
-	// Устанавливаем текущий шейдер для includer'а
 	Includer.SetCurrentShader(name);
 
 	u32 flags = D3DXSHADER_PACKMATRIX_ROWMAJOR | D3DXSHADER_PREFER_FLOW_CONTROL | D3DXSHADER_OPTIMIZATION_LEVEL3
@@ -832,29 +650,16 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 #endif
 		;
 
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [COMPILE] Calling D3DXCompileShader...");
-#endif
-	_result = D3DXCompileShader(src, size, &macros.get_macros()[0], &Includer, entry, target, flags, &pShaderBuf,
-								&pErrorBuf, &pConstants);
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [COMPILE] D3DXCompileShader completed with result: 0x%08x", _result);
-#endif
+	_result = D3DXCompileShader(src, size, &macros.get_macros()[0], &Includer, entry, target, flags, &pShaderBuf, &pErrorBuf, &pConstants);
 
 	if (SUCCEEDED(_result) && pShaderBuf)
 	{
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [COMPILE] Shader compilation successful, gathering dependencies...");
-#endif
-
-		// Собираем информацию о зависимостях (с удалением дубликатов)
 		std::vector<ShaderDependencyInfo> dependencies;
 		const auto& includedFiles = Includer.GetIncludedFiles();
-		std::set<std::string> uniqueFiles; // Для проверки уникальности
+		std::set<std::string> uniqueFiles;
 
 		for (const auto& includedFile : includedFiles)
 		{
-			// Пропускаем дубликаты
 			if (uniqueFiles.find(includedFile) != uniqueFiles.end())
 				continue;
 
@@ -863,81 +668,48 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 			ShaderDependencyInfo dep;
 			dep.filePath = includedFile;
 
-			// Получаем правильный путь для проверки
 			string_path check_path;
 			FS.update_path(check_path, "$game_shaders$", includedFile.c_str());
 
 			dep.modTime = GetFileModTime(check_path);
 			if (dep.modTime == 0)
-			{
-				// Если не нашли, пробуем исходный путь
 				dep.modTime = GetFileModTime(includedFile.c_str());
-			}
 
-			// Если все еще 0, файл не найден - пропускаем или устанавливаем флаг ошибки
 			if (dep.modTime == 0)
 			{
 				Msg("! [COMPILE] Warning: Cannot get mod time for dependency: %s", includedFile.c_str());
-				// Продолжаем, но без этой зависимости
 				continue;
 			}
 
 			dep.crc = CShaderDependencyManager::CalculateFileCRC(includedFile.c_str());
 			dependencies.push_back(dep);
-
-#ifdef DEBUG_SHADER_COMPILATION
-			Msg("* [COMPILE] Dependency: %s (modTime: %lld, CRC: %u)", includedFile.c_str(), (long long)dep.modTime,
-				dep.crc);
-#endif
 		}
 
 		if (bUseShaderCache)
 		{
-#ifdef DEBUG_SHADER_COMPILATION
-			Msg("* [COMPILE] Writing cache files...");
-#endif
-
-			// СОЗДАЕМ ДИРЕКТОРИИ перед записью файла
 			if (!EnsureCacheDirectoryExists(cache_dest))
 			{
 				Msg("! [COMPILE] Failed to create cache directory for: %s", cache_dest);
 			}
 			else
 			{
-				// ИСПОЛЬЗУЕМ ОТНОСИТЕЛЬНЫЙ путь для записи!
 				IWriter* file = FS.w_open("$app_data_root$", cache_dest);
 				if (file)
 				{
-					// Вычисляем CRC данных шейдера
 					boost::crc_32_type processor;
-					processor.process_block(pShaderBuf->GetBufferPointer(),
-											((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize());
+					processor.process_block(pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize());
 					u32 crc = processor.checksum();
 
-					// Подготавливаем метаданные с информацией о зависимостях
 					ShaderCacheMetadata metadata;
 					metadata.crc = crc;
 					metadata.sourceModTime = sourceModTime;
 					metadata.buildId = GlobalBuildInfo.ID;
 					metadata.dependencyCount = (u32)dependencies.size();
 
-#ifdef DEBUG_SHADER_COMPILATION
-					Msg("* [COMPILE] Writing cache metadata with %d dependencies", dependencies.size());
-#endif
-
-					// Записываем метаданные и данные шейдера
 					file->w(&metadata, sizeof(ShaderCacheMetadata));
 					file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
 					FS.w_close(file);
 
-#ifdef DEBUG_SHADER_COMPILATION
-					Msg("* [COMPILE] Main cache file written successfully");
-#endif
-
-					// Записываем информацию о зависимостях в отдельный INI файл
-#ifdef DEBUG_SHADER_COMPILATION
-					Msg("* [COMPILE] Writing dependency info...");
-#endif
 					if (CShaderDependencyManager::WriteDependencyInfo(cache_dest, dependencies))
 					{
 #ifdef DEBUG_SHADER_COMPILATION
@@ -956,21 +728,13 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 			}
 		}
 
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [COMPILE] Before ReflectShader");
-#endif
 		_result = ReflectShader((DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), result);
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [COMPILE] After ReflectShader, result: 0x%08x", _result);
-#endif
 
 		if (FAILED(_result))
 		{
 			Msg("! [COMPILE] D3DReflectShader %s.%s hr == 0x%08x", name, ext, _result);
-			// Не ассертим здесь - просто продолжаем с ошибкой
 		}
 
-		// Сохранение дизассемблированных данных шейдера
 		if (bDisassebleShader && SUCCEEDED(_result))
 		{
 			ID3DXBuffer* pDisassembly = NULL;
@@ -981,15 +745,11 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 
 			if (SUCCEEDED(disasmResult) && pDisassembly)
 			{
-				// Формируем путь для сохранения дизассемблированного шейдера
 				string_path disasm_path;
-				sprintf_s(disasm_path, sizeof disasm_path, "shaders_cache\\%s%s.%s\\%s_%s_%d.html",
-						  ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
+				sprintf_s(disasm_path, sizeof disasm_path, "shaders_cache\\%s%s.%s\\%s_%s_%d.html", ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
 
-				// Создаем директорию если нужно
 				EnsureCacheDirectoryExists(disasm_path);
 
-				// Сохраняем дизассемблированный код
 				IWriter* disasm_file = FS.w_open("$app_data_root$", disasm_path);
 				if (disasm_file)
 				{
@@ -1010,42 +770,32 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 			}
 		}
 
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [COMPILE] Releasing shader buffer");
-#endif
 		_RELEASE(pShaderBuf);
-#ifdef DEBUG_SHADER_COMPILATION
-		Msg("* [COMPILE] Shader buffer released");
-#endif
 	}
 	else
 	{
 		Msg("! [COMPILE] Shader compilation failed or no shader buffer");
 	}
 
-	// Обработка ошибок и предупреждений
 	string16 code;
 	sprintf_s(code, sizeof code, "%08x", _result);
 	std::string message = pErrorBuf ? std::string((char*)pErrorBuf->GetBufferPointer()) : "";
 
 	if (pErrorBuf && !FAILED(_result) && message.length() > 0)
 	{
-		std::string warning = make_string("\n~ Warning:\n~ Shader: %s\n~ Type: %s\n~ Target: %s\n~ HRESULT: %s\n", name,
-										  ext, target, code);
+		std::string warning = make_string("\n~ Warning:\n~ Shader: %s\n~ Type: %s\n~ Target: %s\n~ HRESULT: %s\n", name, ext, target, code);
 
 		warning += message;
 
 		Log(warning.c_str());
 		FlushLog();
 		
-		// Вместо CHECK_OR_EXIT просто логируем предупреждение
 		if (!bWarningsAsErrors)
 		{
 			Msg("! [COMPILE] Warnings treated as errors for shader: %s.%s", name, ext);
 		}
 		else
 		{
-			// Показываем диалог с предупреждением
 			std::string dialogTitle = make_string("Shader Warning - %s.%s", name, ext);
 			ShowShaderErrorDialog(dialogTitle.c_str(), warning, true);
 		}
@@ -1068,11 +818,9 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 		Log(error.c_str());
 		FlushLog();
 
-		// Показываем диалог с ошибкой
 		std::string dialogTitle = make_string("Shader Compilation Error - %s.%s", name, ext);
 		ShowShaderErrorDialog(dialogTitle.c_str(), error, false);
 
-		// Устанавливаем шейдер в NULL чтобы избежать использования битого шейдера
 		if (result)
 		{
 			result->sh = NULL;
@@ -1088,27 +836,16 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 	}
 #endif
 
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [COMPILE] Releasing DX buffers");
-#endif
 	if (pErrorBuf)
 		_RELEASE(pErrorBuf);
 	if (pConstants)
 		_RELEASE(pConstants);
-#ifdef DEBUG_SHADER_COMPILATION
-	Msg("* [COMPILE] DX buffers released");
-	Msg("* [COMPILE] CompileShader completed");
-#endif
 
 	return _result;
 }
 
-// Дополнительная утилита для поиска зависимостей
 void CResourceManager::RecompileDependentShaders(const std::string& changedHeader)
 {
-	// Эта функция может быть вызвана при обнаружении изменения header-файла
-	// Она найдет все шейдеры, которые зависят от этого header'а и пометит их кеш как устаревший
-
 	string_path searchPattern;
 	sprintf_s(searchPattern, "shaders_cache\\*\\*.xrcache.xrdep");
 
@@ -1132,13 +869,12 @@ void CResourceManager::RecompileDependentShaders(const std::string& changedHeade
 				{
 					// Нашли шейдер, зависящий от измененного header'а
 					string_path cacheFile;
-					strcpy_s(cacheFile, iniPath); // Используем strcpy_s вместо присваивания
+					strcpy_s(cacheFile, iniPath);
 					char* ext = strstr(cacheFile, ".xrdep");
 					if (ext)
 						*ext = 0; // Убираем .xrdep
 
 					Msg("! Marking shader as outdated due to header change: %s", cacheFile);
-					// Удаляем файлы кеша
 					FS.file_delete("$app_data_root$", cacheFile);
 					FS.file_delete("$app_data_root$", iniPath);
 					recompiledCount++;
