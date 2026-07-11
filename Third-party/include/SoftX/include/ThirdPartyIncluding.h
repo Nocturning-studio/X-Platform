@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -7,15 +7,12 @@
 /////////////////////////////////////////////////////////////////
 // Math lib
 #include <AfterMath/include/AfterMath.h>
-#ifdef SOFTX_IMPLEMENTATION
-using namespace AfterMath;
-#endif
 /////////////////////////////////////////////////////////////////
 //#define ENABLE_PROFILER
 
 // Your custom profiler
-#ifdef ENABLE_PROFILING
-#include <optick/include/optick.h>
+#ifdef ENABLE_PROFILER
+#include "../../../Optick/Include/optick.h"
 #define PROFILE_FRAME(x) OPTICK_FRAME(x)
 #define PROFILE_SCOPE(x) OPTICK_EVENT(x)
 #define PROFILE_THREAD(x) OPTICK_THREAD(x)

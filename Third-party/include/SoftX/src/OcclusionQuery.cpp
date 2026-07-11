@@ -1,11 +1,11 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
 
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "RasterizerCommon.h"
 #include "QueryRasterizerFactory.h"
 #include "ThreadPoolManager.h"
@@ -23,62 +23,35 @@ OcclusionQuery::~OcclusionQuery()
         future.wait();
 }
 
-void OcclusionQuery::SetVertexBuffer(const VertexBuffer& vb)
+bool OcclusionQuery::GetData(uint* outVisibleSamples) const
 {
-    currentVB = vb;
+    if (!ready)
+    {
+        if (outVisibleSamples) *outVisibleSamples = 0;
+        return false;
+    }
+    if (outVisibleSamples)
+        *outVisibleSamples = totalVisibleSamples;
+    return totalVisibleSamples > 0;
 }
 
-void OcclusionQuery::SetIndexBuffer(const IndexBuffer& ib)
+bool OcclusionQuery::GetResult(queryID id, uint* outSamples) const
 {
-    currentIB = ib;
-}
-
-void OcclusionQuery::SetConstantBuffer(const ConstantBuffer& cb)
-{
-    currentCB = cb;
-}
-
-void OcclusionQuery::SetVertexShader(OcclusionVertexShader vs)
-{
-    currentVS = std::move(vs);
-}
-
-void OcclusionQuery::SetDepthBuffer(DepthBuffer& db)
-{
-    depthBuffer = &db;
-}
-
-void OcclusionQuery::SetViewport(const Viewport& vp)
-{
-    viewport = vp;
-}
-
-void OcclusionQuery::SetCullMode(CullMode mode)
-{
-    cullMode = mode;
-}
-
-void OcclusionQuery::SetDepthFunc(ComparisonFunc func)
-{
-    depthFunc = func;
-}
-
-void OcclusionQuery::SetDepthWriteEnable(bool enable)
-{
-    depthWriteEnable = enable;
+    if (!ready || id >= drawCalls.size())
+        return false;
+    const DrawCall& dc = drawCalls[id];
+    if (outSamples)
+        *outSamples = dc.visibleSamples;
+    return dc.visibleSamples > 0;
 }
 
 bool OcclusionQuery::Validate() const
 {
-    if (depthBuffer == nullptr) return false;
+    if (!depthBuffer) return false;
     if (viewport.size.x <= 0 || viewport.size.y <= 0) return false;
-
-    if (currentVB.IsEmpty()) return false;
-    if (currentIB.IsEmpty()) return false;
+    if (currentVB.IsEmpty() || currentIB.IsEmpty()) return false;
     if (!currentVS) return false;
-
     if (!begun || ended) return false;
-
     return true;
 }
 
@@ -121,7 +94,7 @@ void OcclusionQuery::End()
     begun = false;
 
     auto drawCallsCopy = std::make_shared<std::vector<DrawCall>>(drawCalls);
-    DepthBuffer* db = depthBuffer;
+    DepthBuffer* db = depthBuffer.get();
     Viewport vpData = viewport;
     IQueryRasterizer* rast = rasterizer.get();
 
@@ -129,7 +102,7 @@ void OcclusionQuery::End()
     totalVisibleSamples = 0;
 
     future = std::async(std::launch::async, [this, drawCallsCopy, db, vpData, rast]()
-        {
+    {
             PROFILE_THREAD("OcclusionQuery::AsyncExecution");
             PROFILE_SCOPE("OcclusionQuery::AsyncExecution");
             std::atomic<uint32_t> totalVisible(0);
@@ -157,35 +130,7 @@ void OcclusionQuery::End()
 
             totalVisibleSamples = totalVisible.load();
             ready = true;
-        });
-}
-
-bool OcclusionQuery::GetData(uint* outVisibleSamples) const
-{
-    PROFILE_SCOPE("OcclusionQuery::GetData");
-
-    if (!ready)
-    {
-        if (outVisibleSamples) *outVisibleSamples = 0;
-        return false;
-    }
-
-    if (outVisibleSamples)
-        *outVisibleSamples = totalVisibleSamples;
-
-    return totalVisibleSamples > 0;
-}
-
-bool OcclusionQuery::GetResult(queryID id, uint* outSamples) const
-{
-    PROFILE_SCOPE("OcclusionQuery::GetResult");
-
-    if (!ready || id >= drawCalls.size())
-        return false;
-    const DrawCall& dc = drawCalls[id];
-    if (outSamples)
-        *outSamples = dc.visibleSamples;
-    return dc.visibleSamples > 0;
+    });
 }
 
 bool OcclusionQuery::Flush(uint* outVisibleSamples)
@@ -200,11 +145,6 @@ bool OcclusionQuery::Flush(uint* outVisibleSamples)
 
     ready = true;
     return GetData(outVisibleSamples);
-}
-
-bool OcclusionQuery::IsReady() const
-{
-    return ready;
 }
 
 void OcclusionQuery::Release()
@@ -268,7 +208,6 @@ void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
         VertexOutput v1 = transformedVerts[i1];
         VertexOutput v2 = transformedVerts[i2];
 
-        // Near-plane clipping (всё ещё необходимо)
         VertexOutput clipped[2][3];
         int numTris = RasterizerCommon::ClipTriangleNearPlane(v0, v1, v2, clipped);
         for (int t = 0; t < numTris; ++t)

@@ -1,11 +1,11 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
 
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "RasterizerCommon.h"
 #include "QueryRasterizerSSE.h"
 
@@ -35,7 +35,7 @@ uint32_t QueryRasterizerSSE::RasterizeTriangle(
     int iMinY = std::max((int)tileMin.y, (int)std::floor(minY));
     int iMaxY = std::min((int)tileMax.y, (int)std::ceil(maxY));
 
-    if (iMinX > iMaxX || iMinY > iMaxY) UNLIKELY
+    if (iMinX > iMaxX || iMinY > iMaxY) SOFTX_UNLIKELY
         return 0;
 
     const int x0fp = RasterizerCommon::ToFixed(v0.Position.x);
@@ -51,7 +51,7 @@ uint32_t QueryRasterizerSSE::RasterizeTriangle(
     const CullMode cull = state.cullMode;
     if (cull == CullMode::Back && area2Int < 0) return 0;
     if (cull == CullMode::Front && area2Int > 0) return 0;
-    if (area2Int == 0) UNLIKELY return 0;
+    if (area2Int == 0) SOFTX_UNLIKELY return 0;
 
     // --- normalizing, inside test always must be f >= 0 ---
     const int normSign = (area2Int > 0) ? 1 : -1;

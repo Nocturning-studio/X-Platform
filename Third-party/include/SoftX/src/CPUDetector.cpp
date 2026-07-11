@@ -1,10 +1,10 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "CPUDetector.h"
 
 #include <array>

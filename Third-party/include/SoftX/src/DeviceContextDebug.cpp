@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -8,14 +8,14 @@
 #include <ppl.h>
 
 #include "RasterizerCommon.h"
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "ThreadPoolManager.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 void DeviceContext::DrawDebugLine(int x0, int y0, int x1, int y1, const float4& color)
 {
-    IRenderTarget* rt = renderTarget;
+    IRenderTarget* rt = renderTarget.get();
     if (!rt)
         return;
 
@@ -51,7 +51,7 @@ void DeviceContext::DrawDebugLine(int x0, int y0, int x1, int y1, const float4& 
 
 void DeviceContext::DrawTileBorders()
 {
-    IRenderTarget* rt = renderTarget;
+    IRenderTarget* rt = renderTarget.get();
     if (!rt)
         return;
 

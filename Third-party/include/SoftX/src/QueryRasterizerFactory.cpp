@@ -1,11 +1,11 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include <SoftX.h>
-#include "QueryRasterizerInterface.h"
+#include "../include/SoftX.h"
+#include "../include/QueryRasterizerInterface.h"
 #include "QueryRasterizerAVX.h"
 #include "QueryRasterizerSSE.h"
 #include "QueryRasterizerScalar.h"

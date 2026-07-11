@@ -148,6 +148,8 @@ void SoftXOcclusionMapBuilder::BuildAsync(const fmat4x4& viewProj)
         ctx.SetVertexBuffer(*vb);
         ctx.SetIndexBuffer(*ib);
         ctx.DrawIndexed();
+
+        core->GetWriteBuffer()->GenerateHiZ(SoftX::DepthBuffer::HiZReduction::Min);
     };
 
     core->StartBuildTask(std::move(buildTask));

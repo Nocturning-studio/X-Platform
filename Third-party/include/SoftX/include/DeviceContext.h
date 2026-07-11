@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -22,65 +22,61 @@ public:
     DeviceContext(DeviceContext&&) = default;
     DeviceContext& operator=(DeviceContext&&) = default;
 
-    void SetVertexShader(VertexShader shader);
-    VertexShader GetVertexShader() const;
+    SOFTX_FORCE_INLINE void SetVertexShader(VertexShader shader) { vertexShader = std::move(shader); }
+    SOFTX_FORCE_INLINE VertexShader GetVertexShader() const { return vertexShader; }
 
-    void SetGeometryShader(GeometryShader shader);
-    GeometryShader GetGeometryShader() const;
+    SOFTX_FORCE_INLINE void SetGeometryShader(GeometryShader shader) { geometryShader = std::move(shader); }
+    SOFTX_FORCE_INLINE GeometryShader GetGeometryShader() const { return geometryShader; }
 
-    void SetPixelShader(PixelShader shader);
-    PixelShader GetPixelShader() const;
+    SOFTX_FORCE_INLINE void SetPixelShader(PixelShader shader) { pixelShader = std::move(shader); }
+    SOFTX_FORCE_INLINE PixelShader GetPixelShader() const { return pixelShader; }
 
-    void SetVertexBuffer(const VertexBuffer& buffer);
-    VertexBuffer GetVertexBuffer() const;
+    SOFTX_FORCE_INLINE void SetVertexBuffer(const VertexBuffer& buffer) { vertexBuffer = buffer; }
+    SOFTX_FORCE_INLINE VertexBuffer GetVertexBuffer() const { return vertexBuffer; }
 
-    void SetIndexBuffer(const IndexBuffer& buffer);
-    IndexBuffer GetIndexBuffer() const;
+    SOFTX_FORCE_INLINE void SetIndexBuffer(const IndexBuffer& buffer) { indexBuffer = buffer; }
+    SOFTX_FORCE_INLINE IndexBuffer GetIndexBuffer() const { return indexBuffer; }
 
-    void SetConstantBuffer(const ConstantBuffer& buffer);
-    ConstantBuffer GetConstantBuffer() const;
+    SOFTX_FORCE_INLINE void SetConstantBuffer(const ConstantBuffer& buffer) { constantBuffer = buffer; }
+    SOFTX_FORCE_INLINE ConstantBuffer GetConstantBuffer() const { return constantBuffer; }
 
-    void SetTexture(const std::string& name, const ITexture* texture, SamplerState sampler = SamplerState{});
+    SOFTX_FORCE_INLINE void SetTexture(const std::string& name, const std::shared_ptr<ITexture> texture, SamplerState sampler = SamplerState{}) { textureTable.Set(name, texture, sampler); }
 
-    void SetRenderTarget(IRenderTarget* target);
-    void SetRenderTarget(IRenderTarget* target, bool createDepthBuffer = true);
-    IRenderTarget* GetRenderTarget() const;
+    SOFTX_FORCE_INLINE void SetRenderTarget(std::shared_ptr<IRenderTarget> target) { renderTarget = std::move(target); }
+    void SetRenderTarget(std::shared_ptr<IRenderTarget> target, bool createDepthBuffer);
+    SOFTX_FORCE_INLINE std::shared_ptr<IRenderTarget> GetRenderTarget() const { return renderTarget; }
 
-    // Depth buffer management methods
-    void SetDepthBuffer(DepthBuffer* depthBuffer);
-    DepthBuffer* GetDepthBuffer() const;
+    SOFTX_FORCE_INLINE void SetDepthBuffer(std::shared_ptr<DepthBuffer> depth) { this->depthBuffer = std::move(depth); }
+    SOFTX_FORCE_INLINE std::shared_ptr<DepthBuffer> GetDepthBuffer() const { return depthBuffer; }
 
-    void SetDepthWriteEnable(bool enable);
-    bool GetDepthWriteEnable() const;
+    SOFTX_FORCE_INLINE void SetDepthWriteEnable(bool enable) { depthWriteEnable = enable; }
+    SOFTX_FORCE_INLINE bool GetDepthWriteEnable() const { return depthWriteEnable; }
+
+    SOFTX_FORCE_INLINE void SetCullMode(CullMode mode) { cullMode = mode; }
+    SOFTX_FORCE_INLINE CullMode GetCullMode() const { return cullMode; }
+
+    SOFTX_FORCE_INLINE void SetFillMode(FillMode mode) { fillMode = mode; }
+    SOFTX_FORCE_INLINE FillMode GetFillMode() const { return fillMode; }
+
+    SOFTX_FORCE_INLINE void SetDepthFunc(ComparisonFunc func) { depthFunc = func; }
+    SOFTX_FORCE_INLINE ComparisonFunc GetDepthFunc() const { return depthFunc; }
+
+    SOFTX_FORCE_INLINE void SetViewport(const Viewport& vp) { viewport = vp; }
+    SOFTX_FORCE_INLINE Viewport GetViewport() const { return viewport; }
+
+    SOFTX_FORCE_INLINE void SetTileSize(uint size) { tileSize = size; }
+    SOFTX_FORCE_INLINE uint GetTileSize() const { return tileSize; }
 
     void Clear(const float4& color);
-    void ClearDepth(float depth = 1.0f);
-    void ClearColorAndDepth(const float4& color, float depth = 1.0f);
-
-    void SetCullMode(CullMode mode);
-    CullMode GetCullMode() const;
-
-    void SetFillMode(FillMode mode);
-    FillMode GetFillMode() const;
-
-    void SetDepthFunc(ComparisonFunc func);
-    ComparisonFunc GetDepthFunc() const;
-
-    void SetViewport(const Viewport& vp);
-    Viewport GetViewport() const;
-
-    void SetTileSize(uint size);
-    uint GetTileSize() const;
-
+    void ClearDepth(const float& depth = 1.0f);
+    void ClearColorAndDepth(const float4& color, const float& depth = 1.0f);
     bool Validate(std::string* errorMsg = nullptr) const;
 
     void DrawIndexed(uint indexCount, uint startIndex);
     void DrawIndexed();
-
     void DrawFullScreenQuad();
 
 private:
-    // Private methods (all PascalCase)
     void RenderTileQuad(const Tile& tile, float invW, float invH);
     void DrawPoint(int x, int y, float z, const float4& color);
     void DrawLine(int x0, int y0, int x1, int y1, float z0, float z1, const float4& color);
@@ -88,7 +84,6 @@ private:
     void DrawTileBorders();
     void DrawActiveTileBorders(const std::vector<Tile>& tiles);
 
-    // Fields (camelCase, no m_ prefix)
     VertexShader vertexShader;
     GeometryShader geometryShader;
     PixelShader pixelShader;
@@ -98,20 +93,18 @@ private:
     ConstantBuffer constantBuffer;
     TextureTable textureTable;
 
-    std::unique_ptr<DepthBuffer> ownDepthBuffer;
-    DepthBuffer* depthBuffer;
-    IRenderTarget* renderTarget;
+    std::shared_ptr<DepthBuffer> depthBuffer;
+    std::shared_ptr<IRenderTarget> renderTarget;
 
     std::unique_ptr<IRasterizer> rasterizer;
 
     CullMode cullMode = CullMode::Back;
     FillMode fillMode = FillMode::Solid;
     ComparisonFunc depthFunc = ComparisonFunc::Less;
-    bool depthWriteEnable;
+    bool depthWriteEnable = true;
 
     Viewport viewport;
-
-    uint tileSize;
+    uint tileSize = 64;
 };
 
 SOFTX_END

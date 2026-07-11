@@ -1,11 +1,11 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
 
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "RasterizerCommon.h"
 #include "RasterizerSSE.h"
 
@@ -36,7 +36,7 @@ void RasterizerSSE::RasterizeTriangle(const VertexOutput& v0,
     int iMinY = std::max((int)tileMin.y, (int)std::floor(minY));
     int iMaxY = std::min((int)tileMax.y, (int)std::ceil(maxY));
 
-    if (iMinX > iMaxX || iMinY > iMaxY) UNLIKELY
+    if (iMinX > iMaxX || iMinY > iMaxY) SOFTX_UNLIKELY
         return;
 
     // ── Fixed-point vertex coordinates (28.4 — 4 sub-pixel bits = 1/16 pixel) ──
@@ -54,9 +54,9 @@ void RasterizerSSE::RasterizeTriangle(const VertexOutput& v0,
     int64_t area2Int = RasterizerCommon::EdgeFunctionInt(x0fp, y0fp, x1fp, y1fp, x2fp, y2fp);
 
     const CullMode cull = state.cullMode;
-    if (cull == CullMode::Back  && area2Int < 0) return;
-    if (cull == CullMode::Front && area2Int > 0) return;
-    if (area2Int == 0) UNLIKELY return;
+    if (cull == CullMode::Back  && area2Int > 0) return;
+    if (cull == CullMode::Front && area2Int < 0) return;
+    if (area2Int == 0) SOFTX_UNLIKELY return;
 
     // ── Edge function steps ──────────────────────────────────────────────────
     // Pixel x → x+1:  ΔE = +S * Δy_fp

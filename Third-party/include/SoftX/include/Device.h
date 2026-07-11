@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -18,38 +18,45 @@ class SOFTX_API Device
 {
 public:
     explicit Device(const PresentParameters& params);
-    ~Device() = default;
+    ~Device();
+
+    Device(Device&&) = default;
+    Device& operator=(Device&&) = default;
+    Device(const Device&) = delete;
+    Device& operator=(const Device&) = delete;
 
     Device CreateHeadless(uint2 backBufferSize);
 
-    void SetDeviceContext(DeviceContext ctx);
-    DeviceContext& GetDeviceContext();
-    const DeviceContext& GetDeviceContext() const;
+    SOFTX_FORCE_INLINE void SetDeviceContext(DeviceContext ctx) { immediateContext = std::move(ctx); }
+    SOFTX_FORCE_INLINE DeviceContext& GetDeviceContext() { return immediateContext; }
+    SOFTX_FORCE_INLINE const DeviceContext& GetDeviceContext() const { return immediateContext; }
 
-    DeviceContext& GetImmediateContext()
-    {
-        return immediateContext;
-    }
-    const DeviceContext& GetImmediateContext() const
-    {
-        return immediateContext;
-    }
+    SOFTX_FORCE_INLINE DeviceContext& GetImmediateContext() { return immediateContext; }
+    SOFTX_FORCE_INLINE const DeviceContext& GetImmediateContext() const { return immediateContext; }
 
-    std::unique_ptr<DeviceContext> CreateDeferredContext();
+    SOFTX_FORCE_INLINE std::unique_ptr<DeviceContext> CreateDeferredContext() { return std::make_unique<DeviceContext>(); }
+
+    SOFTX_FORCE_INLINE std::shared_ptr<FrameBuffer> GetBackBuffer() { return backBuffer; }
+    SOFTX_FORCE_INLINE std::shared_ptr<DepthBuffer> GetDepthBuffer() { return depthBuffer; }
+
+    SOFTX_FORCE_INLINE PresentParameters& GetPresentParams() { return presentParams; }
+    SOFTX_FORCE_INLINE const PresentParameters& GetPresentParams() const { return presentParams; }
 
     void Present();
 
-    Framebuffer& GetBackBuffer();
-    const Framebuffer& GetBackBuffer() const;
+private:
+    void SetupOutputConsole();
+    void DestroyOutputConsole();
 
-    PresentParameters& GetPresentParams();
-    const PresentParameters& GetPresentParams() const;
+    void PresentToWindow();
+    void PresentToConsole();
 
 private:
     PresentParameters presentParams;
-    Framebuffer backBuffer;
-    DepthBuffer depthBuffer;
+    std::shared_ptr<FrameBuffer> backBuffer;
+    std::shared_ptr<DepthBuffer> depthBuffer;
     DeviceContext immediateContext;
+    HANDLE hConsoleBuffer = nullptr;
 };
 
 SOFTX_END

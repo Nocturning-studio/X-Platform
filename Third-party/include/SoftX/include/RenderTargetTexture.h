@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ public:
         }
     }
 
-    void SetPixel(uint2 coords, const float4& color) override
+    void SetPixel(const uint2& coords, const float4& color) override
     {
         __m128 col = _mm_set_ps(color.w, color.z, color.y, color.x);
         texture.StreamWrite(coords, col);

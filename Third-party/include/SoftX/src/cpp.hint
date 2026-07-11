@@ -1,19 +1,11 @@
-// Файлы указаний помогают среде IDE Visual Studio интерпретировать идентификаторы Visual C++
-// (например, имена функций и макросов).
-// Дополнительные сведения: https://go.microsoft.com/fwlink/?linkid=865984
 #define SOFTX_BEGIN namespace SoftX {
 #define PROFILE_SCOPE(x) OPTICK_EVENT(x)
 #define PROFILE_SCOPE(x)
 #define PROFILE_SCOPE(x) OPTICK_EVENT(x)
 #define PROFILE_SCOPE(x)
-#define UNLIKELY [[unlikely]]
-#define UNLIKELY
+#define SOFTX_UNLIKELY [[unlikely]]
+#define SOFTX_UNLIKELY
 #define SOFTX_END }
-// Файлы указаний помогают среде IDE Visual Studio интерпретировать идентификаторы Visual C++
-// (например, имена функций и макросов).
-// Дополнительные сведения: https://go.microsoft.com/fwlink/?linkid=865984
 #define SOFTX_BEGIN namespace SoftX {
-// Файлы указаний помогают среде IDE Visual Studio интерпретировать идентификаторы Visual C++
-// (например, имена функций и макросов).
-// Дополнительные сведения: https://go.microsoft.com/fwlink/?linkid=865984
-#define SOFTX_BEGIN namespace SoftX {
+#define SOFTX_FORCE_INLINE
+#define SOFTX_FORCE_INLINE __attribute__((always_inline)) inline

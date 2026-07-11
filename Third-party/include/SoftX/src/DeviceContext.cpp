@@ -1,146 +1,46 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
 
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "RasterizerFactory.h"
 #include "ThreadPoolManager.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
-DeviceContext::DeviceContext()
-    : vertexShader(nullptr),
-      pixelShader(nullptr),
-      vertexBuffer(),
-      indexBuffer(),
-      constantBuffer(),
-      renderTarget(nullptr),
-      ownDepthBuffer(nullptr),
-      depthBuffer(nullptr),
-      depthWriteEnable(true),
-      cullMode(CullMode::Back),
-      fillMode(FillMode::Solid),
-      viewport(),
-      tileSize(64),
-      rasterizer(CreateBestRasterizer())
+DeviceContext::DeviceContext(): vertexShader(nullptr),
+                                pixelShader(nullptr),
+                                vertexBuffer(),
+                                indexBuffer(),
+                                constantBuffer(),
+                                renderTarget(nullptr),
+                                depthBuffer(nullptr),
+                                depthWriteEnable(true),
+                                cullMode(CullMode::Back),
+                                fillMode(FillMode::Solid),
+                                viewport(),
+                                tileSize(64),
+                                rasterizer(CreateBestRasterizer())
 {
 }
 
 DeviceContext::~DeviceContext() = default;
 
-void DeviceContext::SetVertexShader(VertexShader shader)
+void DeviceContext::SetRenderTarget(std::shared_ptr<IRenderTarget> rt, bool createDepthBuffer)
 {
-    vertexShader = std::move(shader);
-}
-
-VertexShader DeviceContext::GetVertexShader() const
-{
-    return vertexShader;
-}
-
-void DeviceContext::SetGeometryShader(GeometryShader shader)
-{
-    geometryShader = std::move(shader);
-}
-
-GeometryShader DeviceContext::GetGeometryShader() const
-{
-    return geometryShader;
-}
-
-void DeviceContext::SetPixelShader(PixelShader shader)
-{
-    pixelShader = std::move(shader);
-}
-
-PixelShader DeviceContext::GetPixelShader() const
-{
-    return pixelShader;
-}
-
-void DeviceContext::SetVertexBuffer(const VertexBuffer& buffer)
-{
-    vertexBuffer = buffer;
-}
-
-VertexBuffer DeviceContext::GetVertexBuffer() const
-{
-    return vertexBuffer;
-}
-
-void DeviceContext::SetIndexBuffer(const IndexBuffer& buffer)
-{
-    indexBuffer = buffer;
-}
-
-IndexBuffer DeviceContext::GetIndexBuffer() const
-{
-    return indexBuffer;
-}
-
-void DeviceContext::SetConstantBuffer(const ConstantBuffer& buffer)
-{
-    constantBuffer = buffer;
-}
-
-ConstantBuffer DeviceContext::GetConstantBuffer() const
-{
-    return constantBuffer;
-}
-
-void DeviceContext::SetTexture(const std::string& name, const ITexture* texture, SamplerState sampler)
-{
-    textureTable.Set(name, texture, sampler);
-}
-
-void DeviceContext::SetRenderTarget(IRenderTarget* target)
-{
-    renderTarget = target;
-}
-
-IRenderTarget* DeviceContext::GetRenderTarget() const
-{
-    return renderTarget;
-}
-
-void DeviceContext::SetDepthBuffer(DepthBuffer* dpthBuffer)
-{
-    depthBuffer = dpthBuffer;
-}
-
-DepthBuffer* DeviceContext::GetDepthBuffer() const
-{
-    return depthBuffer;
-}
-
-void DeviceContext::SetDepthWriteEnable(bool enable)
-{
-    depthWriteEnable = enable;
-}
-
-bool DeviceContext::GetDepthWriteEnable() const
-{
-    return depthWriteEnable;
-}
-
-void DeviceContext::SetRenderTarget(IRenderTarget* rt, bool createDepthBuffer)
-{
-    renderTarget = rt;
-    if (createDepthBuffer && rt)
+    renderTarget = std::move(rt);
+    if (createDepthBuffer && renderTarget)
     {
-        uint2 newSize = rt->Size();
-        if (!ownDepthBuffer || ownDepthBuffer->Size() != newSize)
-        {
-            ownDepthBuffer = std::make_unique<DepthBuffer>(newSize);
-        }
-        depthBuffer = ownDepthBuffer.get();
+        uint2 newSize = renderTarget->Size();
+        if (!depthBuffer || depthBuffer->Size() != newSize)
+            depthBuffer = std::make_shared<DepthBuffer>(newSize);
     }
     else
     {
-        depthBuffer = nullptr;
+        depthBuffer.reset();
     }
 }
 
@@ -154,7 +54,7 @@ void DeviceContext::Clear(const float4& color)
     }
 }
 
-void DeviceContext::ClearDepth(float depth)
+void DeviceContext::ClearDepth(const float& depth)
 {
     PROFILE_SCOPE("DeviceContext::ClearDepth");
 
@@ -164,7 +64,7 @@ void DeviceContext::ClearDepth(float depth)
     }
 }
 
-void DeviceContext::ClearColorAndDepth(const float4& color, float depth)
+void DeviceContext::ClearColorAndDepth(const float4& color, const float& depth)
 {
     PROFILE_SCOPE("DeviceContext::ClearColorAndDepth");
 
@@ -180,56 +80,6 @@ void DeviceContext::ClearColorAndDepth(const float4& color, float depth)
         Clear(color);
         ClearDepth(depth);
     }
-}
-
-void DeviceContext::SetCullMode(CullMode mode)
-{
-    cullMode = mode;
-}
-
-CullMode DeviceContext::GetCullMode() const
-{
-    return cullMode;
-}
-
-void DeviceContext::SetFillMode(FillMode mode)
-{
-    fillMode = mode;
-}
-
-FillMode DeviceContext::GetFillMode() const
-{
-    return fillMode;
-}
-
-void DeviceContext::SetDepthFunc(ComparisonFunc func)
-{
-    depthFunc = func;
-}
-
-ComparisonFunc DeviceContext::GetDepthFunc() const
-{
-    return depthFunc;
-}
-
-void DeviceContext::SetViewport(const Viewport& vp)
-{
-    viewport = vp;
-}
-
-Viewport DeviceContext::GetViewport() const
-{
-    return viewport;
-}
-
-void DeviceContext::SetTileSize(uint size)
-{
-    tileSize = size;
-}
-
-uint DeviceContext::GetTileSize() const
-{
-    return tileSize;
 }
 
 bool DeviceContext::Validate(std::string* errorMsg) const

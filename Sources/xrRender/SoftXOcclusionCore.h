@@ -22,8 +22,8 @@ public:
     SoftX::DeviceContext& GetImmediateContext() { return m_device->GetImmediateContext(); }
 
     // Двойная буферизация
-    SoftX::DepthBuffer* GetWriteBuffer() { return m_depthBuffers[m_writeIdx].get(); }
-    SoftX::DepthBuffer* GetReadBuffer() { return m_depthBuffers[m_readIdx].get(); }
+    std::shared_ptr<SoftX::DepthBuffer> GetWriteBuffer() { return m_depthBuffers[m_writeIdx]; }
+    std::shared_ptr<SoftX::DepthBuffer> GetReadBuffer() { return m_depthBuffers[m_readIdx]; }
     void SwapBuffers();
     void WaitForBuildAndSwap(); // ждёт завершения асинхронной задачи и делает свап буфферов
 
@@ -39,7 +39,7 @@ public:
 
 private:
     std::unique_ptr<SoftX::Device> m_device;
-    std::unique_ptr<SoftX::DepthBuffer> m_depthBuffers[2];
+    std::shared_ptr<SoftX::DepthBuffer> m_depthBuffers[2];
     int m_writeIdx = 0;
     int m_readIdx = 1;
     uint2 m_depth_resolution = 512;

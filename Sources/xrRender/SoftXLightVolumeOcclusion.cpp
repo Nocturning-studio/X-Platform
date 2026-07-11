@@ -88,7 +88,7 @@ void SoftXLightVolumeOcclusion::BeginQueries(const fmat4x4& viewProj, const Soft
     m_currentQueryIndex = (m_currentQueryIndex + 1) % QUERY_POOL_SIZE;
 
     if (!m_activeQuery->IsReady()) m_activeQuery->Flush();
-    m_activeQuery->SetDepthBuffer(*m_core->GetWriteBuffer());
+    m_activeQuery->SetDepthBuffer(m_core->GetWriteBuffer());
     m_activeQuery->SetViewport(m_currentViewport);
     m_activeQuery->Begin();
 }

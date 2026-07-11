@@ -1,11 +1,11 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
 
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "RasterizerCommon.h"
 #include "QueryRasterizerAVX.h"
 
@@ -34,14 +34,14 @@ uint QueryRasterizerAVX::RasterizeTriangle(
     int iMinY = std::max((int)tileMin.y, (int)std::floor(minY));
     int iMaxY = std::min((int)tileMax.y, (int)std::ceil(maxY));
 
-    if (iMinX > iMaxX || iMinY > iMaxY) UNLIKELY
+    if (iMinX > iMaxX || iMinY > iMaxY) SOFTX_UNLIKELY
         return 0;
 
     float area2 = RasterizerCommon::EdgeFunction(v0.Position, v1.Position, v2.Position);
     const CullMode cull = state.cullMode;
     if (cull == CullMode::Back && area2 < 0) return 0;
     if (cull == CullMode::Front && area2 > 0) return 0;
-    if (std::abs(area2) < 1e-6f) UNLIKELY return 0;
+    if (std::abs(area2) < 1e-6f) SOFTX_UNLIKELY return 0;
 
     float4 dx01 = v1.Position - v0.Position;
     float4 dx12 = v2.Position - v1.Position;

@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -9,6 +9,7 @@
 #include <vector>
 #include <future>
 
+#include "LibInternal.h"
 #include "QueryRasterizerInterface.h"
 #include "Types.h"
 #include "DepthBuffer.h"
@@ -24,32 +25,27 @@ public:
     OcclusionQuery();
     ~OcclusionQuery();
 
-    void SetVertexBuffer(const VertexBuffer& vb);
-    void SetIndexBuffer(const IndexBuffer& ib);
-    void SetConstantBuffer(const ConstantBuffer& cb);
-    void SetVertexShader(OcclusionVertexShader vs);
-    void SetDepthBuffer(DepthBuffer& db);
-    void SetViewport(const Viewport& vp);
-    void SetCullMode(CullMode mode);
-    void SetDepthFunc(ComparisonFunc func);
-    void SetDepthWriteEnable(bool enable);
+    SOFTX_FORCE_INLINE void SetVertexBuffer(const VertexBuffer& vb) { currentVB = vb; }
+    SOFTX_FORCE_INLINE void SetIndexBuffer(const IndexBuffer& ib) { currentIB = ib; }
+    SOFTX_FORCE_INLINE void SetConstantBuffer(const ConstantBuffer& cb) { currentCB = cb; }
+    SOFTX_FORCE_INLINE void SetVertexShader(OcclusionVertexShader vs) { currentVS = std::move(vs); }
+    SOFTX_FORCE_INLINE void SetDepthBuffer(std::shared_ptr<DepthBuffer> db) { depthBuffer = std::move(db); }
+    SOFTX_FORCE_INLINE void SetViewport(const Viewport& vp) { viewport = vp; }
+    SOFTX_FORCE_INLINE void SetCullMode(CullMode mode) { cullMode = mode; }
+    SOFTX_FORCE_INLINE void SetDepthFunc(ComparisonFunc func) { depthFunc = func; }
+    SOFTX_FORCE_INLINE void SetDepthWriteEnable(bool enable) { depthWriteEnable = enable; }
+
+    SOFTX_FORCE_INLINE bool IsReady() const { return ready; }
+
+    bool GetData(uint* outVisibleSamples = nullptr) const;
+    bool GetResult(queryID id, uint* outSamples) const;
 
     bool Validate() const;
 
     void Begin();
-
     queryID DrawIndexed();
-
     void End();
-
-    bool GetData(uint* outVisibleSamples = nullptr) const;
-
-    bool GetResult(queryID id, uint* outSamples) const;
-
     bool Flush(uint* outVisibleSamples = nullptr);
-
-    bool IsReady() const;
-
     void Release();
 
 private:
@@ -62,11 +58,10 @@ private:
         uint visibleSamples = 0;
     };
 
-    DepthBuffer* depthBuffer = nullptr;
+    std::shared_ptr<DepthBuffer> depthBuffer;
     Viewport viewport;
     VertexBuffer currentVB;
     IndexBuffer currentIB;
-    float4x4 currentWorld;
     ConstantBuffer currentCB;
     OcclusionVertexShader currentVS;
 
@@ -84,7 +79,7 @@ private:
 
     std::unique_ptr<IQueryRasterizer> rasterizer;
 
-    void ProcessDrawCall(DrawCall& dc, 
+    void ProcessDrawCall(DrawCall& dc,
                          DepthBuffer& db,
                          const Viewport& vp,
                          IQueryRasterizer& rasterizer,

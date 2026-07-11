@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////////////////////////
-// SoftX – Software Graphics API
+// SoftX - Software Graphics API
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
@@ -7,7 +7,7 @@
 
 #include <ppl.h>
 
-#include <SoftX.h>
+#include "../include/SoftX.h"
 #include "RasterizerCommon.h"
 #include "Renderer.h"
 #include "ThreadPoolManager.h"
@@ -18,7 +18,7 @@ SOFTX_BEGIN
 
 void DeviceContext::DrawPoint(int x, int y, float z, const float4& color)
 {
-    IRenderTarget* rt = renderTarget;
+    IRenderTarget* rt = renderTarget.get();
     if (!rt)
         return;
 
@@ -41,7 +41,7 @@ void DeviceContext::DrawPoint(int x, int y, float z, const float4& color)
 
 void DeviceContext::DrawLine(int x0, int y0, int x1, int y1, float z0, float z1, const float4& color)
 {
-    IRenderTarget* rt = renderTarget;
+    IRenderTarget* rt = renderTarget.get();
     if (!rt)
         return;
 
@@ -102,12 +102,24 @@ void DeviceContext::DrawIndexed(uint indexCount, uint startIndex)
             }
         }
 
-        concurrency::parallel_for_each(uniqueIndices.begin(), uniqueIndices.end(),
-            [&](uint idx)
-            {
-                // Only VS — ClipSpaceToScreenSpace not called yet
-                clipVerts[idx] = vertexShader(vertexBuffer.GetByIndex(idx), constantBuffer, textureTable);
-            });
+        auto& pool = ThreadPoolManager::Get();
+        std::atomic<size_t> atomicIdx(0);
+        const size_t totalUnique = uniqueIndices.size();
+
+        for (size_t t = 0; t < pool.threadCount(); ++t)
+        {
+            pool.enqueue([&]()
+                {
+                    while (true)
+                    {
+                        size_t i = atomicIdx.fetch_add(1);
+                        if (i >= totalUnique) break;
+                        uint idx = uniqueIndices[i];
+                        clipVerts[idx] = vertexShader(vertexBuffer.GetByIndex(idx), constantBuffer, textureTable);
+                    }
+                });
+        }
+        pool.wait();
     }
 
     // Step 2: Gather source triangles
@@ -163,7 +175,7 @@ void DeviceContext::DrawIndexed(uint indexCount, uint startIndex)
 
         for (const auto& tri : finalTriangles)
         {
-            VertexOutput inVerts[3] = {finalVerts[tri.x], finalVerts[tri.y], finalVerts[tri.z]};
+            VertexOutput inVerts[3] = { finalVerts[tri.x], finalVerts[tri.y], finalVerts[tri.z] };
             std::vector<VertexOutput> outVerts;
             std::vector<int> outIndices;
             geometryShader(inVerts, outVerts, outIndices, textureTable);
@@ -171,7 +183,7 @@ void DeviceContext::DrawIndexed(uint indexCount, uint startIndex)
             int base = (int)gsVerts.size();
             gsVerts.insert(gsVerts.end(), outVerts.begin(), outVerts.end());
             for (size_t j = 0; j + 2 < outIndices.size(); j += 3)
-                gsTriangles.push_back({base + outIndices[j], base + outIndices[j + 1], base + outIndices[j + 2]});
+                gsTriangles.push_back({ base + outIndices[j], base + outIndices[j + 1], base + outIndices[j + 2] });
         }
         finalVerts = std::move(gsVerts);
         finalTriangles = std::move(gsTriangles);
@@ -187,7 +199,15 @@ void DeviceContext::DrawIndexed(uint indexCount, uint startIndex)
         state.depthFunc = depthFunc;
         state.depthWriteEnable = depthWriteEnable;
 
-        Renderer renderer(*rasterizer, renderTarget, *depthBuffer, pixelShader, constantBuffer, &textureTable, state, tileSize);
+        Renderer renderer(*rasterizer,
+            renderTarget.get(),
+            *depthBuffer,
+            pixelShader,
+            constantBuffer,
+            &textureTable,
+            state,
+            tileSize);
+
         renderer.Execute(finalVerts, finalTriangles);
 
 #ifdef DEBUG_TILING
@@ -207,26 +227,26 @@ void DeviceContext::DrawIndexed(uint indexCount, uint startIndex)
             const auto& v0 = finalVerts[tri.x];
             const auto& v1 = finalVerts[tri.y];
             const auto& v2 = finalVerts[tri.z];
-            DrawLine((int)round(v0.Position.x), 
-                     (int)round(v0.Position.y), 
-                     (int)round(v1.Position.x),
-                     (int)round(v1.Position.y), 
-                     v0.Position.z, 
-                     v1.Position.z, 
-                     wireColor);
-            DrawLine((int)round(v1.Position.x), 
-                     (int)round(v1.Position.y), 
-                     (int)round(v2.Position.x),
-                     (int)round(v2.Position.y), 
-                     v1.Position.z, v2.Position.z, 
-                     wireColor);
-            DrawLine((int)round(v2.Position.x), 
-                     (int)round(v2.Position.y), 
-                     (int)round(v0.Position.x),
-                     (int)round(v0.Position.y), 
-                     v2.Position.z, 
-                     v0.Position.z, 
-                     wireColor);
+            DrawLine((int)round(v0.Position.x),
+                (int)round(v0.Position.y),
+                (int)round(v1.Position.x),
+                (int)round(v1.Position.y),
+                v0.Position.z,
+                v1.Position.z,
+                wireColor);
+            DrawLine((int)round(v1.Position.x),
+                (int)round(v1.Position.y),
+                (int)round(v2.Position.x),
+                (int)round(v2.Position.y),
+                v1.Position.z, v2.Position.z,
+                wireColor);
+            DrawLine((int)round(v2.Position.x),
+                (int)round(v2.Position.y),
+                (int)round(v0.Position.x),
+                (int)round(v0.Position.y),
+                v2.Position.z,
+                v0.Position.z,
+                wireColor);
         }
     }
     else if (fillMode == FillMode::Point)
@@ -257,7 +277,7 @@ void DeviceContext::DrawIndexed()
 void DeviceContext::RenderTileQuad(const Tile& tile, float invW, float invH)
 {
     PROFILE_SCOPE("DeviceContext::RenderTileQuad");
-    IRenderTarget* rt = renderTarget;
+    IRenderTarget* rt = renderTarget.get();
     if (!rt)
         return;
 
@@ -286,13 +306,13 @@ void DeviceContext::DrawFullScreenQuad()
     if (!pixelShader || !renderTarget)
         return;
 
-    IRenderTarget* rt = renderTarget;
+    IRenderTarget* rt = renderTarget.get();
     const uint w = rt->Width();
     const uint h = rt->Height();
     const float invW = 1.0f / (w - 1u);
     const float invH = 1.0f / (h - 1u);
 
-    Framebuffer* fb = dynamic_cast<Framebuffer*>(rt);
+    FrameBuffer* fb = dynamic_cast<FrameBuffer*>(rt);
     RenderTargetTexture* rtt = dynamic_cast<RenderTargetTexture*>(rt);
     uint32_t* fbPixels = fb ? fb->GetRawPixels() : nullptr;
     __m128* texPixels = rtt ? rtt->Texture().GetRawPixels() : nullptr;
@@ -338,7 +358,7 @@ void DeviceContext::DrawFullScreenQuad()
                         for (int i = 0; i < 4; ++i) {
                             VertexOutput input;
                             input.UV = float2(u + i * invW, v);
-                            packed[i] = Framebuffer::PackColor(ps(input, cb, tt));
+                            packed[i] = FrameBuffer::PackColor(ps(input, cb, tt));
                         }
                         _mm_store_si128((__m128i*)(row + x),
                             _mm_loadu_si128((__m128i*)packed));
@@ -347,7 +367,7 @@ void DeviceContext::DrawFullScreenQuad()
                     for (; x <= endX; ++x, u += invW) {
                         VertexOutput input;
                         input.UV = float2(u, v);
-                        row[x] = Framebuffer::PackColor(ps(input, cb, tt));
+                        row[x] = FrameBuffer::PackColor(ps(input, cb, tt));
                     }
                 }
             }

@@ -144,6 +144,9 @@
     <ClCompile Include="QueryRasterizerAVX.cpp">
       <Filter>Src\Rasterizer\Query</Filter>
     </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Src\Resources\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Include">
@@ -178,6 +181,12 @@
     </Filter>
     <Filter Include="Include\Rasterizer">
       <UniqueIdentifier>{fb794f7a-5994-4f7a-a3fb-8d1038fd591d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Resources">
+      <UniqueIdentifier>{3231b098-70aa-483b-bf25-bca9aa649ea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Resources\Textures">
+      <UniqueIdentifier>{b885ccf7-75f4-4831-914a-61c1afedbfab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
