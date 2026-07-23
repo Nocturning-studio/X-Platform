@@ -247,7 +247,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 	{
 		range = (rq_storage.r_begin() + rq_storage.r_count() - 1)->range;
 	}
-	range = _max(EPS_L, range);
+	range = std::max(EPS_L, range);
 
 	bullet->flags.skipped_frame = (Engine.TimeManager.GetFrameCount() >= bullet->frame_num);
 
@@ -290,7 +290,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 		VERIFY(!fis_zero(bullet->speed));
 		// вместо normalize(),	 чтоб не считать 2 раза magnitude()
 
-		float BulletSpeedSafe = _max(bullet->speed, m_fMinBulletSpeed);
+		float BulletSpeedSafe = std::max(bullet->speed, m_fMinBulletSpeed);
 		bullet->dir.x /= BulletSpeedSafe;
 		bullet->dir.y /= BulletSpeedSafe;
 		bullet->dir.z /= BulletSpeedSafe;

@@ -345,7 +345,7 @@ randF(l_fHitPower*0.5f,l_fHitPower*1.5f); l_tpALifeMonsterAbstract->fHealth -=
 l_tpALifeMonsterAbstract->m_fpImmunityFactors[l_tHitType]*l_fHit; #ifdef DEBUG if (psAI_Flags.test(aiALife)) { Msg
 ("[LSS] %s %s %s [power %5.2f][damage %5.2f][health %5.2f][creatures left
 %d]",(*I)->base()->name_replace(),l_tpALifeMonsterAbstract->fHealth <= 0 ? "killed" :
-"attacked",l_tpALifeMonsterAbstract->name_replace(),l_fHit,l_tpALifeMonsterAbstract->m_fpImmunityFactors[l_tHitType]*l_fHit,_max(l_tpALifeMonsterAbstract->fHealth,0.f),l_tpALifeMonsterAbstract->fHealth
+"attacked",l_tpALifeMonsterAbstract->name_replace(),l_fHit,l_tpALifeMonsterAbstract->m_fpImmunityFactors[l_tHitType]*l_fHit,std::max(l_tpALifeMonsterAbstract->fHealth,0.f),l_tpALifeMonsterAbstract->fHealth
 >= EPS_L ? m_tpaCombatGroups[iCombatGroupIndex ^ 1].size() : m_tpaCombatGroups[iCombatGroupIndex ^ 1].size() - 1);
 				}
 #endif

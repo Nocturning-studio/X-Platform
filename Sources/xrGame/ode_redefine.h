@@ -25,7 +25,7 @@
 
 #ifdef dFabs
 #undef dFabs
-#define dFabs(x) ((float)_abs(x)) /* absolute value */
+#define dFabs(x) ((float)std::abs(x)) /* absolute value */
 #endif
 
 #endif // XRGAME_EXPORTS

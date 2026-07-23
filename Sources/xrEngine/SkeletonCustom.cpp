@@ -632,7 +632,7 @@ void BuildMatrix(fmat4x4& mView, float invsz, const fvec3 norm, const fvec3& fro
 	fvec3 at, up, right, y;
 	at.sub(from, norm);
 	y.set(0, 1, 0);
-	if (_abs(norm.y) > .99f)
+	if (std::abs(norm.y) > .99f)
 		y.set(1, 0, 0);
 	right.crossproduct(y, norm);
 	up.crossproduct(norm, right);

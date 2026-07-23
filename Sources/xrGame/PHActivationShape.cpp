@@ -182,7 +182,7 @@ bool CPHActivationShape::Activate(const fvec3 need_size, u16 steps, float max_di
 	float fnum_steps_r = 1.f / fnum_steps;
 	float resolve_depth = 0.01f;
 	float max_vel = max_depth_shape / fnum_it * fnum_steps_r / fixed_step;
-	float limit_l_vel = _max(_max(need_size.x, need_size.y), need_size.z) / fnum_it * fnum_steps_r / fixed_step;
+	float limit_l_vel = std::max(std::max(need_size.x, need_size.y), need_size.z) / fnum_it * fnum_steps_r / fixed_step;
 	if (limit_l_vel > default_l_limit)
 		limit_l_vel = default_l_limit;
 	if (max_vel > limit_l_vel)

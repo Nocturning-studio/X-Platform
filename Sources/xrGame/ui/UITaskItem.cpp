@@ -123,9 +123,9 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_captionTime->SetWndPos(m_captionTime->GetWndPos().x,
 							 m_captionStatic->GetWndPos().y + m_captionStatic->GetHeight() + 3.0f);
 
-	float h = _max(m_taskImage->GetWndPos().y + m_taskImage->GetHeight(),
+	float h = std::max(m_taskImage->GetWndPos().y + m_taskImage->GetHeight(),
 				   m_captionTime->GetWndPos().y + m_captionTime->GetHeight());
-	h = _max(h, m_switchDescriptionBtn->GetWndPos().y + m_switchDescriptionBtn->GetHeight());
+	h = std::max(h, m_switchDescriptionBtn->GetWndPos().y + m_switchDescriptionBtn->GetHeight());
 	SetHeight(h);
 
 	m_curr_descr_mode = m_EventsWnd->GetDescriptionMode();
@@ -146,7 +146,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 
 		m_remTimeStatic->SetWndPos(_pos);
 
-		_height = _max(_height, _pos.y + m_remTimeStatic->GetWndSize().y);
+		_height = std::max(_height, _pos.y + m_remTimeStatic->GetWndSize().y);
 		SetHeight(_height);
 	}
 }
@@ -249,7 +249,7 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 
 	m_descriptionStatic->SetText(*stbl.translate(obj->description));
 	m_descriptionStatic->AdjustHeightToText();
-	float h = _max(m_ActiveObjectiveStatic->GetWndPos().y + m_ActiveObjectiveStatic->GetHeight(),
+	float h = std::max(m_ActiveObjectiveStatic->GetWndPos().y + m_ActiveObjectiveStatic->GetHeight(),
 				   m_descriptionStatic->GetWndPos().y + m_descriptionStatic->GetHeight());
 	SetHeight(h);
 	switch (obj->TaskState())
@@ -402,14 +402,14 @@ void CUIUserTaskItem::SetGameTask				(CGameTask* gt, u16 obj_idx)
 	m_captionStatic->SetText					(*stbl.translate(gt->m_Title));
 	m_captionStatic->AdjustHeightToText			();
 
-	float h1 = _max( m_image->GetWndPos().y+m_image->GetHeight(),
+	float h1 = std::max( m_image->GetWndPos().y+m_image->GetHeight(),
 					m_captionStatic->GetWndPos().y + m_captionStatic->GetHeight() );
 	m_descriptionStatic->SetWndPos				(m_descriptionStatic->GetWndPos().x, h1+4.0f);
 
 	m_descriptionStatic->SetText				(*stbl.translate(obj->description));
 	m_descriptionStatic->AdjustHeightToText		();
 
-	float h = _max(	m_image->GetWndPos().y+m_image->GetHeight(),
+	float h = std::max(	m_image->GetWndPos().y+m_image->GetHeight(),
 					m_descriptionStatic->GetWndPos().y+ m_descriptionStatic->GetHeight());
 
 	SetHeight									(h+10.0f);

@@ -280,7 +280,7 @@ void* xrMemory::mem_realloc(void* P, size_t size
 								_name
 #endif // DEBUG_MEMORY_NAME
 		);
-		std::memcpy(p_new, p_old, _min(s_current - 1, s_dest));
+		std::memcpy(p_new, p_old, std::min(s_current - 1, s_dest));
 		mem_free(p_old);
 		_ptr = p_new;
 	}

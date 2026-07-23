@@ -117,7 +117,7 @@ bool CSpaceRestrictionBridge::on_border(const fvec3& position) const
 		if (ai().level_graph().vertex(*I)->position().xz() != pos.xz())
 			break;
 
-		if (_abs(ai().level_graph().vertex_plane_y(*I) - position.y) < 2.f)
+		if (std::abs(ai().level_graph().vertex_plane_y(*I) - position.y) < 2.f)
 			return (true);
 	}
 

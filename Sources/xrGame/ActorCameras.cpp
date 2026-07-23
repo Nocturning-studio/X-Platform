@@ -69,7 +69,7 @@ void CActor::camUpdateLadder(float dt)
 	}
 	else
 	{
-		cam_yaw += delta * _min(dt * 10.f, 1.f);
+		cam_yaw += delta * std::min(dt * 10.f, 1.f);
 	}
 
 	CElevatorState* es = character_physics_support()->movement()->ElevatorState();
@@ -79,7 +79,7 @@ void CActor::camUpdateLadder(float dt)
 		const float ldown_pitch = cameras[eacFirstEye]->lim_pitch.y;
 		float delta = angle_difference_signed(ldown_pitch, cam_pitch);
 		if (delta > 0.f)
-			cam_pitch += delta * _min(dt * 10.f, 1.f);
+			cam_pitch += delta * std::min(dt * 10.f, 1.f);
 	}
 }
 
@@ -102,7 +102,7 @@ IC float viewport_near(float& w, float& h)
 	w = 2.f * VIEWPORT_NEAR * tanf(deg2rad(Engine.RenderView.Fov) / 2.f);
 	h = w * Engine.RenderView.Aspect;
 	float c = _sqrt(w * w + h * h);
-	return _max(_max(VIEWPORT_NEAR, _max(w, h)), c);
+	return std::max(std::max(VIEWPORT_NEAR, std::max(w, h)), c);
 }
 
 ICF void calc_point(fvec3& pt, float radius, float depth, float alpha)
@@ -199,9 +199,9 @@ void CActor::cam_Update(float dt, float fFOV)
 				{
 					da = PI / 1000.f;
 					if (!fis_zero(r_torso.roll))
-						da *= r_torso.roll / _abs(r_torso.roll);
+						da *= r_torso.roll / std::abs(r_torso.roll);
 					float angle = 0.f;
-					for (; _abs(angle) < _abs(alpha); angle += da)
+					for (; std::abs(angle) < std::abs(alpha); angle += da)
 						if (test_point(xrc, transform, mat, ext, radius, angle))
 						{
 							bIntersect = TRUE;

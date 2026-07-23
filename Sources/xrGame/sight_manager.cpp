@@ -180,8 +180,8 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex* tpNode, float f
 			float fSquare0 = ai().level_graph().compute_square(-fIncrement, fAngleOfView, tpNode);
 			float fSquare1 = ai().level_graph().compute_square(-fIncrement, fAngleOfView, tpNextNode);
 			if ((fSquare1 - fSquare0 > fMaxSquare) || (fsimilar(fSquare1 - fSquare0, fMaxSquare, EPS_L) &&
-													   (_abs(fIncrement - object().movement().m_body.target.yaw) <
-														_abs(fBestAngle - object().movement().m_body.target.yaw))))
+													   (std::abs(fIncrement - object().movement().m_body.target.yaw) <
+														std::abs(fBestAngle - object().movement().m_body.target.yaw))))
 			{
 				fMaxSquare = fSquare1 - fSquare0;
 				fBestAngle = fIncrement;
@@ -218,7 +218,7 @@ void CSightManager::vfValidateAngleDependency(float x1, float& x2, float x3)
 {
 	float _x2 = angle_normalize_signed(x2 - x1);
 	float _x3 = angle_normalize_signed(x3 - x1);
-	if ((_x2 * _x3 <= 0.f) && (_abs(_x2) + _abs(_x3) > PI - EPS_L))
+	if ((_x2 * _x3 <= 0.f) && (std::abs(_x2) + std::abs(_x3) > PI - EPS_L))
 		x2 = x3;
 }
 
@@ -226,7 +226,7 @@ bool CSightManager::need_correction(float x1, float x2, float x3)
 {
 	float _x2 = angle_normalize_signed(x2 - x1);
 	float _x3 = angle_normalize_signed(x3 - x1);
-	if ((_x2 * _x3 <= 0) && (_abs(_x2) + _abs(_x3) > PI - EPS_L))
+	if ((_x2 * _x3 <= 0) && (std::abs(_x2) + std::abs(_x3) > PI - EPS_L))
 		return (true);
 	return (false);
 }

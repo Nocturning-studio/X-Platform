@@ -35,7 +35,7 @@ BOOL CExplosiveRocket::net_Spawn(CSE_Abstract* DC)
 	result = result && CInventoryItem::net_Spawn(DC);
 	fvec3 box;
 	BoundingBox().getsize(box);
-	float max_size = _max(_max(box.x, box.y), box.z);
+	float max_size = std::max(std::max(box.x, box.y), box.z);
 	box.set(max_size, max_size, max_size);
 	box.mul(3.f);
 	CExplosive::SetExplosionSize(box);

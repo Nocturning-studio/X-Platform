@@ -156,7 +156,7 @@ float CPostprocessAnimator::GetLength()
 	for (int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
 	{
 		float t = m_Params[a]->get_length();
-		v = _max(t, v);
+		v = std::max(t, v);
 	}
 	return v;
 }

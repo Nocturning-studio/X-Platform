@@ -282,7 +282,7 @@ void CUIDragDropListEx::ReinitScroll()
 	m_vScrollBar->Show(h1 > h2);
 	m_vScrollBar->Enable(h1 > h2);
 
-	m_vScrollBar->SetRange(0, _max(0, iFloor(h1 - h2)));
+	m_vScrollBar->SetRange(0, std::max(0, iFloor(h1 - h2)));
 	m_vScrollBar->SetScrollPos(0);
 	m_vScrollBar->SetStepSize(CellSize().y / 3);
 	m_vScrollBar->SetPageSize(iFloor(GetWndSize().y / float(CellSize().y)));

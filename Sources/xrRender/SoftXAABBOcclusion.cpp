@@ -20,7 +20,7 @@ SoftXAABBOcclusion::ProjectedVertex SoftXAABBOcclusion::Project(const fvec3& wor
     float cy = x * viewProj._12 + y * viewProj._22 + z * viewProj._32 + viewProj._42;
     float cz = x * viewProj._13 + y * viewProj._23 + z * viewProj._33 + viewProj._43;
 
-    if (w <= 0.0f || _abs(w) < EPS_L)
+    if (w <= 0.0f || std::abs(w) < EPS_L)
     {
         res.valid = false; // за ближней плоскостью
         return res;

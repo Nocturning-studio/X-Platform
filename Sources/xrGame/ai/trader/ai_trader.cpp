@@ -102,7 +102,7 @@ void CAI_Trader::LookAtActor(CBoneInstance* B)
 	float h, p, b;
 	Transform().getHPB(h, p, b);
 	float cur_yaw = h;
-	float dy = _abs(angle_normalize_signed(yaw - cur_yaw));
+	float dy = std::abs(angle_normalize_signed(yaw - cur_yaw));
 	clamp(dy, 0.f, 1.f); // FIX BY IXRAY(THANKS BY NSDeathman)
 
 	if (angle_normalize_signed(yaw - cur_yaw) > 0)

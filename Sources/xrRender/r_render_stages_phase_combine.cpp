@@ -79,9 +79,9 @@ void CRender::combine_scene_lighting()
 	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
 
 	const float minamb = 0.001f;
-	fvec4 ambclr = {	_max(sRgbToLinear(envdesc->ambient.x), minamb),
-						_max(sRgbToLinear(envdesc->ambient.y), minamb),
-						_max(sRgbToLinear(envdesc->ambient.z), minamb), 
+	fvec4 ambclr = {	std::max(sRgbToLinear(envdesc->ambient.x), minamb),
+						std::max(sRgbToLinear(envdesc->ambient.y), minamb),
+						std::max(sRgbToLinear(envdesc->ambient.z), minamb), 
 						ps_r_ao_brightness};
 
 	fvec4 envclr = {	sRgbToLinear(envdesc->hemi_color.x), 
@@ -135,7 +135,7 @@ void CRender::combine_scene_lighting()
 //
 //			fvec3 L_dir, L_up = P.n, L_right;
 //			L_dir.set(0, 0, 1);
-//			if (_abs(L_up.dotproduct(L_dir)) > .99f)
+//			if (std::abs(L_up.dotproduct(L_dir)) > .99f)
 //				L_dir.set(1, 0, 0);
 //			L_right.crossproduct(L_up, L_dir);
 //			L_right.normalize();

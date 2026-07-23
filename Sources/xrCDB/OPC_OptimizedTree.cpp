@@ -331,18 +331,18 @@ bool AABBNoLeafTree::Build(AABBTree* tree)
 	Point EMax(flt_min, flt_min, flt_min);                                                                             \
 	for (udword i = 0; i < mNbNodes; i++)                                                                              \
 	{                                                                                                                  \
-		if (_abs(Nodes[i].mAABB.mCenter.x) > CMax.x)                                                                   \
-			CMax.x = _abs(Nodes[i].mAABB.mCenter.x);                                                                   \
-		if (_abs(Nodes[i].mAABB.mCenter.y) > CMax.y)                                                                   \
-			CMax.y = _abs(Nodes[i].mAABB.mCenter.y);                                                                   \
-		if (_abs(Nodes[i].mAABB.mCenter.z) > CMax.z)                                                                   \
-			CMax.z = _abs(Nodes[i].mAABB.mCenter.z);                                                                   \
-		if (_abs(Nodes[i].mAABB.mExtents.x) > EMax.x)                                                                  \
-			EMax.x = _abs(Nodes[i].mAABB.mExtents.x);                                                                  \
-		if (_abs(Nodes[i].mAABB.mExtents.y) > EMax.y)                                                                  \
-			EMax.y = _abs(Nodes[i].mAABB.mExtents.y);                                                                  \
-		if (_abs(Nodes[i].mAABB.mExtents.z) > EMax.z)                                                                  \
-			EMax.z = _abs(Nodes[i].mAABB.mExtents.z);                                                                  \
+		if (std::abs(Nodes[i].mAABB.mCenter.x) > CMax.x)                                                                   \
+			CMax.x = std::abs(Nodes[i].mAABB.mCenter.x);                                                                   \
+		if (std::abs(Nodes[i].mAABB.mCenter.y) > CMax.y)                                                                   \
+			CMax.y = std::abs(Nodes[i].mAABB.mCenter.y);                                                                   \
+		if (std::abs(Nodes[i].mAABB.mCenter.z) > CMax.z)                                                                   \
+			CMax.z = std::abs(Nodes[i].mAABB.mCenter.z);                                                                   \
+		if (std::abs(Nodes[i].mAABB.mExtents.x) > EMax.x)                                                                  \
+			EMax.x = std::abs(Nodes[i].mAABB.mExtents.x);                                                                  \
+		if (std::abs(Nodes[i].mAABB.mExtents.y) > EMax.y)                                                                  \
+			EMax.y = std::abs(Nodes[i].mAABB.mExtents.y);                                                                  \
+		if (std::abs(Nodes[i].mAABB.mExtents.z) > EMax.z)                                                                  \
+			EMax.z = std::abs(Nodes[i].mAABB.mExtents.z);                                                                  \
 	}
 
 #define INIT_QUANTIZATION                                                                                              \

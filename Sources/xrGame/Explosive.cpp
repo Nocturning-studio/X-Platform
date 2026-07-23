@@ -223,7 +223,7 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 	fvec3 l_c, l_d;
 	l_b1.get_CD(l_c, l_d);
 	float effective_volume = l_d.x * l_d.y * l_d.z;
-	float max_s = effective_volume / (_min(_min(l_d.x, l_d.y), l_d.z));
+	float max_s = effective_volume / (std::min(std::min(l_d.x, l_d.y), l_d.z));
 	if (blasted_obj->PPhysicsShell() && blasted_obj->PPhysicsShell()->isActive())
 	{
 		float ph_volume = blasted_obj->PPhysicsShell()->getVolume();
@@ -275,8 +275,8 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 
 #ifdef DEBUG
 		float l_S = effective_volume *
-					(_abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
-					 _abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
+					(std::abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + std::abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
+					 std::abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
 		float add_eff = _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 		effect += add_eff;
 		if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
@@ -288,8 +288,8 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 		}
 #else
 		float l_S = effective_volume *
-					(_abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
-					 _abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
+					(std::abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + std::abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
+					 std::abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
 		effect += _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 #endif
 	}

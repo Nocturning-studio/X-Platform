@@ -91,7 +91,7 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 	fvec3 torqu;
 	torqu.crossproduct(dr, hit_point);
 	hit_point.x = 0;
-	float rotational_ammount = hit_point.magnitude() * power_factor * 3; //_abs(torqu.x)
+	float rotational_ammount = hit_point.magnitude() * power_factor * 3; //std::abs(torqu.x)
 
 	if (torqu.x < 0)
 		play_cycle(CA, hit_downr, 2, block_times[6], 1);
@@ -114,17 +114,17 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 	const float side_secretive_threshold = 0.2f;
 	dr.mul(power_factor);
 	if (dr.y > side_secretive_threshold)
-		play_cycle(CA, rthit_motion, 1, block_times[0], _abs(dr.y));
+		play_cycle(CA, rthit_motion, 1, block_times[0], std::abs(dr.y));
 	else if (dr.y < -side_secretive_threshold)
-		play_cycle(CA, lthit_motion, 1, block_times[1], _abs(dr.y));
+		play_cycle(CA, lthit_motion, 1, block_times[1], std::abs(dr.y));
 
 	if (dr.z < 0.f)
-		play_cycle(CA, fvhit_motion, 1, block_times[2], _abs(dr.z));
+		play_cycle(CA, fvhit_motion, 1, block_times[2], std::abs(dr.z));
 	else
-		play_cycle(CA, bkhit_motion, 1, block_times[3], _abs(dr.z));
+		play_cycle(CA, bkhit_motion, 1, block_times[3], std::abs(dr.z));
 	CA->LL_SetChannelFactor(1, 3.f);
-	// CA->LL_SetChannelFactor(1,_abs(dr.z));
-	// CA->LL_SetChannelFactor(2,_abs(dr.y));
+	// CA->LL_SetChannelFactor(1,std::abs(dr.z));
+	// CA->LL_SetChannelFactor(2,std::abs(dr.y));
 
 	// BOOL bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channal = 0
 	// CA->PlayCycle(hit_motion,TRUE,0,0,1) ;

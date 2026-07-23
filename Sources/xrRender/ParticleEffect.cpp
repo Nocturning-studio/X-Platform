@@ -345,7 +345,7 @@ void CParticleEffect::Render(float)
 						M.identity();
 						M.k.div(m.vel, speed);
 						M.j.set(0, 1, 0);
-						if (_abs(M.j.dotproduct(M.k)) > .99f)
+						if (std::abs(M.j.dotproduct(M.k)) > .99f)
 							M.j.set(0, 0, 1);
 						M.i.crossproduct(M.j, M.k);
 						M.i.normalize();

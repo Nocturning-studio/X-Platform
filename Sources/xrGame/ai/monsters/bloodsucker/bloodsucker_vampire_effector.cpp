@@ -99,7 +99,7 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 
 	//////////////////////////////////////////////////////////////////////////
 	// using formula: y = k - 2*k*abs(x-1/2)   k - max distance
-	// float	cur_dist = m_dist * (1 - 2*_abs((1-time_left_perc) - 0.5f));
+	// float	cur_dist = m_dist * (1 - 2*std::abs((1-time_left_perc) - 0.5f));
 	float time_passed = 1 - time_left_perc;
 	float cur_dist = m_dist * (_sqrt(0.5f * 0.5f - (time_passed - 0.5f) * (time_passed - 0.5f)));
 
@@ -113,9 +113,9 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 		dangle_target.y = 0.f;
 		dangle_target.z = 0.f;
 
-		angle_lerp(dangle_current.x, dangle_target.x, _abs(dangle_current.x / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
-		angle_lerp(dangle_current.y, dangle_target.y, _abs(dangle_current.y / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
-		angle_lerp(dangle_current.z, dangle_target.z, _abs(dangle_current.z / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
+		angle_lerp(dangle_current.x, dangle_target.x, std::abs(dangle_current.x / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
+		angle_lerp(dangle_current.y, dangle_target.y, std::abs(dangle_current.y / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
+		angle_lerp(dangle_current.z, dangle_target.z, std::abs(dangle_current.z / fLifeTime + 0.001f), Engine.TimeManager.GetDeltaTime());
 	}
 	else
 	{

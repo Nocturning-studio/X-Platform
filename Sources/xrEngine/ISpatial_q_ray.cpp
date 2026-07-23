@@ -226,17 +226,17 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		if (!b_use_sse)
 		{
 			// for FPU - zero out inf
-			if (_abs(_dir.x) > flt_eps)
+			if (std::abs(_dir.x) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.x = 0;
-			if (_abs(_dir.y) > flt_eps)
+			if (std::abs(_dir.y) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.y = 0;
-			if (_abs(_dir.z) > flt_eps)
+			if (std::abs(_dir.z) > flt_eps)
 			{
 			}
 			else

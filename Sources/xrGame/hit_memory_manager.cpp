@@ -147,7 +147,7 @@ void CHitMemoryManager::add(float amount, const fvec3& vLocalDir, const CObject*
 		(*J).fill(entity_alive, m_object,
 				  (!m_stalker ? (*J).m_squad_mask.get()
 							  : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
-		(*J).m_amount = _max(amount, (*J).m_amount);
+		(*J).m_amount = std::max(amount, (*J).m_amount);
 	}
 }
 

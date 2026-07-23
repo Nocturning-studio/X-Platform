@@ -111,7 +111,7 @@ bool CDetailPathManager::compute_tangent(const STrajectoryPoint& start, const SC
 			distance = start_circle.center.distance_to(dest_circle.center);
 			// radius difference
 			float r_diff = start_circle.radius - dest_circle.radius;
-			float r_diff_abs = _abs(r_diff);
+			float r_diff_abs = std::abs(r_diff);
 			if ((r_diff_abs > distance) && !fsimilar(r_diff_abs, distance, EPS_S))
 				return (false);
 			// angle between external tangents and circle centers segment
@@ -171,7 +171,7 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
 	const float min_dist = .1f;
 	STravelPathPoint t;
 	t.velocity = velocity;
-	if (position.radius * _abs(position.angle) <= min_dist)
+	if (position.radius * std::abs(position.angle) <= min_dist)
 	{
 		if (!path)
 		{
@@ -211,8 +211,8 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
 		n = 1;
 	else
 	{
-		int m = _min(iFloor(_abs(angle) / position.angular_velocity * 10.f + 1.5f),
-					 iFloor(position.radius * _abs(angle) / min_dist + 1.5f));
+		int m = std::min(iFloor(std::abs(angle) / position.angular_velocity * 10.f + 1.5f),
+					 iFloor(position.radius * std::abs(angle) / min_dist + 1.5f));
 #ifdef DEBUG
 		if (m >= 10000)
 		{
@@ -313,13 +313,13 @@ bool CDetailPathManager::build_trajectory(STrajectoryPoint& start, STrajectoryPo
 {
 	time = flt_max;
 	SDist dist[4];
-	float straight_velocity = _abs(velocity(velocity2).linear_velocity);
+	float straight_velocity = std::abs(velocity(velocity2).linear_velocity);
 	{
 		for (u32 i = 0; i < tangent_count; ++i)
 		{
 			dist[i].index = i;
-			dist[i].time = _abs(tangents[i][0].angle) / start.angular_velocity +
-						   _abs(tangents[i][1].angle) / dest.angular_velocity +
+			dist[i].time = std::abs(tangents[i][0].angle) / start.angular_velocity +
+						   std::abs(tangents[i][1].angle) / dest.angular_velocity +
 						   tangents[i][0].point.distance_to(tangents[i][1].point) *
 							   (fis_zero(straight_velocity) ? 0 : 1.f / straight_velocity);
 		}

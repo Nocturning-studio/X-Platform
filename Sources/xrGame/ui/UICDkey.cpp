@@ -111,12 +111,12 @@ LPCSTR CUICDkey::DelHyphens(LPCSTR c)
 	int sz = xr_strlen(c);
 	int j = 0;
 
-	for (int i = 0; i < sz - _min(iFloor(sz / 4.0f), 3); i++)
+	for (int i = 0; i < sz - std::min(iFloor(sz / 4.0f), 3); i++)
 	{
 		j = i + iFloor(i / 4.0f);
 		buf[i] = c[j];
 	}
-	buf[sz - _min(iFloor(sz / 4.0f), 3)] = 0;
+	buf[sz - std::min(iFloor(sz / 4.0f), 3)] = 0;
 
 	return buf;
 }

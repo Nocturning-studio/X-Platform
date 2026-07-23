@@ -77,7 +77,7 @@ class ICEMATHS_API Plane
 	}
 	inline_ bool Belongs(const Point& p) const
 	{
-		return _abs(Distance(p)) < PLANE_EPSILON;
+		return std::abs(Distance(p)) < PLANE_EPSILON;
 	}
 
 	inline_ void Normalize()

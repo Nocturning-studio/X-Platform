@@ -1545,7 +1545,7 @@ void PATargetRotate::Execute(ParticleEffect* effect, float dt)
 {
 	float scaleFac = scale * dt;
 
-	pVector r = pVector(_abs(rot.x), _abs(rot.y), _abs(rot.z));
+	pVector r = pVector(std::abs(rot.x), std::abs(rot.y), std::abs(rot.z));
 
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
@@ -1553,7 +1553,7 @@ void PATargetRotate::Execute(ParticleEffect* effect, float dt)
 		//		m.rot += (r - m.rot) * scaleFac;
 		pVector sign(m.rot.x >= 0.f ? scaleFac : -scaleFac, m.rot.y >= 0.f ? scaleFac : -scaleFac,
 					 m.rot.z >= 0.f ? scaleFac : -scaleFac);
-		pVector dif((r.x - _abs(m.rot.x)) * sign.x, (r.y - _abs(m.rot.y)) * sign.x, (r.z - _abs(m.rot.z)) * sign.x);
+		pVector dif((r.x - std::abs(m.rot.x)) * sign.x, (r.y - std::abs(m.rot.y)) * sign.x, (r.z - std::abs(m.rot.z)) * sign.x);
 		m.rot += dif;
 	}
 }

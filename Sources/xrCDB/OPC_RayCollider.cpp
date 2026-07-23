@@ -334,9 +334,9 @@ BOOL RayCollider::InitQuery(const Ray& world_ray, const Matrix4x4* world, udword
 		mData2 = mOrigin + mData;
 
 		// Precompute mFDir;
-		mFDir.x = _abs(mData.x);
-		mFDir.y = _abs(mData.y);
-		mFDir.z = _abs(mData.z);
+		mFDir.x = std::abs(mData.x);
+		mFDir.y = std::abs(mData.y);
+		mFDir.z = std::abs(mData.z);
 	}
 	else
 	{
@@ -349,9 +349,9 @@ BOOL RayCollider::InitQuery(const Ray& world_ray, const Matrix4x4* world, udword
 		//		mData.z = FR(z);
 
 		// Precompute mFDir;
-		mFDir.x = _abs(mDir.x);
-		mFDir.y = _abs(mDir.y);
-		mFDir.z = _abs(mDir.z);
+		mFDir.x = std::abs(mDir.x);
+		mFDir.y = std::abs(mDir.y);
+		mFDir.z = std::abs(mDir.z);
 	}
 
 	// Check temporal coherence :

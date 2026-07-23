@@ -153,7 +153,7 @@ class CVelocityLimiter : public CPHUpdateObject
 				vlinear_velocity.z /= f;
 				ret = true;
 			}
-			mag = _abs(linear_velocity[1]);
+			mag = std::abs(linear_velocity[1]);
 			if (mag > y_limit)
 			{
 				vlinear_velocity.y = linear_velocity[1] / mag * y_limit;
@@ -284,7 +284,7 @@ class CGetContactForces : public CPHUpdateObject
 
 				save_max(m_max_force_self, _sqrt(dDOT(self_force, self_force)));
 				save_max(m_max_torque_self, _sqrt(dDOT(self_torque, self_torque)));
-				save_max(m_max_force_self_y, _abs(self_force[1]));
+				save_max(m_max_force_self_y, std::abs(self_force[1]));
 				save_max(m_max_force_self_sd, _sqrt(self_force[0] * self_force[0] + self_force[2] * self_force[2]));
 				if (other_body)
 				{
@@ -368,7 +368,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	GetCharacterVelocity(vel);
 	GetCharacterPosition(pos);
 	// const Fbox& box =Box();
-	float pass = character_exist ? _abs(Box().getradius() - boxes[id].getradius()) : boxes[id].getradius();
+	float pass = character_exist ? std::abs(Box().getradius() - boxes[id].getradius()) : boxes[id].getradius();
 	float max_vel = pass / 2.f / fnum_it / fnum_steps / fixed_step;
 	float max_a_vel = PI / 8.f / fnum_it / fnum_steps / fixed_step;
 	dBodySetForce(GetBody(), 0.f, 0.f, 0.f);

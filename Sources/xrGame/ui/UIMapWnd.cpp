@@ -76,7 +76,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_UIMainScrollH->SetAutoDelete(true);
 	m_UIMainScrollH->Init(r.left, r.bottom + SCROLLBARS_SHIFT, r.right - r.left, true, "pda");
 	m_UIMainScrollH->SetWindowName("scroll_h");
-	m_UIMainScrollH->SetStepSize(_max(1, iFloor(m_UILevelFrame->GetWidth() / 10)));
+	m_UIMainScrollH->SetStepSize(std::max(1, iFloor(m_UILevelFrame->GetWidth() / 10)));
 	m_UIMainScrollH->SetPageSize(iFloor(m_UILevelFrame->GetWidth()));
 	m_UIMainFrame->AttachChild(m_UIMainScrollH);
 	Register(m_UIMainScrollH);
@@ -87,7 +87,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_UIMainScrollV->Init(r.right + SCROLLBARS_SHIFT, r.top, m_UIMainScrollH->GetWndRect().bottom - r.top, false,
 						  "pda");
 	m_UIMainScrollV->SetWindowName("scroll_v");
-	m_UIMainScrollV->SetStepSize(_max(1, iFloor(m_UILevelFrame->GetHeight() / 10)));
+	m_UIMainScrollV->SetStepSize(std::max(1, iFloor(m_UILevelFrame->GetHeight() / 10)));
 	m_UIMainScrollV->SetPageSize(iFloor(m_UILevelFrame->GetHeight()));
 	m_UIMainFrame->AttachChild(m_UIMainScrollV);
 	Register(m_UIMainScrollV);

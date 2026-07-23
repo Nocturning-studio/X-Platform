@@ -129,7 +129,7 @@ template <bool _debug> class FixedConvexVolume
 				fvec3 tmp_point = view_frustum_rays[i].Position;
 
 				tmp_dist = light_cuboid_polys[align_planes[p]].plane.classify(tmp_point);
-				min_dist = _min(tmp_dist, min_dist);
+				min_dist = std::min(tmp_dist, min_dist);
 			}
 
 			fvec3 shift = light_cuboid_polys[align_planes[p]].plane.n;
@@ -216,7 +216,7 @@ template <bool _debug> class FixedConvexVolume
 
 			float max_dist = -1000;
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
-				max_dist = _max(plane.classify(view_frustum_rays[i].Position), max_dist);
+				max_dist = std::max(plane.classify(view_frustum_rays[i].Position), max_dist);
 
 			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
@@ -573,7 +573,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		L_pos.set(sun->get_position());
 		L_dir.set(sun->get_direction()).normalize();
 		L_right.set(1, 0, 0);
-		if (_abs(L_right.dotproduct(L_dir)) > .99f)
+		if (std::abs(L_right.dotproduct(L_dir)) > .99f)
 			L_right.set(0, 0, 1);
 		L_up.crossproduct(L_dir, L_right).normalize();
 		L_right.crossproduct(L_up, L_dir).normalize();

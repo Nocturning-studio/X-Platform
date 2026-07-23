@@ -76,7 +76,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 								CWeapon				*weapon = smart_cast<CWeapon*>(weapon_object);
 								if (weapon) {
 									float fly_dist		= bullet->fly_dist+dist;
-									float dist_factor	= _min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
+									float dist_factor	= std::min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
 									ahp					= dist_factor*weapon->hit_probability() + (1.f-dist_factor)*1.f;
 								}
 							}
@@ -95,7 +95,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 								{
 									game_difficulty_hit_probability = weapon->hit_probability();
 									float fly_dist = bullet->fly_dist + dist;
-									dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
+									dist_factor = std::min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
 								}
 							}
 
@@ -108,7 +108,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 							{
 								hpf = i_stalker->SpecificCharacter().hit_probability_factor();
 								float fly_dist = bullet->fly_dist + dist;
-								float dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
+								float dist_factor = std::min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
 								ahp = dist_factor * actor->HitProbability() + (1.f - dist_factor) * 1.f;
 							}
 #endif
@@ -497,7 +497,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	{
 		//óìåíüøåíèå ñêîðîñòè ïîëåòà â çàâèñèìîñòè
 		//îò óãëà ïàäåíèÿ ïóëè (÷åì ïðÿìåå óãîë, òåì áîëüøå ïîòåðÿ)
-		float scale = 1.f - _abs(bullet->dir.dotproduct(hit_normal)) * m_fCollisionEnergyMin;
+		float scale = 1.f - std::abs(bullet->dir.dotproduct(hit_normal)) * m_fCollisionEnergyMin;
 		clamp(scale, 0.f, m_fCollisionEnergyMax);
 
 		//âû÷èñëåíèå ðèêîøåòà, äåëàåòñÿ íåìíîãî ôåéêîì,

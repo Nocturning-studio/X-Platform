@@ -180,7 +180,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1, float a2, float a3, floa
 
 		// Find a vector3 orthogonal to n.
 		pVector basis(1.0f, 0.0f, 0.0f);
-		if (_abs(basis * n) > 0.999)
+		if (std::abs(basis * n) > 0.999)
 			basis = pVector(0.0f, 1.0f, 0.0f);
 
 		// Project away N component, normalize and cross to get
@@ -216,7 +216,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1, float a2, float a3, floa
 
 		// Find a vector3 orthogonal to n.
 		pVector basis(1.0f, 0.0f, 0.0f);
-		if (_abs(basis * p2) > 0.999)
+		if (std::abs(basis * p2) > 0.999)
 			basis = pVector(0.0f, 1.0f, 0.0f);
 
 		// Project away N component, normalize and cross to get

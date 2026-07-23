@@ -549,7 +549,7 @@ void CStalkerMovementManager::parse_velocity_mask()
 		float look_angle = path_direction_angle();
 
 		// Если угол значительный (поворот)
-		if (_abs(look_angle) > PI_DIV_8)
+		if (std::abs(look_angle) > PI_DIV_8)
 		{
 			// Принудительно вращаем голову в сторону пути быстрее, чем тело
 			// m_head.target.yaw берется из setup_body_orientation, но мы ускоряем поворот

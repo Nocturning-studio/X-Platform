@@ -181,7 +181,7 @@ void light::set_position(const fvec3& P)
 
 void light::set_range(float R)
 {
-	float eps = _max(range * 0.1f, EPS_L);
+	float eps = std::max(range * 0.1f, EPS_L);
 	if (fsimilar(range, R, eps))
 		return;
 	range = R;
@@ -307,7 +307,7 @@ void light::transform_calc()
 	{
 		// auto find 'up' and 'right' vectors
 		L_up.set(0, 1, 0);
-		if (_abs(L_up.dotproduct(L_dir)) > .99f)
+		if (std::abs(L_up.dotproduct(L_dir)) > .99f)
 			L_up.set(0, 0, 1);
 		L_right.crossproduct(L_up, L_dir);
 		L_right.normalize();

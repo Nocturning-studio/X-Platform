@@ -8,7 +8,7 @@ void CStreamReader::construct(const HANDLE& file_mapping_handle, const u32& star
 	m_start_offset = start_offset;
 	m_file_size = file_size;
 	m_archive_size = archive_size;
-	m_window_size = _max(window_size, FS.dwAllocGranularity);
+	m_window_size = std::max(window_size, FS.dwAllocGranularity);
 
 	map(0);
 }

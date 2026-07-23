@@ -25,7 +25,7 @@ inline_ BOOL PlanesCollider::PlanesAABBOverlap(const Point& center, const Point&
 	// variant here uses 3 fabs ops, 6 muls, 7 adds and two floating point
 	// comparisons per plane. The routine early-exits if the AABB is found
 	// to be outside any of the planes. The loop also constructs a _new_ output
-	// clip mask. Most FPUs have a native single-cycle _abs() operation.
+	// clip mask. Most FPUs have a native single-cycle std::abs() operation.
 
 	udword Mask = 1;		   // current mask index (1,2,4,8,..)
 	udword TmpOutClipMask = 0; // initialize output clip mask into empty.
@@ -34,8 +34,8 @@ inline_ BOOL PlanesCollider::PlanesAABBOverlap(const Point& center, const Point&
 	{
 		if (in_clip_mask & Mask) // if clip plane is active, process it..
 		{
-			float NP = extents.x * _abs(p->n.x) + extents.y * _abs(p->n.y) +
-					   extents.z * _abs(p->n.z); // ### _abs could be precomputed
+			float NP = extents.x * std::abs(p->n.x) + extents.y * std::abs(p->n.y) +
+					   extents.z * std::abs(p->n.z); // ### std::abs could be precomputed
 			float MP = center.x * p->n.x + center.y * p->n.y + center.z * p->n.z + p->d;
 
 			if (NP < MP)				// near vertex behind the clip plane...

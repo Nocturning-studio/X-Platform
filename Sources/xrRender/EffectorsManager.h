@@ -18,11 +18,11 @@ class CEffectorsManager : public IEffectorsManager
 	}
 	virtual void set_duality_h(float f)
 	{
-		param_duality_h = _abs(f);
+		param_duality_h = std::abs(f);
 	}
 	virtual void set_duality_v(float f)
 	{
-		param_duality_v = _abs(f);
+		param_duality_v = std::abs(f);
 	}
 	virtual void set_noise(float f)
 	{
@@ -34,7 +34,7 @@ class CEffectorsManager : public IEffectorsManager
 	}
 	virtual void set_noise_fps(float f)
 	{
-		param_noise_fps = _abs(f) + EPS_S;
+		param_noise_fps = std::abs(f) + EPS_S;
 	}
 	virtual void set_color_base(u32 f)
 	{

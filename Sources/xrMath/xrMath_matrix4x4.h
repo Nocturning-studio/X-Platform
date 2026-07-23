@@ -238,7 +238,7 @@ template <class T> struct template_matrix4x4
 		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) +
 					 a._13 * (a._21 * a._32 - a._22 * a._31));
 
-		if (_abs(fDetInv) <= flt_zero)
+		if (std::abs(fDetInv) <= flt_zero)
 			return false;
 		fDetInv = 1.0f / fDetInv;
 

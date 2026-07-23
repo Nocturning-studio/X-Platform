@@ -29,11 +29,11 @@ CWeaponShotEffector::CWeaponShotEffector()
 void CWeaponShotEffector::Initialize(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz,
 									 float angle_frac)
 {
-	fRelaxSpeed = _abs(relax_speed);
+	fRelaxSpeed = std::abs(relax_speed);
 	VERIFY(!fis_zero(fRelaxSpeed));
-	fAngleVertMax = _abs(max_angle);
+	fAngleVertMax = std::abs(max_angle);
 	VERIFY(!fis_zero(fAngleVertMax));
-	fAngleVertFrac = _abs(angle_frac);
+	fAngleVertFrac = std::abs(angle_frac);
 	fAngleHorzMax = max_angle_horz;
 	fAngleHorzStep = step_angle_horz;
 }
@@ -67,15 +67,15 @@ void CWeaponShotEffector::Update()
 
 	if (bActive)
 	{
-		float time_to_relax = _abs(fAngleVert) / fRelaxSpeed;
+		float time_to_relax = std::abs(fAngleVert) / fRelaxSpeed;
 		//		VERIFY(_valid(time_to_relax));
-		float relax_speed = (fis_zero(time_to_relax)) ? 0.0f : _abs(fAngleHorz) / time_to_relax;
+		float relax_speed = (fis_zero(time_to_relax)) ? 0.0f : std::abs(fAngleHorz) / time_to_relax;
 		//		VERIFY(_valid(relax_speed));
 
-		float time_to_relax_l = _abs(fLastDeltaVert) / fRelaxSpeed;
+		float time_to_relax_l = std::abs(fLastDeltaVert) / fRelaxSpeed;
 		//		VERIFY(_valid(time_to_relax_l));
 
-		float relax_speed_l = (fis_zero(time_to_relax_l)) ? 0.0f : _abs(fLastDeltaHorz) / time_to_relax_l;
+		float relax_speed_l = (fis_zero(time_to_relax_l)) ? 0.0f : std::abs(fLastDeltaHorz) / time_to_relax_l;
 		//		VERIFY(_valid(relax_speed_l));
 		//-------------------------------------------------------
 		if (fAngleHorz >= 0.f)

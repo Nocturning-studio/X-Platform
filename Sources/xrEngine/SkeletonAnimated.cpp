@@ -840,7 +840,7 @@ ICF float smooth(float x)
 	float x0	= x*2.f-1.f;
 	float s 	= (x0<0.f)?-1.f:1.f;
 
-	return ((s*pow(_abs(x0),1.f/1.5f))+1.f)/2.f;
+	return ((s*pow(std::abs(x0),1.f/1.5f))+1.f)/2.f;
 }
 */
 IC void QR2Quat(const CKeyQR& K, Fquaternion& Q)
@@ -903,7 +903,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 		*/
 		D->T.lerp(T1, T2, delta);
 		/*
-		if ((_abs(D->T.y)>10000) || (_abs(D->T.x)>10000) || (_abs(D->T.z)>10000))
+		if ((std::abs(D->T.y)>10000) || (std::abs(D->T.x)>10000) || (std::abs(D->T.z)>10000))
 		{
 		Log("xxx");
 		Log("Blend--------");

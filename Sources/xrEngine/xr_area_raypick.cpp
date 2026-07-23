@@ -25,7 +25,7 @@ BOOL CObjectSpace::RayTest(const fvec3& start, const fvec3& dir, float range, co
 BOOL CObjectSpace::_RayTest(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt,
 							collide::ray_cache* cache, CObject* ignore_object)
 {
-	VERIFY(_abs(dir.magnitude() - 1) < EPS);
+	VERIFY(std::abs(dir.magnitude() - 1) < EPS);
 
 	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ ÒÅÊÓÙÅÃÎ ÏÎÒÎÊÀ
 	RayQueryThreadData& data = GetRayThreadData();

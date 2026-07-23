@@ -340,7 +340,7 @@ void CDrawUtilities::DrawDirectionalLight(const fvec3& p, const fvec3& d, float 
 	fmat4x4 rot;
 
 	N.set(0, 1, 0);
-	if (_abs(D.y) > 0.99f)
+	if (std::abs(D.y) > 0.99f)
 		N.set(1, 0, 0);
 	R.crossproduct(N, D);
 	R.normalize();
@@ -884,7 +884,7 @@ void CDrawUtilities::DrawAABB(const fvec3& p0, const fvec3& p1, u32 clr_s, u32 c
 	fmat4x4 R;
 	fvec3 C;
 	C.set((p1.x + p0.x) * 0.5f, (p1.y + p0.y) * 0.5f, (p1.z + p0.z) * 0.5f);
-	R.scale(_abs(p1.x - p0.x), _abs(p1.y - p0.y), _abs(p1.z - p0.z));
+	R.scale(std::abs(p1.x - p0.x), std::abs(p1.y - p0.y), std::abs(p1.z - p0.z));
 	R.translate_over(C);
 	RenderBackend.set_transform_world(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
@@ -988,7 +988,7 @@ void CDrawUtilities::DrawCylinder(const fmat4x4& parent, const fvec3& center, co
 	L_dir.set(dir);
 	L_dir.normalize();
 	L_up.set(0, 1, 0);
-	if (_abs(L_up.dotproduct(L_dir)) > .99f)
+	if (std::abs(L_up.dotproduct(L_dir)) > .99f)
 		L_up.set(0, 0, 1);
 	L_right.crossproduct(L_up, L_dir);
 	L_right.normalize();
@@ -1025,7 +1025,7 @@ void CDrawUtilities::DrawCone(const fmat4x4& parent, const fvec3& apex, const fv
 	L_dir.set(dir);
 	L_dir.normalize();
 	L_up.set(0, 1, 0);
-	if (_abs(L_up.dotproduct(L_dir)) > .99f)
+	if (std::abs(L_up.dotproduct(L_dir)) > .99f)
 		L_up.set(0, 0, 1);
 	L_right.crossproduct(L_up, L_dir);
 	L_right.normalize();
@@ -1059,7 +1059,7 @@ void CDrawUtilities::DrawPlane(const fvec3& p, const fvec3& n, const fvec2& scal
 	// build final rotation / translation
 	fvec3 L_dir, L_up = n, L_right;
 	L_dir.set(0, 0, 1);
-	if (_abs(L_up.dotproduct(L_dir)) > .99f)
+	if (std::abs(L_up.dotproduct(L_dir)) > .99f)
 		L_dir.set(1, 0, 0);
 	L_right.crossproduct(L_up, L_dir);
 	L_right.normalize();

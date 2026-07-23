@@ -53,7 +53,7 @@ template <class T> class template_cylinder
 
 		T fInv, fA, fB, fC, fDiscr, fRoot, fT, fT0, fT1, fTmp0, fTmp1;
 
-		if (_abs(kD.z) >= 1.0f - fEpsilon)
+		if (std::abs(kD.z) >= 1.0f - fEpsilon)
 		{
 			// line is parallel to cylinder axis
 			if (kP.x * kP.x + kP.y * kP.y <= fRadiusSqr)
@@ -69,10 +69,10 @@ template <class T> class template_cylinder
 			}
 		}
 
-		if (_abs(kD.z) <= fEpsilon)
+		if (std::abs(kD.z) <= fEpsilon)
 		{
 			// line is perpendicular to axis of cylinder
-			if (_abs(kP.z) > fHalfHeight)
+			if (std::abs(kP.z) > fHalfHeight)
 			{
 				// line is outside the planar caps of cylinder
 				return 0;

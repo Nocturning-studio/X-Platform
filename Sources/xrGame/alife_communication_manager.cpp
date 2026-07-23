@@ -621,7 +621,7 @@ CSE_ALifeHumanAbstract *tpALifeHumanAbstract2, int iItemCount1, int iItemCount2,
 		if (iBalance < 0)
 			return			(bfCheckForTrade(tpALifeHumanAbstract1, m_tpTrader1, m_tpSums1,
 tpALifeHumanAbstract1->m_dwMoney, tpALifeHumanAbstract2, m_tpTrader2, m_tpSums2, tpALifeHumanAbstract2->m_dwMoney,
-_abs(iBalance))); else return			(bfCheckForTrade(tpALifeHumanAbstract2, m_tpTrader2, m_tpSums2,
+std::abs(iBalance))); else return			(bfCheckForTrade(tpALifeHumanAbstract2, m_tpTrader2, m_tpSums2,
 tpALifeHumanAbstract2->m_dwMoney, tpALifeHumanAbstract1, m_tpTrader1, m_tpSums1, tpALifeHumanAbstract1->m_dwMoney,
 iBalance));
 }

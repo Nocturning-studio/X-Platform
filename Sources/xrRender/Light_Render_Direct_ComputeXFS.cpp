@@ -22,7 +22,7 @@ void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 	{
 		// auto find 'up' and 'right' vectors
 		L_up.set(0, 1, 0);
-		if (_abs(L_up.dotproduct(L_dir)) > .99f)
+		if (std::abs(L_up.dotproduct(L_dir)) > .99f)
 			L_up.set(0, 0, 1);
 		L_right.crossproduct(L_up, L_dir);
 		L_right.normalize();
@@ -73,7 +73,7 @@ void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 	if (_size > SMAP_adapt_max)
 		_size = SMAP_adapt_max;
 	int _epsilon = iCeil(float(_size) * 0.01f);
-	int _diff = _abs(int(_size) - int(_cached_size));
+	int _diff = std::abs(int(_size) - int(_cached_size));
 	L->TransformContext.ShadowContext.size = (_diff >= _epsilon) ? _size : _cached_size;
 
 	// make N pixel border
@@ -86,9 +86,9 @@ void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)
 	// float	g_beta		= 2*rad2deg		(atanf(tan_beta));
 	// Msg				("x(%f) : a(%f), b(%f)",x,g_alpha,g_beta);
 
-	// _min(L->get_cone() + deg2rad(4.5f), PI*0.98f) - Here, it is needed to enlarge the shadow map frustum to include also
+	// std::min(L->get_cone() + deg2rad(4.5f), PI*0.98f) - Here, it is needed to enlarge the shadow map frustum to include also
 	// displaced pixels and the pixels neighbor to the examining one.
-	L->TransformContext.ShadowContext.project.build_projection(_min(L->get_cone() + deg2rad(5.f), PI * 0.98f), 1.f, SMAP_near_plane, L->get_range() + EPS_S);
+	L->TransformContext.ShadowContext.project.build_projection(std::min(L->get_cone() + deg2rad(5.f), PI * 0.98f), 1.f, SMAP_near_plane, L->get_range() + EPS_S);
 
 	L->TransformContext.ShadowContext.combine.mul(L->TransformContext.ShadowContext.project, L->TransformContext.ShadowContext.view);
 }

@@ -109,7 +109,7 @@ void CROS_impl::calc_sky_hemi_value(fvec3& position, CObject* _object)
 {
 	// hemi-tracing
 	sky_rays_uptodate += ps_r_dhemi_count;
-	sky_rays_uptodate = _min(sky_rays_uptodate, lt_hemisamples);
+	sky_rays_uptodate = std::min(sky_rays_uptodate, lt_hemisamples);
 
 	for (u32 it = 0; it < (u32)ps_r_dhemi_count; it++)
 	{
