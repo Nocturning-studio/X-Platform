@@ -28,8 +28,8 @@ side,const fvec3 &p,fvec3 &point)
 		point.mul(diffs);
 		point.add(p);
 		fvec3 d;d.sub(center,point);
-		bool inside1 =std::abs(d[side1])<h1;
-		bool inside2 =std::abs(d[side2])<h2;
+		bool inside1 =_abs(d[side1])<h1;
+		bool inside2 =_abs(d[side2])<h2;
 		if(diffs>0.f)
 		{
 			if(inside1&&inside2) return box_inside;
@@ -40,7 +40,7 @@ side,const fvec3 &p,fvec3 &point)
 			if(inside1&&inside2) return on_side;
 			else if(inside1)
 			{
-				float dd=h2-std::abs(d[side2]);
+				float dd=h2-_abs(d[side2]);
 				fvec3 s;s.set(transform[side2]);s.
 			}
 		}
@@ -109,7 +109,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 	{
 		float tr1, tr2;
 		// perp//
-		float abs_c_dist = std::abs(Lc);
+		float abs_c_dist = _abs(Lc);
 		if (abs_c_dist > h + r)
 			return false;
 		float sq_dist = v_smag - Lr * Lr - Lc * Lc;

@@ -70,7 +70,7 @@ const u32 FIRE_MAKE_SENSE_INTERVAL = 10000;
 // Вспомогательная функция для определения направления попадания
 int GetHitDirection(const fvec3& hit_dir_local)
 {
-	if (std::abs(hit_dir_local.z) > std::abs(hit_dir_local.x))
+	if (_abs(hit_dir_local.z) > _abs(hit_dir_local.x))
 	{
 		return (hit_dir_local.z > 0) ? HIT_FRONT : HIT_BACK;
 	}
@@ -101,7 +101,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 		base *= (1.0f + (1.0f - health) * 2.0f);
 
 	// [IMPROVEMENT] 4. Turn Penalty
-	float yaw_diff = std::abs(angle_difference(movement().m_body.current.yaw, m_previous_yaw));
+	float yaw_diff = _abs(angle_difference(movement().m_body.current.yaw, m_previous_yaw));
 	if (yaw_diff > PI_DIV_6)
 		base *= 2.5f;
 
@@ -857,7 +857,7 @@ IC float CAI_Stalker::start_pick_distance() const
 	if (!memory().enemy().selected())
 		return (result);
 
-	return (std::max(result, memory().enemy().selected()->Position().distance_to(Position()) + 1.f));
+	return (_max(result, memory().enemy().selected()->Position().distance_to(Position()) + 1.f));
 }
 
 float CAI_Stalker::pick_distance()
@@ -1000,7 +1000,7 @@ bool CAI_Stalker::fire_make_sense()
 	if ((pick_dist + PRECISE_DISTANCE) < dist_to_enemy)
 		return (false);
 
-	if (std::abs(Position().y - enemy->Position().y) > FLOOR_DISTANCE)
+	if (_abs(Position().y - enemy->Position().y) > FLOOR_DISTANCE)
 		return (false);
 
 	// ВАЖНО: Мы уже проверили dist_to_enemy < 4.0f выше.

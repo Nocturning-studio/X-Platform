@@ -162,9 +162,9 @@ template <class T> struct template_matrix3x3
 		for (i = 0; i < 50; i++)
 		{
 			sm = 0.0f;
-			sm += std::abs(a.m[0][1]);
-			sm += std::abs(a.m[0][2]);
-			sm += std::abs(a.m[1][2]);
+			sm += _abs(a.m[0][1]);
+			sm += _abs(a.m[0][2]);
+			sm += _abs(a.m[1][2]);
 			if (sm == 0.0)
 			{
 				set(v);
@@ -177,7 +177,7 @@ template <class T> struct template_matrix3x3
 				tresh = 0.0f;
 			{
 				g = 100.0f * abs(a.m[0][1]);
-				if (i > 3 && abs(d.x) + g == std::abs(d.x) && std::abs(d.y) + g == std::abs(d.y))
+				if (i > 3 && abs(d.x) + g == _abs(d.x) && _abs(d.y) + g == _abs(d.y))
 					a.m[0][1] = 0.0;
 				else if (abs(a.m[0][1]) > tresh)
 				{
@@ -208,10 +208,10 @@ template <class T> struct template_matrix3x3
 				}
 			}
 			{
-				g = 100.0f * std::abs(a.m[0][2]);
-				if (i > 3 && std::abs(d.x) + g == std::abs(d.x) && std::abs(d.z) + g == std::abs(d.z))
+				g = 100.0f * _abs(a.m[0][2]);
+				if (i > 3 && _abs(d.x) + g == _abs(d.x) && _abs(d.z) + g == _abs(d.z))
 					a.m[0][2] = 0.0f;
-				else if (std::abs(a.m[0][2]) > tresh)
+				else if (_abs(a.m[0][2]) > tresh)
 				{
 					h = d.z - d.x;
 					if (abs(h) + g == abs(h))
@@ -240,10 +240,10 @@ template <class T> struct template_matrix3x3
 				}
 			}
 			{
-				g = 100.0f * std::abs(a.m[1][2]);
-				if (i > 3 && std::abs(d.y) + g == std::abs(d.y) && std::abs(d.z) + g == std::abs(d.z))
+				g = 100.0f * _abs(a.m[1][2]);
+				if (i > 3 && _abs(d.y) + g == _abs(d.y) && _abs(d.z) + g == _abs(d.z))
 					a.m[1][2] = 0.0f;
-				else if (std::abs(a.m[1][2]) > tresh)
+				else if (_abs(a.m[1][2]) > tresh)
 				{
 					h = d.z - d.y;
 					if (abs(h) + g == abs(h))

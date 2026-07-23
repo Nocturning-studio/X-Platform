@@ -204,8 +204,8 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 			v_r.x2 /= 1.328f;
 
 		UIItemImage->GetUIStaticItem().SetRect(v_r);
-		UIItemImage->SetWidth(std::min(v_r.width(), UIItemImageSize.x));
-		UIItemImage->SetHeight(std::min(v_r.height(), UIItemImageSize.y));
+		UIItemImage->SetWidth(_min(v_r.width(), UIItemImageSize.x));
+		UIItemImage->SetHeight(_min(v_r.height(), UIItemImageSize.y));
 	}
 }
 

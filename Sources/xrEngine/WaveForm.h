@@ -18,7 +18,7 @@ struct WaveForm
 
 	IC float signf(float t)
 	{
-		return t / std::abs(t);
+		return t / _abs(t);
 	}
 
 	IC float Func(float t)

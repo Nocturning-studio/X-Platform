@@ -368,7 +368,7 @@ void CElevatorState::GetJumpDir(const fvec3& accel, fvec3& dir)
 	ac.set(accel).normalize_safe();
 	float side_component = ac.dotproduct(side);
 	dir.set(norm);
-	if (std::abs(side_component) > M_SQRT1_2)
+	if (_abs(side_component) > M_SQRT1_2)
 	{
 		if (side_component < 0.f)
 			side.invert();

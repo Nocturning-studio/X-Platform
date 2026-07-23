@@ -123,7 +123,8 @@ void CAI_Space::load(LPCSTR level_name)
 			  "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2(cross_table().header().game_guid() == game_graph().header().guid(),
 			  "graph doesn't correspond to the cross table");
-	m_graph_engine = xr_new<CGraphEngine>(_max(game_graph().header().vertex_count(), level_graph().header().vertex_count()));
+	m_graph_engine =
+		xr_new<CGraphEngine>(_max(game_graph().header().vertex_count(), level_graph().header().vertex_count()));
 
 	R_ASSERT2(current_level.guid() == level_graph().header().guid(), "graph doesn't correspond to the AI-map");
 

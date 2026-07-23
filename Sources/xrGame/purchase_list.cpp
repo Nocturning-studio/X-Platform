@@ -58,5 +58,5 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
 
 	DEFICITS::const_iterator I = m_deficits.find(name);
 	VERIFY3(I == m_deficits.end(), "Duplicate section in the purchase list", *name);
-	m_deficits.insert(std::make_pair(name, (float)count * probability / std::max((float)j, min_deficit_factor)));
+	m_deficits.insert(std::make_pair(name, (float)count * probability / _max((float)j, min_deficit_factor)));
 }

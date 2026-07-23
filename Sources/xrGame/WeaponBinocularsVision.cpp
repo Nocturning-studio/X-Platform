@@ -86,10 +86,10 @@ void SBinocVisibleObj::Update()
 		fvec3 p;
 		b.getpoint(k, p);
 		transform.transform(p);
-		mn.x = std::min(mn.x, p.x);
-		mn.y = std::min(mn.y, p.y);
-		mx.x = std::max(mx.x, p.x);
-		mx.y = std::max(mx.y, p.y);
+		mn.x = _min(mn.x, p.x);
+		mn.y = _min(mn.y, p.y);
+		mx.x = _max(mx.x, p.x);
+		mx.y = _max(mx.y, p.y);
 	}
 	static Frect screen_rect = {-1.0f, -1.0f, 1.0f, 1.0f};
 

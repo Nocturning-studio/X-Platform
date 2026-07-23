@@ -31,14 +31,14 @@ float CControlMovement::real_velocity()
 	{
 		float tmp = movement_control->GetXZActVelInGoingDir();
 #ifdef DEBUG
-		if (std::abs(tmp) > 1000)
+		if (_abs(tmp) > 1000)
 		{
 			Log("! GetVelocity", movement_control->GetVelocity());
 			Log("! GetPathDir", movement_control->GetPathDir());
 		}
 #endif // DEBUG
 		clamp(tmp, 0.0f, 15.0f);
-		VERIFY2(std::abs(tmp) < 1000, "movement_control->GetXZActVelInGoingDir() returns too big speed");
+		VERIFY2(_abs(tmp) < 1000, "movement_control->GetXZActVelInGoingDir() returns too big speed");
 		return tmp;
 	}
 

@@ -129,7 +129,7 @@ IC void CDetailPathManager::assign_angle(float& angle, const float start_yaw, co
 IC void CDetailPathManager::compute_circles(STrajectoryPoint& point, SCirclePoint* circles)
 {
 	VERIFY(!fis_zero(point.angular_velocity));
-	point.radius = std::abs(point.linear_velocity) / point.angular_velocity;
+	point.radius = _abs(point.linear_velocity) / point.angular_velocity;
 	circles[0].radius = circles[1].radius = point.radius;
 	VERIFY(fsimilar(point.direction.square_magnitude(), 1.f));
 	circles[0].center.x = point.direction.y * point.radius + point.position.x;

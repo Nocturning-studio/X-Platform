@@ -229,5 +229,5 @@ float CHeightMap::Query(float x, float z)
 	}
 	float q1 = hm_static.Query(x, z);
 	float q2 = hm_dynamic.Query(x, z);
-	return std::max(q1, q2);
+	return _max(q1, q2);
 }

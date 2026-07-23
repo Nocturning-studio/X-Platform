@@ -474,7 +474,7 @@ void CEffect_Rain::OnFrame()
 	if (E && E->renderable_ROS())
 	{
 		float lumi = E->renderable_ROS()->get_luminocity_hemi();
-		hemi_factor = 1.f - 2.0f * (0.3f - std::min(std::min(1.f, lumi), 0.3f));
+		hemi_factor = 1.f - 2.0f * (0.3f - _min(_min(1.f, lumi), 0.3f));
 	}
 #endif
 

@@ -171,7 +171,7 @@ float turbulence3(const fvec3& v, float freq, int octaves)
 
 	for (i = 0; i < octaves; i++)
 	{
-		sum += std::abs(noise3(v_)) / freq;
+		sum += _abs(noise3(v_)) / freq;
 		freq *= 2.059f;
 		v_[0] = v[0] * freq;
 		v_[1] = v[1] * freq;

@@ -279,11 +279,11 @@ template <class T> struct template_color
 	}
 	IC BOOL similar_rgba(SelfCRef v, T E = EPS_L) const
 	{
-		return std::abs(r - v.r) < E && std::abs(g - v.g) < E && std::abs(b - v.b) < E && std::abs(a - v.a) < E;
+		return _abs(r - v.r) < E && _abs(g - v.g) < E && _abs(b - v.b) < E && _abs(a - v.a) < E;
 	};
 	IC BOOL similar_rgb(SelfCRef v, T E = EPS_L) const
 	{
-		return std::abs(r - v.r) < E && std::abs(g - v.g) < E && std::abs(b - v.b) < E;
+		return _abs(r - v.r) < E && _abs(g - v.g) < E && _abs(b - v.b) < E;
 	};
 };
 

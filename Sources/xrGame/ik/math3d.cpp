@@ -522,10 +522,10 @@ void find_normal_vector(float v[3], float n[3])
 	int min_i;
 
 	min_i = 0;
-	min = std::abs(v[0]);
+	min = _abs(v[0]);
 	num_zero = (min < 1e-8f);
 
-	temp = std::abs(v[1]);
+	temp = _abs(v[1]);
 	if (temp < 1e-8f)
 		num_zero++;
 	if (temp < min)
@@ -534,7 +534,7 @@ void find_normal_vector(float v[3], float n[3])
 		min_i = 1;
 	}
 
-	temp = std::abs(v[2]);
+	temp = _abs(v[2]);
 	if (temp < 1e-8)
 		num_zero++;
 	if (temp < min)
@@ -771,7 +771,7 @@ void rotation_matrix_to_axis(const Matrix R, float axis[], float& angle)
 	angle = acosf((R[0][0] + R[1][1] + R[2][2] - 1) / 2.0f);
 
 	// Close to identity. Arbitrarily set solution to z axis rotation of 0
-	if (std::abs(angle) < eps || std::abs(angle - PI) < eps)
+	if (_abs(angle) < eps || _abs(angle - PI) < eps)
 	{
 		angle = 0.0;
 		axis[0] = axis[1] = 0.0;

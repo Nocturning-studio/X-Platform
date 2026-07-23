@@ -368,7 +368,7 @@ bool is_similar(const fmat4x4& m0, const fmat4x4& m1, float param)
 	Fquaternion q;
 	q.set(tmp2);
 	q.get_axis_angle(ax, ang);
-	return std::abs(ang) < PI / 2.f;
+	return _abs(ang) < PI / 2.f;
 	/*
 	return  fsimilar(tmp2._11,1.f,param)&&
 			fsimilar(tmp2._22,1.f,param)&&

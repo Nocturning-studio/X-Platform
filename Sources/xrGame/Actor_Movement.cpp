@@ -283,9 +283,9 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, fvec3& vControlAccel, float& Jump
 			BOOL bAccelerated = isActorAccelerated(mstate_real, IsZoomAimingMode()) && CanAccelerate();
 
 			// correct "mstate_real" if opposite keys pressed
-			if (std::abs(vControlAccel.z) < EPS)
+			if (_abs(vControlAccel.z) < EPS)
 				mstate_real &= ~(mcFwd + mcBack);
-			if (std::abs(vControlAccel.x) < EPS)
+			if (_abs(vControlAccel.x) < EPS)
 				mstate_real &= ~(mcLStrafe + mcRStrafe);
 
 			// normalize and analyze crouch and run
@@ -452,7 +452,7 @@ bool CActor::g_LadderOrient()
 {
 	fvec3 leader_norm;
 	character_physics_support()->movement()->GroundNormal(leader_norm);
-	if (std::abs(leader_norm.y) > M_SQRT1_2)
+	if (_abs(leader_norm.y) > M_SQRT1_2)
 		return false;
 	// leader_norm.y=0.f;
 	float mag = leader_norm.magnitude();
@@ -534,13 +534,13 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
 	{
 		// if camera rotated more than 45 degrees - align model with it
 		float ty = angle_normalize(r_torso.yaw);
-		if (std::abs(r_model_yaw - ty) > PI_DIV_4)
+		if (_abs(r_model_yaw - ty) > PI_DIV_4)
 		{
 			r_model_yaw_dest = ty;
 			//
 			mstate_real |= mcTurn;
 		}
-		if (std::abs(r_model_yaw - r_model_yaw_dest) < EPS_L)
+		if (_abs(r_model_yaw - r_model_yaw_dest) < EPS_L)
 		{
 			mstate_real &= ~mcTurn;
 		}

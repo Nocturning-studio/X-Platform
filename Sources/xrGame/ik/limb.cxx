@@ -140,16 +140,16 @@ inline float put_angle_in_range(float low, float high, float v)
 	if (low <= v && v <= high)
 		return v;
 	else
-		d1 = std::min(std::abs(v - low), std::abs(v - high));
+		d1 = std::min(_abs(v - low), _abs(v - high));
 
 	v2 = v - 2 * PI;
 
 	if (low <= v2 && v2 <= high)
 		return v2;
 	else
-		d2 = std::min(std::abs(v2 - low), std::abs(v2 - high));
+		d2 = std::min(_abs(v2 - low), _abs(v2 - high));
 
-	return (std::abs(d1) < std::abs(d2)) ? v : v2;
+	return (_abs(d1) < _abs(d2)) ? v : v2;
 }
 
 //
@@ -817,7 +817,7 @@ int Limb::try_closeby_singularity(int solves, float& swivel_angle, float x[])
 		return 1;
 
 	for (int i = 0; i < num_singular; i++)
-		if (std::abs(swivel_angle - singular_pts[i]) < DTOR(1.0))
+		if (_abs(swivel_angle - singular_pts[i]) < DTOR(1.0))
 		{
 			// Try the singularity
 			if (try_swivel_angle(solves, singular_pts[i], x))

@@ -195,5 +195,5 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
 	// u16 cc;float tdist;
 	// MIN_OF(tdist1,cc=c1;tdist=tdist1,tdist2,cc=c2;tdist=tdist2,tdist3,cc=c3;tdist=tdist3);
 
-	// return std::min(std::min(DistToFragmenton(pos)))
+	// return _min(_min(DistToFragmenton(pos)))
 }

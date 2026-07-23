@@ -168,7 +168,7 @@ IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const CLevelGrap
 							const float epsilon) const
 {
 	return (inside(vertex, _vertex_position) &&
-			(std::abs(vertex_position(vertex).y - vertex_position(_vertex_position).y) <= epsilon));
+			(_abs(vertex_position(vertex).y - vertex_position(_vertex_position).y) <= epsilon));
 }
 
 IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const fvec3& position, const float epsilon) const
@@ -509,8 +509,8 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const fvec2& star
 				VERIFY(_valid(tIntersectPoint.z));
 #endif
 
-				clamp(tIntersectPoint.x, std::min(next1.x, next2.x), std::max(next1.x, next2.x));
-				clamp(tIntersectPoint.z, std::min(next1.y, next2.y), std::max(next1.y, next2.y));
+				clamp(tIntersectPoint.x, _min(next1.x, next2.x), _max(next1.x, next2.x));
+				clamp(tIntersectPoint.z, _min(next1.y, next2.y), _max(next1.y, next2.y));
 				if (bAssignY)
 					tIntersectPoint.y = vertex_plane_y(vertex(cur_vertex_id), tIntersectPoint.x, tIntersectPoint.z);
 				path_node.set_position(tIntersectPoint);

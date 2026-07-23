@@ -142,7 +142,7 @@ void CActorCondition::UpdateCondition()
 							base_w += outfit->m_additional_weight2;
 			*/
 
-			k_max_power = 1.0f + std::min(weight, base_w) / base_w + std::max(0.0f, (weight - base_w) / 10.0f);
+			k_max_power = 1.0f + _min(weight, base_w) / base_w + _max(0.0f, (weight - base_w) / 10.0f);
 		}
 		else
 			k_max_power = 1.0f;

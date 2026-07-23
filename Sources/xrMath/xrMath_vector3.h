@@ -211,38 +211,38 @@ template <class T> struct template_vector3
 
 	IC SelfRef min(const Self& v1, const Self& v2)
 	{
-		x = std::min(v1.x, v2.x);
-		y = std::min(v1.y, v2.y);
-		z = std::min(v1.z, v2.z);
+		x = _min(v1.x, v2.x);
+		y = _min(v1.y, v2.y);
+		z = _min(v1.z, v2.z);
 		return *this;
 	}
 	IC SelfRef min(const Self& v)
 	{
-		x = std::min(x, v.x);
-		y = std::min(y, v.y);
-		z = std::min(z, v.z);
+		x = _min(x, v.x);
+		y = _min(y, v.y);
+		z = _min(z, v.z);
 		return *this;
 	}
 	IC SelfRef max(const Self& v1, const Self& v2)
 	{
-		x = std::max(v1.x, v2.x);
-		y = std::max(v1.y, v2.y);
-		z = std::max(v1.z, v2.z);
+		x = _max(v1.x, v2.x);
+		y = _max(v1.y, v2.y);
+		z = _max(v1.z, v2.z);
 		return *this;
 	}
 	IC SelfRef max(const Self& v)
 	{
-		x = std::max(x, v.x);
-		y = std::max(y, v.y);
-		z = std::max(z, v.z);
+		x = _max(x, v.x);
+		y = _max(y, v.y);
+		z = _max(z, v.z);
 		return *this;
 	}
 
 	IC SelfRef abs(const Self& v)
 	{
-		x = std::abs(v.x);
-		y = std::abs(v.y);
-		z = std::abs(v.z);
+		x = _abs(v.x);
+		y = _abs(v.y);
+		z = _abs(v.z);
 		return *this;
 	}
 	ICF BOOL similar(const Self& v, T E = EPS_L) const
@@ -260,14 +260,14 @@ template <class T> struct template_vector3
 	IC SelfRef align()
 	{
 		y = 0;
-		if (std::abs(z) >= std::abs(x))
+		if (_abs(z) >= _abs(x))
 		{
-			z /= std::abs(z ? z : 1);
+			z /= _abs(z ? z : 1);
 			x = 0;
 		}
 		else
 		{
-			x /= std::abs(x);
+			x /= _abs(x);
 			z = 0;
 		}
 		return *this;
@@ -276,11 +276,11 @@ template <class T> struct template_vector3
 	// Squeeze
 	IC SelfRef squeeze(T Epsilon)
 	{
-		if (std::abs(x) < Epsilon)
+		if (_abs(x) < Epsilon)
 			x = 0;
-		if (std::abs(y) < Epsilon)
+		if (_abs(y) < Epsilon)
 			y = 0;
-		if (std::abs(z) < Epsilon)
+		if (_abs(z) < Epsilon)
 			z = 0;
 		return *this;
 	}
@@ -624,7 +624,7 @@ template <class T> struct template_vector3
 	{
 		T fInvLength;
 
-		if (std::abs(dir.x) >= std::abs(dir.y))
+		if (_abs(dir.x) >= _abs(dir.y))
 		{
 			// W.x or W.z is the largest magnitude component, swap them
 			fInvLength = 1.f / _sqrt(dir.x * dir.x + dir.z * dir.z);

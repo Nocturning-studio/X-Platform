@@ -146,7 +146,7 @@ float AngleInt::Distance(float v) const
 		}
 	}
 
-	return (std::abs(t1) < std::abs(t2)) ? t1 : t2;
+	return (_abs(t1) < _abs(t2)) ? t1 : t2;
 }
 
 int AngleInt::OldIsSupersetOf(const AngleInt& a, float eps) const
@@ -644,14 +644,14 @@ void AngleIntList::wrap(float eps)
 
 	for (AngleIntListNode* temp = head; temp; temp = temp->next)
 	{
-		if (std::abs(temp->D.Low()) < eps)
+		if (_abs(temp->D.Low()) < eps)
 		{
 			s = temp;
 			if (t)
 				break;
 		}
 
-		if (std::abs(temp->D.High() - 2 * PI) < eps)
+		if (_abs(temp->D.High() - 2 * PI) < eps)
 		{
 			t = temp;
 			if (s)

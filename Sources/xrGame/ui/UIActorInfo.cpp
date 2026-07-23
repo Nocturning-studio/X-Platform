@@ -245,7 +245,7 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 
 		fvec2 sz = itm->GetWndSize();
 		float _height;
-		_height = std::max(sz.y, itm->m_text1->GetWndPos().y + itm->m_text1->GetWndSize().y + 3);
+		_height = _max(sz.y, itm->m_text1->GetWndPos().y + itm->m_text1->GetWndSize().y + 3);
 		sz.y = _height;
 		itm->SetWndSize(sz);
 		UIDetailList->AddWindow(itm, true);

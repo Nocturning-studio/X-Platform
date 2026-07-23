@@ -21,7 +21,7 @@ template <class T> class template_plane3D
 	}
 	IC BOOL similar(Self& P, T eps_n = EPS, T eps_d = EPS)
 	{
-		return (n.similar(P.n, eps_n) && (std::abs(d - P.d) < eps_d));
+		return (n.similar(P.n, eps_n) && (_abs(d - P.d) < eps_d));
 	}
 	ICF SelfRef build(const template_vector3<T>& v1, const template_vector3<T>& v2, const template_vector3<T>& v3)
 	{
@@ -66,14 +66,14 @@ template <class T> class template_plane3D
 	}
 	IC T distance(const template_vector3<T>& v)
 	{
-		return std::abs(classify(v));
+		return _abs(classify(v));
 	}
 	IC BOOL intersectRayDist(const template_vector3<T>& P, const template_vector3<T>& D, T& dist)
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 
-		if (std::abs(denom) < EPS_S) // normal is orthogonal to vector3, cant intersect
+		if (_abs(denom) < EPS_S) // normal is orthogonal to vector3, cant intersect
 			return FALSE;
 
 		dist = -(numer / denom);
@@ -84,7 +84,7 @@ template <class T> class template_plane3D
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 
-		if (std::abs(denom) < EPS_S)
+		if (_abs(denom) < EPS_S)
 			return FALSE; // normal is orthogonal to vector3, cant intersect
 		else
 		{
@@ -101,7 +101,7 @@ template <class T> class template_plane3D
 
 		t.sub(v, u);
 		denom = n.dotproduct(t);
-		if (std::abs(denom) < EPS)
+		if (_abs(denom) < EPS)
 			return false; // they are parallel
 
 		dist = -(n.dotproduct(u) + d) / denom;
@@ -124,7 +124,7 @@ template <class T> class template_plane3D
 			return false;
 
 		t.sub(v, u);
-		isect.mad(u, t, dist1 / std::abs(dist1 - dist2));
+		isect.mad(u, t, dist1 / _abs(dist1 - dist2));
 
 		return true;
 	}

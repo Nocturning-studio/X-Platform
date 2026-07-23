@@ -234,17 +234,17 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		if (!bUseSSE)
 		{
 			// for FPU - zero out inf
-			if (std::abs(D.x) > flt_eps)
+			if (_abs(D.x) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.x = 0;
-			if (std::abs(D.y) > flt_eps)
+			if (_abs(D.y) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.y = 0;
-			if (std::abs(D.z) > flt_eps)
+			if (_abs(D.z) > flt_eps)
 			{
 			}
 			else

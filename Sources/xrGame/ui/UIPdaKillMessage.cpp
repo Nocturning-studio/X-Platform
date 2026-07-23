@@ -53,8 +53,8 @@ void CUIPdaKillMessage::Init(KillMessageStruct& msg)
 	m_killer_name.AdjustHeightToText();
 	m_victim_name.AdjustHeightToText();
 	float h = GetHeight();
-	h = std::max(h, m_killer_name.GetHeight());
-	h = std::max(h, m_victim_name.GetHeight());
+	h = _max(h, m_killer_name.GetHeight());
+	h = _max(h, m_victim_name.GetHeight());
 	SetHeight(h);
 }
 

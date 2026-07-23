@@ -740,7 +740,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	// Кеш треугольников
 	const u32 MAX_TRIS_CACHE = 64;
 	TriCache t_cache[MAX_TRIS_CACHE];
-	u32 cached_tris_count = std::min(triCount, MAX_TRIS_CACHE);
+	u32 cached_tris_count = _min(triCount, MAX_TRIS_CACHE);
 
 #ifndef _EDITOR
 	for (u32 t = 0; t < cached_tris_count; ++t)
@@ -749,10 +749,10 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 		t_cache[t].v0 = verts[T.verts[0]];
 		t_cache[t].v1 = verts[T.verts[1]];
 		t_cache[t].v2 = verts[T.verts[2]];
-		t_cache[t].min_x = std::min(t_cache[t].v0.x, std::min(t_cache[t].v1.x, t_cache[t].v2.x));
-		t_cache[t].max_x = std::max(t_cache[t].v0.x, std::max(t_cache[t].v1.x, t_cache[t].v2.x));
-		t_cache[t].min_z = std::min(t_cache[t].v0.z, std::min(t_cache[t].v1.z, t_cache[t].v2.z));
-		t_cache[t].max_z = std::max(t_cache[t].v0.z, std::max(t_cache[t].v1.z, t_cache[t].v2.z));
+		t_cache[t].min_x = _min(t_cache[t].v0.x, _min(t_cache[t].v1.x, t_cache[t].v2.x));
+		t_cache[t].max_x = _max(t_cache[t].v0.x, _max(t_cache[t].v1.x, t_cache[t].v2.x));
+		t_cache[t].min_z = _min(t_cache[t].v0.z, _min(t_cache[t].v1.z, t_cache[t].v2.z));
+		t_cache[t].max_z = _max(t_cache[t].v0.z, _max(t_cache[t].v1.z, t_cache[t].v2.z));
 	}
 #endif
 

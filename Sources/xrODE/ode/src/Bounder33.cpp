@@ -252,7 +252,7 @@ void Lcp33::FillA()
 			EsA(0,1) * ( EsA(1,0) * EsA(2,2) - EsA(1,2) * EsA(2,0) ) +
 			EsA(0,2) * ( EsA(1,0) * EsA(2,1) - EsA(1,1) * EsA(2,0) ) );
 
-	//VERIFY(std::abs(fDetInv)>flt_zero);
+	//VERIFY(_abs(fDetInv)>flt_zero);
 	fDetInv=1.0f/fDetInv;
 
 	EA(0,0) =  fDetInv * ( EsA(1,1) * EsA(2,2) - EsA(1,2) * EsA(2,1) );

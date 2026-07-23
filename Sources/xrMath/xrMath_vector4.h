@@ -188,7 +188,7 @@ template <class T> struct template_vector4
 
 	IC BOOL similar(const Self& v, T E = EPS_L)
 	{
-		return std::abs(x - v.x) < E && std::abs(y - v.y) < E && std::abs(z - v.z) < E && std::abs(w - v.w) < E;
+		return _abs(x - v.x) < E && _abs(y - v.y) < E && _abs(z - v.z) < E && _abs(w - v.w) < E;
 	};
 
 	IC T magnitude_sqr()

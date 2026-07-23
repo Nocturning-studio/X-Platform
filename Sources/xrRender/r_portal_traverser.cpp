@@ -150,7 +150,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 
 			// Учитываем угол обзора
 			dir2portal.div(_sqrt(dist_sq));
-			ssa *= std::abs(portal->GetPlane().n.dotproduct(dir2portal));
+			ssa *= _abs(portal->GetPlane().n.dotproduct(dir2portal));
 
 			if (ssa < r_ssaDISCARD)
 				continue;
@@ -196,20 +196,20 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 				if (t.w > EPS)
 					t.mul(1.f / t.w);
 
-				bb.min.x = std::min(bb.min.x, t.x);
-				bb.max.x = std::max(bb.max.x, t.x);
-				bb.min.y = std::min(bb.min.y, t.y);
-				bb.max.y = std::max(bb.max.y, t.y);
-				depth = std::min(depth, t.z);
+				bb.min.x = _min(bb.min.x, t.x);
+				bb.max.x = _max(bb.max.x, t.x);
+				bb.min.y = _min(bb.min.y, t.y);
+				bb.max.y = _max(bb.max.y, t.y);
+				depth = _min(depth, t.z);
 			}
 
 			// Пересечение с предыдущим сциссором
 			if (depth > EPS) // Если не за спиной
 			{
-				next_scissor.min.x = std::max(cur_scissor.min.x, bb.min.x);
-				next_scissor.max.x = std::min(cur_scissor.max.x, bb.max.x);
-				next_scissor.min.y = std::max(cur_scissor.min.y, bb.min.y);
-				next_scissor.max.y = std::min(cur_scissor.max.y, bb.max.y);
+				next_scissor.min.x = _max(cur_scissor.min.x, bb.min.x);
+				next_scissor.max.x = _min(cur_scissor.max.x, bb.max.x);
+				next_scissor.min.y = _max(cur_scissor.min.y, bb.min.y);
+				next_scissor.max.y = _min(cur_scissor.max.y, bb.max.y);
 				next_scissor.depth = depth;
 
 				// Если область пустая - отсекаем

@@ -421,7 +421,7 @@ void CStats::Show()
 		F.OutSet(200, 0);
 		F.SetHeightI(f_base_size);
 
-		for (u32 it = (u32)std::max(int(0), (int)errors.size() - g_ErrorLineCount); it < errors.size(); it++)
+		for (u32 it = (u32)_max(int(0), (int)errors.size() - g_ErrorLineCount); it < errors.size(); it++)
 			F.OutNext("%s", errors[it].c_str());
 
 		F.OnRender();

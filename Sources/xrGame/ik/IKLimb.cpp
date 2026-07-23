@@ -387,9 +387,9 @@ void CIKLimb::make_shift(fmat4x4& xm, const Fplane& p, const fvec3& pick_dir)
 
 	float dot = p.n.dotproduct(shift);
 
-	if (std::abs(dot) < min_dot)
+	if (_abs(dot) < min_dot)
 	{
-		shift.add(fvec3().mul(p.n, min_dot - std::abs(dot)));
+		shift.add(fvec3().mul(p.n, min_dot - _abs(dot)));
 		dot = p.n.dotproduct(shift);
 		// shift.set( p.n );
 		// dot = 1.f;
@@ -450,7 +450,7 @@ IC float clamp_rotation(Fquaternion& q, float v)
 	float angl;
 	fvec3 ax;
 	q.get_axis_angle(ax, angl);
-	float abs_angl = std::abs(angl);
+	float abs_angl = _abs(angl);
 	if (abs_angl > v)
 	{
 		if (angl < 0.f)
@@ -501,7 +501,7 @@ void get_diff_avalue(const fmat4x4& m0, const fmat4x4& m1, float& l, float& a)
 	l = diff.c.magnitude();
 	fvec3 ax;
 	get_axix_angle(diff, ax, a);
-	a = std::abs(a);
+	a = _abs(a);
 }
 IC void get_blend_speed_limits(float& l, float& a, const SCalculateData& cd, const calculate_state& sv_state)
 {

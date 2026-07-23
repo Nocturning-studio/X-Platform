@@ -426,10 +426,10 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	IC BOOL cmp(SelfCRef Q, T Tolerance = 0.0001f)
 	{
 		if ( // they are the same but with opposite signs
-			((std::abs(x + Q.x) <= Tolerance) && (std::abs(y + Q.y) <= Tolerance) && (std::abs(z + Q.z) <= Tolerance) &&
-			 (std::abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
-			((std::abs(x - Q.x) <= Tolerance) && (std::abs(y - Q.y) <= Tolerance) && (std::abs(z - Q.z) <= Tolerance) &&
-			 (std::abs(w - Q.w) <= Tolerance)))
+			((_abs(x + Q.x) <= Tolerance) && (_abs(y + Q.y) <= Tolerance) && (_abs(z + Q.z) <= Tolerance) &&
+			 (_abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
+			((_abs(x - Q.x) <= Tolerance) && (_abs(y - Q.y) <= Tolerance) && (_abs(z - Q.z) <= Tolerance) &&
+			 (_abs(w - Q.w) <= Tolerance)))
 			return true;
 		else
 			return false;

@@ -133,7 +133,7 @@ void CUIStalkersRankingWnd::FillList()
 		CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
 		int actor_place = get_actor_ranking();
 
-		int sz = std::min(g_all_statistic_humans.size(), 20u);
+		int sz = _min(g_all_statistic_humans.size(), 20);
 		for (int i = 0; i < sz; ++i)
 		{
 			CSE_ALifeTraderAbstract* pT = (g_all_statistic_humans[i]).trader;

@@ -52,7 +52,7 @@ void CHUDCrosshair::SetDispersion(float disp)
 
 	fvec2 scr_size;
 	scr_size.set(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-	float radius_pixels = std::abs(r.x) * scr_size.x / 2.0f;
+	float radius_pixels = _abs(r.x) * scr_size.x / 2.0f;
 	//	clamp(radius_pixels, min_radius, max_radius);
 	target_radius = radius_pixels;
 }
@@ -124,7 +124,7 @@ void CHUDCrosshair::OnRender()
 		float sp = radius_speed_perc * scr_size.x;
 		float radius_change = sp * Engine.TimeManager.GetDeltaTime();
 		clamp(radius_change, 0.0f, sp * 0.0165f); // clamp to 60 fps
-		clamp(radius_change, 0.0f, std::abs(target_radius - radius));
+		clamp(radius_change, 0.0f, _abs(target_radius - radius));
 
 		if (target_radius < radius)
 			radius -= radius_change;

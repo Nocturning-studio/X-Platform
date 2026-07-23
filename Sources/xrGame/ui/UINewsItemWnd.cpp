@@ -67,7 +67,7 @@ void CUINewsItemWnd::Setup(GAME_NEWS_DATA& news_data)
 	m_UIImage->SetOriginalRect(news_data.tex_rect.x1, news_data.tex_rect.y1, news_data.tex_rect.x2,
 							   news_data.tex_rect.y2);
 	float h3 = m_UIImage->GetWndPos().y + m_UIImage->GetHeight();
-	h1 = std::max(h1, h2);
-	h1 = std::max(h1, h3);
+	h1 = _max(h1, h2);
+	h1 = _max(h1, h3);
 	SetHeight(h1);
 }

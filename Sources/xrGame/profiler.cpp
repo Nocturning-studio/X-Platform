@@ -128,8 +128,8 @@ void CProfiler::setup_timer(LPCSTR timer_id, const u64& timer_time, const u32& c
 	else
 	{
 		CProfileStats& current = (*i).second;
-		current.m_min_time = std::min(current.m_min_time, _time);
-		current.m_max_time = std::max(current.m_max_time, _time);
+		current.m_min_time = _min(current.m_min_time, _time);
+		current.m_max_time = _max(current.m_max_time, _time);
 		current.m_total_time += _time;
 		++current.m_count;
 		current.m_call_count += call_count;
@@ -219,7 +219,7 @@ void CProfiler::show_stats(CGameFont* game_font, bool show)
 			TIMERS::iterator I = m_timers.begin();
 			TIMERS::iterator E = m_timers.end();
 			for (; I != E; ++I)
-				max_string_size = std::max(max_string_size, compute_string_length(*(*I).first));
+				max_string_size = _max(max_string_size, compute_string_length(*(*I).first));
 
 			I = m_timers.begin();
 			for (; I != E; ++I)

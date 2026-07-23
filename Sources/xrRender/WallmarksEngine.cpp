@@ -212,7 +212,7 @@ void CWallmarksEngine::BuildMatrix(fmat4x4& mView, float invsz, const fvec3& fro
 	fvec3 at, up, right, y;
 	at.sub(from, sml_normal);
 	y.set(0, 1, 0);
-	if (std::abs(sml_normal.y) > .99f)
+	if (_abs(sml_normal.y) > .99f)
 		y.set(1, 0, 0);
 	right.crossproduct(y, sml_normal);
 	up.crossproduct(sml_normal, right);

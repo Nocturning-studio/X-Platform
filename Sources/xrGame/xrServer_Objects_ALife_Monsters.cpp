@@ -323,10 +323,10 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 					m_DefaultCharacters.push_back(id);
 
 				if (char_info.data()->m_Rank == NO_RANK ||
-					std::abs(spec_char.Rank() - char_info.data()->m_Rank) < RANK_DELTA)
+					_abs(spec_char.Rank() - char_info.data()->m_Rank) < RANK_DELTA)
 				{
 					if (char_info.data()->m_Reputation == NO_REPUTATION ||
-						std::abs(spec_char.Reputation() - char_info.data()->m_Reputation) < REPUTATION_DELTA)
+						_abs(spec_char.Reputation() - char_info.data()->m_Reputation) < REPUTATION_DELTA)
 					{
 #ifdef XRGAME_EXPORTS
 						int* count = NULL;

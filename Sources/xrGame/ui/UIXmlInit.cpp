@@ -580,7 +580,7 @@ bool CUIXmlInit::InitHint(CUIXml& xml_doc, const char* path, int index, CUIStati
 			}
 		}
 
-		float hh = std::max(hint_obj->GetWidth() + 30.0f, 80.0f);
+		float hh = _max(hint_obj->GetWidth() + 30.0f, 80.0f);
 		m_border->SetWidth(hh);
 
 		hint_wnd->SetWidth(hint_obj->GetWidth());

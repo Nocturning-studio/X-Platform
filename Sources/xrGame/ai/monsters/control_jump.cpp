@@ -494,7 +494,7 @@ bool CControlJump::can_jump(CObject* target)
 		return false;
 
 	// check if target on the same floor etc
-	if (std::abs(target_position.y - source_position.y) > m_max_height)
+	if (_abs(target_position.y - source_position.y) > m_max_height)
 		return false;
 
 	// проверка prepare

@@ -37,7 +37,7 @@ class CUIScrollBar : public CUIWindow
 
 	u32 ScrollSize()
 	{
-		return std::max(1, m_iMaxPos - m_iMinPos - m_iPageSize + 1);
+		return _max(1, m_iMaxPos - m_iMinPos - m_iPageSize + 1);
 	}
 	void ClampByViewRect();
 	void SetPosScrollFromView(float view_pos, float view_width, float view_offs);
@@ -95,7 +95,7 @@ class CUIScrollBar : public CUIWindow
 
 	void SetPageSize(int iPage)
 	{
-		m_iPageSize = std::max(0, iPage);
+		m_iPageSize = _max(0, iPage);
 		UpdateScrollBar();
 	}
 	int GetPageSize()
@@ -110,7 +110,7 @@ class CUIScrollBar : public CUIWindow
 	}
 	int GetScrollPos()
 	{
-		return std::max(m_iMinPos, m_iScrollPos);
+		return _max(m_iMinPos, m_iScrollPos);
 	}
 
 	void TryScrollInc();

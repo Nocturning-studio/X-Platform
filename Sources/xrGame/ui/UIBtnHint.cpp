@@ -52,7 +52,7 @@ void CUIButtonHint::SetHintText(CUIWindow* w, LPCSTR text)
 	m_text->SetText(text);
 	m_text->AdjustWidthToText();
 	m_text->ResetClrAnimation();
-	float hh = std::max(m_text->GetWidth() + 30.0f, 80.0f);
+	float hh = _max(m_text->GetWidth() + 30.0f, 80.0f);
 	SetWidth(hh);
 	m_border->SetWidth(hh);
 }

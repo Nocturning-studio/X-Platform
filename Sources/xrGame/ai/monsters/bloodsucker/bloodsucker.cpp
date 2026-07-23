@@ -287,7 +287,7 @@ void CAI_Bloodsucker::LookDirection(fvec3 to_dir, float bone_turn_speed)
 	// float cur_yaw = -movement().m_body.current.yaw;						// текущий мировой угол монстра
 	// float bone_angle;											// угол для боны
 
-	// float dy = std::abs(angle_normalize_signed(yaw - cur_yaw));		// дельта, на которую нужно поворачиваться
+	// float dy = _abs(angle_normalize_signed(yaw - cur_yaw));		// дельта, на которую нужно поворачиваться
 
 	// if (angle_difference(cur_yaw,yaw) <= MAX_BONE_ANGLE) {		// bone turn only
 	//	bone_angle = dy;

@@ -179,7 +179,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 
 		allocator_pool.reserve(128);
 		m_center.set(bbc);
-		m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
+		m_bounds = _max(_max(bbd.x, bbd.y), bbd.z);
 		rt_insert_object = NULL;
 		if (0 == m_root)
 			m_root = _node_create();

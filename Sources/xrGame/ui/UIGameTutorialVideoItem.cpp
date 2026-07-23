@@ -57,7 +57,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
 	m_flags.set(etiGrabInput, TRUE);
 
-	m_delay = std::max(xml->ReadFlt("delay", 0, 0.f), 0.f);
+	m_delay = _max(xml->ReadFlt("delay", 0, 0.f), 0.f);
 
 	// ui-components
 	m_wnd = xr_new<CUIStatic>();
