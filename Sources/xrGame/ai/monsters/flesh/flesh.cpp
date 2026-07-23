@@ -132,8 +132,8 @@ void CAI_Flesh::CheckSpecParams(u32 spec_params)
 bool CAI_Flesh::ConeSphereIntersection(fvec3 ConeVertex, float ConeAngle, fvec3 ConeDir, fvec3 SphereCenter,
 									   float SphereRadius)
 {
-	float fInvSin = 1.0f / _sin(ConeAngle);
-	float fCosSqr = _cos(ConeAngle) * _cos(ConeAngle);
+	float fInvSin = 1.0f / std::sin(ConeAngle);
+	float fCosSqr = std::cos(ConeAngle) * std::cos(ConeAngle);
 
 	fvec3 kCmV;
 	kCmV.sub(SphereCenter, ConeVertex);
@@ -147,7 +147,7 @@ bool CAI_Flesh::ConeSphereIntersection(fvec3 ConeVertex, float ConeAngle, fvec3 
 	if (fE > 0.0f && fE * fE >= fDSqrLen * fCosSqr)
 	{
 
-		float fSinSqr = _sin(ConeAngle) * _sin(ConeAngle);
+		float fSinSqr = std::sin(ConeAngle) * std::sin(ConeAngle);
 
 		fDSqrLen = kCmV.square_magnitude();
 		fE = -kCmV.dotproduct(ConeDir);

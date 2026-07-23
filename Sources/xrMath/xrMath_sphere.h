@@ -68,7 +68,7 @@ template <class T> struct template_sphere
 		}
 		else if (fDiscr > (T)0.0)
 		{
-			T fRoot = _sqrt(fDiscr);
+			T fRoot = std::sqrt(fDiscr);
 			T fInvA = ((T)1.0) / fA;
 			afT[0] = range * (-fB - fRoot) * fInvA;
 			afT[1] = range * (-fB + fRoot) * fInvA;
@@ -149,7 +149,7 @@ template <class T> struct template_sphere
 
 		if (d > 0.f)
 		{
-			T _range = v - _sqrt(d);
+			T _range = v - std::sqrt(d);
 			if (_range < range)
 			{
 				range = _range;

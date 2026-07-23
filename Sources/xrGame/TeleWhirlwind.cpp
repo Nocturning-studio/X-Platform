@@ -200,7 +200,7 @@ void CTeleWhirlwindObject::raise(float step)
 
 		fvec3 diff;
 		diff.sub(center, pos);
-		float mag = _sqrt(diff.x * diff.x + diff.z * diff.z);
+		float mag = std::sqrt(diff.x * diff.x + diff.z * diff.z);
 		fvec3 lc;
 		lc.set(center);
 		if (mag > 1.f)

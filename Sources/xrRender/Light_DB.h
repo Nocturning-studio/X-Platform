@@ -29,7 +29,7 @@ struct Flight
 		position.set(x, y, z);
 		direction.set(x, y, z);
 		direction.normalize_safe();
-		range = _sqrt(flt_max);
+		range = std::sqrt(flt_max);
 	}
 	IC void mul(float brightness)
 	{

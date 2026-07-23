@@ -112,7 +112,7 @@ void noise3Init()
 			}
 			s = DOT(v, v);
 		} while (s > 1.0);
-		s = _sqrt(s);
+		s = std::sqrt(s);
 		for (j = 0; j < 3; j++)
 			g[i][j] = v[j] / s;
 	}

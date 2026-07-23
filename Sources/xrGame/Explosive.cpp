@@ -277,20 +277,20 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 		float l_S = effective_volume *
 					(_abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
 					 _abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
-		float add_eff = _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
+		float add_eff = std::sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 		effect += add_eff;
 		if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
 		{
 			Msg("dist %f,effect R %f", mag, expl_radius);
 			Msg("test pass effect %f", add_eff);
-			Msg("S effect %f", _sqrt(l_S / max_s));
-			Msg("dist/overlap effect, %f", add_eff / _sqrt(l_S / max_s));
+			Msg("S effect %f", std::sqrt(l_S / max_s));
+			Msg("dist/overlap effect, %f", add_eff / std::sqrt(l_S / max_s));
 		}
 #else
 		float l_S = effective_volume *
 					(_abs(l_dir.dotproduct(obj_transform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_transform.j)) / l_d.y +
 					 _abs(l_dir.dotproduct(obj_transform.k)) / l_d.z);
-		effect += _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
+		effect += std::sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 #endif
 	}
 #ifdef DEBUG
@@ -701,10 +701,10 @@ void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysics
 		fvec3 l_dir;
 		l_dir.sub(l_goPos, m_vExplodePos);
 
-		float rmag = _sqrt(m_fUpThrowFactor * m_fUpThrowFactor + 1.f + 2.f * m_fUpThrowFactor * l_dir.y);
+		float rmag = std::sqrt(m_fUpThrowFactor * m_fUpThrowFactor + 1.f + 2.f * m_fUpThrowFactor * l_dir.y);
 		l_dir.y += m_fUpThrowFactor;
 		// rmag -модуль l_dir после l_dir.y += m_fUpThrowFactor,
-		// модуль=_sqrt(l_dir^2+y^2+2.*(l_dir,y)),y=(0,m_fUpThrowFactor,0) (до этого модуль l_dir =1)
+		// модуль=std::sqrt(l_dir^2+y^2+2.*(l_dir,y)),y=(0,m_fUpThrowFactor,0) (до этого модуль l_dir =1)
 		l_dir.mul(1.f / rmag); // перенормировка
 		NET_Packet P;
 		SHit HS;

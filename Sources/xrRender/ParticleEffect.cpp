@@ -233,8 +233,8 @@ void CParticleEffect::OnDeviceDestroy()
 IC void FillSprite(FVF::LIT*& pv, const fvec3& T, const fvec3& R, const fvec3& pos, const fvec2& lt,
 				   const fvec2& rb, float r1, float r2, u32 clr, float angle)
 {
-	float sa = _sin(angle);
-	float ca = _cos(angle);
+	float sa = std::sin(angle);
+	float ca = std::cos(angle);
 	fvec3 Vr, Vt;
 	Vr.x = T.x * r1 * sa + R.x * r1 * ca;
 	Vr.y = T.y * r1 * sa + R.y * r1 * ca;
@@ -261,8 +261,8 @@ IC void FillSprite(FVF::LIT*& pv, const fvec3& T, const fvec3& R, const fvec3& p
 IC void FillSprite(FVF::LIT*& pv, const fvec3& pos, const fvec3& dir, const fvec2& lt, const fvec2& rb,
 				   float r1, float r2, u32 clr, float angle)
 {
-	float sa = _sin(angle);
-	float ca = _cos(angle);
+	float sa = std::sin(angle);
+	float ca = std::cos(angle);
 	const fvec3& T = dir;
 	fvec3 R;
 	R.crossproduct(T, Engine.RenderView.Direction).normalize_safe();

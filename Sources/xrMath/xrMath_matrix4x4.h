@@ -340,8 +340,8 @@ template <class T> struct template_matrix4x4
 
 	IC SelfRef rotateX(T Angle) // rotation about X axis
 	{
-		T cosa = _cos(Angle);
-		T sina = _sin(Angle);
+		T cosa = std::cos(Angle);
+		T sina = std::sin(Angle);
 		i.set(1, 0, 0);
 		_14 = 0;
 		j.set(0, cosa, sina);
@@ -354,8 +354,8 @@ template <class T> struct template_matrix4x4
 	}
 	IC SelfRef rotateY(T Angle) // rotation about Y axis
 	{
-		T cosa = _cos(Angle);
-		T sina = _sin(Angle);
+		T cosa = std::cos(Angle);
+		T sina = std::sin(Angle);
 		i.set(cosa, 0, -sina);
 		_14 = 0;
 		j.set(0, 1, 0);
@@ -368,8 +368,8 @@ template <class T> struct template_matrix4x4
 	}
 	IC SelfRef rotateZ(T Angle) // rotation about Z axis
 	{
-		T cosa = _cos(Angle);
-		T sina = _sin(Angle);
+		T cosa = std::cos(Angle);
+		T sina = std::sin(Angle);
 		i.set(cosa, sina, 0);
 		_14 = 0;
 		j.set(-sina, cosa, 0);
@@ -479,8 +479,8 @@ template <class T> struct template_matrix4x4
 
 	IC SelfRef rotation(const Tvector& axis, T Angle)
 	{
-		T Cosine = _cos(Angle);
-		T Sine = _sin(Angle);
+		T Cosine = std::cos(Angle);
+		T Sine = std::sin(Angle);
 		m[0][0] = axis.x * axis.x + (1 - axis.x * axis.x) * Cosine;
 		m[0][1] = axis.x * axis.y * (1 - Cosine) + axis.z * Sine;
 		m[0][2] = axis.x * axis.z * (1 - Cosine) - axis.y * Sine;
@@ -802,12 +802,12 @@ template <class T> struct template_matrix4x4
 	{
 		T _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
 
-		_sh = _sin(h);
-		_ch = _cos(h);
-		_sp = _sin(p);
-		_cp = _cos(p);
-		_sb = _sin(b);
-		_cb = _cos(b);
+		_sh = std::sin(h);
+		_ch = std::cos(h);
+		_sp = std::sin(p);
+		_cp = std::cos(p);
+		_sb = std::sin(b);
+		_cb = std::cos(b);
 		_cc = _ch * _cb;
 		_cs = _ch * _sb;
 		_sc = _sh * _cb;
@@ -842,7 +842,7 @@ template <class T> struct template_matrix4x4
 	//
 	IC void getHPB(T& h, T& p, T& b) const
 	{
-		T cy = _sqrt(j.y * j.y + i.y * i.y);
+		T cy = std::sqrt(j.y * j.y + i.y * i.y);
 		if (cy > 16.0f * type_epsilon(T))
 		{
 			h = (T)-atan2(k.x, k.z);

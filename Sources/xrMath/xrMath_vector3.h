@@ -405,7 +405,7 @@ template <class T> struct template_vector3
 		T magnitude = x * x + y * y + z * z;
 		if (magnitude > std::numeric_limits<T>::min())
 		{
-			magnitude = _sqrt(1 / magnitude);
+			magnitude = std::sqrt(1 / magnitude);
 			x *= magnitude;
 			y *= magnitude;
 			z *= magnitude;
@@ -416,7 +416,7 @@ template <class T> struct template_vector3
 	// Normalize
 	ICF SelfRef normalize(const Self& v)
 	{
-		T mag = _sqrt(1 / (v.x * v.x + v.y * v.y + v.z * v.z));
+		T mag = std::sqrt(1 / (v.x * v.x + v.y * v.y + v.z * v.z));
 		x = v.x * mag;
 		y = v.y * mag;
 		z = v.z * mag;
@@ -429,7 +429,7 @@ template <class T> struct template_vector3
 		T magnitude = v.x * v.x + v.y * v.y + v.z * v.z;
 		if (magnitude > std::numeric_limits<T>::min())
 		{
-			magnitude = _sqrt(1 / magnitude);
+			magnitude = std::sqrt(1 / magnitude);
 			x = v.x * magnitude;
 			y = v.y * magnitude;
 			z = v.z * magnitude;
@@ -441,9 +441,9 @@ template <class T> struct template_vector3
 		// z	= R.randF(-1,1);
 		z = cos(R.randF(PI));
 		T a = R.randF(PI_MUL_2);
-		T r = _sqrt(1 - z * z);
-		T sa = _sin(a);
-		T ca = _cos(a);
+		T r = std::sqrt(1 - z * z);
+		T sa = std::sin(a);
+		T ca = std::cos(a);
 		x = r * ca;
 		y = r * sa;
 		return *this;
@@ -488,7 +488,7 @@ template <class T> struct template_vector3
 	// Distance calculation
 	IC T distance_to_xz(const Self& v) const
 	{
-		return _sqrt((x - v.x) * (x - v.x) + (z - v.z) * (z - v.z));
+		return std::sqrt((x - v.x) * (x - v.x) + (z - v.z) * (z - v.z));
 	}
 	IC T distance_to_xz_sqr(const Self& v) const
 	{
@@ -504,7 +504,7 @@ template <class T> struct template_vector3
 	// Distance calculation
 	ICF T distance_to(const Self& v) const
 	{
-		return _sqrt(distance_to_sqr(v));
+		return std::sqrt(distance_to_sqr(v));
 	}
 
 	// Barycentric coords
@@ -545,7 +545,7 @@ template <class T> struct template_vector3
 	};
 	IC SelfRef setHP(T h, T p)
 	{
-		T _ch = _cos(h), _cp = _cos(p), _sh = _sin(h), _sp = _sin(p);
+		T _ch = std::cos(h), _cp = std::cos(p), _sh = std::sin(h), _sp = std::sin(p);
 		x = -_cp * _sh;
 		y = _sp;
 		z = _cp * _ch;
@@ -571,7 +571,7 @@ template <class T> struct template_vector3
 				h = -(atanf(x / z) - PI);
 			else
 				h = -atanf(x / z);
-			hyp = _sqrt(x * x + z * z);
+			hyp = std::sqrt(x * x + z * z);
 			if (fis_zero(float(hyp)))
 				p = (y > 0.0f) ? PI_DIV_2 : -PI_DIV_2;
 			else
@@ -605,7 +605,7 @@ template <class T> struct template_vector3
 		}
 		else
 		{
-			float hyp = _sqrt(x * x + z * z);
+			float hyp = std::sqrt(x * x + z * z);
 			if (fis_zero(float(hyp)))
 				return (y > 0.0f) ? PI_DIV_2 : -PI_DIV_2;
 			else
@@ -627,7 +627,7 @@ template <class T> struct template_vector3
 		if (_abs(dir.x) >= _abs(dir.y))
 		{
 			// W.x or W.z is the largest magnitude component, swap them
-			fInvLength = 1.f / _sqrt(dir.x * dir.x + dir.z * dir.z);
+			fInvLength = 1.f / std::sqrt(dir.x * dir.x + dir.z * dir.z);
 			up.x = -dir.z * fInvLength;
 			up.y = 0.0f;
 			up.z = +dir.x * fInvLength;
@@ -635,7 +635,7 @@ template <class T> struct template_vector3
 		else
 		{
 			// W.y or W.z is the largest magnitude component, swap them
-			fInvLength = 1.f / _sqrt(dir.y * dir.y + dir.z * dir.z);
+			fInvLength = 1.f / std::sqrt(dir.y * dir.y + dir.z * dir.z);
 			up.x = 0.0f;
 			up.y = +dir.z * fInvLength;
 			up.z = -dir.y * fInvLength;
@@ -650,7 +650,7 @@ template <class T> struct template_vector3
 		if (fsimilar(dir.y, 1.f, EPS))
 		{
 			up.set(0.f, 0.f, 1.f);
-			fInvLength = 1.f / _sqrt(dir.x * dir.x + dir.y * dir.y);
+			fInvLength = 1.f / std::sqrt(dir.x * dir.x + dir.y * dir.y);
 			// cross (up,dir) and normalize (right)
 			right.x = -dir.y * fInvLength;
 			right.y = dir.x * fInvLength;
@@ -663,7 +663,7 @@ template <class T> struct template_vector3
 		else
 		{
 			up.set(0.f, 1.f, 0.f);
-			fInvLength = 1.f / _sqrt(dir.x * dir.x + dir.z * dir.z);
+			fInvLength = 1.f / std::sqrt(dir.x * dir.x + dir.z * dir.z);
 			// cross (up,dir) and normalize (right)
 			right.x = dir.z * fInvLength;
 			right.y = 0.f;

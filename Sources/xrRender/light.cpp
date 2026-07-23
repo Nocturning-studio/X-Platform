@@ -239,7 +239,7 @@ void light::spatial_move()
 		else
 		{
 			// acute-angled
-			spatial.sphere.R = range / (2.f * _sqr(_cos(cone / 2.f)));
+			spatial.sphere.R = range / (2.f * _sqr(std::cos(cone / 2.f)));
 			spatial.sphere.P.mad(position, direction, spatial.sphere.R);
 		}
 	}
@@ -402,7 +402,7 @@ bool light::camera_inside_volume() const
 		// Угол между направлением света и направлением на камеру
 		float cos_angle = dir_to_cam.dotproduct(direction);
 		float half_cone = cone * 0.5f; // cone – полный угол в радианах
-		bool inside_cone = cos_angle >= _cos(half_cone);
+		bool inside_cone = cos_angle >= std::cos(half_cone);
 
 #ifdef DEBUG_LIGHTS_CULLING
 		Msg("[CPU-OCC] camera_inside_volume (SPOT): pos=(%.1f,%.1f,%.1f) dist=%.1f range=%.1f "
@@ -410,7 +410,7 @@ bool light::camera_inside_volume() const
 			position.x, position.y, position.z,
 			dist_to_source, range,
 			dir_to_cam.x, dir_to_cam.y, dir_to_cam.z,
-			cos_angle, half_cone, _cos(half_cone), inside_cone);
+			cos_angle, half_cone, std::cos(half_cone), inside_cone);
 #endif
 		return inside_cone;
 	}
@@ -524,6 +524,6 @@ float light::get_LOD()
 		return 1;
 	float distSQ = Engine.RenderView.Position.distance_to_sqr(spatial.sphere.P) + EPS;
 	float ScreenSpaceArea = ps_r_slight_fade * spatial.sphere.R / distSQ;
-	float lod = _sqrt(clampr((ScreenSpaceArea - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
+	float lod = std::sqrt(clampr((ScreenSpaceArea - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 	return lod;
 }

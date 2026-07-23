@@ -49,7 +49,7 @@ class Point
 	//! Computes magnitude
 	IC float Magnitude() const
 	{
-		return _sqrt(x * x + y * y + z * z);
+		return std::sqrt(x * x + y * y + z * z);
 	}
 
 	//! Return largest axis

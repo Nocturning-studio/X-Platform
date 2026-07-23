@@ -487,7 +487,7 @@ void CInventoryItem::net_Export(NET_Packet& P)
 
 	P.w_vec3(State.position);
 
-	float magnitude = _sqrt(State.quaternion.magnitude());
+	float magnitude = std::sqrt(State.quaternion.magnitude());
 	if (fis_zero(magnitude))
 	{
 		magnitude = 1;

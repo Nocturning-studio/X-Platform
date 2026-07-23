@@ -245,8 +245,7 @@ void DeviceContext::ClipAndRasterize(const PipelineStateObject& state,
 
         for (const auto& tri : finalTriangles)
         {
-            auto optSetup = RasterizerCommon::CreateTriangleSetup(
-                finalVerts[tri.x], finalVerts[tri.y], finalVerts[tri.z], rasterState);
+            auto optSetup = RasterizerCommon::CreateTriangleSetup(finalVerts[tri.x], finalVerts[tri.y], finalVerts[tri.z], rasterState);
             if (optSetup)
                 setups.push_back(std::move(*optSetup));
         }

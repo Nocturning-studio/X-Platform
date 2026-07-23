@@ -188,7 +188,7 @@ void CPerlinNoise2D::normalize(float v[2])
 {
 	float s;
 
-	s = _sqrt(v[0] * v[0] + v[1] * v[1]);
+	s = std::sqrt(v[0] * v[0] + v[1] * v[1]);
 	s = 1.0f / s;
 	v[0] = v[0] * s;
 	v[1] = v[1] * s;
@@ -307,7 +307,7 @@ void CPerlinNoise3D::normalize(float v[3])
 {
 	float s;
 
-	s = _sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	s = std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 	s = 1.0f / s;
 
 	v[0] = v[0] * s;

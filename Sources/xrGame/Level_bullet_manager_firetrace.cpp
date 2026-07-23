@@ -438,7 +438,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 				hit_normal.sub(end_point, e_center);
 			float len = hit_normal.square_magnitude();
 			if (!fis_zero(len))
-				hit_normal.div(_sqrt(len));
+				hit_normal.div(std::sqrt(len));
 			else
 				hit_normal.invert(bullet->dir);
 		}

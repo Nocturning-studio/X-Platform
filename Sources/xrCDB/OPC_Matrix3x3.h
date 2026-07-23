@@ -378,7 +378,7 @@ class ICEMATHS_API Matrix3x3
 	//! Set a rotation matrix around the X axis.
 	void RotX(float angle)
 	{
-		float Cos = _cos(angle), Sin = _sin(angle);
+		float Cos = std::cos(angle), Sin = std::sin(angle);
 		Identity();
 		m[1][1] = m[2][2] = Cos;
 		m[2][1] = -Sin;
@@ -387,7 +387,7 @@ class ICEMATHS_API Matrix3x3
 	//! Set a rotation matrix around the Y axis.
 	void RotY(float angle)
 	{
-		float Cos = _cos(angle), Sin = _sin(angle);
+		float Cos = std::cos(angle), Sin = std::sin(angle);
 		Identity();
 		m[0][0] = m[2][2] = Cos;
 		m[2][0] = Sin;
@@ -396,7 +396,7 @@ class ICEMATHS_API Matrix3x3
 	//! Set a rotation matrix around the Z axis.
 	void RotZ(float angle)
 	{
-		float Cos = _cos(angle), Sin = _sin(angle);
+		float Cos = std::cos(angle), Sin = std::sin(angle);
 		Identity();
 		m[0][0] = m[1][1] = Cos;
 		m[1][0] = -Sin;

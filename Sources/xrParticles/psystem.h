@@ -34,7 +34,7 @@ class pVector : public fvec3
 	}
 	IC float length() const
 	{
-		return _sqrt(x * x + y * y + z * z);
+		return std::sqrt(x * x + y * y + z * z);
 	}
 	IC float length2() const
 	{

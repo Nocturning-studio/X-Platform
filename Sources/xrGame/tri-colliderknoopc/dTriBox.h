@@ -90,7 +90,7 @@ IC bool dcTriListCollider::CrossProjLine14(const dReal* pt1, const dReal* vc1, c
 
 	dReal t2 = (ac_vc1 * vc1_vc2 - ac_vc2 * vc1_2) / factor;
 
-	dReal nt2 = t2; //*_sqrt(vc2_2);
+	dReal nt2 = t2; //*std::sqrt(vc2_2);
 	if (nt2 > hside || nt2 < -hside)
 		return false;
 

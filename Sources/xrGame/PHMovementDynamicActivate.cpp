@@ -144,7 +144,7 @@ class CVelocityLimiter : public CPHUpdateObject
 			dReal mag;
 			fvec3 vlinear_velocity;
 			vlinear_velocity.set(cast_fv(linear_velocity));
-			mag = _sqrt(linear_velocity[0] * linear_velocity[0] + linear_velocity[2] * linear_velocity[2]); //
+			mag = std::sqrt(linear_velocity[0] * linear_velocity[0] + linear_velocity[2] * linear_velocity[2]); //
 			if (mag > l_limit)
 			{
 				dReal f = mag / l_limit;
@@ -282,19 +282,19 @@ class CGetContactForces : public CPHUpdateObject
 					othrers_torque = feedback->t1;
 				}
 
-				save_max(m_max_force_self, _sqrt(dDOT(self_force, self_force)));
-				save_max(m_max_torque_self, _sqrt(dDOT(self_torque, self_torque)));
+				save_max(m_max_force_self, std::sqrt(dDOT(self_force, self_force)));
+				save_max(m_max_torque_self, std::sqrt(dDOT(self_torque, self_torque)));
 				save_max(m_max_force_self_y, _abs(self_force[1]));
-				save_max(m_max_force_self_sd, _sqrt(self_force[0] * self_force[0] + self_force[2] * self_force[2]));
+				save_max(m_max_force_self_sd, std::sqrt(self_force[0] * self_force[0] + self_force[2] * self_force[2]));
 				if (other_body)
 				{
 					dVector3 shoulder;
 					dVectorSub(shoulder, dJointGetPositionContact(joint), dBodyGetPosition(other_body));
-					dReal shoulder_lenght = _sqrt(dDOT(shoulder, shoulder));
+					dReal shoulder_lenght = std::sqrt(dDOT(shoulder, shoulder));
 
-					save_max(m_max_force_others, _sqrt(dDOT(othrers_force, othrers_force)));
+					save_max(m_max_force_others, std::sqrt(dDOT(othrers_force, othrers_force)));
 					if (!fis_zero(shoulder_lenght))
-						save_max(m_max_torque_others, _sqrt(dDOT(othrers_torque, othrers_torque)) / shoulder_lenght);
+						save_max(m_max_torque_others, std::sqrt(dDOT(othrers_torque, othrers_torque)) / shoulder_lenght);
 				}
 			}
 		}

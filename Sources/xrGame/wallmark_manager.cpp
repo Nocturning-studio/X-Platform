@@ -466,5 +466,5 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 
 	dir.sub(closest, rkPoint);
 	dir.normalize_safe();
-	return _sqrt(_abs(fSqrDist));
+	return std::sqrt(_abs(fSqrDist));
 }

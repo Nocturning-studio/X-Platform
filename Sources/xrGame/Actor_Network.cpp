@@ -214,7 +214,7 @@ static void r_qt_q8(NET_Packet& P, Fquaternion& q)
 	// P.r_float_q8(q.z,-1.f,1.f);
 	// float w2=1.f-q.x*q.x-q.y*q.y-q.z*q.z;
 	// w2=w2<0.f ? 0.f : w2;
-	// q.w=_sqrt(w2);
+	// q.w=std::sqrt(w2);
 	/////////////////////////////////////////////////////
 	///////////////////////////////////////////////////
 	P.r_float_q8(q.x, -1.f, 1.f);

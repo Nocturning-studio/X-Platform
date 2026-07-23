@@ -267,7 +267,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	{
 		T m, one_over_magnitude;
 
-		m = _sqrt(magnitude());
+		m = std::sqrt(magnitude());
 
 		if ((m < QZERO_TOLERANCE) && (m > -QZERO_TOLERANCE))
 			return *this;
@@ -314,12 +314,12 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	// makes unit rotation
 	IC SelfRef rotationYawPitchRoll(T _x, T _y, T _z)
 	{
-		T fSinYaw = _sin(_x * .5f);
-		T fCosYaw = _cos(_x * .5f);
-		T fSinPitch = _sin(_y * .5f);
-		T fCosPitch = _cos(_y * .5f);
-		T fSinRoll = _sin(_z * .5f);
-		T fCosRoll = _cos(_z * .5f);
+		T fSinYaw = std::sin(_x * .5f);
+		T fCosYaw = std::cos(_x * .5f);
+		T fSinPitch = std::sin(_y * .5f);
+		T fCosPitch = std::cos(_y * .5f);
+		T fSinRoll = std::sin(_z * .5f);
+		T fCosRoll = std::cos(_z * .5f);
 
 		x = fSinRoll * fCosPitch * fCosYaw - fCosRoll * fSinPitch * fSinYaw;
 		y = fCosRoll * fSinPitch * fCosYaw + fSinRoll * fCosPitch * fSinYaw;
@@ -339,8 +339,8 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	{
 		T sinTheta;
 
-		w = _cos(angle * 0.5f);
-		sinTheta = _sin(angle * 0.5f);
+		w = std::cos(angle * 0.5f);
+		sinTheta = std::sin(angle * 0.5f);
 		x = sinTheta * axis.x;
 		y = sinTheta * axis.y;
 		z = sinTheta * axis.z;
@@ -357,7 +357,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 		T HalfTheta = acosf(w);
 		if (HalfTheta > QZERO_TOLERANCE)
 		{
-			OneOverSinTheta = 1.0f / _sin(HalfTheta);
+			OneOverSinTheta = 1.0f / std::sin(HalfTheta);
 			axis.x = OneOverSinTheta * x;
 			axis.y = OneOverSinTheta * y;
 			axis.z = OneOverSinTheta * z;
@@ -401,10 +401,10 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 		if ((1.0f - cosom) > EPS)
 		{
 			T omega = _acos_(cosom);
-			T i_sinom = 1.f / _sin(omega);
+			T i_sinom = 1.f / std::sin(omega);
 			T t_omega = tm * omega;
-			Scale0 = _sin(omega - t_omega) * i_sinom;
-			Scale1 = _sin(t_omega) * i_sinom;
+			Scale0 = std::sin(omega - t_omega) * i_sinom;
+			Scale1 = std::sin(t_omega) * i_sinom;
 		}
 		else
 		{
@@ -437,7 +437,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	IC SelfRef ln(SelfCRef Q)
 	{
 		T n = Q.x * Q.x + Q.y * Q.y + Q.z * Q.z;
-		T r = _sqrt(n);
+		T r = std::sqrt(n);
 		T t = (r > EPS_S) ? atan2f(r, Q.w) / r : 0.f;
 		x = t * Q.x;
 		y = t * Q.y;
@@ -447,13 +447,13 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	}
 	IC SelfRef exp(SelfCRef Q)
 	{
-		T r = _sqrt(Q.x * Q.x + Q.y * Q.y + Q.z * Q.z);
+		T r = std::sqrt(Q.x * Q.x + Q.y * Q.y + Q.z * Q.z);
 		T et = expf(Q.w);
-		T s = (r >= EPS_S) ? et * _sin(r) / r : 0.f;
+		T s = (r >= EPS_S) ? et * std::sin(r) / r : 0.f;
 		x = s * Q.x;
 		y = s * Q.y;
 		z = s * Q.z;
-		w = et * _cos(r);
+		w = et * std::cos(r);
 		return *this;
 	}
 };

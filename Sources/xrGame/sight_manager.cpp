@@ -193,7 +193,7 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex* tpNode, float f
 				fSingleIncrement = fIncrement;
 			}
 		}
-		if (_sqrt(fMaxSquare) < 0 * PI_DIV_6)
+		if (std::sqrt(fMaxSquare) < 0 * PI_DIV_6)
 			fBestAngle = fSingleIncrement;
 	}
 
@@ -309,7 +309,7 @@ void CSightManager::Exec_Look(float dt)
 		} else {
 	*/
 	float h = -body.current.yaw;
-	float _sh = _sin(h), _ch = _cos(h);
+	float _sh = std::sin(h), _ch = std::cos(h);
 	m.i.set(_ch, 0.f, _sh);
 	m._14_ = 0.f;
 	m.j.set(0.f, 1.f, 0.f);

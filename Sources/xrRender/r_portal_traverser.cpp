@@ -149,7 +149,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 			float ssa = portal->GetSphere().R * portal->GetSphere().R / dist_sq;
 
 			// Учитываем угол обзора
-			dir2portal.div(_sqrt(dist_sq));
+			dir2portal.div(std::sqrt(dist_sq));
 			ssa *= _abs(portal->GetPlane().n.dotproduct(dir2portal));
 
 			if (ssa < r_ssaDISCARD)

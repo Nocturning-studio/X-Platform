@@ -345,8 +345,8 @@ void pDomain::Generate(pVector& pos) const
 		// Distance from axis
 		float r = radius2 + drand48() * (radius1 - radius2);
 
-		float x = r * _cos(theta); // Weighting of each frame vector3
-		float y = r * _sin(theta);
+		float x = r * std::cos(theta); // Weighting of each frame vector3
+		float y = r * std::sin(theta);
 
 		// Scale radius along axis for cones
 		if (type == PDCone)
@@ -369,8 +369,8 @@ void pDomain::Generate(pVector& pos) const
 		// Distance from center
 		float r = radius2 + drand48() * (radius1 - radius2);
 
-		float x = r * _cos(theta); // Weighting of each frame vector3
-		float y = r * _sin(theta);
+		float x = r * std::cos(theta); // Weighting of each frame vector3
+		float y = r * std::sin(theta);
 
 		pos = p1 + u * x + v * y;
 	}

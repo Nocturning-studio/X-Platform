@@ -267,21 +267,21 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 
 				if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
 				{
-					delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
+					delay = u32(float(db().m_dwDistantIdleSndDelay) * std::sqrt(float(objects_count)));
 					type = MonsterSound::eMonsterSoundIdleDistant;
 				}
 				else
 				{
-					delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
+					delay = u32(float(db().m_dwIdleSndDelay) * std::sqrt(float(objects_count)));
 				}
 
 				break;
 			case MonsterSound::eMonsterSoundEat:
-				delay = u32(float(db().m_dwEatSndDelay) * _sqrt(float(objects_count)));
+				delay = u32(float(db().m_dwEatSndDelay) * std::sqrt(float(objects_count)));
 				break;
 			case MonsterSound::eMonsterSoundAggressive:
 			case MonsterSound::eMonsterSoundPanic:
-				delay = u32(float(db().m_dwAttackSndDelay) * _sqrt(float(objects_count)));
+				delay = u32(float(db().m_dwAttackSndDelay) * std::sqrt(float(objects_count)));
 				break;
 			}
 

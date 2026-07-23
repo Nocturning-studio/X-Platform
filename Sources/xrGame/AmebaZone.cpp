@@ -115,5 +115,5 @@ float CAmebaZone::distance_to_center(CObject* O)
 	Transform().transform_tiny(P, CFORM()->getSphere().P);
 	fvec3 OP;
 	OP.set(O->Position());
-	return _sqrt((P.x - OP.x) * (P.x - OP.x) + (P.x - OP.x) * (P.x - OP.x));
+	return std::sqrt((P.x - OP.x) * (P.x - OP.x) + (P.x - OP.x) * (P.x - OP.x));
 }

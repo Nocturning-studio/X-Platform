@@ -58,8 +58,8 @@ void CUICustomMap::Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 
 void rotation_(float x, float y, const float angle, float& x_, float& y_)
 {
-	float _sc = _cos(angle);
-	float _sn = _sin(angle);
+	float _sc = std::cos(angle);
+	float _sn = std::sin(angle);
 	x_ = x * _sc + y * _sn;
 	y_ = y * _sc - x * _sn;
 }

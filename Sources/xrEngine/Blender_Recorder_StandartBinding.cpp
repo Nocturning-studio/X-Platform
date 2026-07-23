@@ -231,7 +231,7 @@ class cl_times : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float t = Engine.TimeManager.GetGlobalTimeFixed();
-		RenderBackend.set_Constant(C, t, t * 10, t / 10, _sin(t));
+		RenderBackend.set_Constant(C, t, t * 10, t / 10, std::sin(t));
 	}
 };
 static cl_times binder_times;

@@ -147,11 +147,11 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	wind_shift_dir.setHP(wind_direction, 0.0f);
 	wind_shift_dir.mul(-wind_shift_dist);
 
-	float dist = radius * _sqrt(R.randF());
+	float dist = radius * std::sqrt(R.randF());
 	float ang = R.randF(0.0f, PI_MUL_2);
 
 	fvec3 offset;
-	offset.set(dist * _cos(ang), 0.f, dist * _sin(ang));
+	offset.set(dist * std::cos(ang), 0.f, dist * std::sin(ang));
 
 	fvec3& cam_pos = Engine.RenderView.Position;
 	dest.P.set(cam_pos.x + offset.x + wind_shift_dir.x, cam_pos.y + spawn_h, cam_pos.z + offset.z + wind_shift_dir.z);

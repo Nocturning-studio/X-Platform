@@ -101,14 +101,14 @@ IC float viewport_near(float& w, float& h)
 {
 	w = 2.f * VIEWPORT_NEAR * tanf(deg2rad(Engine.RenderView.Fov) / 2.f);
 	h = w * Engine.RenderView.Aspect;
-	float c = _sqrt(w * w + h * h);
+	float c = std::sqrt(w * w + h * h);
 	return _max(_max(VIEWPORT_NEAR, _max(w, h)), c);
 }
 
 ICF void calc_point(fvec3& pt, float radius, float depth, float alpha)
 {
-	pt.x = radius * _sin(alpha);
-	pt.y = radius + radius * _cos(alpha);
+	pt.x = radius * std::sin(alpha);
+	pt.y = radius + radius * std::cos(alpha);
 	pt.z = depth;
 }
 

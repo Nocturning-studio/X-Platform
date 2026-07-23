@@ -366,7 +366,7 @@ class ICEMATHS_API icePoint
 	//! Computes magnitude
 	inline_ float Magnitude() const
 	{
-		return _sqrt(x * x + y * y + z * z);
+		return std::sqrt(x * x + y * y + z * z);
 	}
 	//! Computes volume
 	inline_ float Volume() const
@@ -445,7 +445,7 @@ class ICEMATHS_API icePoint
 		float M = x * x + y * y + z * z;
 		if (M)
 		{
-			M = 1.0f / _sqrt(M);
+			M = 1.0f / std::sqrt(M);
 			x *= M;
 			y *= M;
 			z *= M;
@@ -466,7 +466,7 @@ class ICEMATHS_API icePoint
 	//! Computes distance to another point
 	inline_ float Distance(const Point& b) const
 	{
-		return _sqrt((x - b.x) * (x - b.x) + (y - b.y) * (y - b.y) + (z - b.z) * (z - b.z));
+		return std::sqrt((x - b.x) * (x - b.x) + (y - b.y) * (y - b.y) + (z - b.z) * (z - b.z));
 	}
 
 	//! Computes square distance to another point

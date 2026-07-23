@@ -106,7 +106,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 		switch (biggest)
 		{
 		case A:
-			s = _sqrt(M._11 - (M._22 + M._33) + 1.0f);
+			s = std::sqrt(M._11 - (M._22 + M._33) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
@@ -117,7 +117,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 				break;
 			}
 			// I
-			s = _sqrt(M._33 - (M._11 + M._22) + 1.0f);
+			s = std::sqrt(M._33 - (M._11 + M._22) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
@@ -128,7 +128,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 				break;
 			}
 			// E
-			s = _sqrt(M._22 - (M._33 + M._11) + 1.0f);
+			s = std::sqrt(M._22 - (M._33 + M._11) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
@@ -140,7 +140,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			break;
 		case E:
-			s = _sqrt(M._22 - (M._33 + M._11) + 1.0f);
+			s = std::sqrt(M._22 - (M._33 + M._11) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
@@ -151,7 +151,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 				break;
 			}
 			// I
-			s = _sqrt(M._33 - (M._11 + M._22) + 1.0f);
+			s = std::sqrt(M._33 - (M._11 + M._22) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
@@ -162,7 +162,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 				break;
 			}
 			// A
-			s = _sqrt(M._11 - (M._22 + M._33) + 1.0f);
+			s = std::sqrt(M._11 - (M._22 + M._33) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
@@ -174,7 +174,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			break;
 		case I:
-			s = _sqrt(M._33 - (M._11 + M._22) + 1.0f);
+			s = std::sqrt(M._33 - (M._11 + M._22) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
@@ -185,7 +185,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 				break;
 			}
 			// A
-			s = _sqrt(M._11 - (M._22 + M._33) + 1.0f);
+			s = std::sqrt(M._11 - (M._22 + M._33) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
@@ -196,7 +196,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 				break;
 			}
 			// E
-			s = _sqrt(M._22 - (M._33 + M._11) + 1.0f);
+			s = std::sqrt(M._22 - (M._33 + M._11) + 1.0f);
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;

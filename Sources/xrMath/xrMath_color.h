@@ -241,7 +241,7 @@ template <class T> struct template_color
 	// magnitude
 	IC T magnitude_rgb(void) const
 	{
-		return _sqrt(magnitude_sqr_rgb());
+		return std::sqrt(magnitude_sqr_rgb());
 	}
 	IC T intensity(void) const
 	{

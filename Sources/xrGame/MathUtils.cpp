@@ -79,7 +79,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		float sq_dist = v_smag - Lr * Lr; //
 		if (sq_dist > sq_r)
 			return false;
-		float r_dist = _sqrt(sq_r - sq_dist) + h;
+		float r_dist = std::sqrt(sq_r - sq_dist) + h;
 		tr1 = Lr - r_dist;
 
 		if (tr1 > R)
@@ -121,7 +121,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 			float sq_sphere_dist = lc_h * lc_h + sq_dist * sq_dist;
 			if (sq_sphere_dist > sq_r)
 				return false;
-			float diff = _sqrt(sq_r - sq_sphere_dist);
+			float diff = std::sqrt(sq_r - sq_sphere_dist);
 			tr1 = Lr - diff;
 			if (tr1 > R)
 				return false; //
@@ -143,7 +143,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				}
 			}
 		}
-		float diff = _sqrt(sq_r - sq_dist);
+		float diff = std::sqrt(sq_r - sq_dist);
 		tr1 = Lr - diff;
 
 		if (tr1 > R)
@@ -185,9 +185,9 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 
 	float sq_horde = (sq_r - sq_nearest_dist);
 
-	// float horde=_sqrt(sq_horde)					;
+	// float horde=std::sqrt(sq_horde)					;
 	float sq_c_diff = sq_horde * sq_cos * r_sq_sin;
-	float c_diff = _sqrt(sq_c_diff); // ccc
+	float c_diff = std::sqrt(sq_c_diff); // ccc
 	float cp1 = tc - c_diff;
 	float cp2 = tc + c_diff;
 
@@ -200,7 +200,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		if (sq_sphere_dist > sq_horde)
 			return false;
 		float tr_c = tr - tc_h * cs; //
-		float diff = _sqrt(sq_horde - sq_sphere_dist);
+		float diff = std::sqrt(sq_horde - sq_sphere_dist);
 		tr1 = tr_c - diff;
 		if (tr1 > R)
 			return false; //
@@ -232,7 +232,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		if (sq_sphere_dist > sq_horde)
 			return false;
 		float tr_c = tr - tc_h * cs; //!!
-		float diff = _sqrt(sq_horde - sq_sphere_dist);
+		float diff = std::sqrt(sq_horde - sq_sphere_dist);
 		tr1 = tr_c - diff;
 		if (tr1 > R)
 			return false; //
@@ -303,7 +303,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 						float sq_sphere_dist = sq_sin * tc_h * tc_h;
 						// if(sq_sphere_dist>sq_horde)return false	;
 						float tr_c = tr - tc_h * cs;
-						float diff = _sqrt(sq_horde - sq_sphere_dist);
+						float diff = std::sqrt(sq_horde - sq_sphere_dist);
 						tr2 = tr_c + diff;
 						if (tr2 < 0.f)
 							return false; //
@@ -327,7 +327,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				float tc_h = tc + h; //(tc-(-h))
 				float sq_sphere_dist = sq_sin * tc_h * tc_h;
 				// if(sq_sphere_dist>sq_horde)return false;
-				float diff = _sqrt(sq_horde - sq_sphere_dist);
+				float diff = std::sqrt(sq_horde - sq_sphere_dist);
 				float tr_c = tr - tc_h * cs;
 				tr1 = tr_c - diff;
 				if (tr1 > R)
@@ -359,7 +359,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				/////////////////////////////////////////////
 				float tc_h = tc + h;
 				float tr_c = tr - tc_h * cs;
-				float diff = _sqrt(sq_horde - sq_sin * tc_h * tc_h);
+				float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 				tr1 = tr_c - diff;
 				if (tr1 > R)
 					return false; //
@@ -371,7 +371,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 					{
 						float tc_h = tc - h;
 						float tr_c = tr - tc_h * cs;
-						float diff = _sqrt(sq_horde - sq_sin * tc_h * tc_h);
+						float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 						tr2 = tr_c + diff;
 						if (tr2 < R)
 						{
@@ -420,7 +420,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 
 				float tc_h = tc - h; // hi sphere/cyl
 				float tr_c = tr - tc_h * cs;
-				float diff = _sqrt(sq_horde - sq_sin * tc_h * tc_h);
+				float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 				tr1 = tr_c - diff;
 				if (tr1 > R)
 					return false; //
@@ -463,7 +463,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 						// mixed//lo
 						float tc_h = tc + h;
 						float tr_c = tr - tc_h * cs;
-						diff = _sqrt(sq_horde - sq_sin * tc_h * tc_h);
+						diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 						tr2 = tr_c + diff;
 						if (tr2 < 0.f)
 							return false; //
@@ -483,7 +483,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 
 				float tc_h = tc - h;
 				float tr_c = tr - tc_h * cs;
-				float diff = _sqrt(sq_horde - sq_sin * tc_h * tc_h);
+				float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 				tr1 = tr_c - diff;
 				if (tr1 > R)
 					return false; //
@@ -496,7 +496,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 					{
 						tc_h = tc + h;
 						tr_c = tr - tc_h * cs;
-						diff = _sqrt(sq_horde - sq_sin * tc_h * tc_h);
+						diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 						tr2 = tr_c + diff;
 						if (tr2 < 0.f)
 							return false; //

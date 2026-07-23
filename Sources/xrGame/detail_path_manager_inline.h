@@ -99,8 +99,8 @@ IC void CDetailPathManager::set_path_type(const EDetailPathType path_type)
 
 IC void CDetailPathManager::adjust_point(const fvec2& source, float yaw, float magnitude, fvec2& dest) const
 {
-	dest.x = -_sin(yaw);
-	dest.y = _cos(yaw);
+	dest.x = -std::sin(yaw);
+	dest.y = std::cos(yaw);
 	dest.mad(source, dest, magnitude);
 }
 

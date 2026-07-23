@@ -112,8 +112,8 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, fl
 
 	//	UI()->ClientToScreenScaled			(SZ, iVisRect.x2, iVisRect.y2);
 
-	float cosA = _cos(angle);
-	float sinA = _sin(angle);
+	float cosA = std::cos(angle);
+	float sinA = std::sin(angle);
 
 	// Rotation
 	if (!(uFlags & flValidHeadingPivot))

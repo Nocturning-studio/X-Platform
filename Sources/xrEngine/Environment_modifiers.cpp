@@ -28,7 +28,7 @@ float CEnvModifier::sum(CEnvModifier& M, fvec3& view)
 	if (_dist_sq >= (M.radius * M.radius))
 		return 0;
 
-	float _att = 1 - _sqrt(_dist_sq) / M.radius; //[0..1];
+	float _att = 1 - std::sqrt(_dist_sq) / M.radius; //[0..1];
 	float _power = M.power * _att;
 
 	if (M.use_flags.test(eViewDist))

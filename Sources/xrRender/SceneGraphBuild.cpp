@@ -121,7 +121,7 @@ ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdi
 	{
 	case CRender::PHASE_HUD:	// HUD Forward Base Pass
 	case CRender::PHASE_NORMAL: // Forward Base Pass
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
+		id = ((std::sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
 		break;
 	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
 		id = SE_R1_LPOINT;
@@ -161,7 +161,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cd
 	{
 	case CRender::PHASE_HUD:	// HUD Forward Base Pass
 	case CRender::PHASE_NORMAL: // Forward Base Pass
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
+		id = ((std::sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ;
 		break;
 	case CRender::PHASE_POINT_LIGHTING: // Additive Point Light Pass
 		id = SE_R1_LPOINT;

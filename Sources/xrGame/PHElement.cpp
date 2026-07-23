@@ -446,10 +446,10 @@ void CPHElement::PhDataUpdate(dReal step)
 	///////////////////scale changes values directly so get base values after it/////////////////////////
 	/////////////////////////////base values////////////////////////////////////////////////////////////
 	dReal linear_velocity_smag = dDOT(linear_velocity, linear_velocity);
-	dReal linear_velocity_mag = _sqrt(linear_velocity_smag);
+	dReal linear_velocity_mag = std::sqrt(linear_velocity_smag);
 
 	dReal angular_velocity_smag = dDOT(angular_velocity, angular_velocity);
-	dReal angular_velocity_mag = _sqrt(angular_velocity_smag);
+	dReal angular_velocity_mag = std::sqrt(angular_velocity_smag);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////limit velocity & secure
@@ -466,9 +466,9 @@ void CPHElement::PhDataUpdate(dReal step)
 		VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)), phBoundaries, PhysicsRefObject(),
 						   "PhDataUpdate end, body position");
 		linear_velocity_smag = dDOT(linear_velocity, linear_velocity);
-		linear_velocity_mag = _sqrt(linear_velocity_smag);
+		linear_velocity_mag = std::sqrt(linear_velocity_smag);
 		angular_velocity_smag = dDOT(angular_velocity, angular_velocity);
-		angular_velocity_mag = _sqrt(angular_velocity_smag);
+		angular_velocity_mag = std::sqrt(angular_velocity_smag);
 	}
 	////////////////secure position///////////////////////////////////////////////////////////////////////////////////
 	const dReal* position = dBodyGetPosition(m_body);
@@ -481,9 +481,9 @@ void CPHElement::PhDataUpdate(dReal step)
 	{
 		CutVelocity(m_l_limit, m_w_limit);
 		angular_velocity_smag = dDOT(angular_velocity, angular_velocity);
-		angular_velocity_mag = _sqrt(angular_velocity_smag);
+		angular_velocity_mag = std::sqrt(angular_velocity_smag);
 		linear_velocity_smag = dDOT(linear_velocity, linear_velocity);
-		linear_velocity_mag = _sqrt(linear_velocity_smag);
+		linear_velocity_mag = std::sqrt(linear_velocity_smag);
 	}
 
 	////////////////secure
@@ -838,7 +838,7 @@ IC bool put_in_range(fvec3& v, float range)
 	float sq_mag = v.square_magnitude();
 	if (sq_mag > range * range)
 	{
-		float mag = _sqrt(sq_mag);
+		float mag = std::sqrt(sq_mag);
 		v.mul(range / mag);
 		return true;
 	}

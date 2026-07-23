@@ -215,7 +215,7 @@ void CPHSimpleCharacter::SetBox(const dVector3& sizes)
 	if (m_cyl_hight < 0.f)
 		m_cyl_hight = 0.01f;
 	const dReal k = 1.20f;
-	dReal doun = m_radius * _sqrt(1.f - 1.f / k / k) / 2.f;
+	dReal doun = m_radius * std::sqrt(1.f - 1.f / k / k) / 2.f;
 	// m_geom_shell=dCreateCylinder(0,m_radius/k,m_cyl_hight+doun);
 	dGeomCylinderSetParams(m_geom_shell, m_radius / k, m_cyl_hight + doun);
 	// m_wheel=dCreateSphere(0,m_radius);
@@ -251,7 +251,7 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
 
 	b_exist = true;
 	const dReal k = 1.20f;
-	dReal doun = m_radius * _sqrt(1.f - 1.f / k / k) / 2.f;
+	dReal doun = m_radius * std::sqrt(1.f - 1.f / k / k) / 2.f;
 
 	m_geom_shell = dCreateCylinder(0, m_radius / k, m_cyl_hight + doun);
 
@@ -536,7 +536,7 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
 
 	dMass mass;
 	const float* linear_velocity = dBodyGetLinearVel(m_body);
-	dReal linear_velocity_mag = _sqrt(dDOT(linear_velocity, linear_velocity));
+	dReal linear_velocity_mag = std::sqrt(dDOT(linear_velocity, linear_velocity));
 	dBodyGetMass(m_body, &mass);
 	dReal l_air = linear_velocity_mag * default_k_l; // force/velocity !!!
 	if (l_air > mass.mass / fixed_step)
@@ -733,7 +733,7 @@ void CPHSimpleCharacter::PhTune(dReal step)
 		const dReal* current_pos = dBodyGetPosition(m_body);
 		dVector3 dif = {current_pos[0] - m_jump_depart_position[0], current_pos[1] - m_jump_depart_position[1],
 						current_pos[2] - m_jump_depart_position[2]};
-		dReal amag = _sqrt(m_acceleration.x * m_acceleration.x + m_acceleration.z * m_acceleration.z);
+		dReal amag = std::sqrt(m_acceleration.x * m_acceleration.x + m_acceleration.z * m_acceleration.z);
 		if (amag > 0.f)
 			if (dif[0] * m_acceleration.x / amag + dif[2] * m_acceleration.z / amag < 0.3f)
 			{
@@ -1112,7 +1112,7 @@ void CPHSimpleCharacter::SetVelocity(fvec3 vel)
 	float sq_mag = vel.square_magnitude();
 	if (sq_mag > default_l_limit * default_l_limit)
 	{
-		float mag = _sqrt(sq_mag);
+		float mag = std::sqrt(sq_mag);
 		vel.mul(default_l_limit / mag);
 #ifdef DEBUG
 		Msg("set velocity magnitude is too large %f", mag);
@@ -1222,7 +1222,7 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 	const float* linear_velocity = dBodyGetLinearVel(m_body);
 	if (dV_valid(linear_velocity))
 	{
-		dReal mag = _sqrt(linear_velocity[0] * linear_velocity[0] + linear_velocity[1] * linear_velocity[1] +
+		dReal mag = std::sqrt(linear_velocity[0] * linear_velocity[0] + linear_velocity[1] * linear_velocity[1] +
 						  linear_velocity[2] * linear_velocity[2]); //;
 		// limit velocity
 		dReal l_limit;
@@ -1238,7 +1238,7 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 			if (sq_mag > EPS_L)
 			{
 				fvec3 acc;
-				acc.set(fvec3().mul(m_acceleration, 1.f / _sqrt(sq_mag)));
+				acc.set(fvec3().mul(m_acceleration, 1.f / std::sqrt(sq_mag)));
 				fvec3 vll;
 				vll.mul(cast_fv(linear_velocity), 1.f / mag);
 				float mxa = vll.dotproduct(acc);

@@ -22,7 +22,7 @@ namespace
 ICF float CalculateLODFactor(float screen_space_area, float R)
 {
 	// Вычисляем коэффициент детализации на основе площади на экране
-	return _sqrt(clampr((screen_space_area - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
+	return std::sqrt(clampr((screen_space_area - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 }
 
 // --- LOD Sorting Predicate ---

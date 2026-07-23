@@ -21,7 +21,6 @@ namespace QueryRasterizer
                                          uint2 tileMin,
                                          uint2 tileMax)
     {
-        const uint width = depthBuffer.Width();
         uint visibleCount = 0;
 
         int bbMinX = std::max(static_cast<int>(tileMin.x), s.bbMinX);

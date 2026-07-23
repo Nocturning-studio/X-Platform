@@ -1393,7 +1393,7 @@ float CCar::AntiGravityAccel()
 }
 float CCar::GravityFactorImpulse()
 {
-	return _sqrt(EffectiveGravity() / ph_world->Gravity());
+	return std::sqrt(EffectiveGravity() / ph_world->Gravity());
 }
 void CCar::UpdateBack()
 {
@@ -1575,7 +1575,7 @@ void CCar::InitParabola()
 
 	m_a = expf((m_power_rpm - m_torque_rpm) / (2.f * m_power_rpm)) * m_max_power / m_power_rpm;
 	m_b = m_torque_rpm;
-	m_c = _sqrt(2.f * m_power_rpm * (m_power_rpm - m_torque_rpm));
+	m_c = std::sqrt(2.f * m_power_rpm * (m_power_rpm - m_torque_rpm));
 }
 float CCar::Parabola(float rpm)
 {

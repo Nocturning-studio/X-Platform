@@ -20,7 +20,7 @@ BOOL CRender::enable_scissor(light* L) // true if intersects near plane
 		plane.y = -(M._24 + M._23);
 		plane.z = -(M._34 + M._33);
 		plane.w = -(M._44 + M._43);
-		float denom = -1.0f / _sqrt(_sqr(plane.x) + _sqr(plane.y) + _sqr(plane.z));
+		float denom = -1.0f / std::sqrt(_sqr(plane.x) + _sqr(plane.y) + _sqr(plane.z));
 		plane.mul(denom);
 		Fplane P;
 		P.n.set(plane.x, plane.y, plane.z);

@@ -298,9 +298,9 @@ void CGamePersistent::WeathersUpdate()
 
 					fvec3 pos;
 					float angle = ::Random.randF(PI_MUL_2);
-					pos.x = _cos(angle);
+					pos.x = std::cos(angle);
 					pos.y = 0;
-					pos.z = _sin(angle);
+					pos.z = std::sin(angle);
 					pos.normalize().mul(ch.get_rnd_sound_dist()).add(Engine.RenderView.Position);
 					pos.y += 10.f;
 					snd.play_at_pos(0, pos);

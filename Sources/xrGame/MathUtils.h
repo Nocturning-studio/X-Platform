@@ -90,7 +90,7 @@ ICF void accurate_normalize(float* a)
 }
 IC float dXZMag(const float* v)
 {
-	return _sqrt(v[0] * v[0] + v[2] * v[2]);
+	return std::sqrt(v[0] * v[0] + v[2] * v[2]);
 }
 IC float dXZMag(const fvec3& v)
 {
@@ -102,7 +102,7 @@ IC float dXZDot(const float* v0, const float* v1)
 }
 IC float dXZDotNormalized(const fvec3& v0, const fvec3& v1)
 {
-	return (v0.x * v1.x + v0.z * v1.z) / _sqrt((v0.x * v0.x + v0.z * v0.z) * (v1.x * v1.x + v1.z * v1.z));
+	return (v0.x * v1.x + v0.z * v1.z) / std::sqrt((v0.x * v0.x + v0.z * v0.z) * (v1.x * v1.x + v1.z * v1.z));
 }
 IC float dXZDotNormalized(const float* v0, const float* v1)
 {
@@ -238,7 +238,7 @@ IC void dMatrixSmallDeviation(const dReal* matrix33_from, const dReal* matrix33_
 
 IC bool dVectorLimit(const dReal* v, float l, dReal* lv)
 {
-	dReal mag = _sqrt(dDOT(v, v));
+	dReal mag = std::sqrt(dDOT(v, v));
 	if (mag > l)
 	{
 		dReal f = mag / l;
@@ -279,7 +279,7 @@ IC void twoq_2w(const Fquaternion& q1, const Fquaternion& q2, float dt, fvec3& w
 	w.add(v1);
 	float sinus_2 = 1.f - cosinus * cosinus, k = 2.f / dt;
 	if (sinus_2 > EPS)
-		k *= acosf(cosinus) / _sqrt(sinus_2);
+		k *= acosf(cosinus) / std::sqrt(sinus_2);
 	w.mul(k);
 }
 
@@ -384,7 +384,7 @@ IC void TransferenceToThrowVel(fvec3& in_transference_out_vel, float time, float
 }
 IC float ThrowMinVelTime(const fvec3& transference, float gravity_accel)
 {
-	return _sqrt(2.f * transference.magnitude() / gravity_accel);
+	return std::sqrt(2.f * transference.magnitude() / gravity_accel);
 }
 // returns num result, tgA result tangents of throw angle
 IC u8 TransferenceAndThrowVelToTgA(const fvec3& transference, float throw_vel, float gravity_accel, fvec2& tgA,
@@ -395,14 +395,14 @@ IC u8 TransferenceAndThrowVelToTgA(const fvec3& transference, float throw_vel, f
 	float sqD4 = 1.f - gravity_accel / (sqv * sqv) * (2.f * transference.y * sqv + gravity_accel * sqx);
 	if (sqD4 < 0.f)
 		return 0;
-	s = _sqrt(sqx);
+	s = std::sqrt(sqx);
 	float mlt = sqv / (gravity_accel * s);
 	if (sqD4 == 0.f)
 	{
 		tgA.x = tgA.y = mlt;
 		return 1;
 	}
-	float D4 = _sqrt(sqD4);
+	float D4 = std::sqrt(sqD4);
 	tgA.x = mlt * (1.f - D4);
 	tgA.y = mlt * (1.f + D4);
 	return 2;

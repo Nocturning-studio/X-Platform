@@ -46,8 +46,8 @@ inline float sin_and_cos(float x, float alpha, float beta)
 	while (x > 2 * PI)
 		x -= 2 * PI;
 
-	float c = _cos(x);
-	return (x > PI) ? (alpha * c - beta * _sqrt(1 - c * c)) : (alpha * c + beta * _sqrt(1 - c * c));
+	float c = std::cos(x);
+	return (x > PI) ? (alpha * c - beta * std::sqrt(1 - c * c)) : (alpha * c + beta * std::sqrt(1 - c * c));
 }
 
 //

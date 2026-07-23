@@ -197,7 +197,7 @@ template <class T> struct template_vector4
 	}
 	IC T magnitude()
 	{
-		return _sqrt(magnitude_sqr());
+		return std::sqrt(magnitude_sqr());
 	}
 	IC SelfRef normalize()
 	{

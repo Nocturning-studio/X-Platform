@@ -47,7 +47,7 @@ void CHUDCrosshair::Load()
 void CHUDCrosshair::SetDispersion(float disp)
 {
 	fvec4 r;
-	fvec3 R = {VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
+	fvec3 R = {VIEWPORT_NEAR * std::sin(disp), 0.f, VIEWPORT_NEAR};
 	Engine.RenderView.Project.transform(r, R);
 
 	fvec2 scr_size;

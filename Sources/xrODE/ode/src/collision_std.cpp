@@ -722,7 +722,7 @@ inline bool CrossBoxSide(const dReal* point,const dReal* dir,
 	int i;
 
 	for (i=0;i<3;i++)plane_point[i]+=R[side_num+i*4]*side[side_num]*sign;
-	//dReal _cos=dDOT14(dir,R[side_num]);
+	//dReal std::cos=dDOT14(dir,R[side_num]);
 
 	dReal length=(dDOT14(point,R+side_num)-dDOT14(plane_point,R+side_num))/dDOT14(dir,R+side_num);
 	for (i=0;i<3;i++)out_p[i]=plane_point[i]-dir[i]*length*sign;

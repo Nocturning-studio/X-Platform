@@ -145,8 +145,8 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 			info.fFov *= fov_modifier + Engine.TimeManager.GetDeltaTime();
 		}
 
-		float _sinA = _abs(_sin(ST * Intencity) * A) * fReminderFactor;
-		float _cosA = _cos(ST * Intencity) * A * fReminderFactor;
+		float _sinA = _abs(std::sin(ST * Intencity) * A) * fReminderFactor;
+		float _cosA = std::cos(ST * Intencity) * A * fReminderFactor;
 
 		fvec3 dangle;
 		dangle.x = _cosA;

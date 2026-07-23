@@ -25,8 +25,6 @@ namespace Rasterizer
                                          uint2 tileMin,
                                          uint2 tileMax)
     {
-        const uint width = renderTarget ? renderTarget->Width() : depthBuffer.Width();
-
         int bbMinX = std::max(static_cast<int>(tileMin.x), s.bbMinX);
         int bbMaxX = std::min(static_cast<int>(tileMax.x), s.bbMaxX);
         int bbMinY = std::max(static_cast<int>(tileMin.y), s.bbMinY);

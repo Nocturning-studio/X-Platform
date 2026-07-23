@@ -76,8 +76,8 @@ void SimpleJtLimit::init(int jt_type, float a, float b, float c, float low, floa
 
 	psi.Reset(a, b, c);
 	limits.Set(low, high);
-	sin_low = _sin(low);
-	sin_high = _sin(high);
+	sin_low = std::sin(low);
+	sin_high = std::sin(high);
 
 	switch (jt_type)
 	{
@@ -119,7 +119,7 @@ float SimpleJtLimit::theta1_d_aux(float v, float delta) const
 		return (theta1_d_aux(v + delta, delta * 10.0f) + theta1_d_aux(v - delta, delta * 10.0f)) / 2.0f;
 	}
 
-	d = _sqrt(1 - d * d);
+	d = std::sqrt(1 - d * d);
 
 	return (type == SinJtLimit) ? (d_psi / d) : (-d_psi / d);
 }

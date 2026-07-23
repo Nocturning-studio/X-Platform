@@ -392,7 +392,7 @@ void CBulletManager::Render()
 			if (dist2segSqr < MinDistSqr)
 				dist2segSqr = MinDistSqr;
 
-			width *= _sqrt(dist2segSqr / MaxDistSqr); //*MaxDistWidth/0.08f;
+			width *= std::sqrt(dist2segSqr / MaxDistSqr); //*MaxDistWidth/0.08f;
 		}
 		if (Engine.RenderView.Position.distance_to_sqr(bullet->pos) < (length * length))
 		{
@@ -401,7 +401,7 @@ void CBulletManager::Render()
 		/*
 		//---------------------------------------------
 		fvec3 vT, v0, v1;
-		vT.mad(Engine.RenderView.Position, Engine.RenderView.Direction, _sqrt(dist2segSqr));
+		vT.mad(Engine.RenderView.Position, Engine.RenderView.Direction, std::sqrt(dist2segSqr));
 		v0.mad(vT, Engine.RenderView.Top, width*.5f);
 		v1.mad(vT, Engine.RenderView.Top, -width*.5f);
 		fvec3 v0r, v1r;
@@ -409,7 +409,7 @@ void CBulletManager::Render()
 		Engine.RenderView.ViewProjection.transform(v1r, v1);
 		float ViewWidth = v1r.distance_to(v0r);
 */
-		//		float dist = _sqrt(dist2segSqr);
+		//		float dist = std::sqrt(dist2segSqr);
 		//		Msg("dist - [%f]; ViewWidth - %f, [%f]", dist, ViewWidth, ViewWidth*float(Device.dwHeight));
 		//		Msg("dist - [%f]", dist);
 		//---------------------------------------------

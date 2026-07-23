@@ -89,7 +89,7 @@ template <class T> class template_cylinder
 			}
 			else if (fDiscr > 0.0f)
 			{
-				fRoot = _sqrt(fDiscr);
+				fRoot = std::sqrt(fDiscr);
 				fTmp0 = fInvDLength / fA;
 				afT[0] = (-fB - fRoot) * fTmp0;
 				afT[1] = (-fB + fRoot) * fTmp0;
@@ -140,7 +140,7 @@ template <class T> class template_cylinder
 		}
 		else if (fDiscr > 0.0f)
 		{
-			fRoot = _sqrt(fDiscr);
+			fRoot = std::sqrt(fDiscr);
 			fInv = 1.0f / fA;
 			fT = (-fB - fRoot) * fInv;
 			if (fT0 <= fT1)

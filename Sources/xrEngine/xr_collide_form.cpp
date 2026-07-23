@@ -73,7 +73,7 @@ IC bool RAYvsOBB(const fmat4x4& IM, const fvec3& b_hsize, const fvec3& S, const 
 		float d = PL.distance_to_sqr(SL);
 		if (d < R * R)
 		{
-			R = _sqrt(d);
+			R = std::sqrt(d);
 			VERIFY(R >= 0.f);
 			return true;
 		}
@@ -363,7 +363,7 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 				float d = P.distance_to_sqr(dS);
 				if (d < range * range)
 				{
-					range = _sqrt(d);
+					range = std::sqrt(d);
 					bHIT = TRUE;
 					R.append_result(owner, range, el, Q.flags & CDB::OPT_ONLYNEAREST);
 					if (Q.flags & CDB::OPT_ONLYFIRST)

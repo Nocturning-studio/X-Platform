@@ -229,8 +229,8 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
 
 	sina = -direction.x;
 	cosa = direction.y;
-	sinb = _sin(angle / float(n));
-	cosb = _cos(angle / float(n));
+	sinb = std::sin(angle / float(n));
+	cosb = std::cos(angle / float(n));
 	sini = 0.f;
 	cosi = 1.f;
 

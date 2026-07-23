@@ -77,9 +77,9 @@ void CEnvironment::CalcWindValues()
 	float yaw = CurrentEnv->wind_direction;
 	float pitch = CurrentEnv->wind_tilt;
 
-	CurrentEnv->wind_direction3D.x = _cos(yaw) * _cos(pitch);
-	CurrentEnv->wind_direction3D.y = _sin(pitch);
-	CurrentEnv->wind_direction3D.z = _sin(yaw) * _cos(pitch);
+	CurrentEnv->wind_direction3D.x = std::cos(yaw) * std::cos(pitch);
+	CurrentEnv->wind_direction3D.y = std::sin(pitch);
+	CurrentEnv->wind_direction3D.z = std::sin(yaw) * std::cos(pitch);
 
 	float velocity = CurrentEnv->wind_velocity;
 	clamp(velocity, 0.0f, 0.5f);

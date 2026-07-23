@@ -29,7 +29,7 @@ void bonesBone::Turn(u32 dt)
 	float PIm = PI_DIV_2m * 2;
 
 	float cur_speed =
-		params.r_speed * _cos(PI_DIV_2m - PIm * _abs(params.target_yaw - params.cur_yaw) / params.dist_yaw);
+		params.r_speed * std::cos(PI_DIV_2m - PIm * _abs(params.target_yaw - params.cur_yaw) / params.dist_yaw);
 
 	float dy;
 	dy = cur_speed * dt / 1000; // учитываем милисек и радианную меры
