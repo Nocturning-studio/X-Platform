@@ -5,48 +5,29 @@
 /////////////////////////////////////////////////////////////////
 #pragma once
 /////////////////////////////////////////////////////////////////
-#include "../include/SoftX.h"
-#include "../include/RasterizerInterface.h"
+#include "../include/Types.h"
+#include "RasterizerCommon.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 class Renderer
 {
 public:
-    Renderer(IRasterizer& rasterizer,
-             IRenderTarget* renderTarget,
-             DepthBuffer& depthBuffer,
-             const PixelShader& pixelShader,
-             const ConstantBuffer& constantBuffer,
-             const TextureTable* textureTable,
-             const RasterizerState& state,
-             uint tileSize);
+    Renderer();
 
-    void Execute(const std::vector<VertexOutput>& verts, const std::vector<int3>& triangles);
+    void Execute(const PipelineStateObject& pso, std::vector<RasterizerCommon::TriangleSetup>& setups);
 
-    const std::vector<Tile>& GetTiles() const
-    {
-        return tiles;
-    }
+    const std::vector<Tile>& GetTiles() const { return tiles; }
 
 private:
-    void BuildTiles(uint width, uint height);
-    void BinTriangles(const std::vector<VertexOutput>& verts, const std::vector<int3>& triangles);
-    void RenderTiles();
+    void BuildTiles();
+    void BinTriangles(const std::vector<RasterizerCommon::TriangleSetup>& setups);
+    void RenderTiles(const PipelineStateObject& pso, const std::vector<RasterizerCommon::TriangleSetup>& setups);
 
-    IRasterizer& rasterizer;
-    IRenderTarget* renderTarget;
-    DepthBuffer& depthBuffer;
-    const PixelShader& pixelShader;
-    const ConstantBuffer& constantBuffer;
-    const TextureTable* textureTable;
-    RasterizerState state;
-    uint tileSize;
-    uint width;
-    uint height;
+    uint width = 0;
+    uint height = 0;
+    uint tileSize = 0;
     std::vector<Tile> tiles;
-    const std::vector<VertexOutput>* verts = nullptr;
-    const std::vector<int3>* triangles = nullptr;
 };
 
 SOFTX_END

@@ -139,6 +139,11 @@ template <typename T, typename Alloc = xalloc<T>> class xr_vector : public std::
 	using typename inherited::size_type;
 	using typename inherited::reference;
 	using typename inherited::const_reference;
+	using inherited::begin;
+	using inherited::end;
+	using inherited::capacity;
+	using inherited::reserve;
+	using inherited::erase;
 
 	xr_vector() = default;
 	xr_vector(size_t count, const T& value) : inherited(count, value)
@@ -207,6 +212,10 @@ template <> class xr_vector<bool, xalloc<bool>> : public std::vector<bool, xallo
 	using inherited = std::vector<bool, xalloc<bool>>;
 
   public:
+	using inherited::begin;
+	using inherited::end;
+	using inherited::erase;
+
 	u32 size() const
 	{
 		return static_cast<u32>(inherited::size());
@@ -223,6 +232,10 @@ template <typename Alloc> class xr_vector<bool, Alloc> : public std::vector<bool
 	using inherited = std::vector<bool, Alloc>;
 
   public:
+	using inherited::begin;
+	using inherited::end;
+	using inherited::erase;
+
 	u32 size() const
 	{
 		return static_cast<u32>(inherited::size());

@@ -4,6 +4,9 @@
 // Nocturning studio for NS Platform X
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+
+#include <fstream>
+
 #include "CPUOcclusion.h"
 #include "SoftXOcclusionCore.h"
 #include "SoftXOcclusionMapBuilder.h"

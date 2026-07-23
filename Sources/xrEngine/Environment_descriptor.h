@@ -42,6 +42,7 @@ class ENGINE_API CEnvDescriptor
 	float wind_gusting;
 	float wind_velocity;
 	float wind_tilt;
+	float wind_anim_time;
 
 	fvec3 ambient;
 	float ambient_brightness;

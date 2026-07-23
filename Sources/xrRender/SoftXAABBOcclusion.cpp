@@ -36,6 +36,8 @@ SoftXAABBOcclusion::ProjectedVertex SoftXAABBOcclusion::Project(const fvec3& wor
 
 bool SoftXAABBOcclusion::TestAABB(const Fbox3& worldAABB, const fmat4x4& viewProj, uint2 depthResolution) const
 {
+    PROFILE_FUNCTION();
+
     if (!m_core) return true; // безопасное поведение
 
     std::shared_ptr<SoftX::DepthBuffer> db = m_core->GetReadBuffer();
@@ -128,6 +130,8 @@ bool SoftXAABBOcclusion::TestAABB(const Fbox3& worldAABB, const fmat4x4& viewPro
 
 bool SoftXAABBOcclusion::TestRect(float x0, float y0, float x1, float y1, float depth, uint2 depthResolution) const
 {
+    PROFILE_FUNCTION();
+
     if (!m_core) return true;
     std::shared_ptr<SoftX::DepthBuffer> db = m_core->GetReadBuffer();
     if (!db) return true;
@@ -188,6 +192,8 @@ bool SoftXAABBOcclusion::TestRect(float x0, float y0, float x1, float y1, float 
 
 bool SoftXAABBOcclusion::TestPolygon(const sPoly& worldPoly, const fmat4x4& viewProj, uint2 depthResolution) const
 {
+    PROFILE_FUNCTION();
+
     if (!m_core || worldPoly.empty()) return true;
     std::shared_ptr<SoftX::DepthBuffer> db = m_core->GetReadBuffer();
     if (!db) return true;

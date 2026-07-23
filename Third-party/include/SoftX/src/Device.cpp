@@ -3,22 +3,34 @@
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
-#include "pch.h"
-
 #include "../include/SoftX.h"
+#include "ThreadPoolManager.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
-Device::Device(const PresentParameters& params): presentParams(params), 
-                                                 backBuffer(std::make_shared<FrameBuffer>(params.BackBufferSize)),
-                                                 depthBuffer(std::make_shared<DepthBuffer>(params.BackBufferSize))
+Device::Device(const PresentParameters& params, size_t numThreads): presentParams(params),
+                                                                    backBuffer(std::make_shared<FrameBuffer>(params.BackBufferSize)),
+                                                                    frontBuffer(std::make_shared<FrameBuffer>(params.BackBufferSize)),
+                                                                    depthBuffer(std::make_shared<DepthBuffer>(params.BackBufferSize)),
+                                                                    immediateContext(std::make_unique<DeviceContext>())
 {
+    presentParams.Validate();
+
+    ThreadPoolManager::Initialize(numThreads);
+
+    if (!presentParams.Headless) 
+    {
+        immediateContext->SetRenderTarget(backBuffer, false);
+        immediateContext->SetDepthBuffer(depthBuffer);
+    }
+
     if (presentParams.Output == PresentationMode::Console)
         SetupOutputConsole();
 }
 
 Device::~Device()
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     DestroyOutputConsole();
 }
 
@@ -73,6 +85,50 @@ void Device::DestroyOutputConsole()
     }
 }
 
+void Device::Reset(const PresentParameters& newParams)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (pendingPresent.valid())
+        pendingPresent.wait();
+
+    newParams.Validate();
+
+    const bool consoleWasActive = (presentParams.Output == PresentationMode::Console && !presentParams.Headless);
+    const bool consoleWillBeActive = (newParams.Output == PresentationMode::Console && !newParams.Headless);
+
+    if (consoleWasActive)
+        DestroyOutputConsole();
+
+    presentParams = newParams;
+
+    if (!presentParams.Headless)
+    {
+        backBuffer = std::make_shared<FrameBuffer>(presentParams.BackBufferSize);
+        frontBuffer = std::make_shared<FrameBuffer>(presentParams.BackBufferSize);
+        depthBuffer = std::make_shared<DepthBuffer>(presentParams.BackBufferSize);
+
+        immediateContext->SetRenderTarget(backBuffer, false);
+        immediateContext->SetDepthBuffer(depthBuffer);
+    }
+    else
+    {
+        backBuffer = std::make_shared<FrameBuffer>(uint2(1, 1));
+        frontBuffer.reset();
+        depthBuffer = std::make_shared<DepthBuffer>(uint2(1, 1));
+
+        immediateContext->SetRenderTarget(backBuffer, false);
+        immediateContext->SetDepthBuffer(depthBuffer);
+    }
+
+    if (consoleWillBeActive)
+        SetupOutputConsole();
+}
+
+void Device::SetDeviceContext(std::unique_ptr<DeviceContext> ctx) {
+    immediateContext = std::move(ctx);
+}
+
 void Device::PresentToWindow()
 {
     PROFILE_SCOPE("Device::PresentToWindow");
@@ -86,7 +142,7 @@ void Device::PresentToWindow()
         RECT clientRect;
         GetClientRect(presentParams.hDeviceWindow, &clientRect);
         int2 dstSize(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
-        backBuffer->PresentBitmap(hdc, int2(0, 0), dstSize);
+        frontBuffer->PresentBitmap(hdc, int2(0, 0), dstSize);
         ReleaseDC(presentParams.hDeviceWindow, hdc);
     }
 }
@@ -98,20 +154,32 @@ void Device::PresentToConsole()
     if (hConsoleBuffer == nullptr)
         return;
 
-    backBuffer->PresentASCII(hConsoleBuffer, presentParams.ConsoleSize);
+    frontBuffer->PresentASCII(hConsoleBuffer, presentParams.ConsoleSize);
 }
 
 void Device::Present()
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
+
     PROFILE_SCOPE("Device::Present");
 
     if (presentParams.Headless)
         return;
 
-    if (presentParams.Output == PresentationMode::Console)
-        PresentToConsole();
-    else
-        PresentToWindow();
+    if (pendingPresent.valid())
+        pendingPresent.wait();
+
+    std::swap(backBuffer, frontBuffer);
+
+    immediateContext->SetRenderTarget(backBuffer, false);
+
+    pendingPresent = ThreadPoolManager::Get().enqueueBackground([this]
+    {
+        if (presentParams.Output == PresentationMode::Console)
+            PresentToConsole();
+        else
+            PresentToWindow();
+    });
 }
 
 SOFTX_END

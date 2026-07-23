@@ -3,133 +3,160 @@
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
-#include "pch.h"
-
 #include "../include/SoftX.h"
-#include "RasterizerFactory.h"
-#include "ThreadPoolManager.h"
+#include "ThreadUtils.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
-DeviceContext::DeviceContext(): vertexShader(nullptr),
-                                pixelShader(nullptr),
-                                vertexBuffer(),
-                                indexBuffer(),
-                                constantBuffer(),
-                                renderTarget(nullptr),
-                                depthBuffer(nullptr),
-                                depthWriteEnable(true),
-                                cullMode(CullMode::Back),
-                                fillMode(FillMode::Solid),
-                                viewport(),
-                                tileSize(64),
-                                rasterizer(CreateBestRasterizer())
+DeviceContext::DeviceContext()
+{
+}
+
+DeviceContext::DeviceContext(const PipelineStateObject& initialState) : backState(initialState), 
+                                                                        frontState(initialState)
 {
 }
 
 DeviceContext::~DeviceContext() = default;
 
-void DeviceContext::SetRenderTarget(std::shared_ptr<IRenderTarget> rt, bool createDepthBuffer)
+void DeviceContext::SetVertexShader(VertexShader shader) 
 {
-    renderTarget = std::move(rt);
-    if (createDepthBuffer && renderTarget)
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.vertexShader = std::move(shader);
+}
+
+void DeviceContext::SetGeometryShader(GeometryShader shader)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.geometryShader = std::move(shader);
+}
+
+void DeviceContext::SetPixelShader(PixelShader shader) 
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.pixelShader = std::move(shader);
+}
+
+void DeviceContext::SetIndexBuffer(const IndexBuffer& buffer)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.indexBuffer = buffer;
+}
+
+void DeviceContext::SetVertexBuffer(const VertexBuffer& buffer) 
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.vertexBuffer = buffer;
+}
+
+void DeviceContext::SetTexture(const std::string& name,
+                               std::shared_ptr<const ITexture> texture,
+                               const SamplerState& sampler) 
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.textureTable.Set(name, std::move(texture), sampler);
+}
+
+void DeviceContext::SetRenderTarget(std::shared_ptr<IRenderTarget> target, bool createDepthBuffer) 
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.renderTarget = std::move(target);
+    if (createDepthBuffer && backState.renderTarget) 
     {
-        uint2 newSize = renderTarget->Size();
-        if (!depthBuffer || depthBuffer->Size() != newSize)
-            depthBuffer = std::make_shared<DepthBuffer>(newSize);
-    }
-    else
-    {
-        depthBuffer.reset();
+        uint2 size = backState.renderTarget->Size();
+        if (!backState.depthBuffer || backState.depthBuffer->Size() != size)
+            backState.depthBuffer = std::make_shared<DepthBuffer>(size);
     }
 }
 
-void DeviceContext::Clear(const float4& color)
+void DeviceContext::SetDepthBuffer(std::shared_ptr<DepthBuffer> depth) 
 {
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.depthBuffer = std::move(depth);
+}
+
+void DeviceContext::SetViewport(const Viewport& vp) 
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.viewport = vp;
+}
+
+void DeviceContext::SetTileSize(uint size) 
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.tileSize = size;
+}
+
+void DeviceContext::SetDepthWriteEnable(bool enable)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.depthWriteEnable = enable;
+}
+
+void DeviceContext::SetCullMode(CullMode mode)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.cullMode = mode;
+}
+
+void DeviceContext::SetFillMode(FillMode mode)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.fillMode = mode;
+}
+
+void DeviceContext::SetDepthFunc(ComparisonFunc func)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.depthFunc = func;
+}
+
+void DeviceContext::SetConstantBuffer(const ConstantBuffer& buffer)
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    backState.constantBuffer = buffer;
+}
+
+void DeviceContext::CommitState()
+{
+    std::lock_guard<std::mutex> lock(stateMutex);
+    frontState = backState;
+}
+
+PipelineStateObject DeviceContext::CaptureState() const
+{
+    return frontState;
+}
+
+void DeviceContext::Clear(ClearFlags flags,
+                          const float4& color,
+                          float depth)
+{
+    if (flags == ClearFlags::None) return;
+
+    std::lock_guard<std::mutex> lock(drawMutex);
     PROFILE_SCOPE("DeviceContext::Clear");
+    CommitState();
 
-    if (renderTarget)
-    {
-        renderTarget->Clear(color);
-    }
-}
+    PipelineStateObject state = frontState;
 
-void DeviceContext::ClearDepth(const float& depth)
-{
-    PROFILE_SCOPE("DeviceContext::ClearDepth");
+    const bool clearColor = !!(flags & ClearFlags::RenderTarget) && state.renderTarget;
+    const bool clearDepth = !!(flags & ClearFlags::DepthBuffer) && state.depthBuffer;
 
-    if (depthBuffer)
-    {
-        depthBuffer->Clear(depth);
-    }
-}
+    if (!clearColor && !clearDepth) return;
 
-void DeviceContext::ClearColorAndDepth(const float4& color, const float& depth)
-{
-    PROFILE_SCOPE("DeviceContext::ClearColorAndDepth");
+    const bool useParallel = clearColor && clearDepth;
 
-    auto& pool = ThreadPoolManager::Get();
-    if (renderTarget && depthBuffer && (pool.threadCount() > 0))
+    if (useParallel) 
     {
-        pool.enqueue([this, color] { Clear(color); });
-        pool.enqueue([this, depth] { ClearDepth(depth); });
-        pool.wait();
+        state.renderTarget->Clear(color);
+        ThreadUtils::DispatchWorkers([db = state.depthBuffer, depth]{ db->Clear(depth); });
     }
-    else
+    else 
     {
-        Clear(color);
-        ClearDepth(depth);
+        if (clearColor) state.renderTarget->Clear(color);
+        if (clearDepth) state.depthBuffer->Clear(depth);
     }
-}
-
-bool DeviceContext::Validate(std::string* errorMsg) const
-{
-    bool result = true;
-
-    if (!vertexShader)
-    {
-        if (errorMsg)
-            *errorMsg = "Vertex shader not set ";
-        result = false;
-    }
-    if (renderTarget != nullptr && !pixelShader)
-    {
-        if (errorMsg)
-            *errorMsg += "Pixel shader not set ";
-        result = false;
-    }
-    if (vertexBuffer.IsEmpty())
-    {
-        if (errorMsg)
-            *errorMsg += "Vertex buffer is empty ";
-        result = false;
-    }
-    if (indexBuffer.IsEmpty())
-    {
-        if (errorMsg)
-            *errorMsg += "Index buffer is empty ";
-        result = false;
-    }
-    if (renderTarget == nullptr && depthBuffer == nullptr)
-    {
-        if (errorMsg)
-            *errorMsg += "Render target not set ";
-        result = false;
-    }
-    if (viewport.size.x <= 0.0f || viewport.size.y <= 0.0f)
-    {
-        if (errorMsg)
-            *errorMsg += "Viewport has non-positive size ";
-        result = false;
-    }
-    if (tileSize == 0)
-    {
-        if (errorMsg)
-            *errorMsg += "Tile size is zero ";
-        result = false;
-    }
-
-    return result;
 }
 
 SOFTX_END

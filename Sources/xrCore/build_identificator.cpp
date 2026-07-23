@@ -12,7 +12,7 @@ xrBuildInfo ComputeBuildIdentificator()
 {
 	xrBuildInfo BuildID = {0};
 
-	LPSTR month_id[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	LPCSTR month_id[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 	int days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 

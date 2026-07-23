@@ -247,7 +247,7 @@ template <class T> struct template_vector3
 	}
 	ICF BOOL similar(const Self& v, T E = EPS_L) const
 	{
-		return _abs(x - v.x) < E && _abs(y - v.y) < E && _abs(z - v.z) < E;
+		return std::abs(x - v.x) < E && std::abs(y - v.y) < E && std::abs(z - v.z) < E;
 	};
 
 	IC SelfRef set_length(T l)
@@ -297,9 +297,9 @@ template <class T> struct template_vector3
 	IC SelfRef clamp(const Self& _v)
 	{
 		Self v;
-		v.x = _abs(_v.x);
-		v.y = _abs(_v.y);
-		v.z = _abs(_v.z);
+		v.x = std::abs(_v.x);
+		v.y = std::abs(_v.y);
+		v.z = std::abs(_v.z);
 		::clamp(x, -v.x, v.x);
 		::clamp(y, -v.y, v.y);
 		::clamp(z, -v.z, v.z);
@@ -376,7 +376,7 @@ template <class T> struct template_vector3
 	// magnitude
 	IC T magnitude(void) const
 	{
-		return _sqrt(square_magnitude());
+		return std::sqrt(square_magnitude());
 	}
 
 	// Normalize
@@ -392,7 +392,7 @@ template <class T> struct template_vector3
 
 	ICF SelfRef normalize(void)
 	{
-		T mag = _sqrt(T(1) / (x * x + y * y + z * z));
+		T mag = std::sqrt(T(1) / (x * x + y * y + z * z));
 		x *= mag;
 		y *= mag;
 		z *= mag;

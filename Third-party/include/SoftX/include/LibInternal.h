@@ -9,7 +9,19 @@
 #define SOFTX_BEGIN namespace SoftX { using namespace AfterMath;
 #define SOFTX_END }
 
-#if _HAS_CXX20
+#if (defined(__cplusplus) && __cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+#define SOFTX_CXX20_OR_LATER 1
+#else
+#define SOFTX_CXX20_OR_LATER 0
+#endif
+
+#if (defined(__cplusplus) && __cplusplus >= 201703L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#define SOFTX_CXX17_OR_LATER 1
+#else
+#define SOFTX_CXX17_OR_LATER 0
+#endif
+
+#if SOFTX_CXX20_OR_LATER
 #define SOFTX_LIKELY [[likely]]
 #define SOFTX_UNLIKELY [[unlikely]]
 #else

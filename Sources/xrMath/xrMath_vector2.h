@@ -37,32 +37,32 @@ template <class T> struct template_vector2
 	}
 	IC SelfRef abs(const Self& p)
 	{
-		x = _abs(p.x);
-		y = _abs(p.y);
+		x = std::abs(p.x);
+		y = std::abs(p.y);
 		return *this;
 	}
 	IC SelfRef min(const Self& p)
 	{
-		x = _min(x, p.x);
-		y = _min(y, p.y);
+		x = std::min(x, p.x);
+		y = std::min(y, p.y);
 		return *this;
 	}
 	IC SelfRef min(T _x, T _y)
 	{
-		x = _min(x, _x);
-		y = _min(y, _y);
+		x = std::min(x, _x);
+		y = std::min(y, _y);
 		return *this;
 	}
 	IC SelfRef max(const Self& p)
 	{
-		x = _max(x, p.x);
-		y = _max(y, p.y);
+		x = std::max(x, p.x);
+		y = std::max(y, p.y);
 		return *this;
 	}
 	IC SelfRef max(T _x, T _y)
 	{
-		x = _max(x, _x);
-		y = _max(y, _y);
+		x = std::max(x, _x);
+		y = std::max(y, _y);
 		return *this;
 	}
 	IC SelfRef sub(T p)
@@ -166,14 +166,14 @@ template <class T> struct template_vector2
 	}
 	IC SelfRef norm(void)
 	{
-		float m = _sqrt(x * x + y * y);
+		float m = std::sqrt(x * x + y * y);
 		x /= m;
 		y /= m;
 		return *this;
 	}
 	IC SelfRef norm_safe(void)
 	{
-		float m = _sqrt(x * x + y * y);
+		float m = std::sqrt(x * x + y * y);
 		if (m)
 		{
 			x /= m;
@@ -183,7 +183,7 @@ template <class T> struct template_vector2
 	}
 	IC T distance_to(const Self& p) const
 	{
-		return _sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
+		return std::sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
 	}
 	IC T square_magnitude(void) const
 	{
@@ -191,7 +191,7 @@ template <class T> struct template_vector2
 	}
 	IC T magnitude(void) const
 	{
-		return _sqrt(square_magnitude());
+		return std::sqrt(square_magnitude());
 	}
 
 	IC SelfRef mad(const Self& p, const Self& d, T r)
@@ -211,12 +211,12 @@ template <class T> struct template_vector2
 
 	IC bool similar(Self& p, T eu, T ev) const
 	{
-		return _abs(x - p.x) < eu && _abs(y - p.y) < ev;
+		return std::abs(x - p.x) < eu && std::abs(y - p.y) < ev;
 	}
 
 	IC bool similar(const Self& p, float E = EPS_L) const
 	{
-		return _abs(x - p.x) < E && _abs(y - p.y) < E;
+		return std::abs(x - p.x) < E && std::abs(y - p.y) < E;
 	};
 
 	// average arithmetic
@@ -229,8 +229,8 @@ template <class T> struct template_vector2
 	// average geometric
 	IC SelfRef averageG(Self& p1, Self& p2)
 	{
-		x = _sqrt(p1.x * p2.x);
-		y = _sqrt(p1.y * p2.y);
+		x = std::sqrt(p1.x * p2.x);
+		y = std::sqrt(p1.y * p2.y);
 		return *this;
 	}
 
@@ -250,14 +250,14 @@ template <class T> struct template_vector2
 	}
 	IC SelfRef normalize(const Self& v)
 	{
-		float m = _sqrt(v.x * v.x + v.y * v.y);
+		float m = std::sqrt(v.x * v.x + v.y * v.y);
 		x = v.x / m;
 		y = v.y / m;
 		return *this;
 	}
 	IC SelfRef normalize_safe(const Self& v)
 	{
-		float m = _sqrt(v.x * v.x + v.y * v.y);
+		float m = std::sqrt(v.x * v.x + v.y * v.y);
 		if (m)
 		{
 			x = v.x / m;

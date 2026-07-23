@@ -65,10 +65,9 @@ float CalcGustWave(float Time)
 
 void CEnvironment::CalcWindValues()
 {
-	float GustFactor = CalcGustWave(Engine.TimeManager.GetGlobalTime());
+	float GustFactor = CalcGustWave(Engine.TimeManager.GetGlobalTimeFixed());
 
 	float BaseStrength = CurrentEnv->wind_strength;
-	// Уменьшили влияние порывов на итоговую цифру, чтобы не было скачков от 0 до 100
 	float GustStrength = CurrentEnv->wind_gusting * BaseStrength;
 
 	CurrentEnv->wind_turbulence = BaseStrength + (GustStrength * GustFactor);
@@ -78,8 +77,11 @@ void CEnvironment::CalcWindValues()
 	float yaw = CurrentEnv->wind_direction;
 	float pitch = CurrentEnv->wind_tilt;
 
-	// X-Ray использует Y-Up систему координат
 	CurrentEnv->wind_direction3D.x = _cos(yaw) * _cos(pitch);
 	CurrentEnv->wind_direction3D.y = _sin(pitch);
 	CurrentEnv->wind_direction3D.z = _sin(yaw) * _cos(pitch);
+
+	float velocity = CurrentEnv->wind_velocity;
+	clamp(velocity, 0.0f, 0.5f);
+	CurrentEnv->wind_anim_time = Engine.TimeManager.GetGlobalTimeFixed() * velocity;
 }

@@ -1363,9 +1363,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 			node->val.ScreenSpaceArea = screen_space_area;
 			node->val.pVisual = pVisual;
 		}
-
-		// Если объект близко - рисуем его детальную геометрию (детей)
-		if (screen_space_area > r_ssaLOD_B)
+		else if (screen_space_area > r_ssaLOD_B) // Если объект близко - рисуем его детальную геометрию (детей)
 		{
 			for (IRender_Visual* child : pLod->children)
 				ProcessStaticVisual(child, ctx, dest);

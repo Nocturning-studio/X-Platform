@@ -15,11 +15,11 @@ static void FillGeometry(
     std::unique_ptr<SoftX::IndexBuffer>& outIB,
     const char* label)
 {
-    std::vector<SoftX::VertexInput> vertices;
+    std::vector<SoftX::Vertex> vertices;
     vertices.reserve(vertCount);
     for (u32 i = 0; i < vertCount; ++i)
     {
-        SoftX::VertexInput vi;
+        SoftX::Vertex vi;
         const fvec3& v = sourceVerts[i];
         vi.Position = float3(v.x, v.y, v.z);
         vi.Normal = float3(0, 0, 0);
@@ -109,8 +109,7 @@ uint32_t SoftXLightVolumeOcclusion::GetVisibleSamples(uint32_t queryId) const
 }
 
 // ---------------------------------------------------------------------------------------
-SoftX::VertexOutput LightVolumeQueryVS(const SoftX::VertexInput& input,
-    const SoftX::ConstantBuffer& cb)
+SoftX::VertexOutput LightVolumeQueryVS(const SoftX::Vertex& input, const SoftX::ConstantBuffer& cb)
 {
     const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
     float4 pos = float4(input.Position.x, input.Position.y, input.Position.z, 1.0f);

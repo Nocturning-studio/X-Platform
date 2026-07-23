@@ -393,11 +393,7 @@ class cl_wind_turbulence : public R_constant_setup
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 
-		float velocity = desc->wind_velocity; // Берем скорость из конфига
-		clamp(velocity, 0.0f, 0.5f);
-		float anim_time = Engine.TimeManager.GetGlobalTimeFixed() * velocity;
-
-		RenderBackend.set_Constant(C, desc->wind_turbulence, desc->wind_turbulence, anim_time, desc->wind_strength);
+		RenderBackend.set_Constant(C, desc->wind_turbulence, desc->wind_turbulence, desc->wind_anim_time, desc->wind_strength);
 	}
 };
 static cl_wind_turbulence binder_wind_turbulence;

@@ -9,6 +9,7 @@
 
 #include <limits>  // std::numeric_limits
 #include <type_traits>  // std::is_floating_point
+#include <algorithm>
 
 #include "AfterMathInternal.h"
 

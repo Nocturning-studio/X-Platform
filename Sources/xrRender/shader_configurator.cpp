@@ -286,8 +286,7 @@ void SetupCustomMaterialNormal(CBlender_Compile& C, LPCSTR channel_setup)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR VertexShaderName,
-					  LPCSTR PixelShaderName, BOOL bUseAlpha, BOOL bUseDepthOnly)
+void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR VertexShaderName, LPCSTR PixelShaderName, BOOL bUseAlpha, BOOL bUseDepthOnly, ShaderStage Stage)
 {
 	C.set_Define("MATERIAL_QUALITY", (int)ps_r_material_quality, CBlender_Compile::ShaderScope::Pixel);
 
@@ -938,136 +937,107 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 		}
 	}
 	// Create shader pass
-	safe_string::concat3(NewPixelShaderName, sizeof(NewPixelShaderName), "gbuffer_stage_", PixelShaderName, "");
-	safe_string::concat3(NewVertexShaderName, sizeof(NewVertexShaderName), "gbuffer_stage_", VertexShaderName, "");
+	const char* stage_prefix = Stage == ShaderStage::shadow_depth_stage ? "shadow_depth_stage_" : "gbuffer_stage_";
+	safe_string::concat3(NewPixelShaderName, sizeof(NewPixelShaderName), stage_prefix, PixelShaderName, "");
+	safe_string::concat3(NewVertexShaderName, sizeof(NewVertexShaderName), stage_prefix, VertexShaderName, "");
 	C.begin_Pass(NewVertexShaderName, NewPixelShaderName, "main", "main", FALSE, TRUE, TRUE);
 
-	C.set_Sampler("s_base", AlbedoTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-				  D3DTEXF_ANISOTROPIC, true);
+	C.set_Sampler("s_base", AlbedoTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 
 	if (bUseOpacity)
-		C.set_Sampler("s_custom_opacity", OpacityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_opacity", OpacityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
-	// [НОВОЕ] Сэмплеры для ARMD и ARM
+	// Сэмплеры для ARMD и ARM
 	if (bUseARMDMap)
 	{
-		C.set_Sampler("s_armd_map", ARMDTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_armd_map", ARMDTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 	}
 	else if (bUseARMMap)
 	{
-		C.set_Sampler("s_arm_map", ARMTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_arm_map", ARMTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 	}
 	else
 	{
 		if (bUseERMMap)
 		{
-			C.set_Sampler("s_erm_map", ERMTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-						  D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_erm_map", ERMTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 		}
 
 		if (bUseBakedAO)
-			C.set_Sampler("s_baked_ao", BakedAOTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-						  D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_baked_ao", BakedAOTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 		if (bUseCustomRoughness)
-			C.set_Sampler("s_custom_roughness", CustomRoughnessTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-						  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_custom_roughness", CustomRoughnessTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 		if (bUseCustomGloss)
-			C.set_Sampler("s_custom_gloss", CustomGlossTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-						  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_custom_gloss", CustomGlossTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 		if (bUseCustomMetallic)
-			C.set_Sampler("s_custom_metallic", CustomMetallicTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-						  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_custom_metallic", CustomMetallicTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 	}
 
 	if (bUseCustomMaterial)
-		C.set_Sampler("s_custom_material", CustomMaterialTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_material", CustomMaterialTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomNormal)
-		C.set_Sampler("s_custom_normal", CustomNormalTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_normal", CustomNormalTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
-	// [НОВОЕ] Сэмплер для упакованной нормали
 	if (bUsePackedNormal)
-		C.set_Sampler("s_packed_normal", PackedNormalTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_packed_normal", PackedNormalTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomSubsurfacePower)
-		C.set_Sampler("s_custom_subsurface_power", CustomSubsurfacePowerTexture, false, D3DTADDRESS_WRAP,
-					  D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_subsurface_power", CustomSubsurfacePowerTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomEmission)
-		C.set_Sampler("s_custom_emission", CustomEmissionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_emission", CustomEmissionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomDisplacement)
-		C.set_Sampler("s_custom_displacement", CustomDisplacementTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_displacement", CustomDisplacementTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomCavity)
-		C.set_Sampler("s_custom_cavity", CustomCavityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_cavity", CustomCavityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomSpecularTint)
-		C.set_Sampler("s_custom_specular_tint", CustomSpecularTintTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_specular_tint", CustomSpecularTintTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomSheenIntensity)
-		C.set_Sampler("s_custom_sheen_intensity", CustomSheenIntensityTexture, false, D3DTADDRESS_WRAP,
-					  D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_sheen_intensity", CustomSheenIntensityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomSheenRoughness)
-		C.set_Sampler("s_custom_sheen_roughness", CustomSheenRoughnessTexture, false, D3DTADDRESS_WRAP,
-					  D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_sheen_roughness", CustomSheenRoughnessTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomCoatIntensity)
-		C.set_Sampler("s_custom_coat_intensity", CustomCoatIntensityTexture, false, D3DTADDRESS_WRAP,
-					  D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_coat_intensity", CustomCoatIntensityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomCoatRoughness)
-		C.set_Sampler("s_custom_coat_roughness", CustomCoatRoughnessTexture, false, D3DTADDRESS_WRAP,
-					  D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_coat_roughness", CustomCoatRoughnessTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomWeight)
-		C.set_Sampler("s_custom_weight", CustomWeightTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_weight", CustomWeightTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseBump)
 	{
-		C.set_Sampler("s_bumpX", BumpCorrectionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_bumpX", BumpCorrectionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
-		C.set_Sampler("s_bump", BumpTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_bump", BumpTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 	}
 
 	if (bUseDetail)
 	{
-		C.set_Sampler("s_detail", DetailAlbedoTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC, true);
+		C.set_Sampler("s_detail", DetailAlbedoTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 
 		if (bUseDetailBump)
 		{
-			C.set_Sampler("s_detailBump", DetailBumpTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-						  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_detailBump", DetailBumpTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
-			C.set_Sampler("s_detailBumpX", DetailBumpCorrectionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-						  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			C.set_Sampler("s_detailBumpX", DetailBumpCorrectionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 		}
 	}
 
 	if (bUseLightMap)
 	{
-		C.set_Sampler("s_hemi", HemisphereLightMapTexture, false, D3DTADDRESS_CLAMP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
-		C.set_Sampler("s_lmap", LightMapTexture, false, D3DTADDRESS_CLAMP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_hemi", HemisphereLightMapTexture, false, D3DTADDRESS_CLAMP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_lmap", LightMapTexture, false, D3DTADDRESS_CLAMP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 	}
 
 	jitter(C);
@@ -1075,8 +1045,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 	C.end_Pass();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR VertexShaderName,
-									LPCSTR PixelShaderName, BOOL bUseAlpha)
+void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR VertexShaderName, LPCSTR PixelShaderName, BOOL bUseAlpha, ShaderStage Stage)
 {
 	C.set_Define("MATERIAL_QUALITY", (int)ps_r_material_quality, CBlender_Compile::ShaderScope::Pixel);
 
@@ -1190,52 +1159,42 @@ void configure_shader_detail_object(CBlender_Compile& C, bool bIsHightQualityGeo
 	C.set_Define(bUseCustomWeight, "USE_WEIGHT_MAP", "1", CBlender_Compile::ShaderScope::Vertex);
 
 	// Create shader pass
-	safe_string::concat3(NewPixelShaderName, sizeof(NewPixelShaderName), "gbuffer_stage_", PixelShaderName, "");
-	safe_string::concat3(NewVertexShaderName, sizeof(NewVertexShaderName), "gbuffer_stage_", VertexShaderName, "");
+	const char* stage_prefix = Stage == ShaderStage::shadow_depth_stage ? "shadow_depth_stage_" : "gbuffer_stage_";
+	safe_string::concat3(NewPixelShaderName, sizeof(NewPixelShaderName), stage_prefix, PixelShaderName, "");
+	safe_string::concat3(NewVertexShaderName, sizeof(NewVertexShaderName), stage_prefix, VertexShaderName, "");
 	C.begin_Pass(NewVertexShaderName, NewPixelShaderName, "main", "main", FALSE, TRUE, TRUE);
 
-	C.set_Sampler("s_base", AlbedoTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-				  D3DTEXF_ANISOTROPIC, true);
+	C.set_Sampler("s_base", AlbedoTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 
 	if (bUseOpacity)
-		C.set_Sampler("s_custom_opacity", OpacityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_opacity", OpacityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseBakedAO)
-		C.set_Sampler("s_baked_ao", BakedAOTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR,
-					  D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_baked_ao", BakedAOTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomNormal)
-		C.set_Sampler("s_custom_normal", CustomNormalTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_normal", CustomNormalTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomRoughness)
-		C.set_Sampler("s_custom_roughness", CustomRoughnessTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_roughness", CustomRoughnessTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomMetallic)
-		C.set_Sampler("s_custom_metallic", CustomMetallicTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_metallic", CustomMetallicTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomSubsurfacePower)
-		C.set_Sampler("s_custom_subsurface_power", CustomSubsurfacePowerTexture, false, D3DTADDRESS_WRAP,
-					  D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_subsurface_power", CustomSubsurfacePowerTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomEmission)
-		C.set_Sampler("s_custom_emission", CustomEmissionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_emission", CustomEmissionTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomDisplacement)
-		C.set_Sampler("s_custom_displacement", CustomDisplacementTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_displacement", CustomDisplacementTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomCavity)
-		C.set_Sampler("s_custom_cavity", CustomCavityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_cavity", CustomCavityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	if (bUseCustomWeight)
-		C.set_Sampler("s_custom_weight", CustomWeightTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-					  D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.set_Sampler("s_custom_weight", CustomWeightTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 	jitter(C);
 

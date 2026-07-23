@@ -3,18 +3,15 @@
 // Copyright (c) 2026 NSDeathman
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
-#include "pch.h"
-
 #include "../include/SoftX.h"
 #include "RasterizerCommon.h"
-#include "QueryRasterizerFactory.h"
+#include "QueryRasterizer.h"
 #include "ThreadPoolManager.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
-OcclusionQuery::OcclusionQuery()
+OcclusionQuery::OcclusionQuery() : stateMutex(std::make_unique<std::mutex>())
 {
-    rasterizer = CreateBestQueryRasterizer();
 }
 
 OcclusionQuery::~OcclusionQuery()
@@ -23,36 +20,58 @@ OcclusionQuery::~OcclusionQuery()
         future.wait();
 }
 
-bool OcclusionQuery::GetData(uint* outVisibleSamples) const
+void OcclusionQuery::SetVertexBuffer(const VertexBuffer& vb) 
 {
-    if (!ready)
-    {
-        if (outVisibleSamples) *outVisibleSamples = 0;
-        return false;
-    }
-    if (outVisibleSamples)
-        *outVisibleSamples = totalVisibleSamples;
-    return totalVisibleSamples > 0;
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.vertexBuffer = vb;
 }
 
-bool OcclusionQuery::GetResult(queryID id, uint* outSamples) const
+void OcclusionQuery::SetIndexBuffer(const IndexBuffer& ib) 
 {
-    if (!ready || id >= drawCalls.size())
-        return false;
-    const DrawCall& dc = drawCalls[id];
-    if (outSamples)
-        *outSamples = dc.visibleSamples;
-    return dc.visibleSamples > 0;
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.indexBuffer = ib;
 }
 
-bool OcclusionQuery::Validate() const
+void OcclusionQuery::SetConstantBuffer(const ConstantBuffer& cb) 
 {
-    if (!depthBuffer) return false;
-    if (viewport.size.x <= 0 || viewport.size.y <= 0) return false;
-    if (currentVB.IsEmpty() || currentIB.IsEmpty()) return false;
-    if (!currentVS) return false;
-    if (!begun || ended) return false;
-    return true;
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.constantBuffer = cb;
+}
+
+void OcclusionQuery::SetVertexShader(OcclusionVertexShader vs) 
+{
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.vertexShader = std::move(vs);
+}
+
+void OcclusionQuery::SetDepthBuffer(std::shared_ptr<DepthBuffer> db) 
+{
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.depthBuffer = std::move(db);
+}
+
+void OcclusionQuery::SetViewport(const Viewport& vp) 
+{
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.viewport = vp;
+}
+
+void OcclusionQuery::SetCullMode(CullMode mode) 
+{
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.cullMode = mode;
+}
+
+void OcclusionQuery::SetDepthFunc(ComparisonFunc func) 
+{
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.depthFunc = func;
+}
+
+void OcclusionQuery::SetDepthWriteEnable(bool enable) 
+{
+    std::lock_guard<std::mutex> lock(*stateMutex);
+    state.depthWriteEnable = enable;
 }
 
 void OcclusionQuery::Begin()
@@ -71,13 +90,23 @@ void OcclusionQuery::Begin()
 
 OcclusionQuery::queryID OcclusionQuery::DrawIndexed()
 {
-    assert(Validate() && "OcclusionQuery: state is invalid before DrawIndexed");
+    if (!begun || ended)
+        SOFTX_THROW(InvalidState("OcclusionQuery::DrawIndexed called outside Begin/End"));
+
+    OcclusionPipelineState stateCaptured;
+    {
+        std::lock_guard<std::mutex> lock(*stateMutex);
+        stateCaptured = state;
+    }
+
+    if (stateCaptured.vertexBuffer.IsEmpty() || stateCaptured.indexBuffer.IsEmpty() || !stateCaptured.vertexShader)
+        SOFTX_THROW(InvalidState("OcclusionQuery: vertex buffer, index buffer or vertex shader not set"));
 
     DrawCall dc;
-    dc.vb = currentVB;
-    dc.ib = currentIB;
-    dc.constantBuffer = currentCB;
-    dc.vertexShader = std::move(currentVS);
+    dc.vb = stateCaptured.vertexBuffer;
+    dc.ib = stateCaptured.indexBuffer;
+    dc.constantBuffer = stateCaptured.constantBuffer;
+    dc.vertexShader = stateCaptured.vertexShader;
     dc.visibleSamples = 0;
 
     queryID id = static_cast<queryID>(drawCalls.size());
@@ -89,47 +118,40 @@ void OcclusionQuery::End()
 {
     PROFILE_SCOPE("OcclusionQuery::End");
 
-    assert(begun && !ended);
+    if (!begun || ended)
+        SOFTX_THROW(InvalidState("OcclusionQuery::End called without Begin"));
+
     ended = true;
     begun = false;
 
+    OcclusionPipelineState stateCaptured;
+    {
+        std::lock_guard<std::mutex> lock(*stateMutex);
+        stateCaptured = state;
+    }
+
     auto drawCallsCopy = std::make_shared<std::vector<DrawCall>>(drawCalls);
-    DepthBuffer* db = depthBuffer.get();
-    Viewport vpData = viewport;
-    IQueryRasterizer* rast = rasterizer.get();
+    DepthBuffer* db = stateCaptured.depthBuffer.get();
+    Viewport vpData = stateCaptured.viewport;
 
     ready = false;
     totalVisibleSamples = 0;
 
-    future = std::async(std::launch::async, [this, drawCallsCopy, db, vpData, rast]()
+    future = ThreadPoolManager::Get().enqueueBackground([this, drawCallsCopy, stateCaptured, db]()
     {
-            PROFILE_THREAD("OcclusionQuery::AsyncExecution");
-            PROFILE_SCOPE("OcclusionQuery::AsyncExecution");
-            std::atomic<uint32_t> totalVisible(0);
+        PROFILE_THREAD("OcclusionQuery::AsyncExecution");
+        PROFILE_SCOPE("OcclusionQuery::AsyncExecution");
+        std::atomic<uint32_t> totalVisible(0);
 
-            std::atomic<size_t> idx(0);
-            size_t count = drawCallsCopy->size();
+        size_t count = drawCallsCopy->size();
+        for (size_t i = 0; i < count; ++i)
+            ProcessDrawCall((*drawCallsCopy)[i], stateCaptured, *db, totalVisible);
 
-            auto& pool = ThreadPoolManager::Get();
-            for (size_t t = 0; t < pool.threadCount(); ++t)
-            {
-                pool.enqueue([&]()
-                    {
-                        while (true)
-                        {
-                            size_t i = idx.fetch_add(1);
-                            if (i >= count) break;
-                            ProcessDrawCall((*drawCallsCopy)[i], *db, vpData, *rast, totalVisible);
-                        }
-                    });
-            }
-            pool.wait();
+        for (size_t i = 0; i < drawCalls.size(); ++i)
+            drawCalls[i].visibleSamples = (*drawCallsCopy)[i].visibleSamples;
 
-            for (size_t i = 0; i < drawCalls.size(); ++i)
-                drawCalls[i].visibleSamples = (*drawCallsCopy)[i].visibleSamples;
-
-            totalVisibleSamples = totalVisible.load();
-            ready = true;
+        totalVisibleSamples = totalVisible.load();
+        ready = true;
     });
 }
 
@@ -153,31 +175,53 @@ void OcclusionQuery::Release()
 
     if (future.valid())
         future.wait();
-    rasterizer.reset();
     drawCalls.clear();
-    depthBuffer = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(*stateMutex);
+        state.depthBuffer.reset();
+    }
     begun = ended = false;
     ready = false;
 }
 
-void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
+bool OcclusionQuery::GetData(uint* outVisibleSamples) const
+{
+    if (!ready)
+    {
+        if (outVisibleSamples) *outVisibleSamples = 0;
+        return false;
+    }
+    if (outVisibleSamples) *outVisibleSamples = totalVisibleSamples;
+    return totalVisibleSamples > 0;
+}
+
+bool OcclusionQuery::GetResult(queryID id, uint* outSamples) const
+{
+    if (!ready || id >= drawCalls.size()) return false;
+    const DrawCall& dc = drawCalls[id];
+    if (outSamples) *outSamples = dc.visibleSamples;
+    return dc.visibleSamples > 0;
+}
+
+void OcclusionQuery::ProcessDrawCall(const DrawCall& dc,
+                                     const OcclusionPipelineState& pso,
                                      DepthBuffer& db,
-                                     const Viewport& vp,
-                                     IQueryRasterizer& rasterzer,
                                      std::atomic<uint>& totalVisible)
 {
     PROFILE_SCOPE("OcclusionQuery::ProcessDrawCall");
 
-    RasterizerState state;
-    state.cullMode = cullMode;
-    state.depthFunc = depthFunc;
-    state.depthWriteEnable = depthWriteEnable;
+    // Rasterizer state for both TriangleSetup creation and rasterisation
+    RasterizerState rasterState;
+    rasterState.cullMode = pso.cullMode;
+    rasterState.depthFunc = pso.depthFunc;
+    rasterState.depthWriteEnable = pso.depthWriteEnable;
 
     const auto& vbData = *dc.vb;
     const auto& ibData = dc.ib;
     const size_t indexCount = ibData.Size();
     if (indexCount < 3) return;
 
+    // Gather unique indices
     const size_t vertexCount = vbData.size();
     std::vector<bool> visited(vertexCount, false);
     std::vector<uint32_t> uniqueIndices;
@@ -191,11 +235,10 @@ void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
         }
     }
 
-    std::vector<VertexOutput> transformedVerts(vertexCount);
+    // Transform only the unique vertices
+    std::vector<Interpolant> transformedVerts(vertexCount);
     for (uint32_t idx : uniqueIndices)
-    {
         transformedVerts[idx] = dc.vertexShader(vbData[idx], dc.constantBuffer);
-    }
 
     uint32_t localVisible = 0;
     for (size_t i = 0; i + 2 < indexCount; i += 3)
@@ -204,25 +247,31 @@ void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
         uint32_t i1 = ibData.GetByIndex(static_cast<uint>(i + 1));
         uint32_t i2 = ibData.GetByIndex(static_cast<uint>(i + 2));
 
-        VertexOutput v0 = transformedVerts[i0];
-        VertexOutput v1 = transformedVerts[i1];
-        VertexOutput v2 = transformedVerts[i2];
+        Interpolant v0 = transformedVerts[i0];
+        Interpolant v1 = transformedVerts[i1];
+        Interpolant v2 = transformedVerts[i2];
 
-        VertexOutput clipped[2][3];
+        // Near-plane clipping
+        Interpolant clipped[2][3];
         int numTris = RasterizerCommon::ClipTriangleNearPlane(v0, v1, v2, clipped);
         for (int t = 0; t < numTris; ++t)
         {
+            // Perspective divide for all three vertices of the clipped triangle
             for (int j = 0; j < 3; ++j)
-                RasterizerCommon::ClipSpaceToScreenSpace(clipped[t][j], vp);
+                RasterizerCommon::ClipSpaceToScreenSpace(clipped[t][j], pso.viewport);
 
-            const VertexOutput& tv0 = clipped[t][0];
-            const VertexOutput& tv1 = clipped[t][1];
-            const VertexOutput& tv2 = clipped[t][2];
+            // Pre‑compute triangle setup (culling + edge deltas + invArea)
+            auto optSetup = RasterizerCommon::CreateTriangleSetup(clipped[t][0], clipped[t][1], clipped[t][2], rasterState);
+            if (!optSetup)
+                continue;   // culled or degenerate
 
-            float minX = std::min({ tv0.Position.x, tv1.Position.x, tv2.Position.x });
-            float maxX = std::max({ tv0.Position.x, tv1.Position.x, tv2.Position.x });
-            float minY = std::min({ tv0.Position.y, tv1.Position.y, tv2.Position.y });
-            float maxY = std::max({ tv0.Position.y, tv1.Position.y, tv2.Position.y });
+            const RasterizerCommon::TriangleSetup& s = *optSetup;
+
+            // Screen-space bounding box from the already transformed vertices
+            float minX = std::min({ s.v0.Position.x, s.v1.Position.x, s.v2.Position.x });
+            float maxX = std::max({ s.v0.Position.x, s.v1.Position.x, s.v2.Position.x });
+            float minY = std::min({ s.v0.Position.y, s.v1.Position.y, s.v2.Position.y });
+            float maxY = std::max({ s.v0.Position.y, s.v1.Position.y, s.v2.Position.y });
 
             int tileMinX = std::max(0, (int)std::floor(minX));
             int tileMinY = std::max(0, (int)std::floor(minY));
@@ -232,16 +281,12 @@ void OcclusionQuery::ProcessDrawCall(DrawCall& dc,
             if (tileMinX > tileMaxX || tileMinY > tileMaxY)
                 continue;
 
-            localVisible += rasterzer.RasterizeTriangle( tv0, tv1, tv2,
-                                                         state,
-                                                         db,
-                                                         dc.constantBuffer,
-                                                         uint2(tileMinX, tileMinY),
-                                                         uint2(tileMaxX, tileMaxY) );
+            // Rasterise using the pre‑computed setup
+            localVisible += QueryRasterizer::RasterizeTriangle(s, rasterState, db, pso.viewport, uint2(tileMinX, tileMinY), uint2(tileMaxX, tileMaxY));
         }
     }
 
-    dc.visibleSamples = localVisible;
+    const_cast<DrawCall&>(dc).visibleSamples = localVisible;
     totalVisible += localVisible;
 }
 

@@ -103,6 +103,10 @@ template <class T, typename C> class resptr_core : public C
   protected:
 	typedef resptr_core this_type;
 	typedef resptr_core<T, C> self;
+	using C::p_;
+	using C::_inc;
+	using C::_dec;
+	using C::_set;
 
   public:
 	// construction

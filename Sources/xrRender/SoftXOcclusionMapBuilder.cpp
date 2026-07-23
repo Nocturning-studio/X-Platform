@@ -10,11 +10,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 static SoftX::VertexBuffer CreateVertexBuffer(const xr_vector<fvec3>& verts)
 {
-    std::vector<SoftX::VertexInput> vbData;
+    std::vector<SoftX::Vertex> vbData;
     vbData.reserve(verts.size());
     for (const fvec3& v : verts)
     {
-        SoftX::VertexInput vi;
+        SoftX::Vertex vi;
         vi.Position = float3(v.x, v.y, v.z);
         vi.Normal = float3(0, 0, 0);
         vi.Color = float4(0, 0, 0, 0);
@@ -114,42 +114,48 @@ void SoftXOcclusionMapBuilder::BuildAsync(const fmat4x4& viewProj)
         OPTICK_THREAD("Occlusion Map Build");
         OPTICK_EVENT("BuildDepthBuffer");
 
-        SoftX::DeviceContext& ctx = core->GetImmediateContext();
-
-        // Полная настройка состояний перед рисованием окклюдеров
-        ctx.SetRenderTarget(nullptr, true);
-        ctx.SetDepthBuffer(core->GetWriteBuffer());
-        ctx.SetCullMode(SoftX::CullMode::None);
-        ctx.SetFillMode(SoftX::FillMode::Solid);
-        ctx.SetDepthFunc(SoftX::ComparisonFunc::Less);
-        ctx.SetDepthWriteEnable(true);
-        ctx.SetViewport(SoftX::Viewport(0.0f, 0.0f, (int)depthResolution.x, (int)depthResolution.y, 0.0f, 1.0f));
-        ctx.SetTileSize(64);
-
-        ctx.ClearDepth(1.0f);
-
-        auto occlusionVS = [](const SoftX::VertexInput& input, const SoftX::ConstantBuffer& cb, const SoftX::TextureTable&) -> SoftX::VertexOutput
         {
-            const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
-            float x = input.Position.x, y = input.Position.y, z = input.Position.z;
-            float w = x * mvp._14 + y * mvp._24 + z * mvp._34 + mvp._44;
-            float outX = x * mvp._11 + y * mvp._21 + z * mvp._31 + mvp._41;
-            float outY = x * mvp._12 + y * mvp._22 + z * mvp._32 + mvp._42;
-            float outZ = x * mvp._13 + y * mvp._23 + z * mvp._33 + mvp._43;
-            SoftX::VertexOutput output;
-            output.Position = float4(outX, outY, outZ, w);
-            return output;
-        };
-        ctx.SetVertexShader(occlusionVS);
-        ctx.SetPixelShader([](const auto&, const auto&, const auto&) { return float4(0, 0, 0, 0); });
+            OPTICK_EVENT("Draw occluder");
+            SoftX::DeviceContext& ctx = core->GetImmediateContext();
 
-        SoftX::ConstantBuffer cb(&viewProj, sizeof(viewProj));
-        ctx.SetConstantBuffer(cb);
-        ctx.SetVertexBuffer(*vb);
-        ctx.SetIndexBuffer(*ib);
-        ctx.DrawIndexed();
+            // Полная настройка состояний перед рисованием окклюдеров
+            ctx.SetRenderTarget(nullptr, true);
+            ctx.SetDepthBuffer(core->GetWriteBuffer());
+            ctx.SetCullMode(SoftX::CullMode::None);
+            ctx.SetFillMode(SoftX::FillMode::Solid);
+            ctx.SetDepthFunc(SoftX::ComparisonFunc::Less);
+            ctx.SetDepthWriteEnable(true);
+            ctx.SetViewport(SoftX::Viewport(0.0f, 0.0f, (int)depthResolution.x, (int)depthResolution.y, 0.0f, 1.0f));
+            ctx.SetTileSize(64);
 
-        core->GetWriteBuffer()->GenerateHiZ(SoftX::DepthBuffer::HiZReduction::Min);
+            ctx.ClearDepth(1.0f);
+
+            auto occlusionVS = [](const SoftX::Vertex& input, const SoftX::ConstantBuffer& cb, const SoftX::TextureTable&) -> SoftX::VertexOutput
+            {
+                const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
+                float x = input.Position.x, y = input.Position.y, z = input.Position.z;
+                float w = x * mvp._14 + y * mvp._24 + z * mvp._34 + mvp._44;
+                float outX = x * mvp._11 + y * mvp._21 + z * mvp._31 + mvp._41;
+                float outY = x * mvp._12 + y * mvp._22 + z * mvp._32 + mvp._42;
+                float outZ = x * mvp._13 + y * mvp._23 + z * mvp._33 + mvp._43;
+                SoftX::VertexOutput output;
+                output.Position = float4(outX, outY, outZ, w);
+                return output;
+            };
+            ctx.SetVertexShader(occlusionVS);
+            ctx.SetPixelShader([](const auto&, const auto&, const auto&) { return float4(0, 0, 0, 0); });
+
+            SoftX::ConstantBuffer cb(&viewProj, sizeof(viewProj));
+            ctx.SetConstantBuffer(cb);
+            ctx.SetVertexBuffer(*vb);
+            ctx.SetIndexBuffer(*ib);
+            ctx.DrawIndexed();
+        }
+
+        {
+            OPTICK_EVENT("Generate Hi-Z Chain");
+            core->GetWriteBuffer()->GenerateHiZ(SoftX::DepthBuffer::HiZReduction::Min);
+        }
     };
 
     core->StartBuildTask(std::move(buildTask));
