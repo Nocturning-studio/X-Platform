@@ -1,0 +1,14 @@
+name: Build with MSBuild (VS 2019)
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build solution
+      run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /m
