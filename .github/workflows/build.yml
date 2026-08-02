@@ -10,5 +10,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build solution
+    - name: Build release
       run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /m
+
+    - name: Build debug
+      run: msbuild xrEngine.sln /p:Configuration=Debug /p:Platform=Win32 /m
