@@ -284,33 +284,9 @@ namespace luabind
 //		template<class T> friend T luabind::object_cast(const proxy_object& obj);
 		public:
 
-			template<class T>
-			proxy_raw_object& operator=(const T& val)
-			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
-				detail::getref(L, m_key_ref);
-				detail::convert_to_lua(L, val);
-				lua_rawset(L, -3);
-				// pop table
-				lua_pop(L, 1);
-				return *this;
-			}
+			template<class T> proxy_raw_object& operator=(const T& val);
 
-			template<class T, class Policies>
-			void assign(const T& val, const Policies& p)
-			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
-				detail::getref(L, m_key_ref);
-				detail::convert_to_lua_p(L, val, p);
-				lua_settable(L, -3);
-				// pop table
-				lua_pop(L, 1);
-				return *this;
-			}
+			template<class T, class Policies> void assign(const T& val, const Policies& p);
 
 			proxy_raw_object& operator=(const object& p);
 			proxy_raw_object& operator=(const proxy_object& p);
