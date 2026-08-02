@@ -1,5 +1,18 @@
 X-Platform это проект, нацеленный на качественную переработку X-Ray Engine 1.0, с внедрением новых, современных технологий и улучшения кодовой базы.
 
+<p align="center">
+  <img src="https://img.shields.io/badge/C%2B%2B-17-blue" alt="C++ Standard">
+  <a href="https://github.com/Nocturning-studio/X-Platform/actions/workflows/build.yml">
+    <img src="https://github.com/Nocturning-studio/X-Platform/actions/workflows/build.yml/badge.svg" alt="Build Status">
+  </a>
+  <a href="https://github.com/Nocturning-studio/X-Platform/stargazers">
+    <img src="https://img.shields.io/github/stars/Nocturning-studio/X-Platform?style=social" alt="Stars">
+  </a>
+  <a href="https://discord.gg/XXvxtnDbBP">
+    <img src="https://img.shields.io/discord/308323056592486420?logo=discord&logoColor=white" alt="Discord">
+  </a>
+</p>
+
 Сборка:
 Установите Visual Studio 2019 или Visual Studio 2022, установив дополнительно набор инструментов сборки V142
 Склонируйте репозиторий X-Platform
