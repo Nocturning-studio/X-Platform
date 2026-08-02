@@ -1,7 +1,16 @@
-﻿// math_float2x2.h
-// Description: 2x2 matrix class with HLSL-like syntax and SSE optimization
-// Author: NSDeathman, DeepSeek
-
+﻿/*
+ * AfterMath — high‑performance C++ math library (HLSL‑style, SSE‑accelerated)
+ *
+ * Project:   Presence AfterMath
+ * Copyright: 2026 Presence Collaboratory
+ * Authors:   NSDeathman (Architecture & Core)
+ *            DeepSeek (Mathematics & HLSL Integration)
+ *            Gemini 3 (Optimization & Fast Math)
+ *			  Nikolay Partas (Half precision data type prototype)
+ * License:   MIT License with Attribution — see LICENSE.md for details.
+ *
+ * https://github.com/Presence-Collaboratory/AfterMath-CPP-Open-Math-Library
+ */
 #pragma once
 
 #include <cmath>
@@ -13,9 +22,6 @@
 #include "math_float2.h"
 #include "math_functions.h"
 #include "AfterMathInternal.h"
-
-#pragma warning(push)
-#pragma warning(disable : AFTERMATH_DISABLED_WARNINGS)
 
 AFTERMATH_BEGIN
 
@@ -485,5 +491,3 @@ AFTERMATH_INLINE_VAR const float2x2 float2x2_Identity = float2x2::identity();
 AFTERMATH_INLINE_VAR const float2x2 float2x2_Zero = float2x2::zero();
 
 AFTERMATH_END
-
-#pragma warning(pop)

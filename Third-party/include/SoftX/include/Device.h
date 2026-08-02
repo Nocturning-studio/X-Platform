@@ -5,14 +5,11 @@
 /////////////////////////////////////////////////////////////////
 #pragma once
 /////////////////////////////////////////////////////////////////
-#include <functional>
-#include <future>
+#include <memory>
 
 #include "DeviceContext.h"
 #include "LibInternal.h"
 #include "ThirdPartyIncluding.h"
-/////////////////////////////////////////////////////////////////
-typedef void* HANDLE;
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
@@ -25,46 +22,35 @@ public:
     Device(const Device&) = delete;
     Device& operator=(const Device&) = delete;
 
-    Device(Device&&) = default;
-    Device& operator=(Device&&) = default;
+    Device(Device&&) noexcept;
+    Device& operator=(Device&&) noexcept;
 
     static Device CreateHeadless(uint2 backBufferSize);
 
     void SetDeviceContext(std::unique_ptr<DeviceContext> ctx);
-    DeviceContext& GetDeviceContext() { return *immediateContext; }
-    const DeviceContext& GetDeviceContext() const { return *immediateContext; }
+    DeviceContext& GetDeviceContext();
+    const DeviceContext& GetDeviceContext() const;
 
-    DeviceContext& GetImmediateContext() { return *immediateContext; }
-    const DeviceContext& GetImmediateContext() const { return *immediateContext; }
+    DeviceContext& GetImmediateContext();
+    const DeviceContext& GetImmediateContext() const;
 
-    std::unique_ptr<DeviceContext> CreateDeferredContext() { return std::make_unique<DeviceContext>(); }
+    std::unique_ptr<DeviceContext> CreateDeferredContext()
+    {
+        return std::make_unique<DeviceContext>();
+    }
 
-    SOFTX_FORCE_INLINE std::shared_ptr<FrameBuffer> GetBackBuffer() { return backBuffer; }
-    SOFTX_FORCE_INLINE std::shared_ptr<DepthBuffer> GetDepthBuffer() { return depthBuffer; }
+    std::shared_ptr<Texture> GetBackBuffer();
+    std::shared_ptr<DepthBuffer> GetDepthBuffer();
 
-    SOFTX_FORCE_INLINE PresentParameters& GetPresentParams() { return presentParams; }
-    SOFTX_FORCE_INLINE const PresentParameters& GetPresentParams() const { return presentParams; }
+    PresentParameters& GetPresentParams();
+    const PresentParameters& GetPresentParams() const;
 
     void Reset(const PresentParameters& newParams);
-
     void Present();
 
 private:
-    void SetupOutputConsole();
-    void DestroyOutputConsole();
-
-    void PresentToWindow();
-    void PresentToConsole();
-
-private:
-    std::unique_ptr<DeviceContext> immediateContext;
-    std::shared_ptr<FrameBuffer> backBuffer;
-    std::shared_ptr<FrameBuffer> frontBuffer;
-    std::shared_ptr<DepthBuffer> depthBuffer;
-    HANDLE hConsoleBuffer = nullptr;
-    PresentParameters presentParams;
-    mutable std::mutex m_mutex;
-    std::future<void> pendingPresent;
+    class Impl;
+    std::unique_ptr<Impl> pImpl;
 };
 
 SOFTX_END

@@ -7,79 +7,97 @@
 /////////////////////////////////////////////////////////////////
 #include "../include/LibInternal.h"
 #include "../include/DepthBuffer.h"
-#include "../include/RenderTargetInterface.h"
 #include "RasterizerCommon.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
 namespace QueryRasterizer
 {
-    static inline uint RasterizeTriangle(const RasterizerCommon::TriangleSetup& s,
-                                         const RasterizerState& state,
+    /**
+     * Rasterizes a triangle for occlusion query – only depth is computed and
+     * tested. Returns the number of visible (depth‑passing) pixels.
+     */
+    static inline uint RasterizeTriangle(const RasterizerCommon::TriangleSetup& setup,
+                                         const RasterizerState& rasterizerState,
                                          DepthBuffer& depthBuffer,
-                                         const Viewport& vp,
+                                         const Viewport& viewport,
                                          uint2 tileMin,
                                          uint2 tileMax)
     {
         uint visibleCount = 0;
 
-        int bbMinX = std::max(static_cast<int>(tileMin.x), s.bbMinX);
-        int bbMaxX = std::min(static_cast<int>(tileMax.x), s.bbMaxX);
-        int bbMinY = std::max(static_cast<int>(tileMin.y), s.bbMinY);
-        int bbMaxY = std::min(static_cast<int>(tileMax.y), s.bbMaxY);
-        if (bbMinX > bbMaxX || bbMinY > bbMaxY) return 0;
+        // Intersect the triangle’s bounding box with the tile extent
+        int boundingBoxMinX = std::max(static_cast<int>(tileMin.x), setup.bbMinX);
+        int boundingBoxMaxX = std::min(static_cast<int>(tileMax.x), setup.bbMaxX);
+        int boundingBoxMinY = std::max(static_cast<int>(tileMin.y), setup.bbMinY);
+        int boundingBoxMaxY = std::min(static_cast<int>(tileMax.y), setup.bbMaxY);
+        if (boundingBoxMinX > boundingBoxMaxX || boundingBoxMinY > boundingBoxMaxY)
+            return 0;
 
-        int pcX = RasterizerCommon::PixelCentre(bbMinX);
-        int pcY = RasterizerCommon::PixelCentre(bbMinY);
+        int pixelCentreX = RasterizerCommon::PixelCentre(boundingBoxMinX);
+        int pixelCentreY = RasterizerCommon::PixelCentre(boundingBoxMinY);
 
-        int32_t f01Row = s.normSign * RasterizerCommon::EdgeFunctionInt(s.x0fp, s.y0fp, s.x1fp, s.y1fp, pcX, pcY);
-        int32_t f12Row = s.normSign * RasterizerCommon::EdgeFunctionInt(s.x1fp, s.y1fp, s.x2fp, s.y2fp, pcX, pcY);
-        int32_t f20Row = s.normSign * RasterizerCommon::EdgeFunctionInt(s.x2fp, s.y2fp, s.x0fp, s.y0fp, pcX, pcY);
+        int32_t edge01Row = setup.normSign * RasterizerCommon::EdgeFunctionInt(setup.x0fp, setup.y0fp, setup.x1fp, setup.y1fp, pixelCentreX, pixelCentreY);
+        int32_t edge12Row = setup.normSign * RasterizerCommon::EdgeFunctionInt(setup.x1fp, setup.y1fp, setup.x2fp, setup.y2fp, pixelCentreX, pixelCentreY);
+        int32_t edge20Row = setup.normSign * RasterizerCommon::EdgeFunctionInt(setup.x2fp, setup.y2fp, setup.x0fp, setup.y0fp, pixelCentreX, pixelCentreY);
 
-        float faRow = static_cast<float>(f12Row) * s.invArea2;
-        float fbRow = static_cast<float>(f20Row) * s.invArea2;
-        float fcRow = static_cast<float>(f01Row) * s.invArea2;
+        float barycentricAlphaRow = static_cast<float>(edge12Row) * setup.invArea2;
+        float barycentricBetaRow  = static_cast<float>(edge20Row) * setup.invArea2;
+        float barycentricGammaRow = static_cast<float>(edge01Row) * setup.invArea2;
 
-        for (int y = bbMinY; y <= bbMaxY; ++y)
+        for (int y = boundingBoxMinY; y <= boundingBoxMaxY; ++y)
         {
-            int32_t f01 = f01Row;
-            int32_t f12 = f12Row;
-            int32_t f20 = f20Row;
+            int32_t edge01 = edge01Row;
+            int32_t edge12 = edge12Row;
+            int32_t edge20 = edge20Row;
 
-            float fa = faRow;
-            float fb = fbRow;
-            float fc = fcRow;
+            float alpha = barycentricAlphaRow;
+            float beta  = barycentricBetaRow;
+            float gamma = barycentricGammaRow;
 
-            for (int x = bbMinX; x <= bbMaxX; ++x)
+            for (int x = boundingBoxMinX; x <= boundingBoxMaxX; ++x)
             {
-                if ((f01 | f12 | f20) >= 0)
+                if ((edge01 | edge12 | edge20) >= 0)
                 {
-                    Interpolant frag = RasterizerCommon::TrilerpDepthOnly(s.v0, s.v1, s.v2, fa, fb, fc);
-                    float depth = RasterizerCommon::ComputeDepth(frag.Position.z, frag.Position.w, vp);
-                    float oldDepth = depthBuffer.At(int2(x, y));
+                    Interpolant fragment;
 
-                    if (RasterizerCommon::DepthTest(depth, oldDepth, state.depthFunc))
+                    float weight0 = alpha * setup.v0.ClipSpacePosition.w;
+                    float weight1 = beta  * setup.v1.ClipSpacePosition.w;
+                    float weight2 = gamma * setup.v2.ClipSpacePosition.w;
+
+                    float totalWeight = weight0 + weight1 + weight2;
+                    float inverseTotalWeight = (std::abs(totalWeight) > 1e-10f) ? (1.0f / totalWeight) : 0.0f;
+
+                    // Perspective‑correct depth interpolation
+                    fragment.ClipSpacePosition.z = (weight0 * setup.v0.ClipSpacePosition.z + weight1 * setup.v1.ClipSpacePosition.z + weight2 * setup.v2.ClipSpacePosition.z) * inverseTotalWeight;
+                    // Linear interpolation for w (to reconstruct view‑space depth)
+                    fragment.ClipSpacePosition.w = alpha * setup.v0.ClipSpacePosition.w + beta * setup.v1.ClipSpacePosition.w + gamma * setup.v2.ClipSpacePosition.w;
+
+                    float depth = RasterizerCommon::ComputeDepth(fragment.ClipSpacePosition.z, fragment.ClipSpacePosition.w, viewport);
+                    float storedDepth = depthBuffer.At(int2(x, y));
+
+                    if (RasterizerCommon::DepthTest(depth, storedDepth, rasterizerState.depthFunc))
                     {
-                        if (state.depthWriteEnable)
+                        if (rasterizerState.depthWriteEnable)
                             depthBuffer.At(int2(x, y)) = depth;
                         ++visibleCount;
                     }
                 }
 
-                f01 += s.stepX01;
-                f12 += s.stepX12;
-                f20 += s.stepX20;
-                fa += s.faStepX;
-                fb += s.fbStepX;
-                fc += s.fcStepX;
+                edge01 += setup.stepX01;
+                edge12 += setup.stepX12;
+                edge20 += setup.stepX20;
+                alpha  += setup.faStepX;
+                beta   += setup.fbStepX;
+                gamma  += setup.fcStepX;
             }
 
-            f01Row += s.stepY01;
-            f12Row += s.stepY12;
-            f20Row += s.stepY20;
-            faRow += s.faStepY;
-            fbRow += s.fbStepY;
-            fcRow += s.fcStepY;
+            edge01Row += setup.stepY01;
+            edge12Row += setup.stepY12;
+            edge20Row += setup.stepY20;
+            barycentricAlphaRow += setup.faStepY;
+            barycentricBetaRow  += setup.fbStepY;
+            barycentricGammaRow += setup.fcStepY;
         }
 
         return visibleCount;

@@ -1,5 +1,16 @@
-﻿// math_quaternion.h
-// Description: Quaternion class with HLSL-like syntax and global functions
+﻿/*
+ * AfterMath — high‑performance C++ math library (HLSL‑style, SSE‑accelerated)
+ *
+ * Project:   Presence AfterMath
+ * Copyright: 2026 Presence Collaboratory
+ * Authors:   NSDeathman (Architecture & Core)
+ *            DeepSeek (Mathematics & HLSL Integration)
+ *            Gemini 3 (Optimization & Fast Math)
+ *			  Nikolay Partas (Half precision data type prototype)
+ * License:   MIT License with Attribution — see LICENSE.md for details.
+ *
+ * https://github.com/Presence-Collaboratory/AfterMath-CPP-Open-Math-Library
+ */
 // Author: NSDeathman, DeepSeek
 
 #pragma once
@@ -60,6 +71,8 @@ public:
     explicit quaternion(const float4& vec) noexcept : data_(vec) {}
     explicit quaternion(__m128 simd_val) noexcept : simd_(simd_val) {}
     quaternion(const quaternion&) noexcept = default;
+    explicit quaternion(const float3x3& m) noexcept;
+    explicit quaternion(const float4x4& m) noexcept;
 
     // ============================================================================
     // Assignment Operators
@@ -71,6 +84,8 @@ public:
         data_ = vec;
         return *this;
     }
+    quaternion& operator=(const float3x3& m) noexcept;
+    quaternion& operator=(const float4x4& m) noexcept;
 
     // ============================================================================
     // Access Methods

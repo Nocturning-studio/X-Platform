@@ -6,13 +6,13 @@
 #pragma once
 /////////////////////////////////////////////////////////////////
 // Math lib
-#include <AfterMath/include/AfterMath.h>
+#include "../../AfterMath/include/AfterMath.h"
 /////////////////////////////////////////////////////////////////
 //#define ENABLE_PROFILER
 
 // Your custom profiler
 #ifdef ENABLE_PROFILER
-#include "../../../Optick/Include/optick.h"
+#include "../../Optick/Include/optick.h"
 #define PROFILE_FRAME(x) OPTICK_FRAME(x)
 #define PROFILE_SCOPE(x) OPTICK_EVENT(x)
 #define PROFILE_THREAD(x) OPTICK_THREAD(x)

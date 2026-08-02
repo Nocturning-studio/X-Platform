@@ -152,7 +152,6 @@ void CConstantManager::SetArrayConstantInternal(R_constant* C, R_constant_load& 
 void CConstantManager::SetArrayConstantInternal(R_constant* C, R_constant_load& L, u32 e, const fvec4& A, bool isPixel)
 {
     VERIFY(C->type == RC_float);
-    VERIFY(L.cls == RC_1x4);
     fvec4* data = isPixel ? m_pixelData : m_vertexData;
     bool& dirty = isPixel ? m_pixelDirty : m_vertexDirty;
     u32& lo = isPixel ? m_pixelDirtyLo : m_vertexDirtyLo;

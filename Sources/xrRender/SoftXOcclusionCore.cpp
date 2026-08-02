@@ -17,8 +17,10 @@ void SoftXOcclusionCore::Initialize(uint2 depthMapSize)
 
     m_depth_resolution = depthMapSize;
 
+    Msg("DepthBuffer resolution: %d, %d", m_depth_resolution.x, m_depth_resolution.y);
+
     SoftX::PresentParameters params;
-    params.BackBufferSize = uint2(1, 1);
+    params.BackBufferSize = m_depth_resolution;
     params.hDeviceWindow = nullptr;
     params.Windowed = true;
     params.Headless = true;
@@ -26,8 +28,8 @@ void SoftXOcclusionCore::Initialize(uint2 depthMapSize)
     m_device = std::make_unique<SoftX::Device>(params);
 
     // Создаём два depth-буфера для двойной буферизации
-    m_depthBuffers[0] = std::make_unique<SoftX::DepthBuffer>(depthMapSize, 4);
-    m_depthBuffers[1] = std::make_unique<SoftX::DepthBuffer>(depthMapSize, 4);
+    m_depthBuffers[0] = std::make_unique<SoftX::DepthBuffer>(m_depth_resolution, 4);
+    m_depthBuffers[1] = std::make_unique<SoftX::DepthBuffer>(m_depth_resolution, 4);
 
     // Начальные настройки контекста (общие для всех пользователей)
     SoftX::DeviceContext& ctx = m_device->GetImmediateContext();

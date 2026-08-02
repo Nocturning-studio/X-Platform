@@ -1,7 +1,16 @@
-﻿// Description: Fast mathematical functions using lookup tables and approximations
-//              for performance-critical applications
-// Author: Sergey Chechin, NSDeathman, DeepSeek
-
+﻿/*
+ * AfterMath — high‑performance C++ math library (HLSL‑style, SSE‑accelerated)
+ *
+ * Project:   Presence AfterMath
+ * Copyright: 2026 Presence Collaboratory
+ * Authors:   NSDeathman (Architecture & Core)
+ *            DeepSeek (Mathematics & HLSL Integration)
+ *            Gemini 3 (Optimization & Fast Math)
+ *			  Nikolay Partas (Half precision data type prototype)
+ * License:   MIT License with Attribution — see LICENSE.md for details.
+ *
+ * https://github.com/Presence-Collaboratory/AfterMath-CPP-Open-Math-Library
+ */
 #pragma once
 
 #include <cmath>
@@ -28,7 +37,7 @@ AFTERMATH_BEGIN
     * @note Functions are optimized for speed over absolute precision
     * @note Tables have 1-degree resolution (360 entries)
     */
-namespace FastMath
+    namespace FastMath
 {
     // ============================================================================
     // Lookup Tables (1-degree resolution)
@@ -463,7 +472,7 @@ namespace FastMath
         const float m2 = m * m;
         const float m3 = m * m2;
 
-        return (m - m2 / 2.0f + m3 / 3.0f) + exponent * 0.69314718056f; // ln(2)
+        return (m - m2 / 2.0f + m3 / 3.0f) + static_cast<float>(exponent) * 0.69314718056f; // ln(2)
     }
 
     /**
@@ -511,28 +520,28 @@ namespace FastMath
         return u.f * (1.5f - 0.5f * x * u.f * u.f);
     }
 
-        /**
-        * @brief Fast inverse square root using SSE intrinsics (Quake inverse square root algorithm)
-        * 
-        * Computes 1/sqrt(x) using Newton-Raphson approximation with SSE optimization.
-        * This is significantly faster than standard 1.0f / sqrtf(x) but less accurate.
-        * 
-        * @param x Input value packed in SSE register (all 4 components will be processed)
-        * @return SSE register containing approximate inverse square roots
-        * 
-        * @note Accuracy: ~0.175% relative error maximum
-        * @note Performance: 3-4x faster than standard implementation
-        * @note Uses one Newton-Raphson iteration for improved accuracy
-        * 
-        * @code
-        * __m128 values = _mm_set1_ps(4.0f);
-        * __m128 result = fast_inverse_sqrt_sse(values);
-        * // result now contains approximately 0.5f in all components (1/sqrt(4) = 0.5)
-        * @endcode
-        * 
-        * @see https://en.wikipedia.org/wiki/Fast_inverse_square_root
-        * @see Newton-Raphson method for iterative approximation
-        */
+    /**
+    * @brief Fast inverse square root using SSE intrinsics (Quake inverse square root algorithm)
+    *
+    * Computes 1/sqrt(x) using Newton-Raphson approximation with SSE optimization.
+    * This is significantly faster than standard 1.0f / sqrtf(x) but less accurate.
+    *
+    * @param x Input value packed in SSE register (all 4 components will be processed)
+    * @return SSE register containing approximate inverse square roots
+    *
+    * @note Accuracy: ~0.175% relative error maximum
+    * @note Performance: 3-4x faster than standard implementation
+    * @note Uses one Newton-Raphson iteration for improved accuracy
+    *
+    * @code
+    * __m128 values = _mm_set1_ps(4.0f);
+    * __m128 result = fast_inverse_sqrt_sse(values);
+    * // result now contains approximately 0.5f in all components (1/sqrt(4) = 0.5)
+    * @endcode
+    *
+    * @see https://en.wikipedia.org/wiki/Fast_inverse_square_root
+    * @see Newton-Raphson method for iterative approximation
+    */
     inline __m128 fast_inverse_sqrt_sse(__m128 x) noexcept
     {
         // Initial approximation using magic number and bit manipulation
@@ -557,13 +566,13 @@ namespace FastMath
 
     /**
         * @brief Fast square root using SSE inverse square root approximation
-        * 
+        *
         * Computes sqrt(x) as x * fast_inverse_sqrt_sse(x). This is faster than
         * standard sqrtf() but less accurate.
-        * 
+        *
         * @param x Input value packed in SSE register
         * @return SSE register containing approximate square roots
-        * 
+        *
         * @note sqrt(x) = x * (1/sqrt(x))
         * @note Accuracy: ~0.175% relative error maximum
         * @note Performance: 2-3x faster than _mm_sqrt_ps

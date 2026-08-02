@@ -6,12 +6,9 @@
 #pragma once
 /////////////////////////////////////////////////////////////////
 #include <memory>
-#include <vector>
-#include <future>
 
 #include "LibInternal.h"
 #include "Types.h"
-#include "DepthBuffer.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
@@ -36,8 +33,12 @@ public:
     void SetCullMode(CullMode mode);
     void SetDepthFunc(ComparisonFunc func);
     void SetDepthWriteEnable(bool enable);
+    void SetTileSize(uint size);
+    void SetScissorRect(int left, int top, int right, int bottom);
+    void SetScissorRect(const Rect& rect);
+    void SetScissorEnable(bool enable);
 
-    SOFTX_FORCE_INLINE bool IsReady() const { return ready; }
+    bool IsReady() const;
 
     bool GetData(uint* outVisibleSamples = nullptr) const;
     bool GetResult(queryID id, uint* outSamples) const;
@@ -49,30 +50,8 @@ public:
     void Release();
 
 private:
-    struct DrawCall
-    {
-        VertexBuffer vb;
-        IndexBuffer ib;
-        ConstantBuffer constantBuffer;
-        OcclusionVertexShader vertexShader;
-        uint visibleSamples = 0;
-    };
-
-    OcclusionPipelineState state;
-    mutable std::unique_ptr<std::mutex> stateMutex;
-
-    std::vector<DrawCall> drawCalls;
-    std::future<void> future;
-
-    std::atomic<bool> ready{ false };
-    bool begun = false;
-    bool ended = false;
-    uint totalVisibleSamples = 0;
-
-    void ProcessDrawCall(const DrawCall& dc,
-                         const OcclusionPipelineState& state,
-                         DepthBuffer& db,
-                         std::atomic<uint>& totalVisible);
+    class Impl;
+    std::unique_ptr<Impl> pImpl;
 };
 
 SOFTX_END

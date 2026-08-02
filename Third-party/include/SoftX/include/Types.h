@@ -13,9 +13,8 @@
 
 #include "LibInternal.h"
 #include "ThirdPartyIncluding.h"
-#include "TextureInterface.h"
+#include "Exceptions.h"
 /////////////////////////////////////////////////////////////////
-class SOFTX_API SoftX::IRenderTarget;
 class SOFTX_API SoftX::DepthBuffer;
 struct HWND__; typedef HWND__* HWND;
 /////////////////////////////////////////////////////////////////
@@ -69,28 +68,18 @@ struct PresentParameters
 };
 
 // ── Geometry data ───────────────────────────────────────────
+#define SOFT_MAX_ATTRIBUTES_COUNT 8
 struct Vertex
 {
-    float4 Color;
     float3 Position;
-    float3 Normal;
-    float2 UV;
-
-    Vertex() : Color(0, 0, 0, 0), Position(0, 0, 0), Normal(0, 0, 0), UV(0, 0) {}
-    Vertex(float3 pos, float4 col = float4(0, 0, 0, 0), float3 norm = float3(0, 0, 0), float2 uv = float2(0, 0)) : Color(col), Position(pos), Normal(norm), UV(uv) {}
+    float4 Attributes[SOFT_MAX_ATTRIBUTES_COUNT];
 };
 
 struct Interpolant
 {
-    float4 Position;
-    float4 Color;
-    float3 Normal;
-    float2 UV;
-
-    Interpolant() : Position(0, 0, 0, 0), Color(0, 0, 0, 0), Normal(0, 0, 0), UV(0, 0) {}
-    Interpolant(float4 pos, float3 norm, float4 col, float2 uv = float2(0, 0)) : Position(pos), Color(col), Normal(norm), UV(uv) {}
+    float4 ClipSpacePosition;
+    float4 Attributes[SOFT_MAX_ATTRIBUTES_COUNT];
 };
-using VertexOutput = Interpolant;
 
 // ── Buffers ──────────────────────────────────────────────────
 class VertexBuffer
@@ -122,13 +111,6 @@ public:
     {
         PrepareWrite();
         data->emplace_back(std::move(vertex));
-    }
-
-    template <typename... Args>
-    void Add(Args&&... args)
-    {
-        PrepareWrite();
-        data->emplace_back(std::forward<Args>(args)...);
     }
 
     void Reserve(size_t capacity)
@@ -243,15 +225,6 @@ struct Viewport
         : pos(pos), size(size), minZ(minZ), maxZ(maxZ) {}
 };
 
-struct Tile
-{
-    uint2 min;
-    uint2 max;
-    std::vector<int> triangleIndices;
-
-    Tile(uint2 min, uint2 max) : min(min), max(max) {}
-};
-
 // ── Sampler ──────────────────────────────────────────────────
 enum class Filter { Nearest, Bilinear };
 enum class Wrap { Repeat, Clamp, Mirror };
@@ -292,17 +265,17 @@ struct SamplerState
 // ── Textures ─────────────────────────────────────────────────
 struct TextureBinding
 {
-    std::shared_ptr<const ITexture> texture;
+    std::shared_ptr<const Texture> texture;
     SamplerState sampler;
 
     TextureBinding() = default;
-    TextureBinding(std::shared_ptr<const ITexture> tex, SamplerState samp = SamplerState{})
+    TextureBinding(std::shared_ptr<const Texture> tex, SamplerState samp = SamplerState{})
         : texture(std::move(tex)), sampler(samp) {}
 
     SOFTX_FORCE_INLINE bool IsValid() const { return texture != nullptr; }
     SOFTX_FORCE_INLINE bool IsEmpty() const { return !IsValid(); }
 
-    SOFTX_FORCE_INLINE void SetTexture(std::shared_ptr<const ITexture> tex) { texture = std::move(tex); }
+    SOFTX_FORCE_INLINE void SetTexture(std::shared_ptr<const Texture> tex) { texture = std::move(tex); }
     SOFTX_FORCE_INLINE void SetSamplerState(const SamplerState& samp) { sampler = samp; }
 
     float4 Sample(const float2& uv) const
@@ -333,7 +306,7 @@ struct TextureBinding
 class TextureTable
 {
 public:
-    SOFTX_FORCE_INLINE void Set(const std::string& name, std::shared_ptr<const ITexture> texture, const SamplerState& sampler = SamplerState{})
+    SOFTX_FORCE_INLINE void Set(const std::string& name, std::shared_ptr<const Texture> texture, const SamplerState& sampler = SamplerState{})
     {
         bindings[name] = { std::move(texture), sampler };
     }
@@ -368,14 +341,6 @@ enum class CullMode { None, Front, Back };
 enum class FillMode { Point, Wireframe, Solid };
 enum class ComparisonFunc { Never, Less, Equal, LessEqual, Greater, NotEqual, GreaterEqual, Always };
 
-struct RasterizerState
-{
-    CullMode cullMode = CullMode::Back;
-    FillMode fillMode = FillMode::Solid;
-    ComparisonFunc depthFunc = ComparisonFunc::Less;
-    bool depthWriteEnable = true;
-};
-
 // ── Pipeline resources ───────────────────────────────────────
 enum class PipelineResource : uint32_t
 {
@@ -407,7 +372,7 @@ struct PipelineStateObject
 
     TextureTable textureTable;
 
-    std::shared_ptr<IRenderTarget> renderTarget;
+    std::shared_ptr<Texture> renderTarget;
     std::shared_ptr<DepthBuffer> depthBuffer;
 
     CullMode cullMode = CullMode::Back;
@@ -417,6 +382,9 @@ struct PipelineStateObject
 
     Viewport viewport;
     uint tileSize = 64;
+
+    Rect scissorRect;
+    bool scissorEnable = false;
 
     void Validate(uint32_t requiredResourcesMask) const 
     {
@@ -439,44 +407,6 @@ struct PipelineStateObject
         check(PipelineResource::DepthBuffer, "depth buffer", depthBuffer != nullptr);
         check(PipelineResource::Viewport, "viewport", viewport.size.x > 0 && viewport.size.y > 0);
         check(PipelineResource::TileSize, "tile size > 0", tileSize > 0);
-
-        if (!errors.empty())
-            SOFTX_THROW(InvalidState("Missing required pipeline state: " + errors));
-    }
-};
-
-struct OcclusionPipelineState
-{
-    using OcclusionVertexShader = std::function<Interpolant(const Vertex&, const ConstantBuffer&)>;
-
-    VertexBuffer vertexBuffer;
-    IndexBuffer  indexBuffer;
-    ConstantBuffer constantBuffer;
-    OcclusionVertexShader vertexShader;
-
-    std::shared_ptr<DepthBuffer> depthBuffer;
-    Viewport viewport;
-    CullMode cullMode = CullMode::Back;
-    ComparisonFunc depthFunc = ComparisonFunc::Less;
-    bool depthWriteEnable = false;
-
-    void Validate(uint32_t requiredResourcesMask) const
-    {
-        std::string errors;
-        auto check = [&](PipelineResource res, const char* name, bool present)
-        {
-            if ((requiredResourcesMask & static_cast<uint32_t>(res)) && !present)
-            {
-                if (!errors.empty()) errors += "; ";
-                errors += name;
-            }
-        };
-        check(PipelineResource::VertexShader, "vertex shader", vertexShader != nullptr);
-        check(PipelineResource::VertexBuffer, "vertex buffer", !vertexBuffer.IsEmpty());
-        check(PipelineResource::IndexBuffer, "index buffer", !indexBuffer.IsEmpty());
-        check(PipelineResource::ConstantBuffer, "constant buffer", constantBuffer.Size() > 0);
-        check(PipelineResource::DepthBuffer, "depth buffer", depthBuffer != nullptr);
-        check(PipelineResource::Viewport, "viewport", viewport.size.x > 0 && viewport.size.y > 0);
 
         if (!errors.empty())
             SOFTX_THROW(InvalidState("Missing required pipeline state: " + errors));

@@ -16,9 +16,6 @@ static SoftX::VertexBuffer CreateVertexBuffer(const xr_vector<fvec3>& verts)
     {
         SoftX::Vertex vi;
         vi.Position = float3(v.x, v.y, v.z);
-        vi.Normal = float3(0, 0, 0);
-        vi.Color = float4(0, 0, 0, 0);
-        vi.UV = float2(0, 0);
         vbData.push_back(vi);
     }
     return SoftX::VertexBuffer(vbData);
@@ -128,9 +125,9 @@ void SoftXOcclusionMapBuilder::BuildAsync(const fmat4x4& viewProj)
             ctx.SetViewport(SoftX::Viewport(0.0f, 0.0f, (int)depthResolution.x, (int)depthResolution.y, 0.0f, 1.0f));
             ctx.SetTileSize(64);
 
-            ctx.ClearDepth(1.0f);
+            ctx.Clear(SoftX::ClearFlags::DepthBuffer, float4(), 1.0f);
 
-            auto occlusionVS = [](const SoftX::Vertex& input, const SoftX::ConstantBuffer& cb, const SoftX::TextureTable&) -> SoftX::VertexOutput
+            auto occlusionVS = [](const SoftX::Vertex& input, const SoftX::ConstantBuffer& cb, const SoftX::TextureTable&) -> SoftX::Interpolant
             {
                 const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
                 float x = input.Position.x, y = input.Position.y, z = input.Position.z;
@@ -138,8 +135,8 @@ void SoftXOcclusionMapBuilder::BuildAsync(const fmat4x4& viewProj)
                 float outX = x * mvp._11 + y * mvp._21 + z * mvp._31 + mvp._41;
                 float outY = x * mvp._12 + y * mvp._22 + z * mvp._32 + mvp._42;
                 float outZ = x * mvp._13 + y * mvp._23 + z * mvp._33 + mvp._43;
-                SoftX::VertexOutput output;
-                output.Position = float4(outX, outY, outZ, w);
+                SoftX::Interpolant output;
+                output.ClipSpacePosition = float4(outX, outY, outZ, w);
                 return output;
             };
             ctx.SetVertexShader(occlusionVS);

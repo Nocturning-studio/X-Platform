@@ -28,6 +28,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
+#include "xrMath_utils.h"
+
 template <class T> struct template_quaternion;
 
 template <class T> struct template_matrix4x4
@@ -886,8 +888,7 @@ typedef template_matrix4x4<float> fmat4x4;
 
 template <class T> BOOL _valid(const template_matrix4x4<T>& m)
 {
-	return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) &&
-		   _valid(m.c) && _valid(m._44_);
+	return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) && _valid(m.c) && _valid(m._44_);
 }
 
 extern XRMATH_API fmat4x4 Fidentity;

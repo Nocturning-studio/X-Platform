@@ -1,13 +1,26 @@
-// math_float4x4.h
-// Description: 4x4 matrix class with HLSL-like syntax and SSE optimization
-// Convention:  Row-major storage, Left-Handed coordinate system
-//              Vectors are ROW vectors: result = vec * mat
-//              Multiplication order: vec * T * R * S
-//              +Z points forward (into screen), +Y up, +X right
-//              Depth range: [0, 1] (zero-to-one, Vulkan/DirectX style)
-// Author: NSDeathman, DeepSeek
-
+/*
+ * AfterMath — high‑performance C++ math library (HLSL‑style, SSE‑accelerated)
+ *
+ * Project:   Presence AfterMath
+ * Copyright: 2026 Presence Collaboratory
+ * Authors:   NSDeathman (Architecture & Core)
+ *            DeepSeek (Mathematics & HLSL Integration)
+ *            Gemini 3 (Optimization & Fast Math)
+ *			  Nikolay Partas (Half precision data type prototype)
+ * License:   MIT License with Attribution — see LICENSE.md for details.
+ *
+ * https://github.com/Presence-Collaboratory/AfterMath-CPP-Open-Math-Library
+ */
 #pragma once
+
+/**
+ * @file math_float4x4.h
+ * @brief 4x4 floating point precision matrix class with HLSL-like syntax and SSE optimization
+ * @note Row-major storage, Left-Handed coordinate system
+ * @note Vectors are ROW vectors: result = vec * mat
+ * @note +Z points forward (into screen), +Y up, +X right
+ * @note Depth range: [0, 1] (zero-to-one, Vulkan/DirectX style)
+ */
 
 #include <cmath>
 #include <string>
@@ -105,6 +118,10 @@ public:
 
     float4x4(const float4x4&) noexcept = default;
 
+    explicit float4x4(const float3x3& m) noexcept;
+
+    explicit float4x4(const quaternion& q) noexcept;
+
     // ============================================================================
     // Assignment Operators
     // ============================================================================
@@ -118,6 +135,10 @@ public:
         row3 = float4(0.0f, 0.0f, 0.0f, scalar);
         return *this;
     }
+
+    float4x4& operator=(const float3x3& m) noexcept;
+
+    float4x4& operator=(const quaternion& q) noexcept;
 
     // ============================================================================
     // Compound Assignment Operators
@@ -314,39 +335,121 @@ inline float4x4 operator/(const float4x4& mat, float scalar) noexcept {
 
 inline float4x4 operator*(const float4x4& a, const float4x4& b) noexcept
 {
-	// Cache b's rows as __m128 � no conversion needed since float4 is a union
-	const __m128 b0 = b.row0.simd_;
-	const __m128 b1 = b.row1.simd_;
-	const __m128 b2 = b.row2.simd_;
-	const __m128 b3 = b.row3.simd_;
+    // Cache b's rows as __m128 — no conversion needed since float4 is a union
+    const __m128 b0 = b.row0.simd_;
+    const __m128 b1 = b.row1.simd_;
+    const __m128 b2 = b.row2.simd_;
+    const __m128 b3 = b.row3.simd_;
 
-	float4x4 result;
+    float4x4 result;
 
-	// Lambda to compute one result row:
-	//   row_out = splat(a0)*b0 + splat(a1)*b1 + splat(a2)*b2 + splat(a3)*b3
-	auto mul_row = [&](const float4& row_a) -> __m128 {
+    // Lambda to compute one result row:
+    //   row_out = splat(a0)*b0 + splat(a1)*b1 + splat(a2)*b2 + splat(a3)*b3
+    auto mul_row = [&](const float4& row_a) -> __m128 {
 #ifdef __FMA__
-		// FMA path: 4 fused multiply-adds, no intermediate rounding
-		__m128 r = _mm_mul_ps(_mm_set1_ps(row_a.x), b0);
-		r = _mm_fmadd_ps(_mm_set1_ps(row_a.y), b1, r);
-		r = _mm_fmadd_ps(_mm_set1_ps(row_a.z), b2, r);
-		r = _mm_fmadd_ps(_mm_set1_ps(row_a.w), b3, r);
+        // FMA path: 4 fused multiply-adds, no intermediate rounding
+        __m128 r = _mm_mul_ps(_mm_set1_ps(row_a.x), b0);
+        r = _mm_fmadd_ps(_mm_set1_ps(row_a.y), b1, r);
+        r = _mm_fmadd_ps(_mm_set1_ps(row_a.z), b2, r);
+        r = _mm_fmadd_ps(_mm_set1_ps(row_a.w), b3, r);
 #else
-		// SSE path: 4 multiplies + 3 adds
-		__m128 r = _mm_mul_ps(_mm_set1_ps(row_a.x), b0);
-		r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(row_a.y), b1));
-		r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(row_a.z), b2));
-		r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(row_a.w), b3));
+        // SSE path: 4 multiplies + 3 adds
+        __m128 r = _mm_mul_ps(_mm_set1_ps(row_a.x), b0);
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(row_a.y), b1));
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(row_a.z), b2));
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(row_a.w), b3));
 #endif
-		return r;
-	};
+        return r;
+    };
 
-	result.row0.simd_ = mul_row(a.row0);
-	result.row1.simd_ = mul_row(a.row1);
-	result.row2.simd_ = mul_row(a.row2);
-	result.row3.simd_ = mul_row(a.row3);
+    result.row0.simd_ = mul_row(a.row0);
+    result.row1.simd_ = mul_row(a.row1);
+    result.row2.simd_ = mul_row(a.row2);
+    result.row3.simd_ = mul_row(a.row3);
 
-	return result;
+    return result;
+}
+
+// ============================================================================
+// float3x3 <-> float4x4 Mixed Multiplication  (SSE optimized)
+// ============================================================================
+//
+// float3 has no __m128 union, so rows are loaded manually via _mm_set_ps.
+// The fourth lane is zeroed on load and handled explicitly where needed.
+//
+// --- float3x3 * float4x4 ---
+//   Only rows 0..2 of the result are computed; row3 is copied from b.row3.
+//   For each of the 3 output rows:
+//     result.row_i = splat(a[i].x)*b.row0 + splat(a[i].y)*b.row1 + splat(a[i].z)*b.row2
+//   b.row* are native __m128 (float4 union); a elements are scalar broadcasts.
+//
+// --- float4x4 * float3x3 ---
+//   b has no __m128, so its rows are loaded once as __m128 (w lane = 0).
+//   The w column of every result row is preserved from a[i][3] (not touched by b).
+//   For each of the 4 output rows the first three lanes are:
+//     result.row_i.xyz = splat(a[i][0])*b.row0 + splat(a[i][1])*b.row1 + splat(a[i][2])*b.row2
+//   Then the w lane is patched back from a[i][3] via _mm_insert_ps / _mm_blend_ps.
+
+inline float4x4 operator*(const float3x3& a, const float4x4& b) noexcept {
+    // b rows are already __m128 via float4 union
+    const __m128 b0 = b.row0.simd_;
+    const __m128 b1 = b.row1.simd_;
+    const __m128 b2 = b.row2.simd_;
+
+    // Helper: compute one result row from a float3 row of a
+    // result_row = splat(ax)*b0 + splat(ay)*b1 + splat(az)*b2
+    auto mul_row = [&](const float3& ra) -> __m128 {
+#ifdef __FMA__
+        __m128 r = _mm_mul_ps(_mm_set1_ps(ra.x), b0);
+        r = _mm_fmadd_ps(_mm_set1_ps(ra.y), b1, r);
+        r = _mm_fmadd_ps(_mm_set1_ps(ra.z), b2, r);
+#else
+        __m128 r = _mm_mul_ps(_mm_set1_ps(ra.x), b0);
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(ra.y), b1));
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(ra.z), b2));
+#endif
+        return r;
+    };
+
+    float4x4 result;
+    result.row0.simd_ = mul_row(a.row0);
+    result.row1.simd_ = mul_row(a.row1);
+    result.row2.simd_ = mul_row(a.row2);
+    result.row3 = b.row3;           // a is 3x3: bottom row passes through from b
+    return result;
+}
+
+inline float4x4 operator*(const float4x4& a, const float3x3& b) noexcept {
+    // Load float3x3 rows into __m128 (w lane = 0, unused)
+    const __m128 b0 = _mm_set_ps(0.0f, b.row0.z, b.row0.y, b.row0.x);
+    const __m128 b1 = _mm_set_ps(0.0f, b.row1.z, b.row1.y, b.row1.x);
+    const __m128 b2 = _mm_set_ps(0.0f, b.row2.z, b.row2.y, b.row2.x);
+
+    // _mm_blend_ps(src0, src1, 0x8): lane 3 from src1, lanes 0..2 from src0.
+
+    // Helper: compute xyz lanes via broadcast+FMA, restore w from a_row[3]
+    auto mul_row = [&](const float4& ra) -> __m128 {
+#ifdef __FMA__
+        __m128 r = _mm_mul_ps(_mm_set1_ps(ra.x), b0);
+        r = _mm_fmadd_ps(_mm_set1_ps(ra.y), b1, r);
+        r = _mm_fmadd_ps(_mm_set1_ps(ra.z), b2, r);
+#else
+        __m128 r = _mm_mul_ps(_mm_set1_ps(ra.x), b0);
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(ra.y), b1));
+        r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(ra.z), b2));
+#endif
+        // Lanes 0,1,2 are the correct dot products; lane 3 is 0 (from b load).
+        // Restore original a[i][3] into lane 3.
+        // _mm_blend_ps(src0, src1, 0x8): lane3 from src1 (a_w broadcast), rest from src0 (r).
+        return _mm_blend_ps(r, _mm_set1_ps(ra.w), 0x8);
+    };
+
+    float4x4 result;
+    result.row0.simd_ = mul_row(a.row0);
+    result.row1.simd_ = mul_row(a.row1);
+    result.row2.simd_ = mul_row(a.row2);
+    result.row3.simd_ = mul_row(a.row3);
+    return result;
 }
 
 // ============================================================================
@@ -354,13 +457,25 @@ inline float4x4 operator*(const float4x4& a, const float4x4& b) noexcept
 // ============================================================================
 
 /// Transform a float4 row-vector by a matrix: result = vec * mat
+///
+/// Identical broadcast strategy as matrix * matrix:
+///   result = splat(vec.x)*row0 + splat(vec.y)*row1 + splat(vec.z)*row2 + splat(vec.w)*row3
+///
+/// SSE:  4 mul + 3 add  (vs 16 mul + 12 add scalar)
+/// FMA:  1 mul + 3 fmadd
 inline float4 operator*(const float4& vec, const float4x4& mat) noexcept {
-    return float4(
-        vec.x * mat.row0.x + vec.y * mat.row1.x + vec.z * mat.row2.x + vec.w * mat.row3.x,
-        vec.x * mat.row0.y + vec.y * mat.row1.y + vec.z * mat.row2.y + vec.w * mat.row3.y,
-        vec.x * mat.row0.z + vec.y * mat.row1.z + vec.z * mat.row2.z + vec.w * mat.row3.z,
-        vec.x * mat.row0.w + vec.y * mat.row1.w + vec.z * mat.row2.w + vec.w * mat.row3.w
-    );
+#ifdef __FMA__
+    __m128 r = _mm_mul_ps(_mm_set1_ps(vec.x), mat.row0.simd_);
+    r = _mm_fmadd_ps(_mm_set1_ps(vec.y), mat.row1.simd_, r);
+    r = _mm_fmadd_ps(_mm_set1_ps(vec.z), mat.row2.simd_, r);
+    r = _mm_fmadd_ps(_mm_set1_ps(vec.w), mat.row3.simd_, r);
+#else
+    __m128 r = _mm_mul_ps(_mm_set1_ps(vec.x), mat.row0.simd_);
+    r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(vec.y), mat.row1.simd_));
+    r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(vec.z), mat.row2.simd_));
+    r = _mm_add_ps(r, _mm_mul_ps(_mm_set1_ps(vec.w), mat.row3.simd_));
+#endif
+    return float4(r);
 }
 
 /// Transform a point (w=1) and perform perspective divide
@@ -852,40 +967,6 @@ inline float4x4 rotation_axis(const float3& axis, float angle) noexcept {
 
 inline bool operator==(const float4x4& a, const float4x4& b) noexcept { return  approximately(a, b); }
 inline bool operator!=(const float4x4& a, const float4x4& b) noexcept { return !approximately(a, b); }
-
-// ============================================================================
-// float3x3 <-> float4x4 Mixed Multiplication
-// ============================================================================
-
-inline float4x4 operator*(const float3x3& a, const float4x4& b) noexcept {
-    float4x4 result;
-    for (int i = 0; i < 3; ++i) {
-        float4 row;
-        for (int j = 0; j < 4; ++j) {
-            float sum = 0.0f;
-            for (int k = 0; k < 3; ++k)
-                sum += a[i][k] * b[k][j];
-            row[j] = sum;
-        }
-        result[i] = row;
-    }
-    result[3] = b[3];
-    return result;
-}
-
-inline float4x4 operator*(const float4x4& a, const float3x3& b) noexcept {
-    float4x4 result;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            float sum = 0.0f;
-            for (int k = 0; k < 3; ++k)
-                sum += a[i][k] * b[k][j];
-            result[i][j] = sum;
-        }
-        result[i][3] = a[i][3];
-    }
-    return result;
-}
 
 // ============================================================================
 // Useful Constants

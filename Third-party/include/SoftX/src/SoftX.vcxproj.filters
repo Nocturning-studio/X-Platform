@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{c7e60be6-1b41-48cc-85e2-1a4ffdec9fe4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{0b1eb04e-a02b-4718-b72b-36fa7c63fc4b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\DepthBuffer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Device.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DeviceContext.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Exceptions.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LibInternal.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OcclusionQuery.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SoftX.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Texture.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ThirdPartyIncluding.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Types.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUDetector.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="InternalTypes.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryRasterizer.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Rasterizer.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerCommon.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadUtils.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="TileGrid.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CPUDetector.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceContext.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="OcclusionQuery.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

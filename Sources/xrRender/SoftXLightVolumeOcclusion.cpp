@@ -22,9 +22,6 @@ static void FillGeometry(
         SoftX::Vertex vi;
         const fvec3& v = sourceVerts[i];
         vi.Position = float3(v.x, v.y, v.z);
-        vi.Normal = float3(0, 0, 0);
-        vi.Color = float4(0, 0, 0, 0);
-        vi.UV = float2(0, 0);
         vertices.push_back(vi);
     }
 
@@ -109,7 +106,7 @@ uint32_t SoftXLightVolumeOcclusion::GetVisibleSamples(uint32_t queryId) const
 }
 
 // ---------------------------------------------------------------------------------------
-SoftX::VertexOutput LightVolumeQueryVS(const SoftX::Vertex& input, const SoftX::ConstantBuffer& cb)
+SoftX::Interpolant LightVolumeQueryVS(const SoftX::Vertex& input, const SoftX::ConstantBuffer& cb)
 {
     const fmat4x4& mvp = *static_cast<const fmat4x4*>(cb.Data());
     float4 pos = float4(input.Position.x, input.Position.y, input.Position.z, 1.0f);
@@ -120,11 +117,8 @@ SoftX::VertexOutput LightVolumeQueryVS(const SoftX::Vertex& input, const SoftX::
     clip.z = pos.x * mvp._13 + pos.y * mvp._23 + pos.z * mvp._33 + mvp._43;
     clip.w = pos.x * mvp._14 + pos.y * mvp._24 + pos.z * mvp._34 + mvp._44;
 
-    SoftX::VertexOutput output;
-    output.Position = clip;
-    output.Color = float4(0, 0, 0, 0);
-    output.Normal = float3(0, 0, 0);
-    output.UV = float2(0, 0);
+    SoftX::Interpolant output;
+    output.ClipSpacePosition = clip;
     return output;
 }
 

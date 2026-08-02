@@ -1,7 +1,16 @@
-﻿// math_float3x3.h
-// Description: 3x3 matrix class with HLSL-like syntax
-// Author: NSDeathman, DeepSeek
-
+﻿/*
+ * AfterMath — high‑performance C++ math library (HLSL‑style, SSE‑accelerated)
+ *
+ * Project:   Presence AfterMath
+ * Copyright: 2026 Presence Collaboratory
+ * Authors:   NSDeathman (Architecture & Core)
+ *            DeepSeek (Mathematics & HLSL Integration)
+ *            Gemini 3 (Optimization & Fast Math)
+ *	          Nikolay Partas (Half precision data type prototype)
+ * License:   MIT License with Attribution — see LICENSE.md for details.
+ *
+ * https://github.com/Presence-Collaboratory/AfterMath-CPP-Open-Math-Library
+ */
 #pragma once
 
 #include <cmath>
@@ -75,11 +84,11 @@ public:
 
     float3x3(const float3x3&) noexcept = default;
 
-    //// Constructor from float4x4 (extracts upper-left 3x3)
-    //explicit float3x3(const float4x4& mat4x4) noexcept;
+    // Constructor from float4x4 (extracts upper-left 3x3)
+    explicit float3x3(const float4x4& mat4x4) noexcept;
 
-    //// Constructor from quaternion
-    //explicit float3x3(const quaternion& q) noexcept;
+    // Constructor from quaternion
+    explicit float3x3(const quaternion& q) noexcept;
 
     // ============================================================================
     // Assignment Operators
@@ -95,7 +104,10 @@ public:
     }
 
     // Assignment from float4x4
-    /*float3x3& operator=(const float4x4& mat4x4) noexcept;*/
+    float3x3& operator=(const float4x4& mat4x4) noexcept;
+
+    // Assignment from quaternion
+    float3x3& operator=(const quaternion& q) noexcept;
 
     // ============================================================================
     // Compound Assignment Operators
@@ -262,7 +274,7 @@ public:
                          float3(0.0f, 0.0f, 1.0f));
     }
 
-    /*static float3x3 rotation_axis(const float3& axis, float angle) noexcept;*/
+    static float3x3 rotation_axis(const float3& axis, float angle) noexcept;
 
     static float3x3 rotation_euler(const float3& angles) noexcept {
         return rotation_z(angles.z) * rotation_y(angles.y) * rotation_x(angles.x);
@@ -479,7 +491,7 @@ inline bool approximately_zero(const float3x3& mat, float epsilon = 1e-6f) noexc
 
 inline float3x3 normal_matrix(const float3x3& model) noexcept {
     float3x3 inv = inverse(model);
-    float3x3 result = transpose(inv); // это (M^{-1})^T
+    float3x3 result = transpose(inv); // (M^{-1})^T
 
     float3 r0 = normalize(result.row0);
     float3 r1 = normalize(result.row1);

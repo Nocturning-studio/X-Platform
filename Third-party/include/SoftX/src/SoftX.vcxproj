@@ -19,40 +19,32 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CPUDetector.cpp" />
-    <ClCompile Include="Device.cpp" />
-    <ClCompile Include="DeviceContext.cpp" />
-    <ClCompile Include="DeviceContextDebug.cpp" />
-    <ClCompile Include="DeviceContextDraw.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="OcclusionQuery.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="TextureRGBA32F.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\include\DepthBuffer.h" />
-    <ClInclude Include="..\include\DepthTextureView.h" />
     <ClInclude Include="..\include\Device.h" />
     <ClInclude Include="..\include\DeviceContext.h" />
     <ClInclude Include="..\include\Exceptions.h" />
-    <ClInclude Include="..\include\FrameBuffer.h" />
     <ClInclude Include="..\include\LibInternal.h" />
     <ClInclude Include="..\include\OcclusionQuery.h" />
-    <ClInclude Include="..\include\RenderTargetInterface.h" />
-    <ClInclude Include="..\include\RenderTargetTexture.h" />
     <ClInclude Include="..\include\SoftX.h" />
-    <ClInclude Include="..\include\TextureInterface.h" />
-    <ClInclude Include="..\include\TextureRGBA32F.h" />
+    <ClInclude Include="..\include\Texture.h" />
     <ClInclude Include="..\include\ThirdPartyIncluding.h" />
     <ClInclude Include="..\include\Types.h" />
     <ClInclude Include="CPUDetector.h" />
+    <ClInclude Include="InternalTypes.h" />
     <ClInclude Include="QueryRasterizer.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RasterizerCommon.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="ThreadUtils.h" />
+    <ClInclude Include="TileGrid.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CPUDetector.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="DeviceContext.cpp" />
+    <ClCompile Include="OcclusionQuery.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

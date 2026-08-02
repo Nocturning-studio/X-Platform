@@ -10,6 +10,7 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <future>
 
 #include "../include/SoftX.h"
 /////////////////////////////////////////////////////////////////
@@ -17,8 +18,8 @@ SOFTX_BEGIN
 
 class SOFTX_API ThreadPool
 {
-    public:
-    ThreadPool(size_t numThreads) : stop(false), stopBackground(false), activeTasks(0)
+public:
+    ThreadPool(size_t numThreads) : stop(false), activeTasks(0)
     {
         if (numThreads == 0)
             numThreads = std::thread::hardware_concurrency();
@@ -35,10 +36,10 @@ class SOFTX_API ThreadPool
                         {
                             std::unique_lock<std::mutex> lock(queueMutex);
                             condition.wait(lock,
-                                           [this]
-                                           {
-                                               return stop || !tasks.empty();
-                                           });
+                                [this]
+                                {
+                                    return stop || !tasks.empty();
+                                });
                             if (stop && tasks.empty())
                                 return;
 
@@ -57,29 +58,6 @@ class SOFTX_API ThreadPool
                     }
                 });
         }
-
-        backgroundWorker = std::thread(
-            [this]
-            {
-                PROFILE_THREAD("SoftX Background Worker");
-                while (true)
-                {
-                    std::function<void()> task;
-                    {
-                        std::unique_lock<std::mutex> lock(backgroundMutex);
-                        backgroundCondition.wait(lock,
-                                               [this]
-                                               {
-                                                   return stopBackground || !backgroundTasks.empty();
-                                               });
-                        if (stopBackground && backgroundTasks.empty())
-                            return;
-                        task = std::move(backgroundTasks.front());
-                        backgroundTasks.pop();
-                    }
-                    task();
-                }
-            });
     }
 
     ~ThreadPool()
@@ -92,14 +70,11 @@ class SOFTX_API ThreadPool
         for (auto& worker : workers)
             worker.join();
 
-        if (backgroundWorker.joinable())
         {
-            {
-                std::unique_lock<std::mutex> lock(backgroundMutex);
-                stopBackground = true;
-            }
-            backgroundCondition.notify_all();
-            backgroundWorker.join();
+            std::unique_lock<std::mutex> lock(backgroundMutex);
+            for (auto& t : backgroundThreads)
+                if (t.joinable())
+                    t.join();
         }
     }
 
@@ -123,10 +98,10 @@ class SOFTX_API ThreadPool
         PROFILE_TAG("Blocked", "true");
         std::unique_lock<std::mutex> lock(queueMutex);
         condition.wait(lock,
-                       [this]
-                       {
-                           return tasks.empty() && activeTasks == 0;
-                       });
+            [this]
+            {
+                return tasks.empty() && activeTasks == 0;
+            });
     }
 
     size_t threadCount() const
@@ -138,19 +113,21 @@ class SOFTX_API ThreadPool
     {
         auto pt = std::make_shared<std::packaged_task<void()>>(std::forward<F>(task));
         std::future<void> fut = pt->get_future();
+
+        std::thread t([pt]()
+            {
+                PROFILE_THREAD("SoftX Background Task");
+                (*pt)();
+            });
+
         {
             std::unique_lock<std::mutex> lock(backgroundMutex);
-            backgroundTasks.emplace(
-                [pt]
-                {
-                    (*pt)();
-                });
+            backgroundThreads.push_back(std::move(t));
         }
-        backgroundCondition.notify_one();
         return fut;
     }
 
-    private:
+private:
     std::vector<std::thread> workers;
     std::queue<std::function<void()>> tasks;
     std::mutex queueMutex;
@@ -158,12 +135,8 @@ class SOFTX_API ThreadPool
     std::atomic<int> activeTasks;
     bool stop;
 
-    std::thread backgroundWorker;
-    std::queue<std::function<void()>> backgroundTasks;
+    std::vector<std::thread> backgroundThreads;
     std::mutex backgroundMutex;
-    std::condition_variable backgroundCondition;
-    bool stopBackground = false;
 };
 
 SOFTX_END
-/////////////////////////////////////////////////////////////////

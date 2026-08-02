@@ -6,7 +6,7 @@
 #pragma once
 /////////////////////////////////////////////////////////////////
 #include <optional>
-#include "../include/Types.h"
+#include "InternalTypes.h"
 /////////////////////////////////////////////////////////////////
 SOFTX_BEGIN
 
@@ -46,83 +46,18 @@ namespace RasterizerCommon
         return vp.minZ + zNDC * (vp.maxZ - vp.minZ);
     }
 
-    inline __m128 ComputeDepthForBlock(__m128 z_clip, __m128 invW, const Viewport& vp)
-    {
-        __m128 zNDC = _mm_mul_ps(z_clip, invW);
-        __m128 range = _mm_set1_ps(vp.maxZ - vp.minZ);
-        __m128 minZ = _mm_set1_ps(vp.minZ);
-        return _mm_add_ps(minZ, _mm_mul_ps(zNDC, range));
-    }
-
-#define PLERP(field) result.field = (w0 * v0.field + w1 * v1.field + w2 * v2.field) * wsum
-#define LERP(field) result.field = (alpha * v0.field + beta * v1.field + gamma * v2.field)
-
-    inline Interpolant TrilerpDepthOnly(const Interpolant& v0, 
-                                        const Interpolant& v1, 
-                                        const Interpolant& v2, 
-                                        float alpha,
-                                        float beta, 
-                                        float gamma)
-    {
-        float w0 = alpha * v0.Position.w;
-        float w1 = beta * v1.Position.w;
-        float w2 = gamma * v2.Position.w;
-
-        float invWsum = w0 + w1 + w2;
-        float wsum = (std::abs(invWsum) > 1e-10f) ? (1.0f / invWsum) : 0.0f;
-
-        Interpolant result;
-
-        PLERP(Position.z);
-        LERP(Position.x);
-        LERP(Position.y);
-        LERP(Position.w);
-
-        return result;
-    }
-
-    inline Interpolant Trilerp(const Interpolant& v0, 
-                               const Interpolant& v1, 
-                               const Interpolant& v2, 
-                               float alpha,
-                               float beta, 
-                               float gamma)
-    {
-        float w0 = alpha * v0.Position.w;
-        float w1 = beta * v1.Position.w;
-        float w2 = gamma * v2.Position.w;
-
-        float invWsum = w0 + w1 + w2;
-        float wsum = (std::abs(invWsum) > 1e-10f) ? (1.0f / invWsum) : 0.0f;
-
-        Interpolant result;
-
-        PLERP(Color);
-        PLERP(Normal);
-        PLERP(UV);
-        PLERP(Position.z);
-        LERP(Position.x);
-        LERP(Position.y);
-        LERP(Position.w);
-
-        return result;
-    }
-
-#undef PLERP
-#undef LERP
-
     inline void ClipSpaceToScreenSpace(Interpolant& vert, const Viewport& vp)
     {
-        float w = vert.Position.w;
+        float w = vert.ClipSpacePosition.w;
         float invW = (std::abs(w) > 1e-10f) ? (1.0f / w) : 0.0f;
 
-        float xNDC = vert.Position.x * invW;
-        float yNDC = vert.Position.y * invW;
+        float xNDC = vert.ClipSpacePosition.x * invW;
+        float yNDC = vert.ClipSpacePosition.y * invW;
 
-        vert.Position.x = vp.pos.x + (xNDC * 0.5f + 0.5f) * static_cast<float>(vp.size.x);
-        vert.Position.y = vp.pos.y + (1.0f - (yNDC * 0.5f + 0.5f)) * static_cast<float>(vp.size.y);
-        vert.Position.z = vert.Position.z;
-        vert.Position.w = invW;
+        vert.ClipSpacePosition.x = vp.pos.x + (xNDC * 0.5f + 0.5f) * static_cast<float>(vp.size.x);
+        vert.ClipSpacePosition.y = vp.pos.y + (1.0f - (yNDC * 0.5f + 0.5f)) * static_cast<float>(vp.size.y);
+        vert.ClipSpacePosition.z = vert.ClipSpacePosition.z;
+        vert.ClipSpacePosition.w = invW;
     }
 
     inline Interpolant LerpVertexClipSpace(const Interpolant& a, const Interpolant& b, float t)
@@ -130,10 +65,15 @@ namespace RasterizerCommon
         Interpolant r;
 
 #define CSLERP(field) r.field = a.field + t * (b.field - a.field)
-        CSLERP(Position);
-        CSLERP(Color);
-        CSLERP(Normal);
-        CSLERP(UV);
+        CSLERP(ClipSpacePosition);
+        CSLERP(Attributes[0]);
+        CSLERP(Attributes[1]);
+        CSLERP(Attributes[2]);
+        CSLERP(Attributes[3]);
+        CSLERP(Attributes[4]);
+        CSLERP(Attributes[5]);
+        CSLERP(Attributes[6]);
+        CSLERP(Attributes[7]);
 #undef CSLERP
 
         return r;
@@ -150,7 +90,7 @@ namespace RasterizerCommon
 
         for (int i = 0; i < 3; ++i) 
         {
-            inside[i] = (verts[i]->Position.z >= 0.0f) && (verts[i]->Position.w > 0.0f);
+            inside[i] = (verts[i]->ClipSpacePosition.z >= 0.0f) && (verts[i]->ClipSpacePosition.w > 0.0f);
             if (inside[i]) ++insideCount;
         }
 
@@ -176,7 +116,7 @@ namespace RasterizerCommon
 
             if (aIn != bIn) 
             {
-                float t = (0.0f - A.Position.z) / (B.Position.z - A.Position.z);
+                float t = (0.0f - A.ClipSpacePosition.z) / (B.ClipSpacePosition.z - A.ClipSpacePosition.z);
                 t = AfterMath::clamp(t, 0.0f, 1.0f);
                 poly[polySize++] = LerpVertexClipSpace(A, B, t);
             }
@@ -241,9 +181,9 @@ namespace RasterizerCommon
                                                             const Interpolant& c,
                                                             const RasterizerState& state)
     {
-        const int x0 = ToFixed(a.Position.x), y0 = ToFixed(a.Position.y);
-        const int x1 = ToFixed(b.Position.x), y1 = ToFixed(b.Position.y);
-        const int x2 = ToFixed(c.Position.x), y2 = ToFixed(c.Position.y);
+        const int x0 = ToFixed(a.ClipSpacePosition.x), y0 = ToFixed(a.ClipSpacePosition.y);
+        const int x1 = ToFixed(b.ClipSpacePosition.x), y1 = ToFixed(b.ClipSpacePosition.y);
+        const int x2 = ToFixed(c.ClipSpacePosition.x), y2 = ToFixed(c.ClipSpacePosition.y);
 
         int64_t area2 = EdgeFunctionInt(x0, y0, x1, y1, x2, y2);
         if (area2 == 0) return std::nullopt;
@@ -282,10 +222,10 @@ namespace RasterizerCommon
         s.v1 = b;
         s.v2 = c;
 
-        float minX = std::min({ a.Position.x, b.Position.x, c.Position.x });
-        float maxX = std::max({ a.Position.x, b.Position.x, c.Position.x });
-        float minY = std::min({ a.Position.y, b.Position.y, c.Position.y });
-        float maxY = std::max({ a.Position.y, b.Position.y, c.Position.y });
+        float minX = std::min({ a.ClipSpacePosition.x, b.ClipSpacePosition.x, c.ClipSpacePosition.x });
+        float maxX = std::max({ a.ClipSpacePosition.x, b.ClipSpacePosition.x, c.ClipSpacePosition.x });
+        float minY = std::min({ a.ClipSpacePosition.y, b.ClipSpacePosition.y, c.ClipSpacePosition.y });
+        float maxY = std::max({ a.ClipSpacePosition.y, b.ClipSpacePosition.y, c.ClipSpacePosition.y });
 
         s.bbMinX = static_cast<int>(std::floor(minX));
         s.bbMaxX = static_cast<int>(std::ceil(maxX));
