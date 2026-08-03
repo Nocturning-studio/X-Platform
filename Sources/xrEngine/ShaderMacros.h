@@ -1,7 +1,7 @@
 #ifndef SHADER_MACROS_INCLUDED
 #define SHADER_MACROS_INCLUDED
 #pragma once
-#include "d3dx9.h"
+#include <d3dx9.h>
 #include "../xrCore/xrstring.h"
 
 class ENGINE_API CShaderMacros
