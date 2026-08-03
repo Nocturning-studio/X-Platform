@@ -1,4 +1,4 @@
-name: Build with MSBuild (VS 2019)
+name: Build with MSBuild
 
 on: [push, pull_request]
 
@@ -10,8 +10,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build release
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build Release
       run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /m
 
-    - name: Build debug
+    - name: Build Debug
       run: msbuild xrEngine.sln /p:Configuration=Debug /p:Platform=Win32 /m
