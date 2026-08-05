@@ -4,6 +4,7 @@
  *  1999-2001                                                               *
  *  Contents: PPMII model description and encoding/decoding routines        *
  ****************************************************************************/
+#include "stdafx.h"
 #include <string.h>
 #include "PPMd.h"
 #pragma hdrstop
@@ -37,7 +38,7 @@ template <class TMP_TYPE> inline TMP_TYPE CLAMP(const TMP_TYPE& X, const TMP_TYP
 // SEE-contexts for PPM-contexts with masked symbols
 
 #pragma pack(1)
-static struct SEE2_CONTEXT
+struct SEE2_CONTEXT
 {
 	WORD Summ;
 	BYTE Shift, Count;
@@ -65,7 +66,7 @@ SEE2_CONTEXT _PACK_ATTR SEE2Cont[24][32], DummySEE2Cont;
 
 //==============================================================================
 
-static struct PPM_CONTEXT
+struct PPM_CONTEXT
 {						  // Notes:
 	BYTE NumStats, Flags; // 1. NumStats & NumMasked contain
 	WORD SummFreq;		  //  number of symbols minus 1

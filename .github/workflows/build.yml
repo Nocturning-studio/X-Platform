@@ -15,6 +15,3 @@ jobs:
 
     - name: Build Release
       run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /m
-
-    - name: Build Debug
-      run: msbuild xrEngine.sln /p:Configuration=Debug /p:Platform=Win32 /m

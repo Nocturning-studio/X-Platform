@@ -205,7 +205,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>USE_OPTICK=1;OPTICK_FIBERS=1;NDEBUG;MT_INSTRUMENTED_BUILD;_CRT_SECURE_NO_WARNINGS;OPTICK_LIB=1;OPTICK_EXPORTS;OPTICK_ENABLE_GPU=0;OPTICK_ENABLE_GPU_D3D12=0;OPTICK_ENABLE_GPU_VULKAN=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -283,7 +283,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>USE_OPTICK=1;OPTICK_FIBERS=1;_DEBUG;_CRTDBG_MAP_ALLOC;MT_INSTRUMENTED_BUILD;_CRT_SECURE_NO_WARNINGS;OPTICK_LIB=1;OPTICK_EXPORTS;OPTICK_ENABLE_GPU_D3D12=0;OPTICK_ENABLE_GPU_VULKAN=0;%(PreprocessorDefinitions) USE_OPTICK</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
