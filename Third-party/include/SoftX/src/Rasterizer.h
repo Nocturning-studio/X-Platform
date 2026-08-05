@@ -102,11 +102,13 @@ namespace Rasterizer
                         {
                             Interpolant fragment;
 
+#ifndef NO_ATTRIBUTES_NEEDED
                             // Perspective‑correct attributes
                             for(int attr = 0; attr < SOFT_MAX_ATTRIBUTES_COUNT; ++attr)
                                 fragment.Attributes[attr] = (weight0 * setup.v0.Attributes[attr] + 
                                                              weight1 * setup.v1.Attributes[attr] + 
                                                              weight2 * setup.v2.Attributes[attr]) * inverseTotalWeight;
+#endif
 
                             // Screen‑space linear interpolation
                             fragment.ClipSpacePosition.x = alpha * setup.v0.ClipSpacePosition.x + beta * setup.v1.ClipSpacePosition.x + gamma * setup.v2.ClipSpacePosition.x;

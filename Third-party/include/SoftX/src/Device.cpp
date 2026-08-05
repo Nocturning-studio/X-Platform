@@ -115,9 +115,9 @@ public:
         }
         else
         {
-            backBuffer = std::make_shared<Texture>(uint2(1, 1));
+            backBuffer = std::make_shared<Texture>(uint2(2, 2));
             frontBuffer.reset();
-            depthBuffer = std::make_shared<DepthBuffer>(uint2(1, 1));
+            depthBuffer = std::make_shared<DepthBuffer>(uint2(2, 2));
 
             immediateContext->SetRenderTarget(backBuffer, false);
             immediateContext->SetDepthBuffer(depthBuffer);

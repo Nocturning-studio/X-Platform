@@ -256,7 +256,9 @@ public:
                         for (int i = 0; i < 4; ++i)
                         {
                             Interpolant input;
+#ifndef NO_ATTRIBUTES_NEEDED
                             input.Attributes[0] = float2(u + i * invW, v);
+#endif
                             float4 c = ps(input, cb, tt);
                             _mm_stream_ps(reinterpret_cast<float*>(row + x + i), _mm_set_ps(c.w, c.z, c.y, c.x));
                         }
@@ -265,7 +267,9 @@ public:
                     for (; x <= endX; ++x, u += invW)
                     {
                         Interpolant input;
+#ifndef NO_ATTRIBUTES_NEEDED
                         input.Attributes[0] = float2(u, v);
+#endif
                         float4 c = ps(input, cb, tt);
                         _mm_stream_ps(reinterpret_cast<float*>(row + x), _mm_set_ps(c.w, c.z, c.y, c.x));
                     }

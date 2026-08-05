@@ -72,13 +72,17 @@ struct PresentParameters
 struct Vertex
 {
     float3 Position;
+#ifndef NO_ATTRIBUTES_NEEDED
     float4 Attributes[SOFT_MAX_ATTRIBUTES_COUNT];
+#endif
 };
 
 struct Interpolant
 {
     float4 ClipSpacePosition;
+#ifndef NO_ATTRIBUTES_NEEDED
     float4 Attributes[SOFT_MAX_ATTRIBUTES_COUNT];
+#endif
 };
 
 // ── Buffers ──────────────────────────────────────────────────

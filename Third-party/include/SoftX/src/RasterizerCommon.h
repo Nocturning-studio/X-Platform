@@ -66,6 +66,7 @@ namespace RasterizerCommon
 
 #define CSLERP(field) r.field = a.field + t * (b.field - a.field)
         CSLERP(ClipSpacePosition);
+#ifndef NO_ATTRIBUTES_NEEDED
         CSLERP(Attributes[0]);
         CSLERP(Attributes[1]);
         CSLERP(Attributes[2]);
@@ -74,6 +75,7 @@ namespace RasterizerCommon
         CSLERP(Attributes[5]);
         CSLERP(Attributes[6]);
         CSLERP(Attributes[7]);
+#endif
 #undef CSLERP
 
         return r;
