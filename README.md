@@ -16,14 +16,14 @@
 X-Platform это проект, нацеленный на переработку X-Ray Engine 1.0, с внедрением современных технологий.
 
 # Сборка:
-Установите Visual Studio 2026
-Склонируйте репозиторий X-Platform
-Выделите в качестве собираемого проекта xrGame и запустите сборку, движок соберется автоматически, а все нужные библиотеки скопируются в выходную папку
+- Установите Visual Studio 2026
+- Склонируйте репозиторий X-Platform
+- Выделите в качестве собираемого проекта xrGame и запустите сборку, движок соберется автоматически, а все нужные библиотеки скопируются в выходную папку
 
 # Запуск:
-Скачайте gamedata из репозитория проектов для данного движка (https://github.com/Nocturning-studio/X-Projects)
-Положите ее в корневую папку с игрой
-Выберите bin/xrEngine.exe и запустите
+- Скачайте gamedata из репозитория проектов для данного движка (https://github.com/Nocturning-studio/X-Projects)
+- Положите ее в корневую папку с игрой
+- Выберите bin/xrEngine.exe и запустите
 
 <img width="3500" height="1876" alt="Splash screen1" src="https://github.com/user-attachments/assets/f4f2b12e-a019-405c-bc74-4fd0d5eff0da" />
 <img width="1920" height="1080" alt="Opener" src="https://github.com/user-attachments/assets/b7422e36-c5ce-4792-bb49-75d8ca376bb7" />
