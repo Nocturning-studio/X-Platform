@@ -891,6 +891,6 @@ template <class T> BOOL _valid(const template_matrix4x4<T>& m)
 	return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) && _valid(m.c) && _valid(m._44_);
 }
 
-extern XRMATH_API fmat4x4 Fidentity;
+inline fmat4x4 Fidentity = fmat4x4().identity();
 
 #pragma warning(pop)

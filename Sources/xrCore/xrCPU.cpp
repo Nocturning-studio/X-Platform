@@ -120,14 +120,10 @@ void Initialize()
 
 	Msg("* CPU features: %s", features);
 
-	Fidentity.identity();
-	initialize_normal_compression_stats();
-
 	// ¬ключаем Flush-to-Zero (FTZ) и Denormals-are-Zero (DAZ).
 	// Ёто предотвращает падение FPS, когда значени€ станов€тс€ очень близкими к нулю.
 	_mm_setcsr(_mm_getcsr() | 0x8000 | 0x0040);
 
-	// «десь мы вызываем CPU::GetCLK() €вно, использу€ пространство имен
 	::Random.seed(u32(CPU::GetCLK()));
 }
 

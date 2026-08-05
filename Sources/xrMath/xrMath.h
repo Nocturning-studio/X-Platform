@@ -24,7 +24,6 @@
 #include "xrMath_obb.h"
 #include "xrMath_sphere.h"
 #include "xrMath_cylinder.h"
-#include "xrMath_random.h"
 #include "xrMath_compressed_normal.h"
 #include "xrMath_plane3D.h"
 #include "xrMath_plane2D.h"
@@ -33,6 +32,3 @@
 #include "xrMath_implementation.h"
 
 #pragma pack(pop)
-
-extern XRMATH_API fmat4x4 Fidentity;
-extern XRMATH_API CRandom Random;

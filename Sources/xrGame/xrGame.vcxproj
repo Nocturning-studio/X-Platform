@@ -178,11 +178,9 @@
       <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrEngine.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\discord_game_sdk.dll" "$(OutDir)discord_game_sdk.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
+      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
@@ -240,11 +238,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\discord_game_sdk.dll" "$(OutDir)discord_game_sdk.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
+      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
@@ -311,11 +307,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\discord_game_sdk.dll" "$(OutDir)discord_game_sdk.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
+      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
@@ -384,11 +378,9 @@ copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\discord_game_sdk.dll" "$(OutDir)discord_game_sdk.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
+      <Command>copy /Y "$(SolutionDir)\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Third-party\bin\x86\BugTrap.dll" "$(OutDir)BugTrap.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
 copy /Y "$(SolutionDir)\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
