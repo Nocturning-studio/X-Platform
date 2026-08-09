@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+
 template <class T> struct template_vector2
 {
   public:
@@ -83,10 +86,16 @@ template <class T> struct template_vector2
 		y = p1.y - p2.y;
 		return *this;
 	}
-	IC SelfRef sub(const Self& p, float d)
+	IC SelfRef sub(const Self& p, T d)
 	{
 		x = p.x - d;
 		y = p.y - d;
+		return *this;
+	}
+	IC SelfRef sub(T s, const Self& p)
+	{
+		x = s - p.x;
+		y = s - p.y;
 		return *this;
 	}
 	IC SelfRef add(T p)
@@ -107,7 +116,7 @@ template <class T> struct template_vector2
 		y = p1.y + p2.y;
 		return *this;
 	}
-	IC SelfRef add(const Self& p, float d)
+	IC SelfRef add(const Self& p, T d)
 	{
 		x = p.x + d;
 		y = p.y + d;
@@ -119,7 +128,7 @@ template <class T> struct template_vector2
 		y *= s;
 		return *this;
 	}
-	IC SelfRef mul(Self& p)
+	IC SelfRef mul(const Self& p)
 	{
 		x *= p.x;
 		y *= p.y;
@@ -129,6 +138,12 @@ template <class T> struct template_vector2
 	{
 		x /= s;
 		y /= s;
+		return *this;
+	}
+	IC SelfRef div(const Self& p)
+	{
+		x /= p.x;
+		y /= p.y;
 		return *this;
 	}
 	IC SelfRef invert()
@@ -150,13 +165,21 @@ template <class T> struct template_vector2
 		y = t;
 		return *this;
 	}
-	IC SelfRef cross(Self& D)
+	IC SelfRef cross(const Self& D)
 	{
 		x = D.y;
 		y = -D.x;
 		return *this;
 	}
-	IC T dot(Self& p)
+	IC Self cross()
+	{
+		// vector3 orthogonal to (x,y) is (y,-x)
+		Self kCross;
+		kCross.x = y;
+		kCross.y = -x;
+		return kCross;
+	}
+	IC T dot(const Self& p)
 	{
 		return x * p.x + y * p.y;
 	}
@@ -200,34 +223,26 @@ template <class T> struct template_vector2
 		y = p.y + d.y * r;
 		return *this;
 	}
-	IC Self Cross()
+
+	IC bool similar(const Self& p, T eu, T ev) const
 	{
-		// vector3 orthogonal to (x,y) is (y,-x)
-		Self kCross;
-		kCross.x = y;
-		kCross.y = -x;
-		return kCross;
+		return std::abs(x - p.x) <= eu && std::abs(y - p.y) <= ev;
 	}
 
-	IC bool similar(Self& p, T eu, T ev) const
+	IC bool similar(const Self& p, T E = EPS_L) const
 	{
-		return std::abs(x - p.x) < eu && std::abs(y - p.y) < ev;
-	}
-
-	IC bool similar(const Self& p, float E = EPS_L) const
-	{
-		return std::abs(x - p.x) < E && std::abs(y - p.y) < E;
+		return std::abs(x - p.x) <= E && std::abs(y - p.y) <= E;
 	};
 
 	// average arithmetic
-	IC SelfRef averageA(Self& p1, Self& p2)
+	IC SelfRef averageA(const Self& p1, const Self& p2)
 	{
-		x = (p1.x + p2.x) * .5f;
-		y = (p1.y + p2.y) * .5f;
+		x = (p1.x + p2.x) * T(0.5);
+		y = (p1.y + p2.y) * T(0.5);
 		return *this;
 	}
 	// average geometric
-	IC SelfRef averageG(Self& p1, Self& p2)
+	IC SelfRef averageG(const Self& p1, const Self& p2)
 	{
 		x = std::sqrt(p1.x * p2.x);
 		y = std::sqrt(p1.y * p2.y);
@@ -236,7 +251,6 @@ template <class T> struct template_vector2
 
 	T& operator[](int i) const
 	{
-		// assert:  0 <= i < 2; x and y are packed into 2*sizeof(float) bytes
 		return (T&)*(&x + i);
 	}
 
@@ -271,7 +285,7 @@ template <class T> struct template_vector2
 	}
 	IC float crossproduct(const Self& p) const
 	{
-		return y * p.x - x * p.y;
+		return x * p.y - y * p.x;
 	}
 	IC float getH(void) const
 	{
@@ -315,7 +329,7 @@ IC template_vector2<T> operator-(const template_vector2<T>& a, T s) {
 }
 template <class T>
 IC template_vector2<T> operator-(T s, const template_vector2<T>& a) {
-	template_vector2<T> r; r.sub(a, s); return r;   // s - a = -(a - s)
+	template_vector2<T> r; r.sub(s, a); return r;
 }
 
 template <class T>
@@ -344,11 +358,19 @@ IC template_vector2<T> operator/(T s, const template_vector2<T>& a) {
 	template_vector2<T> r; r.x = s / a.x; r.y = s / a.y; return r;
 }
 
-typedef template_vector2<float> fvec2;
-typedef template_vector2<double> dvec2;
-typedef template_vector2<int> ivec2;
+template <class T>
+std::string to_string(const template_vector2<T>& v)
+{
+	std::ostringstream oss;
+	oss << "(" << v.x << ", " << v.y << ")";
+	return oss.str();
+}
 
 template <class T> BOOL _valid(const template_vector2<T>& v)
 {
 	return _valid((T)v.x) && _valid((T)v.y);
 }
+
+typedef template_vector2<float> fvec2;
+typedef template_vector2<double> dvec2;
+typedef template_vector2<int> ivec2;

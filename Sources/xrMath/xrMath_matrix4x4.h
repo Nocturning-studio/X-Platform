@@ -78,7 +78,7 @@ template <class T> struct template_matrix4x4
 		return *this;
 	}
 
-	// Добавленный метод similar для сравнения матриц с заданной точностью
+	// Р”РѕР±Р°РІР»РµРЅРЅС‹Р№ РјРµС‚РѕРґ similar РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ РјР°С‚СЂРёС† СЃ Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РЅРѕСЃС‚СЊСЋ
 	ICF bool similar(const Self& other, T epsilon = flt_zero) const
 	{
 		return (fsimilar(_11, other._11, epsilon) && fsimilar(_12, other._12, epsilon) &&

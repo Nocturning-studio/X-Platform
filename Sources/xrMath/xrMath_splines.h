@@ -1,6 +1,6 @@
 #pragma once
 
-// Сплайны (math implementation)
+// РЎРїР»Р°Р№РЅС‹ (math implementation)
 inline void spline1(float t, fvec3* p, fvec3* ret)
 {
 	float t2 = t * t;

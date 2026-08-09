@@ -8,6 +8,22 @@
 #undef BREAK_AT_STRCMP
 #endif
 
+#ifdef MSVC_COMPILER
+typedef pstr   LPSTR;
+typedef pcstr  LPCSTR;
+#endif
+
+typedef char string16[16];
+typedef char string32[32];
+typedef char string64[64];
+typedef char string128[128];
+typedef char string256[256];
+typedef char string512[512];
+typedef char string1024[1024];
+typedef char string2048[2048];
+typedef char string4096[4096];
+typedef char string_path[2 * _MAX_PATH];
+
 IC u32 xr_strlen(const char* S);
 
 // return pointer to ".ext"

@@ -16,7 +16,6 @@ template <class T> struct template_vector3
   public:
 	T x, y, z;
 
-	// access operators
 	ICF T& operator[](int i)
 	{
 		return *((T*)this + i);
@@ -187,7 +186,6 @@ template <class T> struct template_vector3
 	ICF SelfRef operator/=(const Self& v) { return div(v); }
 	ICF SelfRef operator/=(T s) { return div(s); }
 
-	// Унарный минус
 	IC Self operator-() const {
 		Self r;
 		r.invert(*this);
@@ -273,7 +271,6 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// Squeeze
 	IC SelfRef squeeze(T Epsilon)
 	{
 		if (_abs(x) < Epsilon)
@@ -285,7 +282,6 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// Clamp vector3
 	IC SelfRef clamp(const Self& min, const Self max)
 	{
 		::clamp(x, min.x, max.x);
@@ -379,7 +375,6 @@ template <class T> struct template_vector3
 		return std::sqrt(square_magnitude());
 	}
 
-	// Normalize
 	IC T normalize_magn(void)
 	{
 		T len = magnitude();
@@ -399,7 +394,6 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// Safe-Normalize
 	ICF SelfRef normalize_safe(void)
 	{
 		T magnitude = x * x + y * y + z * z;
@@ -413,7 +407,6 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// Normalize
 	ICF SelfRef normalize(const Self& v)
 	{
 		T mag = std::sqrt(1 / (v.x * v.x + v.y * v.y + v.z * v.z));
@@ -423,7 +416,6 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// Safe-Normalize
 	ICF SelfRef normalize_safe(const Self& v)
 	{
 		T magnitude = v.x * v.x + v.y * v.y + v.z * v.z;
@@ -438,7 +430,6 @@ template <class T> struct template_vector3
 	}
 	IC SelfRef random_dir(CRandom& R = ::Random)
 	{
-		// z	= R.randF(-1,1);
 		z = cos(R.randF(PI));
 		T a = R.randF(PI_MUL_2);
 		T r = std::sqrt(1 - z * z);
@@ -470,13 +461,11 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// DotProduct
 	ICF T dotproduct(const Self& v) const // v1*v2
 	{
 		return x * v.x + y * v.y + z * v.z;
 	}
 
-	// CrossProduct
 	ICF SelfRef crossproduct(const Self& v1, const Self& v2) // (v1,v2) -> this
 	{
 		x = v1.y * v2.z - v1.z * v2.y;
@@ -485,7 +474,6 @@ template <class T> struct template_vector3
 		return *this;
 	}
 
-	// Distance calculation
 	IC T distance_to_xz(const Self& v) const
 	{
 		return std::sqrt((x - v.x) * (x - v.x) + (z - v.z) * (z - v.z));
@@ -495,13 +483,11 @@ template <class T> struct template_vector3
 		return (x - v.x) * (x - v.x) + (z - v.z) * (z - v.z);
 	}
 
-	// Distance calculation
 	ICF T distance_to_sqr(const Self& v) const
 	{
 		return (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z);
 	}
 
-	// Distance calculation
 	ICF T distance_to(const Self& v) const
 	{
 		return std::sqrt(distance_to_sqr(v));
@@ -699,7 +685,7 @@ IC template_vector3<T> operator-(const template_vector3<T>& a, T s) {
 }
 template <class T>
 IC template_vector3<T> operator-(T s, const template_vector3<T>& a) {
-	template_vector3<T> r; r.sub(a, s); return r;   // эквивалентно: s - a = -(a - s)
+	template_vector3<T> r; r.sub(a, s); return r;
 }
 
 template <class T>
@@ -751,7 +737,6 @@ template <class T> BOOL _valid(const template_vector3<T>& v)
 	return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z);
 }
 
-//////////////////////////////////////////////////////////////////////////
 #pragma warning(push)
 #pragma warning(disable : 4244)
 ICF double rsqrt(double v)

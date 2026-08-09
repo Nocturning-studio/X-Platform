@@ -12,7 +12,6 @@ XRRHI_API std::string WinErrorToString(long code)
 	if (result == 0)
 		return "Unknown error";
 
-	// Удаляем завершающие пробелы/переводы строк
 	while (result > 0 && (buffer[result - 1] == '\n' || buffer[result - 1] == '\r' || buffer[result - 1] == ' '))
 	{
 		buffer[--result] = '\0';
@@ -24,7 +23,7 @@ XRRHI_API std::string WinErrorToString(long code)
 XRRHI_API void __cdecl Print(const char* format, ...)
 {
 	va_list mark;
-	string1024 buf;
+	char buf[1024];
 	va_start(mark, format);
 	int sz = _vsnprintf_s(buf, sizeof(buf), _TRUNCATE, format, mark);
 	buf[sizeof(buf) - 1] = 0;
