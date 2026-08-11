@@ -80,32 +80,32 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
-    <IntDir>$(SolutionDir)\Build\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Sources\Runtime\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(SolutionDir)\Sources\Runtime\xrEngine\;$(SolutionDir)\Sources\Runtime\xrCore\;$(SolutionDir)Sources\Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\;$(SolutionDir)\Build\Libraries\;$(LibraryPath)$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\;$(SolutionDir)\Temp\Libraries\;$(LibraryPath)$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
-    <IntDir>$(SolutionDir)\Build\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Sources\Runtime\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(SolutionDir)\Sources\Runtime\xrEngine\;$(SolutionDir)\Sources\Runtime\xrCore\;$(SolutionDir)Sources\Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\;$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\;$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|Win32'">
     <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
-    <IntDir>$(SolutionDir)\Build\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Sources\Runtime\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(SolutionDir)\Sources\Runtime\xrEngine\;$(SolutionDir)\Sources\Runtime\xrCore\;$(SolutionDir)Sources\Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\;$(LibraryPath)$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
-    <IntDir>$(SolutionDir)\Build\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Sources\Runtime\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(SolutionDir)\Sources\Runtime\xrEngine\;$(SolutionDir)\Sources\Runtime\xrCore\;$(SolutionDir)Sources\Third-party\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\;$(SolutionDir)\Build\Libraries\;$(LibraryPath)$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
+    <LibraryPath>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)Sources\Third-party\lib\$(PlatformShortName)\;$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\;$(SolutionDir)\Temp\Libraries\;$(LibraryPath)$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -143,7 +143,7 @@
       <MapExports>false</MapExports>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -191,7 +191,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
@@ -239,7 +239,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
@@ -278,7 +278,7 @@
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)\Build\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>NotSet</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
