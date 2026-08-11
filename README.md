@@ -15,6 +15,32 @@
 
 X-Platform это проект, нацеленный на переработку X-Ray Engine 1.0, с внедрением современных технологий.
 
+# Структура проекта
+```
+X-Platform/
+├── game_filesystem.ltx
+├── appdata/
+│   └── user_game_settings.ltx
+├── gamedata/
+└── Engine/
+    ├── Binaries/
+    │   └── ($PlatformShortName)/
+    │       └── xrEngine.exe
+    ├── Shaders/
+    └── Sources/
+        ├── Runtime/            ← основной код движка (xrCore, xrMath, xrEngine, xrRender и т.д.)
+        ├── Third-Party/        ← сторонние библиотеки (ODE, SoftX, PresenceAudio и т.п.)
+        └── QOL&Network/        ← утилиты и сетевые инструменты (Лог сендер, лаунчер)
+```
+
+# Немного фич проекта
+- C++17 и компиляция Visual Studio 2026
+- Объемный звук при помощи трассировки пути Presence Audio
+- Многопоточный Occlusion culling на базе SoftX
+- Интеграция профилировщика Optick
+- Полностью переписанный рендер с PBR, IBL, отражениями, симуляцией ветра и многим другим
+- Огромный рефакторинг кодовой базы
+
 # Сборка:
 - Установите Visual Studio 2026
 - Склонируйте репозиторий X-Platform
@@ -24,6 +50,11 @@ X-Platform это проект, нацеленный на переработку
 - Скачайте gamedata из репозитория проектов для данного движка (https://github.com/Nocturning-studio/X-Projects)
 - Положите ее в корневую папку с игрой
 - Выберите bin/xrEngine.exe и запустите
+
+# Минимальные системные требования
+- Процессор: Intel Core I5 2400
+- ОЗУ: 4GB
+- Видеокарта: GTX750Ti
 
 <img width="3500" height="1876" alt="Splash screen1" src="https://github.com/user-attachments/assets/f4f2b12e-a019-405c-bc74-4fd0d5eff0da" />
 <img width="1920" height="1080" alt="Opener" src="https://github.com/user-attachments/assets/b7422e36-c5ce-4792-bb49-75d8ca376bb7" />
