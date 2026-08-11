@@ -364,12 +364,15 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 		strcpy_s(base, sizeof(base), *path);
 		if (strext(base))
 			*strext(base) = 0;
+		strcat(base, "\\");
 	}
 	else
 	{
 		strcpy_s(base, sizeof(base), base_path);
+		size_t len = xr_strlen(base);
+		if (len > 0 && base[len - 1] != '\\')
+			strcat(base, "\\");
 	}
-	strcat(base, "\\");
 
 	// Read headers
 	IReader* hdr = open_chunk(A.hSrcFile, 1);
@@ -453,7 +456,7 @@ void CLocatorAPI::ProcessOne(const char* path, void* _F)
 	}
 }
 
-void CLocatorAPI::ScanArchivesInFolder(LPCSTR folder)
+void CLocatorAPI::ScanArchivesInFolder(LPCSTR folder, LPCSTR base_path)
 {
 	string_path search_path;
 	strconcat(sizeof(search_path), search_path, folder, "*.db*");
@@ -472,7 +475,7 @@ void CLocatorAPI::ScanArchivesInFolder(LPCSTR folder)
 		string_path full_name;
 		strconcat(sizeof(full_name), full_name, folder, find_data.name);
 		Msg("* Processing game archive: %s", full_name);
-		ProcessArchive(full_name, nullptr);
+		ProcessArchive(full_name, base_path);
 
 	} while (_findnext(hFile, &find_data) == 0);
 
@@ -481,13 +484,19 @@ void CLocatorAPI::ScanArchivesInFolder(LPCSTR folder)
 
 void CLocatorAPI::ProcessGameArchives()
 {
+	// Р‘Р°Р·РѕРІС‹Р№ РїСѓС‚СЊ, РєСѓРґР° Р±СѓРґСѓС‚ СЃРјРѕРЅС‚РёСЂРѕРІР°РЅС‹ С„Р°Р№Р»С‹ РёР· Р°СЂС…РёРІРѕРІ
+	string_path gamedata_base;
+	update_path(gamedata_base, "$fs_root$", "gamedata\\");
+
+	// 1. РђСЂС…РёРІС‹ РІ РєРѕСЂРЅРµ РїСЂРѕРµРєС‚Р° ($fs_root$)
 	string_path root_path;
 	update_path(root_path, "$fs_root$", "");
-	ScanArchivesInFolder(root_path);
+	ScanArchivesInFolder(root_path, gamedata_base);
 
+	// 2. РђСЂС…РёРІС‹ РІ РїРѕРґРїР°РїРєРµ archives
 	string_path arch_path;
 	update_path(arch_path, "$fs_root$", "archives\\");
-	ScanArchivesInFolder(arch_path);
+	ScanArchivesInFolder(arch_path, gamedata_base);
 }
 
 IC bool pred_str_ff(const _finddata_t& x, const _finddata_t& y)
@@ -542,7 +551,7 @@ bool CLocatorAPI::Recurse(const char* path)
 		strcpy_s(full_path, sizeof(full_path), path);
 		strcat(full_path, sFile.name);
 
-		// загоняем в вектор для того *.db* приходили в сортированном порядке
+		// Р·Р°РіРѕРЅСЏРµРј РІ РІРµРєС‚РѕСЂ РґР»СЏ С‚РѕРіРѕ *.db* РїСЂРёС…РѕРґРёР»Рё РІ СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРѕРј РїРѕСЂСЏРґРєРµ
 		if (!ignore_name(sFile.name) && !ignore_path(full_path))
 			rec_files.push_back(sFile);
 
@@ -556,7 +565,7 @@ bool CLocatorAPI::Recurse(const char* path)
 	}
 	else
 	{
-		// загоняем в вектор для того *.db* приходили в сортированном порядке
+		// Р·Р°РіРѕРЅСЏРµРј РІ РІРµРєС‚РѕСЂ РґР»СЏ С‚РѕРіРѕ *.db* РїСЂРёС…РѕРґРёР»Рё РІ СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРѕРј РїРѕСЂСЏРґРєРµ
 		if (!ignore_name(sFile.name))
 			rec_files.push_back(sFile);
 
@@ -586,7 +595,7 @@ bool CLocatorAPI::Recurse(const char* path)
 
 void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 {
-	char _delimiter = '|'; // разделитель полей в строках конфига
+	char _delimiter = '|'; // СЂР°Р·РґРµР»РёС‚РµР»СЊ РїРѕР»РµР№ РІ СЃС‚СЂРѕРєР°С… РєРѕРЅС„РёРіР°
 	if (m_Flags.is(flReady))
 		return;
 
@@ -594,34 +603,34 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 	m_Flags.set(flags, TRUE);
 
 	// ====================================================================
-	// Поиск корневого каталога проекта по расположению game_filesystem.ltx
+	// РџРѕРёСЃРє РєРѕСЂРЅРµРІРѕРіРѕ РєР°С‚Р°Р»РѕРіР° РїСЂРѕРµРєС‚Р° РїРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЋ game_filesystem.ltx
 	//
-	// Вместо того чтобы жёстко привязывать $fs_root$ к рабочему каталогу
-	// или каталогу с исполняемым файлом, движок теперь рекурсивно
-	// поднимается вверх (до 8 уровней) от каталога с бинарником и
-	// ищет game_filesystem.ltx. Первый найденный экземпляр считается
-	// корнем проекта. Это позволяет запускать движок из глубоко
-	// вложенных папок (например, Engine/Binaries/x86) и корректно
-	// определять пути ко всем игровым и движковым ресурсам.
+	// Р’РјРµСЃС‚Рѕ С‚РѕРіРѕ С‡С‚РѕР±С‹ Р¶С‘СЃС‚РєРѕ РїСЂРёРІСЏР·С‹РІР°С‚СЊ $fs_root$ Рє СЂР°Р±РѕС‡РµРјСѓ РєР°С‚Р°Р»РѕРіСѓ
+	// РёР»Рё РєР°С‚Р°Р»РѕРіСѓ СЃ РёСЃРїРѕР»РЅСЏРµРјС‹Рј С„Р°Р№Р»РѕРј, РґРІРёР¶РѕРє С‚РµРїРµСЂСЊ СЂРµРєСѓСЂСЃРёРІРЅРѕ
+	// РїРѕРґРЅРёРјР°РµС‚СЃСЏ РІРІРµСЂС… (РґРѕ 8 СѓСЂРѕРІРЅРµР№) РѕС‚ РєР°С‚Р°Р»РѕРіР° СЃ Р±РёРЅР°СЂРЅРёРєРѕРј Рё
+	// РёС‰РµС‚ game_filesystem.ltx. РџРµСЂРІС‹Р№ РЅР°Р№РґРµРЅРЅС‹Р№ СЌРєР·РµРјРїР»СЏСЂ СЃС‡РёС‚Р°РµС‚СЃСЏ
+	// РєРѕСЂРЅРµРј РїСЂРѕРµРєС‚Р°. Р­С‚Рѕ РїРѕР·РІРѕР»СЏРµС‚ Р·Р°РїСѓСЃРєР°С‚СЊ РґРІРёР¶РѕРє РёР· РіР»СѓР±РѕРєРѕ
+	// РІР»РѕР¶РµРЅРЅС‹С… РїР°РїРѕРє (РЅР°РїСЂРёРјРµСЂ, Engine/Binaries/x86) Рё РєРѕСЂСЂРµРєС‚РЅРѕ
+	// РѕРїСЂРµРґРµР»СЏС‚СЊ РїСѓС‚Рё РєРѕ РІСЃРµРј РёРіСЂРѕРІС‹Рј Рё РґРІРёР¶РєРѕРІС‹Рј СЂРµСЃСѓСЂСЃР°Рј.
 	// ====================================================================
 	string_path current_dir;
 	strcpy(current_dir, Core.ApplicationPath);
-	// Гарантируем наличие завершающего слеша для удобства конкатенации
+	// Р“Р°СЂР°РЅС‚РёСЂСѓРµРј РЅР°Р»РёС‡РёРµ Р·Р°РІРµСЂС€Р°СЋС‰РµРіРѕ СЃР»РµС€Р° РґР»СЏ СѓРґРѕР±СЃС‚РІР° РєРѕРЅРєР°С‚РµРЅР°С†РёРё
 	size_t len = xr_strlen(current_dir);
 	if (len > 0 && current_dir[len - 1] != '\\')
 		strcat(current_dir, "\\");
 
-	// Имя файла конфигурации может быть переопределено параметром fs_fname
+	// РРјСЏ С„Р°Р№Р»Р° РєРѕРЅС„РёРіСѓСЂР°С†РёРё РјРѕР¶РµС‚ Р±С‹С‚СЊ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРѕ РїР°СЂР°РјРµС‚СЂРѕРј fs_fname
 	const char* target_fname = (fs_fname && fs_fname[0]) ? fs_fname : FSLTX;
 	string_path full_fs_path = {0};
 	bool found = false;
 
 	Msg("* Searching for %s starting from %s", target_fname, current_dir);
 
-	// Цикл подъёма: проверяем до 8 родительских каталогов
+	// Р¦РёРєР» РїРѕРґСЉС‘РјР°: РїСЂРѕРІРµСЂСЏРµРј РґРѕ 8 СЂРѕРґРёС‚РµР»СЊСЃРєРёС… РєР°С‚Р°Р»РѕРіРѕРІ
 	for (int level = 0; level <= 8; ++level)
 	{
-		// Формируем полный путь к проверяемому файлу
+		// Р¤РѕСЂРјРёСЂСѓРµРј РїРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє РїСЂРѕРІРµСЂСЏРµРјРѕРјСѓ С„Р°Р№Р»Сѓ
 		strconcat(sizeof(full_fs_path), full_fs_path, current_dir, target_fname);
 		Msg("  [%d] Checking: %s", level, full_fs_path);
 
@@ -632,58 +641,58 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 			break;
 		}
 
-		// Останавливаемся, если достигли корня диска (например, C:\)
+		// РћСЃС‚Р°РЅР°РІР»РёРІР°РµРјСЃСЏ, РµСЃР»Рё РґРѕСЃС‚РёРіР»Рё РєРѕСЂРЅСЏ РґРёСЃРєР° (РЅР°РїСЂРёРјРµСЂ, C:\)
 		if (current_dir[0] && current_dir[1] == ':' && current_dir[2] == '\\' && current_dir[3] == 0)
 		{
 			Msg("  Reached drive root, stopping.");
 			break;
 		}
 
-		// Переходим на уровень выше.
-		// PathRemoveFileSpec корректно работает только с путями без
-		// завершающего слеша, поэтому сначала убираем его.
+		// РџРµСЂРµС…РѕРґРёРј РЅР° СѓСЂРѕРІРµРЅСЊ РІС‹С€Рµ.
+		// PathRemoveFileSpec РєРѕСЂСЂРµРєС‚РЅРѕ СЂР°Р±РѕС‚Р°РµС‚ С‚РѕР»СЊРєРѕ СЃ РїСѓС‚СЏРјРё Р±РµР·
+		// Р·Р°РІРµСЂС€Р°СЋС‰РµРіРѕ СЃР»РµС€Р°, РїРѕСЌС‚РѕРјСѓ СЃРЅР°С‡Р°Р»Р° СѓР±РёСЂР°РµРј РµРіРѕ.
 		len = xr_strlen(current_dir);
 		if (len > 0 && current_dir[len - 1] == '\\')
 			current_dir[len - 1] = 0;
 
-		if (!PathRemoveFileSpec(current_dir)) // FALSE если уже корень диска
+		if (!PathRemoveFileSpec(current_dir)) // FALSE РµСЃР»Рё СѓР¶Рµ РєРѕСЂРµРЅСЊ РґРёСЃРєР°
 		{
 			Msg("  Cannot go higher, stopping.");
 			break;
 		}
 
-		// Восстанавливаем завершающий слеш для единообразия
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р·Р°РІРµСЂС€Р°СЋС‰РёР№ СЃР»РµС€ РґР»СЏ РµРґРёРЅРѕРѕР±СЂР°Р·РёСЏ
 		len = xr_strlen(current_dir);
 		if (len > 0 && current_dir[len - 1] != '\\')
 			strcat(current_dir, "\\");
 	}
 
-	// Если файл не найден за 8 подъёмов — аварийное завершение
+	// Р•СЃР»Рё С„Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ Р·Р° 8 РїРѕРґСЉС‘РјРѕРІ вЂ” Р°РІР°СЂРёР№РЅРѕРµ Р·Р°РІРµСЂС€РµРЅРёРµ
 	R_ASSERT3(found, "Cannot find game_filesystem.ltx after scanning up to 8 directories above executable.", Core.ApplicationPath);
 
-	// Регистрируем найденный корень как $fs_root$
+	// Р РµРіРёСЃС‚СЂРёСЂСѓРµРј РЅР°Р№РґРµРЅРЅС‹Р№ РєРѕСЂРµРЅСЊ РєР°Рє $fs_root$
 	append_path("$fs_root$", current_dir, "", FALSE);
 
 	ProcessGameArchives();
 
 	// ====================================================================
-	// Дополнительные пути, не зависящие от конфигурации
+	// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїСѓС‚Рё, РЅРµ Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёРё
 	// ====================================================================
 
-	// Путь к папке с исполняемым файлом
+	// РџСѓС‚СЊ Рє РїР°РїРєРµ СЃ РёСЃРїРѕР»РЅСЏРµРјС‹Рј С„Р°Р№Р»РѕРј
 	if (m_Flags.is(flScanAppRoot))
 	{
 		append_path("$app_root$", Core.ApplicationPath, 0, FALSE);
 	}
 
-	// Режим «только целевая папка» (обычно используется редактором)
+	// Р РµР¶РёРј В«С‚РѕР»СЊРєРѕ С†РµР»РµРІР°СЏ РїР°РїРєР°В» (РѕР±С‹С‡РЅРѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЂРµРґР°РєС‚РѕСЂРѕРј)
 	if (m_Flags.is(flTargetFolderOnly))
 	{
 		append_path("$target_folder$", target_folder, 0, TRUE);
 	}
 	else
 	{
-		// Читаем и разбираем game_filesystem.ltx
+		// Р§РёС‚Р°РµРј Рё СЂР°Р·Р±РёСЂР°РµРј game_filesystem.ltx
 		IReader* F = r_open(0, full_fs_path);
 		R_ASSERT3(F, "Can't open file:", full_fs_path);
 
@@ -697,7 +706,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 			F->r_string(buf, sizeof(buf));
 			_GetItem(buf, 0, id, '=');
 			if (id[0] == ';')
-				continue; // игнорируем комментарии
+				continue; // РёРіРЅРѕСЂРёСЂСѓРµРј РєРѕРјРјРµРЅС‚Р°СЂРёРё
 
 			_GetItem(buf, 1, temp, '=');
 			int cnt = _GetItemCount(temp, _delimiter);
@@ -717,7 +726,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 			_GetItem(temp, 5, capt, _delimiter);
 
 			xr_strlwr(id);
-			// Пропускаем алиас $build_copy$, если не в режиме копирования сборки
+			// РџСЂРѕРїСѓСЃРєР°РµРј Р°Р»РёР°СЃ $build_copy$, РµСЃР»Рё РЅРµ РІ СЂРµР¶РёРјРµ РєРѕРїРёСЂРѕРІР°РЅРёСЏ СЃР±РѕСЂРєРё
 			if (!m_Flags.is(flBuildCopy) && (0 == xr_strcmp(id, "$build_copy$")))
 				continue;
 
@@ -726,26 +735,26 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 			lp_def = (cnt >= 5) ? def : 0;
 			lp_capt = (cnt >= 6) ? capt : 0;
 
-			// Получаем физический путь родительского алиаса (если он уже зарегистрирован)
+			// РџРѕР»СѓС‡Р°РµРј С„РёР·РёС‡РµСЃРєРёР№ РїСѓС‚СЊ СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ Р°Р»РёР°СЃР° (РµСЃР»Рё РѕРЅ СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ)
 			LPCSTR full_root = root;
 			PathPairIt p_it = pathes.find(root);
 			if (p_it != pathes.end())
 				full_root = p_it->second->m_Path;
 
-			// Добавляем алиас с немедленным сканированием папки
-			// append_path сама создаст FS_Path и вставит в pathes
+			// Р”РѕР±Р°РІР»СЏРµРј Р°Р»РёР°СЃ СЃ РЅРµРјРµРґР»РµРЅРЅС‹Рј СЃРєР°РЅРёСЂРѕРІР°РЅРёРµРј РїР°РїРєРё
+			// append_path СЃР°РјР° СЃРѕР·РґР°СЃС‚ FS_Path Рё РІСЃС‚Р°РІРёС‚ РІ pathes
 			append_path(id, full_root, lp_add, (fl & FS_Path::flRecurse) ? TRUE : FALSE);
 		}
 		r_close(F);
 	}
 
 	// ====================================================================
-	// Алиасы для движковых ресурсов, не зависящие от игрового контента
+	// РђР»РёР°СЃС‹ РґР»СЏ РґРІРёР¶РєРѕРІС‹С… СЂРµСЃСѓСЂСЃРѕРІ, РЅРµ Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚ РёРіСЂРѕРІРѕРіРѕ РєРѕРЅС‚РµРЅС‚Р°
 	//
-	// Эти пути вычисляются относительно $fs_root$, то есть от корня
-	// проекта, найденного по game_filesystem.ltx. Таким образом,
-	// движковые шейдеры, утилиты и другие ресурсы могут находиться
-	// в подпапке Engine/ и не зависеть от структуры gamedata.
+	// Р­С‚Рё РїСѓС‚Рё РІС‹С‡РёСЃР»СЏСЋС‚СЃСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ $fs_root$, С‚Рѕ РµСЃС‚СЊ РѕС‚ РєРѕСЂРЅСЏ
+	// РїСЂРѕРµРєС‚Р°, РЅР°Р№РґРµРЅРЅРѕРіРѕ РїРѕ game_filesystem.ltx. РўР°РєРёРј РѕР±СЂР°Р·РѕРј,
+	// РґРІРёР¶РєРѕРІС‹Рµ С€РµР№РґРµСЂС‹, СѓС‚РёР»РёС‚С‹ Рё РґСЂСѓРіРёРµ СЂРµСЃСѓСЂСЃС‹ РјРѕРіСѓС‚ РЅР°С…РѕРґРёС‚СЊСЃСЏ
+	// РІ РїРѕРґРїР°РїРєРµ Engine/ Рё РЅРµ Р·Р°РІРёСЃРµС‚СЊ РѕС‚ СЃС‚СЂСѓРєС‚СѓСЂС‹ gamedata.
 	// ====================================================================
 	string_path engine_dir;
 	update_path(engine_dir, "$fs_root$", "Engine\\");
@@ -831,7 +840,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
 {
 	R_ASSERT(_path);
 	VERIFY(flags);
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes();
 
 	string_path N;
@@ -901,7 +910,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
 {
 	R_ASSERT(path);
 	VERIFY(flags);
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes();
 
 	string_path N;
@@ -1217,7 +1226,7 @@ template <typename T> void CLocatorAPI::copy_file_to_build(T*& r, LPCSTR source_
 
 bool CLocatorAPI::check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname, const file*& desc)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes();
 
 	// correct path
@@ -1343,7 +1352,7 @@ void CLocatorAPI::w_close(IWriter*& S)
 
 CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes();
 
 	file desc_f;
@@ -1386,7 +1395,7 @@ BOOL CLocatorAPI::dir_delete(LPCSTR path, LPCSTR nm, BOOL remove_files)
 				//		        const char* entry_begin = entry.name+base_len;
 				if (!remove_files)
 					return FALSE;
-				_unlink(entry.name); // Замена unlink на _unlink
+				_unlink(entry.name); // Р—Р°РјРµРЅР° unlink РЅР° _unlink
 				files.erase(cur_item);
 			}
 			else
@@ -1421,7 +1430,7 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
 	if (I != files.end())
 	{
 		// remove file
-		_unlink(I->name); // Замена unlink на _unlink
+		_unlink(I->name); // Р—Р°РјРµРЅР° unlink РЅР° _unlink
 		char* str = LPSTR(I->name);
 		xr_free(str);
 		files.erase(I);
@@ -1456,7 +1465,7 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
 		{
 			if (!bOwerwrite)
 				return;
-			_unlink(D->name); // Замена unlink на _unlink
+			_unlink(D->name); // Р—Р°РјРµРЅР° unlink РЅР° _unlink
 			char* str = LPSTR(D->name);
 			xr_free(str);
 			files.erase(D);
@@ -1514,7 +1523,7 @@ LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src)
 
 u32 CLocatorAPI::get_file_age(LPCSTR nm)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes();
 
 	files_it I = file_find_it(nm);
@@ -1523,7 +1532,7 @@ u32 CLocatorAPI::get_file_age(LPCSTR nm)
 
 void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes();
 
 	// set file
@@ -1633,7 +1642,7 @@ BOOL CLocatorAPI::can_write_to_folder(LPCSTR path)
 		else
 		{
 			fclose(hf);
-			_unlink(temp); // Замена unlink на _unlink
+			_unlink(temp); // Р—Р°РјРµРЅР° unlink РЅР° _unlink
 			return TRUE;
 		}
 	}
