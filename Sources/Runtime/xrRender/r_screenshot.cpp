@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\xrEngine\xr_effgamma.h"
 #include "tga.h"
 #include "..\xrEngine\xrImage_Resampler.h"
 #include "..\xrEngine\XR_IOConsole.h"

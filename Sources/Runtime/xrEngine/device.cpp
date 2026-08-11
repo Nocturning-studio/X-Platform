@@ -58,8 +58,6 @@ void CRenderDevice::End(void)
         dwPrecacheFrame--;
         if (0 == dwPrecacheFrame)
         {
-            Gamma.Update();
-
             if (precache_light)
                 precache_light->set_active(false);
             if (precache_light)
@@ -259,7 +257,6 @@ void CRenderDevice::_Create(LPCSTR shName)
     _SetupStates();
 
     RenderBackend.OnDeviceCreate();
-    Gamma.Update();
     Engine.ResourceManager->OnDeviceCreate(shName);
     ::Render->create();
     Engine.Statistic->OnDeviceCreate();

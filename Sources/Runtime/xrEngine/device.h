@@ -11,7 +11,6 @@ class ENGINE_API CGammaControl;
 #include "pure.h"
 #include "ftimer.h"
 #include "stats.h"
-#include "xr_effgamma.h"
 #include "shader.h"
 #include "R_Backend.h"
 #include <mutex>
@@ -74,9 +73,6 @@ class ENGINE_API CRenderDevice
 	void SetNearer(BOOL enabled);
 
   public:
-	// Dependent classes
-	CGammaControl Gamma;
-
 	CRenderDevice()
 #ifdef PROFILE_CRITICAL_SECTIONS
 		: mt_csEnter(MUTEX_PROFILE_ID(CRenderDevice::mt_csEnter)),

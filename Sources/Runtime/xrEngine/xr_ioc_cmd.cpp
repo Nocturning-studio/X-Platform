@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "igame_level.h"
 
-#include "xr_effgamma.h"
 #include "Engine.h"
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
@@ -615,25 +614,6 @@ class CCC_SND_Restart : public IConsole_Command
 };
 
 //-----------------------------------------------------------------------
-float ps_gamma = 1.f, ps_brightness = 1.f, ps_contrast = 1.f;
-class CCC_Gamma : public CCC_Float
-{
-  public:
-	CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f)
-	{
-	}
-
-	virtual void Execute(LPCSTR args)
-	{
-		CCC_Float::Execute(args);
-		Device.Gamma.Gamma(ps_gamma);
-		Device.Gamma.Brightness(ps_brightness);
-		Device.Gamma.Contrast(ps_contrast);
-		Device.Gamma.Update();
-	}
-};
-
-//-----------------------------------------------------------------------
 
 extern INT g_bDR_LM_UsePointsBBox;
 extern INT g_bDR_LM_4Steps;
@@ -807,9 +787,6 @@ void CCC_Register()
 	CMD4(CCC_Integer, "rs_skeleton_update", &psSkeletonUpdate, 2, 128);
 #endif // DEBUG
 
-	CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-	CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-	CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
 	//	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
 	//	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
 
