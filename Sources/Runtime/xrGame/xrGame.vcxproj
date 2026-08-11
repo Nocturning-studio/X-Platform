@@ -14869,6 +14869,9 @@
     <ProjectReference Include="..\..\Third-party\include\PresenceAudioSDK\Source\PresenceAudioSDK.vcxproj">
       <Project>{3069dde2-b851-484d-94bb-bc53146c8eee}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\xrGameSpy\xrGameSpy.vcxproj">
+      <Project>{5535f6b4-7ae6-4b66-8aea-cc31c14d7ab7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
