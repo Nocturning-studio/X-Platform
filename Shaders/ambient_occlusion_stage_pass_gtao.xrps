@@ -8,7 +8,7 @@
 #define GTAO_RADIUS       1.5f      
 #define GTAO_SLICES       3         
 #define GTAO_SAMPLES      3         
-#define GTAO_INTENSITY    2.2f      
+#define GTAO_INTENSITY    2.0f      
 
 #define GTAO_BIAS         0.02f     
 #define HORIZON_BIAS      0.03f     

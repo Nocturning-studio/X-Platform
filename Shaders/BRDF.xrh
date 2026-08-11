@@ -290,9 +290,8 @@ float3 CalcSpecular(float3 Normal, float3 ViewDirection, float3 LightDirection, 
     return (D * V) * F;
 }
 
-float3 EnergyCompensation(float3 F0, float NdotV, float Roughness)
+float3 EnergyCompensation(float3 F0, float NdotV, float a)
 {
-    float a = Roughness * Roughness;
     float a2 = a * a;
     float E = (1.0 - a2) / (1.0 + 0.5 * a2);
     float3 Favg = F0 + (1.0 - F0) / 21.0;
@@ -334,7 +333,8 @@ float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 L
     if (NdotL <= 0.0)
         return 0.0;
 
-    float Roughness = clamp(GBuffer.Roughness, 0.045f, 1.0f);
+    float perceptualRoughness = clamp(GBuffer.Roughness, 0.045f, 1.0f);
+    float linearRoughness = perceptualRoughness * perceptualRoughness;
     float3 F0 = CalculateF0(GBuffer.Albedo, GBuffer.Metallic, GBuffer.SpecularTint);
     float3 Albedo = GBuffer.Albedo;
     
@@ -375,12 +375,12 @@ float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 L
 #endif
     
     float3 F_Base;
-    float3 specularRad = CalcSpecular(Normal, ViewDirection, LightDir, Roughness, F0, F_Base);
+    float3 specularRad = CalcSpecular(Normal, ViewDirection, LightDir, linearRoughness, F0, F_Base);
     
-    float3 energyComp = EnergyCompensation(F0, NdotV, Roughness);
+    float3 energyComp = EnergyCompensation(F0, NdotV, linearRoughness);
     specularRad *= energyComp;
 
-    float3 diffuseRad = EnergyConservingDiffuse(Albedo, F0, GBuffer.Metallic, Roughness, NdotL, NdotV, LdotH, LdotV);
+    float3 diffuseRad = EnergyConservingDiffuse(Albedo, F0, GBuffer.Metallic, linearRoughness, NdotL, NdotV, LdotH, LdotV);
     
     float3 baseLayer = (diffuseRad + specularRad) * coatAttenuation * sheenAttenuation;
     float3 DirectLighting = baseLayer + sheenRad * coatAttenuation + clearCoatRad;
@@ -390,7 +390,7 @@ float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 L
     if (GBuffer.SubSurfacePower > 0.0)
     {
         float3 SubsurfaceColor = Albedo * GBuffer.SubSurfacePower;
-        float3 sssRad = CalcSubsurfaceScattering(SubsurfaceColor, GBuffer.SubSurfacePower, Roughness, NdotV, LdotV, NdotL);
+        float3 sssRad = CalcSubsurfaceScattering(SubsurfaceColor, GBuffer.SubSurfacePower, linearRoughness, NdotV, LdotV, NdotL);
         FinalColor += sssRad * LightColor * Shadow * coatAttenuation;
     }
 #endif
