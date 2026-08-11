@@ -985,8 +985,6 @@
     <ClInclude Include="Light_DB.h" />
     <ClInclude Include="Light_Package.h" />
     <ClInclude Include="ModelPool.h" />
-    <ClInclude Include="NvTriStrip.h" />
-    <ClInclude Include="NvTriStripObjects.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="ParticleEffectDef.h" />
     <ClInclude Include="ParticleGroup.h" />
@@ -1006,10 +1004,8 @@
     <ClInclude Include="SoftXOcclusionCore.h" />
     <ClInclude Include="SoftXOcclusionMapBuilder.h" />
     <ClInclude Include="SunOccluder.h" />
-    <ClInclude Include="VertexCache.h" />
     <ClInclude Include="WallmarksEngine.h" />
     <ClInclude Include="xrRender_console.h" />
-    <ClInclude Include="xrStripify.h" />
     <ClInclude Include="Blender_antialiasing.h" />
     <ClInclude Include="Blender_ambient_occlusion.h" />
     <ClInclude Include="blender_bloom.h" />
@@ -1104,8 +1100,6 @@
     <ClCompile Include="Light_DB.cpp" />
     <ClCompile Include="Light_Package.cpp" />
     <ClCompile Include="ModelPool.cpp" />
-    <ClCompile Include="NvTriStrip.cpp" />
-    <ClCompile Include="NvTriStripObjects.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
     <ClCompile Include="ParticleEffectDef.cpp" />
     <ClCompile Include="ParticleGroup.cpp" />
@@ -1133,10 +1127,8 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tga.cpp" />
     <ClCompile Include="shader_configurator.cpp" />
-    <ClCompile Include="VertexCache.cpp" />
     <ClCompile Include="WallmarksEngine.cpp" />
     <ClCompile Include="xrRender_console.cpp" />
-    <ClCompile Include="xrStripify.cpp" />
     <ClCompile Include="ColorMapManager.cpp" />
     <ClCompile Include="Light_Render_Direct.cpp" />
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />

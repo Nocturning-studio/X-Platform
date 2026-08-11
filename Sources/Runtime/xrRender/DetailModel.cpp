@@ -8,8 +8,6 @@ CDetail::~CDetail()
 
 void CDetail::Unload()
 {
-	////OPTICK_EVENT("CDetail::Unload");
-
 	if (vertices)
 	{
 		xr_free(vertices);
@@ -25,8 +23,6 @@ void CDetail::Unload()
 
 void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
 {
-	////OPTICK_EVENT("CDetail::transfer");
-
 	// Transfer vertices
 	{
 		CDetail::fvfVertexIn *srcIt = vertices, *srcEnd = vertices + number_vertices;
@@ -57,8 +53,6 @@ void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 
 void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
 {
-	////OPTICK_EVENT("CDetail::transfer");
-
 	// Transfer vertices
 	{
 		CDetail::fvfVertexIn *srcIt = vertices, *srcEnd = vertices + number_vertices;
@@ -89,8 +83,6 @@ void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 
 void CDetail::Load(IReader* S)
 {
-	////OPTICK_EVENT("CDetail::Load");
-
 	// Shader
 	string256 fnT, fnS;
 	S->r_stringZ(fnS, sizeof(fnS));
@@ -126,40 +118,4 @@ void CDetail::Load(IReader* S)
 	for (u32 i = 0; i < number_vertices; i++)
 		bv_bb.modify(vertices[i].P);
 	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
-
-#ifndef _EDITOR
-	Optimize();
-#endif
 }
-
-#ifndef _EDITOR
-#include "xrstripify.h"
-
-void CDetail::Optimize()
-{
-	////OPTICK_EVENT("CDetail::Optimize");
-
-	xr_vector<u16> vec_indices, vec_permute;
-	const int cache = RHI()->GetDeviceCaps().VertexCacheSize;
-
-	// Stripify
-	vec_indices.assign(indices, indices + number_indices);
-	vec_permute.resize(number_vertices);
-	int vt_old = xrSimulate(vec_indices, cache);
-	xrStripify(vec_indices, vec_permute, cache, 0);
-	int vt_new = xrSimulate(vec_indices, cache);
-	if (vt_new < vt_old)
-	{
-		// Msg					("* DM: %d verts, %d indices, VT: %d/%d",number_vertices,number_indices,vt_old,vt_new);
-
-		// Copy faces
-		CopyMemory(indices, &*vec_indices.begin(), vec_indices.size() * sizeof(u16));
-
-		// Permute vertices
-		xr_vector<fvfVertexIn> verts;
-		verts.assign(vertices, vertices + number_vertices);
-		for (u32 i = 0; i < verts.size(); i++)
-			vertices[i] = verts[vec_permute[i]];
-	}
-}
-#endif

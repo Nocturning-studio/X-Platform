@@ -154,9 +154,6 @@
     <Filter Include="Core\Occlusion culling\Portal traverse system">
       <UniqueIdentifier>{113a2b8e-7672-4fdf-89aa-c2bdb9a003dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Stripifier">
-      <UniqueIdentifier>{90ddcd80-88df-482f-9b11-217190755c23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Scene Graph">
       <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
     </Filter>
@@ -185,18 +182,6 @@
     </ClInclude>
     <ClInclude Include="DetailModel.h">
       <Filter>Core\Details</Filter>
-    </ClInclude>
-    <ClInclude Include="NvTriStrip.h">
-      <Filter>Core\Stripifier</Filter>
-    </ClInclude>
-    <ClInclude Include="NvTriStripObjects.h">
-      <Filter>Core\Stripifier</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexCache.h">
-      <Filter>Core\Stripifier</Filter>
-    </ClInclude>
-    <ClInclude Include="xrStripify.h">
-      <Filter>Core\Stripifier</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
       <Filter>Core\Lights</Filter>
@@ -445,18 +430,6 @@
     </ClCompile>
     <ClCompile Include="DetailModel.cpp">
       <Filter>Core\Details</Filter>
-    </ClCompile>
-    <ClCompile Include="NvTriStrip.cpp">
-      <Filter>Core\Stripifier</Filter>
-    </ClCompile>
-    <ClCompile Include="NvTriStripObjects.cpp">
-      <Filter>Core\Stripifier</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexCache.cpp">
-      <Filter>Core\Stripifier</Filter>
-    </ClCompile>
-    <ClCompile Include="xrStripify.cpp">
-      <Filter>Core\Stripifier</Filter>
     </ClCompile>
     <ClCompile Include="light.cpp">
       <Filter>Core\Lights</Filter>

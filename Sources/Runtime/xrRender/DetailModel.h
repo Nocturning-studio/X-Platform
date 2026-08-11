@@ -6,7 +6,6 @@ class CDetail : public IRender_DetailModel
 {
   public:
 	void Load(IReader* S);
-	void Optimize();
 	virtual void Unload();
 
 	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset);
