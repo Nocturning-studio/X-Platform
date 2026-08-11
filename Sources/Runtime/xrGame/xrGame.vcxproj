@@ -178,13 +178,7 @@
       <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrEngine.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-</Command>
+      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -238,13 +232,7 @@ copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)Open
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-</Command>
+      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -307,13 +295,7 @@ copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)Open
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-</Command>
+      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|Win32'">
@@ -378,13 +360,7 @@ copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)Open
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\D3DCompiler_43.dll" "$(OutDir)D3DCompiler_43.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\eax.dll" "$(OutDir)eax.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\wrap_oal.dll" "$(OutDir)wrap_oal.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\Imgui.dll" "$(OutDir)Imgui.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\ode.dll" "$(OutDir)ode.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-</Command>
+      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
