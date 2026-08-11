@@ -330,6 +330,8 @@ IReader* open_chunk(void* ptr, u32 ID)
 
 void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 {
+	Msg("* Trying to process archive: %s", _path);
+
 	// find existing archive
 	shared_str path = _path;
 
@@ -349,7 +351,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 	A.path = path;
 	// Open the file
 	A.hSrcFile = CreateFile(*path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
-	R_ASSERT(A.hSrcFile != INVALID_HANDLE_VALUE);
+	R_ASSERT2(A.hSrcFile != INVALID_HANDLE_VALUE && A.hSrcFile != NULL, make_string("Cannot open archive: %s", *path));
 	A.hSrcMap = CreateFileMapping(A.hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT(A.hSrcMap != INVALID_HANDLE_VALUE);
 	A.size = GetFileSize(A.hSrcFile, 0);
@@ -438,17 +440,54 @@ void CLocatorAPI::ProcessOne(const char* path, void* _F)
 			return;
 		if (0 == xr_strcmp(F.name, ".."))
 			return;
-		strcat(N, "\\");
+		strcat_s(N, sizeof(N), "\\");
 		Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
 		Recurse(N);
 	}
 	else
 	{
 		if (strext(N) && 0 == strncmp(strext(N), ".db", 3))
-			ProcessArchive(N);
-		else
-			Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
+			return;
+
+		Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
 	}
+}
+
+void CLocatorAPI::ScanArchivesInFolder(LPCSTR folder)
+{
+	string_path search_path;
+	strconcat(sizeof(search_path), search_path, folder, "*.db*");
+
+	_finddata_t find_data;
+	intptr_t hFile = _findfirst(search_path, &find_data);
+
+	if (hFile == -1)
+		return;
+
+	do
+	{
+		if (find_data.attrib & _A_SUBDIR)
+			continue;
+
+		string_path full_name;
+		strconcat(sizeof(full_name), full_name, folder, find_data.name);
+		Msg("* Processing game archive: %s", full_name);
+		ProcessArchive(full_name, nullptr);
+
+	} while (_findnext(hFile, &find_data) == 0);
+
+	_findclose(hFile);
+}
+
+void CLocatorAPI::ProcessGameArchives()
+{
+	string_path root_path;
+	update_path(root_path, "$fs_root$", "");
+	ScanArchivesInFolder(root_path);
+
+	string_path arch_path;
+	update_path(arch_path, "$fs_root$", "archives\\");
+	ScanArchivesInFolder(arch_path);
 }
 
 IC bool pred_str_ff(const _finddata_t& x, const _finddata_t& y)
@@ -534,7 +573,7 @@ bool CLocatorAPI::Recurse(const char* path)
 
 	rec_files.clear_not_free();
 
-	concurrency::parallel_sort(buffer.begin(), buffer.end(), pred_str_ff);
+	std::sort(buffer.begin(), buffer.end(), pred_str_ff);
 	for (FFIt I = buffer.begin(), E = buffer.end(); I != E; ++I)
 		ProcessOne(path, &*I);
 
@@ -623,15 +662,15 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 	R_ASSERT3(found, "Cannot find game_filesystem.ltx after scanning up to 8 directories above executable.", Core.ApplicationPath);
 
 	// Регистрируем найденный корень как $fs_root$
-	// (заменяет старое поведение, когда корень был пустым или относительным)
 	append_path("$fs_root$", current_dir, "", FALSE);
+
+	ProcessGameArchives();
 
 	// ====================================================================
 	// Дополнительные пути, не зависящие от конфигурации
 	// ====================================================================
 
-	// Путь к папке с исполняемым файлом (используется редко, оставлен
-	// для обратной совместимости)
+	// Путь к папке с исполняемым файлом
 	if (m_Flags.is(flScanAppRoot))
 	{
 		append_path("$app_root$", Core.ApplicationPath, 0, FALSE);
@@ -715,20 +754,13 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 
 	{
 		string_path gamedata_path;
-		FS.update_path(gamedata_path, "$game_data$", ""); // получаем путь типа "D:\...\Gamedata\"
+		FS.update_path(gamedata_path, "$game_data$", "");
 		size_t len = xr_strlen(gamedata_path);
 		if (len > 0 && gamedata_path[len - 1] == '\\')
 			gamedata_path[len - 1] = 0;
 
-		if (::GetFileAttributes(gamedata_path) == INVALID_FILE_ATTRIBUTES)
-		{
-			Msg("! Gamedata folder not found: %s", gamedata_path);
-			R_ASSERT(false);
-		}
-		else
-		{
+		if (::GetFileAttributes(gamedata_path) != INVALID_FILE_ATTRIBUTES)
 			Msg("* Gamedata folder found: %s", gamedata_path);
-		}
 	}
 
 	m_Flags.set(flReady, TRUE);

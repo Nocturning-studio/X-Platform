@@ -68,7 +68,8 @@ class XRCORE_API CLocatorAPI
 	void ProcessArchive(LPCSTR path, LPCSTR base_path = NULL);
 	void ProcessOne(LPCSTR path, void* F);
 	bool Recurse(LPCSTR path);
-	//	bool						CheckExistance	(LPCSTR path);
+	void ProcessGameArchives();
+	void ScanArchivesInFolder(LPCSTR folder);
 
 	files_it file_find_it(LPCSTR n);
 
