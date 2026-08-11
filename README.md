@@ -19,9 +19,10 @@ X-Platform это проект, нацеленный на переработку
 ```
 X-Platform/
 ├── game_filesystem.ltx
-├── appdata/
+├── Appdata/
 │   └── user_game_settings.ltx
-├── gamedata/
+├── Archives/                 ← Папка с .db* архивами игры
+├── Gamedata/                 ← Папка с незапакованными ресурсами вашего мода
 └── Engine/
     ├── Scripts/              ← Скприты для сборки (Билд эвенты)
     ├── Config/               ← Конфиги движка (Не игры)
@@ -52,6 +53,7 @@ X-Platform/
 # Запуск:
 - Скачайте gamedata из репозитория проектов для данного движка (https://github.com/Nocturning-studio/X-Projects)
 - Положите содержимое репозитория выше в папку gamedata и положите ее в корневую папку с игрой
+- Создайте папку Archives в той же папке где и Gamеdata и положите в нее .db* архивы игры
 - Перейдите в Engine/Binaries/($PlatformShortName)/xrEngine.exe и запустите (Игра сама найдет корневую директорию игры по файлу game_filesystem.ltx)
 
 # Минимальные системные требования
