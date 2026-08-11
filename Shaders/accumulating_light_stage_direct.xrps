@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 20.11.2023
+// Author: NSDeathMan
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "BRDF.xrh"
+#include "BranchingShadows.xrh"
+#include "screen_space_shadows.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+// Constants
+uniform float sun_far;
+uniform float2 m_bias;
+uniform float sun_normal_bias;
+uniform float sun_directional_bias;
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float4 TexCoords : TEXCOORD0;
+};
+///////////////////////////////////////////////////////////////////////////////////
+float4 main(Interpolators Input) : COLOR0
+{
+    GBuffer GBuffer = UnpackGBuffer(Input.TexCoords.xy / Input.TexCoords.w);
+
+    float4 Position = float4(GBuffer.Position, 1.0f);
+
+    Position.xyz += GBuffer.Normal * m_bias.x;
+    Position.xyz += Ldynamic_dir.xyz * m_bias.y;
+
+    float4 ShadowMapTexCoords = mul(m_shadow, Position);
+    
+    // Используем branching shadows вместо традиционного PCF
+    float ShadowMap = GetBranchingShadowCoverage(ShadowMapTexCoords, Input.TexCoords.xy / Input.TexCoords.w);
+    
+    // Fading with distance
+#ifdef USE_SMOOTH_FADING
+    float ShadowMapFadingFactor = smoothstep(sun_far * 0.85f, sun_far, length(GBuffer.Position));
+    ShadowMap = lerp(ShadowMap, 1.0f, ShadowMapFadingFactor);
+#endif    
+
+    // Weapon shadowing
+    float NdotL = abs(dot(normalize(GBuffer.Normal), Ldynamic_dir.rgb));
+    if ((NdotL * ShadowMap > 0.1f) && (GBuffer.MaterialID == HUD_MATERIAL))
+        ShadowMap *= TraceShadow(Ldynamic_dir.xyz, GBuffer.Position.xyz);
+    
+    float4 FinalColor = 0.0f;
+
+    FinalColor.rgb = Calculate_Lighting_Model(GBuffer, Ldynamic_dir.xyz, Ldynamic_color.rgb, ShadowMap);
+    FinalColor.a = ShadowMap;
+
+    return FinalColor;
+}
+///////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,24 @@
+function normal    (shader, t_base, t_second, t_detail)
+  shader:begin  ("model_distort","particle")    -- particle_alphaonly
+      : sorting  (3, false)
+      : blend    (true,blend.srcalpha,blend.invsrcalpha)
+      : zb     (true,false)
+      : fog    (false)
+      : distort   (true)
+  shader:sampler  ("s_base")      :texture  (t_base)
+  shader:sampler("s_gbuffer_1") :texture("$user$gbuffer_1") : f_none()
+  shader:sampler("s_gbuffer_2") :texture("$user$gbuffer_2") : f_none()
+  shader:sampler("s_gbuffer_3") :texture("$user$gbuffer_3") : f_none()
+  shader:sampler("s_gbuffer_4") :texture("$user$gbuffer_4") : f_none()
+end
+
+function l_special  (shader, t_base, t_second, t_detail)
+  shader:begin  ("model_distort","particle_distort")
+      : sorting  (3, false)
+      : blend    (true,blend.srccolor,blend.invsrcalpha)
+      : zb     (true,false)
+      : fog    (false)
+      : distort   (true)
+  shader:sampler  ("s_base")      :texture  (t_base)
+  shader:sampler  ("s_distort")   :texture  (t_base)  -- "pfx\\pfx_distortion"
+end

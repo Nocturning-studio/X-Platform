@@ -1,0 +1,35 @@
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+struct v2p
+{
+ float2 tc0: TEXCOORD0; // base
+    float3 position: TEXCOORD1;
+  float3 c0: COLOR0; // sun
+};
+
+struct PixelShaderOutputStruct
+{
+	float4 Generic_0: COLOR0;
+	float4 Position: COLOR1;
+};
+//////////////////////////////////////////////////////////////////////////////////////////
+PixelShaderOutputStruct main(v2p I)
+{
+	float4 t_base = tex2D(s_base, I.tc0);
+    t_base.rgb = sRgbToLinear(t_base.rgb);
+    t_base.a = sRgbToLinear(t_base.a).x;
+    
+    float3 light = sRgbToLinear(I.c0);
+    float3 final = light * t_base.rgb;// * AMBIENT_BRIGHTNESS;
+	
+	// NSDeathman - считаем туман второй раз, но теперь специально для этого конкретного объекта
+    float Fog = CalcFogness(I.position);
+    final.rgb = ApplyFogness(final.rgb, Fog);
+    float Opacity = (1.0f - safe_pow(Fog, 2.2f)) * t_base.a;
+    
+    PixelShaderOutputStruct Output;
+    Output.Generic_0 = float4(final.rgb, Opacity);
+    Output.Position = float4(I.position.z, NULL, NULL, NULL);
+    return Output;
+}

@@ -1,0 +1,57 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Author: Deadiablo, NSDeathman
+// Original code: https://www.xrhadertoy.com/view/WscyRl
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "material_components.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define AO_SAMPLES 22
+#define AO_ATTENUATION 5.0
+#define AO_RADIUS 0.01
+#define AO_POWER 8.8
+#define AO_RENDER_DISTANCE 25.0f
+#define AO_STEP_SIZE rcp(AO_SAMPLES)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float AOfromHeight(float2 UV, float WorldSpaceDepth
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 BlendMask
+#endif
+)
+{
+    float AO = 1.0f;
+    
+    if(WorldSpaceDepth < AO_RENDER_DISTANCE)
+    {
+#ifdef USE_FOR_TERRAIN_MATERIAL
+        float height = GetTerrainDetailHeight(BlendMask, UV);
+#else
+        float height = GetHeight(UV);
+#endif
+
+        AO = 0.0f;
+        
+        [unroll]
+        for (int i = 0; i < AO_SAMPLES; i++)
+        {
+            float2 Offset = BokehOffsets[i] * AO_RADIUS; //poissonDisk_12[i] * AO_RADIUS;
+            //Offset = Offset * 2.0f - 1.0f;
+
+#ifdef USE_FOR_TERRAIN_MATERIAL
+            AO += max(GetTerrainDetailHeight(BlendMask, UV + Offset) - height, 0.0f);
+#else
+            AO += max(GetHeight(UV + Offset) - height, 0.0f);
+#endif
+        }
+
+        AO /= AO_SAMPLES;
+        AO = invert(AO);
+        AO = abs(AO);
+        AO = safe_pow(AO, AO_POWER);
+
+        // Create smooth render distance border
+        float FarFadingFactor = smoothstep(AO_RENDER_DISTANCE * 0.75f, AO_RENDER_DISTANCE, WorldSpaceDepth);
+        AO = lerp(AO, 1.0f, FarFadingFactor);
+    }
+
+    return AO;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

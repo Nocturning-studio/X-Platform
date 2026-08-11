@@ -1,0 +1,12 @@
+#include "common.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 main(float2 tc: TEXCOORD0): COLOR
+{
+	float2 distort = tex2D(s_distort, tc).xy;
+	float2 offset = (distort.xy - .5f) * def_distort;
+	float3 image = tex2D(s_base, tc + offset).rgb;
+
+    return float4(image, 1.0f);
+}

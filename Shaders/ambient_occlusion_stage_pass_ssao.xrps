@@ -1,0 +1,148 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//  Optimized SSAO for Low-End Hardware
+//  Based on S.T.A.L.K.E.R code
+//  Fixed & Optimized by DeepSeek, Gemini-3 and some NSDeathman
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Uniforms
+uniform float4 image_resolution; // xy = res, zw = 1/res
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// НАСТРОЙКИ
+#define SAMPLES 8
+#define SSAO_RADIUS 1.75f
+#define SSAO_INTENSITY 12.0f
+#define SSAO_BIAS 0.05f
+#define SSAO_MAX_DIST 100.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Bayer 4x4 Dithering
+//////////////////////////////////////////////////////////////////////////////////////////
+float GetBayer4x4(float2 screenPos)
+{
+    float2 pos = floor(screenPos);
+    return (fmod(pos.y, 4.0f) * 0.25f) + (fmod(pos.x, 4.0f) * 0.0625f) + 0.0625f;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Main SSAO Shader
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ao_pass(float2 TexCoords : TEXCOORD0, float2 VPOS : VPOS) : COLOR
+{
+    // 1. Получаем данные (P - позиция, N - нормаль)
+    float3 P, N;
+    GetPositionAndNormal(TexCoords, P, N);
+
+    // Ранний выход для неба и очень далеких объектов
+    if (P.z <= 0.01f || P.z > SSAO_MAX_DIST)
+        return 1.0f;
+
+    // 2. Расчет радиуса
+    // image_resolution.y используется для сохранения пропорций круга
+    // Чем дальше объект, тем меньше радиус выборки на экране.
+    float screenRadius = (SSAO_RADIUS / P.z) * 0.5f; // 0.5 - подгоночный коэффициент под FOV
+    screenRadius = min(screenRadius, 0.1f); // Ограничиваем макс размер, чтобы не убить кэш GPU
+
+    // 3. Подготовка шума (Jitter)
+    float random = GetBayer4x4(VPOS);
+    
+    // Создаем случайный поворот
+    float angle = random * 6.283185f;
+    float2 cs;
+    sincos(angle, cs.y, cs.x); // x=cos, y=sin
+
+    float occlusion = 0.0f;
+    
+    // Смещение начала луча чуть выше поверхности, чтобы избежать шума на ровных стенах
+    float3 origin = P + N * SSAO_BIAS;
+
+    // 4. Цикл выборки (Spiral Sampling)
+    // Золотой угол дает лучшее распределение сэмплов, чем просто круг
+    // 2.39996 = PI * (3 - sqrt(5))
+    float spinAngle = 2.39996f; 
+
+    for (int i = 0; i < SAMPLES; i++)
+    {
+        // Вычисляем смещение сэмпла
+        float radiusStep = (float(i) + random) / float(SAMPLES);
+        float currentAngle = float(i) * spinAngle;
+        
+        float2 offset;
+        sincos(currentAngle, offset.y, offset.x);
+        
+        // Поворачиваем смещение на случайный угол (cs)
+        // Вращение вектора: x' = x*cos - y*sin, y' = x*sin + y*cos
+        float2 rotatedOffset = float2(
+            offset.x * cs.x - offset.y * cs.y,
+            offset.x * cs.y + offset.y * cs.x
+        );
+        
+        // Получаем UV координаты сэмпла
+        // image_resolution.zw * image_resolution.y корректирует аспект (чтобы круг не был овалом)
+        float2 sampleUV = TexCoords + rotatedOffset * radiusStep * screenRadius * float2(image_resolution.y * image_resolution.z, 1.0f);
+
+        // Читаем позицию сэмпла
+        float3 samplePos = GetPosition(sampleUV);
+
+        // --- ВАЖНАЯ ПРОВЕРКА (Range Check) ---
+        // Если сэмпл находится слишком далеко по глубине от исходной точки,
+        // значит это фон за краем объекта. Мы его игнорируем.
+        float3 diff = samplePos - origin;
+        float distSq = dot(diff, diff); // Квадрат расстояния (быстрее чем length)
+        
+        // Проверка нормали: сэмпл должен быть спереди поверхности
+        float vDotN = dot(normalize(diff), N);
+        
+        // Функция веса:
+        // 1. max(0, vDotN) - учитываем только точки "перед" поверхностью
+        // 2. smoothstep - мягко обрезаем вклад, если точка слишком далеко (избавляет от гало)
+        float rangeCheck = smoothstep(SSAO_RADIUS * SSAO_RADIUS, 0.0f, distSq);
+        
+        occlusion += max(0.0f, vDotN - 0.1f) * rangeCheck; // -0.1f убирает акне (грязь)
+    }
+
+    // Усредняем и инвертируем
+    occlusion = 1.0f - (occlusion / float(SAMPLES));
+    
+    // Усиливаем контраст
+    return pow(saturate(occlusion), SSAO_INTENSITY);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Bilateral-like Blur (Smart Denoise)
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 denoise_pass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float2 texelSize = image_resolution.zw;
+    float centerDepth = GetPosition(TexCoords).z;
+    float centerAO = tex2Dlod0(s_ao, TexCoords).r;
+    
+    float result = centerAO;
+    float totalWeight = 1.0f;
+    
+    // Простой крестообразный фильтр (дешевле чем 3x3)
+    // Оффсеты: Влево, Вправо, Вверх, Вниз
+    float2 offsets[4] = {
+        float2(-1.5, 0.5), float2(1.5, 0.5),
+        float2(0.5, -1.5), float2(0.5, 1.5)
+    };
+
+    for(int i = 0; i < 4; i++)
+    {
+        float2 sampleUV = TexCoords + offsets[i] * texelSize;
+        float sampleAO = tex2Dlod0(s_ao, sampleUV).r;
+        float sampleDepth = GetPosition(sampleUV).z;
+        
+        // Вес зависит от разницы глубин.
+        // Если глубина сильно отличается (край объекта), вес равен 0 -> край не размывается.
+        float weight = 1.0f / (1.0f + abs(centerDepth - sampleDepth) * 10.0f);
+        
+        result += sampleAO * weight;
+        totalWeight += weight;
+    }
+    
+    return result / totalWeight;
+}

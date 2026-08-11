@@ -1,0 +1,139 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Created: 13.01.2024
+// Authors: 
+//      FXAA - Nvidia
+//      Integrate to S.T.A.L.K.E.R: Call of Pripyat - Zackin5(https://github.com/Zackin5/StalkerCop-FxaaShaders)
+//      FXAA_BRIGHTNESS_AS_LUMA - NSDeathman
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uniform float3 fxaa_params;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define FXAA_QUALITY__PRESET 39
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FXAA settings
+
+// Choose the amount of sub-pixel aliasing removal.
+// This can effect sharpness.
+//   1.00 - upper limit(softer)
+//   0.75 - default amount of filtering
+//   0.50 - lower limit(sharper, less sub-pixel aliasing removal)
+//   0.25 - almost off
+//   0.00 - completely off
+#define FXAA_Subpix fxaa_params.x
+
+// The minimum amount of local contrast required to apply algorithm.
+//   0.333 - too little(faster)
+//   0.250 - low quality
+//   0.166 - default
+//   0.125 - high quality 
+//   0.063 - overkill(slower)
+#define FXAA_EdgeThreshold fxaa_params.y
+
+// Trims the algorithm from processing darks.
+//   0.0833 - upper limit(default, the start of visible unfiltered edges)
+//   0.0625 - high quality(faster)
+//   0.0312 - visible limit(slower)
+// Special notes when using FXAA_GREEN_AS_LUMA,
+//   Likely want to set this to zero.
+//   As colors that are mostly not-green
+//   will appear very dark in the green channel!
+//   Tune by looking at mostly non-green content,
+//   then start at zero and increase until aliasing is a problem.
+#define FXAA_EdgeThresholdMin fxaa_params.z
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define FXAA_GREEN_AS_LUMA 1
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "fxaa.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// =============================================================================================
+// Geometric Edge Detection for FXAA
+// =============================================================================================
+
+// Возвращает силу геометрического края от 0.0 до 1.0
+// 0.0 - плоская поверхность
+// 1.0 - резкий край геометрии (срез угла или перепад глубины)
+float GetGeometricEdgeFactor(float2 coords)
+{
+    // Отступ для соседей (1 пиксель)
+    float2 texel = screen_res.zw;
+    
+    // 1. Получаем данные центрального пикселя
+    float3 posC = GetPosition(coords);
+    float3 normC = GetNormal(coords);
+    
+    // 2. Выбираем 4 соседних пикселя (Крестом)
+    // Используем offset для точности
+    float2 uvL = coords + float2(-texel.x, 0);
+    float2 uvR = coords + float2( texel.x, 0);
+    float2 uvT = coords + float2(0, -texel.y);
+    float2 uvB = coords + float2(0,  texel.y);
+    
+    float3 posL = GetPosition(uvL);
+    float3 posR = GetPosition(uvR);
+    float3 posT = GetPosition(uvT);
+    float3 posB = GetPosition(uvB);
+    
+    float3 normL = GetNormal(uvL);
+    float3 normR = GetNormal(uvR);
+    float3 normT = GetNormal(uvT);
+    float3 normB = GetNormal(uvB);
+
+    // 3. Детект краев по ГЛУБИНЕ/ПОЗИЦИИ
+    // Сравниваем позиции. Если расстояние велико - это край.
+    // Используем view-space позицию, она надежнее простого depth.
+    float3 diffPosH = abs(posL - posR); // Горизонтальная разница
+    float3 diffPosV = abs(posT - posB); // Вертикальная разница
+    // Сумма модулей разниц координат
+    float edgePos = dot(diffPosH, 1.0) + dot(diffPosV, 1.0);
+    
+    // 4. Детект краев по НОРМАЛЯМ
+    // Скалярное произведение (dot): 1.0 = сонаправлены, <1.0 = угол.
+    // Вычисляем "разницу" как (1 - dot)
+    float edgeNorm = 0.0;
+    edgeNorm += (1.0 - dot(normC, normL));
+    edgeNorm += (1.0 - dot(normC, normR));
+    edgeNorm += (1.0 - dot(normC, normT));
+    edgeNorm += (1.0 - dot(normC, normB));
+    
+    // 5. Настройка чувствительности (Magic Numbers подбираются под движок)
+    // Для Stalker (метры): перепад > 5-10см считаем краем
+    float weightPos = smoothstep(0.05, 0.2, edgePos); 
+    // Для Нормалей: сумма отклонений.
+    float weightNorm = smoothstep(0.1, 0.4, edgeNorm);
+    
+    // Возвращаем максимальный из двух показателей
+    return saturate(max(weightPos, weightNorm));
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0): COLOR
+{
+    // 1. Вычисляем силу геометрического края (0..1)
+    float geomEdge = GetGeometricEdgeFactor(TexCoords);
+    
+    // 2. Модулируем пороги FXAA
+    // Стандартные настройки FXAA (из дефайнов вверху)
+    float qualityThreshold = FXAA_EdgeThreshold;       // Обычно 0.166
+    float qualityThresholdMin = FXAA_EdgeThresholdMin; // Обычно 0.0833
+    
+    // Если geomEdge высокий (это край геометрии), мы понижаем порог до минимума.
+    // Это заставляет FXAA работать даже на очень темных участках (где Luma контраст низкий),
+    // но только там, где есть реальный геометрический край.
+    
+    // lerp(Стандарт, 0.0, СилаКрая)
+    // Используем 0.001 вместо 0.0, чтобы избежать деления на ноль в редких случаях
+    float dynamicThreshold = lerp(qualityThreshold, 0.001, geomEdge);
+    float dynamicThresholdMin = lerp(qualityThresholdMin, 0.001, geomEdge);
+
+    // 3. Запускаем FXAA с динамическими параметрами
+    return FxaaPixelShader(
+        TexCoords, 
+        s_image, 
+        screen_res.zw, 
+        FXAA_Subpix, 
+        dynamicThreshold,
+        dynamicThresholdMin
+    );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,87 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "wind.xrh" 
+
+///////////////////////////////////////////////////////////////////////////////////
+struct VertexData
+{
+    float3 Position : POSITION;
+    float4 Misc : TEXCOORD0; // uv + t
+};
+
+struct InstanceData
+{
+    // Stream 1 (Instancing)
+    // Данные приходят в регистры TEXCOORD 1-4
+    float4 Mat0 : TEXCOORD1;
+    float4 Mat1 : TEXCOORD2;
+    float4 Mat2 : TEXCOORD3;
+    float4 Color : TEXCOORD4;
+};
+
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float3 Position : TEXCOORD0;
+    float2 UV : TEXCOORD1;
+};
+
+////////////////////////////////////////////////////////////////////////////
+// VERTEX SHADER
+////////////////////////////////////////////////////////////////////////////
+Interpolators main(VertexData Geometry, InstanceData Instance)
+{
+    Interpolators Output;
+
+    // Собираем матрицу трансформации.
+    // Так как в C++ мы записали данные так:
+    // Mat0 = (M11, M21, M31, M41) -> Это первая строка для умножения mul(M, v)
+    // Mat1 = (M12, M22, M32, M42)
+    // Mat2 = (M13, M23, M33, M43)
+    // Это соответствует тому, как если бы мы создавали матрицу для умножения вектора-столбца справа
+    // или вектора-строки слева. В HLSL mul(vec, mat) требует row-major.
+    
+    float4x4 WorldMatrix = float4x4(
+        Instance.Mat0,
+        Instance.Mat1,
+        Instance.Mat2,
+        float4(0, 0, 0, 1)
+    );
+
+    // Расширяем позицию
+    float4 Pos4 = float4(Geometry.Position.xyz, 1.0f);
+    
+    // Трансформируем в мир
+    // pos.x = dot(m0, P); pos.y = dot(m1, P); pos.z = dot(m2, P);
+    // Это эквивалентно mul(Pos4, transpose(WorldMatrix)) или mul(WorldMatrix, Pos4) в зависимости от порядка.
+    // Учитывая нашу запись, это будет mul(WorldMatrix, Pos4) если WorldMatrix это строки.
+    
+    float4 WorldPosition;
+    WorldPosition.x = dot(Instance.Mat0, Pos4);
+    WorldPosition.y = dot(Instance.Mat1, Pos4);
+    WorldPosition.z = dot(Instance.Mat2, Pos4);
+    WorldPosition.w = 1.0f;
+
+#ifdef USE_DETAILWAVE
+    // В C++ мы положили M._42 (Y translation) в Instance.Mat1.w
+    float BaseHeight = Instance.Mat1.w;
+    float Height = WorldPosition.y - BaseHeight;
+    
+    // Используем нашу обновленную функцию с float3 возвратом!
+    WorldPosition.xyz += CalcGrassWind(WorldPosition.xyz, Height);
+#endif
+
+    // Standard stuff
+    Output.HomogeniousPosition = mul(m_WorldViewProject, WorldPosition);
+    Output.Position = mul(m_WorldView, WorldPosition).xyz;
+    
+    float2 quantizedUV = float2(Geometry.Misc.x, Geometry.Misc.y);
+    Output.UV.xy = quantizedUV / 16384.0f;
+
+    return Output;
+}
+////////////////////////////////////////////////////////////////////////////

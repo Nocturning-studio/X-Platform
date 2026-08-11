@@ -1,0 +1,80 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 06.08.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "wind.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct VertexData
+{
+	float4 Position: POSITION;
+	float4 Tangent: TANGENT;
+	float4 Binormal: BINORMAL;
+	float4 Normal: NORMAL;
+	float4 Color: COLOR;
+	float2 UV: TEXCOORD0;
+	float2 LightMapUV: TEXCOORD1;
+};
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+	float4 HomogeniousPosition: POSITION;
+	float3 Position: TEXCOORD0;
+	float3 TBN0: TEXCOORD1;
+	float3 TBN1: TEXCOORD2;
+	float3 TBN2: TEXCOORD3;
+	float2 UV: TEXCOORD4;
+	float2 LightMapTexcoords: TEXCOORD5;
+	float2 Lighting: TEXCOORD6;
+};
+///////////////////////////////////////////////////////////////////////////////////
+Interpolators main(VertexData Input)
+{
+    Interpolators Output;
+
+	float3 Tangent = unpack_bx4(Input.Tangent.xyz);
+	float3 Bitangent = unpack_bx4(Input.Binormal.xyz);
+	float3 Normal = unpack_bx4(Input.Normal.xyz);
+
+    float4 Position = Input.Position;
+
+#ifdef USE_WIND
+    // Prepare Wind Context with TBN data
+    float Weight = SampleWeightMap(Input.UV);
+    WindContext Ctx;
+    Ctx.WorldPosition = Input.Position.xyz;
+    Ctx.ObjectCenter = 0.0f;
+    Ctx.Normal = Normal;
+    Ctx.Tangent = Tangent;
+    Ctx.Binormal = Bitangent;
+    Ctx.HeightRelativeToRoot = Weight;
+    Ctx.Rigidity = Weight;
+    Ctx.TextureCoordinates = Input.UV;
+
+    // Calculate Full 3D Displacement
+#ifdef USE_BRANCHCARD_WIND
+    Position.xyz += CalculateBranchCardWind(Ctx) * Weight;
+#elif USE_LEAFCARD_WIND
+    Position.xyz += CalculateLeafCardWind(Ctx) * Weight;
+#endif
+#endif  
+
+    Output.HomogeniousPosition = mul(m_WorldViewProject, Position);
+    Output.Position = mul(m_WorldView, Position);
+
+    float3x3 TBN = mul((float3x3)m_WorldView, float3x3( Tangent.x, Bitangent.x, Normal.x,
+														Tangent.y, Bitangent.y, Normal.y,
+														Tangent.z, Bitangent.z, Normal.z ));
+    Output.TBN0 = TBN[0];
+    Output.TBN1 = TBN[1];
+    Output.TBN2 = TBN[2];
+
+    Output.UV = (Input.UV + float2(Input.Tangent.w, Input.Binormal.w)) * (32.f / 32768.f);
+    Output.LightMapTexcoords = unpack_tc_lmap(Input.LightMapUV);
+    Output.Lighting.x = Input.Normal.w;
+    Output.Lighting.y = Input.Color.w;
+	
+    return Output;
+}
+///////////////////////////////////////////////////////////////////////////////////

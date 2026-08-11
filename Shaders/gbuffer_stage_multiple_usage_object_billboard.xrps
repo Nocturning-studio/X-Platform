@@ -1,0 +1,50 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "lightmap.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+	float4 HomogeniousPosition: POSITION;
+	float3 Position: TEXCOORD0;
+	float2 TexCoords0: TEXCOORD1;
+	float2 TexCoords1: TEXCOORD2;
+    float TransitionFactor: TEXCOORD3;
+    float Ambient: TEXCOORD4;
+    float SunOcclusion: TEXCOORD5;
+    float OpacityFactor: TEXCOORD6;
+};
+///////////////////////////////////////////////////////////////////////////////////
+GBufferPacked main(Interpolators Input)
+{
+    GBuffer GBuffer = InitializeGBuffer();
+	
+    float4 BaseTextureData0 = tex2D(s_base, Input.TexCoords0);
+    BaseTextureData0.rgb = sRgbToLinear(BaseTextureData0.rgb);
+    float4 BaseTextureData1 = tex2D(s_base, Input.TexCoords1);
+    BaseTextureData1.rgb = sRgbToLinear(BaseTextureData1.rgb);
+    float4 BaseTextureData = lerp(BaseTextureData0, BaseTextureData1, Input.TransitionFactor);
+
+    BaseTextureData.a *= Input.OpacityFactor;
+
+    clip(BaseTextureData.a - 0.8f);
+
+    GBuffer.Albedo = BaseTextureData.rgb;
+	
+	float4 NormalAndAO0 = tex2D(s_hemi, Input.TexCoords0);
+	float4 NormalAndAO1 = tex2D(s_hemi, Input.TexCoords1);
+	float4 NormalAndAO = lerp(NormalAndAO0, NormalAndAO1, Input.TransitionFactor);
+
+    GBuffer.AO = NormalAndAO.a;
+    
+    GBuffer.Normal = -normalize(NormalAndAO.rgb);
+
+    GBuffer.Position = Input.Position;
+    
+    return PackGBuffer(GBuffer);
+}
+///////////////////////////////////////////////////////////////////////////////////

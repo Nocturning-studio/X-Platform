@@ -1,0 +1,20 @@
+#include "common.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+
+struct	v2p_TL
+{
+	float2 	Tex0	: TEXCOORD0;
+	float4	Color	: COLOR;
+	float4 	HPos	: POSITION;	// Clip-space position 	(for rasterization)
+};
+
+float4 main ( v2p_TL I ) : COLOR0
+{
+	float4 res = tex2D( s_base, I.Tex0 );
+	res.rgb		= lerp( res.rgb, I.Color.rgb, I.Color.a);
+	res.a		*= I.Color.a;
+
+	return res;
+}

@@ -1,0 +1,647 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Created: 27.06.2024
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "normal_map_functions.xrh"
+#include "tonemapping.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_bump;
+uniform sampler2D s_bumpX; // (Error for bump)
+uniform sampler2D s_detail;
+uniform sampler2D s_detailBump;
+uniform sampler2D s_detailBumpX; // (Error for bump detail)
+uniform sampler2D s_mask;
+uniform sampler2D s_baked_ao; // Baked AO - From texture
+uniform sampler2D s_custom_normal;
+uniform sampler2D s_packed_normal;
+uniform sampler2D s_custom_roughness;
+uniform sampler2D s_custom_gloss;
+uniform sampler2D s_custom_metallic;
+uniform sampler2D s_custom_subsurface_power;
+uniform sampler2D s_custom_emission;
+uniform sampler2D s_custom_displacement;
+uniform sampler2D s_custom_cavity;
+uniform sampler2D s_custom_opacity;
+uniform sampler2D s_custom_specular_tint;
+uniform sampler2D s_arm_map;
+uniform sampler2D s_armd_map;
+uniform sampler2D s_erm_map;
+uniform sampler2D s_custom_sheen_intensity;
+uniform sampler2D s_custom_sheen_roughness;
+uniform sampler2D s_custom_coat_intensity;
+uniform sampler2D s_custom_coat_roughness;
+uniform sampler2D s_custom_material;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_dt_r;
+uniform sampler2D s_dt_g;
+uniform sampler2D s_dt_b;
+uniform sampler2D s_dt_a;
+uniform sampler2D s_dn_r;
+uniform sampler2D s_dn_g;
+uniform sampler2D s_dn_b;
+uniform sampler2D s_dn_a;
+uniform sampler2D s_dn_rX;
+uniform sampler2D s_dn_gX;
+uniform sampler2D s_dn_bX;
+uniform sampler2D s_dn_aX;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct MaterialComponents
+{
+    float3 Albedo;
+    float Opacity;
+    float3 Normal;
+    float Height;
+    float Roughness;
+    float Metallic;
+    float Emission;
+    float SubSurfacePower;
+    float AO;
+	float Cavity;
+    float SpecularTint;
+    float SheenIntensity;
+    float SheenRoughness;
+    float CoatIntensity;
+    float CoatRoughness;
+};
+
+MaterialComponents InitializeMaterial()
+{
+    MaterialComponents Output;
+    
+    // --Get Albedo--
+    Output.Albedo = float3(1, 0, 0);
+    Output.Albedo = sRgbToLinear(Output.Albedo);
+    
+    // --Get Opacity--
+    Output.Opacity = 0.5f;
+    
+    // --Get Normal--
+    Output.Normal = float3(0, 0, 1);
+    
+    // --Get Roughness--
+    Output.Roughness = 1.0f;
+    
+    // --Get height--
+    Output.Height = 0.5f;
+
+    // --PLACEHOLDERS--
+    Output.Emission = 0.0f;
+    Output.Metallic = 0.0f;
+    Output.SubSurfacePower = 0.0f;
+    Output.AO = 1.0f;
+    Output.Cavity = 1.0f;
+    Output.SpecularTint = 1.0f;
+    
+    Output.SheenIntensity = 0.0f;;
+    Output.SheenRoughness = 1.0f;
+    Output.CoatIntensity = 0.0f;
+    Output.CoatRoughness = 1.0f;
+    
+    return Output;
+}
+
+/*================================================================================================================*/
+//Base material components
+/*================================================================================================================*/
+//Bump material storage type
+/*----------------------------------------------------------------------------------------------------------------*/
+MaterialComponents UnpackBumpMaterial(float2 UV)
+{
+    MaterialComponents Output = InitializeMaterial();
+    
+    // Get storage buffers
+    float4 AlbedoData = tex2D(s_base, UV);
+
+    float4 BumpData = tex2D(s_bump, UV);
+    
+    // --Get Roughness--
+    
+    // Separate gloss from buffer and invert, for create roughness
+    float Roughness = invert(BumpData.r);//pow2(invert(BumpData.r));
+    
+    Output.Roughness = pow2(Roughness);
+
+#ifdef USE_BUMP_DECOMPRESSION
+    float4 BumpXData = tex2D(s_bumpX, UV);
+#else
+    float4 BumpXData = float4(0.5f, 0.5f, 0.5f, 0.5f);
+#endif
+    
+    // --Get Albedo--
+    Output.Albedo = AlbedoData.rgb;
+    
+#if USE_SRGB_COLOR_CONVERTING
+    Output.Albedo = sRgbToLinear(Output.Albedo);
+#endif
+
+    // --Get Opacity--
+    Output.Opacity = AlbedoData.a;
+    
+    // --Get Normal--
+   
+    // DXT Compressed normals(TBN = ABG)
+    float3 CompressedNormal = BumpData.wzx;
+
+    // Decompressing data + 0.5f
+    float3 DecompressionData = BumpXData.xyz;
+
+    // Transform normal map color from [0; 1] space to [-1; 1] and decompress
+    // DecompressionData = Decompress data + 0.5f
+    float3 DecompressedNormal = 0.0f;
+    
+    DecompressedNormal.xy = CompressedNormal.xy + (DecompressionData.xy - 1.0f);
+    
+    DecompressedNormal.z = sqrt(1.0f - dot(DecompressedNormal.xy, DecompressedNormal.xy));
+    
+    Output.Normal = DecompressedNormal;
+    
+    // --Get height--
+    Output.Height = BumpXData.a;
+
+    return Output;
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+//xrMaterial storage type(In future)
+/*----------------------------------------------------------------------------------------------------------------*/
+MaterialComponents UnpackMaterial(float2 UV)
+{
+    MaterialComponents Output = InitializeMaterial();
+
+    // Get storage buffers
+    float4 AlbedoData = tex2D(s_base, UV);
+    
+    // --Get Albedo--
+    Output.Albedo = AlbedoData.rgb;
+    
+#if USE_SRGB_COLOR_CONVERTING
+    Output.Albedo = sRgbToLinear(Output.Albedo);
+#endif
+    
+    // --Get Opacity--
+    Output.Opacity = AlbedoData.a;
+    
+    return Output;
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+//Separated material storage type(1 component = 1 sample: Slow - for debugging)
+/*----------------------------------------------------------------------------------------------------------------*/
+MaterialComponents UpdateMaterial(float2 UV, MaterialComponents Input)
+{
+    MaterialComponents Output = InitializeMaterial();
+    
+    // Initialize new material
+    Output = Input;
+    
+    // --Get Normal--
+#if USE_CUSTOM_NORMAL
+    Output.Normal = tex2D(s_custom_normal, UV).xyz * 2.0f - 1.0f;
+#elif USE_PACKED_NORMAL
+    float4 packedNorm = tex2D(s_packed_normal, UV);
+    
+    Output.Normal.xy = packedNorm.ga * 2.0f - 1.0f;
+#endif
+
+#if IS_OPENGL_NORMAL
+    Output.Normal.y = invert(Output.Normal.y);
+#endif
+
+    // Реконструкция Z
+    Output.Normal.z = sqrt(saturate(1.0f - dot(Output.Normal.xy, Output.Normal.xy)));
+
+#if USE_ARMD_MAP
+    float4 ARMD = tex2D(s_armd_map, UV);
+    Output.AO = ARMD.r;
+    Output.Roughness = ARMD.g;
+    Output.Metallic = ARMD.b;
+    Output.Height = ARMD.a; // Дисплейсмент в альфе
+#elif USE_ARM_MAP
+    float3 ARM = tex2D(s_arm_map, UV).rgb;
+    Output.AO = ARM.r;
+    Output.Roughness = ARM.g;
+    Output.Metallic = ARM.b;
+#else
+    #if USE_ERM_MAP
+       float3 ERM = tex2D(s_erm_map, UV).rgb;
+       Output.Roughness = ERM.g;
+       Output.Metallic = ERM.b;
+    #endif
+    
+    #if USE_BAKED_AO
+        Output.AO = tex2D(s_baked_ao, UV).r;
+    #endif
+        // --Get Roughness--
+    #if USE_CUSTOM_ROUGHNESS
+        Output.Roughness = tex2D(s_custom_roughness, UV).r;
+    #elif USE_CUSTOM_GLOSSINESS
+        // --Get Roughness from gloss--
+        Output.Roughness = tex2D(s_custom_gloss, UV).r;
+        Output.Roughness = invert(Output.Roughness);
+        Output.Roughness = pow2(Output.Roughness);
+    #endif
+    
+        // --Get Metallic--
+    #if USE_CUSTOM_METALLIC
+        Output.Metallic = tex2D(s_custom_metallic, UV).r;
+    #endif
+#endif
+    
+    // --Get height--
+#if USE_CUSTOM_DISPLACEMENT
+    Output.Height = tex2D(s_custom_displacement, UV).r;
+#endif
+    
+    // --Get cavity--
+#if USE_CUSTOM_CAVITY
+    Output.Cavity = tex2D(s_custom_cavity, UV).r;
+#else
+    Output.Cavity = Output.Normal.z;
+#endif
+    
+    // --Get Emission Power--
+#if USE_CUSTOM_EMISSION
+    Output.Emission = tex2D(s_custom_emission, UV).r;
+#endif
+    
+    // --Get Specular tint Power--
+#if USE_CUSTOM_SPECULAR_TINT
+    Output.SpecularTint = tex2D(s_custom_specular_tint, UV).r;
+#endif
+    
+    // --Get Subsuface scattering Power--
+#if USE_CUSTOM_SUBSURFACE_POWER
+    Output.SubSurfacePower = tex2D(s_custom_subsurface_power, UV).r;
+#endif
+    
+    // --Get Transparency--
+#if USE_CUSTOM_OPACITY
+    Output.Opacity = tex2D(s_custom_opacity, UV).r;
+#endif
+    
+#if USE_CUSTOM_SHEEN_INTENSITY
+    Output.SheenIntensity = tex2D(s_custom_sheen_intensity, UV).r;
+#endif
+    
+#if USE_CUSTOM_SHEEN_ROUGHNESS
+    Output.SheenRoughness = tex2D(s_custom_sheen_roughness, UV).r;
+#else
+    Output.SheenRoughness = Output.Roughness;
+#endif    
+
+#if USE_CUSTOM_COAT_INTENSITY
+    Output.CoatIntensity = tex2D(s_custom_coat_intensity, UV).r;
+#endif
+    
+#if USE_CUSTOM_COAT_ROUGHNESS
+    Output.CoatRoughness = tex2D(s_custom_coat_roughness, UV).r;
+#else
+    Output.CoatRoughness = Output.Roughness;
+#endif    
+    
+#ifdef USE_CUSTOM_MATERIAL
+    float4 CustomMatData = tex2D(s_custom_material, UV);
+
+    #ifdef C_MAT_R_IS_AO
+        Output.AO = CustomMatData.r;
+    #endif
+    #ifdef C_MAT_R_IS_ROUGHNESS
+        Output.Roughness = CustomMatData.r;
+    #endif
+    #ifdef C_MAT_R_IS_GLOSS
+        float gloss = CustomMatData.r;
+        Output.Roughness = pow2(1.0f - gloss); 
+    #endif
+    #ifdef C_MAT_R_IS_METALLIC
+        Output.Metallic = CustomMatData.r;
+    #endif
+    #ifdef C_MAT_R_IS_EMISSION
+        Output.Emission = CustomMatData.r;
+    #endif
+    #ifdef C_MAT_R_IS_HEIGHT
+        Output.Height = CustomMatData.r;
+    #endif
+    #ifdef C_MAT_R_IS_CAVITY
+        Output.Cavity = CustomMatData.r;
+    #endif
+    #ifdef C_MAT_R_IS_SUBSURFACE
+        Output.SubSurfacePower = CustomMatData.r;
+    #endif
+
+    #ifdef C_MAT_G_IS_AO
+        Output.AO = CustomMatData.g;
+    #endif
+    #ifdef C_MAT_G_IS_ROUGHNESS
+        Output.Roughness = CustomMatData.g;
+    #endif
+    #ifdef C_MAT_G_IS_GLOSS
+        float gloss = CustomMatData.g;
+        Output.Roughness = pow2(1.0f - gloss); 
+    #endif
+    #ifdef C_MAT_G_IS_METALLIC
+        Output.Metallic = CustomMatData.g;
+    #endif
+    #ifdef C_MAT_G_IS_EMISSION
+        Output.Emission = CustomMatData.g;
+    #endif
+    #ifdef C_MAT_G_IS_HEIGHT
+        Output.Height = CustomMatData.g;
+    #endif
+    #ifdef C_MAT_G_IS_CAVITY
+        Output.Cavity = CustomMatData.g;
+    #endif
+    #ifdef C_MAT_G_IS_SUBSURFACE
+        Output.SubSurfacePower = CustomMatData.g;
+    #endif
+
+    #ifdef C_MAT_B_IS_AO
+        Output.AO = CustomMatData.b;
+    #endif
+    #ifdef C_MAT_B_IS_ROUGHNESS
+        Output.Roughness = CustomMatData.b;
+    #endif
+    #ifdef C_MAT_B_IS_GLOSS
+        float gloss = CustomMatData.b;
+        Output.Roughness = pow2(1.0f - gloss); 
+    #endif
+    #ifdef C_MAT_B_IS_METALLIC
+        Output.Metallic = CustomMatData.b;
+    #endif
+    #ifdef C_MAT_B_IS_EMISSION
+        Output.Emission = CustomMatData.b;
+    #endif
+    #ifdef C_MAT_B_IS_HEIGHT
+        Output.Height = CustomMatData.b;
+    #endif
+    #ifdef C_MAT_B_IS_CAVITY
+        Output.Cavity = CustomMatData.b;
+    #endif
+    #ifdef C_MAT_B_IS_SUBSURFACE
+        Output.SubSurfacePower = CustomMatData.b;
+    #endif
+
+    #ifdef C_MAT_A_IS_AO
+        Output.AO = CustomMatData.a;
+    #endif
+    #ifdef C_MAT_A_IS_ROUGHNESS
+        Output.Roughness = CustomMatData.a;
+    #endif
+    #ifdef C_MAT_A_IS_GLOSS
+        float gloss = CustomMatData.a;
+        Output.Roughness = pow2(1.0f - gloss); 
+    #endif
+    #ifdef C_MAT_A_IS_METALLIC
+        Output.Metallic = CustomMatData.a;
+    #endif
+    #ifdef C_MAT_A_IS_EMISSION
+        Output.Emission = CustomMatData.a;
+    #endif
+    #ifdef C_MAT_A_IS_HEIGHT
+        Output.Height = CustomMatData.a;
+    #endif
+    #ifdef C_MAT_A_IS_CAVITY
+        Output.Cavity = CustomMatData.a;
+    #endif
+    #ifdef C_MAT_A_IS_SUBSURFACE
+        Output.SubSurfacePower = CustomMatData.a;
+    #endif
+#endif
+
+    #ifdef C_MAT_HAS_CUSTOM_NORMAL
+        float3 CustomNormVec = float3(0, 0, 1);
+        
+        #ifdef C_MAT_NORM_X_IS_R
+            CustomNormVec.x = CustomMatData.r;
+        #elif defined(C_MAT_NORM_X_IS_G)
+            CustomNormVec.x = CustomMatData.g;
+        #elif defined(C_MAT_NORM_X_IS_B)
+            CustomNormVec.x = CustomMatData.b;
+        #elif defined(C_MAT_NORM_X_IS_A)
+            CustomNormVec.x = CustomMatData.a;
+        #endif
+
+        #ifdef C_MAT_NORM_Y_IS_R
+            CustomNormVec.y = CustomMatData.r;
+        #elif defined(C_MAT_NORM_Y_IS_G)
+            CustomNormVec.y = CustomMatData.g;
+        #elif defined(C_MAT_NORM_Y_IS_B)
+            CustomNormVec.y = CustomMatData.b;
+        #elif defined(C_MAT_NORM_Y_IS_A)
+            CustomNormVec.y = CustomMatData.a;
+        #endif
+
+        CustomNormVec.xy = CustomNormVec.xy * 2.0f - 1.0f;
+
+        #if IS_OPENGL_NORMAL
+            CustomNormVec.y = -CustomNormVec.y;
+        #endif
+
+        #ifdef C_MAT_NORM_RECONSTRUCT_Z
+            float dotXY = dot(CustomNormVec.xy, CustomNormVec.xy);
+            CustomNormVec.z = sqrt(saturate(1.0f - dotXY));
+        #else
+            float rawZ = 1.0f;
+            #ifdef C_MAT_NORM_Z_IS_R
+                rawZ = CustomMatData.r;
+            #elif defined(C_MAT_NORM_Z_IS_G)
+                rawZ = CustomMatData.g;
+            #elif defined(C_MAT_NORM_Z_IS_B)
+                rawZ = CustomMatData.b;
+            #elif defined(C_MAT_NORM_Z_IS_A)
+                rawZ = CustomMatData.a;
+            #endif
+            
+            CustomNormVec.z = rawZ * 2.0f - 1.0f; 
+        #endif
+
+        Output.Normal = CustomNormVec;
+    #endif
+
+    return Output;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Specific functions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float GetHeight(float2 UV)
+{
+#if USE_BUMP
+    return tex2Dlod0(s_bumpX, UV).a;
+#elif USE_CUSTOM_DISPLACEMENT
+    return tex2Dlod0(s_custom_displacement, UV).r;
+#elif USE_ARMD_MAP
+    return tex2Dlod0(s_armd_map, UV).a;
+#else
+    return 1.0f;
+#endif
+}
+
+float GetOpacity(float2 UV)
+{
+#if USE_CUSTOM_OPACITY
+    return tex2Dlod0(s_custom_opacity, UV).r;
+#else
+    return tex2Dlod0(s_base, UV).a;
+#endif
+}
+/*================================================================================================================*/
+//Detail material components
+/*================================================================================================================*/
+//Bump material storage type
+/*----------------------------------------------------------------------------------------------------------------*/
+MaterialComponents UnpackDetailBumpMaterial(float2 UV)
+{
+    MaterialComponents Output = InitializeMaterial();
+    
+    // Get storage buffers
+    float4 AlbedoData = tex2D(s_detail, UV);
+    float4 BumpData = tex2D(s_detailBump, UV);
+    float4 BumpXData = tex2D(s_detailBumpX, UV);
+    
+    // --Get Albedo--
+    Output.Albedo = AlbedoData.rgb;
+    
+#if USE_DETAIL_SRGB_COLOR_CONVERTING
+    Output.Albedo = sRgbToLinear(Output.Albedo);
+#endif
+    
+    // --Get Opacity--
+    Output.Opacity = 1.0f;
+    
+    // --Get Normal--
+   
+    // DXT Compressed normals(TBN = ABG)
+    float3 CompressedNormal = BumpData.wzx;
+
+    // Decompressing data + 0.5f
+    float3 DecompressionData = BumpXData.xyz;
+
+    // Transform normal map color from [0; 1] space to [-1; 1] and decompress
+    // DecompressionData = Decompress data + 0.5f
+    float3 DecompressedNormal = 0.0f;
+    
+    DecompressedNormal.xy = CompressedNormal.xy + (DecompressionData.xy - 1.0f);
+    
+    DecompressedNormal.z = sqrt(1.0f - dot(DecompressedNormal.xy, DecompressedNormal.xy));
+    
+    Output.Normal = DecompressedNormal;
+    
+    // --Get Roughness--
+    
+    // Separate gloss from buffer and invert, for create roughness
+    //float Roughness = invert(pow2(BumpData.r));
+    
+    // Twice power for PBR BRDF
+    //Roughness = pow2(Roughness);
+    
+    //Output.Roughness = Roughness;
+    
+    // --Get height--
+    Output.Height = BumpXData.a;
+    
+    return Output;
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+//xrMaterial storage type(In future)
+/*----------------------------------------------------------------------------------------------------------------*/
+MaterialComponents UnpackDetailMaterial(float2 UV)
+{
+    MaterialComponents Output = InitializeMaterial();
+
+    // Get storage buffers
+    float4 AlbedoData = tex2D(s_detail, UV);
+    
+    // --Get Albedo--
+    Output.Albedo = AlbedoData.rgb;
+    
+#if USE_DETAIL_SRGB_COLOR_CONVERTING
+    Output.Albedo = sRgbToLinear(Output.Albedo);
+#endif
+    
+    // --Get Opacity--
+    Output.Opacity = AlbedoData.a;
+    
+    return Output;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Specific functions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float GetDetailHeight(float2 UV)
+{
+#if USE_DETAIL_BUMP
+    return tex2Dlod0(s_detailBumpX, UV).a;
+#else
+#if USE_CUSTOM_DISPLACEMENT
+    return tex2Dlod0(s_custom_displacement, UV).r;
+#else
+    return 0.5f;
+#endif
+#endif
+}
+/*================================================================================================================*/
+//Terrain material components
+/*================================================================================================================*/
+float4 GetTerrainDetailMask(float2 UV)
+{
+    float4 BlendMask = tex2D(s_mask, UV);
+    return BlendMask / dot(BlendMask, 1.0f);
+}
+
+float3 GetTerrainDetailAlbedo(float4 BlendMask, float2 UV)
+{
+    float3 RedChannelAlbedo = tex2D(s_dt_r, UV).rgb;
+#if USE_DETAIL_SRGB_COLOR_CONVERTING
+    RedChannelAlbedo = sRgbToLinear(RedChannelAlbedo);
+#endif
+    RedChannelAlbedo *= BlendMask.r;
+    
+    float3 GreenChannelAlbedo = tex2D(s_dt_g, UV).rgb;
+#if USE_DETAIL_SRGB_COLOR_CONVERTING
+    GreenChannelAlbedo = sRgbToLinear(GreenChannelAlbedo);
+#endif
+    GreenChannelAlbedo *= BlendMask.g;
+    
+    float3 BlueChannelAlbedo = tex2D(s_dt_b, UV).rgb;
+#if USE_DETAIL_SRGB_COLOR_CONVERTING
+    BlueChannelAlbedo = sRgbToLinear(BlueChannelAlbedo);
+#endif
+    BlueChannelAlbedo *= BlendMask.b;
+    
+    float3 AlphaChannelAlbedo = tex2D(s_dt_a, UV).rgb;
+#if USE_DETAIL_SRGB_COLOR_CONVERTING
+    AlphaChannelAlbedo = sRgbToLinear(AlphaChannelAlbedo);
+#endif
+    AlphaChannelAlbedo *= BlendMask.a;
+    
+    return RedChannelAlbedo + GreenChannelAlbedo + BlueChannelAlbedo + AlphaChannelAlbedo;
+}
+
+float4 GetTerrainDetailBump(float4 BlendMask, float2 UV)
+{
+    float4 RedChannelBump = tex2D(s_dn_r, UV) * BlendMask.r;
+    float4 GreenChannelBump = tex2D(s_dn_g, UV) * BlendMask.g;
+    float4 BlueChannelBump = tex2D(s_dn_b, UV) * BlendMask.b;
+    float4 AlphaChannelBump = tex2D(s_dn_a, UV) * BlendMask.a;
+    return RedChannelBump + GreenChannelBump + BlueChannelBump + AlphaChannelBump;
+}
+
+float4 GetTerrainDetailBumpDecompression(float4 BlendMask, float2 UV)
+{
+    float4 RedChannelBumpX = tex2D(s_dn_rX, UV) * BlendMask.r;
+    float4 GreenChannelBumpX = tex2D(s_dn_gX, UV) * BlendMask.g;
+    float4 BlueChannelBumpX = tex2D(s_dn_bX, UV) * BlendMask.b;
+    float4 AlphaChannelBumpX = tex2D(s_dn_aX, UV) * BlendMask.a;
+    return RedChannelBumpX + GreenChannelBumpX + BlueChannelBumpX + AlphaChannelBumpX;
+}
+
+float GetTerrainDetailHeight(float4 BlendMask, float2 UV)
+{
+    float RedChannelHeight = tex2Dlod0(s_dn_rX, UV).a * BlendMask.r;
+    float GreenChannelHeight = tex2Dlod0(s_dn_gX, UV).a * BlendMask.g;
+    float BlueChannelHeight = tex2Dlod0(s_dn_bX, UV).a * BlendMask.b;
+    float AlphaChannelHeight = tex2Dlod0(s_dn_aX, UV).a * BlendMask.a;
+    return RedChannelHeight + GreenChannelHeight + BlueChannelHeight + AlphaChannelHeight;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,62 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 21.11.2025
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+uniform float additional_ambient;
+////////////////////////////////////////////////////////////////////////////
+struct AmbientOcclusion
+{
+    float RealTime;
+    float Lightmap;
+    float Baked;
+    float Combined;
+};
+
+float GetAOWithFilter(float2 TexCoords)
+{
+    float ao = 0.0f;
+    
+    ao += tex2Dlod0(s_ao, TexCoords + screen_res.zw * float2(1.5f, -0.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + screen_res.zw * float2(1.5f, 1.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + screen_res.zw * float2(-0.5f, -0.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + screen_res.zw * float2(-0.5f, 1.5f)).r;
+    
+    return ao * 0.25f;
+}
+
+AmbientOcclusion CalculateAmbientOcclusion(GBuffer GBuffer, float3 WorldSpaceNormal, float2 TexCoords, float3 ViewDirection)
+{
+    AmbientOcclusion ao;
+    
+    ao.RealTime = tex2Dlod0(s_ao, TexCoords).r;
+    //ao.RealTime = lerp(1.0f, ao.RealTime, GBuffer.Roughness);
+    //ao.RealTime = lerp(ao.RealTime, 1.0f, GBuffer.Metallic);
+    
+    const float adjustBrightness = 5.0f;
+    const float minAmbient = 0.005f;
+    
+    float LightmapRaw = saturate(GBuffer.AO);
+    
+    float nvFactor = saturate(additional_ambient * 10.0f); 
+    
+    float targetGamma = 2.2f;//lerp(1.7f, 0.8f, nvFactor);
+    float LightmapCurve = safe_pow(LightmapRaw * adjustBrightness, targetGamma);
+    
+    float LightmapFinal = (LightmapCurve * AMBIENT_BRIGHTNESS) + minAmbient;
+    
+    float nvBoost = additional_ambient; // Сила подсветки
+    
+    LightmapFinal = max(LightmapFinal, nvBoost * ao.RealTime);
+    
+    ao.Lightmap = Reinhard(LightmapFinal);
+    
+    ao.Baked = GBuffer.BakedAO;
+    
+    ao.Combined = ao.RealTime * ao.Baked * ao.Lightmap;
+    
+    ao.Combined *= GBuffer.Cavity;
+
+    return ao;
+}
+////////////////////////////////////////////////////////////////////////////

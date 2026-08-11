@@ -1,0 +1,100 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Created: 06.08.2023
+// Modified: 2025
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "material_helper.xrh"
+#include "material_components.xrh"
+#include "displacement.xrh"
+#include "parallax_shadows.xrh"
+#include "normal_map_functions.xrh"
+#include "ao_from_height.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct MaterialParams
+{
+    float3 Albedo;
+    float Opacity;
+    float3 Normal;
+    float Height;
+    float Roughness;
+    float Metallic;
+    float AO;
+	float Cavity;
+    float SubSurfacePower;
+    float Emission;
+    float SpecularTint;
+    float SheenIntensity;
+    float SheenRoughness;
+    float CoatIntensity;
+    float CoatRoughness;
+};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+MaterialParams GetMaterial(float2 UV, float3x3 TBN, float3 Position)
+{
+    MaterialParams Material;
+    MaterialComponents UnpackedMaterial;
+    
+    float3 ViewVector = GetViewVector(Position, TBN);
+    
+    float ParallaxShadow = 1.0f; 
+    float ParallaxCavity = 1.0f;
+
+#ifndef USE_ALPHA_TEST
+    ParallaxOutput POM = GetDisplacement(Position, ViewVector, UV, BASE_MATERIAL);
+    
+    UV = POM.uv;
+    
+    ParallaxShadow = POM.ao;
+    ParallaxCavity = POM.cavity;
+#endif
+    
+#if USE_BUMP
+    UnpackedMaterial = UnpackBumpMaterial(UV);
+#else
+    UnpackedMaterial = UnpackMaterial(UV);
+#endif
+
+    UnpackedMaterial = UpdateMaterial(UV, UnpackedMaterial);
+    
+    Material.Albedo = UnpackedMaterial.Albedo;
+    Material.Opacity = UnpackedMaterial.Opacity;
+    Material.Normal = UnpackedMaterial.Normal;
+    Material.Height = UnpackedMaterial.Height;
+    Material.Roughness = UnpackedMaterial.Roughness;
+    Material.Metallic = UnpackedMaterial.Metallic;
+    Material.SubSurfacePower = UnpackedMaterial.SubSurfacePower;
+    Material.Emission = UnpackedMaterial.Emission;
+    Material.SheenIntensity = UnpackedMaterial.SheenIntensity;
+    Material.SheenRoughness = UnpackedMaterial.SheenRoughness;
+    Material.CoatIntensity = UnpackedMaterial.CoatIntensity;
+    Material.CoatRoughness = UnpackedMaterial.CoatRoughness;
+    
+    Material.AO = UnpackedMaterial.AO * ParallaxShadow;
+    Material.Cavity = UnpackedMaterial.Cavity * ParallaxCavity; 
+
+	Material.Cavity = UnpackedMaterial.Cavity;
+    Material.SpecularTint = UnpackedMaterial.SpecularTint;
+    
+#ifdef USE_TDETAIL
+    float2 DetailUV = UV * dt_params.xy;
+
+    MaterialComponents UnpackedDetailMaterial;
+
+    UnpackedDetailMaterial = UnpackDetailMaterial(DetailUV);
+    
+    // Combine main albedo with detail
+    Material.Albedo *= 2.0f * UnpackedDetailMaterial.Albedo;
+#endif // USE_TDETAIL
+
+#ifdef USE_BUMP
+    // Make normals more power with heightmap
+    Material.Normal.xy *= Material.Height + 1.0f;
+    Material.Normal.z *= Material.Height;
+#endif
+    
+    Material.Normal = normalize(Material.Normal);
+
+    return Material;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

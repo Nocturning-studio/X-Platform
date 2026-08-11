@@ -1,0 +1,44 @@
+////////////////////////////////////////////////////////////////////////////////
+// Created: 06.01.2025
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "wind.xrh"
+////////////////////////////////////////////////////////////////////////////////
+struct VertexData
+{
+    float4 Position : POSITION;
+    float4 UV : TEXCOORD0;
+};
+////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float3 Position : TEXCOORD0;
+    float2 UV : TEXCOORD1;
+};
+////////////////////////////////////////////////////////////////////////////////
+Interpolators main(VertexData Input)
+{
+    Interpolators Output;
+
+    float3 pos = mul(m_transform, Input.Position);
+    
+    float2 result = 0.0f;
+    
+#ifdef USE_TREEWAVE
+    float frac = Input.UV.z * consts.x;	
+    float Height = pos.y - m_transform._24;
+    result = CalcTreeWind(pos.xyz, Height, Output.UV, frac);
+#endif    
+    
+    float4 w_pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1.0f);
+
+    Output.HomogeniousPosition = mul(m_ViewProject, w_pos);
+    Output.Position = mul(m_View, w_pos);
+    Output.UV = (Input.UV.xy * consts.xy).xy;
+    
+    return Output;
+}
+////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,23 @@
+#include "common.xrh"
+
+struct v2p
+{
+	float2 tc0: TEXCOORD0; // base
+	float2 tc1: TEXCOORD1; // another
+	float4 c: COLOR0; // diffuse
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+uniform sampler2D s_another;
+float4 main(v2p I): COLOR
+{
+    float4 result = tex2D(s_base, I.tc0);
+    result.rgb = sRgbToLinear(result.rgb);
+    result *= I.c;
+	float4 grad = tex2D(s_another, I.tc1);
+    float3 mult = result.rgb * grad.rgb * 2;
+    result = lerp(result.rgb, mult, grad.w);
+	
+    return float4(result.rgb, 1);
+}

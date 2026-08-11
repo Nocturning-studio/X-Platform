@@ -1,0 +1,60 @@
+////////////////////////////////////////////////////////////////////////////
+// Created: 20.11.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+////////////////////////////////////////////////////////////////////////////
+#ifndef USE_FOR_LOCAL_SOURCE
+#if SHADOW_FILTER_QUALITY == 1
+#define SHADOW_FILTERING_RADIUS 1.0f
+#define SHADOW_FILTERING_SAMPLES_COUNT 4
+#define OFFSET_ARRAY BokehOffsets
+#elif SHADOW_FILTER_QUALITY == 2
+#define SHADOW_FILTERING_RADIUS 2.0f
+#define SHADOW_FILTERING_SAMPLES_COUNT 12
+#define OFFSET_ARRAY poissonDisk_12
+#elif SHADOW_FILTER_QUALITY == 3
+#define SHADOW_FILTERING_RADIUS 4.0f
+#define SHADOW_FILTERING_SAMPLES_COUNT 22
+#define OFFSET_ARRAY BokehOffsets
+#endif
+#else
+#define SHADOW_FILTERING_RADIUS 1.0f
+#define SHADOW_FILTERING_SAMPLES_COUNT 9
+#define OFFSET_ARRAY BokehOffsets
+#endif
+////////////////////////////////////////////////////////////////////////////
+#define SHADOW_MAP_PIXEL_SIZE float(1.0f / float(SMAP_size) * SHADOW_FILTERING_RADIUS)
+////////////////////////////////////////////////////////////////////////////
+float sample_shadow_map(float4 TexCoords, float2 SampleBias)
+{
+    float4 SampleTexCoords = float4(TexCoords + TexCoords.w * float4(SampleBias, 0.0f, 0.0f) * SHADOW_MAP_PIXEL_SIZE);
+
+    return tex2Dproj(s_smap, SampleTexCoords).x;
+}
+
+float shadow_map_filter(float4 TexCoords)
+{
+    float ShadowMap = 0.0f;
+
+    [unroll(SHADOW_FILTERING_SAMPLES_COUNT)]
+    for(int i = 0; i < SHADOW_FILTERING_SAMPLES_COUNT; i++)
+    {
+        ShadowMap += sample_shadow_map(TexCoords, OFFSET_ARRAY[i]);
+    }
+
+    return ShadowMap / SHADOW_FILTERING_SAMPLES_COUNT;
+}
+
+float get_shadow_map(float4 TexCoords)
+{
+#if FAR_CASCADE == 0
+    float ShadowMap = shadow_map_filter(TexCoords);
+#else
+    float ShadowMap = sample_shadow_map(TexCoords, float2(0, 0));
+#endif
+
+    return ShadowMap;
+}
+////////////////////////////////////////////////////////////////////////////

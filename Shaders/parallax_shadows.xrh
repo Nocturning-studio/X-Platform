@@ -1,0 +1,146 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Created	: 07.08.2023
+//	Author	: NSDeathman
+//	Noctuning Studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "material_components.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define RENDER_DISTANCE 20
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float3 GetLightDirection(float3 LightDirection, float3x3 TBN)
+{
+	TBN = transpose(TBN);
+	return normalize(mul(TBN, LightDirection));
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//https://stackoverflow.com/questions/55089830/adding-shadows-to-parallax-occlusion-map
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float ShadowCalc(float3 Position, float3 LightDirection, float2 UV
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 BlendMask
+#endif
+)
+{
+	if(Position.z > RENDER_DISTANCE)
+		return 1.0f;
+	
+	if(LightDirection.z >= 0.0f)
+		return 0.0f;
+
+	float minLayers = 0;
+	float maxLayers = 32;
+	float numLayers = lerp(maxLayers, minLayers, abs(dot(float3(0.0f, 0.0f, 1.0f), LightDirection)));
+
+	float2 currentTexCoords = UV;
+
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    float currentDepthMapValue = invert(GetTerrainDetailHeight(BlendMask, currentTexCoords));
+#else
+	float currentDepthMapValue = invert(GetHeight(currentTexCoords));
+#endif
+
+	float currentLayerDepth = currentDepthMapValue;
+
+	float layerDepth = 1.0 / numLayers;
+	float2 P = LightDirection.xy / LightDirection.z * 0.075f;
+	float2 deltaTexCoords = P / numLayers;
+
+	while(currentLayerDepth <= currentDepthMapValue && currentLayerDepth > 0.0f)
+	{
+		currentTexCoords += deltaTexCoords;
+#ifdef USE_FOR_TERRAIN_MATERIAL
+        currentDepthMapValue = invert(GetTerrainDetailHeight(BlendMask, currentTexCoords));
+#else
+		currentDepthMapValue = invert(GetHeight(currentTexCoords));
+#endif
+		currentLayerDepth -= layerDepth;
+	}
+
+	return currentLayerDepth > currentDepthMapValue ? 0.0 : 1.0f;
+}
+
+/*
+float NormalMapShadows(float3 Position, float3 LightDirection, float2 UV, int MaterialType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 BlendMask
+#endif
+)
+{
+    LightDirection = -LightDirection;
+    float samplecount = 50.0f; // * max(1.0f - abs(IN.lightdir.z), 1.0/SampleCount);
+    float HeightScale = 0.24f;
+    float ShadowHardness = 100.0f;
+    float invsamplecount = 1.0f / samplecount;
+
+    float hardness = HeightScale * HeightScale * ShadowHardness * 50.0f;
+
+    float4 res = 0.0f;
+    float shadow = 0.0f;
+    float3 normal;
+    float2 uvddx = ddx(UV);
+    float2 uvddy = ddy(UV);
+    float3 lightdir = normalize(LightDirection);
+
+    normal = GetNormalMapGrad(UV, uvddx, uvddy);
+    //normal = normal * 2.0 - 1.0f;
+
+    float2 dir = LightDirection.xy * float2(1.0f, -1.0f) * HeightScale;
+
+	//can be used for adaptive number of steps
+	//float2	uvwidth = fwidth(dir.xy);
+	//uvwidth.x = max(uvwidth.x, uvwidth.y);
+
+	//lighting with flat normals(from vertex or depth generated)
+    float lighting = saturate(dot(lightdir, normal));
+
+    float step = invsamplecount;
+    float pos = step;
+
+	//randomization of start sample
+	//float2	noise = frac(vPos.xy*0.5);
+	//noise.x = noise.x + noise.y*0.5f;
+	//pos = step - step * noise.x;
+
+	//do not compute on back faces/pixels
+    //pos = (-lighting >= 0.0f) ? 1.001 : pos;
+
+    //if(EnableShadows == false)
+     //   pos = 1.001;
+
+    float slope = -lighting;
+    float maxslope = 0.0f;
+    float invsamplecountplusone = 1.0 + invsamplecount;
+    while(pos <= 1.0f)
+    {
+        float3 tmpNormal = GetNormalMapGrad(UV + dir * pos, uvddx, uvddy);
+        //tmpNormal = tmpNormal * 2.0 - 1.0f;
+
+		//to save memory bandwidth, you may reconstruct Z if normal have 2 channels(bad precision, sphere transform decoding is better, but slower)
+		//tmpNormal.z = sqrt(1.0-dot(tmpNormal.xy, tmpNormal.xy));
+
+        float tmpLighting = dot(lightdir, tmpNormal);
+
+        float shadowed = -tmpLighting;
+
+		//for g-buffer normals of deferred render insert here depth comparison to occlude objects, abstract code example:
+		//float2	cropminmax = saturate(1.0f - (depth - tmpDepth) * float2(4000.0f, -600.0f));
+		//cropminmax.x = cropminmax.x * cropminmax.y;
+		//shadowed *= cropminmax.x;
+
+        slope += shadowed;
+
+		//if(slope > 0.0f) shadow += slope;
+		//shadow += saturate(slope);
+        shadow += max(slope, 0.0f);
+
+        pos += step;
+    }
+
+	//these multipliers depends from shadow math in the cycle
+    shadow *= invsamplecount * invsamplecount;
+    shadow *= hardness;
+    return saturate(1.0f - shadow);
+}
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

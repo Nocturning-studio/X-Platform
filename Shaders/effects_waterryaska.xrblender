@@ -1,0 +1,110 @@
+local tex_base                = "water\\water_water"
+local tex_nmap                = "water\\water_normal"
+local tex_nmap0               = "water\\water_0_normal"
+local tex_dist                = "water\\water_dudv"
+local tex_env0                = "$user$sky0"
+local tex_env1                = "$user$sky1"
+local tex_leaves              = "water\\water_foam"
+local tex_caustic             = "water\\water_caustic" 
+
+-- ЛОКАЛЬНАЯ ФУНКЦИЯ-ПОМОЩНИК
+-- Принимает объект shader и устанавливает все общие текстуры
+local function setup_water_samplers(shader)
+  shader:sampler("s_base")              :texture(tex_base)          :f_anisotropic() :srgb()
+  shader:sampler("s_nmap")              :texture(tex_nmap)          :f_trilinear()
+  shader:sampler("s_nmap0")             :texture(tex_nmap0)         :f_trilinear()
+  shader:sampler("sky_s0")              :texture(tex_env0)          :clamp(): srgb()
+  shader:sampler("sky_s1")              :texture(tex_env1)          :clamp(): srgb()
+  
+  -- Системные текстуры и G-Buffer
+  shader:sampler("s_image")             :texture("$user$generic1")  :f_none()
+  shader:sampler("s_gbuffer_1")         :texture("$user$gbuffer_1") :f_none()
+  shader:sampler("s_gbuffer_2")         :texture("$user$gbuffer_2") :f_none()
+  shader:sampler("s_gbuffer_3")         :texture("$user$gbuffer_3") :f_none()
+  shader:sampler("s_gbuffer_4")         :texture("$user$gbuffer_4") :f_none()
+  shader:sampler("s_hi_z_mip_chain")    :texture("$user$hi_z")      :f_none()
+  shader:sampler("s_light_accumulator") :texture("$user$accumulator"):f_none()
+  shader:sampler("s_brdf_lut")          :texture("vfx\\vfx_brdf_lut"):f_none()
+
+  -- Детали воды
+  shader:sampler("s_leaves")            :texture(tex_leaves)        :wrap():f_anisotropic(): srgb()
+  shader:sampler("s_caustic")           :texture(tex_caustic)       :wrap():f_anisotropic(): srgb()
+end
+
+
+-- MAIN SHADER
+function normal(shader, t_base, t_second, t_detail)
+  shader
+      : vertex_shader("water")
+      : vertex_shader_entry("main")
+      : pixel_shader("water_common")
+      : pixel_shader_entry("main_water_base")
+      : define("WATER_TYPE_DIRTY_PUDDLE")
+      : sorting(2, false)
+      : blend(true, blend.srcalpha, blend.invsrcalpha)
+      : zb(true, false)
+      : distort(true)
+      : fog(true)
+      : commit()
+
+  setup_water_samplers(shader)
+end
+
+-- SUN SHADER
+function l_sun(shader, t_base, t_second, t_detail)
+  shader
+      : vertex_shader("water")
+      : vertex_shader_entry("main")
+      : pixel_shader("water_common")
+      : pixel_shader_entry("main_water_sun")
+      : define("WATER_TYPE_DIRTY_PUDDLE")
+      : sorting(2, false)
+      : blend(true, blend.one, blend.one)
+      : zb(true, false)
+      : distort(true)
+      : fog(true)
+      : commit()
+
+  setup_water_samplers(shader)
+end
+
+-- POINT LIGHT SHADER
+function l_point(shader, t_base, t_second, t_detail)
+  shader
+      : vertex_shader("water")
+      : vertex_shader_entry("main")
+      : pixel_shader("water_common")
+      : pixel_shader_entry("main_water_light_point") -- Точка входа в HLSL
+      : define("WATER_TYPE_DIRTY_PUDDLE")
+      : sorting(2, false)
+      : blend(true, blend.one, blend.one)            -- Аддитивное смешивание (Add light)
+      : zb(true, false)                              -- Z-Test On, Z-Write Off
+      : distort(false)
+      : fog(false)                                   -- Туман обычно накладывается в конце, но можно включить если аддитив
+      : commit()
+
+  -- Базовые семплеры воды (нужны для нормалей и волн)
+  setup_water_samplers(shader)
+end
+
+-- SPOT LIGHT SHADER
+function l_spot(shader, t_base, t_second, t_detail)
+  shader
+      : vertex_shader("water")
+      : vertex_shader_entry("main")
+      : pixel_shader("water_common")
+      : pixel_shader_entry("main_water_light_spot")  -- Точка входа в HLSL
+      : define("WATER_TYPE_DIRTY_PUDDLE")
+      : sorting(2, false)
+      : blend(true, blend.one, blend.one)            -- Аддитивное смешивание
+      : zb(true, false)
+      : distort(false)
+      : fog(false)
+      : commit()
+
+  setup_water_samplers(shader)
+  
+  -- Специфичные семплеры для Spot света
+  shader:sampler("s_smap"):texture("$user$smap_depth")
+  shader:sampler("s_lmap"):texture("internal\\internal_light_attenuation")
+end

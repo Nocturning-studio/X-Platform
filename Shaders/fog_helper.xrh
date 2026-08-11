@@ -1,0 +1,68 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 26.11.2023
+//	Author	: NSDeathman, mihan-323
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "height_fog.xrh"
+////////////////////////////////////////////////////////////////////////////
+#define USE_HEIGHT_FOG
+////////////////////////////////////////////////////////////////////////////
+#define FOG_DENSITY_MULTIPLIER 0.02f
+#define VERTICAL_FOG_DENSITY_MULTIPLIER 0.2f
+////////////////////////////////////////////////////////////////////////////
+float CalcSqaredExponentialFog(float3 Position)
+{
+    float Distance = length(Position);
+    float FogDensity = fog_params.a * FOG_DENSITY_MULTIPLIER;
+    return saturate(1.0f - exp2((-Distance * FogDensity) * (Distance * FogDensity)));
+}
+
+float CalcSqaredExponentialFogManual(float3 Position, float Density)
+{
+    float Distance = length(Position);
+    float FogDensity = Density;
+    return saturate(1.0f - exp2((-Distance * FogDensity) * (Distance * FogDensity)));
+}
+
+float CalcVerticalFog(float3 Position)
+{
+    float3 WorldSpacePosition = mul(m_invView, float4(Position.xyz, 1.0f));
+    float VerticalFogDensity = vertical_fog_density * FOG_DENSITY_MULTIPLIER;
+    return GetExponentialHeightFog(WorldSpacePosition, eye_position, VerticalFogDensity, vertical_fog_height);
+}
+
+float CalcVertexFogness(float3 Position)
+{
+    Position = Position - eye_position;
+
+    float Fog = CalcSqaredExponentialFog(Position);
+#ifdef USE_HEIGHT_FOG
+    float HeightFog = CalcVerticalFog(Position);
+    Fog += Fog * HeightFog * 0.5f;
+#endif
+    return Fog;
+}
+
+float CalcFogness(float3 Position)
+{
+    float Fog = CalcSqaredExponentialFog(Position);
+#ifdef USE_HEIGHT_FOG
+    float HeightFog = CalcVerticalFog(Position);
+    Fog = saturate(Fog + Fog * HeightFog * 0.5f);
+#endif
+    return Fog;
+}
+
+// Использование одной и той же константы в верт. и пикс. 
+// шейдере вызывает ошибку, так что для блендинга необходимо использовать 
+// цвет в отдельной константе
+float3 ApplyFogness(float3 Color, float Fogness)
+{
+    return lerp(Color, fog_color.rgb, Fogness);
+}
+
+float GetFogDensity()
+{
+    return fog_params.a;
+}
+////////////////////////////////////////////////////////////////////////////

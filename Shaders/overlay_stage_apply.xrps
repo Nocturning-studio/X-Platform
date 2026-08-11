@@ -1,0 +1,63 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 23/06/2024
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_watermark;
+///////////////////////////////////////////////////////////////////////////////////
+uniform int3 enabled_overlays;
+///////////////////////////////////////////////////////////////////////////////////
+//Thirds
+#define HORIZONTAL_LINE_ASPECT screen_res.x / screen_res.y
+#define THIRDS_LINE_SIZE 0.0025
+#define HORIZONTAL_LINE_TOP 1.0f / 3.0f
+#define HORIZONTAL_LINE_BOTTOM 2.0f / 3.0f
+#define VERTICAL_LINE_LEFT 1.0f / 3.0f
+#define VERTICAL_LINE_RIGHT 2.0f / 3.0f
+
+//Center
+#define CENTER_LINE_SIZE 0.0005
+#define HORIZONTAL_LINE_CENTER 1.0f / 2.0f
+#define VERTICAL_LINE_CENTER 1.0f / 2.0f
+
+#define LINE_COLOR float3(0.0f, 0.0f, 0)
+///////////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0) : COLOR0
+{
+    float4 ImageColor = tex2Dlod0(s_image, TexCoords);
+
+    //Lines
+	if(enabled_overlays.x > 0)
+    {
+        if(TexCoords.y > HORIZONTAL_LINE_TOP && TexCoords.y < (HORIZONTAL_LINE_TOP + THIRDS_LINE_SIZE * HORIZONTAL_LINE_ASPECT))
+            ImageColor.rgb = LINE_COLOR;
+		
+        if(TexCoords.y > HORIZONTAL_LINE_BOTTOM && TexCoords.y < (HORIZONTAL_LINE_BOTTOM + THIRDS_LINE_SIZE * HORIZONTAL_LINE_ASPECT))
+            ImageColor.rgb = LINE_COLOR;
+        
+        if(TexCoords.x > VERTICAL_LINE_LEFT && TexCoords.x < (VERTICAL_LINE_LEFT + THIRDS_LINE_SIZE))
+            ImageColor.rgb = LINE_COLOR;
+        
+        if(TexCoords.x > VERTICAL_LINE_RIGHT && TexCoords.x < (VERTICAL_LINE_RIGHT + THIRDS_LINE_SIZE))
+            ImageColor.rgb = LINE_COLOR;
+        
+        if(TexCoords.y > HORIZONTAL_LINE_CENTER && TexCoords.y < (HORIZONTAL_LINE_CENTER + CENTER_LINE_SIZE * HORIZONTAL_LINE_ASPECT))
+            ImageColor.rgb = LINE_COLOR;
+        
+        if(TexCoords.x > VERTICAL_LINE_CENTER && TexCoords.x < (VERTICAL_LINE_CENTER + CENTER_LINE_SIZE))
+            ImageColor.rgb = LINE_COLOR;
+    }
+
+    //Borders
+	if(enabled_overlays.y > 0)
+		ImageColor *= step(abs(TexCoords.y - 0.5f), 0.4f);
+
+    //Watermark
+	if(enabled_overlays.z > 0)
+		ImageColor *= tex2Dlod0(s_watermark, TexCoords);
+
+	return ImageColor;
+}
+///////////////////////////////////////////////////////////////////////////////////

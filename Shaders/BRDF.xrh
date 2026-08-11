@@ -1,0 +1,468 @@
+// =============================================================================
+// Created  : 20.11.2023
+// Author   : NSDeathman
+// Special thanks for Google (Filament) and Alro
+// Used code: 
+//  https://github.com/google/filament/blob/main/shaders/src/surface_brdf.fs
+//  https://www.shadertoy.com/view/3tlBW7
+// =============================================================================
+
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+// =============================================================================
+// UNIFORMS
+// =============================================================================
+
+uniform sampler2D s_brdf_lut;
+
+// =============================================================================
+// FRESNEL FUNCTIONS
+// =============================================================================
+
+float3 fresnelSchlick(float cosTheta, float3 F0)
+{
+    float f = safe_pow(1.0f - cosTheta, 5.0f);
+    return lerp(F0, 1.0f, f);
+}
+
+float f_fresnelSchlick(float cosTheta, float F0)
+{
+    float f = safe_pow(1.0f - cosTheta, 5.0f);
+    return lerp(F0, 1.0f, f);
+}
+
+float3 fresnelSchlickF90(float cosTheta, float3 F0, float3 F90)
+{
+    float f = safe_pow(1.0f - cosTheta, 5.0f);
+    return lerp(F0, F90, f);
+}
+
+float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
+{
+    float f = safe_pow(1.0f - cosTheta, 5.0f);
+    float3 rF0 = max(1.0f - roughness, F0);
+    return lerp(F0, rF0, f);
+}
+
+float3 Fresnel_Sheen(float HoV, float3 SheenColor)
+{
+    float f = pow5(1.0 - HoV);
+    return SheenColor + (1.0 - SheenColor) * f;
+}
+
+float F_Schlick(float f0, float f90, float VoH)
+{
+    return f0 + (f90 - f0) * pow5(1.0 - VoH);
+}
+
+// =============================================================================
+// MICROFACET DISTRIBUTION FUNCTIONS
+// =============================================================================
+
+float D_GGX(float NoH, float roughness)
+{
+    // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
+
+    // In mediump, there are two problems computing 1.0 - NoH^2
+    // 1) 1.0 - NoH^2 suffers floating point cancellation when NoH^2 is close to 1 (highlights)
+    // 2) NoH doesn't have enough precision around 1.0
+    // Both problem can be fixed by computing 1-NoH^2 in highp and providing NoH in highp as well
+
+    // However, we can do better using Lagrange's identity:
+    //      ||a x b||^2 = ||a||^2 ||b||^2 - (a . b)^2
+    // since N and H are unit vectors: ||N x H||^2 = 1.0 - NoH^2
+    // This computes 1.0 - NoH^2 directly (which is close to zero in the highlights and has
+    // enough precision).
+    // Overall this yields better performance, keeping all computations in mediump
+    float oneMinusNoHSquared = 1.0 - NoH * NoH;
+    float a = NoH * roughness;
+    float k = min(roughness / (oneMinusNoHSquared + a * a), 453.5); // 453.5 prevents fp16 overflow
+    float d = k * (k * (1.0 / PI));
+    return d;
+}
+
+// =============================================================================
+// SHEEN DISTRIBUTION FUNCTIONS
+// =============================================================================
+
+float D_Charlie(float NoH, float roughness)
+{
+    // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
+    float invAlpha = 1.0 / roughness;
+    float cos2h = NoH * NoH;
+    float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+    return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
+}
+
+// =============================================================================
+// GEOMETRY AND VISIBILITY FUNCTIONS
+// =============================================================================
+
+float Vis_SmithGGXCorrelated(float NoV, float NoL, float roughness)
+{
+    // Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"
+    float a2 = roughness * roughness;
+    // TODO: lambdaV can be pre-computed for all the lights, it should be moved out of this function
+    float lambdaV = NoL * sqrt((NoV - a2 * NoV) * NoV + a2);
+    float lambdaL = NoV * sqrt((NoL - a2 * NoL) * NoL + a2);
+    // 0.0000077 = nextafter(0.5 / MEDIUMP_FLT_MAX, 1.0) in fp16, so we don't overflow
+    float v = 0.5f / max(lambdaV + lambdaL, 1e-5);
+    // a2=0 => v = 1 / 4*NoL*NoV   => min=1/4, max=+inf
+    // a2=1 => v = 1 / 2*(NoL+NoV) => min=1/4, max=+inf
+    return v;
+}
+
+float CharlieL(float x, float a)
+{
+    float r = 1.0 / (4.0 * a);
+    return r * (x - 1.0) + log(lerp(exp(-r * (x - 1.0)), 1.0, x));
+}
+
+float Vis_Charlie(float NoL, float NoV, float SheenRoughness)
+{
+    float a = SheenRoughness;
+    float a2 = a * a;
+    
+    float GGXV = NoL * (NoV * (1.0 - a) + a);
+    float GGXL = NoV * (NoL * (1.0 - a) + a);
+    
+    return 0.5 / (GGXV + GGXL + 1e-5);
+}
+
+float Vis_Kelemen(float LoH)
+{
+    return 0.25 / max(LoH * LoH, 1e-5);
+}
+
+float Vis_Neubelt(float NoV, float NoL)
+{
+    return 1.0 / max(4.0 * (NoL + NoV - NoL * NoV), 1e-5);
+}
+
+// =============================================================================
+// DIFFUSE BRDF MODELS
+// =============================================================================
+
+float OrenNayarDiffuse(float LdotV, float NdotL, float NdotV, float Roughness)
+{
+    float sigma2 = Roughness * Roughness;
+    float A = 1.0 - 0.5 * sigma2 / (sigma2 + 0.33);
+    float B = 0.45 * sigma2 / (sigma2 + 0.09);
+    
+    float s = LdotV - NdotL * NdotV;
+    float t = lerp(1.0, max(NdotL, NdotV), step(0.0, s));
+    
+    return (A + B * max(0.0, s) / (t + 1e-5f)); 
+}
+
+float BurleyDiffuse(float roughness, float NoV, float NoL, float LoH)
+{
+    // Burley 2012, "Physically-Based Shading at Disney"
+    float f90 = 0.5 + 2.0 * roughness * LoH * LoH;
+    float lightScatter = F_Schlick(1.0, f90, NoL);
+    float viewScatter = F_Schlick(1.0, f90, NoV);
+    return lightScatter * viewScatter * (1.0 / PI);
+}
+
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
+
+float3 CalculateF0(float3 Albedo, float Metallic, float3 SpecularTint)
+{
+    float3 dielectricF0 = 0.04 * SpecularTint;
+    return lerp(dielectricF0, Albedo, Metallic);
+}
+
+// =============================================================================
+// SHEEN AND COAT UTILITY FUNCTIONS
+// =============================================================================
+
+float3 CalculateSheenColor(float3 Albedo, float Metallic, float SheenIntensity, float3 SpecularTint)
+{
+    if (Metallic > 0.5)
+        return float3(1.0, 1.0, 1.0) * min(SheenIntensity, 0.5);
+
+    float3 saturatedAlbedo = Albedo * SpecularTint;
+    float maxComponent = max(saturatedAlbedo.r, max(saturatedAlbedo.g, saturatedAlbedo.b));
+    if (maxComponent > 0.0)
+    {
+        float3 normalizedSheen = saturatedAlbedo / maxComponent;
+        return lerp(normalizedSheen, float3(1.0, 1.0, 1.0), 0.3) * SheenIntensity;
+    }
+    return SheenIntensity;
+}
+
+float CalculateCoatF0(GBuffer GBuffer, float CoatIntensity)
+{
+    float3 baseF0 = CalculateF0(GBuffer.Albedo, GBuffer.Metallic, GBuffer.SpecularTint);
+    float avgBaseF0 = dot(baseF0, float3(0.333, 0.333, 0.333));
+    float baseReflectanceInfluence = avgBaseF0 * 0.2;
+    float roughnessReduction = GBuffer.Roughness * 0.15;
+    return saturate(0.04f + baseReflectanceInfluence - roughnessReduction);
+}
+
+// =============================================================================
+// SHEEN BRDF
+// =============================================================================
+
+float3 CalculateSheen(float3 Normal, float3 ViewDirection, float3 LightDirection, float SheenRoughness, float3 SheenColor, float SheenIntensity)
+{
+    float3 H = normalize(ViewDirection + LightDirection);
+    float NdotL = saturate(dot(Normal, LightDirection));
+    float NdotV = saturate(dot(Normal, ViewDirection));
+    float NoH = saturate(dot(Normal, H));
+    float HoV = saturate(dot(H, ViewDirection));
+
+    if (NdotL <= 0.0 || NdotV <= 0.0)
+        return 0.0;
+
+    float D = D_Charlie(NoH, SheenRoughness);
+    float V = Vis_Neubelt(NdotV, NdotL);
+    float3 F = Fresnel_Sheen(HoV, SheenColor);
+    
+    return (D * V) * F * SheenIntensity * NdotL;
+}
+
+// =============================================================================
+// CLEAR COAT BRDF
+// =============================================================================
+
+float3 CalculateClearCoat(float3 Normal, float3 ViewDirection, float3 LightDirection, float CoatRoughness, float CoatIntensity, float3 CoatF0)
+{
+    float3 H = normalize(ViewDirection + LightDirection);
+    float NdotL = saturate(dot(Normal, LightDirection));
+    float NdotV = saturate(dot(Normal, ViewDirection));
+    float NoH = saturate(dot(Normal, H));
+    float HoV = saturate(dot(H, ViewDirection));
+    float LoH = saturate(dot(LightDirection, H));
+
+    float D = D_GGX(NoH, CoatRoughness);
+    float V = Vis_Kelemen(LoH);
+    float3 F = fresnelSchlick(HoV, CoatF0);
+
+    return (D * V) * F * CoatIntensity * NdotL;
+}
+
+float3 ApplyClearCoatAttenuation(float3 BaseColor, float CoatIntensity, float HoV)
+{
+    float3 Fcoat = fresnelSchlick(HoV, 0.04);
+    return BaseColor * (1.0 - Fcoat * CoatIntensity);
+}
+
+// =============================================================================
+// SUBSURFACE SCATTERING
+// =============================================================================
+
+float3 CalcSubsurfaceScattering(float3 SubsurfaceColor, float SubsurfacePower, float Roughness, float NdotV, float LdotV, float NdotL)
+{
+#if 0
+    float diffusion = saturate(-LdotV);
+    diffusion *= diffusion;
+    float rim = safe_pow(1.0 - abs(NdotV), 1.5);
+    float orientation = saturate(-NdotL * 0.3 + 0.7);
+    float roughnessFactor = 1.0 - Roughness * 0.6;
+    float subsurface = (diffusion * 0.7 + rim * 0.3) * orientation * roughnessFactor;
+    return subsurface * SubsurfaceColor * (SubsurfacePower * 2.5);
+#else
+    return 0.0f;
+#endif
+}
+
+// =============================================================================
+// SPECULAR BRDF AND MULTI-SCATTERING
+// =============================================================================
+
+float3 CalcSpecular(float3 Normal, float3 ViewDirection, float3 LightDirection, float Roughness, float3 F0, out float3 F_Out)
+{
+    float3 H = normalize(ViewDirection + LightDirection);
+    float NdotL = saturate(dot(Normal, LightDirection));
+    float NdotV = saturate(dot(Normal, ViewDirection));
+    float NoH = saturate(dot(Normal, H));
+    float HoV = saturate(dot(H, ViewDirection));
+
+    float D = D_GGX(NoH, Roughness);
+    float V = Vis_SmithGGXCorrelated(Roughness, NdotV, NdotL);
+    float3 F = fresnelSchlickRoughness(HoV, F0, Roughness);
+
+    F_Out = F;
+    return (D * V) * F;
+}
+
+float3 EnergyCompensation(float3 F0, float NdotV, float Roughness)
+{
+    float a = Roughness * Roughness;
+    float a2 = a * a;
+    float E = (1.0 - a2) / (1.0 + 0.5 * a2);
+    float3 Favg = F0 + (1.0 - F0) / 21.0;
+    float3 Fms = Favg * E / max(1.0 - Favg * (1.0 - E), 1e-5);
+    return 1.0 + Fms;
+}
+
+// =============================================================================
+// MATERIAL PROPERTIES
+// =============================================================================
+
+float3 EnergyConservingDiffuse(float3 Albedo, float3 F0, float Metallic, float Roughness, float NdotL, float NdotV, float LdotH, float LdotV)
+{
+    float3 diffuseTerm = BurleyDiffuse(Roughness, NdotV, NdotL, LdotH);
+    
+    float3 F = fresnelSchlick(NdotV, F0);
+    float3 kD = (1.0 - F) * (1.0 - Metallic);
+
+    return diffuseTerm * Albedo * kD;
+}
+
+// =============================================================================
+// LIGHTING MODELS WITH SHEEN AND COAT
+// =============================================================================
+
+float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 LightColor, float3 Shadow)
+{
+    float3 Normal = normalize(GBuffer.Normal);
+    float3 ViewDirection = normalize(-GBuffer.Position);
+    float3 LightDir = normalize(-LightDirection);
+    float3 HalfWayDirection = normalize(ViewDirection + LightDir);
+
+    float NdotL = saturate(dot(Normal, LightDir));
+    float NdotV = saturate(dot(Normal, ViewDirection) + 1e-5);
+    float LdotH = saturate(dot(LightDir, HalfWayDirection));
+    float LdotV = saturate(dot(ViewDirection, LightDir));
+    float NoH = saturate(dot(Normal, HalfWayDirection));
+
+    if (NdotL <= 0.0)
+        return 0.0;
+
+    float Roughness = clamp(GBuffer.Roughness, 0.045f, 1.0f);
+    float3 F0 = CalculateF0(GBuffer.Albedo, GBuffer.Metallic, GBuffer.SpecularTint);
+    float3 Albedo = GBuffer.Albedo;
+    
+#ifdef EXTENDED_BRDF
+    float3 clearCoatRad = 0.0;
+    float3 coatAttenuation = 1.0;
+
+    if (GBuffer.CoatIntensity > 0.0)
+    {
+        float CoatF0_Val = CalculateCoatF0(GBuffer, GBuffer.CoatIntensity);
+        float3 CoatF0_Vec = float3(CoatF0_Val, CoatF0_Val, CoatF0_Val);
+        clearCoatRad = CalculateClearCoat(Normal, ViewDirection, LightDir,
+                                          GBuffer.CoatRoughness, GBuffer.CoatIntensity, CoatF0_Vec);
+        // Аттенюация базы на основе френеля лака
+        float HoV = saturate(dot(HalfWayDirection, ViewDirection));
+        coatAttenuation = 1.0 - fresnelSchlick(HoV, 0.04) * GBuffer.CoatIntensity;
+    }
+
+    float3 sheenRad = 0.0;
+    float3 sheenAttenuation = 1.0;
+
+    if (GBuffer.SheenIntensity > 0.0)
+    {
+        float3 SheenColor = CalculateSheenColor(Albedo, GBuffer.Metallic,
+                                                 GBuffer.SheenIntensity, GBuffer.SpecularTint);
+        sheenRad = CalculateSheen(Normal, ViewDirection, LightDir,
+                                  GBuffer.SheenRoughness, SheenColor, GBuffer.SheenIntensity);
+        // Ослабление базы слоем sheen (приближённо)
+        float HoV = saturate(dot(HalfWayDirection, ViewDirection));
+        float3 Fsheen = Fresnel_Sheen(HoV, SheenColor);
+        sheenAttenuation = 1.0 - Fsheen * GBuffer.SheenIntensity;
+    }
+#else
+#define coatAttenuation 1.0f
+#define sheenAttenuation 1.0f
+#define clearCoatRad 0.0f
+#define sheenRad 0.0f
+#endif
+    
+    float3 F_Base;
+    float3 specularRad = CalcSpecular(Normal, ViewDirection, LightDir, Roughness, F0, F_Base);
+    
+    float3 energyComp = EnergyCompensation(F0, NdotV, Roughness);
+    specularRad *= energyComp;
+
+    float3 diffuseRad = EnergyConservingDiffuse(Albedo, F0, GBuffer.Metallic, Roughness, NdotL, NdotV, LdotH, LdotV);
+    
+    float3 baseLayer = (diffuseRad + specularRad) * coatAttenuation * sheenAttenuation;
+    float3 DirectLighting = baseLayer + sheenRad * coatAttenuation + clearCoatRad;
+    float3 FinalColor = DirectLighting * NdotL * LightColor * Shadow * GBuffer.Cavity;
+    
+#if 0
+    if (GBuffer.SubSurfacePower > 0.0)
+    {
+        float3 SubsurfaceColor = Albedo * GBuffer.SubSurfacePower;
+        float3 sssRad = CalcSubsurfaceScattering(SubsurfaceColor, GBuffer.SubSurfacePower, Roughness, NdotV, LdotV, NdotL);
+        FinalColor += sssRad * LightColor * Shadow * coatAttenuation;
+    }
+#endif
+
+    return FinalColor;
+}
+
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
+
+float getMipLevelFromRoughness(float roughness, float lodCount)
+{
+    float ROUGHNESS_1_MIP_RESOLUTION = 1.5;
+    float deltaLod = lodCount - ROUGHNESS_1_MIP_RESOLUTION;
+    return deltaLod * (sqrt(1.0 + 24.0 * roughness) - 1.0f) / 4.0f;
+}
+
+float3 getSpecularDominantDir(float3 rd, float3 n, float roughness)
+{
+    float smoothness = clamp(1.0f - roughness, 0.0f, 1.0f);
+    float lerpFactor = smoothness * (sqrt(smoothness) + roughness);
+    return normalize(lerp(n, reflect(rd, n), lerpFactor));
+}
+
+float CalculateAttenuation(float3 Point, float3 LightPosition, float LightSourceRange)
+{
+    float3 ToLight = Point - LightPosition;
+    float ToLightSqr = dot(ToLight, ToLight);
+    return powEXP(saturate(1.0f - ToLightSqr * LightSourceRange));
+}
+
+float CalculatePointAttenuation(float3 Point, float3 LightPosition, float LightSourceRangeInvSqr)
+{
+    float3 ToLight = LightPosition - Point;
+    float DistanceSqr = dot(ToLight, ToLight);
+    
+    float DistanceSqrNorm = DistanceSqr * LightSourceRangeInvSqr;
+    float SmoothFactor = saturate(1.0 - DistanceSqrNorm * DistanceSqrNorm);
+    SmoothFactor = SmoothFactor * SmoothFactor;
+    
+    return SmoothFactor / (DistanceSqr + 1e-4);
+}
+
+float CalculateSpotAttenuation(float3 Point, float3 LightPosition, float LightSourceRangeSqr, float3 LightDirection, float SpotCosInner, float SpotCosOuter)
+{
+    float3 ToLight = LightPosition - Point;
+    float DistanceSqr = dot(ToLight, ToLight);
+    
+    if (DistanceSqr > LightSourceRangeSqr)
+        return 0.0;
+    
+    // Физически корректное затухание по расстоянию
+    float Distance = sqrt(DistanceSqr);
+    float InvDistanceSqr = 1.0 / (DistanceSqr + 1e-6);
+    
+    float NormDistance = Distance / sqrt(LightSourceRangeSqr);
+    float RangeFade = saturate(1.0 - NormDistance * NormDistance);
+    RangeFade = RangeFade * RangeFade;
+    
+    float3 ToLightNormalized = normalize(ToLight);
+    float CosAngle = dot(ToLightNormalized, -LightDirection);
+    
+    if (CosAngle < SpotCosOuter)
+        return 0.0;
+    
+    float AngleFade = 1.0;
+    if (CosAngle < SpotCosInner)
+    {
+        float AngleNorm = (CosAngle - SpotCosOuter) / (SpotCosInner - SpotCosOuter);
+        AngleFade = smoothstep(0.0, 1.0, AngleNorm);
+    }
+    
+    return InvDistanceSqr * RangeFade * AngleFade;
+}

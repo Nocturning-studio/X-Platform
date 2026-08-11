@@ -1,0 +1,8 @@
+#include "common.xrh"
+
+float4 main(float4 C: COLOR0): COLOR
+{
+	float4 result = C;
+
+    return result;
+}

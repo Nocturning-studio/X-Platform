@@ -1,0 +1,6 @@
+#include "common.xrh"
+
+float4 main(float4 P:	POSITION): POSITION
+{
+	return mul(m_WorldViewProject,	P);
+}

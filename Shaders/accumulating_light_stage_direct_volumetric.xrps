@@ -1,0 +1,132 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2025
+// Author: NSDeathMan
+// Modified: Step 2 - Wide Beams & Distance Cap
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "shadow_filtering.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float4 TexCoords : TEXCOORD0;
+    float2 PixelPosition : VPOS;
+};
+///////////////////////////////////////////////////////////////////////////////////
+#if SUN_SHAFTS_QUALITY == 1
+    #define RAY_SAMPLES 12
+#elif SUN_SHAFTS_QUALITY == 2
+    #define RAY_SAMPLES 16
+#elif SUN_SHAFTS_QUALITY == 3
+    #define RAY_SAMPLES 24
+#else
+    #define RAY_SAMPLES 16
+#endif
+
+#define G_SCATTERING 0.6f 
+#define FOG_DENSITY 0.1f
+#define MAX_RAY_DISTANCE 70.0f
+
+// --- ИЗМЕНЕНИЕ 1: Добавил настройки смещения ---
+// Насколько сильно "вдавливать" тень. 
+// Если лучи все еще просвечивают - увеличивай (0.002, 0.005). 
+// Если тени исчезли там, где не надо (Peter Panning) - уменьшай.
+#define SHADOW_BIAS 0.003f 
+
+// Отступ от геометрии (в метрах). 
+// Луч остановится за 15 см до стены, чтобы не собирать глюки с поверхности.
+#define GEOMETRY_MARGIN 0.15f 
+
+///////////////////////////////////////////////////////////////////////////////////
+float GetMiePhase(float cosTheta, float g)
+{
+    float g2 = g * g;
+    float result = (1.0f - g2) / (4.0f * PI * pow(max(0.001f, 1.0f + g2 - 2.0f * g * cosTheta), 1.5f));
+    return result + 0.15f; 
+}
+///////////////////////////////////////////////////////////////////////////////////
+
+float InterleavedGradientNoise(float2 pixelPos)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(pixelPos, magic.xy)));
+}
+
+float4 main(Interpolators Input) : COLOR0
+{
+    float2 texCoord = Input.TexCoords.xy / Input.TexCoords.w;
+    float3 Position = GetPosition(texCoord);
+    
+    float3 cameraPos = float3(0.0f, 0.0f, 0.0f);
+    
+    float3 viewVector = Position - cameraPos;
+    float viewLength = length(viewVector);
+    float3 viewDir = viewVector / viewLength;
+    
+    float3 lightDir = -Ldynamic_dir.xyz;
+    
+    float cosTheta = dot(viewDir, lightDir);
+    float phase = GetMiePhase(cosTheta, G_SCATTERING); 
+    
+    float cosine, sine;
+    const float rotationAngle = PI / RAY_SAMPLES;
+    sincos(rotationAngle, sine, cosine);
+    float2x2 rotationMatrix = float2x2(cosine, -sine, sine, cosine);
+
+    // --- ИЗМЕНЕНИЕ: Используем IGN вместо fmod ---
+    float JitterOffset = InterleavedGradientNoise(Input.PixelPosition);
+
+    float2 sampleDirection;
+    // Увеличил множитель частоты для sampleDirection, чтобы тени тоже шумели приятно
+    sincos(7.0f * PI * JitterOffset, sampleDirection.y, sampleDirection.x);
+    sampleDirection = lerp(sampleDirection, JitterOffset, 0.5f);
+
+    float safeViewLength = max(0.0f, viewLength - GEOMETRY_MARGIN);
+    float rayLength = min(safeViewLength, MAX_RAY_DISTANCE);
+    
+    float stepSize = rayLength / RAY_SAMPLES;
+    float currentDist = JitterOffset * stepSize; // Используем скалярный JitterOffset
+    
+    float volumetricLight = 0.0f;
+
+    if(Position.z < 0.01f)
+    {
+        volumetricLight = 0.1f * phase; 
+    }
+    else
+    {
+        [loop]
+        for (int i = 0; i < RAY_SAMPLES; ++i)
+        {
+            sampleDirection = mul(sampleDirection, rotationMatrix);
+            float3 currentPos = cameraPos + viewDir * currentDist;
+        
+            float4 shadowCoord = mul(m_shadow, float4(currentPos, 1.0f));
+            shadowCoord.xyz /= shadowCoord.w;
+            
+            shadowCoord.z += SHADOW_BIAS;
+
+            float lightAmount = 0.0f;
+        
+            if (shadowCoord.x >= 0.0f && shadowCoord.x <= 1.0f && 
+                shadowCoord.y >= 0.0f && shadowCoord.y <= 1.0f &&
+                shadowCoord.z > 0.0f && shadowCoord.z < 1.0f)
+            {
+                lightAmount = sample_shadow_map(shadowCoord, sampleDirection.xy);
+            }
+        
+            float attenuation = exp(-currentDist * FOG_DENSITY);
+        
+            volumetricLight += lightAmount * phase * attenuation * stepSize;
+        
+            currentDist += stepSize;
+        }
+
+        float fSturation = -Ldynamic_dir.z;
+        fSturation = 0.5f * fSturation + 0.5f;
+	    volumetricLight *= fSturation;
+    }
+    
+    return volumetricLight;
+}

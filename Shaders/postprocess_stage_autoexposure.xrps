@@ -1,0 +1,157 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Combined Autoexposure Shader
+//	Created	: 08.11.2025
+//	Author	: NSDeathman
+//	NSProjectX Nocturning Studio - 2025
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Uniforms & Samplers
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 autoexposure_params; // x: middlegray, y: low_lum, z: adaptation_speed, w: time_delta
+uniform float4 adaptation_params;   // x: speed, y: time_delta
+uniform float4 mip_data;            // xy: inv_resolution, zw: texel_size
+
+uniform sampler2D s_luminance;
+uniform sampler2D s_luminance_previous;
+uniform sampler2D s_mip_chain;
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 1: Initial Initialization
+// Изначальная инициализация перед всем процессом рендера
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 InitialPass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float3 AverageLuminance = 0;
+    float2 texelSize = screen_res.zw;
+
+    int samples = 0;
+    for (int x = -4; x <= 4; x++)
+    {
+        for (int y = -4; y <= 4; y++)
+        {
+            AverageLuminance += tex2D(s_image, TexCoords + texelSize * float2(x, y)).rgb;
+            samples++;
+        }
+    }
+
+    // Дополнительные диагональные сэмплы для большего покрытия
+    for (int d = -1; d <= 1; d += 2)
+    {
+        AverageLuminance += tex2D(s_image, TexCoords + texelSize * float2(1.5 * d, 1.5 * d)).rgb;
+        AverageLuminance += tex2D(s_image, TexCoords + texelSize * float2(1.5 * d, -1.5 * d)).rgb;
+        samples += 2;
+    }
+
+    AverageLuminance /= float(samples);
+
+    // Смешиваем с центральным пикселем (опционально, как было в оригинале, хотя логика странная - перезапись)
+    // AverageLuminance = tex2D(s_image, TexCoords).rgb; // В оригинале это перезаписывало расчеты выше. Возможно, имелось в виду += или lerp.
+    // Оставим только расчет среднего, если строка выше была ошибкой копипасты, 
+    // либо раскомментируйте, если так задумано автором.
+
+    float luminance = dot(AverageLuminance, float3(0.2126f, 0.7152f, 0.0722f));
+
+    return float4(luminance, luminance, luminance, 1.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 2: Generate Mip Levels
+// Генерация мип уровней (даунсемплинг)
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 GenerateMipChainPass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float mip_chain = 0.0;
+    float total_weight = 0.0;
+
+    // Ядро Гаусса 5x5 с увеличенным радиусом
+    const float kernel[5] = {0.0625, 0.25, 0.375, 0.25, 0.0625};
+    const float2 offsets[25] = {
+        float2(-2.0, -2.0), float2(-1.0, -2.0), float2(0.0, -2.0), float2(1.0, -2.0), float2(2.0, -2.0),
+        float2(-2.0, -1.0), float2(-1.0, -1.0), float2(0.0, -1.0), float2(1.0, -1.0), float2(2.0, -1.0),
+        float2(-2.0,  0.0), float2(-1.0,  0.0), float2(0.0,  0.0), float2(1.0,  0.0), float2(2.0,  0.0),
+        float2(-2.0,  1.0), float2(-1.0,  1.0), float2(0.0,  1.0), float2(1.0,  1.0), float2(2.0,  1.0),
+        float2(-2.0,  2.0), float2(-1.0,  2.0), float2(0.0,  2.0), float2(1.0,  2.0), float2(2.0,  2.0)
+    };
+
+    // Применяем фильтр Гаусса 5x5
+    for (int i = 0; i < 25; i++)
+    {
+        int x = i % 5;
+        int y = i / 5;
+        float weight = kernel[x] * kernel[y];
+
+        float2 sampleUV = TexCoords + mip_data.zw * offsets[i] * 1.5; // Увеличиваем радиус в 1.5 раза
+        mip_chain += tex2Dlod(s_mip_chain, float4(sampleUV, mip_data.xy)).r * weight;
+        total_weight += weight;
+    }
+
+    return mip_chain / total_weight;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 3: Prepare Luminance
+// Подготовка яркости (Адаптация)
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 PrepareLuminancePass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float currentLum = 0.0f;
+
+    // Выборка из последнего уровня мип-чейна (предположительно 1x1 или около того)
+    currentLum += tex2Dlod(s_luminance, float4(TexCoords + mip_data.zw * float2(1.5f, -0.5f), 0, 8)).r;
+    currentLum += tex2Dlod(s_luminance, float4(TexCoords + mip_data.zw * float2(1.5f, 1.5f), 0, 8)).r;
+    currentLum += tex2Dlod(s_luminance, float4(TexCoords + mip_data.zw * float2(-0.5f, -0.5f), 0, 8)).r;
+    currentLum += tex2Dlod(s_luminance, float4(TexCoords + mip_data.zw * float2(-0.5f, 1.5f), 0, 8)).r;
+
+    currentLum *= 0.25f;
+
+    float previousLum = tex2D(s_luminance_previous, float2(0.5f, 0.5f)).r;
+
+    // Логарифмическая обработка для лучшей адаптации
+    currentLum = log(max(currentLum, 0.0001f));
+    previousLum = log(max(previousLum, 0.0001f));
+
+    // Фактор адаптации с ограничениями
+    float adaptation_speed = adaptation_params.x;
+    float time_delta = adaptation_params.y;
+
+    // Ограничиваем параметры для стабильности
+    adaptation_speed = clamp(adaptation_speed, 0.01f, 10.0f);
+    time_delta = clamp(time_delta, 0.001f, 0.1f);
+
+    float adaptation_factor = adaptation_speed * time_delta;
+    adaptation_factor = clamp(adaptation_factor, 0.001f, 1.0f);
+
+    // Интерполяция в логарифмическом пространстве
+    float adaptedLum_log = lerp(previousLum, currentLum, adaptation_factor);
+
+    // Возвращаемся из логарифмического пространства
+    float adaptedLum = exp(adaptedLum_log);
+
+    return float4(adaptedLum, adaptedLum, adaptedLum, 1.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 4: Apply Exposure
+// Применение автоэкспозиции к изображению
+// Entry Point: pass_apply
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ApplyPass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float adaptedLum = tex2D(s_luminance, float2(0.5f, 0.5f)).r;
+
+    // Вычисление экспозиции
+    float exposure = autoexposure_params.x / (adaptedLum + 0.001f);
+    exposure = clamp(exposure, autoexposure_params.y, 1.6f);
+
+    return float4(exposure, exposure, exposure, 1.0f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ApplyPassDummy(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float DummyLum = 10.0f;
+
+    return float4(DummyLum, DummyLum, DummyLum, 1.0f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////

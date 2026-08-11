@@ -1,0 +1,32 @@
+/*********************************************************************************/
+// Data - 21.06.2023
+// NSDeathman Experemental
+// Only non commertial using
+/*********************************************************************************/
+// Chat GPT function 
+///////////////////////////////////////////////////////////////////////////////////
+float3 convert_height_to_normal(float HeightMap)
+{
+    float DUHeightMap = ddx(HeightMap);
+    float DVHeightMap = ddy(HeightMap);
+    float3 HeightToNormal = normalize(cross(float3(1, 0.0f, DUHeightMap), float3(0.0f, 1, DVHeightMap)));
+    return (HeightToNormal * 0.5 + 0.5);
+}
+///////////////////////////////////////////////////////////////////////////////////
+// Author: LVutner
+///////////////////////////////////////////////////////////////////////////////////
+float3 Blend_Normal_Maps(float3 NormalMap_1, float3 NormalMap_2)
+{
+    NormalMap_1 += float3(0.0f, 0.0f, 1);
+    NormalMap_2 *= float3(-1, -1, 1);
+    return NormalMap_1 * dot(NormalMap_1, NormalMap_2) / NormalMap_1.z - NormalMap_2;
+}
+///////////////////////////////////////////////////////////////////////////////////
+float3 Unpack_Normal_Map(float2 PackedNormal)
+{
+    float3 Normal;
+    Normal.xy = PackedNormal;
+    Normal.z = sqrt(1.0f - dot(PackedNormal.xy, PackedNormal.xy));
+    return Normal;
+}
+///////////////////////////////////////////////////////////////////////////////////

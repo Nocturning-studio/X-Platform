@@ -1,0 +1,141 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//  Author: NSDeathman
+//  Nocturning studio for X-Platform project
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 image_resolution;
+//////////////////////////////////////////////////////////////////////////////////////////
+#define AO_RADIUS         4.0f      // Радиус (чуть уменьшил для четкости)
+#define AO_SAMPLES        4         // Количество лучей (направлений)
+#define AO_STEPS          6         // Количество шагов (увеличил с 4 до 6 против полос)
+#define AO_INTENSITY      1.0f      // Сила затенения
+#define AO_BIAS           0.02f     // Смещение (защита от черноты)
+#define MAX_PIXEL_RADIUS  100.0f    // ВАЖНО: Лимит радиуса в пикселях (убирает полосы вблизи)
+#define RENDER_DISTANCE   100.0f    // Дальность
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+float GetFalloff(float distSq) 
+{
+    return saturate(1.0f - distSq / (AO_RADIUS * AO_RADIUS));
+}
+
+// Interleaved Gradient Noise (IGN)
+// Лучший шум для скрытия полос (banding) и артефактов
+float GetIGN(float2 position)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(position, magic.xy)));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
+{
+    float3 P, N;
+    GetPositionAndNormal(TexCoords, P, N);
+
+    // Оптимизация и проверки
+    if (P.z > RENDER_DISTANCE || P.z <= 0.05f || dot(N, N) < 0.1f) 
+    {
+        return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    float3 V = -normalize(P);
+
+    // Фикс нормалей (на всякий случай)
+    if (dot(N, V) < 0.0f) N = -N;
+
+    // Сдвиг начала луча (Фикс самозатенения)
+    float3 origin = P + N * AO_BIAS;
+
+    // Расчет радиуса
+    // Вблизи P.z маленький, результат деления огромный.
+    // min(..., MAX_PIXEL_RADIUS) — это ГЛАВНЫЙ фикс полос. 
+    // Мы запрещаем лучу искать дальше 100 пикселей, даже если физически радиус позволяет.
+    float pixelRadius = (AO_RADIUS * screen_res.y) / P.z;
+    pixelRadius = min(pixelRadius, MAX_PIXEL_RADIUS); 
+
+    if (pixelRadius < 1.0f) return 1.0f;
+
+    // Генерируем качественный шум
+    float jitter = GetIGN(float2(Position2D.x, Position2D.y));
+    
+    float occlusion = 0.0f;
+    float2 aspect = float2(1.0f, screen_res.x * screen_res.w);
+
+    // ================= Raymarching =================
+    [unroll(AO_SAMPLES)]
+    for (int i = 0; i < AO_SAMPLES; i++)
+    {
+        // Поворот угла поиска + джиттер
+        float angle = (float(i) + jitter) * (PI * 2.0f / float(AO_SAMPLES));
+        float2 dir = float2(cos(angle), sin(angle));
+        float2 texDir = dir * aspect * screen_res.zw;
+
+        // Внутренний цикл шагов
+        [unroll(AO_STEPS)]
+        for (int j = 0; j < AO_STEPS; j++)
+        {
+            // Считаем шаг.
+            // (j + jitter) — сдвигает выборку для каждого пикселя по-разному.
+            // Это превращает жесткие "полосы" в незаметный мелкий "шум".
+            float stepPos = (float(j) + jitter) / float(AO_STEPS);
+            
+            // Квадратичное распределение: больше сэмплов у основания, меньше на краях
+            // pow(..., 1.5) или 2.0 дает приятный результат
+            float r = pixelRadius * stepPos * stepPos + 1.0f; 
+            
+            float2 uv = TexCoords + texDir * r;
+            
+            float3 S = GetPosition(uv);
+            float3 diff = S - origin;
+            float distSq = dot(diff, diff);
+
+            if (distSq < AO_RADIUS * AO_RADIUS)
+            {
+                float dist = sqrt(distSq);
+                float3 L = diff / dist;
+                
+                float NdotL = dot(N, L);
+                
+                // Bias угла + Falloff по дистанции
+                // 0.1f - угол отсечения плоских поверхностей
+                float sampleOcc = max(0.0f, NdotL - 0.1f); 
+                
+                occlusion += sampleOcc * GetFalloff(distSq);
+            }
+        }
+    }
+
+    occlusion /= float(AO_SAMPLES * AO_STEPS);
+    
+    // Настройка контраста
+    // Умножаем на 6.0, чтобы тени были сочными, но не черными дырами
+    occlusion = saturate(occlusion * AO_INTENSITY * 3.0f);
+    
+    float visibility = 1.0f - occlusion;
+    
+    // Гамма 2.2 делает переходы мягче, скрывая остатки бендинга
+    visibility = pow(visibility, 2.2f);
+
+    float fade = smoothstep(RENDER_DISTANCE * 0.9f, RENDER_DISTANCE, P.z);
+    visibility = lerp(visibility, 1.0f, fade);
+
+    return float4(visibility, visibility, visibility, 1.0f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 denoise_pass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float ao = 0.0f;
+    
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(1.5f, -0.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(1.5f, 1.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(-0.5f, -0.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(-0.5f, 1.5f)).r;
+    
+    return ao * 0.25f;
+}
+//////////////////////////////////////////////////////////////////////////////////////////

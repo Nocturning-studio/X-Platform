@@ -1,0 +1,372 @@
+////////////////////////////////////////////////////////////////////////////
+//  Created : 06.04.2025
+//  Original Author : Screen Space Shaders Addon, NSDeathman
+//  Description : Procedural 3D Wind
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+
+////////////////////////////////////////////////////////////////////////////
+// ВХОДНЫЕ ДАННЫЕ
+////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_wave_map;
+uniform sampler2D s_custom_weight;
+
+uniform float4 wind_turbulence; // x=Power, y=ClampedTurbulence, z=Time
+uniform float4 wind_params;     // xyz=Direction, w=Gusting
+
+////////////////////////////////////////////////////////////////////////////
+// МАКРОСЫ
+////////////////////////////////////////////////////////////////////////////
+#define DYNAMIC_WIND_POWER    wind_turbulence.x
+#define TURBULENCE_CLAMPED    wind_turbulence.y
+#define ANIMATION_TIME        wind_turbulence.z
+#define WIND_DIRECTION        normalize(wind_params.xyz) 
+#define WIND_DIRECTION_2D     normalize(wind_params.xz) 
+#define WIND_GUST_FACTOR      wind_params.w
+
+////////////////////////////////////////////////////////////////////////////
+// СТРУКТУРЫ
+////////////////////////////////////////////////////////////////////////////
+struct WindContext
+{
+    float3 WorldPosition;       
+    float3 ObjectCenter;        
+    float3 Normal;              
+    float3 Tangent;             
+    float3 Binormal;            
+    float  HeightRelativeToRoot;
+    float  Rigidity;            
+    float2 TextureCoordinates;  
+};
+
+////////////////////////////////////////////////////////////////////////////
+// NOISE LIBRARY
+////////////////////////////////////////////////////////////////////////////
+float3 CalculateModulo289(float3 InputValue) { return InputValue - floor(InputValue * (1.0 / 289.0)) * 289.0; }
+float4 CalculateModulo289(float4 InputValue) { return InputValue - floor(InputValue * (1.0 / 289.0)) * 289.0; }
+float4 CalculatePermutation(float4 InputValue) { return CalculateModulo289(((InputValue * 34.0) + 1.0) * InputValue); }
+float4 CalculateTaylorInverseSquareRoot(float4 InputValue) { return 1.79284291400159 - 0.85373472095314 * InputValue; }
+
+float CalculateSimplexNoise3D(float3 VectorInput)
+{ 
+    const float2 ConstantC = float2(1.0/6.0, 1.0/3.0);
+    const float4 ConstantD = float4(0.0, 0.5, 1.0, 2.0);
+
+    float3 GridCell = floor(VectorInput + dot(VectorInput, ConstantC.yyy));
+    float3 PositionInCell = VectorInput - GridCell + dot(GridCell, ConstantC.xxx);
+
+    float3 StepValue = step(PositionInCell.yzx, PositionInCell.xyz);
+    float3 InverseStep = 1.0 - StepValue;
+    float3 Offset1 = min(StepValue.xyz, InverseStep.zxy);
+    float3 Offset2 = max(StepValue.xyz, InverseStep.zxy);
+
+    float3 Position1 = PositionInCell - Offset1 + ConstantC.xxx;
+    float3 Position2 = PositionInCell - Offset2 + ConstantC.yyy;
+    float3 Position3 = PositionInCell - ConstantD.yyy;
+
+    GridCell = CalculateModulo289(GridCell); 
+    float4 Permutation = CalculatePermutation( CalculatePermutation( CalculatePermutation( 
+               GridCell.z + float4(0.0, Offset1.z, Offset2.z, 1.0))
+             + GridCell.y + float4(0.0, Offset1.y, Offset2.y, 1.0)) 
+             + GridCell.x + float4(0.0, Offset1.x, Offset2.x, 1.0));
+
+    float Normalizer = 0.142857142857; 
+    float3 NoiseScale = Normalizer * ConstantD.wyz - ConstantD.xzx;
+
+    float4 JValue = Permutation - 49.0 * floor(Permutation * NoiseScale.z * NoiseScale.z);
+    float4 XIndex = floor(JValue * NoiseScale.z);
+    float4 YIndex = floor(JValue - 7.0 * XIndex);
+
+    float4 GradientX = XIndex * NoiseScale.x + NoiseScale.yyyy;
+    float4 GradientY = YIndex * NoiseScale.x + NoiseScale.yyyy;
+    float4 GradientH = 1.0 - abs(GradientX) - abs(GradientY);
+
+    float4 B0 = float4(GradientX.xy, GradientY.xy);
+    float4 B1 = float4(GradientX.zw, GradientY.zw);
+
+    float4 S0 = floor(B0) * 2.0 + 1.0;
+    float4 S1 = floor(B1) * 2.0 + 1.0;
+    float4 ShapeMask = -step(GradientH, float4(0.0,0.0,0.0,0.0));
+
+    float4 A0 = B0.xzyw + S0.xzyw * ShapeMask.xxyy;
+    float4 A1 = B1.xzyw + S1.xzyw * ShapeMask.zzww;
+
+    float3 Point0 = float3(A0.xy, GradientH.x);
+    float3 Point1 = float3(A0.zw, GradientH.y);
+    float3 Point2 = float3(A1.xy, GradientH.z);
+    float3 Point3 = float3(A1.zw, GradientH.w);
+
+    float4 NormResult = CalculateTaylorInverseSquareRoot(float4(dot(Point0,Point0), dot(Point1,Point1), dot(Point2, Point2), dot(Point3,Point3)));
+    Point0 *= NormResult.x;
+    Point1 *= NormResult.y;
+    Point2 *= NormResult.z;
+    Point3 *= NormResult.w;
+
+    float4 MixValue = max(0.6 - float4(dot(PositionInCell,PositionInCell), dot(Position1,Position1), dot(Position2,Position2), dot(Position3,Position3)), 0.0);
+    MixValue = MixValue * MixValue;
+    
+    return 42.0 * dot(MixValue * MixValue, float4(dot(Point0,PositionInCell), dot(Point1,Position1), dot(Point2,Position2), dot(Point3,Position3)));
+}
+
+////////////////////////////////////////////////////////////////////////////
+// UTILS
+////////////////////////////////////////////////////////////////////////////
+float SampleWeightMap(float2 TextureCoordinates)
+{
+    TextureCoordinates.y = invert(TextureCoordinates.y);
+    float WeightResult = 0.0f;
+#ifdef USE_WEIGHT_MAP
+    WeightResult = tex2Dlod0(s_custom_weight, TextureCoordinates).r;
+#endif
+#if USE_X_AXIS_AS_WEIGHT
+    WeightResult = TextureCoordinates.x;
+#elif USE_Y_AXIS_AS_WEIGHT
+    WeightResult = TextureCoordinates.y;
+#elif USE_BOTH_AXIS_AS_WEIGHT
+    WeightResult = avg2(TextureCoordinates);
+#endif
+#if INVERT_WEIGHT_AXIS
+    WeightResult = invert(WeightResult);
+#endif
+    return WeightResult;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// ФИЗИКА ТРАВЫ (GRASS)
+////////////////////////////////////////////////////////////////////////////
+float3 CalcGrassWind(float3 Position, float Height)
+{
+    // Ограничиваем турбулентность
+    float Turbulence = (1.0f + min(TURBULENCE_CLAMPED, 1.0f));
+    
+    // Ограничиваем влияние Gusting
+    float SafeGustFactor = min(wind_params.w, 1.25f);
+    
+    // Вычисление скорости с которой наша карта будет плыть по траве
+    float BaseSpeedMultiplier = 1.0f;
+    float2 SpeedOffsetMultiplier = wind_turbulence.z * WIND_DIRECTION_2D * BaseSpeedMultiplier;
+
+    // Вычисление масштаба (Обычный масштаб карты + плавающее экстра значение для сильного ветра)
+    float BaseScaleMultiplier = 0.015f;
+    float StormyScaleMultiplier = min(SafeGustFactor * Turbulence * 0.5f, 0.025f);
+    float ScaleMultiplier = BaseScaleMultiplier + StormyScaleMultiplier;
+
+    float3 Flow = tex2Dlod0(s_wave_map, (Position.xz + SpeedOffsetMultiplier) * ScaleMultiplier).xyz;
+
+    float2 GrassMotion = Flow.xyz * 2.0f - 1.0f;
+    
+    float HeightLimit = saturate(pow2(Height) - 0.01f) * saturate(1.0f - Height * 0.1f);
+    
+    // 3. Итоговое ограничение силы
+    float Intensity = min(DYNAMIC_WIND_POWER, 0.8f);
+    
+    // Рассчитываем горизонтальное смещение (как и раньше)
+    float2 HorizontalOffset = (Flow.z * -WIND_DIRECTION_2D + GrassMotion) * Turbulence * HeightLimit * SafeGustFactor * Intensity * 0.5f;
+
+    // --- LENGTH PRESERVATION (Сохранение длины) ---
+    
+    // Считаем, насколько сильно мы сдвинули вершину по горизонтали
+    float BendDistance = length(HorizontalOffset);
+    
+    // ВАЖНО: Нельзя сдвигать вершину дальше, чем её собственная высота (иначе корень из отрицательного числа = артефакты)
+    // Ограничиваем изгиб на уровне 95% от высоты для безопасности
+    float MaxBend = max(Height * 0.95f, 0.001f); 
+    
+    if(BendDistance > MaxBend)
+    {
+        // Если ветер слишком сильный, масштабируем смещение обратно к лимиту
+        float Ratio = MaxBend / BendDistance;
+        HorizontalOffset *= Ratio;
+        BendDistance = MaxBend;
+    }
+
+    // Теорема Пифагора: NewY = sqrt(Hypotenuse^2 - Side^2)
+    // Мы находим новую высоту вершины после наклона
+    float NewHeight = sqrt(max(0.0f, pow2(Height) - pow2(BendDistance)));
+    
+    // Разница между старой высотой и новой — это наше смещение вниз (оно будет отрицательным)
+    float VerticalOffset = NewHeight - Height;
+
+    // Возвращаем XYZ смещение (X, Y_drop, Z)
+    return float3(HorizontalOffset.x, VerticalOffset, HorizontalOffset.y);
+}
+
+////////////////////////////////////////////////////////////////////////////
+// ФИЗИКА СТВОЛА (TREE TRUNK)
+////////////////////////////////////////////////////////////////////////////
+float3 CalculateTrunkWind(WindContext Context)
+{
+    // --- НАСТРОЙКИ ШУМА ---
+    float WorldSpaceNoiseScale = 0.12f; 
+    float WindFlowSpeed = 0.12f; 
+    
+    float3 WindFlowOffset = -WIND_DIRECTION * ANIMATION_TIME * WindFlowSpeed;
+    float3 NoiseSamplePosition = (Context.ObjectCenter * WorldSpaceNoiseScale) - WindFlowOffset;
+    NoiseSamplePosition.y += ANIMATION_TIME * 0.02f; 
+
+    float RawNoiseValue = CalculateSimplexNoise3D(NoiseSamplePosition);
+    float NormalizedGust = RawNoiseValue * 0.5f + 0.5f;
+    float SharpGustCurve = safe_pow(NormalizedGust, 2.5f); 
+    float ShapedGustNoise = SharpGustCurve * 2.0f - 1.0f;
+    float CrossSwayNoise = CalculateSimplexNoise3D(NoiseSamplePosition + float3(50.0f, 0.0f, -50.0f));
+
+    // --- РАСЧЕТ СИЛ ---
+    float CurrentWindPower = DYNAMIC_WIND_POWER;
+    
+    float TrunkLeanForce = CurrentWindPower * (0.8f + ShapedGustNoise * 0.4f);
+    TrunkLeanForce = max(TrunkLeanForce, CurrentWindPower * 0.25f);
+
+    float3 UpVector = float3(0, 1, 0);
+    float3 SideDirection = normalize(cross(-WIND_DIRECTION, UpVector + float3(0.001, 0, 0))); 
+    float SideSwayForce = CrossSwayNoise * CurrentWindPower * 0.15f; 
+
+    // --- МАТЕМАТИКА (TAPERED BEAM) ---
+    
+    float Height = max(Context.HeightRelativeToRoot, 0.0f);
+    
+    // Степень 1.9 обеспечивает равномерный изгиб от корня
+    float BaseCurve = pow(Height, 1.9f);
+    
+    // Утончение к верху (чем выше, тем легче гнется)
+    float ThicknessFactor = 1.0f / (1.0f + Height * 0.15f);
+    
+    // Жесткость
+    float LocalStiffness = max(Context.Rigidity * ThicknessFactor, 0.05f);
+    
+    // === ИЗМЕНЕНИЕ 1: УМЕНЬШЕНИЕ АМПЛИТУДЫ ===
+    // Было 0.005f -> Стало 0.0028f
+    // Это значительно снижает размах колебаний
+    float GlobalScale = 0.0028f; 
+    
+    float BendingFactor = (BaseCurve * GlobalScale) / LocalStiffness;
+
+    // --- СБОРКА СМЕЩЕНИЯ ---
+
+    float3 MainWindVector = -WIND_DIRECTION * TrunkLeanForce;
+    float3 SideSwayVector = SideDirection * SideSwayForce;
+    
+    float3 Displacement = (MainWindVector + SideSwayVector) * BendingFactor;
+
+    // --- ФИЗИЧЕСКИЕ ОГРАНИЧЕНИЯ (LIMITS) ---
+
+    float CurrentBendDistance = length(Displacement);
+    
+    // Было 0.90f -> Стало 0.45f
+    // Дерево теперь не может согнуться больше чем на 45% от своей высоты.
+    // Это предотвращает "эффект резины" при экстремальных значениях ветра.
+    float MaxAllowedBend = Height * 0.45f;
+    
+    if (CurrentBendDistance > MaxAllowedBend && Height > 0.1f)
+    {
+        float ratio = MaxAllowedBend / CurrentBendDistance;
+        Displacement *= ratio; 
+        CurrentBendDistance = MaxAllowedBend;
+    }
+
+    // Сохранение длины (Volume Preservation)
+    float Y_Drop = Height - sqrt(max(0.0f, pow2(Height) - pow2(CurrentBendDistance)));
+    Displacement.y -= Y_Drop;
+
+    return Displacement;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// ФИЗИКА ЛИСТЬЕВ (LEAF CARDS)
+////////////////////////////////////////////////////////////////////////////
+float3 CalculateLeafCardWind(WindContext Context)
+{
+    float HeightFactor = saturate(normalize(pow2(Context.HeightRelativeToRoot)));
+    float WeightMap = SampleWeightMap(Context.TextureCoordinates);
+    float BroadTurbulence = 1.0f + TURBULENCE_CLAMPED;
+    
+    float WindCatchFactor = saturate(dot(Context.Normal, -WIND_DIRECTION) + 0.2f);
+    float LeafAnimationSpeed = 1.25f; 
+    
+    float3 NoiseSamplePos = Context.WorldPosition * 1.2f; 
+    NoiseSamplePos += WIND_DIRECTION * ANIMATION_TIME * LeafAnimationSpeed;
+
+    float FlutterNoiseValue = CalculateSimplexNoise3D(NoiseSamplePos + float3(0, ANIMATION_TIME * 1.5f * LeafAnimationSpeed, 0));
+    float3 SurfaceFlutterMove = Context.Normal * FlutterNoiseValue;
+
+    float TumbleNoiseValue = CalculateSimplexNoise3D(NoiseSamplePos * 0.6f + float3(ANIMATION_TIME * LeafAnimationSpeed, 0, 0));
+    float3 RotationTumbleMove = (Context.Tangent + Context.Binormal) * TumbleNoiseValue * 0.8f;
+    float3 TotalLeafMotion = (SurfaceFlutterMove + RotationTumbleMove);
+    
+    // Листья не должны улетать на метр от ветки, даже в ураган.
+    float SafeWindPower = min(DYNAMIC_WIND_POWER, 0.75f); 
+    
+    float TotalIntensity = SafeWindPower * (0.4f + WindCatchFactor * 0.6f);
+    float MotionScale = 0.25f; 
+
+    float3 Result = TotalLeafMotion * TotalIntensity * WeightMap * HeightFactor * Context.Rigidity * MotionScale * BroadTurbulence;
+    
+    float MoveLen = length(Result);
+    if(MoveLen > 0.2f) Result *= (0.2f / MoveLen);
+
+    return Result;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// ФИЗИКА ВЕТОК (BRANCH CARDS)
+////////////////////////////////////////////////////////////////////////////
+float3 CalculateBranchCardWind(WindContext Context)
+{
+    float HeightFactor = saturate(normalize(pow2(Context.HeightRelativeToRoot)));
+    float WeightMap = pow2(SampleWeightMap(Context.TextureCoordinates)); 
+    float BroadTurbulence = 1.0f + TURBULENCE_CLAMPED;
+    
+    float BranchAnimationSpeed = 0.45f;
+    float3 NoiseSamplePos = Context.WorldPosition * 0.3f;
+    NoiseSamplePos += WIND_DIRECTION * ANIMATION_TIME * BranchAnimationSpeed;
+    
+    float3 ForwardVector = WIND_DIRECTION; 
+    float3 RightVector = normalize(cross(ForwardVector, float3(0, 1, 0)));
+    float3 UpVector    = float3(0, 1, 0);
+
+    float MainBendNoise = CalculateSimplexNoise3D(NoiseSamplePos);
+    float SideSwayNoise = CalculateSimplexNoise3D(NoiseSamplePos + float3(13.5f, 0, -13.5f));
+
+    float ForwardMovementFactor = MainBendNoise * 0.5f + 0.5f; 
+    float LateralMovementFactor = SideSwayNoise * 0.4f; 
+    float VerticalDipAmount = length(float2(ForwardMovementFactor, LateralMovementFactor)) * 0.2f;
+
+    float3 BranchMotion = float3(0,0,0);
+    BranchMotion += ForwardVector * ForwardMovementFactor; 
+    BranchMotion += RightVector * LateralMovementFactor;   
+    BranchMotion -= UpVector * VerticalDipAmount;          
+
+    // FIX: Ограничиваем силу ветра для веток
+    float SafeWindPower = min(DYNAMIC_WIND_POWER, 0.85f);
+
+    float MotionScale = 0.4f; 
+    
+    float3 Result = BranchMotion * SafeWindPower * WeightMap * HeightFactor * Context.Rigidity * MotionScale * BroadTurbulence;
+
+    // FIX: Лимитируем смещение веток (максимум 0.5 у.е.)
+    float MoveLen = length(Result);
+    if(MoveLen > 0.5f) Result *= (0.5f / MoveLen);
+
+    return Result;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// ГЛАВНЫЙ ДИСПЕТЧЕР
+////////////////////////////////////////////////////////////////////////////
+float3 CalculateTreeWind(WindContext Context)
+{
+    float3 FinalDisplacement = float3(0,0,0);
+#ifdef USE_LEGACY_WIND
+#else
+    FinalDisplacement = CalculateTrunkWind(Context);
+    float3 DetailDisplacement = float3(0,0,0);
+
+#ifdef USE_BRANCHCARD_WIND
+    DetailDisplacement = CalculateBranchCardWind(Context);
+#elif USE_LEAFCARD_WIND
+    DetailDisplacement = CalculateLeafCardWind(Context);
+#endif
+
+    FinalDisplacement += DetailDisplacement;
+#endif 
+    return FinalDisplacement;
+}

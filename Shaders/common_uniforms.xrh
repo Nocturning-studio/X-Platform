@@ -1,0 +1,97 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 27.07.2022
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+uniform float3x4 m_World;
+uniform float3x4 m_invWorld;
+uniform float3x4 m_View;
+uniform float3x4 m_invView;
+uniform float4x4 m_Project;
+uniform float4x4 m_invProject;
+uniform float3x4 m_WorldView;
+uniform float4x4 m_ViewProject;
+uniform float4x4 m_WorldViewProject;
+
+uniform float3x4 m_transform_v;
+uniform float3x4 m_transform;
+uniform float4 consts; // {1/quant,1/quant,diffusescale,ambient}
+uniform float4 wave; // cx,cy,cz,tm
+uniform float4 wind; // direction2D
+uniform float4 c_bias; // + color
+uniform float4 c_scale; // * color
+uniform float2 c_sun; // x=*, y=+
+
+uniform float4x4 m_texgen;
+uniform float4x4 mVPTexgen;
+
+uniform float4 fog_params;
+uniform float3 fog_color;
+uniform float fog_sky_influence;
+
+uniform float vertical_fog_density;
+uniform float vertical_fog_height;
+
+uniform float3 water_intensity;
+uniform float3 sun_shafts_intensity;
+uniform float4 rain_density;
+
+uniform float vignette_power;
+uniform float4 sepia_params;
+
+uniform float2 wind_velocity;
+
+// x = -1.0f * tan(FOV * 0.5)
+// y = x / aspect
+// z = near plane
+// w = far plane
+uniform float4 pos_decompression_params;
+uniform float4 pos_decompression_params_hud;
+
+uniform float4 env_color; // color.w  = lerp factor
+
+uniform float4 timers;
+
+uniform float3 eye_position;
+uniform float3 eye_direction;
+uniform float3 eye_normal;
+
+uniform float3 L_sun_color;
+uniform float3 L_sun_dir_w;
+uniform float3 L_sun_dir_e;
+
+uniform float4 L_hemi_color;
+uniform float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
+
+uniform float4 screen_res;
+
+uniform float4 dt_params;
+
+uniform float4 ao_resolution;
+
+uniform float4 L_material;     // 0.0f,0.0f,0.0f,mid
+uniform float4 Ldynamic_color; // dynamic light color(rgb1)	- spot/point
+uniform float4 Ldynamic_pos;   // dynamic light pos+1/range(w) - spot/point
+uniform float4 Ldynamic_dir;   // dynamic light direction - sun
+
+uniform float4 J_direct[6];
+uniform float4 J_spot[6];
+uniform float4 m_lmap[2];
+uniform float4x4 m_shadow;
+
+uniform float2 parallax_height;
+
+uniform float3 sun_dir;
+uniform float3 sun_color;
+
+uniform float4 ambient_color;
+uniform float ao_brightness;
+
+uniform float is_hud_render_phase;
+
+uniform float4 debug_reserved;
+
+uniform float ambient_brightness;
+
+#define AMBIENT_BRIGHTNESS ambient_brightness.x
+////////////////////////////////////////////////////////////////////////////

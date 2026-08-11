@@ -1,0 +1,35 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Created	: 30.11.2024
+//	Author	: NSDeathman
+//	NSProjectX Nocturning Studio - 2024
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float2 noise_intesity;
+//////////////////////////////////////////////////////////////////////////////////////////
+// NSDeathman - get radiation particle intersection with camera matrix
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR
+{
+	//https://www.xrhadertoy.com/view/ms3GDs
+    float f = 16.0f * TexCoords.x * TexCoords.y * (1.0f - TexCoords.x) * (1.0f - TexCoords.y);
+    float Vignette = safe_pow(abs(f), 2);
+
+    float result = 0.0f;
+    
+    if(noise_intesity.x > 0.0f)
+    {
+        float3 noiseCol = Hash3D_Temporal(TexCoords);
+        noiseCol *= 2.0f;
+        noiseCol -= 1.0f;
+        noiseCol *= 1.1f;
+    
+        float Factor = noise_intesity.x * noise_intesity.y;
+    
+        if((noiseCol.r > 0.745f) && (noiseCol.g > invert(Factor)) && (noiseCol.b < Factor))
+            result += saturate(invert(Vignette) * 2.0f);
+    }
+    
+    return result;
+}
+//////////////////////////////////////////////////////////////////////////////////////////

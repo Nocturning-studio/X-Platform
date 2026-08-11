@@ -1,0 +1,36 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 30.11.2025
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_hi_z_mip_chain;
+uniform float4 mip_data;
+////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords: TEXCOORD0): COLOR
+{
+    // TexCoords указывают на центр пикселя, который мы ПИШЕМ (на текущем мипе).
+    // Этот центр ровно посередине 4-х пикселей ПРЕДЫДУЩЕГО мипа (source).
+    
+    // Смещение на пол-текселя исходной текстуры, чтобы попасть в центры 4-х исходных текселей
+    float2 offset = mip_data.zw * 0.5f;
+
+    float mip_level = mip_data.y;
+
+    // Выборка 4 соседних текселей
+    float4 d;
+    d.x = tex2Dlod(s_hi_z_mip_chain, float4(TexCoords + float2(-offset.x, -offset.y), 0, mip_level)).r;
+    d.y = tex2Dlod(s_hi_z_mip_chain, float4(TexCoords + float2( offset.x, -offset.y), 0, mip_level)).r;
+    d.z = tex2Dlod(s_hi_z_mip_chain, float4(TexCoords + float2(-offset.x,  offset.y), 0, mip_level)).r;
+    d.w = tex2Dlod(s_hi_z_mip_chain, float4(TexCoords + float2( offset.x,  offset.y), 0, mip_level)).r;
+
+    // Редукция. 
+    // Используем min(), если NearZ = 0 (стандарт). 
+    // Это сохраняет самую "близкую" к камере точку в блоке.
+    float min_depth = min(min(d.x, d.y), min(d.z, d.w));
+
+    return float4(min_depth, 0, 0, 0);
+}
+////////////////////////////////////////////////////////////////////////////

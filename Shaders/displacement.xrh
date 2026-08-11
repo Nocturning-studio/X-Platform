@@ -1,0 +1,381 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Created	: 07.08.2023
+//	Modified: 05.12.2025
+//	Author	: NSDeathman
+//	Noctuning Studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "material_components.xrh"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OUTPUT STRUCTURE
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct ParallaxOutput
+{
+    float2 uv;      // Смещенные текстурные координаты
+    float  ao;      // Мягкое затенение (Ambient Occlusion)
+    float  cavity;  // Резкое затенение трещин (Cavity / Micro-Occlusion)
+    float  height;  // Финальная глубина
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SETTINGS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define PARALLAX_H 0.025f 
+#define TERRAIN_PARALLAX_H 0.025f 
+
+// --- Настройки Contact AO ---
+#define HQ_SAMPLES 12            
+#define HQ_RADIUS 0.01f          
+#define HQ_AO_INTENSITY 1.5f     
+#define HQ_AO_POWER 4.0f         
+
+// --- Настройки Cavity ---
+// 0 = Cavity выключен
+// 1 = Cavity включен
+#define USE_REALTIME_CAVITY 1  
+
+#define HQ_CAVITY_INTENSITY 8.0f 
+#define HQ_CAVITY_BIAS 0.01f     
+
+// Quality Settings
+#if MATERIAL_QUALITY == UNDEFINED_QUALITY || MATERIAL_QUALITY == LOW_QUALITY
+    #define PARALLAX_MAX_SAMPLES 10
+    #define PARALLAX_MIN_SAMPLES 4
+    #define STOP_FADE_DIST 20
+    #define TERRAIN_FADE_DIST 30
+    #define USE_HQ_DATA 0 
+#elif MATERIAL_QUALITY == MIDDLE_QUALITY
+    #define PARALLAX_MAX_SAMPLES 24
+    #define PARALLAX_MIN_SAMPLES 8
+    #define STOP_FADE_DIST 35
+    #define TERRAIN_FADE_DIST 45
+    #define USE_HQ_DATA 1
+#elif MATERIAL_QUALITY == HIGHT_QUALITY
+    #define PARALLAX_MAX_SAMPLES 48
+    #define PARALLAX_MIN_SAMPLES 12
+    #define STOP_FADE_DIST 45
+    #define TERRAIN_FADE_DIST 70 
+    #define USE_HQ_DATA 1
+#endif
+
+#define STEEP_PARALLAX_START_FADE (STOP_FADE_DIST - 10.0f)
+#define STEEP_PARALLAX_STOP_FADE STOP_FADE_DIST
+#define TERRAIN_STEEP_PARALLAX_START_FADE (TERRAIN_FADE_DIST - 20.0f)
+#define TERRAIN_STEEP_PARALLAX_STOP_FADE TERRAIN_FADE_DIST
+
+#define PARALLAX_START_FADE STEEP_PARALLAX_START_FADE
+#define PARALLAX_STOP_FADE STEEP_PARALLAX_STOP_FADE
+#define DETAIL_STEEP_PARALLAX_START_FADE (STOP_FADE_DIST - 15.0f)
+#define DETAIL_STEEP_PARALLAX_STOP_FADE (STOP_FADE_DIST - 5.0f)
+#define DETAIL_PARALLAX_START_FADE DETAIL_STEEP_PARALLAX_START_FADE
+#define DETAIL_PARALLAX_STOP_FADE DETAIL_STEEP_PARALLAX_STOP_FADE
+#define TERRAIN_PARALLAX_START_FADE TERRAIN_STEEP_PARALLAX_START_FADE
+#define TERRAIN_PARALLAX_STOP_FADE TERRAIN_STEEP_PARALLAX_STOP_FADE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float GetDither(float2 pos)
+{
+    return frac(sin(dot(pos, float2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+float GetRawHeight(float2 uv, int type
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 mask
+#endif
+)
+{
+    float h = 0.0f;
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    h = GetTerrainDetailHeight(mask, uv);
+#else
+    if(type == BASE_MATERIAL) h = GetHeight(uv);
+    else if(type == DETAIL_MATERIAL) h = GetDetailHeight(uv);
+#endif
+    return h;
+}
+
+float GetSampledDepth(float2 uv, int type
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 mask
+#endif
+)
+{
+    return 1.0f - GetRawHeight(uv, type
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , mask
+#endif
+    );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CALCULATION OF AO AND CAVITY
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float2 CalculateHighQualityData(float2 uv, float currentHeight, int matType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 mask
+#endif
+)
+{
+    float accumulatedAO = 0.0f;
+    float cavitySum = 0.0f;
+    
+    float goldenAngle = 2.39996323f; 
+    float radius = HQ_RADIUS;
+    
+    float rot = GetDither(uv * 500.0f) * 6.28f;
+    float sinR, cosR;
+    sincos(rot, sinR, cosR);
+    
+    [unroll]
+    for(int i = 0; i < HQ_SAMPLES; i++)
+    {
+        float r = sqrt(float(i + 1) / float(HQ_SAMPLES));
+        float theta = i * goldenAngle;
+        
+        float2 offset;
+        sincos(theta, offset.y, offset.x);
+        
+        float2 rotatedOffset = float2(
+            offset.x * cosR - offset.y * sinR,
+            offset.x * sinR + offset.y * cosR
+        );
+        
+        float2 sampleUV = uv + (rotatedOffset * radius * r);
+        
+        float h_neighbor = GetRawHeight(sampleUV, matType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+            , mask
+#endif
+        );
+        
+        float diff = h_neighbor - currentHeight;
+        
+        // AO Logic
+        accumulatedAO += max(0.0f, diff);
+
+        // Cavity Logic
+#if USE_REALTIME_CAVITY
+        if(diff > HQ_CAVITY_BIAS)
+            cavitySum += diff; 
+#endif
+    }
+    
+    // AO Result
+    accumulatedAO /= float(HQ_SAMPLES);
+    float finalAO = saturate(1.0f - accumulatedAO * HQ_AO_INTENSITY);
+    finalAO = pow(finalAO, HQ_AO_POWER);
+    
+    // Cavity Result
+    float finalCavity = 1.0f;
+#if USE_REALTIME_CAVITY
+    cavitySum /= float(HQ_SAMPLES);
+    finalCavity = saturate(1.0f - cavitySum * HQ_CAVITY_INTENSITY * 5.0f);
+    finalCavity = pow(finalCavity, 2.0f); 
+#endif
+
+    return float2(finalAO, finalCavity);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CORE FUNCTION (Parallax Occlusion Mapping)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ParallaxOutput CalculateParallaxOcclusionMapping(float3 Position, float3 ViewVector, float2 UV,
+                                                 float StartFadingDistance, float StopFadingDistance, 
+                                                 int MinimalSamplesCount, int MaximalSamplesCount, 
+                                                 float ParallaxScale, 
+                                                 int MaterialType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+    , float4 BlendMask
+#endif
+)
+{
+    ParallaxOutput OUT;
+    OUT.uv = UV;
+    OUT.ao = 1.0f;
+    OUT.cavity = 1.0f;
+    OUT.height = 0.0f;
+
+    if(Position.z >= StopFadingDistance) return OUT;
+
+    float3 vViewDir = normalize(ViewVector);
+    // Проверка, что вектор не смотрит от поверхности
+    if(vViewDir.z <= 0.0f) return OUT; 
+
+    // --- RAY MARCHING SETUP ---
+    float nNumSteps = lerp(float(MaximalSamplesCount), float(MinimalSamplesCount), vViewDir.z);
+    float fStepSize = 1.0f / nNumSteps;
+    
+    // 1. Ограничиваем угол обзора снизу.
+    // Если vViewDir.z стремится к нулю, деление дает бесконечность. 
+    // Ставим мягкий порог (Bias).
+    float viewZ = vViewDir.z + 0.05f; 
+    
+    // 2. Рассчитываем базовое смещение.
+    float2 vDelta = -vViewDir.xy * ParallaxScale / viewZ;
+    
+    // 3. CLAMP VECTOR LENGTH
+    // Мы ограничиваем физическую длину вектора смещения UV.
+    // Если вектор требует сдвинуть текстуру больше, чем на (Scale * 2), мы его обрезаем.
+    // Это не дает текстуре "обернуться вокруг себя".
+    float maxOffset = ParallaxScale * 2.0f;
+    float deltaLength = length(vDelta);
+    
+    if(deltaLength > maxOffset)
+    {
+        vDelta = (vDelta / deltaLength) * maxOffset;
+    }
+    
+    // 4. ANGLE FADE (Плавное отключение)
+    // На самых экстремальных углах (меньше 10 градусов), плавно выключаем параллакс.
+    // Это прячет все оставшиеся математические артефакты.
+    float angleFade = smoothstep(0.0f, 0.15f, vViewDir.z);
+    vDelta *= angleFade;
+    
+    // =========================================================================================
+
+    float2 vTexOffsetPerStep = fStepSize * vDelta;
+    float dither = GetDither(UV * 512.0f);
+    float2 vTexCurrentOffset = UV + vTexOffsetPerStep * dither;
+    float fCurrentLayerDepth = fStepSize * dither;
+
+    float fCurrentDepthVal = GetSampledDepth(vTexCurrentOffset, MaterialType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+        , BlendMask
+#endif
+    );
+
+    int loopSafety = 0;
+    while(fCurrentLayerDepth < fCurrentDepthVal && loopSafety < MaximalSamplesCount * 2)
+    {
+        vTexCurrentOffset += vTexOffsetPerStep;
+        fCurrentLayerDepth += fStepSize;
+        fCurrentDepthVal = GetSampledDepth(vTexCurrentOffset, MaterialType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+            , BlendMask
+#endif
+        );
+        loopSafety++;
+    }
+
+    float2 vPrevTexOffset = vTexCurrentOffset - vTexOffsetPerStep;
+    float fPrevLayerDepth = fCurrentLayerDepth - fStepSize;
+    float fPrevDepthVal = GetSampledDepth(vPrevTexOffset, MaterialType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+        , BlendMask
+#endif
+    );
+
+    float fAfterDepth  = fCurrentDepthVal - fCurrentLayerDepth;
+    float fBeforeDepth = fPrevDepthVal - fPrevLayerDepth;
+    float weight = fAfterDepth / (fAfterDepth - fBeforeDepth);
+    
+    float2 finalUV = lerp(vTexCurrentOffset, vPrevTexOffset, weight);
+    float finalDepth = lerp(fCurrentLayerDepth, fPrevLayerDepth, weight);
+    
+    // --- AO / CAVITY CALCULATION ---
+    float finalAO = 1.0f;
+    float finalCavity = 1.0f;
+    
+#if USE_HQ_DATA
+    // Передаем правильную высоту для сравнения (1.0 = Пик, 0.0 = Дно)
+    float currentHeightMap = 1.0f - finalDepth; 
+    
+    float2 hqData = CalculateHighQualityData(finalUV, currentHeightMap, MaterialType
+#ifdef USE_FOR_TERRAIN_MATERIAL
+        , BlendMask
+#endif
+    );
+    finalAO = hqData.x;
+    finalCavity = hqData.y;
+#else
+    // Fallback для низкого качества
+    finalAO = 1.0f - (finalDepth * 0.3f); 
+#endif
+
+    // Небольшая компенсация самозатенения от угла обзора
+    // (Помогает скрыть алиасинг на границах POM)
+    finalAO = saturate(finalAO + (vViewDir.z * 0.1f));
+
+    // --- FADING ---
+    // Плавное исчезновение эффекта на расстоянии
+    float fParallaxFade = smoothstep(StopFadingDistance, StartFadingDistance, Position.z);
+    
+    // Интерполируем результаты с оригинальными UV по мере удаления
+    OUT.uv = lerp(UV, finalUV, fParallaxFade);
+    OUT.ao = lerp(1.0f, finalAO, fParallaxFade);
+    OUT.cavity = lerp(1.0f, finalCavity, fParallaxFade);
+    OUT.height = finalDepth;
+
+    return OUT;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// WRAPPERS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef USE_FOR_TERRAIN_MATERIAL
+
+ParallaxOutput GetDisplacement(float3 Position, float3 ViewVector, float2 UV, int MaterialType)
+{
+#if defined(USE_PARALLAX_OCCLUSION_MAPPING)
+    return CalculateParallaxOcclusionMapping(Position, ViewVector, UV,
+                                           STEEP_PARALLAX_START_FADE, 
+                                           STEEP_PARALLAX_STOP_FADE, PARALLAX_MIN_SAMPLES, 
+                                           PARALLAX_MAX_SAMPLES, PARALLAX_H, MaterialType);
+#elif defined(USE_PARALLAX_MAPPING)
+    ParallaxOutput OUT; OUT.uv = UV; OUT.ao = 1.0f; OUT.cavity = 1.0f; OUT.height = 0.0f;
+    if(Position.z < PARALLAX_STOP_FADE) {
+        float h = (MaterialType == BASE_MATERIAL) ? GetHeight(UV) : GetDetailHeight(UV);
+        float fade = smoothstep(PARALLAX_STOP_FADE, PARALLAX_START_FADE, Position.z);
+        OUT.uv += ((h * PARALLAX_H) - (PARALLAX_H/2)) * ViewVector.xy * fade;
+    }
+    return OUT;
+#else
+    ParallaxOutput OUT; OUT.uv = UV; OUT.ao = 1.0f; OUT.cavity = 1.0f; OUT.height = 0.0f; return OUT;
+#endif
+}
+
+ParallaxOutput GetDetailDisplacement(float3 Position, float3 ViewVector, float2 UV, int MaterialType)
+{
+#if defined(USE_PARALLAX_OCCLUSION_MAPPING)
+    return CalculateParallaxOcclusionMapping(Position, ViewVector, UV, DETAIL_STEEP_PARALLAX_START_FADE,
+                                           DETAIL_STEEP_PARALLAX_STOP_FADE, 2, 
+                                           PARALLAX_MIN_SAMPLES, PARALLAX_H * 0.5f, MaterialType);
+#else
+    ParallaxOutput OUT; OUT.uv = UV; OUT.ao = 1.0f; OUT.cavity = 1.0f; OUT.height = 0.0f; return OUT;
+#endif
+}
+
+#else // TERRAIN
+
+ParallaxOutput GetTerrainDisplacement(float3 Position, float3 ViewVector, float2 UV, float4 BlendMask, int MaterialType)
+{
+#if defined(USE_PARALLAX_OCCLUSION_MAPPING)
+    return CalculateParallaxOcclusionMapping(Position, ViewVector, UV, 
+        TERRAIN_STEEP_PARALLAX_START_FADE,
+        TERRAIN_STEEP_PARALLAX_STOP_FADE, 
+        PARALLAX_MIN_SAMPLES,
+        PARALLAX_MAX_SAMPLES, 
+        TERRAIN_PARALLAX_H,
+        MaterialType, BlendMask);
+#elif defined(USE_PARALLAX_MAPPING)
+    ParallaxOutput OUT; OUT.uv = UV; OUT.ao = 1.0f; OUT.cavity = 1.0f; OUT.height = 0.0f;
+    if(Position.z < TERRAIN_PARALLAX_STOP_FADE) {
+        float h = GetTerrainDetailHeight(BlendMask, UV);
+        float fade = smoothstep(TERRAIN_PARALLAX_STOP_FADE, TERRAIN_PARALLAX_START_FADE, Position.z);
+        OUT.uv += ((h * TERRAIN_PARALLAX_H) - (TERRAIN_PARALLAX_H/2)) * ViewVector.xy * fade;
+    }
+    return OUT;
+#else
+    ParallaxOutput OUT; OUT.uv = UV; OUT.ao = 1.0f; OUT.cavity = 1.0f; OUT.height = 0.0f; return OUT;
+#endif
+}
+
+#endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

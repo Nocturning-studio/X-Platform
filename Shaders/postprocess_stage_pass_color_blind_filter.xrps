@@ -1,0 +1,24 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 29.05.2025
+//	Author	: thecech12, NSDeathman
+//  https://minecraft-inside.ru/mods/156131-colorblindness.html
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+////////////////////////////////////////////////////////////////////////////
+uniform float3 red_matrix;
+uniform float3 green_matrix;
+uniform float3 blue_matrix;
+////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float4 InTexel = tex2Dlod0(s_image, TexCoords);
+
+    // Color Matrix
+    float RedValue = dot(InTexel.rgb, red_matrix);
+    float GreenValue = dot(InTexel.rgb, green_matrix);
+    float BlueValue = dot(InTexel.rgb, blue_matrix);
+    float3 OutColor = float3(RedValue, GreenValue, BlueValue);
+
+    return float4(OutColor, 1.0);
+}
+////////////////////////////////////////////////////////////////////////////

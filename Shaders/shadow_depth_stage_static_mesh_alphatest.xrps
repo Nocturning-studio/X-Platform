@@ -1,0 +1,13 @@
+#include "common.xrh"
+#include "alpha_test.xrh"
+#include "material_components.xrh"
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 main(v_shadow_direct_aref I) : COLOR
+{
+    float Opacity = GetOpacity(I.tc0);
+	
+    calc_alpha_test(I.tc0, Opacity);
+    
+    return Opacity;
+}

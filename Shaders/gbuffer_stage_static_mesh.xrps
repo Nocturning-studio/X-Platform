@@ -1,0 +1,79 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 06.08.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "material.xrh"
+#include "lightmap.xrh"
+#include "alpha_test.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+	float4 HomogeniousPosition: POSITION;
+	float3 Position: TEXCOORD0;
+	float3 TBN0: TEXCOORD1;
+	float3 TBN1: TEXCOORD2;
+	float3 TBN2: TEXCOORD3;
+	float2 UV: TEXCOORD4;
+	float2 LightMapUV: TEXCOORD5;
+	float2 Lighting: TEXCOORD6;
+};
+///////////////////////////////////////////////////////////////////////////////////
+GBufferPacked main(Interpolators Input)
+{
+    GBuffer GBuffer;
+	
+	// Combine TBN for send to material loading
+	float3x3 TBN = float3x3(Input.TBN0, Input.TBN1, Input.TBN2);
+	
+	// Load primary material data - textures, displacement, normal data preparing, etc
+    MaterialParams Material = GetMaterial(Input.UV.xy, TBN, Input.Position);
+
+#ifdef USE_ALPHA_TEST
+	calc_alpha_test(Input.UV, Material.Opacity);
+#endif
+	
+    GBuffer.Albedo = Material.Albedo;
+
+    GBuffer.Normal = normalize(mul(TBN, Material.Normal)).rgb;
+	
+    GBuffer.Position = Input.Position;
+	
+#ifdef USE_LIGHTMAP
+	GBuffer.AO = Unpack_LightMap(Input.LightMapUV);
+#else
+    GBuffer.AO = Input.Lighting.x;
+#endif
+
+    GBuffer.BakedAO = Material.AO;
+	
+	GBuffer.Cavity = Material.Cavity;
+	
+    GBuffer.Roughness = Material.Roughness;
+
+	GBuffer.Metallic = Material.Metallic;
+
+    GBuffer.SubSurfacePower = Material.SubSurfacePower;
+
+    GBuffer.Emission = Material.Emission;
+
+    if(is_hud_render_phase == 1)
+		GBuffer.MaterialID = HUD_MATERIAL;
+	else
+        GBuffer.MaterialID = NORMAL_MATERIAL;
+		
+    GBuffer.SpecularTint = Material.SpecularTint;
+	
+	GBuffer.SheenIntensity = Material.SheenIntensity;
+	
+    GBuffer.SheenRoughness = Material.SheenRoughness;
+	
+    GBuffer.CoatIntensity = Material.CoatIntensity;
+	
+    GBuffer.CoatRoughness = Material.CoatRoughness;
+	
+    return PackGBuffer(GBuffer);
+}
+///////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,62 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 07.04.2025
+//	Author	: NSDeathman, IXRay team
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+////////////////////////////////////////////////////////////////////////////
+struct VertexData
+{
+    float4 Position : POSITION;
+    float4 Normal : NORMAL; // (rgb - normal, a - hemi occlusion)
+    float4 Tangent : TANGENT;
+    float4 Bitangent : BINORMAL;
+    float4 Color : COLOR0;
+    float2 UV : TEXCOORD0;
+};
+
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float4 TCTexgen : TEXCOORD0;
+    float3 Position : TEXCOORD1;
+    float3 UV_Lighting : TEXCOORD2;
+    float3 TBN0 : TEXCOORD3;
+    float3 TBN1 : TEXCOORD4;
+    float3 TBN2 : TEXCOORD5;
+    float3 ViewDirection : TEXCOORD6;
+};
+////////////////////////////////////////////////////////////////////////////
+Interpolators main(VertexData Input)
+{
+    Interpolators Output;
+
+    Output.HomogeniousPosition = mul(m_ViewProject, Input.Position);
+    Output.Position = mul(m_WorldView, Input.Position);
+    
+    Output.ViewDirection = Input.Position.xyz - eye_position;
+    
+    float3 ViewSpacePosition = mul(m_View, Input.Position);
+    Output.TCTexgen = mul(m_texgen, Input.Position);
+    Output.TCTexgen.z = ViewSpacePosition.z;
+    
+    float3 Normal = normalize(unpack_bx2(Input.Normal.xyz));
+    
+    float3 Tangent = float3(-1.0f, 0.0f, 0.0f);
+    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+
+    float3 Bitangent = cross(Normal, Tangent);
+    
+    float3x3 TBN = mul((float3x3) m_WorldView, float3x3(Tangent.x, Bitangent.x, Normal.x,
+                                                        Tangent.y, Bitangent.y, Normal.y,
+                                                        Tangent.z, Bitangent.z, Normal.z));
+    Output.TBN0 = TBN[0];
+    Output.TBN1 = TBN[1];
+    Output.TBN2 = TBN[2];
+    
+    Output.UV_Lighting.xy = Input.Position.xz * 0.25f;
+    Output.UV_Lighting.z = v_hemi(Normal) * Input.Normal.w;
+    
+    return Output;
+}
+////////////////////////////////////////////////////////////////////////////

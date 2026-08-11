@@ -1,0 +1,163 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Improved Screen Space Path Tracing (SSAO/SSPT)
+//	Refactored for quality and stability
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 image_resolution;
+//////////////////////////////////////////////////////////////////////////////////////////
+#define AO_RADIUS 0.5f          // Радиус в метрах
+#define AO_SAMPLES 12           // Количество лучей (12-16 оптимально для качества)
+#define AO_STEPS 4              // Шаги марша вдоль луча
+#define AO_THICKNESS 0.5f       // Толщина объектов (чтобы тени не просвечивали сквозь стены)
+#define AO_INTENSITY 4.5f       // Сила затенения
+#define AO_BIAS 0.02f           // Смещение от поверхности
+#define RENDER_DISTANCE 100.0f  // Дальность прорисовки эффекта
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// Высокочастотный шум, идеальный для TAA
+float GetInterleavedGradientNoise(float2 pos)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(pos, magic.xy)));
+}
+
+// Проверка границ экрана
+bool IsOnScreen(float2 uv)
+{
+    return all(uv >= 0.0f) && all(uv <= 1.0f);
+}
+
+// Функция трассировки одного луча
+float RayMarch(float3 RayOrigin, float3 RayDir, float2 TexCoords, float Jitter)
+{
+    float occlusion = 0.0f;
+    
+    // Шаг луча
+    float stepSize = AO_RADIUS / float(AO_STEPS);
+    
+    // Начинаем не с 0, а со случайного смещения (Dithering along ray)
+    // Это скрывает малoe количество шагов
+    float currentDist = (Jitter * stepSize) + stepSize; 
+
+    [unroll]
+    for (int i = 0; i < AO_STEPS; i++)
+    {
+        // 1. Получаем позицию точки на луче
+        float3 samplePos = RayOrigin + RayDir * currentDist;
+        
+        // 2. Проецируем на экран
+        float4 offset = float4(samplePos, 1.0f);
+        offset = mul(m_Project, offset);
+        offset.xyz /= offset.w;
+        // Инвертируем Y для DirectX
+        float2 sampleUV = offset.xy * float2(0.5f, -0.5f) + 0.5f;
+
+        if (IsOnScreen(sampleUV))
+        {
+            // 3. Читаем реальную глубину сцены
+            float3 geometryPos = GetPosition(sampleUV);
+            float sceneDepth = geometryPos.z;
+            float sampleDepth = samplePos.z;
+
+            // 4. Считаем разницу глубин
+            // diff > 0 значит луч ушел ЗА геометрию (потенциальное затенение)
+            float diff = sampleDepth - sceneDepth;
+
+            // 5. Проверка затенения с учетом толщины
+            // AO_BIAS: Чтобы не затенять саму поверхность (акне)
+            // AO_THICKNESS: Если разница слишком большая, значит это объект далеко на фоне, а не затенение
+            if (diff > AO_BIAS && diff < AO_THICKNESS)
+            {
+                // Вес выборки: чем дальше точка затенения от оригинала, тем слабее тень (Distance Attenuation)
+                // Функция falloff: 1 / (1 + d^2)
+                float weight = 1.0f - saturate(currentDist / AO_RADIUS);
+                occlusion = weight; 
+                
+                // Если нашли пересечение, прерываем этот луч (First hit approximation)
+                // Для чистого AO можно не прерывать, но для производительности лучше break
+                break; 
+            }
+        }
+        
+        // Увеличиваем дистанцию
+        currentDist += stepSize;
+    }
+
+    return occlusion;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ao_pass(float2 TexCoords : TEXCOORD0, float2 Position2D : VPOS) : COLOR
+{
+    float3 ViewPos, Normal;
+    ViewPos = GetPosition(TexCoords);
+    Normal = GetNormal(TexCoords);
+
+    // Ранний выход по дальности
+    if (ViewPos.z > RENDER_DISTANCE || ViewPos.z <= 0.1f)
+        return 1.0f;
+
+    // Сдвигаем позицию начала луча чуть-чуть по нормали
+    float3 Origin = ViewPos + Normal * AO_BIAS;
+
+    // Строим TBN базис
+    float3 up = abs(Normal.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
+    float3 tangent = normalize(cross(up, Normal));
+    float3 bitangent = cross(Normal, tangent);
+    float3x3 TBN = float3x3(tangent, bitangent, Normal);
+
+    // Генерация шума
+    float noise = GetInterleavedGradientNoise(Position2D);
+    float occlusionAccum = 0.0f;
+
+    // Цикл выборок (Golden Spiral)
+    [unroll]
+    for (int i = 0; i < AO_SAMPLES; i++)
+    {
+        // Формула Золотой Спирали для распределения точек на полусфере
+        float t = (float(i) + noise) / float(AO_SAMPLES);
+        float phi = 2.0f * PI * 2.3999632f * float(i) + (noise * 2.0f * PI); // Золотой угол + вращение шумом
+        
+        // Cosine-weighted sampling (больше лучей вверх, меньше к горизонту)
+        float cosTheta = 1.0f - t;
+        float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
+
+        // Вектор в Tangent Space
+        float3 localDir = float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+        
+        // Перевод в View Space
+        float3 rayDir = mul(localDir, TBN);
+        
+        // Трассировка
+        // Передаем noise как jitter для смещения шагов луча
+        occlusionAccum += RayMarch(Origin, rayDir, TexCoords, noise);
+    }
+
+    // Усреднение
+    float visibility = 1.0f - (occlusionAccum / float(AO_SAMPLES));
+    
+    // Усиление контраста (Power curve)
+    visibility = pow(saturate(visibility), AO_INTENSITY);
+
+    // Плавное исчезновение на расстоянии
+    float fade = smoothstep(RENDER_DISTANCE * 0.8f, RENDER_DISTANCE, ViewPos.z);
+    visibility = lerp(visibility, 1.0f, fade);
+
+    return float4(visibility, visibility, visibility, 1.0f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 denoise_pass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float ao = 0.0f;
+    
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(1.5f, -0.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(1.5f, 1.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(-0.5f, -0.5f)).r;
+    ao += tex2Dlod0(s_ao, TexCoords + image_resolution.zw * float2(-0.5f, 1.5f)).r;
+    
+    return ao * 0.25f;
+}
+//////////////////////////////////////////////////////////////////////////////////////////

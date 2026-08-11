@@ -1,0 +1,275 @@
+// =================================================================================================
+//	FidelityFX DoF: Robust Implementation (Direct CoC Sampling Fix)
+// =================================================================================================
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+// =================================================================================================
+// 1. CONSTANTS & UNIFORMS
+// =================================================================================================
+
+uniform float4 dof_coc_params;   // x=Focus, y=FocalLen, z=Aperture, w=PPM
+uniform float4 dof_layer_select; 
+
+uniform sampler2D s_dof_coc;      // R16F (+Far, -Near)
+uniform sampler2D s_dof_dilation; // Max Near CoC (Low Res)
+uniform sampler2D s_dof_far;      // Far Layer Color
+uniform sampler2D s_dof_near;     // Near Layer Color
+
+#define MAX_COC_RADIUS 30.0f      
+#define BLUR_SAMPLES 32       
+#define GOLDEN_ANGLE 2.39996323f  
+
+// =================================================================================================
+// 2. HELPERS
+// =================================================================================================
+
+float GetJitter(float2 uv)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(uv * screen_res.xy, magic.xy)));
+}
+
+// РАСЧЕТ CoC
+// Чтобы логика была предельно простой:
+// Positive (+) = NEAR (Передний план, Ближе фокуса)
+// Negative (-) = FAR (Задний план, Дальше фокуса)
+float CalculateCoC(float depth)
+{
+    float P = dof_coc_params.x; 
+    float f = dof_coc_params.y; 
+    float A = dof_coc_params.z; 
+    float PPM = dof_coc_params.w; 
+    
+    float O = depth * 1000.0f; 
+    if (O < 0.01f) O = 100000.0f; // Skybox fix
+    
+    // Исправление 1: избегаем деления на ноль в знаменателе (P - f)
+    float denominator = max(P - f, 0.0001f);
+    
+    // Исправление 2: избегаем деления на ноль в O
+    float O_safe = max(O, 0.0001f);
+    
+    // Формула: (Focus - Dist)
+    // Если O < P (Близко) -> (10 - 2) = +8 -> NEAR (+)
+    // Если O > P (Далеко) -> (10 - 50) = -40 -> FAR (-)
+    
+    // Множитель линзы
+    float k = (f * f) / (max(A, 0.1f) * denominator);
+    
+    // Сама формула
+    float val = (P - O) / O_safe;
+    float coc = val * k * PPM;
+    
+    // Boost если размытие слишком слабое в движке
+    coc *= 4.0f; 
+    
+    return clamp(coc, -MAX_COC_RADIUS, MAX_COC_RADIUS);
+}
+
+// =================================================================================================
+// 3. PASSES
+// =================================================================================================
+
+// --- PHASE 1: Calc CoC ---
+float4 PassCalcCoC(float2 uv : TEXCOORD0) : COLOR0
+{
+    float depth = GetDepth(uv);
+    return float4(CalculateCoC(depth), 0, 0, 0); 
+}
+
+// --- PHASE 2: Tile Dilation ---
+// Находит максимальный POSITIVE CoC (Near) в блоках
+float4 PassTileDilation(float2 uv : TEXCOORD0) : COLOR0
+{
+    float2 pixel_size = screen_res.zw;
+    float max_near = 0.0f;
+    const int STEP = 2; 
+
+    // Ищем максимальный плюс (Near)
+    for(int x = -MAX_COC_RADIUS; x <= MAX_COC_RADIUS; x += STEP)
+    {
+        for(int y = -MAX_COC_RADIUS; y <= MAX_COC_RADIUS; y += STEP)
+        {
+            float2 off = float2(x, y) * pixel_size;
+            float coc = tex2Dlod(s_dof_coc, float4(uv + off, 0, 0)).r;
+            if (coc > 0.0f) max_near = max(max_near, coc);
+        }
+    }
+    return float4(max_near, 0, 0, 0);
+}
+
+// --- PHASE 3: Separate Layers ---
+float4 PassSeparate(float2 uv : TEXCOORD0) : COLOR0
+{
+    float4 color = tex2D(s_image, uv); 
+    float coc = tex2D(s_dof_coc, uv).r; 
+    
+    bool is_near_layer = (dof_layer_select.x > 0.5f);
+    
+    if (is_near_layer)
+    {
+        // Near Layer:
+        // Берем только пиксели с CoC > 0 (Передний план).
+        // Остальное закрашиваем черным (transparent).
+        if (coc > 0.0f) 
+            return float4(color.rgb, 1.0f); // Альфа не важна, данные CoC возьмем из текстуры
+        else 
+            return float4(0, 0, 0, 0);
+    }
+    else
+    {
+        // Far Layer:
+        // Чтобы убрать ГАЛО, мы вырезаем передний план (черная дыра вместо оружия).
+        if (coc > 0.0f)
+            return float4(0, 0, 0, 0);
+        else
+            return float4(color.rgb, 1.0f);
+    }
+}
+
+// --- PHASE 4: Reliable Blur ---
+float4 BokehBlur(sampler2D source, float2 uv, bool is_near)
+{
+    // Входной пиксель
+    float4 center = tex2D(source, uv); 
+    float center_coc = tex2D(s_dof_coc, uv).r;
+    
+    // Определяем радиус поиска
+    float radius = 0.0f;
+    
+    if (is_near) {
+        // Для Near нам обязательно нужна Dilation Map.
+        // Если пиксель сам резкий (CoC=0), но сосед размыт (CoC=10), 
+        // Dilation скажет "ищи в радиусе 10".
+        float dil = tex2D(s_dof_dilation, uv).r;
+        
+        // Оптимизация: если вокруг нет размытых ближних объектов, выходим
+        if (dil < 0.5f) return float4(center.rgb, 0.0f);
+        radius = dil;
+    } else {
+        // Для Far радиус берем из центрального CoC (абсолютное значение)
+        // Но только если CoC отрицательный (Far).
+        if (center_coc < 0.0f) radius = abs(center_coc);
+        else radius = 0.0f;
+        
+        // Оптимизация
+        if (radius < 0.5f) return center;
+    }
+    
+    radius = clamp(radius, 0.0f, MAX_COC_RADIUS);
+
+    // --- SAMPLING ---
+    float2 pixel_size = screen_res.zw; 
+    float rnd = GetJitter(uv) * 6.28f;
+    float2x2 rot = float2x2(cos(rnd), -sin(rnd), sin(rnd), cos(rnd));
+    
+    float4 acc = 0;
+    float weight_sum = 0.0f;
+    
+    [loop]
+    for(int i = 0; i < BLUR_SAMPLES; i++)
+    {
+        float r = sqrt(float(i) / float(BLUR_SAMPLES));
+        float theta = i * GOLDEN_ANGLE;
+        
+        float2 offset = float2(cos(theta), sin(theta)) * (r * radius);
+        offset = mul(rot, offset);
+        
+        float2 sample_uv = uv + offset * pixel_size;
+        
+        // 1. Читаем цвет соседа (Layer Color)
+        float4 tap = tex2Dlod(source, float4(sample_uv, 0, 0));
+        
+        // 2. [FIX] Читаем CoC соседа НАПРЯМУЮ из карты CoC
+        // Мы не верим альфа-каналу 'tap.a', так как он может потеряться.
+        float tap_coc_raw = tex2Dlod(s_dof_coc, float4(sample_uv, 0, 0)).r;
+        
+        float w = 1.0f;
+        
+        if (is_near)
+        {
+            // === NEAR LOGIC (Scatter / Bleeding) ===
+            // Сосед вносит вклад в точку, только если он Near (CoC > 0)
+            // И если его круг размытия (CoC) дотягивается до нас.
+            // Dist = length(offset).
+            
+            float dist = length(offset);
+            
+            // Проверка: CoC > 0 и CoC >= Dist
+            if (tap_coc_raw > 0.0f && tap_coc_raw >= dist)
+            {
+                 // Antialiasing краев боке
+                 w = smoothstep(0.0f, 1.0f, tap_coc_raw - dist);
+            }
+            else
+            {
+                 w = 0.0f;
+            }
+        }
+        else
+        {
+            // === FAR LOGIC (Gather) ===
+            // Просто собираем цвет. Но нужно отсечь "дырки" от переднего плана.
+            // В PassSeparate мы писали черный цвет (0,0,0) там, где CoC > 0.
+            // Поэтому проверка простая: если пиксель черный и Near (coc > 0), вес 0.
+            
+            if (tap_coc_raw > 0.0f) w = 0.0f; // Это передний план, игнорируем
+            else w = 1.0f; // Это фон
+        }
+        
+        acc += float4(tap.rgb, 1.0f) * w;
+        weight_sum += w;
+    }
+    
+    // --- OUTPUT ---
+    if (is_near)
+    {
+        // Если веса мало - значит здесь нет размытия переднего плана -> прозрачность
+        if (weight_sum < 0.01f) return float4(center.rgb, 0.0f);
+        
+        float3 res = acc.rgb / max(weight_sum, 0.0001f); // Исправление 3: избегаем деления на ноль
+        // Расчет плотности (Coverage) для альфа-блендинга
+        float alpha = saturate((weight_sum / float(BLUR_SAMPLES)) * 4.0f);
+        
+        return float4(res, alpha);
+    }
+    else
+    {
+        // Far
+        if (weight_sum < 0.01f) return center;
+        return acc / max(weight_sum, 0.0001f); // Исправление 4: избегаем деления на ноль
+    }
+}
+
+float4 PassBlurFar(float2 uv : TEXCOORD0) : COLOR0 { return BokehBlur(s_image, uv, false); }
+float4 PassBlurNear(float2 uv : TEXCOORD0) : COLOR0 { return BokehBlur(s_image, uv, true); }
+
+// --- PHASE 5: Composite ---
+float4 PassComposite(float2 uv : TEXCOORD0) : COLOR0
+{
+    float4 sharp = tex2D(s_image, uv);        
+    float4 far_blur = tex2D(s_dof_far, uv); 
+    float4 near_blur = tex2D(s_dof_near, uv); 
+    
+    float coc = tex2D(s_dof_coc, uv).r; 
+    
+    // 1. Фон
+    // Смешиваем Sharp и FarBlur.
+    // Фактор = abs(CoC), но только для Far пикселей (coc < 0)
+    // Если coc > 0 (автомат в руках), far_factor должен быть 0.
+    
+    float far_mix = smoothstep(0.2f, 2.0f, abs(coc));
+    if (coc > 0.0f) far_mix = 0.0f; // Hard cut для ближнего плана
+    
+    float3 result = lerp(sharp.rgb, far_blur.rgb, far_mix);
+    
+    // 2. Передний план
+    // Просто накладываем NearBlur поверх, используя его альфу (coverage)
+    // Также немного "подчищаем" альфу порогом
+    
+    float near_mix = smoothstep(0.01f, 1.0f, near_blur.a);
+    result = lerp(result, near_blur.rgb, near_mix);
+    
+    return float4(result, 1.0f);
+}

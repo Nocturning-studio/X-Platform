@@ -1,0 +1,56 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 16.03.2025
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+// Functions
+////////////////////////////////////////////////////////////////////////////
+//https://www.xrhadertoy.com/view/3tlBW7
+#define safe_dot(a, b) max(dot((a), (b)), 0.00001f)
+#define safe_pow(f, e) pow(abs(f), e)
+////////////////////////////////////////////////////////////////////////////
+// Inverting
+#define invert(x) (1.0f - (x))
+////////////////////////////////////////////////////////////////////////////
+#define rcp(x) (1.0f / (x))
+////////////////////////////////////////////////////////////////////////////
+// Myltiply add
+#define mad(m, a, b) ((m) * (a) + (b))
+
+// Multiply + Saturation
+#define mul_sat(a, b) saturate(mul((a), (b)))
+
+// Multiply add + Saturation
+#define mad_sat(m, a, b) saturate(mad(m, a, b))
+
+#define mod(x, y) (x) - (y) * floor((x) / (y));
+
+//Power
+#define pow2(x) mul((x), (x))
+#define pow4(x) pow2(mul((x), (x)))
+#define pow5(x) safe_pow((x), 5.0f)
+#define pow6(x) safe_pow((x), 6.0f)
+#define powEXP(x) safe_pow((x), 2.718f)
+////////////////////////////////////////////////////////////////////////////
+// Average functions
+float avg2(float2 tex)
+{
+    return (tex.x + tex.y) * 0.5f;
+};
+
+float avg3(float3 tex)
+{
+    return (tex.x + tex.y + tex.z) * 0.3333333f;
+};
+
+float avg4(float4 tex)
+{
+    return (tex.x + tex.y + tex.z + tex.w) * 0.25f;
+};
+////////////////////////////////////////////////////////////////////////////
+// Tex2D functions
+float4 tex2Dlod0(sampler2D smp, float2 tc)
+{
+    return tex2Dlod(smp, float4(tc, 0.0f, 0.0f));
+}
+////////////////////////////////////////////////////////////////////////////

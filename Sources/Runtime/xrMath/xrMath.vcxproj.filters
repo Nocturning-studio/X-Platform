@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="xrMath.h" />
+    <ClInclude Include="xrMath_common.h" />
+    <ClInclude Include="xrMath_bitwise.h" />
+    <ClInclude Include="xrMath_box2D.h" />
+    <ClInclude Include="xrMath_box3D.h" />
+    <ClInclude Include="xrMath_color.h" />
+    <ClInclude Include="xrMath_compressed_normal.h" />
+    <ClInclude Include="xrMath_constants.h" />
+    <ClInclude Include="xrMath_cylinder.h" />
+    <ClInclude Include="xrMath_flags.h" />
+    <ClInclude Include="xrMath_implementation.h" />
+    <ClInclude Include="xrMath_matrix3x3.h" />
+    <ClInclude Include="xrMath_matrix4x4.h" />
+    <ClInclude Include="xrMath_obb.h" />
+    <ClInclude Include="xrMath_plane2D.h" />
+    <ClInclude Include="xrMath_plane3D.h" />
+    <ClInclude Include="xrMath_quaternion.h" />
+    <ClInclude Include="xrMath_random.h" />
+    <ClInclude Include="xrMath_rect.h" />
+    <ClInclude Include="xrMath_sphere.h" />
+    <ClInclude Include="xrMath_splines.h" />
+    <ClInclude Include="xrMath_types.h" />
+    <ClInclude Include="xrMath_utils.h" />
+    <ClInclude Include="xrMath_vector2.h" />
+    <ClInclude Include="xrMath_vector3.h" />
+    <ClInclude Include="xrMath_vector4.h" />
+  </ItemGroup>
+</Project>

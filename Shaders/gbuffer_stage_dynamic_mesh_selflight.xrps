@@ -1,0 +1,38 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "material.xrh"
+#include "gbuffer.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+	float4 HomogeniousPosition: POSITION;
+	float3 Position : TEXCOORD0;
+	float3 TBN0 	: TEXCOORD1;
+	float3 TBN1				: TEXCOORD2;
+	float3 TBN2 	: TEXCOORD3;
+	float2 UV				: TEXCOORD4;
+};
+///////////////////////////////////////////////////////////////////////////////////
+GBufferPacked main(Interpolators Input)
+{
+    GBuffer GBuffer = InitializeGBuffer();;
+	
+	float3x3 TBN = float3x3(Input.TBN0, Input.TBN1, Input.TBN2);
+
+    GBuffer.Albedo = tex2D(s_base, Input.UV).rgb;
+
+    GBuffer.Albedo = sRgbToLinear(GBuffer.Albedo.rgb);
+	
+    GBuffer.Normal = normalize(mul(TBN, float3(0.5f, 0.5f, 1.0f)));
+
+    GBuffer.Position = Input.Position;
+
+    GBuffer.Emission = 1.0f;
+	
+    return PackGBuffer(GBuffer);
+}
+///////////////////////////////////////////////////////////////////////////////////

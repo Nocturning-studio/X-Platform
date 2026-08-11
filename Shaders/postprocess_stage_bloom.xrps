@@ -1,0 +1,196 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Author	: NSDeathman
+//	Nocturning studio for NS Platform X
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Common Uniforms & Helpers
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 bloom_parameters;  // x: threshold, y: brightness, z: blades threshold, w: intensity
+uniform float4 bloom_resolution;  // xy: resolution, zw: 1/resolution  
+uniform float4 bloom_blur_params; // x: blur scale, y: iteration, z: anamorphic stretch, w: reserved
+
+uniform sampler2D s_bloom;
+uniform sampler2D s_bloom_blades;
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// Improved luminance calculation (Rec. 709)
+float GetLuminance(float3 Color)
+{
+    return dot(Color, float3(0.2126729, 0.7151522, 0.0721750));
+}
+
+// Karis's luma approximation for fireflies reduction
+float KarisAverage(float3 Color)
+{
+    return 1.0 / (1.0 + GetLuminance(Color));
+}
+
+// ACES tone mapping approximation
+float3 ACESFilm(float3 x)
+{
+    float a = 2.51;
+    float b = 0.03;
+    float c = 2.43;
+    float d = 0.59;
+    float e = 0.14;
+    return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 1: Prepare
+// Improved Bloom Preparation with Smooth Extraction
+//////////////////////////////////////////////////////////////////////////////////////////
+struct OutputTextures
+{
+    float4 BloomTexture : COLOR0;
+    float4 BladesTexture : COLOR1;
+};
+
+// Smooth threshold function with soft knee
+float3 ApplyBloomThreshold(float3 color, float threshold, float softKnee)
+{
+    float luminance = GetLuminance(color);
+    
+    // Soft knee curve for smooth transition
+    float soft = luminance - threshold + softKnee;
+    soft = clamp(soft, 0.0, 2.0 * softKnee);
+    soft = soft * soft / (4.0 * softKnee + 1e-5);
+    
+    float amount = max(luminance - threshold, soft);
+    return color * amount;
+}
+
+OutputTextures PrepareColorBuffer(float2 TexCoords : TEXCOORD0)
+{
+    OutputTextures Output;
+    
+    float4 ImageColor = tex2D(s_image, TexCoords);
+    
+    // Reduce fireflies using Karis's average
+    float luma = KarisAverage(ImageColor.rgb);
+    ImageColor.rgb *= luma;
+    
+    // Extract bloom with smooth transition
+    float bloomThreshold = bloom_parameters.x;
+    float bloomBrightness = bloom_parameters.y;
+    float bloomSoftKnee = bloomThreshold; // Soft knee for smooth transition
+    
+    float3 bloomColor = ApplyBloomThreshold(ImageColor.rgb, bloomThreshold, bloomSoftKnee);
+    Output.BloomTexture = float4(bloomColor * bloomBrightness, 1.0);
+    
+    // Extract anamorphic blades with higher threshold but softer transition
+    float bladesThreshold = bloom_parameters.z;
+    float bladesBrightness = bloom_parameters.w;
+    float bladesSoftKnee = bladesThreshold; // Even softer for blades
+    
+    float3 bladesColor = ApplyBloomThreshold(ImageColor.rgb, bladesThreshold, bladesSoftKnee);
+    Output.BladesTexture = float4(bladesColor * bladesBrightness, 1.0);
+    
+    return Output;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 2: Bloom Filter
+// High Quality Gaussian Bloom Filter with Progressive Blur
+//////////////////////////////////////////////////////////////////////////////////////////
+#ifdef USE_HORIZONTAL_FILTER
+    #define DIRECTION float2(1.0, 0.0)
+#else
+    #define DIRECTION float2(0.0, 1.0)
+#endif
+
+float4 FilterBloom(float2 TexCoords : TEXCOORD0) : COLOR0
+{
+    float2 PixelSize = bloom_resolution.zw;
+    
+    // Progressive blur scale based on iteration
+    float blurScale = 2.0f + bloom_blur_params.x; 
+    float2 direction = DIRECTION * blurScale;
+    
+    // High-quality 13-tap Gaussian kernel
+    const float weights[13] =
+    {
+        0.0656, // center
+        0.0626, // ±1
+        0.0596, // ±2  
+        0.0556, // ±3
+        0.0506, // ±4
+        0.0451, // ±5
+        0.0391, // ±6
+        0.0329, // ±7
+        0.0267, // ±8
+        0.0208, // ±9
+        0.0155, // ±10
+        0.0111, // ±11
+        0.0075  // ±12
+    };
+    
+    const float offsets[13] =
+    {
+        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0
+    };
+    
+    float4 blurredColor = tex2D(s_bloom, TexCoords) * weights[0];
+    
+    [unroll]
+    for (int i = 1; i < 13; i++)
+    {
+        float2 offset = offsets[i] * PixelSize * direction;
+        blurredColor += tex2D(s_bloom, TexCoords + offset) * weights[i];
+        blurredColor += tex2D(s_bloom, TexCoords - offset) * weights[i];
+    }
+    
+    return blurredColor;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 3: Blades Filter
+// Simplified Blades Filter
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 FilterBlades(float2 TexCoords : TEXCOORD0) : COLOR0
+{
+    float2 pixelSize = bloom_resolution.zw;
+    
+    // Анаморфный bloom - растягиваем по горизонтали
+    float2 direction = float2(3.0f, 0.3f); // Горизонтальное растяжение
+    
+    float4 color = tex2D(s_bloom_blades, TexCoords);
+    float totalWeight = 1.0f;
+    
+    // Простой размытие с 4 сэмплами
+    for (int i = 1; i <= 2; i++)
+    {
+        float weight = 1.0f / (i + 1.0f);
+        float2 offset = pixelSize * direction * i;
+        
+        color += tex2D(s_bloom_blades, TexCoords + offset) * weight;
+        color += tex2D(s_bloom_blades, TexCoords - offset) * weight;
+        totalWeight += 2.0f * weight;
+    }
+    
+    return color / totalWeight;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 4: Apply
+// Alpha blend apply effect to screen
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ApplyBloom(float2 TexCoords: TEXCOORD0) : COLOR0
+{
+    // Используем tex2D для линейной интерполяции (мягкий апскейл), 
+    // так как буфер блума обычно в 2 или 4 раза меньше экрана.
+    float3 bloomColor = tex2D(s_bloom, TexCoords).rgb;
+    float3 bladesColor = tex2D(s_bloom_blades, TexCoords).rgb;
+    
+    // Combine with configurable intensities
+    float bloomIntensity = bloom_parameters.w;
+    float bladesIntensity = bloom_parameters.w * 0.5f; // Blades usually subtler
+    
+    float3 finalColor = bloomColor * bloomIntensity + bladesColor * bladesIntensity;
+
+    // Возвращаем результат для аддитивного смешивания (ONE, ONE)
+    return float4(finalColor, 1.0f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////

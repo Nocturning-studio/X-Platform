@@ -1,0 +1,169 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Created	: 30.11.2024
+//	Author	: NSDeathman
+//	NSProjectX Nocturning Studio - 2024
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+struct v2p
+{
+	float4 color: COLOR0;
+	float4 gray: COLOR1;
+    float2 tc0: TEXCOORD0; 
+    float2 tc1: TEXCOORD1;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_grad0;
+uniform sampler2D s_grad1;
+uniform sampler2D s_noise0;
+uniform sampler2D s_noise1;
+uniform sampler2D s_noise2;
+
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 c_brightness;
+uniform float4 c_colormap;
+uniform float actor_health;
+uniform float night_vision_enabled;
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Вспомогательные функции
+//////////////////////////////////////////////////////////////////////////////////////////
+
+float GetVignette(float2 TexCoords, float Power)
+{
+    float f = 16.0f * TexCoords.x * TexCoords.y * (1.0f - TexCoords.x) * (1.0f - TexCoords.y);
+    return safe_pow(abs(f), Power);
+}
+
+float GetHeartbeat()
+{
+    return safe_pow(0.5f + 0.5f * sin(timers.x * 10.0f), 4.0f) * 0.3f;
+}
+
+float3 GetBloodEffector(float3 ImageColor, float2 TexCoords)
+{
+    float Health = saturate(pow(actor_health, 2.71f));
+    float RedVignette = GetVignette(TexCoords, invert(Health) * 0.25f);
+    float3 WoundVignetteColor = float3(0.25f, 0.0f, 0.0f) * invert(RedVignette) * invert(GetHeartbeat());
+    return lerp(ImageColor.rgb, WoundVignetteColor, invert(RedVignette) * (1.0 - Health));
+}
+
+// Линзовая дисторсия UV координат
+float2 LensDistort(float2 uv, float k) 
+{
+    float2 centered = uv - 0.5f;
+    float r2 = dot(centered, centered);
+    float f = 1.0f + r2 * (k + k * sqrt(r2));
+    return centered * f + 0.5f;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Основная функция шейдера
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 main(v2p I): COLOR
+{
+    // -----------------------------------------------------------------
+    // ЛОГИКА ПРИ ВКЛЮЧЕННОМ ПНВ (NIGHT VISION ON)
+    // -----------------------------------------------------------------
+    if (night_vision_enabled > 0.5f)
+    {
+        // Настройки (TWEAK HERE)
+        const float kDistortion = 0.22f;
+        const float kBlurWidth = 0.012f;      // Чуть меньше размытия по краям
+        const float3 kPhosphorColor = float3(0.45f, 0.85f, 1.1f);
+        
+        // Настройки шарпенинга (Исправлено)
+        const float kSharpStrength = 0.4f;    // Было 1.5f -> стало 0.4f (мягче)
+        const float kSharpOffset = 0.003f;    // Было 0.01f -> стало 0.003f (тоньше грани)
+
+        // 1. Искажение линзы
+        float2 DistortedUV = LensDistort(I.tc0, kDistortion); 
+        
+        // Маска краев
+        if (DistortedUV.x < 0.0f || DistortedUV.x > 1.0f || DistortedUV.y < 0.0f || DistortedUV.y > 1.0f)
+            return float4(0, 0, 0, 1);
+
+        // 2. Оптика и Хроматика
+        float2 centerVector = DistortedUV - 0.5f;
+        float distFromCenter = dot(centerVector, centerVector);
+        float blurAmount = distFromCenter * kBlurWidth; 
+        
+        float3 NVColor = float3(0,0,0);
+        
+        // Samples
+        NVColor.r = tex2Dlod0(s_image, DistortedUV - centerVector * (blurAmount * 1.5f)).r;
+        NVColor.g = tex2Dlod0(s_image, DistortedUV).g;
+        NVColor.b = tex2Dlod0(s_image, DistortedUV + centerVector * (blurAmount * 2.0f)).b;
+        
+        // ИСПРАВЛЕННЫЙ ШАРПЕНИНГ (Sharpening)
+        // Берем сэмпл очень близко к оригиналу, чтобы подчеркнуть только микро-детали
+        float3 BlurredSample = tex2Dlod0(s_image, DistortedUV + centerVector * kSharpOffset).rgb;
+        // Добавляем разницу, но намного мягче
+        NVColor += (NVColor - BlurredSample) * kSharpStrength; 
+
+        // 3. Яркость
+        float lum = dot(NVColor, float3(0.2126f, 0.7152f, 0.0722f));
+        lum = pow(max(0.0f, lum), 0.45f) * 1.1f; 
+
+        // 4. Шум
+        float noise = avg3(Hash3D_Temporal(DistortedUV * 25.0f + timers.x * 20.0f)); 
+        float sparkles = max(0.0f, noise - 0.97f) * 25.0f;
+        float interference = sin(DistortedUV.y * 12.0f + timers.x * 5.0f) * 0.01f; // Ослабил интерференцию
+        
+        lum += (noise - 0.5f) * 0.12f;
+        lum += sparkles;
+        lum += interference;
+
+        // 5. Микро-сетка (Смягчена)
+        // Сделал её более прозрачной (0.02 вместо 0.04), чтобы не рябила в глазах
+        float scanline = sin(DistortedUV.y * 800.0f) * 0.02f; 
+        float grid = sin(DistortedUV.x * 800.0f) * 0.02f;
+        lum -= abs(scanline + grid); 
+
+        // 6. Цвет
+        float3 FinalColor = lum * kPhosphorColor;
+
+        // 7. Bloom (Слегка усилен для компенсации меньшего шарпа)
+        float glowMask = max(0.0f, lum - 0.75f); 
+        FinalColor += glowMask * kPhosphorColor * 0.7f; 
+
+        // 8. Виньетка
+        float2 vignUV = abs(DistortedUV - 0.5f) * 2.0f;
+        float vdist = pow(pow(vignUV.x, 4.0f) + pow(vignUV.y, 4.0f), 0.25f); 
+        float vignetteMask = 1.0f - smoothstep(0.75f, 0.98f, vdist);
+        FinalColor *= vignetteMask;
+
+        return float4(FinalColor, 1.0f);
+    }
+    
+    // -----------------------------------------------------------------
+    // ОБЫЧНЫЙ РЕЖИМ (БЕЗ ИЗМЕНЕНИЙ)
+    // -----------------------------------------------------------------
+    float3 ImageColor0 = tex2Dlod0(s_image, I.tc0).rgb;
+    float3 ImageColor1 = tex2Dlod0(s_image, I.tc1).rgb;
+    float3 ImageColor = (ImageColor0 + ImageColor1) * 0.5f;
+    
+    float grad_i = dot(ImageColor, (0.3333h).xxx);
+    float3 Grad0 = tex2Dlod0(s_grad0, float2(grad_i, 0.5f)).rgb;
+    float3 Grad1 = tex2Dlod0(s_grad1, float2(grad_i, 0.5f)).rgb;
+    float3 Colormap = lerp(Grad0, Grad1, c_colormap.y);
+    ImageColor = lerp(ImageColor, Colormap, c_colormap.x);
+    
+    float gray = dot(ImageColor, I.gray.rgb);
+    ImageColor = lerp(gray, ImageColor, I.gray.w);
+
+    float3 noised = ImageColor * Hash3D_Temporal(I.tc0) * 2.0f;
+    ImageColor = lerp(noised, ImageColor, I.color.w);
+    
+    ImageColor += tex2Dlod0(s_noise0, I.tc0).r;
+    ImageColor += tex2Dlod0(s_noise1, I.tc0).r;
+    ImageColor += tex2Dlod0(s_noise2, I.tc0).r;
+    
+    ImageColor.rgb *= GetVignette(I.tc0, vignette_power);
+    ImageColor.rgb = GetBloodEffector(ImageColor, I.tc0);
+    ImageColor = (ImageColor * I.color.rgb + c_brightness.rgb) * 2.0f;
+    
+    return float4(ImageColor, 1);
+}

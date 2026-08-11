@@ -1,0 +1,47 @@
+#include "common.xrh"
+#include "alpha_test.xrh"
+#include "gbuffer.xrh"
+
+struct v2p
+{
+ float2 tc0: TEXCOORD0; // base
+ float2 tc1: TEXCOORD1; // lmap
+	float2 tc2: TEXCOORD2; // hemi
+	float3 tc3: TEXCOORD3; // env
+	float3 position: TEXCOORD4;
+  float3 c0: COLOR0;
+	float3 c1: COLOR1;
+};
+
+struct PixelShaderOutputStruct
+{
+	float4 Generic_0: COLOR0;
+	float4 Position: COLOR1;
+};
+
+uniform samplerCUBE s_env;
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+PixelShaderOutputStruct main(v2p I)
+{
+    float4 BaseTextureData = tex2D(s_base, I.tc0);
+    BaseTextureData.rgb = sRgbToLinear(BaseTextureData.rgb);
+    
+	// lighting
+    float3 l_hemi = sRgbToLinear(I.c0) * sRgbToLinear(tex2D(s_hemi, I.tc2).rgb);
+	
+    BaseTextureData.rgb = l_hemi * BaseTextureData.rgb;// * AMBIENT_BRIGHTNESS * 10.0f;
+	
+	// NSDeathman - считаем туман второй раз, но теперь специально для этого конкретного объекта
+    float Fog = CalcFogness(I.position);
+    BaseTextureData.rgb = ApplyFogness(BaseTextureData.rgb, Fog);
+    float FogOpacity = BaseTextureData.a * invert(safe_pow(Fog, 4.4f));
+    
+    PixelShaderOutputStruct Output;
+    Output.Generic_0 = float4(BaseTextureData.rgb, FogOpacity);
+    
+    calc_alpha_test(I.tc0, BaseTextureData.a);
+    Output.Position = float4(I.position.z, NULL, NULL, NULL);
+    return Output;
+}

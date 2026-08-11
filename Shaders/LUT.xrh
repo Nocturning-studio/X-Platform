@@ -1,0 +1,72 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Code by Screen space shaders
+// Tweaked to NSPX by NSDeathman
+// Date: 08.12.2024
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define LUT_RESOUTION_X 1024.0f
+#define CELLS_SIZE 32.0f // Width/Height of your cell
+#define CELLS_GROUPS 1	 // LUT presets stacked on top of each other 
+#define LUT_RESOLUTION_Y CELLS_SIZE * CELLS_GROUPS
+#define LUT_GROUPS max(1, CELLS_GROUPS)
+#define TEXEL_SIZE float2(1.0f / LUT_RESOUTION_X, 1.0f / LUT_RESOLUTION_Y)
+#define TEXEL_HALF float2(TEXEL_SIZE.xy / 2.0f)
+#define TEXEL_FIX TEXEL_SIZE.y * LUT_GROUPS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_env_lut0; //Actual game time hour LUT
+uniform sampler2D s_env_lut1; //Next game time hour LUT
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_lut;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uniform float c_lut_params; //x - Cross game hours lut interpolation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float3 Apply_Environment_LUT(float3 ImageColor, float2 TexCoords)
+{
+    // Prepare LUT UVs
+    float3 cells = ImageColor * CELLS_SIZE - ImageColor;
+    float lut_frac = frac(cells.b);
+    cells.rg = TEXEL_HALF + cells.rg * TEXEL_SIZE;
+    cells.r += (cells.b - lut_frac) * TEXEL_FIX;
+
+	// Final LUT UVs
+    float4 uvs = float4(cells.rg, cells.r + TEXEL_FIX, cells.g);
+
+	// Group offset
+    float2 grp_offset = float2(0.0f, 0.0f);
+
+	// Sample LUTs
+    float3 left0 = tex2Dlod0(s_env_lut0, uvs.xy + grp_offset).rgb;
+    float3 left1 = tex2Dlod0(s_env_lut1, uvs.xy + grp_offset).rgb;
+    float3 left = lerp(left0, left1, c_lut_params.x);
+    
+    float3 right0 = tex2Dlod0(s_env_lut0, uvs.zw + grp_offset).rgb;
+    float3 right1 = tex2Dlod0(s_env_lut1, uvs.zw + grp_offset).rgb;
+    float3 right = lerp(right0, right1, c_lut_params.x);
+    
+    // Apply LUTS
+    return lerp(left, right, lut_frac);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float3 Apply_Constant_LUT(float3 ImageColor, float2 TexCoords)
+{
+    // Prepare LUT UVs
+    float3 cells = ImageColor * CELLS_SIZE - ImageColor;
+    float lut_frac = frac(cells.b);
+    cells.rg = TEXEL_HALF + cells.rg * TEXEL_SIZE;
+    cells.r += (cells.b - lut_frac) * TEXEL_FIX;
+
+	// Final LUT UVs
+    float4 uvs = float4(cells.rg, cells.r + TEXEL_FIX, cells.g);
+
+	// Group offset
+    float2 grp_offset = float2(0.0f, 0.0f);
+
+	// Sample LUT
+    float3 left = tex2Dlod0(s_lut, uvs.xy + grp_offset).rgb;
+    float3 right = tex2Dlod0(s_lut, uvs.zw + grp_offset).rgb;
+    
+    // Apply LUT
+    return lerp(left, right, lut_frac);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

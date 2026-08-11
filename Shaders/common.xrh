@@ -1,0 +1,25 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 27.07.2022
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+// Список поддерживаемых в hlsl прагм
+// #pragma def
+// #pragma message
+// #pragma pack_matrix(row_major/row_column)
+// #pragma warning
+////////////////////////////////////////////////////////////////////////////
+#include "hlsl_extensions.xrh"
+////////////////////////////////////////////////////////////////////////////
+#include "common_hooks.xrh"
+#include "common_constants.xrh"
+#include "common_math.xrh"
+#include "common_define_associations.xrh"
+#include "common_defines.xrh"
+#include "common_iostructs.xrh"
+#include "common_policies.xrh"
+#include "common_samplers.xrh"
+#include "common_uniforms.xrh"
+#include "common_functions.xrh"
+#include "common_effects.xrh"
+////////////////////////////////////////////////////////////////////////////

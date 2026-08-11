@@ -1,0 +1,64 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 01.08.2023
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+// Rendertarget format control
+#define ARGB8 1
+#define ARGB16F 2
+////////////////////////////////////////////////////////////////////////////
+// Vignette mode control
+#define VIGNETTE_MODE_STATIC 1
+#define VIGNETTE_MODE_DYNAMIC 2
+
+////////////////////////////////////////////////////////////////////////////
+// Antialiasing mode control
+#define AA_DISABLED 0
+#define RGAA 1
+#define DLAA 2
+#define FXAA 3
+
+////////////////////////////////////////////////////////////////////////////
+// Alpha-testing antialiasing mode control
+#define ALPHA_TEST_AA_DISABLED 0
+#define FXAA_ATOC 1
+
+////////////////////////////////////////////////////////////////////////////
+// Quality control
+#define UNDEFINED_QUALITY 0
+#define LOW_QUALITY 1
+#define MIDDLE_QUALITY 2
+#define HIGHT_QUALITY 3
+#define ULTRA_QUALITY 4
+
+////////////////////////////////////////////////////////////////////////////
+// Shadow filtering control
+#define DISABLE_FILTERING 0
+#define LOW_FILTERING 1
+#define MIDDLE_FILTERING 2
+#define HIGHT_FILTERING 3
+
+////////////////////////////////////////////////////////////////////////////
+// Render debuging
+#define DISABLED 0
+#define GBUFFER_ALBEDO 1
+#define GBUFFER_POSITION 2
+#define GBUFFER_NORMAL 3
+#define GBUFFER_ROUGHNESS 4
+#define GBUFFER_METALLIC 5
+#define GBUFFER_SUBSURFACE_POWER 6
+#define GBUFFER_EMISSION 7
+#define GBUFFER_LIGHTMAP_AO 8
+#define GBUFFER_BAKED_AO 9
+#define DIRECT_LIGHT 10
+#define INDIRECT_LIGHT 11
+#define REAL_TIME_AO 12
+
+////////////////////////////////////////////////////////////////////////////
+// Material types
+#define BASE_MATERIAL 0
+#define DETAIL_MATERIAL 1
+#define TERRAIN_MATERIAL 2
+
+#define FLAT_MATERIALS 0
+////////////////////////////////////////////////////////////////////////////

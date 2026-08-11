@@ -1,0 +1,279 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 27.07.2022
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "common_uniforms.xrh"
+////////////////////////////////////////////////////////////////////////////
+float4 pack_normal(float4 v)
+{
+    return (v - 0.5f) * 2.0f;
+}
+
+float3 unpack_normal(float3 v)
+{
+    return 2.0f * v - 1.0f;
+}
+
+float3 unpack_bx2(float3 v)
+{
+    return 2.0f * v - 1.0f;
+}
+
+float3 unpack_bx4(float3 v)
+{
+    return 4.0f * v - 2.0f;
+}
+
+float2 unpack_tc_base(float2 tc, float du, float dv)
+{
+    return (tc.xy + float2(du, dv)) * (32.0f / 32768.0f);
+}
+
+float2 unpack_tc_lmap(float2 tc)
+{
+    return tc * (1.0f / 32768.0f); // [-1  .. +1 ]
+}
+
+float4 wmark_shift(float3 pos, float3 norm)
+{
+    float3 P = pos;
+    float3 N = norm;
+    float3 sd = eye_position - P;
+    float d = length(sd);
+    float w = min(d / RANGE, 1.0f);
+    float s = lerp(MIN_SHIFT, MAX_SHIFT, d);
+    P += N.xyz * NORMAL_SHIFT;
+    P -= normalize(eye_direction + normalize(P - eye_position)) * s;
+    return float4(P, 1.0f);
+}
+
+float3 calc_reflection(float3 pos_w, float3 norm_w)
+{
+    return reflect(normalize(pos_w - eye_position), norm_w);
+}
+////////////////////////////////////////////////////////////////////////////
+float3 RemapCubeCoords(float3 CubeCoords)
+{
+    float3 CubeCoordsAbs = abs(CubeCoords);
+    float CubeCoordsMax = max(CubeCoordsAbs.x, max(CubeCoordsAbs.y, CubeCoordsAbs.z));
+    CubeCoords /= CubeCoordsMax;
+    CubeCoords.y = CubeCoords.y * 2.0f - 1.0f;
+
+    return CubeCoords;
+}
+////////////////////////////////////////////////////////////////////////////
+//https://www.turais.de/how-to-load-hdri-as-a-cubemap-in-opengl/
+////////////////////////////////////////////////////////////////////////////
+/*
+float3 uvToXYZ(int face, float2 uv)
+{
+    if(face == 0)
+        return float3(1.f, uv.y, -uv.x);
+    else if(face == 1)
+        return float3(-1.f, uv.y, uv.x);
+    else if(face == 2)
+        return float3(+uv.x, -1.f, +uv.y);
+    else if(face == 3)
+        return float3(+uv.x, 1.f, -uv.y);
+    else if(face == 4)
+        return float3(+uv.x, uv.y, 1.f);
+    else //if(face == 5)
+    {
+        return float3(-uv.x, +uv.y, -1.f);
+    }
+}
+
+float2 dirToUV(float3 dir)
+{
+    return float2(0.5f + 0.5f * atan2(dir.z, dir.x) / PI, 1.f - acos(dir.y) / PI);
+}
+*/
+//float3 panoramaToCubeMap(int face, float2 texCoord)
+//{
+//    float2 texCoordNew = texCoord * 2.0 - 1.0f; //< mapping vom 0.0f,1 to -1,1 coords
+//    float3 scan = uvToXYZ(face, texCoordNew);
+//    float3 direction = normalize(scan);
+//    float2 src = dirToUV(direction);
+//
+//    return  texture(u_panorama, src).rgb; //< get the color from the panorama
+//}
+//////////////////////////////////////////////////////////////////////////////////////////
+float3 v_hemi(float3 n)
+{
+    return L_hemi_color.rgb * (.5f + .5f * n.y);
+}
+
+float3 v_hemi_wrap(float3 n, float w)
+{
+    return L_hemi_color.rgb * (w + (1 - w) * n.y);
+}
+
+float3 v_sun(float3 n)
+{
+    return L_sun_color.rgb * dot(n, -L_sun_dir_w);
+}
+
+float3 p_hemi(float2 tc)
+{
+    float3 t_lmh = tex2D(s_hemi, tc).rgb;
+    return dot(t_lmh, 1.0f / 3.0f);
+}
+
+float3 uv_to_eye(float2 uv, float eye_z)
+{
+    uv = (uv * float2(2.0f, 2.0f) - float2(1.0f, 1.0f));
+    // return float3(uv * pos_decompression_params.xy * eye_z, eye_z);
+    return float3(uv * eye_z, eye_z);
+}
+////////////////////////////////////////////////////////////////////////////
+// https://www.xrhadertoy.com/view/3dGfzh
+////////////////////////////////////////////////////////////////////////////
+// slightly altered https://www.xrhadertoy.com/view/wtBXRz
+float2 brownConradyDistortion(float2 uv, float k1)
+{
+    uv = uv * 2.0 - 1.0f;	// brown conrady takes [-1:1]
+
+    // positive values of K1 give barrel distortion, negative give pincushion
+    float r2 = uv.x * uv.x + uv.y * uv.y;
+    uv *= 1.0 + k1 * r2;
+
+    return (uv * .5 + .5); // restore -> [0:1]
+}
+////////////////////////////////////////////////////////////////////////////
+// RotationCosSin is(cos(alpha), sin(alpha)) where alpha is the rotation angle
+// A 2D rotation matrix is applied(see https://en.wikipedia.org/wiki/Rotation_matrix)
+float2 CalcRotationOffset(float noiseDirection)
+{
+    float c, s;
+    sincos(PI, c, s);
+    float2x2 rot = float2x2(c, -s, s, c);
+    float2 noiseOffset;
+    sincos(5.0f * PI * noiseDirection, noiseOffset.y, noiseOffset.x);
+    return lerp(noiseOffset, noiseDirection, 0.5f);
+}
+////////////////////////////////////////////////////////////////////////////
+//https://www.shadertoy.com/view/flGXRm
+////////////////////////////////////////////////////////////////////////////
+float hash(float n)
+{
+    return frac(sin(n) * 43758.5453123f);
+}
+
+float random(float income)
+{
+    return frac((sin(income) * 4698.0101255f) + (sin(income) * 29189.92918f) + (sin(income) * 8.327f));
+}
+
+float3 Hash3D_Temporal(float2 uv)
+{
+    float3 result = 0.0f;
+    result.r = sin(random(uv.x * (timers.x + 250.0f) - uv.y * (timers.x + 2125.0f)));
+    result.g = sin(random(uv.x * (timers.x + 80.0f) + uv.y * (timers.x + 1.0f)));
+    result.b = sin(random(uv.x * (timers.x + 8.0f) - uv.y * (timers.x + 32.0f)));
+    return result;
+}
+////////////////////////////////////////////////////////////////////////////
+float2 Hash2D(float2 p)
+{
+    float3 p3 = frac(float3(p.xyx) * float3(.1031, .1030, .0973));
+    p3 += dot(p3, p3.yzx + 33.33);
+    return frac((p3.xx + p3.yz) * p3.zy);
+}
+////////////////////////////////////////////////////////////////////////////
+float Hash1D(float3 p3)
+{
+    p3 = frac(p3 * .1031);
+    p3 += dot(p3, p3.zyx + 31.32);
+    return frac((p3.x + p3.y) * p3.z);
+}
+////////////////////////////////////////////////////////////////////////////
+bool isHUD(float matID)
+{
+    return matID == HUD_MATERIAL;
+}
+////////////////////////////////////////////////////////////////////////////
+float4 billinear_filter(sampler2D Sampler, float2 TexCoords)
+{
+    float4 result = 0.0f;
+    
+    result += tex2Dlod0(Sampler, TexCoords + screen_res.zw * float2(1.5f, -0.5f));
+    result += tex2Dlod0(Sampler, TexCoords + screen_res.zw * float2(1.5f, 1.5f));
+    result += tex2Dlod0(Sampler, TexCoords + screen_res.zw * float2(-0.5f, -0.5f));
+    result += tex2Dlod0(Sampler, TexCoords + screen_res.zw * float2(-0.5f, 1.5f));
+    
+    return result * 0.25f;
+}
+////////////////////////////////////////////////////////////////////////////
+float3x3 CalculateTBN(float3 Position, float3 Normal, float2 UV)
+{
+    // Get edge vectors of the pixel triangle
+	float3 dp1 = ddx(Position.xyz);
+	float3 dp2 = ddy(Position.xyz);
+	
+	float2 duv1 = ddx(UV.xy);
+	float2 duv2 = ddy(UV.xy);
+
+	float3 N = normalize(Normal);
+
+    // Solve the linear system
+	float3 dp2perp = cross(dp2, N);
+	float3 dp1perp = cross(N, dp1);
+	
+	float3 T = normalize(dp2perp * duv1.x + dp1perp * duv2.x);
+	float3 B = normalize(dp2perp * duv1.y + dp1perp * duv2.y);
+	
+	return float3x3( T.x, B.x, N.x,
+                     T.y, B.y, N.y,
+                     T.z, B.z, N.z );
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+float2 GetViewSpaceTexCoordsFromPosition(float3 ViewSpacePosition)
+{
+    return (ViewSpacePosition.xy / ViewSpacePosition.zz + pos_decompression_params.xy) / pos_decompression_params.zw / screen_res.xy;
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+bool is_in_range(float val, float min, float max)
+{
+    return val >= min && val <= max;
+}
+//////////////////////////////////////////////////////////////////////////////////////////	
+bool is_in_quad(float2 p, float2 lt = float2(0, 0), float2 rb = float2(1, 1))
+{
+    return is_in_range(p.x, lt.x, rb.x) && is_in_range(p.y, lt.y, rb.y);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 proj_to_screen(float4 proj)
+{
+    float4 screen = proj;
+    screen.x = (proj.x + proj.w);
+    screen.y = (proj.w - proj.y);
+    screen.xy *= 0.5;
+    return screen;
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+float3x3 CalculateTBNFromNormal(float3 normal)
+{
+    float3 up = float3(0.0f, 0.0f, 1.0f);
+    if (abs(normal.z) > 0.999f)
+        up = float3(1.0f, 0.0f, 0.0f);
+    
+    float3 tangent = normalize(cross(up, normal));
+    float3 bitangent = cross(normal, tangent);
+    
+    return float3x3(tangent, bitangent, normal);
+}
+////////////////////////////////////////////////////////////////////////////
+#include "tonemapping.xrh"
+#include "fog_helper.xrh"
+////////////////////////////////////////////////////////////////////////////
+float3 GetSkyCubeInterpolated(samplerCUBE s_environment_0, samplerCUBE s_environment_1, float3 cube_coords, float interpolator, float mip_level)
+{
+    float3 SkyCube0 = texCUBElod(s_environment_0, float4(cube_coords, mip_level)).rgb;
+    SkyCube0 = sRgbToLinear(SkyCube0);
+    float3 SkyCube1 = texCUBElod(s_environment_1, float4(cube_coords, mip_level)).rgb;
+    SkyCube1 = sRgbToLinear(SkyCube1);
+    float3 SkyCube = lerp(SkyCube0, SkyCube1, interpolator);
+    return lerp(SkyCube, fog_params.rgb, saturate(GetFogDensity() * 2.0f));
+}
+////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,45 @@
+// shadow_depth_stage_multiple_usage_object_animated.xrvs
+#include "common.xrh"
+#include "wind.xrh"
+
+v_shadow_direct_aref main(v_tree I)
+{
+    v_shadow_direct_aref O;
+
+    // Мировые координаты без ветра
+    float3 pos = mul(m_transform, I.P).xyz;
+    O.tc0 = (I.tc * consts).xy;
+
+#ifdef USE_WIND
+    // Центр объекта (pivot)
+    float3 ObjectPivot = float3(m_transform._14, m_transform._24, m_transform._34);
+
+    // Распаковка и перевод TBN в мировое пространство
+    float3 localNormal   = unpack_bx4(I.N.xyz);
+    float3 localTangent  = unpack_bx4(I.T);
+    float3 localBinormal = unpack_bx4(I.B);
+
+    float3x3 worldRot = (float3x3)m_transform;
+    float3 worldNormal   = normalize(mul(worldRot, localNormal));
+    float3 worldTangent  = normalize(mul(worldRot, localTangent));
+    float3 worldBinormal = normalize(mul(worldRot, localBinormal));
+
+    // Заполнение контекста – идентично G-Buffer
+    WindContext Ctx;
+    Ctx.WorldPosition        = pos;
+    Ctx.ObjectCenter         = ObjectPivot;
+    Ctx.Normal               = worldNormal;
+    Ctx.Tangent              = worldTangent;
+    Ctx.Binormal             = worldBinormal;
+    Ctx.HeightRelativeToRoot = pos.y - ObjectPivot.y;
+    Ctx.Rigidity             = I.tc.z * consts.x;
+    Ctx.TextureCoordinates   = O.tc0;
+
+    float3 WindOffset = CalculateTreeWind(Ctx);
+    pos += WindOffset;
+#endif
+
+    float4 f_pos = float4(pos, 1.0);
+    O.hpos = mul(m_ViewProject, f_pos);
+    return O;
+}

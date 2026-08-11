@@ -1,0 +1,84 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathMan
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "skinning.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+uniform float3 hemi_cube_pos_faces;
+uniform float3 hemi_cube_neg_faces;
+///////////////////////////////////////////////////////////////////////////////////
+
+// Улучшенная функция вычисления AO
+float calculate_improved_ao(float3 normal, float3 pos_faces, float3 neg_faces)
+{
+    // Нелинейное взвешивание based на нормали
+    float3 weights = abs(normal);
+    weights = weights * weights; // Квадратичное взвешивание для emphasis доминирующих направлений
+    
+    // Нормализация весов
+    float weight_sum = weights.x + weights.y + weights.z;
+    weights /= weight_sum;
+    
+    // Смешивание положительных и отрицательных граней based на направлении нормали
+    float3 mixed = lerp(neg_faces, pos_faces, saturate(normal * 0.5 + 0.5));
+    
+    // Финальное значение с учетом весов
+    float ao = dot(mixed, weights);
+    
+    return ao;
+}
+
+struct Interpolators
+{
+    float4 HomogeniousPosition: POSITION;
+    float3 Position: TEXCOORD0;
+    float3 TBN0: TEXCOORD1;
+    float3 TBN1: TEXCOORD2;
+    float3 TBN2: TEXCOORD3;
+    float2 UV: TEXCOORD4;
+    float2 LightMapUV: TEXCOORD5;
+    float AO: TEXCOORD6;
+};
+///////////////////////////////////////////////////////////////////////////////////
+Interpolators _main(v_model Input)
+{
+    Interpolators Output;
+
+    Output.HomogeniousPosition = mul(m_WorldViewProject, Input.P);
+    Output.Position = mul(m_WorldView, Input.P);
+
+    float3 Normal = Input.N;
+    float3 Tangent = Input.T;
+    float3 Bitangent = Input.B;
+    float3x3 TBN = mul((float3x3)m_WorldView, float3x3( Tangent.x, Bitangent.x, Normal.x,
+												        Tangent.y, Bitangent.y, Normal.y,
+												        Tangent.z, Bitangent.z, Normal.z ));
+    Output.TBN0 = TBN[0];
+    Output.TBN1 = TBN[1];
+    Output.TBN2 = TBN[2];
+
+    Output.UV = Input.tc;
+    Output.LightMapUV = Input.tc;
+
+    // Улучшенное вычисление AO
+    float3 Nw = mul((float3x3)m_World, (float3)Input.N);
+    Nw = normalize(Nw);
+    
+    float ao = calculate_improved_ao(Nw, hemi_cube_pos_faces, hemi_cube_neg_faces);
+    Output.AO = saturate(ao);
+
+    return Output;
+}
+///////////////////////////////////////////////////////////////////////////////////
+#if defined(SKIN_NONE)
+Interpolators main(v_model v) { return _main(v); }
+#elif defined(SKIN_0)
+Interpolators main(v_model_skinned_0 v) { return _main(skinning_0(v)); }
+#elif defined(SKIN_1)
+Interpolators main(v_model_skinned_1 v) { return _main(skinning_1(v)); }
+#elif defined(SKIN_2)
+Interpolators main(v_model_skinned_2 v) { return _main(skinning_2(v)); }
+#endif
+///////////////////////////////////////////////////////////////////////////////////

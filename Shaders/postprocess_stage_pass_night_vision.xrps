@@ -1,0 +1,33 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Created	: 30.11.2024
+//	Author	: NSDeathman
+//	NSProjectX Nocturning Studio - 2024
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR
+{
+    float4 color = tex2Dlod0(s_image, TexCoords);
+    
+    float exp = 8.0f;
+    
+    // luminance hack, responses to red channel most
+    float lum = dot(color.rgb, float3(1.0f, 0.50f, 0.25f)) * exp;
+    
+    color.rgb = float3(lum * 0.5f, lum, lum * 0.5f);
+    
+    // scanlines
+    float ScanLines = sin((TexCoords.y * screen_res.y - timers.x * 10.0f) * ((1.0 / 4.0f)));
+    ScanLines = abs(ScanLines);
+    ScanLines = saturate(ScanLines + 0.5f);
+    color *= ScanLines * 2.0f * saturate(avg3(Hash3D_Temporal(TexCoords)) + 0.25f);
+    
+    // vignetting
+    float distanceFromCenter = length(TexCoords - float2(0.5f, 0.5f));
+    float vignetteAmount = 1.0f - distanceFromCenter;
+    vignetteAmount = smoothstep(0.1f, 1.0f, vignetteAmount);
+    color *= vignetteAmount;
+    
+    return color;
+}
+//////////////////////////////////////////////////////////////////////////////////////////

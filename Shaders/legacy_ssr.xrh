@@ -1,0 +1,309 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 03.07.2024
+//	Author	: NSDeathman, Mihan323
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+////////////////////////////////////////////////////////////////////////////
+// Константы для настроек трассировки лучей в экранном пространстве
+#define SSR_MAX_RAY_STEPS 				60		// Увеличили с 16 до 60, чтобы дойти до горизонта
+#define SSR_REFINE_STEPS                4       // Количество шагов уточнения (бинарный поиск)
+#define SSR_INITIAL_STEP_SIZE		 	1.0f	// Начинаем сразу с 2 метров (мелочь на воде не важна)
+#define SSR_STEP_INCREASE_FACTOR 		1.12f	// Каждый шаг длиннее предыдущего на 12% (экспоненциальный рост)
+#define SSR_INITIAL_THICKNESS			1.5f	// Уменьшили толщину, чтобы не было "шлейфов" от деревьев
+
+// Rонстанты для расчета mip-уровней
+#define SSR_MIP_BIAS 					0.5f	// Базовый смещение mip-уровня
+#define SSR_RAY_DISTANCE_SCALE 			0.1f	// Масштаб влияния расстояния луча
+#define SSR_CURVATURE_SCALE 			2.0f	// Масштаб влияния кривизны поверхности
+#define SSR_INCIDENT_ANGLE_SCALE 		1.5f	// Масштаб влияния угла падения
+#define SSR_ROUGHNESS_SCALE 			3.0f	// Масштаб влияния шероховатости
+#define SSR_MAX_MIP_LEVEL 				3.0f	// Максимальный mip-уровень
+////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Вычисляет вектор отражения в пространстве вида и преобразует его в экранное пространство
+ * @param viewSpacePosition - позиция в пространстве вида
+ * @param viewSpaceNormal - нормаль в пространстве вида
+ * @return вектор отражения в экранном пространстве
+ */
+float3 CalculateViewSpaceReflectionVector(float3 viewSpacePosition, float3 viewSpaceNormal)
+{
+    float3 viewDirection = normalize(viewSpacePosition);
+    float3 viewSpaceReflection = normalize(reflect(viewDirection, viewSpaceNormal));
+    
+    // TRICK: Проецируем точку не на 1 метр, а далеко вперед (на величину Z), 
+    // чтобы избежать потери точности float на больших дистанциях.
+    float rayLength = max(10.0f, abs(viewSpacePosition.z));
+    
+    // Текущая позиция (A)
+    float4 clipSpaceCurrentPosition = mul(m_Project, float4(viewSpacePosition, 1.0f));
+    float4 screenSpaceCurrentPosition = proj_to_screen(clipSpaceCurrentPosition);
+    screenSpaceCurrentPosition.xy /= screenSpaceCurrentPosition.w;
+    // H-Space преобразование
+    screenSpaceCurrentPosition.xy *= viewSpacePosition.z;
+    screenSpaceCurrentPosition.z = viewSpacePosition.z;
+    
+    // Отраженная позиция (B)
+    float3 reflectedViewSpacePosition = viewSpacePosition + viewSpaceReflection * rayLength;
+    
+    float4 clipSpaceReflectedPosition = mul(m_Project, float4(reflectedViewSpacePosition, 1.0f));
+    float4 screenSpaceReflectedPosition = proj_to_screen(clipSpaceReflectedPosition);
+    screenSpaceReflectedPosition.xy /= screenSpaceReflectedPosition.w;
+    // H-Space преобразование
+    screenSpaceReflectedPosition.xy *= reflectedViewSpacePosition.z;
+    screenSpaceReflectedPosition.z = reflectedViewSpacePosition.z;
+    
+    // Возвращаем дельту и делим её на rayLength, чтобы вернуть вектор к масштабу "за 1 метр"
+    return (screenSpaceReflectedPosition.xyz - screenSpaceCurrentPosition.xyz) / rayLength;
+}
+
+/**
+ * Корректирует текстурные координаты при выходе за границы экрана методом "зеркального" отражения
+ * @param textureCoordinates - входные/выходные текстурные координаты
+ */
+void MirrorTextureCoordinatesAtScreenEdges(inout float2 textureCoordinates)
+{
+    // Если координата X вышла за левую границу экрана
+    if (textureCoordinates.x < 0.0f)
+        textureCoordinates = float2(-textureCoordinates.x, textureCoordinates.y - textureCoordinates.x * 0.5f);
+    
+    // Если координата X вышла за правую границу экрана
+    if (textureCoordinates.x > 1.0f)
+        textureCoordinates = float2(1.0f - (textureCoordinates.x - 1.0f), textureCoordinates.y + (textureCoordinates.x - 1.0f) * 0.5f);
+}
+
+/**
+ * Вычисляет mip-уровень на основе физических параметров отражения
+ */
+float CalculateMipLevel(
+    float3 rayStartPosition,
+    float3 intersectionPosition,
+    float3 reflectionDirection,
+    float3 surfaceNormal,
+    float roughness,
+    float rayLength)
+{
+    // 1. Расстояние луча - чем длиннее луч, тем выше mip-уровень
+    float distanceFactor = rayLength * SSR_RAY_DISTANCE_SCALE;
+    
+    // 2. Угол падения - более острые углы дают более размытые отражения
+    float3 viewDirection = normalize(rayStartPosition);
+    float incidentAngle = acos(dot(reflect(-viewDirection, surfaceNormal), surfaceNormal));
+    float angleFactor = (1.0 - abs(cos(incidentAngle))) * SSR_INCIDENT_ANGLE_SCALE;
+    
+    // 3. Кривизна поверхности - вычисляем на основе изменения нормали
+    float3 ddxNormal = ddx(surfaceNormal);
+    float3 ddyNormal = ddy(surfaceNormal);
+    float curvature = length(ddxNormal) + length(ddyNormal);
+    float curvatureFactor = curvature * SSR_CURVATURE_SCALE;
+    
+    // 4. Шероховатость поверхности
+    float roughnessFactor = roughness * SSR_ROUGHNESS_SCALE;
+    
+    // 5. Расстояние до точки пересечения
+    float intersectionDistance = length(intersectionPosition);
+    float distanceMipFactor = log2(intersectionDistance) * 0.5f;
+    
+    // Комбинируем все факторы
+    float combinedMipLevel = SSR_MIP_BIAS + 
+                           distanceFactor + 
+                           angleFactor + 
+                           curvatureFactor + 
+                           roughnessFactor + 
+                           distanceMipFactor;
+    
+    // Ограничиваем максимальным mip-уровнем и возвращаем
+    return clamp(combinedMipLevel, 0.0f, SSR_MAX_MIP_LEVEL);
+}
+
+/**
+ * Выполняет трассировку луча для поиска пересечения с геометрией сцены
+ * @param maxSteps - максимальное количество шагов трассировки
+ * @param currentStepSize - текущий размер шага (изменяется в процессе)
+ * @param intersectionThickness - текущая толщина пересечения (изменяется в процессе)
+ * @param stepSizeIncreaseFactor - коэффициент увеличения шага на каждой итерации
+ * @param rayStartPosition - начальная позиция луча
+ * @param reflectionDirection - направление отражения
+ * @param currentRayPosition - текущая позиция луча (изменяется в процессе)
+ * @param intersectionTextureCoordinates - текстурные координаты точки пересечения (выходной параметр)
+ * @return true если пересечение найдено, false в противном случае
+ */
+bool TraceReflectionRayForIntersection( 
+    int maxSteps, 
+    inout float currentStepSize, 
+    inout float intersectionThickness, 
+    float stepSizeIncreaseFactor,
+    float3 rayStartPosition, 
+    float3 reflectionDirection, 
+    inout float3 currentRayPosition, 
+    out float3 intersectionTextureCoordinates )
+{
+    bool intersectionFound = false;
+    
+    // Выполняем трассировку с заданным количеством шагов
+    for (int stepIndex = 0; stepIndex < maxSteps; stepIndex++)
+    {
+        // Перемещаем луч на текущий шаг вдоль направления отражения
+        currentRayPosition += reflectionDirection * currentStepSize;
+        
+        // Преобразуем позицию луча в текстурные координаты (делением на глубину)
+        intersectionTextureCoordinates.xy = currentRayPosition.xy / currentRayPosition.z;
+        
+        // Корректируем координаты при выходе за границы экрана
+        //MirrorTextureCoordinatesAtScreenEdges(intersectionTextureCoordinates.xy);
+        
+        // Проверяем, не вышли ли мы за вертикальные границы экрана
+        if (!is_in_range(intersectionTextureCoordinates.y, 0.0f, 1.0f))
+            break;
+
+        // Получаем глубину геометрии сцены в текущих текстурных координатах
+        intersectionTextureCoordinates.z = GetDepthRaw(intersectionTextureCoordinates.xy);
+        
+        // Вычисляем разницу между глубиной луча и глубиной геометрии
+        float depthDifference = currentRayPosition.z - intersectionTextureCoordinates.z;
+        
+        // Проверяем условия пересечения:
+        // 1. Луч находится перед геометрией (разница положительная)
+        // 2. Расстояние до геометрии меньше текущей толщины пересечения
+        // 3. Глубина геометрии больше глубины начальной точки (избегаем самопересечений)
+        if (depthDifference > 0.0f && depthDifference <= intersectionThickness && intersectionTextureCoordinates.z >= rayStartPosition.z)
+        {
+            intersectionFound = true;
+            break;
+        }
+        else
+        {
+            // Если пересечение не найдено, увеличиваем шаг и толщину для следующей итерации
+            currentStepSize *= stepSizeIncreaseFactor;
+            intersectionThickness *= stepSizeIncreaseFactor;
+        }
+    }
+    
+    return intersectionFound;
+}
+
+/**
+ * Основная функция для вычисления экранных пространственных отражений
+ * @param screenTextureCoordinates - текстурные координаты текущего пикселя
+ * @param viewSpacePosition - позиция в пространстве вида
+ * @param viewSpaceNormal - нормаль в пространстве вида  
+ * @param depthCorrection - поправка глубины для коррекции артефактов
+ * @return цвет отражения и коэффициент видимости (RGB - цвет, A - коэффициент)
+ */
+float4 CalculateScreenSpaceReflection(
+    float2 screenTextureCoordinates, 
+    float3 viewSpacePosition, 
+    float3 viewSpaceNormal, 
+    float depthCorrection)
+{
+    // === FIX 1: BIAS (ПОДЪЕМ ИЗ ПОД ЗЕМЛИ) ===
+    // Сдвигаем начало луча вдоль нормали. Чем дальше объект, тем больше сдвиг,
+    // чтобы избежать самопересечений из-за низкой точности Z-буфера вдалеке.
+    float surfaceBias = 0.1f + (viewSpacePosition.z * 0.005f);
+    float3 biasedViewPosition = viewSpacePosition + (viewSpaceNormal * surfaceBias);
+
+    // Преобразуем позицию в пространство луча (H-Space)
+    float3 raySpacePosition = float3(
+        screenTextureCoordinates.x * biasedViewPosition.z, 
+        screenTextureCoordinates.y * biasedViewPosition.z, 
+        biasedViewPosition.z
+    );
+    
+    // Вычисляем вектор. Важно: используем оригинальную позицию для вектора, но смещенную для старта
+    float3 screenSpaceReflectionVector = CalculateViewSpaceReflectionVector(viewSpacePosition, viewSpaceNormal);
+    
+    // === FIX 2: АДАПТИВНЫЙ ШАГ ===
+    // Линейно увеличиваем шаг с глубиной. На 100 метрах шаг будет больше, чем на 1 метре.
+    float depthScale = max(1.0f, viewSpacePosition.z * 0.05f); 
+    float currentStepSize = SSR_INITIAL_STEP_SIZE * depthScale;
+    
+    // === FIX 3: JITTER (ДИЗЕРИНГ) ===
+    // Добавляем случайное смещение к началу луча, чтобы размыть "ступеньки"
+    // Используем простую функцию шума или текстуру blue noise, если есть.
+    float2 noiseCoord = screenTextureCoordinates * screen_res.xy;
+    float jitter = frac(sin(dot(noiseCoord, float2(12.9898, 78.233))) * 43758.5453);
+    
+    // Смещаем начало луча на случайную долю шага
+    float3 currentRayPosition = raySpacePosition + screenSpaceReflectionVector * (currentStepSize * jitter);
+    
+    // Масштабируем толщину поиска
+    float currentThickness = SSR_INITIAL_THICKNESS * depthScale;
+    
+    // Инициализируем выходные данные
+    float3 intersectionTextureCoordinates;
+    
+    // Трассировка
+    bool intersectionFound = TraceReflectionRayForIntersection(
+        SSR_MAX_RAY_STEPS, 
+        currentStepSize, 
+        currentThickness, 
+        SSR_STEP_INCREASE_FACTOR, 
+        raySpacePosition, 
+        screenSpaceReflectionVector, 
+        currentRayPosition, 
+        intersectionTextureCoordinates
+    );
+
+    // ... (код SSR_REFINE_STEPS оставляем как есть, он хороший) ...
+    #ifdef SSR_REFINE_STEPS
+    if (intersectionFound)
+    {
+        currentRayPosition -= screenSpaceReflectionVector * currentStepSize;
+        currentStepSize /= SSR_REFINE_STEPS;
+        
+        intersectionFound = TraceReflectionRayForIntersection(
+            SSR_REFINE_STEPS, 
+            currentStepSize, 
+            currentThickness, // Можно уменьшить толщину при уточнении: currentThickness * 0.5f
+            1.0f, 
+            raySpacePosition, 
+            screenSpaceReflectionVector, 
+            currentRayPosition, 
+            intersectionTextureCoordinates
+        );
+    }
+    #endif
+
+    // ... (код SSR_FAR_PLANE и выборка цвета остаются без изменений) ...
+
+    // Финальная проверка на валидность координат (чтобы не было артефактов по краям)
+    float edgeFactor = 1.0f;
+    if (intersectionFound)
+    {
+        float2 UV = intersectionTextureCoordinates.xy;
+        // Виньетка по краям экрана, чтобы отражения плавно исчезали
+        float2 edge = smoothstep(0.0f, 0.1f, UV) * (1.0f - smoothstep(0.9f, 1.0f, UV));
+        edgeFactor = edge.x * edge.y;
+    }
+
+    float3 reflectionColor = 0.0f;
+    float reflectionVisibility = 0.0f;
+
+    if (intersectionFound && is_in_quad(intersectionTextureCoordinates.xy))
+    {
+         // Здесь код выборки цвета без изменений
+         // ...
+         float Roughness = GetRoughness(intersectionTextureCoordinates.xy);
+         float3 IntersectionNormal = GetNormal(intersectionTextureCoordinates.xy);
+         float3 intersectionViewPosition = float3(
+            intersectionTextureCoordinates.xy * intersectionTextureCoordinates.z,
+            intersectionTextureCoordinates.z
+         );
+         //float rayLength = length(intersectionViewPosition - viewSpacePosition);
+         //float MipLevel = CalculateMipLevel(
+         //   viewSpacePosition, intersectionViewPosition, screenSpaceReflectionVector,
+         //   IntersectionNormal, Roughness, rayLength
+         //);
+         
+         reflectionColor = tex2D(s_image, intersectionTextureCoordinates.xy).rgb;//tex2Dlod(s_image, float4(intersectionTextureCoordinates.xy, 0, MipLevel)).rgb;
+         
+         // Применяем edgeFactor к видимости
+         reflectionVisibility = (1.0f - smoothstep(0.1f, 0.0f, intersectionTextureCoordinates.y)) * edgeFactor;
+    }
+    
+    return float4(reflectionColor, reflectionVisibility);
+}
+////////////////////////////////////////////////////////////////////////////

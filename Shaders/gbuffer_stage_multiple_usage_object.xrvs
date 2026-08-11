@@ -1,0 +1,101 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+// Updated: Integrated TBN-based Wind Context
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "wind.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct VertexData
+{
+    float4 Position: POSITION; // (float,float,float,1)
+    float4 Normal: NORMAL;
+    float3 Tangent: TANGENT;
+    float3 Binormal: BINORMAL;
+    float4 UV: TEXCOORD0;
+};
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+    float4 HomogeniousPosition: POSITION;
+    float3 Position: TEXCOORD0;
+    float3 TBN0: TEXCOORD1;
+    float3 TBN1: TEXCOORD2;
+    float3 TBN2: TEXCOORD3;
+    float2 UV: TEXCOORD4;
+    float2 Lighting: TEXCOORD6;
+};
+///////////////////////////////////////////////////////////////////////////////////
+Interpolators main(VertexData Input)
+{
+    Interpolators Output;
+
+    // 1. Calculate World Position
+    float3 pos = mul(m_transform, Input.Position).xyz;
+    
+    Output.UV.xy = (Input.UV * consts).xy;
+    
+    // 2. Calculate Object Pivot (Model Center)
+    // m_transform columns: _14=x, _24=y, _34=z
+    float3 ObjectPivot = float3(m_transform._14, m_transform._24, m_transform._34);
+    
+    // 3. Unpack and Rotate TBN to World Space
+    // We need World Space vectors for accurate wind physics
+    float3 localNormal   = unpack_bx4(Input.Normal.xyz);
+    float3 localTangent  = unpack_bx4(Input.Tangent);
+    float3 localBinormal = unpack_bx4(Input.Binormal);
+    
+    float3x3 m_WorldRotate = (float3x3)m_transform;
+    float3 worldNormal   = normalize(mul(m_WorldRotate, localNormal));
+    float3 worldTangent  = normalize(mul(m_WorldRotate, localTangent));
+    float3 worldBinormal = normalize(mul(m_WorldRotate, localBinormal));
+    
+    float4 w_pos = float4(pos, 1.0f);
+
+#ifdef USE_TREEWAVE
+    // Prepare Wind Context with TBN data
+    WindContext Ctx;
+    Ctx.WorldPosition = pos;
+    Ctx.ObjectCenter = ObjectPivot;
+    Ctx.Normal = worldNormal;
+    Ctx.Tangent = worldTangent;
+    Ctx.Binormal = worldBinormal;
+    Ctx.HeightRelativeToRoot = pos.y - ObjectPivot.y;
+    Ctx.Rigidity = Input.UV.z * consts.x;
+    Ctx.TextureCoordinates = Output.UV.xy;
+
+    // Calculate Full 3D Displacement
+    float3 WindOffset = CalculateTreeWind(Ctx);
+
+    // 4. Apply Displacement
+    w_pos.xyz += WindOffset;
+#endif    
+    
+    Output.HomogeniousPosition = mul(m_ViewProject, w_pos);
+    Output.Position = mul(m_View, w_pos);
+
+    // 5. Output TBN for Pixel Shader (Lighting)
+    // Standard TBN calculation (usually View Space or World Space depending on pipeline)
+    // Note: We do not re-rotate TBN by wind here to save performance, 
+    // as per standard game dev practice.
+    float3x3 TBN = mul((float3x3)m_transform_v, float3x3(localTangent.x, localBinormal.x, localNormal.x,
+													   localTangent.y, localBinormal.y, localNormal.y,
+													   localTangent.z, localBinormal.z, localNormal.z));
+    Output.TBN0 = TBN[0];
+    Output.TBN1 = TBN[1];
+    Output.TBN2 = TBN[2];
+
+    Output.Lighting.x = (Input.Normal.w * 0.5f * c_scale.w + c_bias.w);
+    Output.Lighting.x = safe_pow(Output.Lighting.x, 1.25f);
+    Output.Lighting.y = Input.Normal.w * c_sun.x + c_sun.y;
+
+    float AO = worldNormal.y * 0.5f + 0.5f;
+    AO += 0.75f;
+    AO = saturate(AO);
+    
+    Output.Lighting.x *= pow2(AO);
+
+    return Output;
+}
+///////////////////////////////////////////////////////////////////////////////////

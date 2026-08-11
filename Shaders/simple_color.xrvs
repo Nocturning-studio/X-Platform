@@ -1,0 +1,18 @@
+#include "common.xrh"
+
+struct vf
+{
+	float4 hpos: POSITION;
+	float4 C : COLOR0;
+};
+
+uniform float4 tfactor;
+vf main(float4	P:POSITION)
+{
+	vf o;
+
+	o.hpos = mul(m_WorldViewProject, P);			// transform, input in world coords
+	o.C = tfactor;
+
+	return o;
+}

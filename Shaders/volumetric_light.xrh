@@ -1,0 +1,68 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 03.11.2024
+// Authors: Igor Lobanchikov, NSDeathman
+// Code by GSC Gameworld
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "shadow_filtering.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+#define RAY_PATH 2.0h
+///////////////////////////////////////////////////////////////////////////////////
+//#if SUN_SHAFTS_QUALITY == 1
+#define RAY_SAMPLES	28
+//#elif SUN_SHAFTS_QUALITY == 2
+//#define RAY_SAMPLES	36
+//#elif SUN_SHAFTS_QUALITY == 3
+//#define RAY_SAMPLES	48
+//#endif
+///////////////////////////////////////////////////////////////////////////////////
+float H2(in float2 st)
+{
+    return frac(sin(dot(st, float2(12.9898f, 8.233f))) * 43758.5453123f);
+}
+///////////////////////////////////////////////////////////////////////////////////
+float CalcVolumetricSun(float4 TexCoords, float3 Position, float3 Light_Direction)
+{
+    float OutputColor = 0.0f;
+
+    //	Variable ray length, variable step dencity, use jittering
+    float4 Jitter = tex2Dlod0(s_blue_noise, screen_res.x * 0.5f / 256.0f * TexCoords.xy / TexCoords.w);
+	float coeff = (RAY_SAMPLES - 1.0f * Jitter.b) / (RAY_SAMPLES * RAY_SAMPLES);
+    float3 direction = Position * coeff;
+
+    float depth = Position.z;
+    float deltaDepth = direction.z;
+
+    float4 current = mul(m_shadow, float4(Position, 1.0f));
+    float4 delta = mul(m_shadow, float4(direction, 0.0f));
+
+    float max_density = sun_shafts_intensity.x;
+    float density = max_density / RAY_SAMPLES;
+
+    if(depth < 0.0001f)
+		OutputColor = max_density;
+
+    [unroll(RAY_SAMPLES)]
+    for(int i = 0; i < RAY_SAMPLES; ++i)
+    {
+        if(current.x >= 0.0f && current.x <= 1.0f && current.y >= 0.0f && current.y <= 1.0f)
+            OutputColor += sample_shadow_map(current, Jitter.xy);
+
+        depth -= deltaDepth;
+        current -= delta;
+    }
+
+    float fSturation = -Light_Direction.z;
+
+    //Normalize dot product to
+    fSturation = 0.5f * fSturation + 0.5f;
+
+    //	Map saturation to 0.2..1
+    fSturation = 0.80f * fSturation + 0.20f;
+
+	OutputColor *= fSturation * density;
+
+    return OutputColor * 0.15f;
+}
+///////////////////////////////////////////////////////////////////////////////////

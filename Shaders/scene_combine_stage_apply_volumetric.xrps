@@ -1,0 +1,50 @@
+////////////////////////////////////////////////////////////////////////////
+//	Combine Pass (Improved Blur)
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_volumetric_accumulator;
+////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float3 ImageColor = tex2Dlod0(s_image, TexCoords).rgb;
+    
+    // --- ИЗМЕНЕНИЕ 1: Расширенный Blur ---
+    // Умножаем смещение на 1.5 или 2.0, чтобы лучше размазать "зерно" от IGN
+    float2 offset = screen_res.zw * 1.5f; 
+    
+    float VolumetricLight = 0.0f;
+    
+    // Используем чуть более широкие координаты
+    VolumetricLight += tex2Dlod0(s_volumetric_accumulator, TexCoords + offset * float2( 1.0, -1.0)).a;
+    VolumetricLight += tex2Dlod0(s_volumetric_accumulator, TexCoords + offset * float2( 1.0,  1.0)).a;
+    VolumetricLight += tex2Dlod0(s_volumetric_accumulator, TexCoords + offset * float2(-1.0, -1.0)).a;
+    VolumetricLight += tex2Dlod0(s_volumetric_accumulator, TexCoords + offset * float2(-1.0,  1.0)).a;
+    
+    VolumetricLight *= 0.25f; // Среднее арифметическое
+
+    float3 Position = GetPosition(TexCoords);
+    float dist = length(Position);
+    
+    // --- ИЗМЕНЕНИЕ 2: Возвращаем мягкое затухание ---
+    
+    // Ближнее затухание: Эффект нарастает от 0 до 1 на первых 0.5 метрах.
+    // Это уберет свечение на самом оружии, но оставит его вокруг.
+    float NearFactor = saturate(dist * 2.0f); 
+    
+    // Дальнее затухание: Чтобы лучи не были ярче неба на горизонте.
+    // Если CalcFogness возвращает 0..1 (где 1 это туман), то инвертируем.
+    float fogFactor = CalcFogness(Position);
+    float FarFactor = 1.0f - fogFactor; 
+
+    // Применяем факторы
+    float finalIntensity = VolumetricLight * NearFactor * FarFactor;
+    
+    // Финальный цвет
+    // Я убрал 0.05f и регулирую только sun_shafts_intensity, 
+    // чтобы ты мог управлять яркостью из конфигов игры/погоды.
+    float3 shaftColor = sun_color.rgb * finalIntensity * sun_shafts_intensity.x * 0.05f;
+    
+    return float4(ImageColor + shaftColor, 1.0f);
+}

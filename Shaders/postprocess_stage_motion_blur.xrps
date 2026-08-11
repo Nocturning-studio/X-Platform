@@ -1,0 +1,165 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Author	: NSDeathman
+//	Updated for High Quality Directional Blur
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Uniforms
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_dilation_map;   // Velocity Buffer
+uniform sampler2D s_previous_depth; // Saved depth from prev frame
+uniform float4x4 m_current;         // Current ViewProj
+uniform float4x4 m_previous;        // Previous ViewProj
+uniform float m_blur_power;         // Intensity
+uniform float4 image_resolution;    // xy: res, zw: inv_res
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Helpers
+//////////////////////////////////////////////////////////////////////////////////////////
+// Interleaved Gradient Noise для подавления бандинга
+float InterleavedGradientNoise(float2 uv)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(uv * screen_res.xy, magic.xy)));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 1: Save Depth
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 SaveDepth(float2 TexCoords: TEXCOORD0): COLOR0
+{
+    return float4(GetDepthRaw(TexCoords), 0, 0, 0); // Сохраняем RAW depth для точности
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 2: Calculate Velocity (Create Dilation Map)
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 CreateDilationMap(float2 TexCoords : TEXCOORD0, float2 Pos2D: VPOS) : COLOR0
+{
+    // Не размываем небо и HUD
+    if (isHUD(GetMaterialID(TexCoords)) || GetDepthRaw(TexCoords) <= 0.0001f)
+    {
+        return 0.0f;
+    }
+
+    float4 CurrentPosition = float4(GetPositionWithPos2D(TexCoords, Pos2D), 1.0f);
+    
+    // Получаем позицию этого пикселя в предыдущем кадре
+    float PreviousDepth = tex2Dlod0(s_previous_depth, TexCoords).r;
+    float3 PreviousPosition = UnpackPositionWithPos2D(PreviousDepth, Pos2D);
+    
+    // Если глубина слишком отличается (например, телепорт или резкая смена камеры), обнуляем вектор
+    // (Простая защита от артефактов)
+    // if (abs(PreviousDepth - GetDepthRaw(TexCoords)) > 0.1f) return 0.0f;
+
+    // Репроецируем
+    float4 p_current = mul(m_current, CurrentPosition);
+    float4 p_previous = mul(m_previous, float4(PreviousPosition, 1.0f));
+    
+    p_current.xy /= p_current.w;
+    p_previous.xy /= p_previous.w;
+
+    // Вычисляем вектор скорости (Velocity)
+    float2 Velocity = (p_current.xy - p_previous.xy) * 0.5f; // *0.5 т.к. NDC [-1..1] -> UV [0..1]
+    
+    // Инвертируем Y для текстурных координат DirectX
+    Velocity.y = -Velocity.y;
+
+    // Применяем силу размытия
+    Velocity *= m_blur_power;
+    
+    // Клампинг для предотвращения "взрыва" картинки при резких поворотах
+    Velocity = clamp(Velocity, -0.05f, 0.05f);
+
+    return float4(Velocity, 0, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 3: Filter Velocity (Blur Dilation Map)
+// Simple blur to smooth out the vector field
+//////////////////////////////////////////////////////////////////////////////////////////
+#ifdef USE_VERTICAL_FILTER
+    #define OFF float2(0.0f, 1.0f)
+#else
+    #define OFF float2(1.0f, 0.0f)
+#endif
+
+float4 BlurDilationMap(float2 TexCoords : TEXCOORD0) : COLOR0
+{
+    float2 Result = 0.0f;
+    const int RADIUS = 2; // Небольшой радиус, чтобы не терять детали движения
+    
+    for (int i = -RADIUS; i <= RADIUS; i++)
+    {
+        Result += tex2Dlod0(s_dilation_map, TexCoords + float(i) * OFF * image_resolution.zw).xy;
+    }
+    
+    Result /= (float(RADIUS * 2 + 1));
+    return float4(Result, 0, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 4: Directional Motion Blur
+// High Quality Single Pass Blur
+//////////////////////////////////////////////////////////////////////////////////////////
+#define SAMPLES_COUNT 12 // Увеличили кол-во сэмплов для качества
+
+float4 Blur(float2 TexCoords : TEXCOORD0) : COLOR0
+{
+    // 1. Получаем вектор скорости
+    float2 Velocity = tex2Dlod0(s_dilation_map, TexCoords).xy;
+    
+    // Если скорость слишком мала, возвращаем исходный пиксель (оптимизация)
+    float Speed = length(Velocity * screen_res.xy);
+    if (Speed < 0.5f)
+        return tex2Dlod0(s_image, TexCoords);
+
+    // 2. Настраиваем сэмплинг
+    float3 Result = 0.0f;
+    float TotalWeight = 0.0f;
+    
+    float CenterDepth = GetDepth(TexCoords);
+
+    // 3. Jittering (Случайное смещение старта для подавления полос)
+    float Noise = InterleavedGradientNoise(TexCoords);
+    float Jitter = (Noise - 0.5f);
+
+    // 4. Цикл размытия
+    for (int i = 0; i < SAMPLES_COUNT; ++i)
+    {
+        // Вычисляем смещение: от -0.5 до 0.5 вдоль вектора скорости
+        float t = (float(i) + Noise) / float(SAMPLES_COUNT);
+        float2 Offset = Velocity * (t - 0.5f);
+        
+        float2 SampleUV = TexCoords + Offset;
+        
+        // Z-Test (Depth Weighting)
+        // Если сэмпл находится намного ДАЛЬШЕ центрального пикселя (фон), 
+        // мы не должны его размазывать на передний план.
+        float SampleDepth = GetDepth(SampleUV);
+        float DepthWeight = 1.0f;
+        
+        // Простая проверка: если сэмпл сильно глубже (фон), уменьшаем вес
+        // 0.1f - порог чувствительности
+        if (SampleDepth > CenterDepth + 0.01f) 
+             DepthWeight = 0.0f; // Игнорируем фон поверх объекта
+             
+        // Если HUD - игнорируем
+        if (isHUD(GetMaterialID(SampleUV)))
+             DepthWeight = 0.0f;
+
+        float3 SampleColor = tex2Dlod0(s_image, SampleUV).rgb;
+        
+        Result += SampleColor * DepthWeight;
+        TotalWeight += DepthWeight;
+    }
+
+    // Если все веса обнулились (краевой случай), возвращаем центр
+    if (TotalWeight <= 0.001f)
+        return tex2Dlod0(s_image, TexCoords);
+        
+    return float4(Result / TotalWeight, 1.0f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////

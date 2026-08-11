@@ -1,0 +1,70 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+// The Normal Filter Anti Aliasing (NFAA) shader attempts to reduce obvious
+// alising by searching for contrasting luminosity changes in the final 
+// render image. It then builds a normal displament map to apply a 
+// per-pixel blur filter in high contrast alised areas.
+//////////////////////////////////////////////////////////////////////////////////////////
+// Based on Styves implimentation at GemeDev.net
+// http://www.gamedev.net/community/forums/topic.asp?topic_id=580517
+//////////////////////////////////////////////////////////////////////////////////////////
+// S.T.A.L.K.E.R. port by DWM Team
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+//////////////////////////////////////////////////////////////////////////////////////////
+// Filter Strength Adjusts the overall power of the filter. 
+// Values in the range of 0.5 to 1.5 should provide good results without
+// blurring the overal image too much. Anything higher will also likely
+// cause ugly blocky or spikey artifacts.
+// Default Value = 1.0;
+#define filterStrength_var 1.0f
+//////////////////////////////////////////////////////////////////////////////////////////
+// Filter Spread controls how large an area the filter tries to sample
+// and fix aliasing within. This has a direct relationship to the angle
+// of lines the filter can smooth well. A 45 degree line will be perfectly
+// alised with a spread of 2.0, steeper lines will need higher 
+// values. The tradeoff for setting a high spread value is the overall 
+// softness of the image. Values between 2.0 and 5.0 work best.
+// Default Value = 3.0;
+#define filterSpread_var 3.0f
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 main(float2 tc : TEXCOORD0) : SV_Target0
+{
+	// Normal offsets, scale by filter spread
+    float2 upOffset = float2(0.0f, screen_res.w) * filterSpread_var;
+    float2 rightOffset = float2(screen_res.z, 0.0f) * filterSpread_var;
+
+    float3 topHeight = tex2Dlod0(s_image, tc + upOffset).rgb;
+    float3 bottomHeight = tex2Dlod0(s_image, tc - upOffset).rgb;
+    float3 rightHeight = tex2Dlod0(s_image, tc + rightOffset).rgb;
+    float3 leftHeight = tex2Dlod0(s_image, tc - rightOffset).rgb;
+    float3 leftTopHeight = tex2Dlod0(s_image, tc - rightOffset + upOffset).rgb;
+    float3 leftBottomHeight = tex2Dlod0(s_image, tc - rightOffset - upOffset).rgb;
+    float3 rightBottomHeight = tex2Dlod0(s_image, tc + rightOffset + upOffset).rgb;
+    float3 rightTopHeight = tex2Dlod0(s_image, tc + rightOffset - upOffset).rgb;
+
+	// Normal map creation
+    float3 sum0 = rightTopHeight + bottomHeight + leftTopHeight;
+    float3 sum1 = leftBottomHeight + topHeight + rightBottomHeight;
+    float3 sum2 = leftTopHeight + rightHeight + leftBottomHeight;
+    float3 sum3 = rightBottomHeight + leftHeight + rightTopHeight;
+
+	// Subtract the opposite sample set for final vectors
+    float2 Vectors = float2(length(sum0 - sum1), length(sum3 - sum2)) * filterStrength_var;
+
+    float filterClamp = filterStrength_var / filterSpread_var + 0.5f;
+
+    Vectors = clamp(Vectors, -filterClamp.xx, filterClamp.xx);
+
+    float2 Normal = float2(Vectors.x, Vectors.y) * screen_res.zw;
+
+    float4 Scene0 = tex2Dlod0(s_image, tc);
+    float4 Scene1 = tex2Dlod0(s_image, tc + Normal.xy);
+    float4 Scene2 = tex2Dlod0(s_image, tc - Normal.xy);
+    float4 Scene3 = tex2Dlod0(s_image, tc + float2(Normal.x, -Normal.y));
+    float4 Scene4 = tex2Dlod0(s_image, tc - float2(Normal.x, -Normal.y));
+
+    float4 sceneFinal = (Scene0 + Scene1 + Scene2 + Scene3 + Scene4) * 0.2f;
+
+    return sceneFinal;
+}
+//////////////////////////////////////////////////////////////////////////////////////////

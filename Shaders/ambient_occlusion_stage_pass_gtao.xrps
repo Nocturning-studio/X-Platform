@@ -1,0 +1,235 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//  Created by Gemini-3, DeepSeek and some NSDeathman
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+// ================= SETTINGS =================
+#define GTAO_RADIUS       1.5f      
+#define GTAO_SLICES       3         
+#define GTAO_SAMPLES      3         
+#define GTAO_INTENSITY    2.2f      
+
+#define GTAO_BIAS         0.02f     
+#define HORIZON_BIAS      0.03f     
+
+#define THICKNESS_FAR     0.8f      
+#define THICKNESS_NEAR    0.05f     
+
+#define FADE_DISTANCE_START 0.2f    
+#define FADE_DISTANCE_END   3.0f    
+
+#define MAX_PIXEL_RADIUS  250.0f    
+#define RENDER_DISTANCE   150.0f    
+
+// ================= FUNCTIONS =================
+
+float GetFalloff(float distSq, float radiusSq) 
+{
+    float factor = distSq * (1.0f / radiusSq);
+    return saturate(1.0f - factor * factor);
+}
+
+// 1. IGN (Шахматный шум)
+float GetIGN(float2 position)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(position, magic.xy)));
+}
+
+// 2. WHITE NOISE (Хаос)
+float GetWhiteNoise(float2 uv)
+{
+    return frac(sin(dot(uv * 100, float2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+// ================= PASS 1: AO GENERATION =================
+float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
+{
+    float3 P, N;
+    GetPositionAndNormal(TexCoords, P, N);
+
+    if (P.z > RENDER_DISTANCE || P.z <= 0.01f) 
+        return float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    float3 V = -normalize(P);
+    if (dot(N, V) < 0.0f) N = -N;
+
+    float3 origin = P + N * GTAO_BIAS;
+
+    float distanceFactor = smoothstep(FADE_DISTANCE_START, FADE_DISTANCE_END, P.z);
+    
+    float radiusScale = lerp(0.2f, 1.0f, distanceFactor * distanceFactor); 
+    float currentWorldRadius = GTAO_RADIUS * radiusScale;
+    
+    float currentThickness = lerp(THICKNESS_NEAR, THICKNESS_FAR, distanceFactor);
+
+    // Исправление 1: избегаем деления на ноль с помощью max()
+    float pixelRadius = (currentWorldRadius * screen_res.y) / max(P.z, 0.0001f);
+    pixelRadius = min(pixelRadius, MAX_PIXEL_RADIUS);
+    
+    if (pixelRadius < 1.5f) return 1.0f;
+
+    float currentRadiusSq = currentWorldRadius * currentWorldRadius;
+    
+    // 1. Для УГЛА берем White Noise (зависит от TexCoords).
+    // Это гарантирует, что у каждого пикселя свой уникальный поворот.
+    float jitterAngle = GetWhiteNoise(TexCoords);
+    
+    // 2. Для ШАГА берем IGN (зависит от экранных координат).
+    // Это гарантирует, что выборки распределены максимально равномерно.
+    float jitterStep = GetIGN((float2)Position2D);
+
+    float occlusion = 0.0f;
+    
+    [unroll(GTAO_SLICES)]
+    for (int slice = 0; slice < GTAO_SLICES; slice++)
+    {
+        // Угол + Случайный поворот
+        float phi = (float(slice) + jitterAngle) * (PI / float(GTAO_SLICES));
+        
+        float2 dirUV = float2(cos(phi), sin(phi)) * screen_res.zw;
+
+        float horiz1 = 0.0f;
+        float horiz2 = 0.0f;
+
+        // --- SIDE 1 ---
+        [unroll(GTAO_SAMPLES)]
+        for (int s1 = 0; s1 < GTAO_SAMPLES; s1++)
+        {
+            // Используем IGN для шага
+            float step = (float(s1) + jitterStep) / float(GTAO_SAMPLES);
+            step = step * step; 
+            
+            float r = step * pixelRadius + 1.0f; 
+            float2 uv = TexCoords + dirUV * r;
+            
+            float3 S = GetPosition(uv);
+            float diffZ = abs(P.z - S.z);
+
+            if (diffZ < currentThickness)
+            {
+                float3 diff = S - origin;
+                float distSq = dot(diff, diff);
+
+                if (distSq < currentRadiusSq)
+                {
+                    // Исправление 2: проверяем distSq перед вычислением dist
+                    if (distSq > 0.0001f)
+                    {
+                        float dist = sqrt(distSq); 
+                        float3 L = diff / dist; // Теперь деление безопасно
+                        float elevation = dot(N, L); 
+                        
+                        horiz1 = max(horiz1, saturate(elevation - HORIZON_BIAS) * GetFalloff(distSq, currentRadiusSq));
+                    }
+                }
+            }
+        }
+
+        // --- SIDE 2 ---
+        [unroll(GTAO_SAMPLES)]
+        for (int s2 = 0; s2 < GTAO_SAMPLES; s2++)
+        {
+            float step = (float(s2) + jitterStep) / float(GTAO_SAMPLES);
+            step = step * step;
+            
+            float r = step * pixelRadius + 1.0f;
+            float2 uv = TexCoords - dirUV * r; 
+            
+            float3 S = GetPosition(uv);
+            float diffZ = abs(P.z - S.z);
+            
+            if (diffZ < currentThickness)
+            {
+                float3 diff = S - origin;
+                float distSq = dot(diff, diff);
+
+                if (distSq < currentRadiusSq)
+                {
+                    // Исправление 3: аналогичная проверка для второй стороны
+                    if (distSq > 0.0001f)
+                    {
+                        float dist = sqrt(distSq);
+                        float3 L = diff / dist; // Теперь деление безопасно
+                        float elevation = dot(N, L); 
+                        
+                        horiz2 = max(horiz2, saturate(elevation - HORIZON_BIAS) * GetFalloff(distSq, currentRadiusSq));
+                    }
+                }
+            }
+        }
+
+        occlusion += (horiz1 + horiz2);
+    }
+
+    occlusion = (occlusion / float(GTAO_SLICES)) * 0.5f;
+    occlusion = saturate(occlusion * GTAO_INTENSITY);
+    
+    float visibility = 1.0f - occlusion;
+    visibility = pow(abs(visibility), 2.2f);
+    
+    float fade = smoothstep(RENDER_DISTANCE * 0.85f, RENDER_DISTANCE, P.z);
+    visibility = lerp(visibility, 1.0f, fade);
+
+    return float4(visibility, visibility, visibility, 1.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// PASS 2: DENOISER
+//////////////////////////////////////////////////////////////////////////////////////////
+#define BLUR_RADIUS       2         
+#define PLANE_SENSITIVITY 0.15f     
+#define NORMAL_STRICTNESS 0.85f     
+
+float4 denoise_pass(float2 TexCoords : TEXCOORD0) : COLOR0
+{
+    float3 centerPos, centerNorm;
+    GetPositionAndNormal(TexCoords, centerPos, centerNorm);
+    
+    float centerAO = tex2Dlod0(s_ao, TexCoords).r;
+
+    if (centerPos.z > RENDER_DISTANCE * 0.99f) return centerAO;
+
+    float totalWeight = 1.0f;
+    float totalAO = centerAO;
+    float2 pixelSize = screen_res.zw;
+    
+    [unroll]
+    for (int x = -BLUR_RADIUS; x <= BLUR_RADIUS; x++)
+    {
+        [unroll]
+        for (int y = -BLUR_RADIUS; y <= BLUR_RADIUS; y++)
+        {
+            if (x == 0 && y == 0) continue;
+
+            float2 offset = float2(x, y);
+            float2 sampleUV = TexCoords + offset * pixelSize;
+
+            float sampleDepth = GetDepth(sampleUV); 
+            if (abs(centerPos.z - sampleDepth) > 0.5f) continue; 
+
+            float3 samplePos, sampleNorm;
+            GetPositionAndNormal(sampleUV, samplePos, sampleNorm);
+            
+            float normalDot = dot(centerNorm, sampleNorm);
+            if (normalDot < NORMAL_STRICTNESS) continue; 
+            float wNorm = pow(normalDot, 4.0f); 
+
+            float3 diff = samplePos - centerPos;
+            float planeDist = dot(centerNorm, diff);
+            float wPlane = exp(-abs(planeDist) / PLANE_SENSITIVITY);
+
+            float wDist = 1.0f - (length(offset) / (float(BLUR_RADIUS) * 2.0f));
+
+            float weight = wNorm * wPlane * wDist;
+            
+            float sampleAO = tex2Dlod0(s_ao, sampleUV).r;
+            
+            totalAO += sampleAO * weight;
+            totalWeight += weight;
+        }
+    }
+
+    return totalAO / totalWeight;
+}

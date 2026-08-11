@@ -1,0 +1,118 @@
+////////////////////////////////////////////////////////////////////////////////
+// Created: 07.08.2023
+// Modified: 2025 (Terrain POM Adapter)
+// Autor: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////
+//TODO: REVRITE FOR NEW MATERIALS FORMAT
+////////////////////////////////////////////////////////////////////////////////
+#define USE_FOR_TERRAIN_MATERIAL
+////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "material_helper.xrh"
+#include "material_components.xrh"
+#include "normal_map_functions.xrh"
+#include "displacement.xrh"
+#include "parallax_shadows.xrh"
+#include "gbuffer.xrh"
+#include "ao_from_height.xrh"
+#include "lightmap.xrh"
+////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+	float4 HomogeniousPosition: POSITION;
+	float3 Position: TEXCOORD0;
+	float3 TBN0: TEXCOORD1;
+	float3 TBN1: TEXCOORD2;
+	float3 TBN2: TEXCOORD3;
+	float2 UV: TEXCOORD4;
+	float2 DetailUV: TEXCOORD5;
+};
+////////////////////////////////////////////////////////////////////////////////
+GBufferPacked main(Interpolators Input)
+{
+    GBuffer GBuffer = InitializeGBuffer();
+	
+	// Get detail textures map(4 channels = 4 textures)
+    float4 BlendMask = GetTerrainDetailMask(Input.UV);
+
+	// levels//$current_level$//terrain//$terrain_texture_name$.dds - rgb = color map, a = AO
+	float4 AlbedoAO = tex2D(s_base, Input.UV).rgba;
+
+#if USE_SRGB_COLOR_CONVERTING
+    AlbedoAO.rgb = sRgbToLinear(AlbedoAO.rgb);
+#endif
+	
+	// Combine transform matrix for displacement and normal mapping
+	float3x3 TBN = float3x3(Input.TBN0, Input.TBN1, Input.TBN2);
+
+	float3 ViewVector = GetViewVector(Input.Position, TBN);
+
+	// Choose displacement type and calculate UV displacement
+    float2 DetailUV = Input.DetailUV;
+    
+    float ParallaxShadow = 1.0f;
+	float ParallaxCavity = 1.0f;
+	
+#if !(MATERIAL_QUALITY == FLAT_MATERIALS)
+	ParallaxOutput POM = GetTerrainDisplacement(Input.Position, ViewVector, Input.DetailUV, BlendMask, TERRAIN_MATERIAL);
+    
+    DetailUV = POM.uv;
+    
+    ParallaxShadow = POM.ao;
+	ParallaxCavity = POM.cavity;
+#endif	
+
+	// details albedo data, multiplicated by detail map
+    // Используем новые DetailUV для выборки текстур
+    float3 DetailAlbedo = GetTerrainDetailAlbedo(BlendMask, DetailUV);
+    GBuffer.Albedo.rgb = 2.0f * AlbedoAO.rgb * DetailAlbedo;
+	
+#if MATERIAL_QUALITY == FLAT_MATERIALS
+	GBuffer.Normal = normalize(mul(TBN, float3(0.0f, 0.0f, 1.0f)));
+	
+    GBuffer.Roughness = 1.0f;
+#else
+	// Get DXT comressed normals + AO + Roughness for all details in 4 textures set
+    float4 DetailBumpData = GetTerrainDetailBump(BlendMask, DetailUV);
+
+	// Get DXT decompressing data + heightmap for all details in 4 textures set
+    float4 DetailBumpDecompressionData = GetTerrainDetailBumpDecompression(BlendMask, DetailUV);
+
+	// Transform normal map color from [0; 1] space to [-1; 1] with DTX decompressing
+	float3 NormalMap = DetailBumpData.abg + (DetailBumpDecompressionData.rgb - 1.0f);
+
+	 // Reconstruct z component for normals(actually z component used for Baked AO)
+    NormalMap.z = sqrt(1.0f - dot(NormalMap.xy, NormalMap.xy));
+
+    float HeightMap = DetailBumpDecompressionData.a;
+
+	// Transformate height map from [0; 1] space to [1; 2] and make normals more power
+    NormalMap.xy *= HeightMap + 1.0f;
+
+	// Make normals more power with heightmap
+    NormalMap.z *= HeightMap;
+
+    NormalMap = normalize(NormalMap);
+	
+	// Out normal for Geometry buffer
+    GBuffer.Normal = normalize(mul(TBN, NormalMap));
+	
+	// Create roughness from details
+    GBuffer.Roughness = invert(pow2(DetailBumpData.r));
+
+	GBuffer.Cavity = ParallaxCavity;
+#endif	
+
+    GBuffer.Position = Input.Position;
+	
+	// Get light map ambient
+    GBuffer.AO = safe_pow(AlbedoAO.a, 1.25f) * ParallaxShadow;
+
+#if 0//MATERIAL_QUALITY >= HIGHT_QUALITY
+	GBuffer.BakedAO = AOfromHeight(DetailUV, Input.Position.z, BlendMask);
+#endif
+	
+    return PackGBuffer(GBuffer);
+}
+////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,938 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="gbuffer.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="lightmap.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="common.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_define_associations.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_defines.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_functions.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_iostructs.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_policies.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_samplers.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_uniforms.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="shadow_filtering.xrh">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="contrast_adaptive_sharpening.xrh">
+      <Filter>Postprocess\Contrast adaptive sharpening</Filter>
+    </ClInclude>
+    <ClInclude Include="fxaa.xrh">
+      <Filter>Postprocess\Anti-Aliasing</Filter>
+    </ClInclude>
+    <ClInclude Include="screen_space_shadows.xrh">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="volumetric_light.xrh">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="common_constants.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common_math.xrh">
+      <Filter>Helpers\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="skinning.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="chromatic_abberations.xrh">
+      <Filter>Postprocess\Effectors\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="tonemapping.xrh">
+      <Filter>Helpers\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="material.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="material_components.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="normal_map_functions.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="parallax_shadows.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="ao_from_height.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="displacement.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="alpha_test.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Alpha test</Filter>
+    </ClInclude>
+    <ClInclude Include="hashed_alpha.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Alpha test</Filter>
+    </ClInclude>
+    <ClInclude Include="postprocess_stage_autoexposure.xrps">
+      <Filter>Postprocess\Autoexposure</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="accumulating_light_stage_mask.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Masking</Filter>
+    </None>
+    <None Include="accumulating_light_stage_sun_mask.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Masking</Filter>
+    </None>
+    <None Include="accumulating_light_stage_occlusion_culling.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Occlusion culling</Filter>
+    </None>
+    <None Include="accumulating_light_stage_occlusion_culling.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Occlusion culling</Filter>
+    </None>
+    <None Include="gbuffer_stage_detail_object.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Detail object</Filter>
+    </None>
+    <None Include="gbuffer_stage_dynamic_mesh.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Dynamic mesh</Filter>
+    </None>
+    <None Include="gbuffer_stage_particle.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Particle</Filter>
+    </None>
+    <None Include="gbuffer_stage_particle.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Particle</Filter>
+    </None>
+    <None Include="gbuffer_stage_static_mesh.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Static mesh</Filter>
+    </None>
+    <None Include="gbuffer_stage_static_mesh.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Static mesh</Filter>
+    </None>
+    <None Include="gbuffer_stage_terrain.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29\Hight quality geometry</Filter>
+    </None>
+    <None Include="gbuffer_stage_terrain.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29\Hight quality geometry</Filter>
+    </None>
+    <None Include="gbuffer_stage_terrain_lq.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29\Low quality geometry</Filter>
+    </None>
+    <None Include="gbuffer_stage_terrain_lq.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29\Low quality geometry</Filter>
+    </None>
+    <None Include="details_lod.xrblender">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Low quality geometry %28Billboard%29</Filter>
+    </None>
+    <None Include="postprocess_stage_antialiasing_pass_fxaa.xrps">
+      <Filter>Postprocess\Anti-Aliasing</Filter>
+    </None>
+    <None Include="postprocess_stage_distortion.xrps">
+      <Filter>Postprocess\Distortion</Filter>
+    </None>
+    <None Include="postprocess_stage_pass_combine_effectors.xrps">
+      <Filter>Postprocess\Effectors</Filter>
+    </None>
+    <None Include="alpha_blend_lightmap_lighted.xrps">
+      <Filter>Forward rendering\Alpha blend\Lightmap lighted</Filter>
+    </None>
+    <None Include="alpha_blend_lightmap_lighted.xrvs">
+      <Filter>Forward rendering\Alpha blend\Lightmap lighted</Filter>
+    </None>
+    <None Include="alpha_blend_vertex_lighted.xrvs">
+      <Filter>Forward rendering\Alpha blend\Vertex lighted</Filter>
+    </None>
+    <None Include="alpha_blend_vertex_lighted.xrps">
+      <Filter>Forward rendering\Alpha blend\Vertex lighted</Filter>
+    </None>
+    <None Include="sky2.xrps">
+      <Filter>Deffered rendering pipeline\Environment\Skybox</Filter>
+    </None>
+    <None Include="sky2.xrvs">
+      <Filter>Deffered rendering pipeline\Environment\Skybox</Filter>
+    </None>
+    <None Include="effects_water.xrblender">
+      <Filter>Forward rendering\Models\Water</Filter>
+    </None>
+    <None Include="effects_waterryaska.xrblender">
+      <Filter>Forward rendering\Models\Water</Filter>
+    </None>
+    <None Include="effects_waterstuden.xrblender">
+      <Filter>Forward rendering\Models\Water</Filter>
+    </None>
+    <None Include="models_light_panel.xrps">
+      <Filter>Forward rendering\Models\Light panels</Filter>
+    </None>
+    <None Include="models_light_panel.xrvs">
+      <Filter>Forward rendering\Models\Light panels</Filter>
+    </None>
+    <None Include="models_lightplanes.xrblender">
+      <Filter>Forward rendering\Models\Light panels</Filter>
+    </None>
+    <None Include="models_selflight.xrblender">
+      <Filter>Forward rendering\Models\Selflight</Filter>
+    </None>
+    <None Include="models_selflightl.xrblender">
+      <Filter>Forward rendering\Models\Selflight</Filter>
+    </None>
+    <None Include="selflight.xrps">
+      <Filter>Forward rendering\Models\Selflight</Filter>
+    </None>
+    <None Include="selflight.xrblender">
+      <Filter>Forward rendering\Models\Selflight</Filter>
+    </None>
+    <None Include="selflight.xrvs">
+      <Filter>Forward rendering\Models\Selflight</Filter>
+    </None>
+    <None Include="wmark.xrps">
+      <Filter>Forward rendering\Effects\Wallmark</Filter>
+    </None>
+    <None Include="wmark.xrvs">
+      <Filter>Forward rendering\Effects\Wallmark</Filter>
+    </None>
+    <None Include="effects_wallmark.xrblender">
+      <Filter>Forward rendering\Effects\Wallmark</Filter>
+    </None>
+    <None Include="effects_wallmarkblend.xrblender">
+      <Filter>Forward rendering\Effects\Wallmark</Filter>
+    </None>
+    <None Include="effects_wallmarkmult.xrblender">
+      <Filter>Forward rendering\Effects\Wallmark</Filter>
+    </None>
+    <None Include="effects_wallmarkset.xrblender">
+      <Filter>Forward rendering\Effects\Wallmark</Filter>
+    </None>
+    <None Include="distort.xrps">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="distort.xrblender">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="model_distort.xrvs">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="model_distort_inv.xrvs">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="model_distort4ghost.xrvs">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="model_distort4glass.xrvs">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="models_xdistort.xrblender">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="models_xdistortcolor.xrblender">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="models_xdistortcolorl.xrblender">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="models_xdistortcolorlinv.xrblender">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="models_xdistortinv.xrblender">
+      <Filter>Forward rendering\Models\Distort</Filter>
+    </None>
+    <None Include="particle.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle.xrvs">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle_alphaonly.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle_distort.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle_s-aadd.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle_s-add.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle_s-blend.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle_s-mul.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle2t.xrps">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particle-clip.xrvs">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particles_xadd.xrblender">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="particles_xdistort.xrblender">
+      <Filter>Forward rendering\Models\Particle</Filter>
+    </None>
+    <None Include="yuv2rgb.xrps">
+      <Filter>Video converting</Filter>
+    </None>
+    <None Include="model_def_lq.xrps">
+      <Filter>Forward rendering\Models\Dynamic models</Filter>
+    </None>
+    <None Include="model_def_lq.xrvs">
+      <Filter>Forward rendering\Models\Dynamic models</Filter>
+    </None>
+    <None Include="model_env_lq.xrps">
+      <Filter>Forward rendering\Models\Dynamic models</Filter>
+    </None>
+    <None Include="model_env_lq.xrvs">
+      <Filter>Forward rendering\Models\Dynamic models</Filter>
+    </None>
+    <None Include="models_xanomaly.xrblender">
+      <Filter>Forward rendering\Models\Anomaly</Filter>
+    </None>
+    <None Include="models_xlens.xrblender">
+      <Filter>Forward rendering\Models\Lens</Filter>
+    </None>
+    <None Include="models_xglass2.xrblender">
+      <Filter>Forward rendering\Models\Glass</Filter>
+    </None>
+    <None Include="models_xglass.xrblender">
+      <Filter>Forward rendering\Models\Glass</Filter>
+    </None>
+    <None Include="models_xmonolith.xrblender">
+      <Filter>Forward rendering\Models\Monolith</Filter>
+    </None>
+    <None Include="models_xwindows.xrblender">
+      <Filter>Forward rendering\Models\Window</Filter>
+    </None>
+    <None Include="hud_crosshair.xrblender">
+      <Filter>Forward rendering\Hud</Filter>
+    </None>
+    <None Include="hud_movie.xrblender">
+      <Filter>Forward rendering\Hud</Filter>
+    </None>
+    <None Include="portal.xrps">
+      <Filter>Forward rendering\Portals %28Occlusion culling%29</Filter>
+    </None>
+    <None Include="portal.xrblender">
+      <Filter>Forward rendering\Portals %28Occlusion culling%29</Filter>
+    </None>
+    <None Include="portal.xrvs">
+      <Filter>Forward rendering\Portals %28Occlusion culling%29</Filter>
+    </None>
+    <None Include="dumb.xrps">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="dumb.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="simple_color.xrps">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="simple_color.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="gbuffer_stage_dynamic_mesh_selflight.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Dynamic mesh\Selflight</Filter>
+    </None>
+    <None Include="gbuffer_stage_dynamic_mesh_selflight.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Dynamic mesh\Selflight</Filter>
+    </None>
+    <None Include="overlay_stage_apply.xrps">
+      <Filter>Forward rendering\Overlays</Filter>
+    </None>
+    <None Include="postprocess_stage_reflections.xrps">
+      <Filter>Deffered rendering pipeline\Reflections stage</Filter>
+    </None>
+    <None Include="PCSS.xrh">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Helpers</Filter>
+    </None>
+    <None Include="effects_sun.xrblender">
+      <Filter>Forward rendering\Effects\Sun</Filter>
+    </None>
+    <None Include="effects_sun.xrps">
+      <Filter>Forward rendering\Effects\Sun</Filter>
+    </None>
+    <None Include="effects_sun.xrvs">
+      <Filter>Forward rendering\Effects\Sun</Filter>
+    </None>
+    <None Include="common_effects.xrh">
+      <Filter>Helpers\Common</Filter>
+    </None>
+    <None Include="height_fog.xrh">
+      <Filter>Helpers\Effects</Filter>
+    </None>
+    <None Include="fog_helper.xrh">
+      <Filter>Helpers\Effects</Filter>
+    </None>
+    <None Include="effects_rain.xrblender">
+      <Filter>Forward rendering\Effects\Rain</Filter>
+    </None>
+    <None Include="effects_rain.xrps">
+      <Filter>Forward rendering\Effects\Rain</Filter>
+    </None>
+    <None Include="effects_rain.xrvs">
+      <Filter>Forward rendering\Effects\Rain</Filter>
+    </None>
+    <None Include="effects_lightplanes.xrblender">
+      <Filter>Forward rendering\Effects\Light panels</Filter>
+    </None>
+    <None Include="effects_flare.xrblender">
+      <Filter>Forward rendering\Effects\Lens flares</Filter>
+    </None>
+    <None Include="effects_bullet_tracer.xrblender">
+      <Filter>Forward rendering\Effects\Bullet tracer</Filter>
+    </None>
+    <None Include="effects_lightning.xrblender">
+      <Filter>Forward rendering\Effects\Lightning</Filter>
+    </None>
+    <None Include="output_to_screen_stage.xrps">
+      <Filter>Output to screen</Filter>
+    </None>
+    <None Include="postprocess_stage_pass_radiation.xrps">
+      <Filter>Postprocess\Effectors</Filter>
+    </None>
+    <None Include="material_helper.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers\Material</Filter>
+    </None>
+    <None Include="LUT.xrh">
+      <Filter>Postprocess\Effectors\helpers</Filter>
+    </None>
+    <None Include="postprocess_stage_pass_lut.xrps">
+      <Filter>Postprocess\Effectors</Filter>
+    </None>
+    <None Include="postprocess_stage_pass_resolve_gamma.xrps">
+      <Filter>Postprocess\Effectors</Filter>
+    </None>
+    <None Include="effects_lens_flare.xrps">
+      <Filter>Forward rendering\Effects\Lens flares</Filter>
+    </None>
+    <None Include="effects_lens_flare.xrvs">
+      <Filter>Forward rendering\Effects\Lens flares</Filter>
+    </None>
+    <None Include="debug_console.xrblender">
+      <Filter>Forward rendering\Debug</Filter>
+    </None>
+    <None Include="debug_console.xrps">
+      <Filter>Forward rendering\Debug</Filter>
+    </None>
+    <None Include="gbuffer_stage_multiple_usage_object.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Hight quality geometry</Filter>
+    </None>
+    <None Include="gbuffer_stage_multiple_usage_object_animated.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Hight quality geometry</Filter>
+    </None>
+    <None Include="gbuffer_stage_multiple_usage_object_billboard.xrps">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Low quality geometry %28Billboard%29</Filter>
+    </None>
+    <None Include="gbuffer_stage_multiple_usage_object_billboard.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Low quality geometry %28Billboard%29</Filter>
+    </None>
+    <None Include="depth_prepass_stage_detail_object.xrps">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Detail object</Filter>
+    </None>
+    <None Include="depth_prepass_stage_detail_object.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Detail object</Filter>
+    </None>
+    <None Include="depth_prepass_stage_detail_object_animated.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Detail object</Filter>
+    </None>
+    <None Include="depth_prepass_stage_dynamic_mesh.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Dynamic mesh</Filter>
+    </None>
+    <None Include="depth_prepass_stage_dynamic_mesh_alphatest.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Dynamic mesh</Filter>
+    </None>
+    <None Include="depth_prepass_stage_multiple_usage_object.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Multiple usage object</Filter>
+    </None>
+    <None Include="depth_prepass_stage_multiple_usage_object_animated.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Multiple usage object</Filter>
+    </None>
+    <None Include="depth_prepass_stage_particle.xrps">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Particle</Filter>
+    </None>
+    <None Include="depth_prepass_stage_particle.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Particle</Filter>
+    </None>
+    <None Include="depth_prepass_stage_static_mesh.xrps">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Static mesh</Filter>
+    </None>
+    <None Include="depth_prepass_stage_static_mesh.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Static mesh</Filter>
+    </None>
+    <None Include="depth_prepass_stage_static_mesh_alphatest.xrps">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Static mesh</Filter>
+    </None>
+    <None Include="depth_prepass_stage_static_mesh_alphatest.xrvs">
+      <Filter>Deffered rendering pipeline\Depth prepass stage\Static mesh</Filter>
+    </None>
+    <None Include="shadow_depth_stage_dynamic_mesh.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Dynamic mesh</Filter>
+    </None>
+    <None Include="shadow_depth_stage_dynamic_mesh_alphatest.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Dynamic mesh</Filter>
+    </None>
+    <None Include="shadow_depth_stage_multiple_usage_object.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Multiple usage object</Filter>
+    </None>
+    <None Include="shadow_depth_stage_multiple_usage_object_animated.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Multiple usage object</Filter>
+    </None>
+    <None Include="shadow_depth_stage_static_mesh.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Static mesh</Filter>
+    </None>
+    <None Include="shadow_depth_stage_static_mesh.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Static mesh</Filter>
+    </None>
+    <None Include="shadow_depth_stage_static_mesh_alphatest.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Static mesh</Filter>
+    </None>
+    <None Include="shadow_depth_stage_static_mesh_alphatest.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Static mesh</Filter>
+    </None>
+    <None Include="data_encoding.xrh">
+      <Filter>Helpers\Misc</Filter>
+    </None>
+    <None Include="postprocess_stage_depth_of_field.xrps">
+      <Filter>Postprocess\Depth of field</Filter>
+    </None>
+    <None Include="simple_image.xrps">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="hlsl_extensions.xrh">
+      <Filter>Helpers\Misc</Filter>
+    </None>
+    <None Include="screen_quad.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="water.xrvs">
+      <Filter>Forward rendering\Models\Water</Filter>
+    </None>
+    <None Include="BranchingShadows.xrh">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Helpers</Filter>
+    </None>
+    <None Include="accumulating_light_stage_volume.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Geometry</Filter>
+    </None>
+    <None Include="postprocess_stage_pass_color_blind_filter.xrps">
+      <Filter>Postprocess\Accessibility</Filter>
+    </None>
+    <None Include="lmape.xrps">
+      <Filter>Forward rendering\Models\Lightmap + Environment</Filter>
+    </None>
+    <None Include="lmape.xrvs">
+      <Filter>Forward rendering\Models\Lightmap + Environment</Filter>
+    </None>
+    <None Include="accumulating_light_stage_direct.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Accumulating</Filter>
+    </None>
+    <None Include="accumulating_light_stage_point.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Accumulating</Filter>
+    </None>
+    <None Include="accumulating_light_stage_spot.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Accumulating</Filter>
+    </None>
+    <None Include="main_menu_distort.xrblender">
+      <Filter>Main  menu rendering pipeline\Distortion</Filter>
+    </None>
+    <None Include="main_menu_distort.xrps">
+      <Filter>Main  menu rendering pipeline\Distortion</Filter>
+    </None>
+    <None Include="main_menu_gamma.xrps">
+      <Filter>Main  menu rendering pipeline\Gamma</Filter>
+    </None>
+    <None Include="main_menu_gamma.xrblender">
+      <Filter>Main  menu rendering pipeline\Gamma</Filter>
+    </None>
+    <None Include="postprocess_stage_antialiasing_pass_nfaa.xrps">
+      <Filter>Postprocess\Anti-Aliasing</Filter>
+    </None>
+    <None Include="BRDF.xrh">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Helpers</Filter>
+    </None>
+    <None Include="accumulating_light_stage_direct_volumetric.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Accumulating</Filter>
+    </None>
+    <None Include="gbuffer_stage_detail_object.xrvs">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Geometry types\Detail object</Filter>
+    </None>
+    <None Include="scene_combine_stage.xrps">
+      <Filter>Deffered rendering pipeline\Scene combine stage</Filter>
+    </None>
+    <None Include="scene_combine_stage_apply_volumetric.xrps">
+      <Filter>Deffered rendering pipeline\Scene combine stage</Filter>
+    </None>
+    <None Include="scene_combine_stage_pass_postprocess.xrps">
+      <Filter>Deffered rendering pipeline\Scene combine stage</Filter>
+    </None>
+    <None Include="wind.xrh">
+      <Filter>Deffered rendering pipeline\GBuffer stage\Helpers</Filter>
+    </None>
+    <None Include="sun_occluder.xrblender">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Sun occluder</Filter>
+    </None>
+    <None Include="accumulating_light_stage_sun_occluder.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Sun occluder</Filter>
+    </None>
+    <None Include="hi_z_stage_pass_copy_buffer.xrps">
+      <Filter>Deffered rendering pipeline\HI-Z stage</Filter>
+    </None>
+    <None Include="hi_z_stage_pass_generate.xrps">
+      <Filter>Deffered rendering pipeline\HI-Z stage</Filter>
+    </None>
+    <None Include="bent_normals_stage.xrps">
+      <Filter>Deffered rendering pipeline\Bent normals stage</Filter>
+    </None>
+    <None Include="legacy_ssr.xrh">
+      <Filter>Deffered rendering pipeline\Reflections stage</Filter>
+    </None>
+    <None Include="postprocess_stage_bloom.xrps">
+      <Filter>Postprocess\Bloom</Filter>
+    </None>
+    <None Include="postprocess_stage_motion_blur.xrps">
+      <Filter>Postprocess\Motion blur</Filter>
+    </None>
+    <None Include="ambient_occlusion_stage_pass_gtao.xrps">
+      <Filter>Deffered rendering pipeline\Ambient occlusion stage</Filter>
+    </None>
+    <None Include="ambient_occlusion_stage_pass_ssao.xrps">
+      <Filter>Deffered rendering pipeline\Ambient occlusion stage</Filter>
+    </None>
+    <None Include="ambient_occlusion_stage_pass_ssao_pt.xrps">
+      <Filter>Deffered rendering pipeline\Ambient occlusion stage</Filter>
+    </None>
+    <None Include="water_common.xrps">
+      <Filter>Forward rendering\Models\Water</Filter>
+    </None>
+    <None Include="common_hooks.xrh">
+      <Filter>Helpers\Common</Filter>
+    </None>
+    <None Include="shadow_depth_stage_detail_object.xrps">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Detail object</Filter>
+    </None>
+    <None Include="shadow_depth_stage_detail_object.xrvs">
+      <Filter>Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Detail object</Filter>
+    </None>
+    <None Include="screen_set.xrps">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="screen_set.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="stub_default.xrps">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="stub_default_ma.xrps">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="stub_notransform_t.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="stub_notransform_t_m2.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="stub_notransform_t_m4.xrvs">
+      <Filter>Dummy shaders</Filter>
+    </None>
+    <None Include="AmbientOcclusion.xrh">
+      <Filter>Deffered rendering pipeline\Scene combine stage</Filter>
+    </None>
+    <None Include="IBL.xrh">
+      <Filter>Deffered rendering pipeline\Scene combine stage</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Deffered rendering pipeline">
+      <UniqueIdentifier>{4374e531-64ce-484c-9089-84c51f5b4ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{d5a4b750-aa4d-4b69-a005-43b957ee45dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers\Common">
+      <UniqueIdentifier>{a00593eb-0dfc-4d8b-885e-50b0e29df989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage">
+      <UniqueIdentifier>{91d266e8-1143-454f-af06-df553d7d5a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Ambient occlusion stage">
+      <UniqueIdentifier>{d130d8ef-0bd3-4741-aa6c-3442bb943445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage">
+      <UniqueIdentifier>{a2483be5-0efc-4c92-8fee-4988288ce37a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Scene combine stage">
+      <UniqueIdentifier>{cb8013c6-5e11-419c-85a4-5353e5120efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types">
+      <UniqueIdentifier>{74b5e5ed-ec0b-4559-92d9-bf72a2671601}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Accumulating">
+      <UniqueIdentifier>{fb28a79a-5770-43b4-a9fc-e573d685b090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Occlusion culling">
+      <UniqueIdentifier>{3b150f74-98e1-43e0-b5e9-b5447c062051}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Masking">
+      <UniqueIdentifier>{2d6d1344-c086-4443-87dc-8abae9513c9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Static mesh">
+      <UniqueIdentifier>{27dd75c8-4146-4886-bec3-e841d0c38524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Dynamic mesh">
+      <UniqueIdentifier>{b510a72d-824f-43c1-9bb3-0e40dad61f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29">
+      <UniqueIdentifier>{59dcd1b6-2041-41a8-9ed9-6ac3fe8e3d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Particle">
+      <UniqueIdentifier>{a8670a65-12b2-4e23-9290-1d6d0ab22550}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Detail object">
+      <UniqueIdentifier>{3114264c-2c47-409b-9c9e-9e019766daeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29">
+      <UniqueIdentifier>{e8bd59ea-3720-42d9-a856-d854a5ba36e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Hight quality geometry">
+      <UniqueIdentifier>{af42b810-1616-407d-b67f-6df80c291e35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Multiple usage object %28LOD%29\Low quality geometry %28Billboard%29">
+      <UniqueIdentifier>{69790608-1baa-414b-8347-3c5415331d66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29\Hight quality geometry">
+      <UniqueIdentifier>{c34c155b-5dd8-4d68-bd22-73fd7fcd22dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Terrain %28Implicit lighted mesh%29\Low quality geometry">
+      <UniqueIdentifier>{13919862-9f3c-4454-b752-25b8496e7eb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Helpers">
+      <UniqueIdentifier>{cd240db4-8468-47bc-96c6-c9aa84a1bf1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Helpers">
+      <UniqueIdentifier>{4a5113ab-12e0-4347-a54b-b1f28c4be1b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers\Misc">
+      <UniqueIdentifier>{ec56ee53-30d0-4c07-a170-201a0cb66c45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Video converting">
+      <UniqueIdentifier>{3959833a-f727-496f-9d76-4384e61be357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dummy shaders">
+      <UniqueIdentifier>{7d1c70ae-13b3-4b8c-9ea2-69f2b9ca9c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Geometry types\Dynamic mesh\Selflight">
+      <UniqueIdentifier>{8f3353f6-1063-40ae-82ab-28090fa7aaa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess">
+      <UniqueIdentifier>{4dfa69e8-757d-4f3b-829d-e8278ee3bbf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Anti-Aliasing">
+      <UniqueIdentifier>{cfbb4580-0e0b-4c2c-b69d-42bdfcd5c5a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Depth of field">
+      <UniqueIdentifier>{03d2ac27-155f-49f0-9fec-32dea8af87c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Motion blur">
+      <UniqueIdentifier>{a5c0a9f7-4cb2-4958-b9e9-c459fe7237eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Autoexposure">
+      <UniqueIdentifier>{49feecaa-bc5c-432a-94bf-ffea9d67953f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Distortion">
+      <UniqueIdentifier>{8e5af72c-f84e-4f1e-8c6b-bf926c39d2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Bloom">
+      <UniqueIdentifier>{b185c5ad-bc76-4ca0-825f-b945d68107ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Effectors">
+      <UniqueIdentifier>{5c725ee4-9e6b-4d0f-a019-f20c0c206061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Contrast adaptive sharpening">
+      <UniqueIdentifier>{87454a62-2f60-48be-9bb8-bb02c3d94a65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Environment">
+      <UniqueIdentifier>{a8b3bb98-fd26-4a48-860c-9cd390461517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Environment\Skybox">
+      <UniqueIdentifier>{3089d039-13b8-4b34-b3a6-b21b462e0783}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Effectors\helpers">
+      <UniqueIdentifier>{39851f04-a274-4fa6-bf09-e6e7eca18200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers\Effects">
+      <UniqueIdentifier>{81c9c353-e125-4be2-ae67-923cffcfa3c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering">
+      <UniqueIdentifier>{8f041950-b603-4519-8b6c-168d383d44aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Overlays">
+      <UniqueIdentifier>{ab5a929b-fac3-4c66-acb5-1d9cef47be65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Hud">
+      <UniqueIdentifier>{d6b58d58-82b0-4987-b34d-38844e4cf367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Portals %28Occlusion culling%29">
+      <UniqueIdentifier>{480d0b11-e9e2-4bf1-9e37-06676de399a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models">
+      <UniqueIdentifier>{2c34a330-b741-41b3-8450-7ee99bc15568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Water">
+      <UniqueIdentifier>{ffbd90a9-5091-4c5b-99b5-6e7447c7045b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Window">
+      <UniqueIdentifier>{d7334035-af13-483b-9a76-83aafa4fc44b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects">
+      <UniqueIdentifier>{694075dd-8d14-41e7-ab62-3782b0fec958}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Wallmark">
+      <UniqueIdentifier>{4b8fa3e6-7bb2-448a-afab-b28c35a767e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Sun">
+      <UniqueIdentifier>{a2d41156-ec75-430e-954d-668f41b982ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Selflight">
+      <UniqueIdentifier>{7eabb0a4-9cfa-4d9c-a96c-f99755f5ff6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Particle">
+      <UniqueIdentifier>{1ffb1068-4642-42ba-854e-581669cd5ddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Rain">
+      <UniqueIdentifier>{208a812a-3984-4e08-87b3-6c5b783aba6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Monolith">
+      <UniqueIdentifier>{5ec9a333-140f-45ca-9970-b5b9206f5fd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Light panels">
+      <UniqueIdentifier>{e34187d8-655b-4071-a4f8-c85d7fd79ee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Light panels">
+      <UniqueIdentifier>{861f78c9-f6c3-44c5-9805-2f9cda3b607a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Lens">
+      <UniqueIdentifier>{b3a5bc0b-cc48-4032-b622-008959e82c69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Glass">
+      <UniqueIdentifier>{4d26ba62-e59a-41e4-a1b3-4f216268db54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Dynamic models">
+      <UniqueIdentifier>{b086d87c-f5ff-4491-834a-7c7f3a49f27b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Distort">
+      <UniqueIdentifier>{c1033052-f63e-4414-bf9c-f305bccbc7a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Anomaly">
+      <UniqueIdentifier>{8cb7d878-7d17-4cd5-be04-0df57f41ce07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Alpha blend">
+      <UniqueIdentifier>{cd2917fb-abaf-444e-a79f-767fcb18dc6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Alpha blend\Lightmap lighted">
+      <UniqueIdentifier>{98d6205f-0f5e-440e-bbf6-648eaeeebbb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Alpha blend\Vertex lighted">
+      <UniqueIdentifier>{03ec6368-94ac-444d-bf67-a7c9bf1bf9f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Lens flares">
+      <UniqueIdentifier>{3493f1c0-3ae0-47bb-9d16-2c4125bb4dc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Bullet tracer">
+      <UniqueIdentifier>{0b83d99e-a31d-4927-8331-6771fc27cf68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Effects\Lightning">
+      <UniqueIdentifier>{d7a7808d-c0cf-4c14-9e25-378b160725ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Output to screen">
+      <UniqueIdentifier>{648fe681-49b5-43c4-a3c7-b8c3886c27cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Helpers\Material">
+      <UniqueIdentifier>{8b5d0151-4c9c-4189-83cd-8c8571002ee5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\GBuffer stage\Helpers\Alpha test">
+      <UniqueIdentifier>{5dae007b-6590-4763-9968-577b7d86a00b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Debug">
+      <UniqueIdentifier>{0a762b9a-d29f-441f-adcb-f6e1082d1ded}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Shadow depth stage">
+      <UniqueIdentifier>{2e63090c-9768-47b4-bd3c-a04fa0021975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Depth prepass stage">
+      <UniqueIdentifier>{5cdbb387-45b2-41da-a405-990bb3c8a7d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Depth prepass stage\Detail object">
+      <UniqueIdentifier>{5e339d46-81c9-4bad-8eeb-d5fc27e2e722}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Depth prepass stage\Dynamic mesh">
+      <UniqueIdentifier>{5c3e777e-dd7b-4db2-bf57-54f4fcf94cdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Depth prepass stage\Multiple usage object">
+      <UniqueIdentifier>{3f2d1c6b-95f9-4bd8-8fd8-6d7f24481844}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Depth prepass stage\Particle">
+      <UniqueIdentifier>{086969a4-a248-4e6c-a9ec-b2f9bad73b7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Depth prepass stage\Static mesh">
+      <UniqueIdentifier>{b6a8b085-a084-40aa-ae39-fd070c818cb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Detail object">
+      <UniqueIdentifier>{7c0049ea-b643-46fa-ae94-c95528c91ddd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Dynamic mesh">
+      <UniqueIdentifier>{e21a6f08-fb4f-4d00-8a3a-0dccfe77f70f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Multiple usage object">
+      <UniqueIdentifier>{73f3c0aa-18d2-4fda-8dcb-0182323a56ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Shadow depth stage\Static mesh">
+      <UniqueIdentifier>{34a9c35f-3917-4adb-bb28-d800694f9d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Geometry">
+      <UniqueIdentifier>{ed72acf2-8773-43c1-9ee1-742f130adfd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Postprocess\Accessibility">
+      <UniqueIdentifier>{9eba041e-351c-4f8f-bee2-c6b4ec536892}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Forward rendering\Models\Lightmap + Environment">
+      <UniqueIdentifier>{f87450c4-4fca-4b8e-b911-8ecb1ea23e5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main  menu rendering pipeline">
+      <UniqueIdentifier>{700b8da4-9ee1-4dd9-b81b-d17333a288f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main  menu rendering pipeline\Distortion">
+      <UniqueIdentifier>{7a7a26b5-d115-40a7-8fb4-83f48684a132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main  menu rendering pipeline\Gamma">
+      <UniqueIdentifier>{a5038db4-0a7e-4bfa-a6ba-7413b44a06b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Reflections stage">
+      <UniqueIdentifier>{7edd7d39-4b15-4e16-b588-4b762a2e89e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Light accumulating stage\Sun occluder">
+      <UniqueIdentifier>{cda912d8-4688-43a6-8ffa-a35804cd4de9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\HI-Z stage">
+      <UniqueIdentifier>{a2ae51db-4e8a-491a-8891-7d1ccacb3266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deffered rendering pipeline\Bent normals stage">
+      <UniqueIdentifier>{1fd18fc9-c393-44e8-8225-121ac065d637}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ambient_occlusion_stage_pass_hbao_plus.xrps">
+      <Filter>Deffered rendering pipeline\Ambient occlusion stage</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

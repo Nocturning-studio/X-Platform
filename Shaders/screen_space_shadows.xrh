@@ -1,0 +1,121 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 16.08.2024
+// Screen space shadows by Mihan323
+// Version: WEAPON HUD CLEAN (No Noise, High Precision)
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+#define SSS_STEPS 64             
+#define SSS_LENGTH 0.2f          // Чуть увеличили длину, чтобы пробивать глубокие детали
+#define SSS_BIAS 0.001f          // Чуть подняли Bias, чтобы избежать самозатенения на плоскостях
+#define SSS_INTENSITY 1.0f       
+
+// ГРАНИЦЫ
+#define HUD_DEPTH_CUTOFF 1.4f    // Все что ближе 1.4м считаем оружием/руками
+#define THICKNESS_HUD 0.1f
+#define THICKNESS_WORLD 0.05f    // Строгие 5см для фона
+///////////////////////////////////////////////////////////////////////////////////
+
+float4 ViewSpaceToProjection(float3 ViewSpaceData, float Offset)
+{
+    return mul(m_Project, float4(ViewSpaceData, Offset));
+}
+
+// Затухание по краям (Vignette)
+float GetScreenFade(float2 uv)
+{
+    float2 fade = saturate(uv * (1.0f - uv) * 10.0f);
+    return min(fade.x, fade.y);
+}
+
+// Проекция точки
+float3 GetProjectedPos(float3 ViewPos)
+{
+    float4 Proj = ViewSpaceToProjection(ViewPos, 1.0f);
+    Proj /= Proj.w;
+    Proj.xy = Proj.xy * 0.5f + 0.5f;
+    Proj.y = 1.0f - Proj.y;
+    return Proj.xyz;
+}
+
+float TraceShadow(float3 LightDirection, float3 Position)
+{
+    // Если пиксель сам по себе фон - на нем теней от оружия быть не должно (оптимизация)
+    if(Position.z > HUD_DEPTH_CUTOFF) return 1.0f;
+
+    float3 start_view_pos = Position;
+    float3 ray_vector = -LightDirection * SSS_LENGTH; 
+    
+    float3 start_uv_proj = GetProjectedPos(start_view_pos);
+    float3 end_uv_proj = GetProjectedPos(start_view_pos + ray_vector);
+
+    float2 ray_uv_delta = end_uv_proj.xy - start_uv_proj.xy;
+    float ray_z_delta = (start_view_pos.z + ray_vector.z) - start_view_pos.z;
+
+    // Минимальный шаг в пикселях (защита от застревания на одном пикселе при остром угле)
+    // Если вектор слишком короткий в UV, мы его искусственно удлиняем для шага
+    // (Это технический фикс, чтобы не топтаться на месте)
+    float2 screen_res = float2(1920.0f, 1080.0f); // Если есть глобальные uniforms, используй их
+    float2 ray_pixels = ray_uv_delta * screen_res;
+    float pixel_len = length(ray_pixels);
+    if(pixel_len < 1.0f) return 1.0f; // Луч смотрит прямо в камеру или от нее, теней не видно
+
+    float t = 0.0f; 
+    float shadow_factor = 0.0f;
+
+    // Стандартный линейный цикл, но с умной проверкой
+    // Unroll важен для скорости
+    [unroll(SSS_STEPS)]
+    for(int i = 1; i <= SSS_STEPS; i++)
+    {
+        // Квадратичное распределение шагов для точности у основания
+        float progress = (float)i / (float)SSS_STEPS;
+        t = progress * progress; 
+
+        float2 current_uv = start_uv_proj.xy + ray_uv_delta * t;
+        
+        if (current_uv.x < 0 || current_uv.x > 1 || current_uv.y < 0 || current_uv.y > 1) break;
+
+        float current_ray_z = start_view_pos.z + ray_z_delta * t;
+        float scene_z = GetDepth(current_uv);
+
+        // === ГЛАВНЫЙ ФИКС ЗДЕСЬ ===
+        
+        // 1. Вычисляем разницу
+        float diff = current_ray_z - scene_z;
+
+        // 2. Определяем, во что мы врезались: в оружие или в стену?
+        // Если scene_z < 1.4 метра, значит мы уперлись в часть автомата (крышку, прицел, руку).
+        bool is_hud_occluder = (scene_z < HUD_DEPTH_CUTOFF);
+
+        // 3. Выбираем допустимую толщину
+        // Если это оружие - разрешаем огромную разницу (0.5м). 
+        // Это значит: "Если луч зашел за крышку ствольной коробки, даже если она глубокая - это ТЕНЬ".
+        float allowed_thickness = is_hud_occluder ? THICKNESS_HUD : THICKNESS_WORLD;
+
+        if(diff > SSS_BIAS && diff < allowed_thickness)
+        {
+            // Мы нашли препятствие!
+            shadow_factor = 1.0f;
+            
+            // Если это фоновый объект (стена), делаем мягкий край, чтобы не было артефактов
+            if(!is_hud_occluder)
+            {
+                 shadow_factor *= saturate(1.0f - (diff / allowed_thickness));
+            }
+            // А если это HUD (оружие) - рубим тень жестко (или почти жестко), 
+            // так как нам нужна четкость геометрии.
+            else 
+            {
+                // Небольшой фейд на самом пределе 50см, просто на всякий случай
+                shadow_factor *= saturate(1.0f - (diff / (THICKNESS_HUD * 1.2f)));
+            }
+
+            break; // Выходим при первом попадании
+        }
+    }
+
+    float result = 1.0f - (shadow_factor * SSS_INTENSITY);
+    float border_fade = GetScreenFade(start_uv_proj.xy);
+    return lerp(1.0f, result, border_fade);
+}

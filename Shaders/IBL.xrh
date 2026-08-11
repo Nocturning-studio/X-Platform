@@ -1,0 +1,320 @@
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "BRDF.xrh"
+#include "AmbientOcclusion.xrh"
+
+static const uint IBL_MAX_MIP_LEVELS = 11;
+static const float IBL_LOD_BIAS = 0.5;
+static const float MULTI_SCATTERING_ENERGY_PRESERVATION = 0.96;
+static const float MAX_SKY_INFLUENCE = 0.6;
+static const float ROUGHNESS_SKY_REDUCTION = 2.0;
+static const float SPECULAR_INTENSITY_SCALE = 0.7;
+static const float MAX_SPECULAR_CONTRIBUTION = 0.4;
+static const float DIFFUSE_GI_BOOST = 1.1;
+
+struct IBLResult
+{
+    float3 IndirectDiffuse;
+    float3 IndirectSpecular;
+    float3 MultiScatterCompensation;
+    float3 CombinedIndirect;
+    float DiffuseDominance;
+};
+
+struct IBLContext
+{
+    float3 F0;
+    float3 F90;
+    float3 kS;
+    float3 kD;
+    float NdotV;
+    float Roughness;
+    float Roughness2;
+    float perceptualRoughness;
+    float Metallic;
+    float DiffuseDominance;
+};
+
+float CalculateBentNormalSpecularOcclusion(float3 BentNormal, float3 ViewDir, float3 SurfaceNormal, float Roughness, float AO)
+{
+    // 1. ¬ектор отражени€
+    float3 R = reflect(ViewDir, SurfaceNormal);
+    
+    // 2. –ассчитываем степень перекрыти€ (Alignment)
+    // —кал€рное произведение: 1.0 = идеально совпадают, -1.0 = противоположны.
+    float bnDotR = dot(BentNormal, R);
+    
+    // ѕреобразуем диапазон [-1, 1] в [0, 1].
+    // Ёто гарантирует, что мы не получим жесткую черноту на границах.
+    float occlusionFactor = saturate(bnDotR * 0.5 + 0.5);
+    
+    // 3. ‘ормирование " онуса видимости" на основе AO
+    // AO определ€ет, насколько "широкое" отверстие в небо.
+    // ¬озводим в степень: 
+    // ≈сли AO высокий (открытое место) -> степень мала -> крива€ полога€ (свет отовсюду).
+    // ≈сли AO низкий (щель) -> степень велика -> крива€ остра€ (свет только строго по центру).
+    float coneAperture = 1.0 / (max(AO, 0.01)); 
+    float specularOcclusion = pow(occlusionFactor, coneAperture);
+    
+    // ƒополнительно маскируем самим AO, чтобы сохранить баланс энергии,
+    // но делаем это м€гко, чтобы не "раздавить" €ркие блики в полутен€х.
+    specularOcclusion *= saturate(AO + 0.2); 
+    
+    return specularOcclusion;
+}
+
+float3 CalculateAdvancedF0(GBuffer GBuffer)
+{
+    float3 dielectricF0 = 0.04 * GBuffer.SpecularTint;
+    float3 metallicF0 = GBuffer.Albedo;
+    
+    float3 F0 = lerp(dielectricF0, metallicF0, GBuffer.Metallic);
+    F0 *= (1.0 - (1.0 - GBuffer.Cavity) * 0.15);
+    
+    return F0;
+}
+
+float3 CalculateF90(float3 F0, float Metallic)
+{
+    return 1.0 - (1.0 - F0) * (1.0 - Metallic * 0.5);
+}
+
+void CalculateAdvancedFresnel(IBLContext Context, out float3 kS, out float3 kD, out float diffuseDominance)
+{
+    kS = fresnelSchlickRoughness(Context.NdotV, Context.F0, Context.Roughness);
+    
+    float3 invKS = 1.0 / max(kS, 1e-5);
+    float3 energyCompensation = 1.0 + Context.F0 * (0.7 * invKS - 0.7);
+    kS *= energyCompensation;
+    
+    float dielectricScale = 0.5 + 0.3 * (1.0 - Context.Roughness);
+    float specularScale = lerp(dielectricScale, 1.0, Context.Metallic);
+    kS *= specularScale;
+    
+    diffuseDominance = (1.0 - Context.Metallic) * (0.7 + 0.3 * Context.Roughness);
+    
+    kD = (1.0 - kS) * (1.0 - Context.Metallic) * MULTI_SCATTERING_ENERGY_PRESERVATION;
+}
+
+float3 CalculateIBLLambertDiffuse(GBuffer GBuffer, float3 kD, float Ambient, IBLContext Context)
+{
+    float3 lambert = GBuffer.Albedo / PI;
+    float albedoBoost = 1.0 + Context.Roughness * 0.5 + Context.DiffuseDominance * 0.3;
+    float3 finalDiffuse = lambert * albedoBoost * DIFFUSE_GI_BOOST;
+    
+    return finalDiffuse * kD * Ambient;
+}
+
+float2 SampleBRDFLUT(float NdotV, float Roughness)
+{
+    float2 uv = float2(NdotV, Roughness);
+    float2 brdf = tex2Dlod0(s_brdf_lut, uv).xy;
+    
+    float multiScatter = 1.0 + Roughness * (0.5 - NdotV) * 0.3;
+    return brdf * multiScatter;
+}
+
+float GetMipLevel(float Roughness, float maxMipLevel)
+{
+    float perceptualSmoothness = 1.0 - Roughness;
+    float smoothness2 = perceptualSmoothness * perceptualSmoothness;
+    float smoothness4 = smoothness2 * smoothness2;
+    
+    float mipLevel = (1.0 - smoothness4) * maxMipLevel;
+    return max(mipLevel - IBL_LOD_BIAS, 0.0);
+}
+
+float3 GetSpecularDominantDir(float3 ViewDirection, float3 Normal, float Roughness)
+{
+    float smoothness = 1.0 - Roughness;
+    float lerpFactor = smoothness * smoothness * smoothness;
+    
+    float3 perfectReflection = reflect(ViewDirection, Normal);
+    return normalize(lerp(Normal, perfectReflection, lerpFactor));
+}
+
+float3 GetCubemap(float3 Coords, float3 WorldSpaceNormal, float MipLevel)
+{
+    float3 Cubemap = GetSkyCubeInterpolated(sky_s0, sky_s1, Coords, env_color.w, MipLevel);
+    
+    float sphericalHarmonics = WorldSpaceNormal.y * 0.5f + 0.5f;
+    sphericalHarmonics += 0.75f;
+    sphericalHarmonics = saturate(sphericalHarmonics);
+    
+    return Cubemap * pow2(sphericalHarmonics);
+}
+
+float3 CalculateIBLDiffuse(GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 kD, float Ambient, IBLContext Context)
+{
+    float3 irradianceCoords = RemapCubeCoords(BentNormal);
+    float3 irradiance = GetCubemap(irradianceCoords, BentNormal, 8);
+    float3 Diffuse = CalculateIBLLambertDiffuse(GBuffer, kD, Ambient, Context);
+    return irradiance * Diffuse;
+}
+
+float3 CalculateIBLSpecular(GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 ViewDirection, IBLContext Context, float Ambient)
+{
+    float mipLevel = GetMipLevel(Context.Roughness, 8.0f);
+    
+    float3 reflectCoords = GetSpecularDominantDir(ViewDirection, WorldSpaceNormal, Context.Roughness);
+    reflectCoords = RemapCubeCoords(reflectCoords);
+    
+    float3 prefilteredColor = GetCubemap(reflectCoords, WorldSpaceNormal, mipLevel);
+    
+    float specOcclusion = CalculateBentNormalSpecularOcclusion(BentNormal, ViewDirection, WorldSpaceNormal, Context.Roughness, GBuffer.AO);
+
+    float skyIntensity = dot(prefilteredColor, float3(0.2126, 0.7152, 0.0722));
+    float3 neutralSpecular = float3(skyIntensity, skyIntensity, skyIntensity);
+    
+    float metalInfluence = Context.Metallic;
+    float roughnessAttenuation = 1.0 - (Context.Roughness * 0.7);
+    
+    prefilteredColor = lerp(neutralSpecular, prefilteredColor, metalInfluence) * roughnessAttenuation;
+    
+    float2 brdfLUT = SampleBRDFLUT(Context.NdotV, Context.Roughness);
+    
+    float3 specularIBL = prefilteredColor * (Context.F0 * brdfLUT.x + brdfLUT.y) * SPECULAR_INTENSITY_SCALE;
+    
+    float specularLuminance = dot(specularIBL, float3(0.2126, 0.7152, 0.0722));
+    specularIBL *= min(1.0, MAX_SPECULAR_CONTRIBUTION / max(specularLuminance, 1e-5));
+    
+    return specularIBL * Context.kS * Ambient * specOcclusion;
+}
+
+float3 CalculateMultiScatteringCompensation(IBLContext Context, GBuffer GBuffer)
+{
+    if (Context.Roughness < 0.1 || Context.Roughness > 0.7)
+        return 1.0;
+    
+    float3 F_avg = Context.F0 + (1.0 - Context.F0) * 0.047619;
+    float roughness2 = Context.Roughness2;
+    
+    float E = (1.0 - roughness2) / (1.0 + 0.7 * roughness2);
+    float3 F_ms = (Context.F0 + (1.0 - Context.F0) * 0.047619 * (1.0 - Context.Roughness)) * E;
+    F_ms /= max(1.0 - F_avg * (1.0 - E), 1e-5);
+    
+    float compensationStrength = lerp(0.3, 1.0, Context.Metallic);
+    float nDotVCompensation = 1.0 / max(Context.NdotV * 0.5 + 0.5, 0.1) - 1.0;
+    
+    return 1.0 + compensationStrength * F_ms * nDotVCompensation;
+}
+
+#ifndef DISABLE_REFLECTIONS
+
+float3 CalculateScreenSpaceReflections(float4 reflections, IBLContext Context, GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 ViewDirection)
+{
+    // reflections.rgb - цвет, reflections.a - маска уверенности/фейда
+    float reflectionStrength = reflections.a;
+
+    if (reflectionStrength <= 0.001) return 0;
+    
+    float3 reflectionTint = lerp(1.0, Context.F0, Context.Metallic);
+    
+    float3 ssrColor = reflections.rgb * reflectionTint * reflectionStrength;
+    
+    ssrColor *= Context.kS;
+    
+    return ssrColor;
+}
+
+#endif
+
+#ifndef DISABLE_REFLECTIONS
+IBLResult CalculateIndirectLighting(GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 ViewDirection, float Ambient, float4 reflections)
+{
+    IBLResult result = (IBLResult) 0;
+    
+    IBLContext context;
+    context.NdotV = saturate(dot(WorldSpaceNormal, -ViewDirection));
+    context.Roughness = max(GBuffer.Roughness, 0.05);
+    context.Roughness2 = context.Roughness * context.Roughness;
+    context.perceptualRoughness = sqrt(context.Roughness);
+    context.F0 = CalculateAdvancedF0(GBuffer);
+    context.Metallic = GBuffer.Metallic;
+    context.F90 = CalculateF90(context.F0, context.Metallic);
+    
+    context.kS = 0;
+    context.kD = 0;
+    context.DiffuseDominance = 0;
+    
+    CalculateAdvancedFresnel(context, context.kS, context.kD, context.DiffuseDominance);
+    
+    result.MultiScatterCompensation = CalculateMultiScatteringCompensation(context, GBuffer);
+    
+    // IBL
+    result.IndirectDiffuse = CalculateIBLDiffuse(GBuffer, WorldSpaceNormal, BentNormal, context.kD, Ambient, context);
+    
+    result.IndirectSpecular = CalculateIBLSpecular(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, context, Ambient);
+    
+    result.IndirectSpecular *= result.MultiScatterCompensation;
+    result.DiffuseDominance = context.DiffuseDominance;
+       
+    // SSR
+    float3 ssrContribution = CalculateScreenSpaceReflections(reflections, context, GBuffer, WorldSpaceNormal, BentNormal, ViewDirection);
+    float ssrIntensity = reflections.a;
+    
+    // Blend SSR and Cubemap
+    if (ssrIntensity > 0.0)
+    {
+        // Smooth transition based on alpha
+        result.CombinedIndirect = result.IndirectDiffuse + ssrContribution;
+    }
+    else
+    {
+        result.CombinedIndirect = result.IndirectDiffuse + result.IndirectSpecular;
+    }
+    
+    float microOcclusion = 1.0 - (1.0 - GBuffer.Cavity) * (1.0 - context.Roughness * 0.5);
+    result.CombinedIndirect *= microOcclusion;
+    
+    return result;
+}
+#else
+
+IBLResult CalculateIndirectLighting(GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 ViewDirection, float Ambient, float4 Reflections)
+{
+    IBLResult result = (IBLResult) 0;
+    
+    IBLContext context;
+    context.NdotV = saturate(dot(WorldSpaceNormal, -ViewDirection));
+    context.Roughness = max(GBuffer.Roughness, 0.05);
+    context.Roughness2 = context.Roughness * context.Roughness;
+    context.perceptualRoughness = sqrt(context.Roughness);
+    context.F0 = CalculateAdvancedF0(GBuffer);
+    context.Metallic = GBuffer.Metallic;
+    context.F90 = CalculateF90(context.F0, context.Metallic);
+    
+    context.kS = 0;
+    context.kD = 0;
+    context.DiffuseDominance = 0;
+    
+    CalculateAdvancedFresnel(context, context.kS, context.kD, context.DiffuseDominance);
+    
+    result.MultiScatterCompensation = CalculateMultiScatteringCompensation(context, GBuffer);
+    
+    result.IndirectDiffuse = CalculateIBLDiffuse(GBuffer, WorldSpaceNormal, BentNormal, context.kD, Ambient, context);
+                                                       
+    result.IndirectSpecular = CalculateIBLSpecular(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, context, Ambient);
+    
+    result.IndirectSpecular *= result.MultiScatterCompensation;
+    result.DiffuseDominance = context.DiffuseDominance;
+        
+    result.CombinedIndirect = result.IndirectDiffuse + result.IndirectSpecular;
+    
+    float microOcclusion = 1.0 - (1.0 - GBuffer.Cavity) * (1.0 - context.Roughness * 0.5);
+    result.CombinedIndirect *= microOcclusion;
+    
+    return result;
+}
+#endif
+
+float3 CalculateHybridIndirectLighting(GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 ViewDirection, float Ambient, float4 reflections, float additional_ambient)
+{
+    IBLResult ibl = CalculateIndirectLighting(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, Ambient, reflections);
+    
+    float luminance = dot(ibl.CombinedIndirect, float3(0.2126, 0.7152, 0.0722));
+    float exposureCompensation = 1.0 / max(luminance, 0.05);
+    ibl.CombinedIndirect *= min(exposureCompensation, 1.8);
+    
+    return ibl.CombinedIndirect;
+}

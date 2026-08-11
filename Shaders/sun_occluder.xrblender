@@ -1,0 +1,6 @@
+function normal(shader, t_base, t_second, t_detail)
+	shader:begin("accumulating_light_stage_sun_occluder","null")
+		: blend(false, blend.one, blend.zero)
+		: zb(true,  true)
+		: fog(false)
+end

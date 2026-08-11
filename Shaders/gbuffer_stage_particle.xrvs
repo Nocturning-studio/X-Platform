@@ -1,0 +1,40 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+////////////////////////////////////////////////////////////////////////////////
+struct VertexData
+{
+	float4 Position: POSITION;
+	float4 Color: COLOR0;
+	float2 UV: TEXCOORD0;
+};
+////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+    float4 HomogeniousPosition: POSITION;
+    float2 UV: TEXCOORD0;
+    float3 Position: TEXCOORD1;
+    float3 Normal: TEXCOORD2;
+	float4 Color: COLOR0;
+};
+////////////////////////////////////////////////////////////////////////////////
+Interpolators main(VertexData Input)
+{
+    Interpolators Output;
+
+    Output.HomogeniousPosition = mul(m_WorldViewProject, Input.Position);
+
+    Output.Normal = normalize(eye_position - Input.Position.xyz);
+
+    Output.Position = mul(m_WorldView, Input.Position);
+
+    Output.UV = Input.UV;
+
+    Output.Color = Input.Color;
+
+    return Output;
+}
+////////////////////////////////////////////////////////////////////////////////

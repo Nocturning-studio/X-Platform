@@ -1,0 +1,57 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 25.10.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "alpha_test.xrh"
+#include "contrast_adaptive_sharpening.xrh"
+#include "lightmap.xrh"
+#include "material.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float3 Position : TEXCOORD0;
+    float3 UVAO : TEXCOORD1;
+};
+///////////////////////////////////////////////////////////////////////////////////
+GBufferPacked main(Interpolators Input)
+{
+    GBuffer GBuffer = InitializeGBuffer();
+	
+    MaterialComponents UnpackedMaterial;
+    
+    UnpackedMaterial = UnpackMaterial(Input.UVAO.xy);
+    UnpackedMaterial = UpdateMaterial(Input.UVAO.xy, UnpackedMaterial);
+
+    calc_alpha_test(Input.UVAO.xy, UnpackedMaterial.Opacity);
+
+    GBuffer.Albedo = UnpackedMaterial.Albedo;
+    
+    GBuffer.AO = Input.UVAO.z;
+    
+    GBuffer.BakedAO = UnpackedMaterial.AO;
+    
+    GBuffer.Cavity = UnpackedMaterial.Cavity;
+ 
+    float3 VertexNormal = normalize(cross(ddx(Input.Position), ddy(Input.Position)));
+    float3x3 TBN = CalculateTBN(Input.Position, VertexNormal, Input.UVAO.xy);
+    GBuffer.Normal = normalize(mul(TBN, UnpackedMaterial.Normal));
+    
+	GBuffer.Position = Input.Position;
+	
+    GBuffer.Roughness = UnpackedMaterial.Roughness;
+
+    GBuffer.Metallic = UnpackedMaterial.Metallic;
+
+    GBuffer.SubSurfacePower = UnpackedMaterial.SubSurfacePower;
+
+    GBuffer.Emission = UnpackedMaterial.Emission;
+	
+    GBuffer.MaterialID = NORMAL_MATERIAL;
+    
+    return PackGBuffer(GBuffer);
+}
+///////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,300 @@
+////////////////////////////////////////////////////////////////////////////
+//	Created	: 20.11.2022
+//	Author	: NSDeathman, Mihan-323
+//	Basic idea : xRay engine 2.0 sm 3.0
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_gbuffer_1;
+uniform sampler2D s_gbuffer_2;
+uniform sampler2D s_gbuffer_3;
+uniform sampler2D s_gbuffer_4;
+////////////////////////////////////////////////////////////////////////////
+// Упаковка двух 8-битных каналов (0..1) в значение, совместимое с R16F.
+// Для 248 из 256 значений R ошибка = 0; для 8 значений (124-127, 252-255)
+// ошибка R = 4/255 (~0.0157). G всегда восстанавливается без потерь.
+float PackR8G8ToR16F(float r, float g)
+{
+    // 1. Квантуем входные [0..1] в целые 0..255
+    r = round(r * 255.0);
+    g = round(g * 255.0);
+
+    // 2. Разбираем R на знак, экспоненту (5 бит) и мантиссу (2 бита)
+    float sign = step(128.0, r);                     // 1, если r >= 128
+    float idx  = floor(r * 0.25);                    // r / 4 (целая часть)
+    float expR = idx - 32.0 * floor(idx / 32.0);     // idx % 32
+    float mantR = r - 4.0 * idx;                     // r % 4 (0..3)
+
+    // 3. Избегаем Inf/NaN: экспонента 31 заменяется на 30
+    // (теряем 4 единицы в R только для 8 значений)
+    if (expR == 31.0) expR = 30.0;
+
+    // 4. Собираем 10-битную мантиссу half: старшие 2 бита от R, младшие 8 от G
+    float m = mantR * 256.0 + g;   // 0..1023
+
+    // 5. Формируем float, соответствующий half
+    float val;
+    if (expR < 1.0)
+    {
+        // Денормализованное half: 2^-14 * m/1024 = m * 2^-24
+        val = m * 5.960464477539063e-08; // 2^-24
+    }
+    else
+    {
+        // Нормализованное: 2^(expR-15) * (1 + m/1024)
+        val = (1.0 + m * 0.0009765625) * exp2(expR - 15.0);
+    }
+    return sign > 0.5 ? -val : val;
+}
+
+// Распаковка R16F обратно в два 8-битных канала (0..1)
+float2 UnpackR16FToR8G8(float packed)
+{
+    float s = (packed < 0.0) ? 1.0 : 0.0;
+    float v = abs(packed);
+
+    float e, m;
+
+    // Минимальное нормализованное half: 2^-14 ≈ 6.103515625e-5
+    if (v < 6.103515625e-5)
+    {
+        // Денормализованное
+        e = 0.0;
+        m = round(v * 16777216.0);   // v * 2^24
+    }
+    else
+    {
+        // Нормализованное
+        e = floor(log2(v)) + 15.0;
+        m = round((v / exp2(e - 15.0) - 1.0) * 1024.0);
+    }
+
+    // Извлекаем G и остаток R из мантиссы
+    float g = fmod(m, 256.0);                          // младшие 8 бит
+    float mantR = floor(m * 0.00390625) % 4.0;         // (m / 256) % 4
+    float r = s * 128.0 + e * 4.0 + mantR;
+
+    return float2(r / 255.0, g / 255.0);
+}
+////////////////////////////////////////////////////////////////////////////
+struct GBuffer
+{
+    float3 Albedo;
+    float3 Position;
+    float3 Normal;
+    float Roughness;
+    float Metallic;
+    float AO;
+    float BakedAO;
+    float Cavity;
+    float SubSurfacePower;
+    float Emission;
+    float MaterialID;
+    float SpecularTint;
+    float SheenIntensity;
+    float SheenRoughness;
+    float CoatIntensity;
+    float CoatRoughness;
+};
+
+struct GBufferPacked
+{
+    float4 rt_GBuffer_1 : COLOR0;
+    float4 rt_GBuffer_2 : COLOR1;
+    float4 rt_GBuffer_3 : COLOR2;
+};
+////////////////////////////////////////////////////////////////////////////
+float2 PackNormal(float3 normal)
+{
+    float len = dot(normal, normal);
+    if (len < 1e-6f)
+        return float2(0.5f, 0.5f);
+
+    normal /= sqrt(len);
+    
+    float3 absN = abs(normal);
+    float s = absN.x + absN.y + absN.z;
+    float2 enc = normal.xy * (1.0f / s);
+    
+    if (normal.z < 0.0f)
+        enc = (1.0f - abs(enc.yx)) * (enc >= 0.0f ? 1.0f : -1.0f);
+    
+    return enc * 0.5f + 0.5f;
+}
+
+float3 UnpackNormal(float2 packed)
+{
+    float2 enc = packed * 2.0f - 1.0f;
+
+    float3 normal;
+    normal.z = 1.0f - abs(enc.x) - abs(enc.y);
+    
+    if (normal.z < 0.0f)
+        normal.xy = (1.0f - abs(enc.yx)) * (enc >= 0.0f ? 1.0f : -1.0f);
+    else
+        normal.xy = enc.xy;
+    
+    return normalize(normal);
+}
+
+float PackPosition(float3 position)
+{
+   return position.z;
+}
+
+float3 UnpackPosition(float Depth, float2 TexCoords)
+{
+    float3 Pos = 0.0f;
+    Pos.z = Depth;
+    Pos.xy = Depth * (TexCoords * 2.0f * pos_decompression_params.xy - pos_decompression_params.xy);
+    return Pos;
+}
+
+float3 UnpackPositionWithPos2D(float Depth, float2 Pos2D)
+{
+    Pos2D += 0.5f;
+    float3 Pos = 0.0f;
+    Pos.z = Depth;
+    Pos.xy = Depth * (Pos2D * pos_decompression_params.zw - pos_decompression_params.xy);
+    return Pos;
+}
+////////////////////////////////////////////////////////////////////////////
+float CheckDepth(float Depth)
+{
+    return Depth < 0.001f ? 250.0f : Depth;
+}
+
+float GetDepthRaw(float2 TexCoords)
+{
+    return tex2Dlod0(s_gbuffer_3, TexCoords).r;
+}
+
+float GetDepth(float2 TexCoords)
+{
+    float Depth = GetDepthRaw(TexCoords);
+    return CheckDepth(Depth);
+}
+
+float3 GetPosition(float2 TexCoords)
+{    
+    float Depth = GetDepthRaw(TexCoords);
+    return UnpackPosition(Depth, TexCoords);
+}
+
+float3 GetPositionWithPos2D(float2 TexCoords, float2 Pos2D)
+{
+    float Depth = GetDepthRaw(TexCoords);
+    return UnpackPositionWithPos2D(Depth, Pos2D);
+}
+
+float3 GetNormal(float2 TexCoords)
+{
+    float2 Normal = 0.0f;
+    
+    Normal = tex2Dlod0(s_gbuffer_3, TexCoords).gb;
+
+    return UnpackNormal(Normal.xy);
+}
+
+void GetPositionAndNormal(in float2 TexCoords, inout float3 Position, inout float3 Normal)
+{
+    float4 BufferData = 0.0f;
+    
+    BufferData = tex2Dlod0(s_gbuffer_3, TexCoords);
+    
+    float Depth = CheckDepth(BufferData.r);
+    Position = UnpackPosition(Depth, TexCoords);
+    Normal = UnpackNormal(BufferData.gb);
+}
+
+float GetMaterialID(float2 TexCoords)
+{
+    return tex2Dlod0(s_gbuffer_2, TexCoords).a;
+}
+
+float GetRoughness(float2 TexCoords)
+{
+    float2 PackedBuffer = UnpackR16FToR8G8(tex2Dlod0(s_gbuffer_3, TexCoords).a);
+    return PackedBuffer.y;
+}
+////////////////////////////////////////////////////////////////////////////
+GBuffer InitializeGBuffer()
+{
+    GBuffer GBuffer;
+
+    GBuffer.Albedo = float3(1, 1, 1);
+    GBuffer.BakedAO = 1.0f;
+    GBuffer.AO = 1.0f;
+    GBuffer.Emission = 0.0f;
+    GBuffer.SubSurfacePower = 0.0f;
+    GBuffer.Metallic = 0.0f;
+    GBuffer.MaterialID = 0.0f;
+    GBuffer.Cavity = 1.0f;
+    GBuffer.Normal = float3(1, 1, 1);
+    GBuffer.Position = float3(1, 1, 1);
+    GBuffer.Roughness = 1.0f;
+    GBuffer.SpecularTint = 1.0f;
+    GBuffer.SheenIntensity = 0.0f;
+    GBuffer.SheenRoughness = 1.0f;
+    GBuffer.CoatIntensity = 0.0f;
+    GBuffer.CoatRoughness = 1.0f;
+    
+    return GBuffer;
+}
+
+GBufferPacked InitializeGBufferPacked()
+{
+    GBufferPacked GBuffer;
+
+    GBuffer.rt_GBuffer_1 = 0.0f;
+    GBuffer.rt_GBuffer_2 = 0.0f;
+    GBuffer.rt_GBuffer_3 = 0.0f;
+    
+    return GBuffer;
+}
+
+GBufferPacked PackGBuffer(GBuffer Input)
+{
+    GBufferPacked GBuffer = InitializeGBufferPacked();
+    
+    GBuffer.rt_GBuffer_1.rgb = Input.Albedo;
+    GBuffer.rt_GBuffer_1.a = Input.AO;
+    
+    GBuffer.rt_GBuffer_2.r = saturate(Input.Emission);
+    GBuffer.rt_GBuffer_2.g = Input.SubSurfacePower;
+    GBuffer.rt_GBuffer_2.b = Input.BakedAO;
+    GBuffer.rt_GBuffer_2.a = Input.MaterialID;
+    
+    GBuffer.rt_GBuffer_3.r = Input.Position.z;
+    GBuffer.rt_GBuffer_3.gb = PackNormal(Input.Normal);
+    GBuffer.rt_GBuffer_3.a = PackR8G8ToR16F(Input.Metallic, Input.Roughness);
+    
+    return GBuffer;
+}
+
+GBuffer UnpackGBuffer(float2 TexCoords)
+{
+    GBuffer GBuffer = InitializeGBuffer();
+
+    float4 GBuffer_1 = tex2Dlod0(s_gbuffer_1, TexCoords);
+    float4 GBuffer_2 = tex2Dlod0(s_gbuffer_2, TexCoords);
+    float4 GBuffer_3 = tex2Dlod0(s_gbuffer_3, TexCoords);
+    
+    GBuffer.Albedo = GBuffer_1.rgb;
+    GBuffer.AO = GBuffer_1.a;
+    
+    float2 PackedBuffer = UnpackR16FToR8G8(GBuffer_3.a);
+    GBuffer.Metallic = PackedBuffer.x;
+    GBuffer.Roughness = PackedBuffer.y;
+    
+    GBuffer.Emission = GBuffer_2.r;
+    GBuffer.SubSurfacePower = GBuffer_2.g;
+    GBuffer.BakedAO = GBuffer_2.b;
+    GBuffer.MaterialID = GBuffer_2.a;
+    
+    GBuffer.Position = UnpackPosition(GBuffer_3.r, TexCoords);
+    GBuffer.Normal = UnpackNormal(GBuffer_3.gb);
+    
+    return GBuffer;
+}
+////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,348 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//	Combined Screen Space Reflections Shader (SSR)
+//	Modified: AI Assistant (Depth Aware Denoise + IGN Noise)
+//////////////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Uniforms & Samplers
+//////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 mip_data; 
+uniform sampler2D s_mip_chain;
+uniform sampler2D s_hi_z_mip_chain;
+
+// --- НАСТРОЙКИ ---
+#define HIZ_TRACE_LEVEL 2.0f
+#define HIZ_MAX_ITERATIONS 48
+#define SSR_THICKNESS 0.35f
+#define SSR_MAX_MIP_LEVEL 0.0f
+#define SSR_RAY_DISTANCE_SCALE 0.1f	
+#define SSR_CURVATURE_SCALE 2.0f	
+#define SSR_INCIDENT_ANGLE_SCALE 1.5f	
+#define SSR_ROUGHNESS_SCALE 3.0f	
+
+// Настройки Denoise
+#define DENOISE_RADIUS 1            // Радиус размытия (1 = 3x3, 2 = 5x5)
+#define DENOISE_DEPTH_BETA 150.0f   // Чувствительность к краям (больше = жестче края)
+
+// Pass 1: Mip Chain
+#define KERNEL_RADIUS 4
+#define BLUR_STRIDE_BASE 4.0f 
+#define DEPTH_RELAX_COEF 3.0f
+static const float SIGMA = 2.5f;
+
+float4 GenerateMipChainPass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float4 color_sum = 0.0f;
+    float weight_sum = 0.0f;
+    float current_mip_index = mip_data.x; 
+    float step_width = 1.0f + (current_mip_index * BLUR_STRIDE_BASE);
+    float depth_sensitivity = 20.0f / (1.0f + current_mip_index * DEPTH_RELAX_COEF);
+    float gauss_coeff = 2.0f * SIGMA * SIGMA;
+    float center_depth = GetDepth(TexCoords); 
+    
+    [unroll] 
+    for (int y = -KERNEL_RADIUS; y <= KERNEL_RADIUS; y++)
+    {
+        [unroll]
+        for (int x = -KERNEL_RADIUS; x <= KERNEL_RADIUS; x++)
+        {
+            float dist_sq = float(x*x + y*y);
+            float spatial_weight = exp(-dist_sq / gauss_coeff);
+            float2 offset = float2(x, y);
+            float2 sampleUV = TexCoords + offset * mip_data.zw * step_width;
+            float4 sample_color = tex2Dlod(s_mip_chain, float4(sampleUV, 0, 0));
+            float sample_depth = GetDepth(sampleUV);
+            float depth_diff = abs(center_depth - sample_depth);
+            float depth_weight = 1.0f / (1.0f + depth_diff * depth_sensitivity);
+            float luma = dot(sample_color.rgb, float3(0.299f, 0.587f, 0.114f));
+            float firefly_weight = 1.0f / (1.0f + luma); 
+            
+            float final_weight = spatial_weight * depth_weight * firefly_weight;
+            color_sum += sample_color * final_weight;
+            weight_sum += final_weight;
+        }
+    }
+    return color_sum / max(weight_sum, 0.0001f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Helper Functions (UPDATED)
+//////////////////////////////////////////////////////////////////////////////////////////
+float GetIGN(float2 uv)
+{
+    float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(uv * screen_res.xy, magic.xy)));
+}
+
+float GetBayerDither(float2 screenPos)
+{
+    float2 pixelPos = screenPos * screen_res.xy;
+    int x = int(pixelPos.x) % 4;
+    int y = int(pixelPos.y) % 4;
+    int index = x + y * 4;
+    
+    // Матрица Байера 4x4 "развернутая"
+    if (index == 0) return 0.0625f;
+    if (index == 1) return 0.5625f;
+    if (index == 2) return 0.1875f;
+    if (index == 3) return 0.6875f;
+    if (index == 4) return 0.8125f;
+    if (index == 5) return 0.3125f;
+    if (index == 6) return 0.9375f;
+    if (index == 7) return 0.4375f;
+    if (index == 8) return 0.25f;
+    if (index == 9) return 0.75f;
+    if (index == 10) return 0.125f;
+    if (index == 11) return 0.625f;
+    if (index == 12) return 1.0f;
+    if (index == 13) return 0.5f;
+    if (index == 14) return 0.875f;
+    else return 0.375f;
+}
+
+float CalculateMipLevel(float3 rayStartPosition, float3 intersectionPosition, float3 reflectionDirection, float3 surfaceNormal, float roughness, float rayLength)
+{
+    float distanceFactor = rayLength * SSR_RAY_DISTANCE_SCALE;
+    float3 viewDirection = normalize(rayStartPosition);
+    float incidentAngle = acos(dot(reflect(-viewDirection, surfaceNormal), surfaceNormal));
+    float angleFactor = (1.0f - abs(cos(incidentAngle))) * SSR_INCIDENT_ANGLE_SCALE;
+    
+    float3 ddxNormal = ddx(surfaceNormal);
+    float3 ddyNormal = ddy(surfaceNormal);
+    float curvature = length(ddxNormal) + length(ddyNormal);
+    float curvatureFactor = curvature * SSR_CURVATURE_SCALE;
+    
+    float roughnessFactor = roughness * SSR_ROUGHNESS_SCALE;
+    float intersectionDistance = length(intersectionPosition);
+    float distanceMipFactor = log2(intersectionDistance) * 0.5f;
+    
+    float combinedMipLevel = distanceFactor + angleFactor + curvatureFactor + roughnessFactor + distanceMipFactor;
+    return clamp(combinedMipLevel, 0.0f, SSR_MAX_MIP_LEVEL);
+}
+
+float GetHiZDepth(float2 uv, float mip)
+{
+    return tex2Dlod(s_hi_z_mip_chain, float4(uv, 0, mip)).r;
+}
+
+// HI-Z TRACING (UPDATED with IGN)
+bool TraceHiZ(float3 P0, float3 P1, float2 noiseCoords, out float3 outHitUV)
+{
+    float4 clip0 = mul(m_Project, float4(P0, 1.0f));
+    float4 clip1 = mul(m_Project, float4(P1, 1.0f));
+
+    float k0 = 1.0f / clip0.w;
+    float k1 = 1.0f / clip1.w;
+
+    float2 uv0 = (clip0.xy * k0) * float2(0.5f, -0.5f) + 0.5f;
+    float2 uv1 = (clip1.xy * k1) * float2(0.5f, -0.5f) + 0.5f;
+
+    float q0 = 1.0f / P0.z;
+    float q1 = 1.0f / P1.z;
+
+    float2 deltaUV = uv1 - uv0;
+    float deltaQ = q1 - q0;
+
+    if (dot(deltaUV, deltaUV) < 1e-7f) return false;
+
+    float2 mipRes = floor(screen_res.xy * exp2(-HIZ_TRACE_LEVEL));
+    float2 deltaPixels = deltaUV * mipRes;
+    float pixelLength = max(abs(deltaPixels.x), abs(deltaPixels.y));
+    
+    float stride = max(1.0f, pixelLength / (float)HIZ_MAX_ITERATIONS);
+    float t_step = stride / max(pixelLength, 0.001f); 
+
+    float jitter = (GetBayerDither(noiseCoords) - 0.5f); 
+    
+    float t = max(0.0f, t_step * (0.5f + jitter * 0.5f)); 
+
+    bool hitPotential = false;
+    float t_hit_curr = 0.0f;
+    float z_ray_hit = 0.0f;
+
+    [loop] 
+    for (int i = 0; i < HIZ_MAX_ITERATIONS; i++)
+    {
+        float2 currUV = uv0 + deltaUV * t;
+        if (currUV.x < 0 || currUV.y < 0 || currUV.x > 1 || currUV.y > 1) break;
+
+        float currentRayZ = 1.0f / (q0 + deltaQ * t);
+        float cellZ = GetHiZDepth(currUV, HIZ_TRACE_LEVEL);
+        
+        // Более строгий bias для точности
+        float bias = 0.001f + (0.002f * currentRayZ);
+
+        if (currentRayZ > (cellZ + bias)) 
+        {
+            hitPotential = true;
+            t_hit_curr = t;
+            z_ray_hit = currentRayZ;
+            break; 
+        }
+
+        t += t_step;
+        if (t >= 1.0f) break;
+    }
+
+    if (hitPotential)
+    {
+        // Binary Search Refinement (4 steps)
+        float t_prev = max(0.0f, t_hit_curr - t_step);
+        float3 rayStartPt = float3(uv0 + deltaUV * t_prev, 1.0f / (q0 + deltaQ * t_prev));
+        float3 rayEndPt   = float3(uv0 + deltaUV * t_hit_curr, z_ray_hit);
+        
+        float3 samplePos = rayStartPt;
+        float3 stepVec = (rayEndPt - rayStartPt) * 0.5f;
+        samplePos += stepVec; 
+        
+        [unroll]
+        for(int j=0; j<4; j++)
+        {
+             float zBuf = GetHiZDepth(samplePos.xy, 0); 
+             stepVec *= 0.5f;
+             if(samplePos.z > zBuf) samplePos -= stepVec; else samplePos += stepVec;
+        }
+        
+        float finalZ = GetHiZDepth(samplePos.xy, 0);
+        float diff = abs(samplePos.z - finalZ);
+        
+        if(diff <= SSR_THICKNESS * (1.0f + finalZ * 0.05f))
+        {
+            outHitUV = float3(samplePos.xy, finalZ);
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+float4 CalculateScreenSpaceReflection(float2 screenTextureCoordinates, float3 viewSpacePosition, float3 viewSpaceNormal, float2 noiseInput)
+{
+    float3 viewDir = normalize(viewSpacePosition);
+    float3 viewReflDir = normalize(reflect(viewDir, viewSpaceNormal));
+    
+    float maxDist = 80.0f;
+    
+    float3 rayStart = viewSpacePosition + viewReflDir * 0.2f; 
+    float3 rayEnd = viewSpacePosition + viewReflDir * maxDist;
+
+    float3 hitUV_Z = 0;
+    bool isHit = TraceHiZ(rayStart, rayEnd, screenTextureCoordinates, hitUV_Z);
+
+    float4 result = 0;
+
+    if (isHit)
+    {
+        float2 hitUV = hitUV_Z.xy;
+        
+        // Виньетка и Fade
+        float2 vignette = smoothstep(0.0f, 0.1f, hitUV) * (1.0f - smoothstep(0.9f, 1.0f, hitUV));
+        float screenFade = vignette.x * vignette.y;
+        float viewFactor = saturate(dot(viewReflDir, viewSpaceNormal));
+        
+        float roughness = GetRoughness(hitUV); 
+        float3 hitNormal = GetNormal(hitUV);
+        float rayLen = abs(hitUV_Z.z - viewSpacePosition.z); 
+
+        float mipLevel = CalculateMipLevel(viewSpacePosition, viewSpacePosition + viewReflDir * rayLen, viewReflDir, hitNormal, roughness, rayLen);
+
+        float3 reflectionColor = tex2Dlod(s_image, float4(hitUV, 0, mipLevel)).rgb;
+        result = float4(reflectionColor, screenFade * viewFactor);
+    }
+    return result;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 2: Main SSR Render
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 ReflectionsRenderPass(float2 TexCoords: TEXCOORD0, float2 Pos2D: VPOS): COLOR
+{
+    GBuffer GBuffer = UnpackGBuffer(TexCoords);
+
+    if (GBuffer.Position.z > 10000.0f) return 0.0f;
+
+    if (GBuffer.Metallic > 0.01f || (GBuffer.Roughness < 0.4f)) // Чуть поднял порог
+    {
+        float4 Result = CalculateScreenSpaceReflection(TexCoords, GBuffer.Position, GBuffer.Normal, TexCoords);
+        return Result;
+    }
+    else
+    {
+        return 0.0f;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pass 3: Depth-Aware Bilateral Denoise
+//////////////////////////////////////////////////////////////////////////////////////////
+float4 DenoisePass(float2 TexCoords : TEXCOORD0) : COLOR
+{
+    float4 centerColor = tex2Dlod0(s_reflections, TexCoords);
+    float centerDepth = GetDepth(TexCoords);
+    
+    GBuffer gb = UnpackGBuffer(TexCoords);
+    float roughness = gb.Roughness;
+
+    // Если поверхность почти зеркальная, шум не давим вообще, чтобы сохранить детали.
+    // Dither паттерн на зеркалах будет незаметен из-за высокого разрешения отражения.
+    if (roughness < 0.05f) 
+    {
+        return centerColor;
+    }
+
+    // --- НАСТРОЙКА РАДИУСА ---
+    // Чем выше roughness, тем шире ищем соседей.
+    // Максимальный радиус можно ограничить
+    float blurRadius = clamp(roughness * 6.0f, 0.5f, 3.0f);
+    
+    float4 totalColor = 0.0f;
+    float totalWeight = 0.0f;
+    float2 texelSize = screen_res.zw; 
+
+    int kernelSize = 1; // Радиус цикла (1 = 3x3, 2 = 5x5)
+    
+    // Если очень шершавое, увеличиваем ядро
+    if (roughness > 0.4f) kernelSize = 2;
+
+    [unroll]
+    for (int x = -kernelSize; x <= kernelSize; x++)
+    {
+        [unroll]
+        for (int y = -kernelSize; y <= kernelSize; y++)
+        {
+            // Смещение зависит от Roughness! 
+            // Это позволяет размывать сильнее на матовых поверхностях
+            float2 offset = float2(x, y) * texelSize * blurRadius; 
+            float2 sampleUV = TexCoords + offset;
+
+            float4 sampleColor = tex2Dlod0(s_reflections, sampleUV);
+            float sampleDepth = GetDepth(sampleUV);
+            
+            // Получаем нормаль соседа для улучшения качества краев
+            float3 sampleNormal = GetNormal(sampleUV);
+
+            // --- ВЕСА ---
+            
+            // 1. Пространственный вес (Gaussian)
+            float distSq = dot(float2(x,y), float2(x,y));
+            float spatialWeight = exp(-distSq / (2.0f * blurRadius));
+
+            // 2. Вес по глубине (Очень строгий, чтобы не размыть края объектов)
+            float depthDiff = abs(centerDepth - sampleDepth);
+            float depthWeight = (depthDiff < 0.01f * centerDepth) ? 1.0f : 0.0f;
+            
+            // 3. Вес по нормали (чтобы не смешивать грани куба например)
+            float normalDot = dot(gb.Normal, sampleNormal);
+            float normalWeight = pow(saturate(normalDot), 32.0f);
+
+            float weight = spatialWeight * depthWeight * normalWeight;
+
+            totalColor += sampleColor * weight;
+            totalWeight += weight;
+        }
+    }
+
+    return totalColor / max(totalWeight, 0.0001f);
+}

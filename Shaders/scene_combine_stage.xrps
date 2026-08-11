@@ -1,0 +1,147 @@
+////////////////////////////////////////////////////////////////////////////
+//	Combine Shader - Synchronized with Advanced IBL
+//	Author	: NSDeathman
+//  Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "BRDF.xrh"
+#include "IBL.xrh"
+#include "AmbientOcclusion.xrh"
+////////////////////////////////////////////////////////////////////////////
+uniform float debug_mode;
+////////////////////////////////////////////////////////////////////////////
+uniform sampler2D s_luminance;
+uniform sampler2D s_luminance_previous;
+uniform sampler2D s_luminance_mip_chain;
+////////////////////////////////////////////////////////////////////////////
+float4 main(float2 TexCoords : TEXCOORD0, float2 Pos2D : VPOS) : COLOR0
+{
+    GBuffer GBuffer = UnpackGBuffer(TexCoords);
+    
+    // 1. Calculate Geometry Data
+    // --------------------------
+    // Normal is in View Space, convert to World Space
+    float3 WorldSpaceNormal = mul(m_invView, float4(GBuffer.Normal, 0.0f));
+    
+    float3 v2pointL = normalize(GBuffer.Position);
+    float3 ViewDirection = mul(m_invView, float4(v2pointL, 0.0f));
+    
+    // 2. Sample and Unpack Bent Normals
+    // ---------------------------------
+#ifdef USE_BENT_NORMALS
+    float3 ViewSpaceBentNormal = tex2D(s_bent_normals, TexCoords).rgb;
+    ViewSpaceBentNormal = normalize(ViewSpaceBentNormal);
+    
+    float3 WorldSpaceBentNormal = mul(m_invView, float4(ViewSpaceBentNormal, 0.0f));
+    
+    if (length(ViewSpaceBentNormal) < 0.1f)
+    {
+         WorldSpaceBentNormal = WorldSpaceNormal;
+         ViewSpaceBentNormal = GBuffer.Normal;
+    }
+#else
+    float3 WorldSpaceBentNormal = WorldSpaceNormal;
+#endif
+
+    // 3. Calculate Ambient Occlusion
+    // ------------------------------
+    AmbientOcclusion ao = CalculateAmbientOcclusion(GBuffer, WorldSpaceNormal, TexCoords, ViewDirection);
+
+    // 4. Get Direct Lighting
+    // ----------------------
+    float3 DirectLighting = tex2Dlod0(s_light_accumulator, TexCoords).rgb * 2.0f;
+    
+    // 5. Calculate Indirect Lighting (IBL)
+    // ------------------------------------
+#ifdef DISABLE_REFLECTIONS
+    float3 IndirectLighting = CalculateHybridIndirectLighting(GBuffer, 
+                                                            WorldSpaceNormal, 
+                                                            WorldSpaceBentNormal,
+                                                            ViewDirection, 
+                                                            ao.Combined,
+                                                            NULL, 
+                                                            additional_ambient);
+#else
+    float4 reflections = tex2Dlod0(s_reflections, TexCoords);
+    float3 IndirectLighting = CalculateHybridIndirectLighting(GBuffer, 
+                                                            WorldSpaceNormal, 
+                                                            WorldSpaceBentNormal,
+                                                            ViewDirection, 
+                                                            ao.Combined,
+                                                            reflections, 
+                                                            additional_ambient);
+#endif
+    
+    // 6. Final Compositing
+    // --------------------
+    float3 Emission = GBuffer.Emission * 10.0f * GBuffer.Albedo;
+    float3 SceneColor = (IndirectLighting + DirectLighting) + Emission;
+    
+    // Apply Fog
+    float Fog = CalcFogness(GBuffer.Position);
+    SceneColor = ApplyFogness(SceneColor, Fog);
+    float Opacity = safe_pow(Fog, 2.2f);
+    
+    // 7. Debug Visualization
+    // ----------------------
+#ifndef USE_FOR_PRECOMBINE
+    if (debug_mode != 0)
+    {
+        if (debug_mode == GBUFFER_ALBEDO)
+            SceneColor = GBuffer.Albedo;
+        else if (debug_mode == GBUFFER_POSITION)
+        {
+            SceneColor = GBuffer.Position.z / 50.0f;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == GBUFFER_NORMAL)
+        {
+            SceneColor.xy = GBuffer.Normal.xy * 0.5f + 0.5f;
+            SceneColor.z = GBuffer.Normal.z;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == GBUFFER_ROUGHNESS)
+        {
+            SceneColor = GBuffer.Roughness;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == GBUFFER_METALLIC)
+        {
+            SceneColor = GBuffer.Metallic;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == GBUFFER_SUBSURFACE_POWER)
+        {
+            SceneColor = GBuffer.SubSurfacePower;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == GBUFFER_EMISSION)
+        {
+            SceneColor = GBuffer.Emission;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == GBUFFER_LIGHTMAP_AO)
+        {
+            SceneColor = ao.Lightmap;
+            SceneColor = safe_pow(SceneColor, 2.2f);
+        }
+        else if (debug_mode == GBUFFER_BAKED_AO)
+        {
+            SceneColor = ao.Baked;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+        else if (debug_mode == DIRECT_LIGHT)
+            SceneColor = DirectLighting;
+        else if (debug_mode == INDIRECT_LIGHT)
+            SceneColor = IndirectLighting;
+        else if (debug_mode == REAL_TIME_AO)
+        {
+            SceneColor = ao.RealTime;
+            SceneColor = safe_pow(abs(SceneColor), 2.2f);
+        }
+    }
+#endif
+
+    return float4(SceneColor, Opacity);
+}

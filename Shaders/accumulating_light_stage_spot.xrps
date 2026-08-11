@@ -1,0 +1,68 @@
+///////////////////////////////////////////////////////////////////////////////////
+// Created: 22.11.2023
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+///////////////////////////////////////////////////////////////////////////////////
+uniform float3 Ldynamic_spot_att;
+///////////////////////////////////////////////////////////////////////////////////
+#define USE_FOR_LOCAL_SOURCE
+#define PBR_ATTENUATION
+///////////////////////////////////////////////////////////////////////////////////
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "BRDF.xrh"
+#include "shadow_filtering.xrh"
+#include "screen_space_shadows.xrh"
+///////////////////////////////////////////////////////////////////////////////////
+struct Interpolators
+{
+	float4 HomogeniousPosition: POSITION;
+    float4 TexCoords: TEXCOORD0;
+};
+///////////////////////////////////////////////////////////////////////////////////
+float4 main(Interpolators Input): COLOR0
+{
+    GBuffer GBuffer = UnpackGBuffer(Input.TexCoords.xy/Input.TexCoords.w);
+
+    float3 LightDirection = normalize(GBuffer.Position - Ldynamic_pos.xyz);
+
+#ifdef PBR_ATTENUATION
+    float AttenuationFactor = CalculateSpotAttenuation(GBuffer.Position, Ldynamic_pos.xyz, Ldynamic_spot_att.z, LightDirection, Ldynamic_spot_att.x, Ldynamic_spot_att.y);
+#else
+    float AttenuationFactor = CalculateAttenuation(GBuffer.Position, Ldynamic_pos.xyz, Ldynamic_pos.w);
+#endif
+    
+    float4 Position = float4(GBuffer.Position + GBuffer.Normal * 0.015f, 1.0f);
+    float4 ShadowMapTexCoords = mul(m_shadow, Position);
+  
+#ifdef USE_SHADOW_MAPPING
+    float ShadowMap = sample_shadow_map(ShadowMapTexCoords, NULL);
+    
+    float NdotL = abs(dot(normalize(GBuffer.Normal), LightDirection.rgb));
+    if((NdotL * ShadowMap > 0.1f) && (GBuffer.MaterialID == HUD_MATERIAL))
+        ShadowMap *= TraceShadow(LightDirection, Position.xyz);
+#else
+    float ShadowMap = 1.0f;
+#endif
+    
+#ifdef USE_LIGHT_MAPPING
+#ifdef  USE_LIGHT_MAP_TRANSFORM
+    ShadowMapTexCoords.x = dot(Position, m_lmap[0]);
+    ShadowMapTexCoords.y = dot(Position, m_lmap[1]);
+#endif
+    float3 LightMap = tex2Dproj(s_lmap, ShadowMapTexCoords).rgb;
+#else
+    float3 LightMap = float3(1.0f, 1.0f, 1.0f);
+#endif
+
+    LightMap *= ShadowMap * AttenuationFactor;
+    
+//#ifdef USE_SHADOW_MAPPING
+    float3 FinalColor = Calculate_Lighting_Model(GBuffer, LightDirection, Ldynamic_color.rgb, LightMap);
+//#else
+//    float3 FinalColor = Calculate_Diffuse_Lighting_Model(GBuffer, LightDirection, Ldynamic_color.rgb, LightMap);
+//#endif
+    
+    return float4(FinalColor, 1.0f);
+}
+///////////////////////////////////////////////////////////////////////////////////

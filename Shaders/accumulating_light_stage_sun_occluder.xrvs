@@ -1,0 +1,24 @@
+#include "common.xrh"
+
+struct v_in
+{
+    float4 P : POSITION; // ¬ходна€ позици€ из твоего OBJ
+};
+
+struct v_out
+{
+    float4 hpos : POSITION; // ¬ыходна€ позици€ (Clip Space)
+};
+
+v_out main(v_in I)
+{
+    v_out O;
+
+    // m_WVP Ч это глобальна€ матрица World-View-Projection, 
+    // которую движок обновл€ет автоматически.
+    // “ак как в C++ коде мы установили set_transform_project(sun_combine),
+    // умножение на m_WVP переведет вершину сразу в координаты теневой карты.
+    O.hpos = mul(m_WorldViewProject, I.P);
+
+    return O;
+}

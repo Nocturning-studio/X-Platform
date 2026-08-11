@@ -1,0 +1,524 @@
+#include "common.xrh"
+#include "gbuffer.xrh"
+#include "BRDF.xrh"
+#include "IBL.xrh"
+#include "legacy_ssr.xrh"
+#include "wind.xrh"
+#include "normal_map_functions.xrh"
+
+// =============================================================================
+// SHARED: UNIFORMS & INCLUDES
+// =============================================================================
+uniform sampler2D s_nmap;
+
+// Настройки типа воды (Общие для обоих шейдеров)
+#define WATER_TYPE_SWAMP // Выберите тип здесь
+
+struct Interpolators
+{
+    float4 HomogeniousPosition : POSITION;
+    float4 TCTexgen : TEXCOORD0;
+    float3 Position : TEXCOORD1;
+    float3 UV_Lighting : TEXCOORD2;
+    float3 TBN0 : TEXCOORD3;
+    float3 TBN1 : TEXCOORD4;
+    float3 TBN2 : TEXCOORD5;
+    float3 ViewDirection : TEXCOORD6;
+};
+
+struct WaterParams
+{
+    float3 TintColor;
+    float Turbidity;
+    float3 Absorption;
+    float Roughness;
+    float SubsurfaceIntensity;
+};
+
+// =============================================================================
+// SHARED: UTILS & GENERATORS
+// =============================================================================
+
+float3 hash3(float2 p) {
+    float3 q = float3(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)), dot(p, float2(419.2, 371.9)));
+    return frac(sin(q) * 43758.5453);
+}
+
+float noise(in float2 x) {
+    float intensity = rain_density.x;
+    x *= intensity;
+    float2 p = floor(x), f = frac(x);
+    float va = 0.0;
+    if (intensity > 0.01) {
+        for (int j = -1; j <= 1; j++)
+            for (int i = -1; i <= 1; i++) {
+                float2 g = float2(float(i), float(j));
+                float3 o = hash3(p + g);
+                float2 r = ((g - f) + o.xy) / intensity;
+                float d = sqrt(dot(r, r));
+                float a = max(cos(d - timers.x * 2.0f + (o.x + o.y) * 5.0f), 0.0f);
+                a = smoothstep(0.99, 0.999, a);
+                float ripple = lerp(a, 0.0f, d);
+                va += max(ripple, 0.0f);
+            }
+    }
+    return va;
+}
+
+float3 GenerateRaindrops(float2 UV) {
+    if(rain_density.x < 0.01) return float3(0,0,1);
+    float f = noise(12.0 * UV.xy) * smoothstep(0.0, 0.2, sin(UV.x * 3.151592) * sin(UV.y * 3.141592));
+    return float3(-ddx(f), -ddy(f), 0.0);
+}
+
+static const float WaveScales[4] = { 1.0, 2.0, 4.0, 8.0 };
+static const float WaveWeights[4] = { 0.5, 0.25, 0.125, 0.0625 };
+static const float2 WaveScrollDirs[4] = { float2(1.0, 0.1), float2(0.7, 0.7), float2(0.2, 1.0), float2(-0.5, 0.8) };
+
+float3 GenerateWaves(float2 UV) {
+    float2 TotalSlope = float2(0,0);
+    float2 WindDir = normalize(wind_params.xz + float2(0.001, 0.001));
+    float WindPower = saturate(wind_turbulence.x);
+    float BaseSpeed = 0.05f + (WindPower * 0.1f);
+    float Time = timers.x;
+
+    for (int i = 0; i < 4; i++) {
+        float2 MoveDir = normalize(lerp(WaveScrollDirs[i], WindDir, WindPower * 0.6));
+        float2 Scroll = MoveDir * Time * BaseSpeed * (1.0 + float(i) * 0.3);
+        float3 Sample = tex2D(s_nmap, UV * WaveScales[i] + Scroll).xyz;
+        float2 Slope = Sample.xy * 2.0f - 1.0f;
+        TotalSlope += Slope * WaveWeights[i];
+    }
+    
+    float Steepness = 0.5f + (WindPower * 2.5f);
+    TotalSlope *= Steepness;
+    float2 SlopeSq = TotalSlope * TotalSlope;
+    float Z = sqrt(max(0.0f, 1.0f - SlopeSq.x - SlopeSq.y));
+    return normalize(float3(TotalSlope, max(Z, 0.1f)));
+}
+
+// Получение параметров воды (чтобы было синхронизировано в обоих шейдерах)
+WaterParams GetWaterSettings() {
+    WaterParams P;
+#ifdef WATER_TYPE_CLEAN_OCEAN
+    P.TintColor = float3(0.008, 0.015, 0.025); P.Turbidity = 0.1f; P.Absorption = float3(0.3, 0.1, 0.05); P.Roughness = 0.05f; P.SubsurfaceIntensity = 0.2f;
+#elif defined(WATER_TYPE_MURKY_RIVER)
+    P.TintColor = float3(0.018, 0.022, 0.012); P.Turbidity = 0.5f; P.Absorption = float3(0.25, 0.2, 0.3); P.Roughness = 0.15f; P.SubsurfaceIntensity = 0.4f;
+#elif defined(WATER_TYPE_SWAMP)
+    P.TintColor = float3(0.01, 0.013, 0.012); P.Turbidity = 0.8f; P.Absorption = float3(0.25, 0.3, 0.35); P.Roughness = 0.2f; P.SubsurfaceIntensity = 0.6f;
+#elif defined(WATER_TYPE_TROPICAL)
+    P.TintColor = float3(0.006, 0.020, 0.018); P.Turbidity = 0.15f; P.Absorption = float3(0.2, 0.08, 0.03); P.Roughness = 0.03f; P.SubsurfaceIntensity = 0.25f;
+#elif defined(WATER_TYPE_DIRTY_PUDDLE)
+    P.TintColor = float3(0.020, 0.018, 0.012); P.Turbidity = 0.9f; P.Absorption = float3(0.35, 0.4, 0.45); P.Roughness = 0.25f; P.SubsurfaceIntensity = 0.7f;
+#else
+    P.TintColor = float3(0.01, 0.013, 0.012); P.Turbidity = 0.8f; P.Absorption = float3(0.25, 0.3, 0.35); P.Roughness = 0.2f; P.SubsurfaceIntensity = 0.6f;
+#endif
+    
+    // Dynamic Roughness
+    P.Roughness += saturate(wind_turbulence.x) * 0.3f;
+    P.Roughness = min(P.Roughness, 0.8f);
+    
+    return P;
+}
+
+float3 GetWorldNormal(Interpolators Input, float2 UV)
+{
+    float3 WaveNormal = GenerateWaves(UV);
+    float3 RainOffset = GenerateRaindrops(UV * 4.0f);
+    
+    float3 FinalLocalNormal = WaveNormal;
+    FinalLocalNormal.xy += RainOffset.xy;
+    FinalLocalNormal = normalize(FinalLocalNormal);
+    
+    float3x3 TBN = float3x3(Input.TBN0, Input.TBN1, Input.TBN2);
+    return normalize(mul(TBN, FinalLocalNormal));
+}
+
+// Функции освещения из оригинала
+float3 WaterFresnelSchlick(float cosTheta, float3 F0, float roughness) {
+    float f = safe_pow(1.0f - cosTheta, 5.0f);
+    float3 rF0 = lerp(F0, 1.0f, roughness * 0.3); 
+    return lerp(rF0, 1.0f, f);
+}
+
+float3 CalculateWaterSpecular(float3 normal, float3 viewDir, float3 lightDir, float roughness, float3 F0, float cavity) {
+    float3 halfVec = normalize(viewDir + lightDir);
+    float NdotL = safe_dot(normal, lightDir);
+    float NdotV = safe_dot(normal, viewDir);
+    float NdotH = safe_dot(normal, halfVec);
+    float HdotV = safe_dot(halfVec, viewDir);
+    
+    float a = roughness * roughness; a = a*a;
+    float denom = (safe_dot(normal, halfVec)*safe_dot(normal, halfVec) * (a - 1.0) + 1.0);
+    float D = a / (PI * denom * denom);
+    float k = (roughness + 1.0) * (roughness + 1.0) / 8.0;
+    float G = (NdotV / (NdotV * (1.0 - k) + k)) * (NdotL / (NdotL * (1.0 - k) + k));
+    float3 F = WaterFresnelSchlick(HdotV, F0, roughness);
+    return (D * G * F) * cavity / (4.0 * NdotV * NdotL + 0.001);
+}
+
+float3 CalculateWaterEnvBRDF(float NdotV, float roughness, float3 F0) {
+    float2 envBRDF = tex2Dlod0(s_brdf_lut, float2(NdotV, roughness)).xy;
+    return F0 * envBRDF.x + envBRDF.y;
+}
+
+float3 CalculateSubsurfaceScatteringWater(float3 subsurfaceColor, float depth, float3 lightDir, float3 normal, float3 viewDir) {
+    float VdotN = dot(viewDir, normal);
+    float LdotN = dot(lightDir, normal);
+    float thickness = exp(-depth * 2.0);
+    return subsurfaceColor * pow(saturate(-LdotN * 0.5 + 0.5), 2.0) * pow(saturate(-VdotN * 0.5 + 0.5), 1.5) * thickness * 0.3;
+}
+
+
+// =============================================================================
+// SHADER 1: INDIRECT / BASE / AMBIENT (точка входа для функции normal)
+// Отвечает за: цвет воды, отражения (SSR+Sky), глубину, альфу
+// =============================================================================
+float4 main_water_base(Interpolators Input) : COLOR
+{
+    // 1. Инициализация параметров
+    WaterParams P = GetWaterSettings();
+    float4 Albedo = float4(P.TintColor * 8.0f, 1.0f);
+    
+    // 2. Геометрия
+    float2 Coords = Input.UV_Lighting.xy * 2.0f;
+    float2 ProjectedTexCoords = Input.TCTexgen.xy / Input.TCTexgen.w;
+    float3 Normal = GetWorldNormal(Input, Coords);
+    float3 ViewDirection = -normalize(Input.Position);
+    float NdotV = saturate(dot(Normal, ViewDirection));
+    float3 F0 = float3(0.02, 0.02, 0.02);
+
+    // 3. Глубина
+    float3 waterPos = GetPosition(ProjectedTexCoords).xyz * rcp(GetPosition(ProjectedTexCoords).z) * Input.TCTexgen.z;
+    float waterDepth = length(waterPos - GetPosition(ProjectedTexCoords).xyz);
+
+    // 4. INDIRECT LIGHTING CALCULATION
+    float3 WorldSpaceNormal = mul(m_invView, float4(Normal, 0.0f));
+    float3 v2pointL = normalize(Input.Position);
+    float3 v2point = mul(m_invView, float4(v2pointL, 0.0f));
+    float WorldSpaceNdotV = max(dot(WorldSpaceNormal, -v2point), 0.0f);
+
+    // IBL / Sky Reflections
+    float3 ReflectCoords = getSpecularDominantDir(v2point, WorldSpaceNormal, P.Roughness);
+    ReflectCoords = RemapCubeCoords(ReflectCoords);
+    float mipLevel = GetMipLevel(P.Roughness, 8.0f);
+    float3 Irradiance = GetSkyCubeInterpolated(sky_s0, sky_s1, WorldSpaceNormal, L_ambient.w, GetFogDensity() * 8.0f);
+    float3 PrefilteredReflection = GetSkyCubeInterpolated(sky_s0, sky_s1, ReflectCoords, L_ambient.w, mipLevel);
+    
+    float3 EnvBRDF = CalculateWaterEnvBRDF(WorldSpaceNdotV, P.Roughness, F0);
+    float3 IndirectSpecular = PrefilteredReflection * EnvBRDF;
+    
+    // Screen Space Reflection
+    float4 ImageReflection = CalculateScreenSpaceReflection(ProjectedTexCoords.xy, Input.Position, Normal, 0.0f);
+    IndirectSpecular = lerp(IndirectSpecular, ImageReflection.rgb, ImageReflection.a);
+
+    float shoreFresnelCorrection = smoothstep(0.0, 1.0, waterDepth);
+    IndirectSpecular *= shoreFresnelCorrection;
+
+    // Indirect Diffuse + Subsurface
+    float3 FresnelIndirect = fresnelSchlick(WorldSpaceNdotV, F0);
+    float3 IndirectDiffuse = Albedo.rgb * Irradiance * Input.UV_Lighting.z * (1.0 - FresnelIndirect) * 0.3;
+    float3 IndirectSubsurface = P.TintColor * Irradiance * (1.0 - exp(-waterDepth * 2.0)) * P.SubsurfaceIntensity * 0.5;
+
+    // Сборка Indirect цвета
+    float3 FinalColor = IndirectDiffuse + IndirectSpecular;// + IndirectSubsurface;
+    
+    // Scattering ("толща" воды)
+    float3 ScatteredLight = P.TintColor * waterDepth * P.Turbidity * 0.8 * (Irradiance * 0.5); // Солнце добавим в другом шейдере
+    float minLightLevel = 0.1 + P.Turbidity * 0.2;
+    //FinalColor = max(FinalColor, P.TintColor * minLightLevel) + ScatteredLight;
+
+    // 5. ALPHA CALCULATION (Самое важное для базы)
+    float shoreTransition = saturate(waterDepth * 10.0f);
+    float baseAlpha = 0.1f + P.Turbidity * 0.7f;
+    float depthAlpha = (1.0f - exp(-waterDepth * 10.0f));
+    float fresnelAlpha = fresnelSchlick(NdotV, 0.02).r;
+    fresnelAlpha = safe_pow(fresnelAlpha, 0.02f);
+    fresnelAlpha = lerp(0.0, 1.0, fresnelAlpha);
+    
+    float FinalAlpha = saturate(baseAlpha * fresnelAlpha + (depthAlpha * 0.3f)) * shoreTransition;
+    
+    // Применение TintFresnel
+    float3 Fc = 0.1f * P.TintColor;
+    //FinalColor = lerp(Fc, FinalColor, FresnelIndirect);
+
+    // Fog (Влияет на альфу базы, чтобы вода уходила в туман)
+    float Fog = CalcFogness(Input.Position);
+    FinalColor = ApplyFogness(FinalColor, Fog);
+    FinalAlpha = lerp(FinalAlpha, 0.0f, Fog);
+
+    #ifdef TEST 
+    FinalColor = 1.0f;
+    #endif
+
+    return float4(FinalColor, FinalAlpha);
+}
+
+// =============================================================================
+// SHADER 2: DIRECT SUN LIGHTING (точка входа для функции l_sun)
+// Отвечает за: Спекуляр солнца, тени, прямой диффуз, прямое SSS
+// Рекомендуется Additive Blending (one, one) в Lua, но если srcalpha,invsrc -
+// возвращаем Alpha = 1 или модулированную яркость, чтобы не затереть базу.
+// =============================================================================
+float4 main_water_sun(Interpolators Input) : COLOR
+{
+    // 1. Настройки
+    WaterParams P = GetWaterSettings();
+    float sunRoughness = max(P.Roughness * 0.8, 0.04); 
+    
+    // 2. Геометрия
+    float2 Coords = Input.UV_Lighting.xy * 2.0f;
+    float2 ProjectedTexCoords = Input.TCTexgen.xy / Input.TCTexgen.w;
+    
+    // !!! CALCULATE DEPTH !!! 
+    // Дублируем расчет глубины, это необходимо для маскирования блика
+    float sceneDepth = GetPosition(ProjectedTexCoords).z; // View Space Z
+    float surfaceDepth = Input.Position.z;
+    float waterDepth = max(0.0, sceneDepth - surfaceDepth);
+
+    // SOFT BLEND FACTOR
+    // Блик начинает исчезать, если глубина меньше 30 см, и полностью исчезает на 0
+    float specShoreFade = smoothstep(0.0, 0.3, waterDepth);
+
+    float3 Normal = GetWorldNormal(Input, Coords);
+    float3 ViewDirection = -normalize(Input.Position);
+    float3 LightDirection = -normalize(sun_dir);
+    float3 HalfVec = normalize(ViewDirection + LightDirection);
+    
+    // Shadows
+    float Shadow = tex2D(s_light_accumulator, ProjectedTexCoords).a;
+
+    // Добавляем плавное исчезновение тени/света по краям вьюпорта (опционально)
+    // Shadow *= EdgeFade(ProjectedTexCoords);
+
+    // 4. СПЕКУЛЯР (Cook-Torrance / GGX)
+    float NdotL = saturate(dot(Normal, LightDirection));
+    float NdotV = saturate(dot(Normal, ViewDirection));
+    float NdotH = saturate(dot(Normal, HalfVec));
+    
+    float3 F0 = float3(0.02, 0.02, 0.02);
+    
+    float alpha = sunRoughness * sunRoughness;
+    float alphaSq = alpha * alpha;
+    float denom = (NdotH * NdotH) * (alphaSq - 1.0) + 1.0;
+    float D = alphaSq / (PI * denom * denom);
+
+    float k = (sunRoughness + 1.0) * (sunRoughness + 1.0) / 8.0;
+    float G = (NdotL / (NdotL * (1.0 - k) + k)) * (NdotV / (NdotV * (1.0 - k) + k));
+    float3 F = fresnelSchlick(max(dot(HalfVec, ViewDirection), 0.0), F0);
+
+    float3 Specular = (D * G * F); 
+    
+    // Усиливаем блик
+    float intensityMod = 1.0 + (D * 0.2); 
+    Specular *= intensityMod;
+
+    // 5. Direct Subsurface
+    // Логика SSS, зависящая от волны
+    float3 Subsurface = P.TintColor * P.SubsurfaceIntensity * (sun_color * 2.5);
+    Subsurface *= smoothstep(0.3, 1.0, Normal.y); 
+    Subsurface *= saturate(dot(-LightDirection, Normal) * 0.5 + 0.5); 
+
+    // !!! APPLY SHORE FADE TO SSS !!!
+    Subsurface *= smoothstep(0.1, 1.5, waterDepth); // SSS пропадает чуть глубже
+
+    // 6. FINAL COMPOSITION
+    // Спекуляр накладывается. ВАЖНО: Умножаем на specShoreFade
+    float3 SunHighlight = (Specular * NdotL * sun_color * 4.0 * specShoreFade); 
+    float3 SunSSS = (Subsurface * Shadow * NdotL); // SSS тоже гасим тенями
+    
+    float3 FinalColor = SunHighlight + SunSSS;
+
+    // Применяем тени
+    FinalColor *= Shadow;
+
+    // FOG
+    float Fog = CalcFogness(Input.Position);
+    // Для аддитивного блендинга "туман" - это просто черный цвет (0,0,0)
+    // Поэтому интерполируем к нулю.
+    FinalColor = lerp(FinalColor, float3(0,0,0), Fog);
+
+    // DISTANCE FADE (Чтобы вдалеке вода не "шумела" одним пикселем)
+    float dist = length(Input.Position);
+    float distFade = 1.0 - smoothstep(100.0, 600.0, dist);
+    FinalColor *= distFade;
+
+    // OUTPUT
+    // Alpha 1.0 для аддитивного (ONE, ONE) бленда в настройках LUA
+    return float4(FinalColor, 1.0f);
+}
+
+// =============================================================================
+// HELPER: LOCAL LIGHT BRDF
+// =============================================================================
+float3 CalcWaterLocalLight(float3 ViewDirection, float3 LightDirection, float3 Normal, 
+                           float3 LightColor, float Attenuation, WaterParams P)
+{
+    float3 HalfVec = normalize(ViewDirection + LightDirection);
+    float NdotL = saturate(dot(Normal, LightDirection));
+    float NdotV = saturate(dot(Normal, ViewDirection));
+    float NdotH = saturate(dot(Normal, HalfVec));
+    float HdotV = saturate(dot(HalfVec, ViewDirection));
+
+    // --- Specular (GGX) ---
+    float roughness = max(P.Roughness, 0.04);
+    float3 F0 = float3(0.02, 0.02, 0.02);
+
+    float alpha = roughness * roughness;
+    float alphaSq = alpha * alpha;
+    float denom = (NdotH * NdotH) * (alphaSq - 1.0) + 1.0;
+    float D = alphaSq / (PI * denom * denom);
+
+    float k = (roughness + 1.0) * (roughness + 1.0) / 8.0;
+    float G = (NdotL / (NdotL * (1.0 - k) + k)) * (NdotV / (NdotV * (1.0 - k) + k));
+
+    float3 F = fresnelSchlick(HdotV, F0);
+    
+    // Блик локальных источников часто должен быть резким и ярким
+    float3 Specular = (D * G * F) * NdotL * LightColor * 2.0;
+
+    // --- Subsurface / Volume transmission ---
+    // Свет, проходящий сквозь волну (трансмиссия)
+    // Упрощенная модель: сильно зависит от взгляда "на источник"
+    float transDot = saturate(dot(ViewDirection, -LightDirection));
+    float3 Subsurface = P.TintColor * LightColor * P.SubsurfaceIntensity;
+    
+    // Усиливаем SSS на просвет (scattering phase function approximation)
+    float phase = pow(transDot, 4.0) * 0.5 + 0.1;
+    // Подмешиваем высоту волны (считаем, что гребни (Normal.y > 0) светятся лучше)
+    Subsurface *= (phase + smoothstep(0.5, 1.0, Normal.y)); 
+    Subsurface *= saturate(NdotL * 0.5 + 0.5); // wrap diffuse emulation
+
+    return (Specular + Subsurface) * Attenuation;
+}
+
+
+// =============================================================================
+// SHADER 3: POINT LIGHTING
+// =============================================================================
+float4 main_water_light_point(Interpolators Input) : COLOR
+{
+    WaterParams P = GetWaterSettings();
+    
+    // 1. Геометрия (Normal Map)
+    float2 Coords = Input.UV_Lighting.xy * 2.0f;
+    float2 ProjectedTexCoords = Input.TCTexgen.xy / Input.TCTexgen.w;
+    
+    // Z-Fade и маскирование пены можно взять из main_base, если нужно,
+    // но для аддитивных точечных источников часто достаточно Z-buffer теста 
+    // и простого затухания по NdotL.
+    
+    float3 Normal = GetWorldNormal(Input, Coords);
+    float3 ViewDirection = -normalize(Input.Position);
+    
+    // 2. Вектора света (Input.Position и Ldynamic_pos должны быть в одном пространстве - View Space)
+    // Из C++ вы передаете: Engine.RenderView.View.transform(L_pos, ...) -> Значит View Space.
+    float3 LightPosVS = Ldynamic_pos.xyz;
+    float3 ToLight = LightPosVS - Input.Position;
+    float DistSq = dot(ToLight, ToLight);
+    float Dist = sqrt(DistSq);
+    float3 LightDirection = ToLight / Dist;
+    
+    // 3. Attenuation (Range)
+    // Ldynamic_pos.w содержит 1/Range^2
+    float RangeInvSq = Ldynamic_pos.w; 
+    
+    // Стандартное квадратичное затухание с обрезанием по радиусу
+    // saturate(1 - (d^2 / r^2))
+    float att = saturate(1.0 - DistSq * RangeInvSq); 
+    att *= att; // Квадратичное падение интенсивности для плавного края
+    att /= (DistSq + 1.0); // Физический falloff 1/r^2
+    
+    // Либо вариант "smooth linear": 
+    // float att = saturate(1.0 - Dist * sqrt(RangeInvSq));
+    
+    if (att <= 0.0) return float4(0,0,0,0);
+
+    // 4. Освещение
+    float3 FinalColor = CalcWaterLocalLight(ViewDirection, LightDirection, Normal, 
+                                            Ldynamic_color.rgb, att, P);
+    
+    // 5. Вывод
+    // При Additive blend возвращаем цвет, alpha = 1 (множитель blend one)
+    return 1.0f;//float4(FinalColor, 1.0);
+}
+
+
+// =============================================================================
+// SHADER 4: SPOT LIGHTING (С тенями и текстурой фонарика)
+// =============================================================================
+float4 main_water_light_spot(Interpolators Input) : COLOR
+{
+    WaterParams P = GetWaterSettings();
+
+    // 1. Геометрия
+    float2 Coords = Input.UV_Lighting.xy * 2.0f;
+    float3 Normal = GetWorldNormal(Input, Coords);
+    float3 ViewDirection = -normalize(Input.Position);
+
+    // 2. Вектора
+    float3 LightPosVS = Ldynamic_pos.xyz;
+    float3 ToLight = LightPosVS - Input.Position;
+    float DistSq = dot(ToLight, ToLight);
+    float3 LightDirection = normalize(ToLight);
+
+    // 3. Projective Texture Coords (Shadows + Cookie)
+    // В C++ m_shadow строится как mul(L->view, m_TexelAdjust).
+    // Важно: Позиция должна быть View или World?
+    // Судя по deferred реализации SpotLight, входной параметр для m_shadow - WorldPos?
+    // В CRender::render_forward_lights мы считаем матрицу от L->TransformContext.ShadowContext.view (World->Light).
+    // Значит m_shadow ожидает WorldPosition, а не View.
+    // А у нас Input.Position во ViewSpace.
+    // Нам нужно: View -> World -> Light.
+    // ЛИБО: В C++ мы могли уже включить InvView матрицу в m_shadow.
+    // Но так как в Deferred используется глубина (S.P.view), то матрица обычно ожидает View.
+    // Давай используем стандартный подxoд: mul(m_shadow, float4(Input.Position, 1))
+    
+    float4 PS = float4(Input.Position, 1.0f);
+    float4 ShadowTC = mul(m_shadow, PS);
+    ShadowTC.xy /= ShadowTC.w; // Perspective divide если нужно, tex2Dproj делает это сам
+    
+    // 4. Attenuation (Range)
+    float RangeInvSq = Ldynamic_pos.w;
+    float range_att = saturate(1.0 - DistSq * RangeInvSq);
+    range_att *= range_att; // smooth fade
+    range_att /= (DistSq + 0.1);
+    
+    // 5. Attenuation (Cone / Angle) - Spot Effect
+    // Ldynamic_spot_att: x=cos_inner, y=cos_outer, z=range^2
+    // Для шейдера "Flashlight" обычно текстура фонарика сама задает круг.
+    // Но для процедурного спота используем косинусы.
+    // Light Direction в uniform обычно передается в World, а нам нужен View... 
+    // Для фонариков текстура проективная, поэтому угловое затухание часто запечено в s_lmap.
+    
+    // Считывание текстуры фонарика (Light Map / Cookie)
+    float3 light_tex = tex2Dproj(s_lmap, ShadowTC).rgb;
+
+    // Считывание тени
+    // Для s_smap (depth texture) используем tex2Dproj для PCF или сравнения
+    float shadow = 1.0;
+    
+    // Стандартный подход X-Ray
+    // sample_shadow_map(tc) обычно делает работу
+    float smap = tex2Dproj(s_smap, ShadowTC).r;
+    // Сравнение глубины (если не hardware pcf) или результат уже есть.
+    // Предположим, shadow map содержит фактор тени после аппаратного фильтра
+    shadow = smap; 
+    
+    // Комбинированное затухание
+    float total_att = range_att * shadow;
+
+    // Угловое затухание для прожекторов без текстуры, если требуется
+    // (Если light_tex полностью белый квадрат)
+    // Но s_lmap (s_projector) обычно справляется.
+    
+    // Окрашивание
+    float3 color = Ldynamic_color.rgb * light_tex * total_att;
+
+    if (length(color) <= 0.001) return 0.0;
+
+    // 6. Освещение
+    float3 FinalColor = CalcWaterLocalLight(ViewDirection, LightDirection, Normal, color, 1.0, P);
+    
+    return 1.0f;//float4(FinalColor, 1.0);
+}

@@ -1,0 +1,46 @@
+#include "common.xrh"
+#include "skinning.xrh"
+
+struct vf
+{
+  float4 hpos: POSITION;
+  float2 tc0: TEXCOORD0; // base
+  float3 position0: TEXCOORD1;
+  float3 position1: TEXCOORD2;
+  float4 c0: COLOR0; // color
+};
+
+vf _main(v_model v)
+{
+    vf o;
+
+    o.hpos = mul(m_WorldViewProject, v.P); // transform, input in world coords
+    o.position0 = mul(m_WorldView, v.P);
+    o.position1 = mul(m_WorldView, v.P);
+    o.tc0 = v.tc.xy; // copy tc
+
+    // calculate fade
+    float3 dir_v = normalize(mul(m_WorldView, v.P));
+    float3 norm_v = normalize(mul(m_WorldView, float4(v.N.xyz, 1.0f)));
+    float fade = 1.3 * (1 - abs(dot(dir_v, norm_v)));
+    o.c0 = fade;
+
+    return o;
+}
+
+/////////////////////////////////////////////////////////////////////////
+#ifdef   SKIN_NONE
+vf  main(v_model v)     { return _main(v);     }
+#endif
+
+#ifdef   SKIN_0
+vf  main(v_model_skinned_0 v)   { return _main(skinning_0(v)); }
+#endif
+
+#ifdef  SKIN_1
+vf  main(v_model_skinned_1 v)   { return _main(skinning_1(v)); }
+#endif
+
+#ifdef  SKIN_2
+vf  main(v_model_skinned_2 v)   { return _main(skinning_2(v)); }
+#endif
