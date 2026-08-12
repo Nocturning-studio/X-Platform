@@ -324,12 +324,6 @@ void CRenderBackendDX9::Present()
 
 void CRenderBackendDX9::OnFrameBegin()
 {
-	for (u32 stage = 0; stage < m_DeviceCaps.MaxSimultaneousTextures; stage++)
-		m_pDevice->SetTexture(0, 0);
-	m_pDevice->SetStreamSource(0, 0, 0, 0);
-	m_pDevice->SetIndices(0);
-	m_pDevice->SetVertexShader(0);
-	m_pDevice->SetPixelShader(0);
 	m_pDevice->BeginScene();
 }
 

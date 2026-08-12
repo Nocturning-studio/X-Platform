@@ -41,7 +41,7 @@ public:
     void RestoreRenderState(IDirect3DDevice9Ex* device, CRenderBackend& backend);
 
     // Simple getters (used by CRenderBackend)
-    IC BOOL GetBlendEnable() const { return m_bBlend; }
+    IC BOOL GetBlendEnable() const { return m_bBlend != 0; }
     IC D3DBLEND GetSrcBlend() const { return m_srcBlend; }
     IC D3DBLEND GetDstBlend() const { return m_dstBlend; }
     IC u32 GetCullMode() const { return m_cullMode; }
@@ -51,9 +51,9 @@ private:
     IDirect3DSurface9* m_pRT[4] = {};
     IDirect3DSurface9* m_pZB = nullptr;
 
-    BOOL      m_bBlend   = FALSE;
-    D3DBLEND  m_srcBlend = D3DBLEND_ONE;
-    D3DBLEND  m_dstBlend = D3DBLEND_ZERO;
+    u32 m_bBlend = u32(-1);
+	D3DBLEND m_srcBlend = (D3DBLEND)u32(-1);
+	D3DBLEND m_dstBlend = (D3DBLEND)u32(-1);
 
     u32 m_stencilEnable    = 0;
     u32 m_stencilFunc      = 0;
@@ -64,9 +64,9 @@ private:
     u32 m_stencilPass      = 0;
     u32 m_stencilZFail     = 0;
 
-    u32  m_colorWriteMask = u32(-1);
-    u32  m_cullMode       = D3DCULL_CCW;
-    bool m_zWriteEnable   = true;
+    u32 m_colorWriteMask = u32(-1);
+	u32 m_cullMode = u32(-1);
+	u32 m_zWriteEnable = u32(-1);
 
     // For Save/Restore
     struct SavedState

@@ -7,26 +7,26 @@
 // ---------------------------------------------------------------------------
 void CBackendStateCache::Invalidate(CRenderBackend& /*backend*/)
 {
-    for (u32 i = 0; i < 4; ++i)
-        m_pRT[i] = nullptr;
-    m_pZB = nullptr;
+	for (u32 i = 0; i < 4; ++i)
+		m_pRT[i] = nullptr;
+	m_pZB = nullptr;
 
-    m_bBlend   = FALSE;
-    m_srcBlend = D3DBLEND_ONE;
-    m_dstBlend = D3DBLEND_ZERO;
+	m_bBlend = u32(-1);
+	m_srcBlend = (D3DBLEND)u32(-1);
+	m_dstBlend = (D3DBLEND)u32(-1);
 
-    m_stencilEnable    = 0;
-    m_stencilFunc      = 0;
-    m_stencilRef       = 0;
-    m_stencilMask      = 0;
-    m_stencilWriteMask = 0;
-    m_stencilFail      = 0;
-    m_stencilPass      = 0;
-    m_stencilZFail     = 0;
+	m_stencilEnable = u32(-1);
+	m_stencilFunc = u32(-1);
+	m_stencilRef = u32(-1);
+	m_stencilMask = u32(-1);
+	m_stencilWriteMask = u32(-1);
+	m_stencilFail = u32(-1);
+	m_stencilPass = u32(-1);
+	m_stencilZFail = u32(-1);
 
-    m_colorWriteMask = u32(-1);
-    m_cullMode       = D3DCULL_CCW;
-    m_zWriteEnable   = true;
+	m_colorWriteMask = u32(-1);
+	m_cullMode = u32(-1);
+	m_zWriteEnable = u32(-1);
 }
 
 // ---------------------------------------------------------------------------
@@ -80,39 +80,41 @@ void CBackendStateCache::SetScissor(IDirect3DDevice9Ex* device, const RECT* rect
 // ---------------------------------------------------------------------------
 void CBackendStateCache::SetBlend(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst)
 {
-    if (m_bBlend != enable || m_srcBlend != src || m_dstBlend != dst)
-    {
-        m_bBlend   = enable;
-        m_srcBlend = src;
-        m_dstBlend = dst;
+	u32 bEnable = enable ? 1 : 0;
+	if (m_bBlend != bEnable || m_srcBlend != src || m_dstBlend != dst)
+	{
+		m_bBlend = bEnable;
+		m_srcBlend = src;
+		m_dstBlend = dst;
 
-        D3D_SetRenderState(device, D3DRS_ALPHABLENDENABLE, enable);
-        if (enable)
-        {
-            D3D_SetRenderState(device, D3DRS_SRCBLEND,  src);
-            D3D_SetRenderState(device, D3DRS_DESTBLEND, dst);
-            D3D_SetRenderState(device, D3DRS_ALPHATESTENABLE, FALSE);
-        }
-    }
+		D3D_SetRenderState(device, D3DRS_ALPHABLENDENABLE, bEnable);
+		if (bEnable)
+		{
+			D3D_SetRenderState(device, D3DRS_SRCBLEND, src);
+			D3D_SetRenderState(device, D3DRS_DESTBLEND, dst);
+			D3D_SetRenderState(device, D3DRS_ALPHATESTENABLE, FALSE);
+		}
+	}
 }
 
 void CBackendStateCache::SetBlendEx(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst, D3DBLENDOP op)
 {
-    if (m_bBlend != enable || m_srcBlend != src || m_dstBlend != dst)
-    {
-        m_bBlend   = enable;
-        m_srcBlend = src;
-        m_dstBlend = dst;
+	u32 bEnable = enable ? 1 : 0;
+	if (m_bBlend != bEnable || m_srcBlend != src || m_dstBlend != dst)
+	{
+		m_bBlend = bEnable;
+		m_srcBlend = src;
+		m_dstBlend = dst;
 
-        D3D_SetRenderState(device, D3DRS_ALPHABLENDENABLE, enable);
-        if (enable)
-        {
-            D3D_SetRenderState(device, D3DRS_SRCBLEND,  src);
-            D3D_SetRenderState(device, D3DRS_DESTBLEND, dst);
-            D3D_SetRenderState(device, D3DRS_BLENDOP,   op);
-            D3D_SetRenderState(device, D3DRS_ALPHATESTENABLE, FALSE);
-        }
-    }
+		D3D_SetRenderState(device, D3DRS_ALPHABLENDENABLE, bEnable);
+		if (bEnable)
+		{
+			D3D_SetRenderState(device, D3DRS_SRCBLEND, src);
+			D3D_SetRenderState(device, D3DRS_DESTBLEND, dst);
+			D3D_SetRenderState(device, D3DRS_BLENDOP, op);
+			D3D_SetRenderState(device, D3DRS_ALPHATESTENABLE, FALSE);
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -166,11 +168,12 @@ void CBackendStateCache::SetColorWriteEnable(IDirect3DDevice9Ex* device, u32 mas
 // ---------------------------------------------------------------------------
 void CBackendStateCache::SetZWriteEnable(IDirect3DDevice9Ex* device, bool enable)
 {
-    if (m_zWriteEnable != enable)
-    {
-        m_zWriteEnable = enable;
-        D3D_SetRenderState(device, D3DRS_ZWRITEENABLE, enable);
-    }
+	u32 bEnable = enable ? 1 : 0;
+	if (m_zWriteEnable != bEnable)
+	{
+		m_zWriteEnable = bEnable;
+		D3D_SetRenderState(device, D3DRS_ZWRITEENABLE, bEnable);
+	}
 }
 
 void CBackendStateCache::SetCullMode(IDirect3DDevice9Ex* device, u32 mode)
