@@ -751,7 +751,7 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	// Но для теней VQ_FADE не нужен.
 	// В SceneGraph::render_subspace сейчас хардкод опций (0) в traverse.
 	// Это можно улучшить, но пока работает и так.
-
+	SceneGraph.m_packet.Clear();
 	SceneGraph.render_subspace(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet);
 }
 
@@ -789,7 +789,6 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		RenderBackend.set_transform_view(Fidentity);
 		RenderBackend.set_transform_project(sun->TransformContext.Sun.combine);
 
-		// РЕНДЕР ИЗ ПАКЕТА!
 		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
 
 		// Рисуем Sun Details (траву), если нужно
@@ -854,9 +853,6 @@ void CRender::render_sun_cascades()
 		gather_sun_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]);
 		gather_sun_cascade(SE_SUN_FAR,	  *writeBuffer.items[SE_SUN_FAR]);
 	}
-
-	// Здесь происходит неявная синхронизация, так как parallel_invoke блокирующий.
-	// В будущем, при использовании ThreadManager, здесь будет точка синхронизации/ожидания.
 
 	// -------------------------------------------------------------------------
 	// 2. ПОСЛЕДОВАТЕЛЬНАЯ ОТРИСОВКА (DRAW) -> Читаем из ReadBuffer

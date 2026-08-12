@@ -3,7 +3,7 @@
 #include "flod.h"
 #include "render.h"
 
-#include <ppl.h> // Для concurrency::parallel_for
+#include <ppl.h>
 
 // Глобальные переменные настроек (внешние)
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
@@ -184,6 +184,10 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 
 void CSceneGraph::Render(SceneGraphPacket& packet, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
 {
+#ifdef DEBUG
+	DebugCheckDuplicateVisuals(packet);
+#endif
+
 	switch (type)
 	{
 	case SceneGraphRenderType::Opaque:
@@ -390,7 +394,8 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	fmat4x4 ViewProjectOld = Engine.RenderView.ViewProjection;
 
 	// Create Custom HUD Projection
-	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), Engine.RenderView.Aspect,
+	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), 
+											   Engine.RenderView.Aspect,
 											   VIEWPORT_NEAR_HUD,
 											   g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
@@ -462,7 +467,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	if (packet.lstLODs.empty())
 		return;
 
-	// *** 1. Подготовка буфера и констант ***
+	// *** Подготовка буфера и констант ***
 	u32 shader_id = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
 	// Используем packet.lstLODs
 	FLOD* first_visual = (FLOD*)packet.lstLODs[0].pVisual;
@@ -480,25 +485,25 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	const float ssa_limit_b = r_ssaLOD_B;
 	const fvec3 camera_pos = Engine.RenderView.Position;
 
-	// *** 2. ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
+	// *** ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
 	// Используем packet.lstLODs
 	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i) {
 		FLOD::_hw* V = VertexBuffer + (i * 4);
 		SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
 		FLOD* lod_visual = (FLOD*)Node.pVisual;
 
-		// 1. Вычисление Alpha
+		// Вычисление Alpha
 		float ssa_diff = Node.ScreenSpaceArea - ssa_limit_b;
 		float scale = ssa_diff / ssa_range;
 		int alpha_int = iFloor((1.0f - scale) * 255.f);
 		u32 alpha_final = u32(clampr(alpha_int, 0, 255));
 
-		// 2. Вычисление направления
+		// Вычисление направления
 		fvec3 dir_to_camera, shift;
 		dir_to_camera.sub(lod_visual->vis.sphere.P, camera_pos).normalize();
 		shift.mul(dir_to_camera, -.5f * lod_visual->vis.sphere.R);
 
-		// 3. Выбор лучших плоскостей
+		// Выбор лучших плоскостей
 		FLOD::_face* facets = lod_visual->facets;
 
 		svector<std::pair<float, u32>, 8> plane_selector;
@@ -514,13 +519,13 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		u32 id_best = plane_selector[plane_selector.size() - 1].second;
 		u32 id_next = plane_selector[plane_selector.size() - 2].second;
 
-		// 4. Интерполяция
+		// Интерполяция
 		float dot_a = dot_best, dot_b = dot_next, dot_c = dot_next_2;
 		float alpha_factor = 0.5f + 0.5f * (1 - (dot_b - dot_c) / (dot_a - dot_c));
 		int factor_int = iFloor(alpha_factor * 255.5f);
 		u32 factor_final = u32(clampr(factor_int, 0, 255));
 
-		// 5. Заполнение буфера
+		// Заполнение буфера
 		FLOD::_face& FaceA = facets[id_best];
 		FLOD::_face& FaceB = facets[id_next];
 
@@ -543,7 +548,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	RenderBackend.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
-	// *** 3. ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка по шейдерам ***
+	// *** ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка по шейдерам ***
 	// Используем packet.lstLODs
 	if (!packet.lstLODs.empty())
 	{
@@ -568,7 +573,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		packet.lstLODgroups.push_back(current_count);
 	}
 
-	// *** 4. RENDER ***
+	// *** RENDER ***
 	int current_lod_index = 0;
 	RenderBackend.set_transform_world(Fidentity);
 
@@ -593,7 +598,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		}
 	}
 
-	// *** 5. Cleanup ***
+	// *** Cleanup ***
 	// Очищаем packet
 	packet.lstLODs.clear();
 	packet.lstLODgroups.clear();
@@ -608,7 +613,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 //  Назначение: Обход пространства (секторов и порталов) и сбор геометрии в указанный пакет.
 // ===============================================================================================
 
-// 1. Shortcut (создание фрустума из матрицы)
+// Shortcut (создание фрустума из матрицы)
 void CSceneGraph::render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
 								  BOOL _precise_portals, SceneGraphPacket& dest)
 {
@@ -619,7 +624,7 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, f
 	render_subspace(_sector, &temp_frustum, mCombined, _cop, _dynamic, _precise_portals, dest);
 }
 
-// 2. Main Implementation (Основная логика)
+// Main Implementation (Основная логика)
 void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_frustum, fmat4x4& mCombined,
 								  fvec3& camera_pos, BOOL render_dynamic, BOOL precise_portals,
 								  SceneGraphPacket& dest)
@@ -633,7 +638,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	m_traversal_marker++;
 
 	// -------------------------------------------------------------------------
-	// 1. Подготовка локального контекста (TLS)
+	// Подготовка локального контекста (TLS)
 	// -------------------------------------------------------------------------
 	SceneTraversalContext local_ctx;
 	local_ctx.frustum = view_frustum; // Базовый фрустум
@@ -649,7 +654,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	CurrentRenderContext::Scope tls_scope(dest, local_ctx);
 
 	// -------------------------------------------------------------------------
-	// 2. Precise Portals (Внимание: Потенциально небезопасно в MT)
+	// Precise Portals (Внимание: Потенциально небезопасно в MT)
 	// -------------------------------------------------------------------------
 	// Если precise_portals=TRUE передается в параллельных потоках,
 	// запись в pPortal->bDualRender может вызвать гонку данных.
@@ -674,7 +679,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	*/
 
 	// -------------------------------------------------------------------------
-	// 3. Обход порталов (Traverse)
+	// Обход порталов (Traverse)
 	// -------------------------------------------------------------------------
 	// Запускаем локальный траверсер пакета.
 	// Он заполнит свой внутренний список GetVisibleSectors().
@@ -689,7 +694,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	}
 
 	// -------------------------------------------------------------------------
-	// 4. Сбор СТАТИКИ (Static Geometry)
+	// Сбор СТАТИКИ (Static Geometry)
 	// -------------------------------------------------------------------------
 	// Проходим по результатам обхода
 	for (const auto& sec_vis : visible_sectors)
@@ -714,7 +719,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	local_ctx.frustum = view_frustum;
 
 	// -------------------------------------------------------------------------
-	// 5. Сбор ДИНАМИКИ (Dynamic Geometry)
+	// Сбор ДИНАМИКИ (Dynamic Geometry)
 	// -------------------------------------------------------------------------
 	if (render_dynamic)
 	{
@@ -779,7 +784,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	}
 
 	// -------------------------------------------------------------------------
-	// 6. Тень от актера (Actor Shadow Hack)
+	// Тень от актера (Actor Shadow Hack)
 	// -------------------------------------------------------------------------
 	if (g_pGameLevel && (local_ctx.render_phase == RenderImplementation.PHASE_SHADOW_DEPTH))
 	{
@@ -792,15 +797,19 @@ void CSceneGraph::render_reuse(const SceneTraversalContext& initial_ctx, SceneGr
 {
 	PROFILE_FUNCTION();
 
+	SceneTraversalContext local_ctx = initial_ctx;
+	local_ctx.traversal_marker_id = m_traversal_marker.fetch_add(1) + 1;
+	auto static_visuals = packet.m_visuals_static_visible;
+	auto dynamic_visuals = packet.m_visuals_dynamic_visible;
+
 	// Статика (из packet)
-	for (IRender_Visual* V : packet.m_visuals_static_visible)
+	for (IRender_Visual* V : static_visuals)
 	{
-		ProcessStaticVisual(V, initial_ctx, packet);
+		ProcessStaticVisual(V, local_ctx, packet);
 	}
 
 	// Динамика (из packet)
-	SceneTraversalContext local_ctx = initial_ctx;
-	for (auto& it : packet.m_visuals_dynamic_visible)
+	for (auto& it : dynamic_visuals)
 	{
 		local_ctx.current_transform = &it.matrix;
 		ProcessDynamicVisual(it.visual, local_ctx, packet);

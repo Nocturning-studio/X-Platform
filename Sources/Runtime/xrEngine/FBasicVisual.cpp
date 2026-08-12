@@ -42,10 +42,7 @@ CStatTimer tscreate;
 
 void IRender_Visual::Load(const char* N, IReader* data, u32)
 {
-#ifdef DEBUG
 	dbg_name = N;
-#endif
-
 	// header
 	VERIFY(data);
 	ogf_header hdr;
@@ -89,7 +86,6 @@ void IRender_Visual::Copy(IRender_Visual* pFrom)
 #ifdef _EDITOR
 	PCOPY(desc);
 #endif
-#ifdef DEBUG
+
 	PCOPY(dbg_name);
-#endif
 }

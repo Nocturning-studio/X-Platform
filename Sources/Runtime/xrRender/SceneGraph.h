@@ -286,7 +286,9 @@ class CSceneGraph
 	}
 	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest);
 
-	void PrepareDynamicInstances(SceneGraphPacket& packet);
+	void PrepareDynamicInstances(SceneGraphPacket& packet, const SceneTraversalContext& gather_ctx);
+
+	void DebugCheckDuplicateVisuals(SceneGraphPacket& packet);
 
 	void get_Counters(u32& s, u32& d)
 	{

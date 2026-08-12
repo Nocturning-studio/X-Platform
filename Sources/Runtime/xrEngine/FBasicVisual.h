@@ -48,9 +48,9 @@ class ENGINE_API IRender_Visual
 #ifdef _EDITOR
 	ogf_desc desc;
 #endif
-#ifdef DEBUG
+
 	shared_str dbg_name;
-#endif
+
   public:
 	// Common data for rendering
 	u32 Type;		   // visual's type

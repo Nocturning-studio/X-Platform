@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Created: 19.03.2025
 // Author: NSDeathman
 // Nocturning studio for NS Platform X
@@ -65,8 +65,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 
 	if (!dest.m_spatial_query_results.empty())
 	{
-		concurrency::parallel_sort(dest.m_spatial_query_results.begin(), dest.m_spatial_query_results.end(),
-								   sort_predicate);
+		std::sort(dest.m_spatial_query_results.begin(), dest.m_spatial_query_results.end(), sort_predicate);
 	}
 
 	// -------------------------------------------------------------------------
@@ -104,8 +103,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	// 4. Portal Traversal (Траверсер внутри dest)
 	// -------------------------------------------------------------------------
 	// Используем траверсер, привязанный к конкретному пакету
-	dest.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection,
-								   CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
+	dest.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection, CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
 
 	// -------------------------------------------------------------------------
 	// 5. Static Geometry (Берем из dest)
@@ -289,7 +287,7 @@ void CRender::calculate_scene_culling()
 
 		// Сбор данных (запись в item.packet)
 		gather_visibility(item.view_projection, item.packet);
-		SceneGraph.PrepareDynamicInstances(item.packet);
+		SceneGraph.PrepareDynamicInstances(item.packet, m_TraversalContext);
 		MergeCulledLights(item.packet);
 
 		{
@@ -325,7 +323,7 @@ void CRender::calculate_scene_culling()
 
 		// Сбор данных (запись в item.packet)
 		gather_visibility(item.view_projection, item.packet);
-		SceneGraph.PrepareDynamicInstances(item.packet);
+		SceneGraph.PrepareDynamicInstances(item.packet, m_TraversalContext);
 		MergeCulledLights(item.packet);
 	}
 
@@ -439,6 +437,7 @@ void CRender::render_stage_forward()
 	// ============================================
 	// PASS 3: Sun Light (Reuse)
 	// ============================================
+	/*
 	// Смена фазы
 	set_active_phase(PHASE_SUN_LIGHTING);
 
@@ -454,6 +453,7 @@ void CRender::render_stage_forward()
 	// DRAW
 	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);
 	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Transparent);
+	*/
 
 	// ============================================
 	// PASS 4: Debug
