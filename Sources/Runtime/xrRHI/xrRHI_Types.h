@@ -10,10 +10,10 @@ RHI_BEGIN
 enum class BackendType : u32
 {
 	DirectX9 = 0, // Direct3D9Ex
-	DirectX11,	   // Direct3D11 (для будущего)
-	DirectX12,	   // Direct3D12
-	Vulkan,		   // Vulkan
-	OpenGL,		   // OpenGL / OpenGL ES
+	DirectX11,	  // Direct3D11 (для будущего)
+	DirectX12,	  // Direct3D12
+	Vulkan,		  // Vulkan
+	OpenGL,		  // OpenGL / OpenGL ES
 };
 
 // =========================================================================
@@ -248,27 +248,27 @@ struct ConstantDesc
 	std::string name;
 	ConstantType type;
 	ConstantClass cls;
-	u16 registerIndex;  // номер регистра в DX9-терминах (слот)
-	u16 registerCount;  // сколько регистров занимает
-	u32 bufferOffset;   // смещение в байтах внутри ConstantBuffer (вычисляется)
-	u32 sizeInBytes;    // размер данных (обычно registerCount * 16)
+	u16 registerIndex; // номер регистра в DX9-терминах (слот)
+	u16 registerCount; // сколько регистров занимает
+	u32 bufferOffset;  // смещение в байтах внутри ConstantBuffer (вычисляется)
+	u32 sizeInBytes;   // размер данных (обычно registerCount * 16)
 };
 
 struct ShaderConstantLayout
 {
 	struct Field
 	{
-		std::string     name;
-		u32             offset;       // смещение в байтах от начала буфера
-		u32             size;         // размер в байтах
-		ConstantType    type;         // Float, Int, Bool
-		ConstantClass   cls;          // Scalar, Vector, MatrixRows_4x4...
-		u16             registerIndex; // для отладки
-		u16             registerCount;
+		std::string name;
+		u32 offset;		   // смещение в байтах от начала буфера
+		u32 size;		   // размер в байтах
+		ConstantType type; // Float, Int, Bool
+		ConstantClass cls; // Scalar, Vector, MatrixRows_4x4...
+		u16 registerIndex; // для отладки
+		u16 registerCount;
 	};
 	std::vector<Field> fields;
-	u32             totalSize = 0;     // общий размер буфера в байтах (выровнен)
-	u32             registerBase = 0;  // c0
+	u32 totalSize = 0;	  // общий размер буфера в байтах (выровнен)
+	u32 registerBase = 0; // c0
 };
 
 // =========================================================================
@@ -276,8 +276,8 @@ struct ShaderConstantLayout
 // =========================================================================
 enum class RHI_SwapEffect : u32
 {
-	Discard = 0,    // D3DSWAPEFFECT_DISCARD / VK_SWAPCHAIN_CREATE_MODE_*
-	Flip,           // Для DXGI / Vulkan (Flip Model)
+	Discard = 0, // D3DSWAPEFFECT_DISCARD / VK_SWAPCHAIN_CREATE_MODE_*
+	Flip,		 // Для DXGI / Vulkan (Flip Model)
 };
 
 struct RHIPresentationParams
@@ -285,15 +285,15 @@ struct RHIPresentationParams
 	u32 BackBufferWidth = 0;
 	u32 BackBufferHeight = 0;
 	bool Windowed = true;
-	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;			// Базовый формат бэкбуфера
-	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;	// Формат для авто-буфера глубины
-	u32 BackBufferCount = 2;										// Количество буферов в своп-цепи (1-3)
-	u32 SyncInterval = 1;											// 0 - немедленно, 1 - вертикальная синхронизация
-	u32 FullscreenRefreshHz = 60;									// Частота обновления (для полноэкранного режима)
+	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;		   // Базовый формат бэкбуфера
+	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT; // Формат для авто-буфера глубины
+	u32 BackBufferCount = 2;									   // Количество буферов в своп-цепи (1-3)
+	u32 SyncInterval = 1;										   // 0 - немедленно, 1 - вертикальная синхронизация
+	u32 FullscreenRefreshHz = 60;								   // Частота обновления (для полноэкранного режима)
 	RHI_SwapEffect SwapEffect = RHI_SwapEffect::Discard;
-	u32 MultisampleCount = 1;										// Количество сэмплов (1 = MSAA выключен)
+	u32 MultisampleCount = 1; // Количество сэмплов (1 = MSAA выключен)
 	u32 MultisampleQuality = 0;
-	bool EnableAutoDepthStencil = true;								// Создавать ли автоматический Depth/Stencil буфер
+	bool EnableAutoDepthStencil = true; // Создавать ли автоматический Depth/Stencil буфер
 };
 
 RHI_END

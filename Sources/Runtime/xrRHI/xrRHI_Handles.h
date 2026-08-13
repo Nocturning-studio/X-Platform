@@ -9,30 +9,54 @@ constexpr u32 InvalidHandleId = 0xFFFFFFFF;
 
 struct TextureHandle
 {
-    u32 id = InvalidHandleId;
-    bool IsValid() const { return id != InvalidHandleId; }
-    bool operator==(const TextureHandle& other) const { return id == other.id; }
+	u32 id = InvalidHandleId;
+	bool IsValid() const
+	{
+		return id != InvalidHandleId;
+	}
+	bool operator==(const TextureHandle& other) const
+	{
+		return id == other.id;
+	}
 };
 
 struct SamplerHandle
 {
-    u32 id = InvalidHandleId;
-    bool IsValid() const { return id != InvalidHandleId; }
-    bool operator==(const SamplerHandle& other) const { return id == other.id; }
+	u32 id = InvalidHandleId;
+	bool IsValid() const
+	{
+		return id != InvalidHandleId;
+	}
+	bool operator==(const SamplerHandle& other) const
+	{
+		return id == other.id;
+	}
 };
 
 struct ShaderHandle
 {
-    u32 id = InvalidHandleId;
-    bool IsValid() const { return id != InvalidHandleId; }
-    bool operator==(const ShaderHandle& other) const { return id == other.id; }
+	u32 id = InvalidHandleId;
+	bool IsValid() const
+	{
+		return id != InvalidHandleId;
+	}
+	bool operator==(const ShaderHandle& other) const
+	{
+		return id == other.id;
+	}
 };
 
 struct ConstantBufferHandle
 {
-    u32 id = InvalidHandleId;
-    bool IsValid() const { return id != InvalidHandleId; }
-    bool operator==(const ConstantBufferHandle& other) const { return id == other.id; }
+	u32 id = InvalidHandleId;
+	bool IsValid() const
+	{
+		return id != InvalidHandleId;
+	}
+	bool operator==(const ConstantBufferHandle& other) const
+	{
+		return id == other.id;
+	}
 };
 
 RHI_END

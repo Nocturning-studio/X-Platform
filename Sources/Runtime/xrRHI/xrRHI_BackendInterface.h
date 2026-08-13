@@ -7,7 +7,7 @@ RHI_BEGIN
 
 class XRRHI_API IRenderBackend
 {
-public:
+  public:
 	virtual ~IRenderBackend()
 	{
 	}
@@ -49,9 +49,15 @@ public:
 	virtual void SetShader(ShaderType type, ShaderHandle handle) = 0;
 
 	virtual ConstantBufferHandle CreateConstantBuffer(u32 sizeInBytes) = 0;
-	virtual ConstantBufferHandle CreateConstantBuffer(const ShaderConstantLayout& layout) { return CreateConstantBuffer(layout.totalSize); }
+	virtual ConstantBufferHandle CreateConstantBuffer(const ShaderConstantLayout& layout)
+	{
+		return CreateConstantBuffer(layout.totalSize);
+	}
 	virtual void UpdateConstantBuffer(ConstantBufferHandle handle, u32 offset, const void* data, u32 size) = 0;
-	void UpdateConstantBuffer(ConstantBufferHandle handle, const void* data, u32 size){ UpdateConstantBuffer(handle, 0, data, size); }
+	void UpdateConstantBuffer(ConstantBufferHandle handle, const void* data, u32 size)
+	{
+		UpdateConstantBuffer(handle, 0, data, size);
+	}
 	virtual void DestroyConstantBuffer(ConstantBufferHandle handle) = 0;
 	virtual void SetShaderConstantBuffer(ShaderType type, u32 startRegister, ConstantBufferHandle handle) = 0;
 	virtual ShaderConstantLayout ReflectConstantLayout(ShaderHandle handle) = 0;

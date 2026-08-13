@@ -26,7 +26,7 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual void OnFrameBegin() override;
 	virtual void OnFrameEnd() override;
 
-	DEPRECATED  virtual void* GetDeviceHandle() override
+	DEPRECATED virtual void* GetDeviceHandle() override
 	{
 		return m_pDevice;
 	}
@@ -37,14 +37,16 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual const RHIDeviceCaps& GetDeviceCaps() const override;
 	virtual void Clear(u32 clearFlags, const fvec4 color, float depth, u8 stencil) override;
 
-	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<u32, u32>>& outResolutions) const override;
+	virtual void GetAvailableResolutions(RHI_Format format,
+										 std::vector<std::pair<u32, u32>>& outResolutions) const override;
 
 	virtual RHI_Format GetBackBufferFormat() const override;
 
 	TextureHandle CreateTexture(const TextureDesc& desc, const void* initialData = nullptr) override;
 	void DestroyTexture(TextureHandle handle) override;
 	void SetTexture(u32 slot, TextureHandle texture, SamplerHandle sampler = SamplerHandle{}) override;
-	virtual bool CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, bool isDepthStencil, bool isCube = false) override;
+	virtual bool CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, bool isDepthStencil,
+									bool isCube = false) override;
 	virtual void* GetTextureNativeHandle(TextureHandle handle) override;
 	virtual bool GetCubeMapFaceNative(TextureHandle handle, u32 face, u32 level, void** outSurface) override;
 
@@ -109,13 +111,11 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
 
 	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHIPresentationParams& params,
-		D3DFORMAT& outBackBufferFmt,
-		D3DFORMAT& outDepthStencilFmt);
+															 D3DFORMAT& outBackBufferFmt,
+															 D3DFORMAT& outDepthStencilFmt);
 
-	void FillPresentParams(const RHIPresentationParams& params,
-		D3DFORMAT backBufferFmt,
-		D3DFORMAT depthStencilFmt,
-		UINT fullscreenRefreshHz);
+	void FillPresentParams(const RHIPresentationParams& params, D3DFORMAT backBufferFmt, D3DFORMAT depthStencilFmt,
+						   UINT fullscreenRefreshHz);
 
 	DWORD SelectVertexProcessing();
 };

@@ -9,41 +9,48 @@ RHI_BEGIN
 
 struct DX9Texture
 {
-    IDirect3DTexture9* tex2D = nullptr;
-    IDirect3DCubeTexture9* texCube = nullptr;
-    IDirect3DSurface9* surface = nullptr;
-    RHI_Format format = RHI_Format::Unknown;
-    u32 width = 0;
-    u32 height = 0;
-    bool isRenderTarget = false;
-    bool isDepthStencil = false;
+	IDirect3DTexture9* tex2D = nullptr;
+	IDirect3DCubeTexture9* texCube = nullptr;
+	IDirect3DSurface9* surface = nullptr;
+	RHI_Format format = RHI_Format::Unknown;
+	u32 width = 0;
+	u32 height = 0;
+	bool isRenderTarget = false;
+	bool isDepthStencil = false;
 };
 
 struct DX9Sampler
 {
-    SamplerDesc desc;
+	SamplerDesc desc;
 };
 
 struct DX9Shader
 {
-    union
-    {
-        IDirect3DVertexShader9* vs = nullptr;
-        IDirect3DPixelShader9* ps;
-    };
-    ShaderType type;
-    std::vector<u8> bytecode;
+	union {
+		IDirect3DVertexShader9* vs = nullptr;
+		IDirect3DPixelShader9* ps;
+	};
+	ShaderType type;
+	std::vector<u8> bytecode;
 
-    void Release()
-    {
-        if (type == ShaderType::Vertex && vs) { vs->Release(); vs = nullptr; }
-        if (type == ShaderType::Pixel && ps) { ps->Release(); ps = nullptr; }
-    }
+	void Release()
+	{
+		if (type == ShaderType::Vertex && vs)
+		{
+			vs->Release();
+			vs = nullptr;
+		}
+		if (type == ShaderType::Pixel && ps)
+		{
+			ps->Release();
+			ps = nullptr;
+		}
+	}
 };
 
 struct DX9ConstantBuffer
 {
-    std::vector<float> data;
+	std::vector<float> data;
 };
 
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);

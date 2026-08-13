@@ -2,9 +2,10 @@
 #include "xrRHI_Debug.h"
 
 RHI_BEGIN
-XRRHI_API std::string WinErrorToString(long code)
+XRRHI_API const char* WinErrorToString(long code)
 {
-	char buffer[1024];
+	static char buffer[1024];
+
 	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
 	DWORD result = FormatMessageA(flags, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer,
 								  sizeof(buffer), nullptr);
@@ -17,7 +18,7 @@ XRRHI_API std::string WinErrorToString(long code)
 		buffer[--result] = '\0';
 	}
 
-	return std::string(buffer, result);
+	return buffer;
 }
 
 XRRHI_API void __cdecl Print(const char* format, ...)
