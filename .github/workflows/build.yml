@@ -10,29 +10,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Восстанавливаем NuGet пакеты
-    - name: Restore NuGet packages
-      run: nuget restore xrEngine.sln
+    - name: Install MSVC v142 toolset
+      run: |
+        $vsInstaller = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
+        & $vsInstaller modify `
+          --installPath "C:\Program Files\Microsoft Visual Studio\2026\Enterprise" `
+          --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 `
+          --quiet --norestart
+      shell: powershell
 
-    # Настраиваем MSBuild
+    - name: Restore NuGet packages
+      run: msbuild xrEngine.sln /t:Restore /p:Configuration=Release /p:Platform=Win32
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
-       with:
-         vs-version: '2019'
 
-    # Собираем проект
-    - name: Build Release
-      run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /m
+    - name: Build Release (Win32)
+      run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142 /m
 
-    # (Опционально) Собрать ещё и для x64, если нужно
-    # - name: Build Release (x64)
-    #   run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=x64 /m
-
-    # (Опционально) Запустить тесты
-    # - name: Run tests
-    #   run: vstest.console.exe **\*Tests.dll
-
-    # Сохраняем собранные файлы как артефакт (например, .exe, .dll)
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
