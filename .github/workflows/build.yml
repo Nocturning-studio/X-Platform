@@ -33,6 +33,5 @@ jobs:
       with:
         name: Release-Win32
         path: |
-          **\bin\Release\*
-          **\x64\Release\*
+          Binaries\x86\*
         if-no-files-found: error
