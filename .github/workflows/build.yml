@@ -10,20 +10,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
     - name: Install MSVC v142 toolset
       run: |
         $vsInstaller = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
         & $vsInstaller modify `
-          --installPath "C:\Program Files\Microsoft Visual Studio\2026\Enterprise" `
+          --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" `
           --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 `
           --quiet --norestart
       shell: powershell
 
     - name: Restore NuGet packages
       run: msbuild xrEngine.sln /t:Restore /p:Configuration=Release /p:Platform=Win32
-
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
 
     - name: Build Release (Win32)
       run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142 /m
