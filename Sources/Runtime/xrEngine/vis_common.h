@@ -3,7 +3,7 @@
 #pragma once
 
 #pragma pack(push, 4)
-#include <atomic> // Не забудьте подключить, если еще нет
+#include <atomic>
 
 struct vis_data
 {
@@ -25,7 +25,6 @@ struct vis_data
 		hom_tested = 0;
 	}
 
-	// Конструктор по умолчанию
 	vis_data()
 	{
 		box.invalidate();
@@ -37,28 +36,24 @@ struct vis_data
 		hom_tested = 0;
 	}
 
-	// Оператор присваивания
 	vis_data& operator=(const vis_data& other)
 	{
 		if (this != &other)
 		{
-			// Копируем обычные данные
 			box = other.box;
 			sphere = other.sphere;
 			accept_frame = other.accept_frame;
 			hom_frame = other.hom_frame;
 			hom_tested = other.hom_tested;
 
-			// Атомарно копируем значение маркера
 			m_traversal_marker.store(other.m_traversal_marker.load(std::memory_order_relaxed), std::memory_order_relaxed);
 		}
 		return *this;
 	}
 
-	// Конструктор копирования
 	vis_data(const vis_data& other)
 	{
-		*this = other; // Используем оператор присваивания
+		*this = other;
 	}
 };
 #pragma pack(pop)

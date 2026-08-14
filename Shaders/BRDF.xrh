@@ -275,12 +275,12 @@ float3 CalcSpecular(float3 Normal, float3 ViewDirection, float3 LightDirection, 
     float3 H = normalize(ViewDirection + LightDirection);
     float NdotL = saturate(dot(Normal, LightDirection));
     float NdotV = saturate(dot(Normal, ViewDirection));
-    float NoH = saturate(dot(Normal, H));
-    float HoV = saturate(dot(H, ViewDirection));
+    float NdotH = saturate(dot(Normal, H));
+    float HdotV = saturate(dot(H, ViewDirection));
 
-    float D = D_GGX(NoH, Roughness);
+    float D = D_GGX(NdotH, Roughness);
     float V = Vis_SmithGGXCorrelated(Roughness, NdotV, NdotL);
-    float3 F = fresnelSchlickRoughness(HoV, F0, Roughness);
+    float3 F = fresnelSchlickRoughness(HdotV, F0, Roughness);
 
     F_Out = F;
     return (D * V) * F;

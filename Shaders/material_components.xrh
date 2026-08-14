@@ -121,7 +121,7 @@ MaterialComponents UnpackBumpMaterial(float2 UV)
     // Separate gloss from buffer and invert, for create roughness
     float Roughness = invert(BumpData.r);//pow2(invert(BumpData.r));
     
-    Output.Roughness = pow2(Roughness);
+    Output.Roughness = safe_pow(Roughness, 2.2f);
 
 #ifdef USE_BUMP_DECOMPRESSION
     float4 BumpXData = tex2D(s_bumpX, UV);

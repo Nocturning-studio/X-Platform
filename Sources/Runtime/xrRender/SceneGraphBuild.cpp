@@ -101,7 +101,7 @@ ICF float CalcScreenSpaceArea(float& distSQ, fvec3& C, float R)
 
 float r_dtex_range = 50.f;
 
-ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
+ShaderElement* SelectShaderElementForStaticVis(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
 {
 	if (!pVisual)
 	{
@@ -141,7 +141,7 @@ ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdi
 	return pVisual->shader->E[id]._get();
 }
 
-ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
+ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
 {
 	if (!pVisual)
 	{
@@ -221,8 +221,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 	// Выбор шейдера (Technique Selection)
 	// -------------------------------------------------------------------------
-	CRender& render_impl = RenderImplementation;
-	ShaderElement* shader_element = render_impl.rimp_select_sh_dynamic(pVisual, distance_sq, ctx);
+	ShaderElement* shader_element = SelectShaderElementForDynamicVis(pVisual, distance_sq, ctx);
 
 	if (!shader_element)
 		return;
@@ -460,8 +459,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		return;
 
 	// Выбор шейдера
-	CRender& render_impl = RenderImplementation;
-	ShaderElement* shader_element = render_impl.rimp_select_sh_static(pVisual, distance_sq, ctx);
+	ShaderElement* shader_element = SelectShaderElementForStaticVis(pVisual, distance_sq, ctx);
 
 	if (!shader_element)
 		return;

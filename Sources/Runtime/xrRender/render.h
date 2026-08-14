@@ -262,8 +262,6 @@ class CRender : public IRender_interface, public pureFrame
 	void RenderMenu();
 
   public:
-	ShaderElement* rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx);
-	ShaderElement* rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx);
 	D3DVERTEXELEMENT9* getVB_Format(int id, BOOL _alt = FALSE);
 	IDirect3DVertexBuffer9* getVB(int id, BOOL _alt = FALSE);
 	IDirect3DIndexBuffer9* getIB(int id, BOOL _alt = FALSE);
