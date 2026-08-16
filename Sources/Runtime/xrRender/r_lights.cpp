@@ -147,8 +147,7 @@ void CRender::render_lights(light_Package& LP)
         for (light* L : current_batch)
         {
             L->get_smapvis().begin();
-			SceneGraph.m_packet.Clear();
-            SceneGraph.render_subspace(L->spatial.sector, L->TransformContext.ShadowContext.combine, L->get_position(), TRUE, FALSE, SceneGraph.m_packet);
+            SceneGraph.BuildScene(L->spatial.sector, L->TransformContext.ShadowContext.combine, L->get_position(), TRUE, FALSE, SceneGraph.m_packet);
 
             bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
             bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() || SceneGraph.m_packet.queue_transparent.size();

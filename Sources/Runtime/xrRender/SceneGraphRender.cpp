@@ -37,10 +37,11 @@ static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 	PROFILE_FUNCTION();
 
 	// Сортировка Front-to-Back по SSA для Early Z-Cull
-	//std::sort(batch.begin(), batch.end(),
-	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) {
-	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
-	//		  });
+	std::sort(batch.begin(), batch.end(),
+			  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) 
+			  {
+				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+			  });
 
 	for (const auto& node : batch)
 	{
@@ -54,10 +55,11 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 	PROFILE_FUNCTION();
 
 	// Сортировка Front-to-Back
-	//std::sort(batch.begin(), batch.end(),
-	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) {
-	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
-	//		  });
+	std::sort(batch.begin(), batch.end(),
+			  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) 
+			  {
+				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+			  });
 
 	for (const auto& node : batch)
 	{
@@ -132,8 +134,6 @@ template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
 template <typename MapTextures, typename VecTypes>
 void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_map, BOOL bUseSSA)
 {
-	PROFILE_FUNCTION();
-
 	if (textures_map.size() == 0)
 		return;
 
@@ -190,6 +190,8 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 
 void CSceneGraph::Render(SceneGraphPacket& packet, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
 {
+	PROFILE_FUNCTION();
+
 #ifdef DEBUG
 	DebugCheckDuplicateVisuals(packet);
 #endif
@@ -226,7 +228,7 @@ void CSceneGraph::Render(SceneGraphPacket& packet, SceneGraphRenderType type, u3
 
 void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _clear)
 {
-	OPTICK_EVENT("RenderOpaque");
+	PROFILE_FUNCTION();
 	Engine.Statistic->RenderDUMP.Begin();
 
 	// -------------------------------------------------------------------------
@@ -384,9 +386,30 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 	Engine.Statistic->RenderDUMP.End();
 }
 
+void CSceneGraph::RenderFromCache(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet)
+{
+	PROFILE_FUNCTION();
+
+	SceneTraversalContext local_ctx = initial_ctx;
+	local_ctx.traversal_marker_id = ++m_traversal_marker;
+
+	auto static_visuals = packet.m_visuals_static_visible;
+	for (IRender_Visual* V : static_visuals)
+	{
+		ProcessStaticVisual(V, local_ctx, packet);
+	}
+
+	auto dynamic_visuals = packet.m_visuals_dynamic_visible;
+	for (auto& it : dynamic_visuals)
+	{
+		local_ctx.current_transform = &it.matrix;
+		ProcessDynamicVisual(it.visual, local_ctx, packet);
+	}
+}
+
 void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 {
-	OPTICK_EVENT("RenderHUD");
+	PROFILE_FUNCTION();
 	ENGINE_API extern float psHUD_FOV;
 
 	// Backup Projection
@@ -416,35 +439,35 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 
 void CSceneGraph::_RenderTranslucent(SceneGraphPacket& packet)
 {
-	OPTICK_EVENT("RenderTranslucent");
+	PROFILE_FUNCTION();
 	packet.queue_transparent.traverseRL(RenderSortedNode);
 	packet.queue_transparent.clear();
 }
 
 void CSceneGraph::_RenderEmissive(SceneGraphPacket& packet)
 {
-	OPTICK_EVENT("RenderEmissive");
+	PROFILE_FUNCTION();
 	packet.mapEmissive.traverseLR(RenderSortedNode);
 	packet.mapEmissive.clear();
 }
 
 void CSceneGraph::_RenderWmarks(SceneGraphPacket& packet)
 {
-	OPTICK_EVENT("RenderWmarks");
+	PROFILE_FUNCTION();
 	packet.queue_wallmarks.traverseLR(RenderSortedNode);
 	packet.queue_wallmarks.clear();
 }
 
 void CSceneGraph::_RenderDistortion(SceneGraphPacket& packet)
 {
-	OPTICK_EVENT("RenderDistortion");
+	PROFILE_FUNCTION();
 	packet.queue_distortion.traverseRL(RenderSortedNode);
 	packet.queue_distortion.clear();
 }
 
 void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _clear)
 {
-	OPTICK_EVENT("RenderLODs");
+	PROFILE_FUNCTION();
 
 	// Сбор LOD-ов в плоский список
 	if (_setup_zb)
@@ -584,190 +607,4 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	if (_clear)
 		packet.mapLOD.clear();
-}
-
-
-// ===============================================================================================
-//  CSceneGraph::render_subspace
-//  Назначение: Обход пространства (секторов и порталов) и сбор геометрии в указанный пакет.
-// ===============================================================================================
-
-// Shortcut (создание фрустума из матрицы)
-void CSceneGraph::render_subspace(IRender_Sector* _sector, 
-								  fmat4x4& mCombined, 
-								  fvec3& _cop, 
-								  BOOL _dynamic, 
-								  BOOL _precise_portals, 
-								  SceneGraphPacket& dest)
-{
-	OPTICK_EVENT("render_subspace - shortcut");
-
-	CFrustum temp_frustum;
-	temp_frustum.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
-	render_subspace(_sector, &temp_frustum, mCombined, _cop, _dynamic, _precise_portals, dest);
-}
-
-// Main Implementation (Основная логика)
-void CSceneGraph::render_subspace(IRender_Sector* start_sector, 
-								  CFrustum* view_frustum, 
-								  fmat4x4& mCombined,
-								  fvec3& camera_pos, 
-								  BOOL render_dynamic, 
-								  BOOL precise_portals,
-								  SceneGraphPacket& dest)
-{
-	OPTICK_EVENT("render_subspace - main");
-
-	VERIFY(start_sector);
-	VERIFY(view_frustum);
-
-	// Увеличиваем маркер
-	m_traversal_marker++;
-
-	// -------------------------------------------------------------------------
-	// Подготовка локального контекста (TLS)
-	// -------------------------------------------------------------------------
-	SceneTraversalContext local_ctx;
-	local_ctx.frustum = view_frustum; // Базовый фрустум
-	local_ctx.is_hud_pass = FALSE;
-	local_ctx.is_invisible_mode = FALSE;
-	local_ctx.current_owner = nullptr;
-	local_ctx.current_transform = &Fidentity;
-	local_ctx.traversal_marker_id = ++m_traversal_marker;
-	local_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
-
-	CurrentRenderContext::Scope tls_scope(dest, local_ctx);
-
-	// -------------------------------------------------------------------------
-	// Precise Portals (Внимание: Потенциально небезопасно в MT)
-	// -------------------------------------------------------------------------
-	// Если precise_portals=TRUE передается в параллельных потоках,
-	// запись в pPortal->bDualRender может вызвать гонку данных.
-	// Обычно для теней (cascades) это FALSE.
-	// Поле bDualRender удалено, так как оно нарушает потокобезопасность.
-	/*
-	if (precise_portals && RenderImplementation.rmPortals)
-	{
-		fvec3 box_radius;
-		box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
-		RenderImplementation.Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
-		RenderImplementation.Sectors_xrc.box_query(RenderImplementation.rmPortals, camera_pos, box_radius);
-
-		for (int K = 0; K < RenderImplementation.Sectors_xrc.r_count(); K++)
-		{
-			u32 portal_id =
-				RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
-			CPortal* pPortal = (CPortal*)RenderImplementation.Portals[portal_id];
-			pPortal->bDualRender = TRUE;
-		}
-	}
-	*/
-
-	// -------------------------------------------------------------------------
-	// Обход порталов (Traverse)
-	// -------------------------------------------------------------------------
-	dest.portal_traverser.Traverse((CSector*)start_sector, *view_frustum, camera_pos, mCombined, 0);
-
-	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
-
-	dest.visible_sectors_map.clear();
-	for (const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
-	{
-		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
-	}
-
-	// -------------------------------------------------------------------------
-	// Сбор СТАТИКИ (Static Geometry)
-	// -------------------------------------------------------------------------
-	// Проходим по результатам обхода
-	for (const auto& sec_vis : visible_sectors)
-	{
-		CSector* sector = sec_vis.sector;
-		IRender_Visual* root_visual = sector->GetRootVisual();
-		add_Static(root_visual, view_frustum->getMask(), local_ctx, dest);
-	}
-
-	// Возвращаем общий фрустум в контекст
-	local_ctx.frustum = view_frustum;
-
-	// -------------------------------------------------------------------------
-	// Сбор ДИНАМИКИ (Dynamic Geometry)
-	// -------------------------------------------------------------------------
-	if (render_dynamic)
-	{
-		// Делаем запрос к пространственному дереву, используя ОБЩИЙ фрустум каскада
-		// Результат пишется в dest.m_spatial_query_results
-		g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
-
-		for (u32 o_it = 0; o_it < dest.m_spatial_query_results.size(); o_it++)
-		{
-			ISpatial* spatial = dest.m_spatial_query_results[o_it];
-			CSector* sector = (CSector*)spatial->spatial.sector;
-
-			if (0 == sector)
-				continue;
-
-			// --- ПРОВЕРКА ВИДИМОСТИ СЕКТОРА ---
-			// Раньше мы проверяли маркер: if (sector->r_marker != ...)
-			// Теперь сектор не хранит маркер текущего прохода.
-			// Мы должны найти этот сектор в списке visible_sectors нашего траверсера.
-
-			auto it = dest.visible_sectors_map.find(sector);
-			if (it == dest.visible_sectors_map.end()) 
-				continue;
-
-			const auto* active_vis_data = it->second;
-			if (!active_vis_data)
-				continue;
-
-			// --- ПРОВЕРКА ПО ФРУСТУМАМ СЕКТОРА ---
-			// Берем фрустумы из найденной структуры данных
-			for (const auto& frustum : active_vis_data->frustums)
-			{
-				// Быстрый тест сферы с конкретным фрустумом
-				if (!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
-					continue;
-
-				IRenderable* renderable = spatial->dcast_Renderable();
-				if (0 == renderable)
-					continue;
-
-				// Настраиваем контекст для отрисовки
-				local_ctx.frustum = &frustum;
-				local_ctx.current_owner = renderable;
-
-				// Вызываем рендер объекта.
-				// Благодаря TLS, внутри вызовется add_Visual, который запишет в 'dest'.
-				renderable->renderable_Render();
-
-				// Если объект прошел проверку хотя бы одного фрустума - мы его добавили.
-				// Прерываем цикл по фрустумам, чтобы не добавлять дубликаты.
-				break;
-			}
-		}
-	}
-}
-
-// Frame Reuse Optimization
-void CSceneGraph::render_reuse(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet)
-{
-	PROFILE_FUNCTION();
-
-	SceneTraversalContext local_ctx = initial_ctx;
-	local_ctx.traversal_marker_id = ++m_traversal_marker;
-	auto static_visuals = packet.m_visuals_static_visible;
-	auto dynamic_visuals = packet.m_visuals_dynamic_visible;
-
-	// Статика (из packet)
-	for (IRender_Visual* V : static_visuals)
-	{
-		ProcessStaticVisual(V, local_ctx, packet);
-	}
-
-	// Динамика (из packet)
-	for (auto& it : dynamic_visuals)
-	{
-		local_ctx.current_transform = &it.matrix;
-		ProcessDynamicVisual(it.visual, local_ctx, packet);
-	}
 }

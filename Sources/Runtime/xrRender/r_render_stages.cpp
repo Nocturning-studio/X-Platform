@@ -388,7 +388,7 @@ void CRender::render_stage_forward()
 	SceneTraversalContext reuse_ctx = m_TraversalContext;
 	reuse_ctx.render_phase = PHASE_SUN_LIGHTING;
 
-	SceneGraph.render_reuse(reuse_ctx, currentReadItem.packet);
+	SceneGraph.RenderFromCache(reuse_ctx, currentReadItem.packet);
 
 	// DRAW
 	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);

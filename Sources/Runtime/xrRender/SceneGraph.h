@@ -306,19 +306,15 @@ class CSceneGraph
 	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
 	// === Traversal Logic ===
-	void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
-						 BOOL _precise_portals, SceneGraphPacket& dest);
-	void render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
-						 BOOL _precise_portals, SceneGraphPacket& dest);
-
-	void render_reuse(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet);
+	void BuildScene(IRender_Sector* _sector, CFrustum* _frustum, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest);
+	void BuildScene(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest);
 
 	// Helper
-	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize,
-							const SceneTraversalContext& ctx);
+	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize, const SceneTraversalContext& ctx);
 
 	// === Rendering API ===
 	void Render(SceneGraphPacket& packet, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
+	void RenderFromCache(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet);
 
   private:
 	// Render implementations

@@ -719,15 +719,7 @@ void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& i
 
 	CurrentRenderContext::Scope tls_scope(item.packet, local_ctx);
 
-	item.packet.Clear();
-
-	SceneGraph.render_subspace(item.cull_sector,
-		&item.cull_frustum,
-		item.cull_transform,
-		item.cull_COP,
-		TRUE,   // render_dynamic
-		FALSE,  // precise_portals
-		item.packet);
+	SceneGraph.BuildScene(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet);
 }
 
 void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
