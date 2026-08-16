@@ -8,10 +8,11 @@
 // Math lib
 #include "../../AfterMath/include/AfterMath.h"
 /////////////////////////////////////////////////////////////////
-//#define ENABLE_PROFILER
+#define ENABLE_PROFILER
 
 // Your custom profiler
 #ifdef ENABLE_PROFILER
+#define USE_OPTICK
 #include "../../Optick/Include/optick.h"
 #define PROFILE_FRAME(x) OPTICK_FRAME(x)
 #define PROFILE_SCOPE(x) OPTICK_EVENT(x)

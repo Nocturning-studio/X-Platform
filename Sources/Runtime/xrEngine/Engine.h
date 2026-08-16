@@ -27,14 +27,12 @@ class ENGINE_API CGameStateManager;
 class ENGINE_API CStats;
 class ENGINE_API CResourceManager;
 ////////////////////////////////////////////////////////////////////////////////
-// Class creation/destroying interface
 extern "C"
 {
 	typedef DLL_API DLL_Pure* __cdecl Factory_Create(CLASS_ID CLS_ID);
 	typedef DLL_API void __cdecl Factory_Destroy(DLL_Pure* O);
 };
 
-// Tuning interface
 extern "C"
 {
 	typedef void __cdecl VTPause(void);
@@ -75,8 +73,6 @@ class ENGINE_API CEngine
 	VTPause* tune_pause;
 	VTResume* tune_resume;
 
-	// Используются очень часто - встраиваем 
-	// инклуды с их реализациями в Engine.h
 	CEventAPI Event;
 	CLevelManager LevelManager;
 	CFontManager FontManager;
@@ -87,7 +83,6 @@ class ENGINE_API CEngine
 	CEngineEvents Events;
 	CRenderView RenderView; 
 
-	// Используются редко, их инклудим отдельно
 	CGameStateManager* GameStateManager;
 	CLevelLoadingScreen* LoadingScreen;
 	CSheduler* Sheduler;
@@ -95,11 +90,10 @@ class ENGINE_API CEngine
 	CResourceManager* ResourceManager;
 
 	public:
-	// Конструктор/Деструктор
 	CEngine();
 	~CEngine();
 
-	void Run(); // Запуск Loop (Init -> Loop -> Destroy)
+	void Run();
 
 	bool IsLoaded()
 	{
@@ -137,19 +131,16 @@ class ENGINE_API CEngine
 	}
 
 	private:
-	// Основные жизненные циклы (Методы, которые остались)
-	bool Initialize(); // Вся инициализация (Console, Sound, Device, Input, DLLs) теперь здесь
+	bool Initialize();
 	void ProcessEventLoop();
 	void ProcessFrame();
-	bool CheckLoadingEvents(); // Обработка событий загрузки (true если событие обработано)
-	void UpdateGameLogic(); // Логика мира (бывший OnFrame)
-	void Destroy(); // Очистка ресурсов
+	bool CheckLoadingEvents();
+	void UpdateGameLogic();
+	void Destroy();
 };
 ////////////////////////////////////////////////////////////////////////////////
-// Объявляем глобальный указатель, чтобы его видели другие .cpp файлы
 extern ENGINE_API CEngine* g_Engine;
 
-// "Обманываем" старый код, который пишет Engine.Event...
 #define Engine (*g_Engine)
 
 #define NEW_INSTANCE(a) Engine.pCreate(a)

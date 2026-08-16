@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////
 #include "../include/SoftX.h"
 #include "QueryRasterizer.h"
-#include "ThreadPoolManager.h"
+#include "ThreadUtils.h"
 #include "TileGrid.h"
 #include "InternalTypes.h"
 /////////////////////////////////////////////////////////////////
@@ -61,6 +61,8 @@ public:
 
     queryID DrawIndexed()
     {
+        PROFILE_SCOPE("OcclusionQuery::DrawIndexed");
+
         if (!begun || ended)
             SOFTX_THROW(InvalidState("OcclusionQuery::DrawIndexed called outside Begin/End"));
 
@@ -109,19 +111,22 @@ public:
 
         future = ThreadPoolManager::Get().enqueueBackground([this, drawCallsCopy, stateCaptured, db]()
         {
-            PROFILE_THREAD("OcclusionQuery::AsyncExecution");
-            PROFILE_SCOPE("OcclusionQuery::AsyncExecution");
-            std::atomic<uint32_t> totalVisible(0);
+                PROFILE_THREAD("OcclusionQuery::AsyncExecution");
+                PROFILE_SCOPE("OcclusionQuery::AsyncExecution");
+                std::atomic<uint32_t> totalVisible(0);
 
-            size_t count = drawCallsCopy->size();
-            for (size_t i = 0; i < count; ++i)
-                ProcessDrawCall((*drawCallsCopy)[i], stateCaptured, *db, totalVisible);
+                size_t count = drawCallsCopy->size();
+                ThreadUtils::SmartParallelFor(size_t(0), count, size_t(1),
+                    [&](size_t i)
+                    {
+                        ProcessDrawCall((*drawCallsCopy)[i], stateCaptured, *db, totalVisible);
+                    });
 
-            for (size_t i = 0; i < drawCalls.size(); ++i)
-                drawCalls[i].visibleSamples = (*drawCallsCopy)[i].visibleSamples;
+                for (size_t i = 0; i < drawCalls.size(); ++i)
+                    drawCalls[i].visibleSamples = (*drawCallsCopy)[i].visibleSamples;
 
-            totalVisibleSamples = totalVisible.load();
-            ready = true;
+                totalVisibleSamples = totalVisible.load();
+                ready = true;
         });
     }
 

@@ -19,7 +19,7 @@ SOFTX_BEGIN
 class SOFTX_API ThreadPool
 {
 public:
-    ThreadPool(size_t numThreads) : stop(false), activeTasks(0)
+    ThreadPool(size_t numThreads) : stop(false), activeTasks(0), backgroundStop(false)
     {
         if (numThreads == 0)
             numThreads = std::thread::hardware_concurrency();
@@ -58,6 +58,31 @@ public:
                     }
                 });
         }
+
+        backgroundThread = std::thread(
+            [this]
+            {
+                PROFILE_THREAD("SoftX Background Thread");
+                while (true)
+                {
+                    std::function<void()> task;
+                    {
+                        std::unique_lock<std::mutex> lock(backgroundMutex);
+                        backgroundCondition.wait(lock,
+                            [this]
+                            {
+                                return backgroundStop || !backgroundTasks.empty();
+                            });
+                        if (backgroundStop && backgroundTasks.empty())
+                            return;
+
+                        task = std::move(backgroundTasks.front());
+                        backgroundTasks.pop();
+                    }
+
+                    task();
+                }
+            });
     }
 
     ~ThreadPool()
@@ -72,10 +97,11 @@ public:
 
         {
             std::unique_lock<std::mutex> lock(backgroundMutex);
-            for (auto& t : backgroundThreads)
-                if (t.joinable())
-                    t.join();
+            backgroundStop = true;
         }
+        backgroundCondition.notify_all();
+        if (backgroundThread.joinable())
+            backgroundThread.join();
     }
 
     ThreadPool(const ThreadPool&) = delete;
@@ -114,16 +140,12 @@ public:
         auto pt = std::make_shared<std::packaged_task<void()>>(std::forward<F>(task));
         std::future<void> fut = pt->get_future();
 
-        std::thread t([pt]()
-            {
-                PROFILE_THREAD("SoftX Background Task");
-                (*pt)();
-            });
-
         {
             std::unique_lock<std::mutex> lock(backgroundMutex);
-            backgroundThreads.push_back(std::move(t));
+            backgroundTasks.emplace([pt]() { (*pt)(); });
         }
+        backgroundCondition.notify_one();
+
         return fut;
     }
 
@@ -135,8 +157,11 @@ private:
     std::atomic<int> activeTasks;
     bool stop;
 
-    std::vector<std::thread> backgroundThreads;
+    std::thread backgroundThread;
+    std::queue<std::function<void()>> backgroundTasks;
     std::mutex backgroundMutex;
+    std::condition_variable backgroundCondition;
+    bool backgroundStop;
 };
 
 SOFTX_END

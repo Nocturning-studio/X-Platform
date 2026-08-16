@@ -16,7 +16,7 @@
 
 void CLevel::ClientReceive()
 {
-
+	PROFILE_FUNCTION();
 	Demo_StartFrame();
 
 	Demo_Update();

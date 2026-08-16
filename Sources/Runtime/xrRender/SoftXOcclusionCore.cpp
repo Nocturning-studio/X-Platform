@@ -25,7 +25,7 @@ void SoftXOcclusionCore::Initialize(uint2 depthMapSize)
     params.Windowed = true;
     params.Headless = true;
 
-    m_device = std::make_unique<SoftX::Device>(params);
+    m_device = std::make_unique<SoftX::Device>(params, 4);
 
     // Создаём два depth-буфера для двойной буферизации
     m_depthBuffers[0] = std::make_unique<SoftX::DepthBuffer>(m_depth_resolution, 4);

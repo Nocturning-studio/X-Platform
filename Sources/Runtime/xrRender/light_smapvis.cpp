@@ -64,7 +64,7 @@ void smapvis::end()
 		if (testQ_V)
 		{
 			RenderImplementation.occq_begin(testQ_id);
-			RenderImplementation.SceneGraph.m_traversal_marker.fetch_add(1);
+			++RenderImplementation.SceneGraph.m_traversal_marker;
 
 			// Передаем текущий контекст рендера
 			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V, RenderImplementation.m_TraversalContext, RenderImplementation.SceneGraph.m_packet);
@@ -138,7 +138,7 @@ void smapvis::resetoccq()
 void smapvis::mark()
 {
 	RenderImplementation.stats.ic_culled += invisible.size();
-	u32 m_traversal_marker = RenderImplementation.SceneGraph.m_traversal_marker + 1; // we are called befor m_traversal_marker increment
+	u32 m_traversal_marker = ++RenderImplementation.SceneGraph.m_traversal_marker; // we are called befor m_traversal_marker increment
 	for (u32 it = 0; it < invisible.size(); it++)
 		invisible[it]->vis.m_traversal_marker = m_traversal_marker; // this effectively disables processing
 }

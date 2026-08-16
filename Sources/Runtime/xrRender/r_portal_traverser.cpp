@@ -94,12 +94,12 @@ void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_p
 void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum& cur_frustum,
 										 const ScissorRect& cur_scissor)
 {
-	// 1. Регистрация видимости сектора
+	// Регистрация видимости сектора
 	SectorVisibility& sec_data = GetOrAddSectorData(current_sector);
 	sec_data.frustums.push_back(cur_frustum);
 	sec_data.scissors.push_back(cur_scissor);
 
-	// 2. Обход порталов
+	// Обход порталов
 	const auto& portals = current_sector->GetPortals();
 
 	// Используем sPoly на стеке, чтобы избежать аллокаций

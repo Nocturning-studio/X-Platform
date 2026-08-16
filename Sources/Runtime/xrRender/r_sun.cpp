@@ -511,230 +511,204 @@ void CRender::init_cacades()
 	m_sun_read_ix = 0;
 }
 
-// -------------------------------------------------------------------------
-//  Phase 1: GATHER (Параллельный сбор)
-// -------------------------------------------------------------------------
-void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
+void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
-	light* sun = (light*)Lights.sun_adapted._get();
+    light* sun = (light*)Lights.sun_adapted._get();
 
-	HOM.Disable();
+    // Calculate view-frustum bounds in world space
+    fmat4x4 ex_project, ex_full, ex_full_inverse;
+    {
+        ex_project = Engine.RenderView.Project;
+        ex_full.mul(ex_project, Engine.RenderView.View);
+        D3DXMatrixInverse((D3DXMATRIX*)&ex_full_inverse, 0, (D3DXMATRIX*)&ex_full);
+    }
 
-	// 1. Calculate view-frustum bounds in world space
-	// ---------------------------------------------------------------------
-	fmat4x4 ex_project, ex_full, ex_full_inverse;
-	{
-		ex_project = Engine.RenderView.Project;
-		ex_full.mul(ex_project, Engine.RenderView.View);
-		D3DXMatrixInverse((D3DXMATRIX*)&ex_full_inverse, 0, (D3DXMATRIX*)&ex_full);
-	}
+    // Local variables for calculation
+    CFrustum cull_frustum;
+    xr_vector<Fplane> cull_planes;
+    fvec3 cull_COP;
+    CSector* cull_sector;
+    fmat4x4 cull_transform;
 
-	// Local variables for calculation
-	CFrustum cull_frustum;
-	xr_vector<Fplane> cull_planes;
-	fvec3 cull_COP;
-	CSector* cull_sector;
-	fmat4x4 cull_transform;
-
-	{
-		// Lets begin from base frustum
-		fmat4x4 fulltransform_inv = ex_full_inverse;
+    {
+        fmat4x4 fulltransform_inv = ex_full_inverse;
 #ifdef _DEBUG
-		typedef DumbConvexVolume<true> t_volume;
+        typedef DumbConvexVolume<true> t_volume;
 #else
-		typedef DumbConvexVolume<false> t_volume;
+        typedef DumbConvexVolume<false> t_volume;
 #endif
 
-		//******************************* Need to be placed after cuboid built **************************
-		// Search for default sector - assume "default" or "outdoor" sector is the largest one
-		//. hack: need to know real outdoor sector
-		CSector* largest_sector = 0;
-		float largest_sector_vol = 0;
-		for (u32 s = 0; s < Sectors.size(); s++)
-		{
-			CSector* S = (CSector*)Sectors[s];
-			IRender_Visual* V = S->root();
-			float vol = V->vis.box.getvolume();
-			if (vol > largest_sector_vol)
-			{
-				largest_sector_vol = vol;
-				largest_sector = S;
-			}
-		}
-		cull_sector = largest_sector;
+        // Search for default sector (largest)
+        CSector* largest_sector = 0;
+        float largest_sector_vol = 0;
+        for (u32 s = 0; s < Sectors.size(); s++)
+        {
+            CSector* S = (CSector*)Sectors[s];
+            IRender_Visual* V = S->root();
+            float vol = V->vis.box.getvolume();
+            if (vol > largest_sector_vol)
+            {
+                largest_sector_vol = vol;
+                largest_sector = S;
+            }
+        }
+        cull_sector = largest_sector;
 
-		// COP - 100 km away
-		cull_COP.mad(Engine.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
+        // COP - 100 km away
+        cull_COP.mad(Engine.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
 
-		// Create approximate ortho-transform
-		// view: auto find 'up' and 'right' vectors
-		fmat4x4 mdir_View, mdir_Project;
-		fvec3 L_dir, L_up, L_right, L_pos;
-		L_pos.set(sun->get_position());
-		L_dir.set(sun->get_direction()).normalize();
-		L_right.set(1, 0, 0);
-		if (_abs(L_right.dotproduct(L_dir)) > .99f)
-			L_right.set(0, 0, 1);
-		L_up.crossproduct(L_dir, L_right).normalize();
-		L_right.crossproduct(L_up, L_dir).normalize();
-		mdir_View.build_camera_dir(L_pos, L_dir, L_up);
+        // Create approximate ortho-transform
+        fmat4x4 mdir_View, mdir_Project;
+        fvec3 L_dir, L_up, L_right, L_pos;
+        L_pos.set(sun->get_position());
+        L_dir.set(sun->get_direction()).normalize();
+        L_right.set(1, 0, 0);
+        if (_abs(L_right.dotproduct(L_dir)) > .99f)
+            L_right.set(0, 0, 1);
+        L_up.crossproduct(L_dir, L_right).normalize();
+        L_right.crossproduct(L_up, L_dir).normalize();
+        mdir_View.build_camera_dir(L_pos, L_dir, L_up);
 
-		//////////////////////////////////////////////////////////////////////////
 #ifdef _DEBUG
-		typedef FixedConvexVolume<true> t_cuboid;
+        typedef FixedConvexVolume<true> t_cuboid;
 #else
-		typedef FixedConvexVolume<false> t_cuboid;
+        typedef FixedConvexVolume<false> t_cuboid;
 #endif
 
-		t_cuboid light_cuboid;
-		{
-			// Initialize the first cascade rays, then each cascade will initialize rays for next one.
-			if (cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
-			{
-				fvec3 near_p, edge_vec;
-				for (int p = 0; p < 4; p++)
-				{
-					near_p = wform(fulltransform_inv, corners[facetable[4][p]]);
-					edge_vec = wform(fulltransform_inv, corners[facetable[5][p]]);
-					edge_vec.sub(near_p);
-					edge_vec.normalize();
+        t_cuboid light_cuboid;
+        {
+            // Initialize rays for this cascade
+            if (cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
+            {
+                fvec3 near_p, edge_vec;
+                for (int p = 0; p < 4; p++)
+                {
+                    near_p = wform(fulltransform_inv, corners[facetable[4][p]]);
+                    edge_vec = wform(fulltransform_inv, corners[facetable[5][p]]);
+                    edge_vec.sub(near_p);
+                    edge_vec.normalize();
 
-					light_cuboid.view_frustum_rays.push_back(Sun::Ray(near_p, edge_vec));
-				}
-			}
-			else
-				light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
+                    light_cuboid.view_frustum_rays.push_back(Sun::Ray(near_p, edge_vec));
+                }
+            }
+            else
+            {
+                light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
+            }
 
-			light_cuboid.view_ray.Position = Engine.RenderView.Position;
-			light_cuboid.view_ray.Direction = Engine.RenderView.Direction;
-			light_cuboid.light_ray.Position = L_pos;
-			light_cuboid.light_ray.Direction = L_dir;
-		}
+            light_cuboid.view_ray.Position = Engine.RenderView.Position;
+            light_cuboid.view_ray.Direction = Engine.RenderView.Direction;
+            light_cuboid.light_ray.Position = L_pos;
+            light_cuboid.light_ray.Direction = L_dir;
+        }
 
-		// THIS NEED TO BE A CONSTATNT
-		Fplane light_top_plane;
-		light_top_plane.build_unit_normal(L_pos, L_dir);
-		float dist = light_top_plane.classify(Engine.RenderView.Position);
+        Fplane light_top_plane;
+        light_top_plane.build_unit_normal(L_pos, L_dir);
+        float dist = light_top_plane.classify(Engine.RenderView.Position);
 
-		float map_size = m_sun_cascades[cascade_ind].size;
-		D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project, 
-									-map_size * 0.5f, 
-									map_size * 0.5f, 
-									-map_size * 0.5f,
-									map_size * 0.5f, 
-									0.1, 
-									dist + map_size);
+        float map_size = m_sun_cascades[cascade_ind].size;
+        D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project,
+                                    -map_size * 0.5f, map_size * 0.5f,
+                                    -map_size * 0.5f, map_size * 0.5f,
+                                    0.1, dist + map_size);
 
-		// build viewport transform
-		float view_dim = float(RenderImplementation.o.smapsize);
-		fmat4x4 m_viewport = { view_dim / 2.f, 0.0f,			 0.0f, 0.0f, 
-								0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
-								0.0f,			0.0f,			 1.0f, 0.0f, 
-								view_dim / 2.f, view_dim / 2.f,	 0.0f, 1.0f };
-		fmat4x4 m_viewport_inv;
-		D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
+        float view_dim = float(RenderImplementation.o.smapsize);
+        fmat4x4 m_viewport = { view_dim / 2.f, 0.0f,          0.0f, 0.0f,
+                               0.0f,           -view_dim / 2.f, 0.0f, 0.0f,
+                               0.0f,           0.0f,          1.0f, 0.0f,
+                               view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f };
+        fmat4x4 m_viewport_inv;
+        D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
 
-		cull_transform.mul(mdir_Project, mdir_View);
-		fmat4x4 cull_transform_inv;
-		cull_transform_inv.invert(cull_transform);
+        cull_transform.mul(mdir_Project, mdir_View);
+        fmat4x4 cull_transform_inv;
+        cull_transform_inv.invert(cull_transform);
 
-		for (int p = 0; p < 8; p++)
-		{
-			fvec3 xf = wform(cull_transform_inv, corners[p]);
-			light_cuboid.light_cuboid_points[p] = xf;
-		}
+        for (int p = 0; p < 8; p++)
+        {
+            fvec3 xf = wform(cull_transform_inv, corners[p]);
+            light_cuboid.light_cuboid_points[p] = xf;
+        }
 
-		// only side planes
-		for (int plane = 0; plane < 4; plane++)
-			for (int pt = 0; pt < 4; pt++)
-			{
-				int asd = facetable[plane][pt];
-				light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
-			}
+        for (int plane = 0; plane < 4; plane++)
+            for (int pt = 0; pt < 4; pt++)
+            {
+                int asd = facetable[plane][pt];
+                light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
+            }
 
-		fvec3 lightXZshift;
-		light_cuboid.compute_caster_model_fixed(cull_planes, 
-												lightXZshift, 
-												m_sun_cascades[cascade_ind].size,
-												m_sun_cascades[cascade_ind].reset_chain);
+        fvec3 lightXZshift;
+        light_cuboid.compute_caster_model_fixed(cull_planes,
+                                                lightXZshift,
+                                                m_sun_cascades[cascade_ind].size,
+                                                m_sun_cascades[cascade_ind].reset_chain);
 
-		fvec3 proj_view = Engine.RenderView.Direction;
-		proj_view.y = 0;
-		proj_view.normalize();
+        if (cascade_ind < m_sun_cascades.size() - 1)
+            m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
-		// Initialize rays for the next cascade
-		// ВАЖНО: Это модификация глобального массива, но индексы разделены,
-		// и следующий каскад будет читать это только в следующем кадре (или нужно синхронизировать).
-		// В оригинальной реализации каскады зависели друг от друга.
-		// При параллельном запуске cascade[1] не увидит изменений от cascade[0] в ЭТОМ кадре.
-		// Это нормально для теней (будет задержка в 1 кадр для обновления границы каскадов),
-		// либо можно предрасчитать лучи заранее последовательно.
-		// Для простоты оставляем как есть - визуально это почти незаметно.
-		if (cascade_ind < m_sun_cascades.size() - 1)
-			m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
+        fvec3 proj_view = Engine.RenderView.Direction;
+        proj_view.y = 0;
+        proj_view.normalize();
 
-		fvec3 cam_shifted = L_pos;
-		cam_shifted.add(lightXZshift);
+        fvec3 cam_shifted = L_pos;
+        cam_shifted.add(lightXZshift);
 
-		// rebuild the view transform with the shift.
-		mdir_View.identity();
-		mdir_View.build_camera_dir(cam_shifted, L_dir, L_up);
-		cull_transform.identity();
-		cull_transform.mul(mdir_Project, mdir_View);
-		cull_transform_inv.invert(cull_transform);
+        mdir_View.identity();
+        mdir_View.build_camera_dir(cam_shifted, L_dir, L_up);
+        cull_transform.identity();
+        cull_transform.mul(mdir_Project, mdir_View);
+        cull_transform_inv.invert(cull_transform);
 
-		// Create frustum for query
-		cull_frustum._clear();
-		for (u32 p = 0; p < cull_planes.size(); p++)
-			cull_frustum._add(cull_planes[p]);
+        // Create frustum for query
+        cull_frustum._clear();
+        for (u32 p = 0; p < cull_planes.size(); p++)
+            cull_frustum._add(cull_planes[p]);
 
-		fvec3 cam_proj = Engine.RenderView.Position;
-		const float align_aim_step_coef = 4.f;
-		cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
-					 floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
-					 floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
-		cam_proj.mul(align_aim_step_coef);
-		fvec3 cam_pixel = wform(cull_transform, cam_proj);
-		cam_pixel = wform(m_viewport, cam_pixel);
-		fvec3 shift_proj = lightXZshift;
-		cull_transform.transform_dir(shift_proj);
-		m_viewport.transform_dir(shift_proj);
+        fvec3 cam_proj = Engine.RenderView.Position;
+        const float align_aim_step_coef = 4.f;
+        cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
+                     floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
+                     floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
+        cam_proj.mul(align_aim_step_coef);
+        fvec3 cam_pixel = wform(cull_transform, cam_proj);
+        cam_pixel = wform(m_viewport, cam_pixel);
+        fvec3 shift_proj = lightXZshift;
+        cull_transform.transform_dir(shift_proj);
+        m_viewport.transform_dir(shift_proj);
 
-		const float align_granularity = 4.f;
-		shift_proj.x = shift_proj.x > 0 ? align_granularity : -align_granularity;
-		shift_proj.y = shift_proj.y > 0 ? align_granularity : -align_granularity;
-		shift_proj.z = 0;
+        const float align_granularity = 4.f;
+        shift_proj.x = shift_proj.x > 0 ? align_granularity : -align_granularity;
+        shift_proj.y = shift_proj.y > 0 ? align_granularity : -align_granularity;
+        shift_proj.z = 0;
 
-		cam_pixel.x = cam_pixel.x / align_granularity - floorf(cam_pixel.x / align_granularity);
-		cam_pixel.y = cam_pixel.y / align_granularity - floorf(cam_pixel.y / align_granularity);
-		cam_pixel.x *= align_granularity;
-		cam_pixel.y *= align_granularity;
-		cam_pixel.z = 0;
+        cam_pixel.x = cam_pixel.x / align_granularity - floorf(cam_pixel.x / align_granularity);
+        cam_pixel.y = cam_pixel.y / align_granularity - floorf(cam_pixel.y / align_granularity);
+        cam_pixel.x *= align_granularity;
+        cam_pixel.y *= align_granularity;
+        cam_pixel.z = 0;
 
-		cam_pixel.sub(shift_proj);
+        cam_pixel.sub(shift_proj);
 
-		m_viewport_inv.transform_dir(cam_pixel);
-		cull_transform_inv.transform_dir(cam_pixel);
-		fvec3 diff = cam_pixel;
-		static float sign_test = -1.f;
-		diff.mul(sign_test);
-		fmat4x4 adjust;
-		adjust.translate(diff);
-		cull_transform.mulB_44(adjust);
+        m_viewport_inv.transform_dir(cam_pixel);
+        cull_transform_inv.transform_dir(cam_pixel);
+        fvec3 diff = cam_pixel;
+        static float sign_test = -1.f;
+        diff.mul(sign_test);
+        fmat4x4 adjust;
+        adjust.translate(diff);
+        cull_transform.mulB_44(adjust);
+    }
 
-		m_sun_cascades[cascade_ind].transform = cull_transform;
-	}
+    item.cull_transform = cull_transform;
+    item.cull_frustum = cull_frustum;
+    item.cull_sector = cull_sector;
+    item.cull_COP = cull_COP;
 
-	// Сохраняем результаты в WorkItem для фазы Draw
-	item.cull_transform = cull_transform;
-	item.cull_frustum = cull_frustum;
-	item.cull_sector = cull_sector;
-	item.cull_COP = cull_COP;
+    m_sun_cascades[cascade_ind].transform = cull_transform;
+}
 
-	// 2. Сбор сцены (Scene Graph Traversal)
-	// ---------------------------------------------------------------------
-
-	// Настраиваем локальный контекст
+void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
+{
 	SceneTraversalContext local_ctx;
 	local_ctx.frustum = &item.cull_frustum;
 	local_ctx.is_hud_pass = FALSE;
@@ -743,69 +717,59 @@ void CRender::gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	local_ctx.current_transform = &Fidentity;
 	local_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
-	// Активируем TLS: пишем в item.packet
 	CurrentRenderContext::Scope tls_scope(item.packet, local_ctx);
 
-	// Запускаем сбор (используя TLS)
-	// Добавляем флаг CPortalTraverser::VQ_SCISSOR | CPortalTraverser::VQ_HOM для оптимизации
-	// Но для теней VQ_FADE не нужен.
-	// В SceneGraph::render_subspace сейчас хардкод опций (0) в traverse.
-	// Это можно улучшить, но пока работает и так.
-	SceneGraph.m_packet.Clear();
-	SceneGraph.render_subspace(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet);
+	item.packet.Clear();
+
+	SceneGraph.render_subspace(item.cull_sector,
+		&item.cull_frustum,
+		item.cull_transform,
+		item.cull_COP,
+		TRUE,   // render_dynamic
+		FALSE,  // precise_portals
+		item.packet);
 }
 
-// -------------------------------------------------------------------------
-//  Phase 2: DRAW (Последовательная отрисовка)
-// -------------------------------------------------------------------------
 void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
 	OPTICK_EVENT("Draw Cascade");
 
 	light* sun = (light*)Lights.sun_adapted._get();
 
-	// 1. Применяем матрицы к глобальному источнику (теперь мы в главном потоке)
 	sun->TransformContext.Sun.combine = item.cull_transform;
 	sun->TransformContext.Sun.minX = 0;
 	sun->TransformContext.Sun.maxX = RenderImplementation.o.smapsize;
 	sun->TransformContext.Sun.minY = 0;
 	sun->TransformContext.Sun.maxY = RenderImplementation.o.smapsize;
 
-	// 2. Настройка состояний
 	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
 
-	// 3. Отрисовка
 	bool bNormal = item.packet.queue_static[0].size() || item.packet.queue_dynamic[0].size();
-	bool bSpecial = item.packet.queue_static[1].size() || item.packet.queue_dynamic[1].size() ||
-					item.packet.queue_transparent.size();
+	bool bSpecial = item.packet.queue_static[1].size() || item.packet.queue_dynamic[1].size() || item.packet.queue_transparent.size();
 
 	if (bNormal || bSpecial)
 	{
-		// Устанавливаем Render Target (Shadow Map)
 		render_shadow_map_sun(sun, cascade_ind);
 
 		RenderBackend.set_transform_world(Fidentity);
 		RenderBackend.set_transform_view(Fidentity);
 		RenderBackend.set_transform_project(sun->TransformContext.Sun.combine);
 
-		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
-
-		// Рисуем Sun Details (траву), если нужно
-		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-		{
-			// Трава рисуется отдельно, так как она не в графе
-			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
-		}
-
-		// Рисуем Occluder (если есть)
 		if (m_SunOccluder)
 			m_SunOccluder->Render();
+
+		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
+
+		if (g_pGameLevel)
+			g_pGameLevel->pHUD->Render_Actor_Shadow();
+
+		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
+			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
 
 		sun->TransformContext.Sun.transluent = FALSE;
 	}
 
-	// 4. Аккумуляция (наложение тени на экран)
 	set_light_accumulator();
 
 	accumulate_sun(	cascade_ind, 
@@ -813,50 +777,32 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 					m_sun_cascades[cascade_ind].transform );
 }
 
-// -------------------------------------------------------------------------
-//  Main Parallel Function
-// -------------------------------------------------------------------------
 void CRender::render_sun_cascades()
 {
 	PROFILE_FUNCTION();
 
-	// -------------------------------------------------------------------------
-	// ЛОГИКА СМЕНЫ БУФЕРОВ (SWAP)
-	// -------------------------------------------------------------------------
-	// Переключаем буфер записи на следующий
 	m_sun_write_ix = (m_sun_write_ix + 1) % 2;
+	m_sun_read_ix = (m_sun_write_ix + 1) % 2;
 
-	// В текущей синхронной реализации мы читаем из того же буфера, в который пишем.
-	// Если вы вынесете Gather в отдельный поток, который будет работать параллельно
-	// с рендером ПРЕДЫДУЩЕГО кадра, то здесь нужно будет ставить:
-	// m_sun_read_ix = (m_sun_write_ix + 1) % 2; // Читаем старый, пока пишем новый
-
-	// Пока оставляем синхронно для корректности текущего пайплайна:
-	m_sun_read_ix = m_sun_write_ix;
-
-	// Получаем ссылки на буферы
 	SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
 	SunCascadeBuffer& readBuffer = GetSunReadBuffer();
 
-	// Очищаем буфер записи перед использованием
 	writeBuffer.Clear();
 
-	// -------------------------------------------------------------------------
-	// 1. ПАРАЛЛЕЛЬНЫЙ СБОР (GATHER) -> Пишем в WriteBuffer
-	// -------------------------------------------------------------------------
 	{
-		OPTICK_EVENT("Gather Cascades");
-		//concurrency::parallel_invoke([&] { gather_sun_cascade(SE_SUN_NEAR,   *writeBuffer.items[SE_SUN_NEAR]); },
-		//							   [&] { gather_sun_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]); },
-		//							   [&] { gather_sun_cascade(SE_SUN_FAR,    *writeBuffer.items[SE_SUN_FAR]); });
-		gather_sun_cascade(SE_SUN_NEAR,	  *writeBuffer.items[SE_SUN_NEAR]);
-		gather_sun_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]);
-		gather_sun_cascade(SE_SUN_FAR,	  *writeBuffer.items[SE_SUN_FAR]);
+		OPTICK_EVENT("Prepare Cascades");
+		for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+			prepare_sun_cascade(i, *writeBuffer.items[i]);
 	}
 
-	// -------------------------------------------------------------------------
-	// 2. ПОСЛЕДОВАТЕЛЬНАЯ ОТРИСОВКА (DRAW) -> Читаем из ReadBuffer
-	// -------------------------------------------------------------------------
+	{
+		OPTICK_EVENT("Gather Cascades");
+		HOM.Disable();
+		gather_scene_for_cascade(SE_SUN_NEAR,   *writeBuffer.items[SE_SUN_NEAR]);
+		gather_scene_for_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]);
+		gather_scene_for_cascade(SE_SUN_FAR,    *writeBuffer.items[SE_SUN_FAR]);;
+	}
+
 	{
 		OPTICK_EVENT("Draw Cascades Sequence");
 		draw_sun_cascade(SE_SUN_NEAR,	*readBuffer.items[SE_SUN_NEAR]);
@@ -864,7 +810,6 @@ void CRender::render_sun_cascades()
 		draw_sun_cascade(SE_SUN_FAR,	*readBuffer.items[SE_SUN_FAR]);
 	}
 
-	// Восстановление глобальных матриц
 	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_transform_view(Engine.RenderView.View);
 	RenderBackend.set_transform_project(Engine.RenderView.Project);
