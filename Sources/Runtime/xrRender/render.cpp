@@ -550,10 +550,11 @@ void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 	Wallmarks->AddSkeletonWallmark(wm);
 }
 
-void CRender::add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start,
-								   const fvec3& dir, float size)
+void CRender::add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size)
 {
-	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
+	PROFILE_FUNCTION();
+#pragma todo("FIXME")
+	//Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)

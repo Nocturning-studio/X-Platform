@@ -344,6 +344,8 @@ void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 elem
 
 void WeaponUsageStatistic::OnBullet_Remove(SBullet* pBullet)
 {
+	PROFILE_FUNCTION();
+
 	if (!pBullet || !pBullet->flags.allow_sendhit)
 		return;
 	ABULLETS_it BulletIt;

@@ -333,7 +333,7 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const fvec3* pVerts, co
 void CWallmarksEngine::AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start,
 										   const fvec3& dir, float size)
 {
-	////OPTICK_EVENT("CWallmarksEngine::AddSkeletonWallmark");
+	PROFILE_FUNCTION();
 
 	if (::RenderImplementation.active_phase() != CRender::PHASE_NORMAL &&
 		::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)

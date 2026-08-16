@@ -215,6 +215,8 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec3& vEnd, collide::rq_result& R,
 								  u16 target_material, const fvec3& vNormal, bool ShowMark)
 {
+	PROFILE_FUNCTION();
+
 	SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	fvec3 particle_dir;
 
@@ -306,6 +308,8 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 
 void CBulletManager::StaticObjectHit(CBulletManager::_event& E)
 {
+	PROFILE_FUNCTION();
+
 	//	fvec3 hit_normal;
 	FireShotmark(&E.bullet, E.bullet.dir, E.point, E.R, E.tgt_material, E.normal);
 	//	ObjectHit	(&E.bullet,					E.point, E.R, E.tgt_material, hit_normal);
@@ -314,6 +318,8 @@ void CBulletManager::StaticObjectHit(CBulletManager::_event& E)
 static bool g_clear = false;
 void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
+	PROFILE_FUNCTION();
+
 	//òîëüêî äëÿ äèíàìè÷åñêèõ îáúåêòîâ
 	VERIFY(E.R.O);
 	if (g_clear)
@@ -400,8 +406,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 				CGameObject::u_EventSend (P);
 		*/
 
-		SHit Hit = SHit(power, original_dir, NULL, u16(E.R.element), position_in_bone_space, impulse, E.bullet.hit_type,
-						E.bullet.ap, E.bullet.flags.aim_bullet);
+		SHit Hit = SHit(power, original_dir, NULL, u16(E.R.element), position_in_bone_space, impulse, E.bullet.hit_type, E.bullet.ap, E.bullet.flags.aim_bullet);
 
 		Hit.GenHeader(u16((AddStatistic) ? GE_HIT_STATISTIC : GE_HIT) & 0xffff, E.R.O->ID());
 		Hit.whoID = E.bullet.parent_id;

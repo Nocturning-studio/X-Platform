@@ -71,4 +71,5 @@ changelog.txt
 cmake-build*/
 *.pdb
 *.exp
-Sources/xrEngine/optick_capture_100_frames.opt
+*.opt
+*.lastcodeanalysissucceeded
