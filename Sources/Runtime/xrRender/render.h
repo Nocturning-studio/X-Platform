@@ -25,9 +25,7 @@
 #include "xrRender_console.h"
 
 #include "SunOccluder.h" 
-
 #include "CPUOcclusion.h"
-
 #include "EffectorsManager.h"
 
 struct MainSceneWorkItem
@@ -51,40 +49,6 @@ struct MainSceneWorkItem
 	void Clear()
 	{
 		packet.Clear();
-	}
-};
-
-// Обертка для двойного буфера (как для солнца)
-struct MainSceneBuffer
-{
-	MainSceneWorkItem* items[2];
-
-	MainSceneBuffer()
-	{
-		items[0] = nullptr;
-		items[1] = nullptr;
-	}
-
-	void Init()
-	{
-		items[0] = xr_new<MainSceneWorkItem>();
-		items[0]->Init();
-		items[1] = xr_new<MainSceneWorkItem>();
-		items[1]->Init();
-	}
-
-	void Destroy()
-	{
-		if (items[0])
-		{
-			items[0]->Destroy();
-			xr_delete(items[0]);
-		}
-		if (items[1])
-		{
-			items[1]->Destroy();
-			xr_delete(items[1]);
-		}
 	}
 };
 
@@ -216,32 +180,7 @@ class CRender : public IRender_interface, public pureFrame
 		return m_sun_cascades_buffer[m_sun_read_ix];
 	}
 
-	// Буферы для основных проходов
-	// Мы разделяем GBuffer и Forward, так как они могут собираться независимо
-	MainSceneBuffer m_gbuffer_gather_data;
-	MainSceneBuffer m_forward_gather_data;
-
-	// Индексы (общие для сцены, предполагаем синхронное переключение кадра)
-	u32 m_scene_write_ix;
-	u32 m_scene_read_ix;
-
-	MainSceneWorkItem& GetGBufferWriteItem()
-	{
-		return *m_gbuffer_gather_data.items[m_scene_write_ix];
-	}
-	MainSceneWorkItem& GetGBufferReadItem()
-	{
-		return *m_gbuffer_gather_data.items[m_scene_read_ix];
-	}
-
-	MainSceneWorkItem& GetForwardWriteItem()
-	{
-		return *m_forward_gather_data.items[m_scene_write_ix];
-	}
-	MainSceneWorkItem& GetForwardReadItem()
-	{
-		return *m_forward_gather_data.items[m_scene_read_ix];
-	}
+	MainSceneWorkItem m_scene_data;
 
 	//Motion blur
 	fmat4x4 m_saved_viewproj;
@@ -353,13 +292,10 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void add_Visual(IRender_Visual* V);		  // add visual leaf	(no culling performed at all)
 	virtual void add_Geometry(IRender_Visual* V);	  // add visual(s)	(all culling performed)
 
-	// Контекст обхода сцены теперь живет здесь
 	SceneTraversalContext m_TraversalContext;
 
-	// Обновленные виртуальные методы интерфейса IRender_interface
 	virtual void set_Transform(fmat4x4* M)
 	{
-		// Если активен TLS контекст (мы внутри render_subspace или render_main) - пишем туда
 		if (CurrentRenderContext::context)
 			CurrentRenderContext::context->current_transform = M;
 		else
@@ -391,7 +327,7 @@ class CRender : public IRender_interface, public pureFrame
 
 	virtual void set_Frustum(CFrustum* O)
 	{
-		View = O; // Сохраняем для Legacy кода (если где-то используется напрямую View)
+		View = O;
 		if (CurrentRenderContext::context)
 			CurrentRenderContext::context->frustum = O;
 		else
@@ -507,7 +443,8 @@ class CRender : public IRender_interface, public pureFrame
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLightsOptimized(light_Package& LP);
 	void init_cacades();
-	void gather_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
+	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
+	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_ambient_occlusion();

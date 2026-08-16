@@ -111,6 +111,7 @@ typedef resptr_core<ShaderElement, resptr_base<ShaderElement>> ref_selement;
 struct ENGINE_API Shader : public xr_resource_flagged
 {
   public:
+	const u8 elements_count = 6;
 	ref_selement E[6]; // 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models, 5=L_sun
 	~Shader();
 	BOOL equal(Shader& S);

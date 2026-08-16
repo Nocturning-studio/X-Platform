@@ -19,7 +19,11 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 {
 	PROFILE_FUNCTION();
 
-	// Увеличиваем маркер кадра (легаси)
+	// Сброс флагов контекста
+	m_TraversalContext.is_invisible_mode = FALSE;
+	m_TraversalContext.is_hud_pass = FALSE;
+
+	// Увеличиваем маркер кадра
 	SceneGraph.m_traversal_marker++;
 
 	// Если текущий сектор не определен, рисуем только HUD и выходим.
@@ -32,30 +36,27 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	}
 
 	// -------------------------------------------------------------------------
-	// 0. Настройка контекста (TLS)
+	// Настройка контекста (TLS)
 	// -------------------------------------------------------------------------
 	// Получаем уникальный маркер обхода для текущего вызова
-	u32 current_marker = SceneGraph.m_traversal_marker.fetch_add(1) + 1;
+	u32 current_marker = ++SceneGraph.m_traversal_marker;
 
 	m_TraversalContext.frustum = &ViewBase;
 	m_TraversalContext.traversal_marker_id = current_marker;
 	m_TraversalContext.current_transform = &Fidentity;
 	m_TraversalContext.render_phase = CRender::PHASE_NORMAL;
 
-	// АКТИВИРУЕМ TLS:
-	// Теперь все вызовы add_Visual/add_Geometry внутри этого скоупа
-	// будут писать в переданный пакет 'dest'
 	CurrentRenderContext::Scope tls_scope(dest, m_TraversalContext);
 
 	// -------------------------------------------------------------------------
-	// 1. Spatial Query (Пишем в dest)
+	// Spatial Query
 	// -------------------------------------------------------------------------
-	g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED,
-							  STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
+	g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
 
 	// -------------------------------------------------------------------------
-	// 2. Sorting (Сортируем в dest)
+	// Sorting
 	// -------------------------------------------------------------------------
+#if 0
 	const fvec3 camera_pos = Engine.RenderView.Position;
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
 		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
@@ -67,9 +68,10 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	{
 		std::sort(dest.m_spatial_query_results.begin(), dest.m_spatial_query_results.end(), sort_predicate);
 	}
+#endif
 
 	// -------------------------------------------------------------------------
-	// 3. Light Tracking
+	// Light Tracking
 	// -------------------------------------------------------------------------
 	set_Object(nullptr);
 	if (active_phase() == PHASE_NORMAL)
@@ -100,13 +102,13 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	}
 
 	// -------------------------------------------------------------------------
-	// 4. Portal Traversal (Траверсер внутри dest)
+	// Portal Traversal (Траверсер внутри dest)
 	// -------------------------------------------------------------------------
 	// Используем траверсер, привязанный к конкретному пакету
 	dest.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection, CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
 
 	// -------------------------------------------------------------------------
-	// 5. Static Geometry (Берем из dest)
+	// Static Geometry
 	// -------------------------------------------------------------------------
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
@@ -124,13 +126,12 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 		for (const auto& frustum : sec_vis.frustums)
 		{
 			set_Frustum((CFrustum*)&frustum);
-			// add_Geometry сама возьмет dest из TLS (CurrentRenderContext)
 			add_Geometry(root_visual);
 		}
 	}
 
 	// -------------------------------------------------------------------------
-	// 6. Dynamic Geometry & Lights (Берем из dest)
+	// Dynamic Geometry & Lights
 	// -------------------------------------------------------------------------
 	for (ISpatial* spatial : dest.m_spatial_query_results)
 	{
@@ -145,9 +146,6 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 
 			if (pLight->get_LOD() > EPS_L)
 			{
-				// Примечание: Lights.add_light пишет в глобальный список.
-				// При полном выносе в поток это место потребует защиты мьютексом
-				// или своего буфера для lights. Пока оставляем как есть.
 				if (HOM.visible(pLight->get_homdata()))
 					dest.m_culled_lights.push_back(pLight);
 			}
@@ -180,7 +178,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 		}
 		if (!bInFrustum) continue;
 
-		// 1. ФИЛЬТР HUD
+		// ФИЛЬТР HUD
 		if (!sector)
 		{
 			float dist_sq = spatial->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
@@ -189,7 +187,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 		}
 
 		// =====================================================================
-		// 2. HOM OCCLUSION CULLING
+		// HOM OCCLUSION CULLING
 		// =====================================================================
 		vis_data& vis_orig = renderable->renderable.visual->vis;
 
@@ -222,112 +220,64 @@ void CRender::calculate_scene_culling()
 {
 	PROFILE_FUNCTION();
 
-	// 1. Управление буферами (SWAP)
-	// Переключаем индексы буферов один раз за кадр здесь.
-	// Write - куда пишем сейчас. Read - откуда будем читать в фазах рендеринга.
-	m_scene_write_ix = (m_scene_write_ix + 1) % 2;
-
-	// В синхронном режиме (пока нет многопоточности) читаем из того же буфера, в который пишем.
-	// При параллельном исполнении здесь будет: m_scene_read_ix = (m_scene_write_ix + 1) % 2;
-	m_scene_read_ix = m_scene_write_ix;
+	// Очищаем пакет перед новым сбором
+	m_scene_data.Clear();
 
 	if (!pLastSector)
 	{
-		MainSceneWorkItem& gbuffer_item = GetGBufferWriteItem();
-		gbuffer_item.Clear();
-		gbuffer_item.view = Engine.RenderView.View;
-		gbuffer_item.projection = Engine.RenderView.Project;
-		gbuffer_item.view_projection = Engine.RenderView.ViewProjection;
+		// Если сектор не определён, собираем только HUD
+		m_scene_data.view = Engine.RenderView.View;
+		m_scene_data.projection = Engine.RenderView.Project;
+		m_scene_data.view_projection = Engine.RenderView.ViewProjection;
 
 		{
 			SceneGraphFetchConfig hud_config(true, false, false);
 			SceneGraph.SetFetchConfig(hud_config);
 			set_active_phase(PHASE_NORMAL);
 
-			// Устанавливаем TLS для gbuffer_item.packet
-			CurrentRenderContext::Scope tls_scope(gbuffer_item.packet, m_TraversalContext);
+			CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
 			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 				g_pGameLevel->pHUD->Render_Last();
 		}
 
-		// Forward-пакет оставляем пустым
-		MainSceneWorkItem& fwd_item = GetForwardWriteItem();
-		fwd_item.Clear();
 		SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
 		return;
 	}
 
-	// -------------------------------------------------------------------------
-	// PHASE A: GBuffer Gather (Priority 0 + Wallmarks)
-	// -------------------------------------------------------------------------
-	{
-		MainSceneWorkItem& item = GetGBufferWriteItem();
-		item.Clear();
+	// Сохраняем матрицы
+	m_scene_data.view = Engine.RenderView.View;
+	m_scene_data.projection = Engine.RenderView.Project;
+	m_scene_data.view_projection = Engine.RenderView.ViewProjection;
 
-		// Сохраняем матрицы для истории (чтобы Draw поток знал, как рисовать)
-		item.view = Engine.RenderView.View;
-		item.projection = Engine.RenderView.Project;
-		item.view_projection = Engine.RenderView.ViewProjection;
+	// Конфигурация: собираем все приоритеты и декали
+	SceneGraphFetchConfig config;
+	config.fetch_priority_0 = true;
+	config.fetch_priority_1 = true;
+	config.fetch_wallmarks = true;
+	SceneGraph.SetFetchConfig(config);
 
-		// Конфигурация сбора для GBuffer
-		SceneGraphFetchConfig GBufferPassFetchConfig;
-		GBufferPassFetchConfig.fetch_priority_0 = true;	 // Обычная геометрия
-		GBufferPassFetchConfig.fetch_priority_1 = false; // Сложные материалы (потом)
-		GBufferPassFetchConfig.fetch_wallmarks = true;	 // Воллмарки
-		SceneGraph.SetFetchConfig(GBufferPassFetchConfig);
+	set_active_phase(PHASE_NORMAL);
 
-		// Устанавливаем фазу (влияет на выбор шейдеров в rimp_select_sh_...)
-		set_active_phase(PHASE_NORMAL);
-
-		// Сбор баундов для теней (только в основном проходе)
-		if (m_need_render_sun)
-			SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
-		else
-			SceneGraph.SetCullingBoundsCollector(NULL);
-
-		// Сбор данных (запись в item.packet)
-		gather_visibility(item.view_projection, item.packet);
-		SceneGraph.PrepareDynamicInstances(item.packet, m_TraversalContext);
-		MergeCulledLights(item.packet);
-
-		{
-			CurrentRenderContext::Scope tls_scope(item.packet, m_TraversalContext);
-			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
-				g_pGameLevel->pHUD->Render_Last();
-		}
-
-		// Очистка состояния
+	// Сбор баундов для теней
+	if (m_need_render_sun)
+		SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
+	else
 		SceneGraph.SetCullingBoundsCollector(NULL);
-	}
 
-	// -------------------------------------------------------------------------
-	// PHASE B: Forward Gather (Priority 1 + Transparents)
-	// -------------------------------------------------------------------------
+	// Обход сцены
+	gather_visibility(m_scene_data.view_projection, m_scene_data.packet);
+	SceneGraph.PrepareDynamicInstances(m_scene_data.packet, m_TraversalContext);
+	MergeCulledLights(m_scene_data.packet);
+
+	// HUD тоже попадает в этот пакет
 	{
-		MainSceneWorkItem& item = GetForwardWriteItem();
-		item.Clear();
-
-		// Сохраняем матрицы
-		item.view = Engine.RenderView.View;
-		item.projection = Engine.RenderView.Project;
-		item.view_projection = Engine.RenderView.ViewProjection;
-
-		// Конфигурация сбора для Forward
-		SceneGraphFetchConfig ForwardPassFetchConfig;
-		ForwardPassFetchConfig.fetch_priority_0 = false; // Уже отрисовали в GBuffer
-		ForwardPassFetchConfig.fetch_priority_1 = true; // Геометрия со сложными шейдерами (Forward)
-		ForwardPassFetchConfig.fetch_wallmarks = false; // Уже собрали (или не нужны здесь)
-		SceneGraph.SetFetchConfig(ForwardPassFetchConfig);
-
-		set_active_phase(PHASE_NORMAL);
-
-		// Сбор данных (запись в item.packet)
-		gather_visibility(item.view_projection, item.packet);
-		SceneGraph.PrepareDynamicInstances(item.packet, m_TraversalContext);
-		MergeCulledLights(item.packet);
+		CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
+		if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+			g_pGameLevel->pHUD->Render_Last();
 	}
 
-	// Восстанавливаем дефолтный конфиг на всякий случай
+	// Очистка состояния
+	SceneGraph.SetCullingBoundsCollector(NULL);
 	SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
 }
 
@@ -347,40 +297,33 @@ void CRender::render_gbuffer_primary()
 {
 	PROFILE_FUNCTION();
 
-	// 1. Получаем данные для отрисовки (READ Item)
-	// Данные уже были собраны в calculate_scene_culling
-	MainSceneWorkItem& readItem = GetGBufferReadItem();
+	MainSceneWorkItem& readItem = m_scene_data;
 
-	// 2. DRAW PHASE
-	{
-		Engine.Statistic->RenderCALC_GBuffer.Begin();
-		RenderBackend.enable_anisotropy_filtering();
+	Engine.Statistic->RenderCALC_GBuffer.Begin();
+	RenderBackend.enable_anisotropy_filtering();
 
-		set_gbuffer();
+	set_gbuffer();
 
-		if (psDeviceFlags.test(rsWireframe))
-			RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	if (psDeviceFlags.test(rsWireframe))
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-		// Используем пакет из readItem
-		SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
+	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
 
-		if (Details)
-			Details->Render(DetailsRenderMode::Default);
+	if (Details)
+		Details->Render(DetailsRenderMode::Default);
 
-		if (psDeviceFlags.test(rsWireframe))
-			RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	if (psDeviceFlags.test(rsWireframe))
+		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-		RenderBackend.disable_anisotropy_filtering();
-		Engine.Statistic->RenderCALC_GBuffer.End();
-	}
+	RenderBackend.disable_anisotropy_filtering();
+	Engine.Statistic->RenderCALC_GBuffer.End();
 }
 
 void CRender::render_gbuffer_secondary()
 {
 	PROFILE_FUNCTION();
 
-	// Используем уже собранные данные из Read Item (GBuffer packet)
-	MainSceneWorkItem& readItem = GetGBufferReadItem();
+	MainSceneWorkItem& readItem = m_scene_data;
 
 	RenderBackend.enable_anisotropy_filtering();
 	set_gbuffer();
@@ -390,11 +333,8 @@ void CRender::render_gbuffer_secondary()
 
 	RenderBackend.set_ZWriteEnable(FALSE);
 
-	// Рендерим из readItem.packet
-	// LODs
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::LOD, 0, true, true);
 
-	// HUD (оружие)
 	set_active_phase(PHASE_HUD);
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
@@ -410,7 +350,7 @@ void CRender::render_stage_forward()
 	PROFILE_FUNCTION();
 
 	// Берем данные из READ Item для Forward прохода
-	MainSceneWorkItem& currentReadItem = GetForwardReadItem();
+	MainSceneWorkItem& currentReadItem = m_scene_data;
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());

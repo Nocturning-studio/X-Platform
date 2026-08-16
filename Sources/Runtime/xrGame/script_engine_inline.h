@@ -17,6 +17,7 @@ IC void CScriptEngine::add_script_process(const EScriptProcessors& process_id, C
 
 CScriptProcess* CScriptEngine::script_process(const EScriptProcessors& process_id) const
 {
+	PROFILE_FUNCTION();
 	CScriptProcessStorage::const_iterator I = m_script_processes.find(process_id);
 	if ((I != m_script_processes.end()))
 		return ((*I).second);

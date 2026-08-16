@@ -16,6 +16,8 @@ class SoftXOcclusionCore;
 class SoftXLightVolumeOcclusion
 {
 public:
+    static constexpr SoftX::OcclusionQuery::queryID kInvalidQueryId = 0xFFFFFFFFu;
+
     SoftXLightVolumeOcclusion() = default;
     ~SoftXLightVolumeOcclusion() = default;
 

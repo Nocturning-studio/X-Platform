@@ -226,7 +226,7 @@ const float base_spu_epsP = 0.05f;
 const float base_spu_epsR = 0.05f;
 void CObject::spatial_update(float eps_P, float eps_R)
 {
-	//OPTICK_EVENT("CObject::spatial_update");
+	PROFILE_FUNCTION();
 
 	//
 	BOOL bUpdate = FALSE;
@@ -289,7 +289,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
 // Updates
 void CObject::UpdateCL()
 {
-	//OPTICK_EVENT("CObjectList::UpdateCL");
+	PROFILE_FUNCTION();
 
 	// consistency check
 #ifdef DEBUG
@@ -347,7 +347,7 @@ void CObject::spatial_unregister()
 
 void CObject::spatial_move()
 {
-	//OPTICK_EVENT("CObject::spatial_move");
+	PROFILE_FUNCTION();
 
 	Center(spatial.sphere.P);
 	spatial.sphere.R = Radius();

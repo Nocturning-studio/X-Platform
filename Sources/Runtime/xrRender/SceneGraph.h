@@ -258,7 +258,7 @@ class CSceneGraph
 
 	R_feedback* m_feedback_interface;
 	u32 val_feedback_breakp;
-	std::atomic<u32> m_traversal_marker; 
+	u32 m_traversal_marker; 
 
 	u32 counter_S;
 	u32 counter_D;

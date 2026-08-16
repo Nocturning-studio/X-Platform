@@ -373,6 +373,7 @@ void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 
 void CLevel::ProcessGameEvents()
 {
+	PROFILE_FUNCTION();
 	// Game events
 	{
 		NET_Packet P;
@@ -493,10 +494,8 @@ void CLevel::OnFrame()
 				F->SetHeightI(0.015f);
 				F->OutSetI(0.0f, 0.5f);
 				F->SetColor(D3DCOLOR_XRGB(0, 255, 0));
-				F->OutNext("IN:  %4d/%4d (%2.1f%%)", S->bytes_in_real, S->bytes_in,
-						   100.f * float(S->bytes_in_real) / float(S->bytes_in));
-				F->OutNext("OUT: %4d/%4d (%2.1f%%)", S->bytes_out_real, S->bytes_out,
-						   100.f * float(S->bytes_out_real) / float(S->bytes_out));
+				F->OutNext("IN:  %4d/%4d (%2.1f%%)", S->bytes_in_real, S->bytes_in, 100.f * float(S->bytes_in_real) / float(S->bytes_in));
+				F->OutNext("OUT: %4d/%4d (%2.1f%%)", S->bytes_out_real, S->bytes_out, 100.f * float(S->bytes_out_real) / float(S->bytes_out));
 				F->OutNext("client_2_sever ping: %d", net_Statistic.getPing());
 				F->OutNext("SPS/Sended : %4d/%4d", S->dwBytesPerSec, S->dwBytesSended);
 				F->OutNext("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
@@ -537,16 +536,12 @@ void CLevel::OnFrame()
 		}
 	}
 
-	//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
 	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
 
-	// Engine.Statistic->cripting.Begin	();
 	if (!g_dedicated_server)
 		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
-	// Engine.Statistic->Scripting.End	();
 	m_ph_commander->update();
 	m_ph_commander_scripts->update();
-	//	autosave_manager().update			();
 
 	// просчитать полет пуль
 	Engine.Statistic->TEST0.Begin();

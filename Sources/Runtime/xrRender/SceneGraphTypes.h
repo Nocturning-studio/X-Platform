@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fixedmap.h"
-#include "doug_lea_allocator_wrapper.h" // Подключаем наш новый аллокатор
+#include "doug_lea_allocator_wrapper.h"
 
 //#define USE_RESOURCE_DEBUGGER
 

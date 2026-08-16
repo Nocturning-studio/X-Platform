@@ -38,19 +38,19 @@ void SmartParallelFor(Index start, Index end, Index step, Func&& func)
         return;
     }
 
-    Index chunkSize = ((total + numThreads - 1) / numThreads) * step;
-    for (uint32_t t = 0; t < numThreads; ++t)
-    {
-        Index chunkStart = start + t * chunkSize;
-        Index chunkEnd = std::min(chunkStart + chunkSize, end);
-        if (chunkStart >= end) break;
+    std::atomic<Index> next(start);
 
-        DispatchWorkers([chunkStart, chunkEnd, step, &func]()
+    DispatchWorkers([&]()
         {
-            for (Index i = chunkStart; i < chunkEnd; i += step)
+            while (true)
+            {
+                Index i = next.fetch_add(step);
+                if (i >= end)
+                    break;
+
                 func(i);
+            }
         });
-    }
 }
 
 } // namespace ThreadUtils

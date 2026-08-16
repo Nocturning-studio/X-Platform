@@ -31,44 +31,49 @@ template <class K, class T, class allocator = xr_allocator> class FixedMAP
 
 	void Realloc()
 	{
-		u32 newLimit = limit + SG_REALLOC_ADVANCE;
-		TNode* newNodes = (TNode*)allocator::alloc(sizeof(TNode) * newLimit);
+		const u32 newLimit = limit + SG_REALLOC_ADVANCE;
+		TNode* newNodes = static_cast<TNode*>(allocator::alloc(sizeof(TNode) * newLimit));
+		R_ASSERT(newNodes != nullptr);
 
-		ZeroMemory(newNodes, Size(newLimit));
+		u32 i = 0;
+		try
+		{
+			for (; i < pool; ++i)
+			{
+				TNode* oldNode = nodes + i;
+				TNode* newNode = newNodes + i;
 
-		for (u32 i = 0; i < pool; ++i) {
-			TNode* oldNode = nodes + i;
-			TNode* newNode = newNodes + i;
+				new (&newNode->key) K(std::move(oldNode->key));
+				new (&newNode->val) T(std::move(oldNode->val));
 
-			new (&newNode->key) K(std::move(oldNode->key));
-			new (&newNode->val) T(std::move(oldNode->val));
-
-			oldNode->val.~T();
-			oldNode->key.~K();
-
-			newNode->left = nullptr;
-			newNode->right = nullptr;
-		}
-
-		for (u32 i = 0; i < pool; ++i) {
-			TNode* oldNode = nodes + i;
-			TNode* newNode = newNodes + i;
-
-			if (oldNode->left) {
-				size_t lid = oldNode->left - nodes;
-				newNode->left = newNodes + lid;
+				newNode->left = oldNode->left ? (newNodes + (oldNode->left - nodes)) : nullptr;
+				newNode->right = oldNode->right ? (newNodes + (oldNode->right - nodes)) : nullptr;
 			}
-			if (oldNode->right) {
-				size_t rid = oldNode->right - nodes;
-				newNode->right = newNodes + rid;
+
+			for (i = 0; i < pool; ++i)
+			{
+				TNode* oldNode = nodes + i;
+				oldNode->val.~T();
+				oldNode->key.~K();
 			}
+
+			if (nodes)
+				allocator::dealloc(nodes);
+
+			nodes = newNodes;
+			limit = newLimit;
 		}
-
-		if (nodes)
-			allocator::dealloc(nodes);
-
-		nodes = newNodes;
-		limit = newLimit;
+		catch (...)
+		{
+			for (u32 j = 0; j < i; ++j)
+			{
+				TNode* newNode = newNodes + j;
+				newNode->val.~T();
+				newNode->key.~K();
+			}
+			allocator::dealloc(newNodes);
+			throw;
+		}
 	}
 
 	IC TNode* Alloc(const K& key)

@@ -77,21 +77,31 @@ void SoftXLightVolumeOcclusion::Shutdown()
 // ---------------------------------------------------------------------------------------
 void SoftXLightVolumeOcclusion::BeginQueries(const fmat4x4& viewProj, const SoftX::Viewport& viewport)
 {
+    PROFILE_FUNCTION();
     if (!m_core) return;
+
     m_currentViewProj = viewProj;
     m_currentViewport = viewport;
 
-    m_activeQuery = m_queryPool[m_currentQueryIndex].get();
+    SoftX::OcclusionQuery* candidate = m_queryPool[m_currentQueryIndex].get();
+
+    if (!candidate->IsReady())
+    {
+        m_activeQuery = nullptr;
+        return;
+    }
+
+    m_activeQuery = candidate;
     m_currentQueryIndex = (m_currentQueryIndex + 1) % QUERY_POOL_SIZE;
 
-    if (!m_activeQuery->IsReady()) m_activeQuery->Flush();
-    m_activeQuery->SetDepthBuffer(m_core->GetWriteBuffer());
+    m_activeQuery->SetDepthBuffer(m_core->GetReadBuffer());
     m_activeQuery->SetViewport(m_currentViewport);
     m_activeQuery->Begin();
 }
 
 void SoftXLightVolumeOcclusion::EndQueries()
 {
+    PROFILE_FUNCTION();
     if (m_activeQuery) { m_activeQuery->End(); m_pendingQuery = m_activeQuery; m_activeQuery = nullptr; }
 }
 
@@ -124,7 +134,7 @@ SoftX::Interpolant LightVolumeQueryVS(const SoftX::Vertex& input, const SoftX::C
 
 SoftX::OcclusionQuery::queryID SoftXLightVolumeOcclusion::AddVolume(light* L)
 {
-    if (!L || !m_activeQuery) return 0;
+    if (!L || !m_activeQuery) return kInvalidQueryId;
 
     SoftX::VertexBuffer* vb = nullptr; SoftX::IndexBuffer* ib = nullptr;
     switch (L->LightFlags.type) {
@@ -132,9 +142,9 @@ SoftX::OcclusionQuery::queryID SoftXLightVolumeOcclusion::AddVolume(light* L)
     case IRender_Light::POINT:     vb = m_pointVB.get(); ib = m_pointIB.get(); break;
     case IRender_Light::SPOT:      vb = m_spotVB.get();  ib = m_spotIB.get();  break;
     case IRender_Light::OMNIPART:  vb = m_omniVB.get();  ib = m_omniIB.get();  break;
-    default: return 0;
+    default: return kInvalidQueryId;
     }
-    if (!vb || !ib) return 0;
+    if (!vb || !ib) return kInvalidQueryId;
 
     fmat4x4 mvp; mvp.mul(m_currentViewProj, L->get_transform());
     SoftX::ConstantBuffer cb(&mvp, sizeof(mvp));

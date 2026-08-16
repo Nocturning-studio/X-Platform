@@ -17,8 +17,7 @@ void CRender::render_stage_lights_culling()
 
 #ifdef DEBUG_LIGHTS_CULLING
 	Msg("[CPU-OCC] === Frame %d BEGIN ===", frame);
-	Msg("[CPU-OCC] Lights in package: point=%d spot=%d shadowed=%d",
-		Lights.package.v_point.size(), Lights.package.v_spot.size(), Lights.package.v_shadowed.size());
+	Msg("[CPU-OCC] Lights in package: point=%d spot=%d shadowed=%d", Lights.package.v_point.size(), Lights.package.v_spot.size(), Lights.package.v_shadowed.size());
 #endif
 
 	// --------------------------------------------------------------------

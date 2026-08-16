@@ -34,11 +34,13 @@ static bool SortLodsByDotProduct(const std::pair<float, u32>& a, const std::pair
 // --- Render Helper: Static Batches ---
 static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 {
+	PROFILE_FUNCTION();
+
 	// Сортировка Front-to-Back по SSA для Early Z-Cull
-	std::sort(batch.begin(), batch.end(),
-			  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) {
-				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
-			  });
+	//std::sort(batch.begin(), batch.end(),
+	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) {
+	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+	//		  });
 
 	for (const auto& node : batch)
 	{
@@ -49,11 +51,13 @@ static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 // --- Render Helper: Dynamic Batches ---
 static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 {
+	PROFILE_FUNCTION();
+
 	// Сортировка Front-to-Back
-	std::sort(batch.begin(), batch.end(),
-			  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) {
-				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
-			  });
+	//std::sort(batch.begin(), batch.end(),
+	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) {
+	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+	//		  });
 
 	for (const auto& node : batch)
 	{
@@ -128,6 +132,8 @@ template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
 template <typename MapTextures, typename VecTypes>
 void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_map, BOOL bUseSSA)
 {
+	PROFILE_FUNCTION();
+
 	if (textures_map.size() == 0)
 		return;
 
@@ -215,10 +221,9 @@ void CSceneGraph::Render(SceneGraphPacket& packet, SceneGraphRenderType type, u3
 }
 
 // ===============================================================================================
-//  CSceneGraph Rendering Implementation (Stateless Update)
+//  CSceneGraph Rendering Implementation
 // ===============================================================================================
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _clear)
 {
 	OPTICK_EVENT("RenderOpaque");
@@ -230,11 +235,8 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 	{
 		RenderBackend.set_transform_world(Fidentity);
 
-		// Используем packet.queue_static
 		mapNormalVS& map_vs = packet.queue_static[_priority];
 
-		// m_scratch все еще берем из this->m_scratch, так как это рабочий буфер рендеринга.
-		// В будущем scratch тоже можно будет передавать аргументом, если рендеринг будет параллельным.
 		map_vs.getANY_P(m_scratch.nrmVS);
 
 		for (auto* node_vs : m_scratch.nrmVS)
@@ -310,7 +312,6 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 	// PHASE 2: DYNAMIC GEOMETRY (NPCs, Physics)
 	// -------------------------------------------------------------------------
 	{
-		// Используем packet.queue_dynamic
 		mapMatrixVS& map_vs = packet.queue_dynamic[_priority];
 		map_vs.getANY_P(m_scratch.matVS);
 
@@ -383,7 +384,6 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 	Engine.Statistic->RenderDUMP.End();
 }
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 {
 	OPTICK_EVENT("RenderHUD");
@@ -404,7 +404,6 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 
 	// Render
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
-	// Используем packet.queue_hud
 	packet.queue_hud.traverseLR(RenderSortedNode);
 	packet.queue_hud.clear();
 	RenderImplementation.set_render_mode(CRender::MODE_NORMAL);
@@ -415,79 +414,63 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	RenderBackend.set_transform_project(Engine.RenderView.Project);
 }
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderTranslucent(SceneGraphPacket& packet)
 {
 	OPTICK_EVENT("RenderTranslucent");
-	// Используем packet.queue_transparent
 	packet.queue_transparent.traverseRL(RenderSortedNode);
 	packet.queue_transparent.clear();
 }
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderEmissive(SceneGraphPacket& packet)
 {
 	OPTICK_EVENT("RenderEmissive");
-	// Используем packet.mapEmissive
 	packet.mapEmissive.traverseLR(RenderSortedNode);
 	packet.mapEmissive.clear();
 }
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderWmarks(SceneGraphPacket& packet)
 {
 	OPTICK_EVENT("RenderWmarks");
-	// Используем packet.queue_wallmarks
 	packet.queue_wallmarks.traverseLR(RenderSortedNode);
 	packet.queue_wallmarks.clear();
 }
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderDistortion(SceneGraphPacket& packet)
 {
 	OPTICK_EVENT("RenderDistortion");
-	// Используем packet.queue_distortion
 	packet.queue_distortion.traverseRL(RenderSortedNode);
 	packet.queue_distortion.clear();
 }
 
-// Добавлен аргумент packet
 void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _clear)
 {
 	OPTICK_EVENT("RenderLODs");
 
 	// Сбор LOD-ов в плоский список
 	if (_setup_zb)
-		// Используем packet.mapLOD и packet.lstLODs
 		packet.mapLOD.getLR(packet.lstLODs); // front-to-back (для Z-buffer)
 	else
 		packet.mapLOD.getRL(packet.lstLODs); // back-to-front (для цвета)
 
-	// Используем packet.lstLODs
 	if (packet.lstLODs.empty())
 		return;
 
-	// *** Подготовка буфера и констант ***
 	u32 shader_id = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
-	// Используем packet.lstLODs
 	FLOD* first_visual = (FLOD*)packet.lstLODs[0].pVisual;
 
 	u32 vb_offset;
-	// Используем packet.lstLODs.size()
-	FLOD::_hw* VertexBuffer =
-		(FLOD::_hw*)RenderBackend.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
+	FLOD::_hw* VertexBuffer = (FLOD::_hw*)RenderBackend.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
 
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
 	if (ssa_range < EPS_S)
 		ssa_range = EPS_S;
 
-	// Захват переменных для PPL
 	const float ssa_limit_b = r_ssaLOD_B;
 	const fvec3 camera_pos = Engine.RenderView.Position;
 
-	// *** ПАРАЛЛЕЛЬНЫЙ ПРОХОД: Генерация геометрии ***
-	// Используем packet.lstLODs
-	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i) {
+	// *** Генерация геометрии ***
+	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i) 
+	{
 		FLOD::_hw* V = VertexBuffer + (i * 4);
 		SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
 		FLOD* lod_visual = (FLOD*)Node.pVisual;
@@ -548,8 +531,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	RenderBackend.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
-	// *** ПОСЛЕДОВАТЕЛЬНЫЙ ПРОХОД: Группировка по шейдерам ***
-	// Используем packet.lstLODs
+	// *** Группировка по шейдерам ***
 	if (!packet.lstLODs.empty())
 	{
 		ref_selement current_shader = packet.lstLODs[0].pVisual->shader->E[shader_id];
@@ -564,7 +546,6 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 			}
 			else
 			{
-				// Используем packet.lstLODgroups
 				packet.lstLODgroups.push_back(current_count);
 				current_shader = Node.pVisual->shader->E[shader_id];
 				current_count = 1;
@@ -577,7 +558,6 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	int current_lod_index = 0;
 	RenderBackend.set_transform_world(Fidentity);
 
-	// Используем packet.lstLODgroups
 	for (u32 g = 0; g < packet.lstLODgroups.size(); g++)
 	{
 		int primitive_count = packet.lstLODgroups[g];
@@ -599,7 +579,6 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	}
 
 	// *** Cleanup ***
-	// Очищаем packet
 	packet.lstLODs.clear();
 	packet.lstLODgroups.clear();
 
@@ -614,8 +593,12 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 // ===============================================================================================
 
 // Shortcut (создание фрустума из матрицы)
-void CSceneGraph::render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic,
-								  BOOL _precise_portals, SceneGraphPacket& dest)
+void CSceneGraph::render_subspace(IRender_Sector* _sector, 
+								  fmat4x4& mCombined, 
+								  fvec3& _cop, 
+								  BOOL _dynamic, 
+								  BOOL _precise_portals, 
+								  SceneGraphPacket& dest)
 {
 	OPTICK_EVENT("render_subspace - shortcut");
 
@@ -625,8 +608,12 @@ void CSceneGraph::render_subspace(IRender_Sector* _sector, fmat4x4& mCombined, f
 }
 
 // Main Implementation (Основная логика)
-void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_frustum, fmat4x4& mCombined,
-								  fvec3& camera_pos, BOOL render_dynamic, BOOL precise_portals,
+void CSceneGraph::render_subspace(IRender_Sector* start_sector, 
+								  CFrustum* view_frustum, 
+								  fmat4x4& mCombined,
+								  fvec3& camera_pos, 
+								  BOOL render_dynamic, 
+								  BOOL precise_portals,
 								  SceneGraphPacket& dest)
 {
 	OPTICK_EVENT("render_subspace - main");
@@ -634,7 +621,7 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	VERIFY(start_sector);
 	VERIFY(view_frustum);
 
-	// Увеличиваем маркер (хотя теперь он используется меньше, он нужен для отладки или легаси кода)
+	// Увеличиваем маркер
 	m_traversal_marker++;
 
 	// -------------------------------------------------------------------------
@@ -646,11 +633,9 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	local_ctx.is_invisible_mode = FALSE;
 	local_ctx.current_owner = nullptr;
 	local_ctx.current_transform = &Fidentity;
-	local_ctx.traversal_marker_id = m_traversal_marker.fetch_add(1) + 1;
+	local_ctx.traversal_marker_id = ++m_traversal_marker;
 	local_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
-	// Активируем TLS: теперь все вызовы add_Visual/Geometry пойдут в 'dest'
-	// и будут использовать 'local_ctx'
 	CurrentRenderContext::Scope tls_scope(dest, local_ctx);
 
 	// -------------------------------------------------------------------------
@@ -681,8 +666,6 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	// -------------------------------------------------------------------------
 	// Обход порталов (Traverse)
 	// -------------------------------------------------------------------------
-	// Запускаем локальный траверсер пакета.
-	// Он заполнит свой внутренний список GetVisibleSectors().
 	dest.portal_traverser.Traverse((CSector*)start_sector, *view_frustum, camera_pos, mCombined, 0);
 
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
@@ -701,21 +684,10 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 	{
 		CSector* sector = sec_vis.sector;
 		IRender_Visual* root_visual = sector->GetRootVisual();
-
-		// Итерируемся по фрустумам, через которые виден этот сектор.
-		// Эти фрустумы теперь лежат в структуре SectorVisibility, а не в самом секторе.
-		for (const auto& frustum : sec_vis.frustums)
-		{
-			// Обновляем контекст: для статики нужен конкретный фрустум портала
-			local_ctx.frustum = &frustum;
-
-			// Добавляем геометрию (маска плоскостей берется из local_ctx.frustum внутри)
-			add_Static(root_visual, frustum.getMask(), local_ctx, dest);
-		}
+		add_Static(root_visual, view_frustum->getMask(), local_ctx, dest);
 	}
 
-	// Возвращаем общий фрустум в контекст (на случай если динамика захочет его использовать,
-	// хотя ниже мы переопределяем его снова)
+	// Возвращаем общий фрустум в контекст
 	local_ctx.frustum = view_frustum;
 
 	// -------------------------------------------------------------------------
@@ -740,19 +712,11 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 			// Теперь сектор не хранит маркер текущего прохода.
 			// Мы должны найти этот сектор в списке visible_sectors нашего траверсера.
 
-			const CPortalTraverser::SectorVisibility* active_vis_data = nullptr;
+			auto it = dest.visible_sectors_map.find(sector);
+			if (it == dest.visible_sectors_map.end()) 
+				continue;
 
-			// Линейный поиск. При N < 100 секторов в кадре это быстрее, чем map или hash table.
-			for (const auto& item : visible_sectors)
-			{
-				if (item.sector == sector)
-				{
-					active_vis_data = &item;
-					break;
-				}
-			}
-
-			// Если сектор объекта не найден в списке видимых - объект не видим.
+			const auto* active_vis_data = it->second;
 			if (!active_vis_data)
 				continue;
 
@@ -782,14 +746,6 @@ void CSceneGraph::render_subspace(IRender_Sector* start_sector, CFrustum* view_f
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// Тень от актера (Actor Shadow Hack)
-	// -------------------------------------------------------------------------
-	if (g_pGameLevel && (local_ctx.render_phase == RenderImplementation.PHASE_SHADOW_DEPTH))
-	{
-		g_pGameLevel->pHUD->Render_Actor_Shadow();
-	}
 }
 
 // Frame Reuse Optimization
@@ -798,7 +754,7 @@ void CSceneGraph::render_reuse(const SceneTraversalContext& initial_ctx, SceneGr
 	PROFILE_FUNCTION();
 
 	SceneTraversalContext local_ctx = initial_ctx;
-	local_ctx.traversal_marker_id = m_traversal_marker.fetch_add(1) + 1;
+	local_ctx.traversal_marker_id = ++m_traversal_marker;
 	auto static_visuals = packet.m_visuals_static_visible;
 	auto dynamic_visuals = packet.m_visuals_dynamic_visible;
 
