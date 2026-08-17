@@ -127,21 +127,12 @@ static class cl_is_hud_render_phase : public R_constant_setup
 	}
 } binder_is_hud_render_phase;
 //////////////////////////////////////////////////////////////////////////
-void CRender::CheckHWRenderSupporting()
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
 // update with vid_restart
 void CRender::update_options()
 {
 	m_skinning = -1;
 
 	o.smapsize = 1024;
-
-	o.nvdbt = false;//HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
-	if (o.nvdbt)
-		Msg("- Nvidia Depth Bounds supported");
 
 	o.noshadows = (strstr(Core.Params, "-noshadows")) ? TRUE : FALSE;
 	o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
@@ -620,58 +611,6 @@ void CRender::Statistics(CGameFont* _F)
 	stats.ic_total = 0;
 	F.OutNext(" culled : %2d", stats.ic_culled);
 	stats.ic_culled = 0;
-}
-
-void CRender::enable_dbt_bounds(light* L)
-{
-	if (!RenderImplementation.o.nvdbt)
-		return;
-	if (!ps_r_ls_flags.test(RFLAG_USE_NVDBT))
-		return;
-
-	u32 mask = 0xffffffff;
-	EFC_Visible vis = RenderImplementation.ViewBase.testSphere(L->spatial.sphere.P, L->spatial.sphere.R * 1.01f, mask);
-	if (vis != fcvFully)
-		return;
-
-	// transform BB
-	Fbox BB;
-	fvec3 rr;
-	rr.set(L->spatial.sphere.R, L->spatial.sphere.R, L->spatial.sphere.R);
-	BB.setb(L->spatial.sphere.P, rr);
-
-	Fbox bbp;
-	bbp.invalidate();
-	for (u32 i = 0; i < 8; i++)
-	{
-		fvec3 pt;
-		BB.getpoint(i, pt);
-		Engine.RenderView.ViewProjection.transform(pt);
-		bbp.modify(pt);
-	}
-	u_DBT_enable(bbp.min.z, bbp.max.z);
-}
-
-// nv-DBT
-BOOL CRender::u_DBT_enable(float zMin, float zMax)
-{
-	if (!RenderImplementation.o.nvdbt)
-		return FALSE;
-	if (!ps_r_ls_flags.test(RFLAG_USE_NVDBT))
-		return FALSE;
-
-	// enable cheat
-	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, MAKEFOURCC('N', 'V', 'D', 'B'));
-	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_Z, *(DWORD*)&zMin);
-	RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_W, *(DWORD*)&zMax);
-
-	return TRUE;
-}
-
-void CRender::u_DBT_disable()
-{
-	if (RenderImplementation.o.nvdbt && ps_r_ls_flags.test(RFLAG_USE_NVDBT))
-		RenderBackend.SetRenderState(D3DRS_ADAPTIVETESS_X, 0);
 }
 
 float CRender::hclip(float v, float dim)

@@ -31,7 +31,6 @@ void CRender::accumulate_spot_lights(light* L)
 		RenderBackend.set_transform_view(Engine.RenderView.View);
 		RenderBackend.set_transform_project(Engine.RenderView.Project);
 		bIntersect = enable_scissor(L);
-		enable_dbt_bounds(L);
 
 		// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 		// *** thus can cope without stencil clear with 127 lights
@@ -183,6 +182,4 @@ void CRender::accumulate_spot_lights(light* L)
 
 	dwLightMarkerID += 2; // keep lowest bit always setted up
 	RenderBackend.SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-
-	u_DBT_disable();
 }

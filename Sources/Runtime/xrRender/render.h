@@ -77,21 +77,11 @@ class CRender : public IRender_interface, public pureFrame
 	struct _options
 	{
 		u32 smapsize : 16;
-		u32 nvdbt : 1;
 		u32 distortion : 1;
 		u32 forceskinw : 1;
 		u32 noshadows : 1;
-
-		float sun_depth_near_scale;
-		float sun_depth_near_bias;
-		float sun_depth_far_scale;
-		float sun_depth_far_bias;
-
-		bool use_ssao;
-		bool use_atest_aa;
 	} o;
 
-	void CheckHWRenderSupporting();
 	void update_options();
 
 	struct _stats
@@ -392,9 +382,6 @@ class CRender : public IRender_interface, public pureFrame
 	void render_shadow_map_spot_transluent(light* L);
 	void set_light_accumulator();
 	BOOL enable_scissor(light* L); // true if intersects near plane
-	void enable_dbt_bounds(light* L);
-	BOOL u_DBT_enable(float zMin, float zMax);
-	void u_DBT_disable();
 	float hclip(float v, float dim);
 	void draw_volume(light* L);
 	void accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transform_prev);// , float fBias); //, float fSize);
