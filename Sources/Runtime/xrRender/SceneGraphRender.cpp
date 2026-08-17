@@ -402,7 +402,7 @@ void CSceneGraph::RenderFromCache(const SceneTraversalContext& initial_ctx, Scen
 	auto dynamic_visuals = packet.m_visuals_dynamic_visible;
 	for (auto& it : dynamic_visuals)
 	{
-		local_ctx.current_transform = &it.matrix;
+		local_ctx.transform = &it.matrix;
 		ProcessDynamicVisual(it.visual, local_ctx, packet);
 	}
 }

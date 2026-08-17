@@ -9,7 +9,7 @@ struct vis_data
 {
 	Fsphere sphere;						 //
 	Fbox box;							 //
-	u32 m_traversal_marker;				 // for different sub-renders
+	std::atomic<u32> m_traversal_marker; // for different sub-renders
 	u32 accept_frame;					 // when it was requisted accepted for main render
 	u32 hom_frame;						 // when to perform test - shedule
 	u32 hom_tested;						 // when it was last time tested
@@ -46,7 +46,7 @@ struct vis_data
 			hom_frame = other.hom_frame;
 			hom_tested = other.hom_tested;
 
-			m_traversal_marker = other.m_traversal_marker;
+			m_traversal_marker = other.m_traversal_marker.load();
 		}
 		return *this;
 	}

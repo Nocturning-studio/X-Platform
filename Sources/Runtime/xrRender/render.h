@@ -297,9 +297,9 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void set_Transform(fmat4x4* M)
 	{
 		if (CurrentRenderContext::context)
-			CurrentRenderContext::context->current_transform = M;
+			CurrentRenderContext::context->transform = M;
 		else
-			m_TraversalContext.current_transform = M;
+			m_TraversalContext.transform = M;
 	}
 
 	virtual void set_HUD(BOOL V)
@@ -338,9 +338,9 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void set_Object(IRenderable* O)
 	{
 		if (CurrentRenderContext::context)
-			CurrentRenderContext::context->current_owner = O;
+			CurrentRenderContext::context->owner = O;
 		else
-			m_TraversalContext.current_owner = O;
+			m_TraversalContext.owner = O;
 	}
 
 	// wallmarks
@@ -441,10 +441,10 @@ class CRender : public IRender_interface, public pureFrame
 	void MergeCulledLights(SceneGraphPacket& packet);
 	void calculate_scene_culling();
 	void render_lights(light_Package& LP);
-	void ProcessRemainingLightsOptimized(light_Package& LP);
+	void ProcessRemainingLights(light_Package& LP);
 	void init_cacades();
 	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
-	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
+	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_ambient_occlusion();

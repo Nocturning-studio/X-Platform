@@ -23,9 +23,6 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	m_TraversalContext.is_invisible_mode = FALSE;
 	m_TraversalContext.is_hud_pass = FALSE;
 
-	// Увеличиваем маркер кадра
-	SceneGraph.m_traversal_marker++;
-
 	// Если текущий сектор не определен, рисуем только HUD и выходим.
 	if (!pLastSector)
 	{
@@ -43,7 +40,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 
 	m_TraversalContext.frustum = &ViewBase;
 	m_TraversalContext.traversal_marker_id = current_marker;
-	m_TraversalContext.current_transform = &Fidentity;
+	m_TraversalContext.transform = &Fidentity;
 	m_TraversalContext.render_phase = CRender::PHASE_NORMAL;
 
 	CurrentRenderContext::Scope tls_scope(dest, m_TraversalContext);
@@ -57,7 +54,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	// Sorting
 	// -------------------------------------------------------------------------
 #if 0
-	const fvec3 camera_pos = Engine.RenderView.Position;
+	const fvec3 camera_pos = m_TraversalContext.RenderView.Position;
 	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
 		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
 		float dist_b = b->spatial.sphere.P.distance_to_sqr(camera_pos);
@@ -105,7 +102,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	// Portal Traversal (Траверсер внутри dest)
 	// -------------------------------------------------------------------------
 	// Используем траверсер, привязанный к конкретному пакету
-	dest.portal_traverser.Traverse(pLastSector, ViewBase, Engine.RenderView.Position, view_projection, CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
+	dest.portal_traverser.Traverse(pLastSector, ViewBase, m_TraversalContext.RenderView.Position, view_projection, CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
 
 	// -------------------------------------------------------------------------
 	// Static Geometry
@@ -181,7 +178,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 		// ФИЛЬТР HUD
 		if (!sector)
 		{
-			float dist_sq = spatial->spatial.sphere.P.distance_to_sqr(Engine.RenderView.Position);
+			float dist_sq = spatial->spatial.sphere.P.distance_to_sqr(m_TraversalContext.RenderView.Position);
 			if (dist_sq < 2.25f)
 				continue;
 		}
@@ -232,7 +229,7 @@ void CRender::calculate_scene_culling()
 
 		{
 			SceneGraphFetchConfig hud_config(true, false, false);
-			SceneGraph.SetFetchConfig(hud_config);
+			m_TraversalContext.fetch_config = hud_config;
 			set_active_phase(PHASE_NORMAL);
 
 			CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
@@ -240,7 +237,7 @@ void CRender::calculate_scene_culling()
 				g_pGameLevel->pHUD->Render_Last();
 		}
 
-		SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
+		m_TraversalContext.fetch_config = SceneGraphFetchConfig(true, true, false);
 		return;
 	}
 
@@ -254,15 +251,14 @@ void CRender::calculate_scene_culling()
 	config.fetch_priority_0 = true;
 	config.fetch_priority_1 = true;
 	config.fetch_wallmarks = true;
-	SceneGraph.SetFetchConfig(config);
 
 	set_active_phase(PHASE_NORMAL);
 
-	// Сбор баундов для теней
-	if (m_need_render_sun)
-		SceneGraph.SetCullingBoundsCollector(&main_coarse_structure);
-	else
-		SceneGraph.SetCullingBoundsCollector(NULL);
+	m_TraversalContext.RenderView = Engine.RenderView;
+	m_TraversalContext.use_hom = true;
+	m_TraversalContext.use_feedback = false;
+	m_TraversalContext.fetch_config = SceneGraphFetchConfig(true, true, true);
+	m_TraversalContext.culling_bounds = (m_need_render_sun) ? &main_coarse_structure : nullptr;
 
 	// Обход сцены
 	gather_visibility(m_scene_data.view_projection, m_scene_data.packet);
@@ -275,10 +271,6 @@ void CRender::calculate_scene_culling()
 		if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 			g_pGameLevel->pHUD->Render_Last();
 	}
-
-	// Очистка состояния
-	SceneGraph.SetCullingBoundsCollector(NULL);
-	SceneGraph.SetFetchConfig(SceneGraphFetchConfig(true, true, false));
 }
 
 IC float u_diffuse2s(float x, float y, float z)

@@ -707,19 +707,14 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
     m_sun_cascades[cascade_ind].transform = cull_transform;
 }
 
-void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
+void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx)
 {
-	SceneTraversalContext local_ctx;
+	SceneTraversalContext local_ctx = base_ctx;
 	local_ctx.frustum = &item.cull_frustum;
-	local_ctx.is_hud_pass = FALSE;
-	local_ctx.is_invisible_mode = FALSE;
-	local_ctx.current_owner = nullptr;
-	local_ctx.current_transform = &Fidentity;
-	local_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
 	CurrentRenderContext::Scope tls_scope(item.packet, local_ctx);
 
-	SceneGraph.BuildScene(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet);
+	SceneGraph.BuildScene(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet, local_ctx);
 }
 
 void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
@@ -734,7 +729,6 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	sun->TransformContext.Sun.minY = 0;
 	sun->TransformContext.Sun.maxY = RenderImplementation.o.smapsize;
 
-	HOM.Disable();
 	set_active_phase(PHASE_SHADOW_DEPTH);
 
 	bool bNormal = item.packet.queue_static[0].size() || item.packet.queue_dynamic[0].size();
@@ -781,6 +775,14 @@ void CRender::render_sun_cascades()
 
 	writeBuffer.Clear();
 
+	SceneTraversalContext shadow_ctx;
+	shadow_ctx.RenderView = Engine.RenderView;
+	shadow_ctx.use_hom = false;
+	shadow_ctx.use_feedback = false;
+	shadow_ctx.fetch_config = SceneGraphFetchConfig(true, true, false);
+	shadow_ctx.culling_bounds = nullptr;
+	shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
+
 	{
 		OPTICK_EVENT("Prepare Cascades");
 		for (u32 i = 0; i < m_sun_cascades.size(); ++i)
@@ -789,10 +791,9 @@ void CRender::render_sun_cascades()
 
 	{
 		OPTICK_EVENT("Gather Cascades");
-		HOM.Disable();
-		gather_scene_for_cascade(SE_SUN_NEAR,   *writeBuffer.items[SE_SUN_NEAR]);
-		gather_scene_for_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE]);
-		gather_scene_for_cascade(SE_SUN_FAR,    *writeBuffer.items[SE_SUN_FAR]);;
+		gather_scene_for_cascade(SE_SUN_NEAR,   *writeBuffer.items[SE_SUN_NEAR], shadow_ctx);
+		gather_scene_for_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE], shadow_ctx);
+		gather_scene_for_cascade(SE_SUN_FAR,    *writeBuffer.items[SE_SUN_FAR], shadow_ctx);
 	}
 
 	{

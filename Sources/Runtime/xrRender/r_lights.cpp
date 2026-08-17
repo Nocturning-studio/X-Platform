@@ -12,7 +12,7 @@ void CRender::render_lights(light_Package& LP)
     OPTICK_EVENT("render_lights");
 
     // ------------------------------------------------------------------------
-    // 0. Базовая фильтрация нулевых указателей (как было)
+    // Базовая фильтрация нулевых указателей
     auto is_valid_light = [](light* L) {
         if (L == nullptr)
             return false;
@@ -30,14 +30,13 @@ void CRender::render_lights(light_Package& LP)
         [&](light* L) { return !is_valid_light(L); }), LP.v_spot.end());
 
     // ------------------------------------------------------------------------
-    // 1. ВЫЧИСЛЕНИЕ МАТРИЦ ДЛЯ ВИДИМЫХ ИСТОЧНИКОВ (без vis_update)
+    // Вычисление матриц видимых источников
     {
         OPTICK_EVENT("Compute matrices for visible shadowed lights");
 
         xr_vector<light*>& source = LP.v_shadowed;
 
-        // Параллельное вычисление матриц для ВИДИМЫХ источников
-#if 1
+        // Параллельное вычисление матриц для видимых источников
         if (source.size() > 16)
         {
             concurrency::parallel_for_each(source.begin(), source.end(),
@@ -47,7 +46,6 @@ void CRender::render_lights(light_Package& LP)
                 });
         }
         else
-#endif
         {
             for (light* L : source)
             {
@@ -58,7 +56,7 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 2. УДАЛЕНИЕ НЕВИДИМЫХ ИСТОЧНИКОВ
+    // Удаление невидимых источников
     {
         OPTICK_EVENT("Remove invisible");
 
@@ -69,7 +67,7 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 3. УПАКОВКА SHADOW MAPS
+    // Упаковка shadow map
     {
         OPTICK_EVENT("Pack shadow maps");
 
@@ -81,7 +79,7 @@ void CRender::render_lights(light_Package& LP)
         refactored.reserve(source.size());
 
         // Сортировка по убыванию размера
-        if (source.size() > 8)
+        if (source.size() > 16)
             concurrency::parallel_sort(source.begin(), source.end(), pred_area);
         else
             std::sort(source.begin(), source.end(), pred_area);
@@ -116,18 +114,12 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 4. РЕНДЕР ТЕНЕЙ (без vis_update)
+    // Рендер теней
     HOM.Disable();
 
     while (!LP.v_shadowed.empty())
     {
         OPTICK_EVENT("Shadow map rendering");
-
-        SceneGraphFetchConfig ShadowPassFetchConfig;
-        ShadowPassFetchConfig.fetch_priority_0 = true;
-        ShadowPassFetchConfig.fetch_priority_1 = false;
-        ShadowPassFetchConfig.fetch_wallmarks = false;
-        SceneGraph.SetFetchConfig(ShadowPassFetchConfig);
 
         stats.s_used++;
         clear_shadow_map_spot();
@@ -143,11 +135,25 @@ void CRender::render_lights(light_Package& LP)
         }
         Lights_LastFrame.insert(Lights_LastFrame.end(), current_batch.begin(), current_batch.end());
 
+        SceneGraphFetchConfig ShadowPassFetchConfig;
+        ShadowPassFetchConfig.fetch_priority_0 = true;
+        ShadowPassFetchConfig.fetch_priority_1 = false;
+        ShadowPassFetchConfig.fetch_wallmarks = false;
+
+        SceneTraversalContext shadow_ctx;
+        shadow_ctx.RenderView = Engine.RenderView;
+        shadow_ctx.use_hom = false;
+        shadow_ctx.use_feedback = false;
+        shadow_ctx.fetch_config = ShadowPassFetchConfig;
+        shadow_ctx.culling_bounds = nullptr;
+        shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
+
         set_active_phase(PHASE_SHADOW_DEPTH);
+
         for (light* L : current_batch)
         {
             L->get_smapvis().begin();
-            SceneGraph.BuildScene(L->spatial.sector, L->TransformContext.ShadowContext.combine, L->get_position(), TRUE, FALSE, SceneGraph.m_packet);
+            SceneGraph.BuildScene((CSector*)L->spatial.sector, L->TransformContext.ShadowContext.combine, L->get_position(), TRUE, FALSE, SceneGraph.m_packet, shadow_ctx);
 
             bool bNormal = SceneGraph.m_packet.queue_static[0].size() || SceneGraph.m_packet.queue_dynamic[0].size();
             bool bSpecial = SceneGraph.m_packet.queue_static[1].size() || SceneGraph.m_packet.queue_dynamic[1].size() || SceneGraph.m_packet.queue_transparent.size();
@@ -182,7 +188,7 @@ void CRender::render_lights(light_Package& LP)
         }
 
         // --------------------------------------------------------------------
-        // 5. АККУМУЛЯЦИЯ СВЕТА (без vis_update)
+        // Аккумуляция света
         {
             OPTICK_EVENT("Accumulation");
             set_light_accumulator();
@@ -194,7 +200,6 @@ void CRender::render_lights(light_Package& LP)
                 for (size_t i = 0; i < LP.v_point.size();)
                 {
                     light* L = LP.v_point[i];
-                    // vis_update() удалён, visible уже актуален
                     if (L->VisibilityData.visible)
                     {
                         accumulate_point_lights(L);
@@ -202,7 +207,9 @@ void CRender::render_lights(light_Package& LP)
                         LP.v_point.pop_back();
                     }
                     else
+                    {
                         i++;
+                    }
                 }
             }
 
@@ -212,7 +219,6 @@ void CRender::render_lights(light_Package& LP)
                 for (size_t i = 0; i < LP.v_spot.size();)
                 {
                     light* L = LP.v_spot[i];
-                    // vis_update() удалён
                     if (L->VisibilityData.visible)
                     {
                         LR.compute_xf_spot(L);
@@ -221,7 +227,9 @@ void CRender::render_lights(light_Package& LP)
                         LP.v_spot.pop_back();
                     }
                     else
+                    {
                         i++;
+                    }
                 }
             }
 
@@ -236,20 +244,20 @@ void CRender::render_lights(light_Package& LP)
     }
 
     // ------------------------------------------------------------------------
-    // 6. ОСТАВШИЕСЯ ИСТОЧНИКИ
-    ProcessRemainingLightsOptimized(LP);
+    // Оставшиеся источники света
+    ProcessRemainingLights(LP);
 }
 
-void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
+void CRender::ProcessRemainingLights(light_Package& LP)
 {
-    OPTICK_EVENT("ProcessRemainingLightsOptimized");
+    OPTICK_EVENT("ProcessRemainingLights");
 
     // Point lights
     if (!LP.v_point.empty())
     {
         OPTICK_EVENT("remaining point");
 
-        // Фильтрация и накопление без vis_update
+        // Фильтрация и накопление
         LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(),
             [this](light* L) {
                 if (L->VisibilityData.visible)
@@ -273,6 +281,7 @@ void CRender::ProcessRemainingLightsOptimized(light_Package& LP)
                 LR.compute_xf_spot(L);
         }
 
+        // Фильтрация и накопление
         LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(),
             [this](light* L) {
                 if (L->VisibilityData.visible)

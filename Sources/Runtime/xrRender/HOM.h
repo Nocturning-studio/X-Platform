@@ -20,6 +20,11 @@ public:
     BOOL visible(sPoly& P);
     BOOL visible(Fbox2& B, float depth);
 
+    BOOL invisible(vis_data& vis) { return !visible(vis); };
+    BOOL invisible(Fbox3& B) { return !visible(B); };
+    BOOL invisible(sPoly& P) { return !visible(P); };
+    BOOL invisible(Fbox2& B, float depth) { return !visible(B, depth); };
+
     CHOM();
     ~CHOM();
 };

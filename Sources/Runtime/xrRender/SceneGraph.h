@@ -190,24 +190,33 @@ struct SceneGraphScratchPad
 // =========================================================================
 struct SceneTraversalContext
 {
-	IRenderable* current_owner;
-	fmat4x4* current_transform;
+	IRenderable* owner;
+	fmat4x4* transform;
 	const CFrustum* frustum;
 	BOOL is_hud_pass;
 	BOOL is_invisible_mode;
 	u32 traversal_marker_id;
 	u32 render_phase; 
+	CRenderView RenderView;
+	bool use_hom;
+	bool use_feedback;
+	SceneGraphFetchConfig fetch_config;
+	xr_vector<Fbox3, render_alloc<Fbox3>>* culling_bounds;
 
 	SceneTraversalContext()
-			:current_owner(NULL), 
-			current_transform(NULL), 
-			frustum(NULL), 
-			is_hud_pass(FALSE), 
-			is_invisible_mode(FALSE),
-			traversal_marker_id(0), 
-			render_phase(0)
-	{
-	}
+		: owner(nullptr),
+		transform(nullptr),
+		frustum(nullptr),
+		is_hud_pass(FALSE),
+		is_invisible_mode(FALSE),
+		traversal_marker_id(0),
+		render_phase(0),
+		RenderView(),
+		use_hom(true),
+		use_feedback(false),
+		fetch_config(true, true, false),
+		culling_bounds(nullptr)
+	{}
 };
 
 class CurrentRenderContext
@@ -252,16 +261,12 @@ class CSceneGraph
 	// 2. Worker Buffers (for Rendering/Sorting phase)
 	SceneGraphScratchPad m_scratch;
 
-	// 3. Global Config / Counters
-	SceneGraphFetchConfig m_fetch_config;
-	xr_vector<Fbox3, render_alloc<Fbox3>>* m_culling_bounds_recorder;
-
 	R_feedback* m_feedback_interface;
 	u32 val_feedback_breakp;
-	u32 m_traversal_marker; 
+	std::atomic<u32> m_traversal_marker;
 
-	u32 counter_S;
-	u32 counter_D;
+	std::atomic<u32> counter_S;
+	std::atomic<u32> counter_D;
 	BOOL b_loaded;
 
 	friend class CRender; // CRender управляет контекстом и вызывает приватные методы
@@ -271,14 +276,11 @@ class CSceneGraph
 	void destroy();
 
 	// === State Management ===
-	void SetFetchConfig(const SceneGraphFetchConfig& config);
-
 	void set_Feedback(R_feedback* V, u32 id)
 	{
 		val_feedback_breakp = id;
 		m_feedback_interface = V;
 	}
-	void SetCullingBoundsCollector(xr_vector<Fbox3, render_alloc<Fbox3>>* dest);
 
 	void PrepareDynamicInstances(SceneGraphPacket& packet, const SceneTraversalContext& gather_ctx);
 
@@ -306,8 +308,8 @@ class CSceneGraph
 	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
 	// === Traversal Logic ===
-	void BuildScene(IRender_Sector* _sector, CFrustum* _frustum, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest);
-	void BuildScene(IRender_Sector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest);
+	void BuildScene(CSector* _sector, CFrustum* _frustum, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest, const SceneTraversalContext& ctx);
+	void BuildScene(CSector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest, const SceneTraversalContext& ctx);
 
 	// Helper
 	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize, const SceneTraversalContext& ctx);

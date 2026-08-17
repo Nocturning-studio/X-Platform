@@ -198,7 +198,7 @@ void CDetailManager::UpdateVisibility()
 				continue;
 
 #ifndef _EDITOR
-			if (!RenderImplementation.HOM.visible(MS.vis))
+			if (RenderImplementation.HOM.invisible(MS.vis))
 				continue;
 #endif
 
@@ -218,7 +218,7 @@ void CDetailManager::UpdateVisibility()
 				}
 
 #ifndef _EDITOR
-				if (!RenderImplementation.HOM.visible(S.vis))
+				if (RenderImplementation.HOM.invisible(S.vis))
 					continue;
 #endif
 
