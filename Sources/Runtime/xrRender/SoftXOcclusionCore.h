@@ -30,10 +30,6 @@ public:
 
     bool IsReadBufferReady() const { return m_readBufferReady; }
 
-    // Запускает переданную задачу асинхронно. Ожидается, что задача будет
-    // заполнять write-буфер (GetWriteBuffer()) через GetImmediateContext().
-    void StartBuildTask(std::function<void()> task);
-
     bool IsDeviceValid() const { return m_device != nullptr; }
 
     uint2 GetDepthResolution() const { return m_depth_resolution; }

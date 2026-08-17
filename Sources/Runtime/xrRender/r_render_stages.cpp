@@ -281,6 +281,9 @@ IC float u_diffuse2s(float x, float y, float z)
 
 bool CRender::need_render_sun()
 {
+	if (!g_pGameLevel)
+		return false;
+
 	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->get_color();
 	return ps_r_lighting_flags.test(RFLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
 }

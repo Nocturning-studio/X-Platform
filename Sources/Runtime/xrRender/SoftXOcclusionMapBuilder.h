@@ -28,7 +28,7 @@ public:
     void SetCore(SoftXOcclusionCore* core) { m_core = core; }
 
     // Асинхронно заполнить depth-буфер (write-буфер ядра)
-    void BuildAsync(const fmat4x4& viewProj);
+    void Build();
 
     u32 GetVertexCount() const { return m_vertexCount; }
     u32 GetIndexCount()  const { return m_indexCount; }

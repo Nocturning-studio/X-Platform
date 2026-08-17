@@ -26,7 +26,7 @@ public:
     void DrawDebug();
     bool IsLoaded() const { return m_loaded; }
 
-    void BuildDepthBuffer(const fmat4x4& viewProj) { m_occlusionMap.BuildAsync(viewProj); }
+    void __stdcall BuildDepthBuffer() { m_occlusionMap.Build(); }
     void WaitForBuildAndSwap() { if (m_core) m_core->WaitForBuildAndSwap(); }
 
     void BeginOcclusionQueries(const fmat4x4& viewProj, const SoftX::Viewport& viewport) { m_lightOcc.BeginQueries(viewProj, viewport); }

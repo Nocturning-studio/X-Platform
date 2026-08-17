@@ -333,7 +333,7 @@ void CEngine::ProcessFrame()
 	OPTICK_FRAME("X-Ray Primary Thread");
 	PROFILE_FUNCTION();
 
-	// 1. Проверка готовности устройства
+	// Проверка готовности устройства
 	if (!Device.b_is_Ready)
 	{
 		OPTICK_EVENT("Waiting for Device.b_is_Ready");
@@ -341,52 +341,48 @@ void CEngine::ProcessFrame()
 		return;
 	}
 
-	// 2. Начало отсчета времени кадра
+	// Начало отсчета времени кадра
 	TimeManager.Update();		// Расчет DeltaTime
 	TimeManager.OnFrameStart(); // Засекаем время для лимитера
 
-	// 3. Сбор статистики (включаем если нужно)
-	// psDeviceFlags обычно глобальна или доступна через Device
+	// Сбор статистики
 	if (psDeviceFlags.test(rsStatistic))
 		g_bEnableStatGather = TRUE;
 	else
 		g_bEnableStatGather = FALSE;
 
-	// 4. Блокирующие события загрузки (прерывают кадр)
+	// Блокирующие события загрузки (прерывают кадр)
 	if (CheckLoadingEvents())
 		return;
 
-	// 5. Обновление игровой логики (Input, AI, Game)
+	// Обновление игровой логики (Input, AI, Game)
 	UpdateGameLogic();
 
-	// 6. Precache (Прогрев рендера вращением камеры)
-	// Сама реализация вращения пока остается в Device, но вызываем мы её отсюда
+	// Precache (Прогрев рендера вращением камеры)
 	if (Device.dwPrecacheFrame)
 		Device.PreCache();
 
-	// 7. Расчет камеры и матриц (View * Projection)
-	// Делаем это ПОСЛЕ логики (где камера могла сдвинуться) и ПЕРЕД рендером
+	// Расчет камеры и матриц (View * Projection)
 	RenderView.UpdateViewProjection();
 
-	// 8. Запуск тяжелых задач в потоках (Скелет, Физика, Распаковка)
-	// Они работают параллельно с рендером (или рендер ждет их, зависит от реализации RenderFrame)
+	// Запуск тяжелых задач в потоках (Скелет, Физика, Распаковка)
 	ThreadManager.SignalFrameStart();
 
-	// 9. Рендер сцены
+	// Рендер сцены
 #ifndef DEDICATED_SERVER
 	Device.RenderFrame();
 #endif
 
-	// 10. Сохранение состояния камеры (для интерполяции в след. кадре)
+	// Сохранение состояния камеры (для интерполяции в след. кадре)
 	RenderView.SaveState();
 
-	// 11. Синхронизация: ждем завершения всех потоков перед следующим кадром
+	// Синхронизация: ждем завершения всех потоков перед следующим кадром
 	ThreadManager.WaitForFrameEnd();
 
-	// 12. Лимитер FPS (усыпляем поток, если слишком быстро)
+	// Лимитер FPS (усыпляем поток, если слишком быстро)
 	TimeManager.DoFrameLimit();
 
-	// 13. Экономия энергии при свернутом окне
+	// Экономия энергии при свернутом окне
 	if (!Device.b_is_Active)
 		Sleep(1);
 }
@@ -397,14 +393,11 @@ void CEngine::ProcessEventLoop()
 	Events.AppStart.Process(rp_AppStart);
 	Engine.SetUnloaded();
 
-	// Основной цикл теперь выглядит так:
 	while (true)
 	{
-		// 1. Обработка сообщений ОС (Window Manager)
 		if (!WindowManager.ProcessMessages())
-			break; // Если вернул false -> WM_QUIT -> выходим
+			break;
 
-		// 2. Игровой кадр
 		ProcessFrame();
 	}
 

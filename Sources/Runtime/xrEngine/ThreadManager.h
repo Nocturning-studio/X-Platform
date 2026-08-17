@@ -88,7 +88,7 @@ class ENGINE_API CThreadManager
 	std::atomic<u32> m_threadsCompleted{0};
 
 	// Фиксированное количество воркеров
-	static constexpr u32 MAX_WORKERS = 4; // Максимальное количество потоков
+	static constexpr u32 MAX_WORKERS = 2; // Максимальное количество потоков
 	WorkerContext m_workers[MAX_WORKERS];
 	u32 m_workerCount;
 
@@ -115,8 +115,7 @@ class ENGINE_API CThreadManager
 	void Initialize();
 	void Destroy();
 
-	void AddParallelTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal,
-						 TaskType type = TaskType::General);
+	void AddParallelTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal, TaskType type = TaskType::General);
 
 	void RemoveParallelTask(const ParallelTask& delegate);
 	bool HasParallelTask(const ParallelTask& delegate) const;

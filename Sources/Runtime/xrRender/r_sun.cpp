@@ -703,8 +703,6 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
     item.cull_frustum = cull_frustum;
     item.cull_sector = cull_sector;
     item.cull_COP = cull_COP;
-
-    m_sun_cascades[cascade_ind].transform = cull_transform;
 }
 
 void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx)
@@ -751,7 +749,7 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 			g_pGameLevel->pHUD->Render_Actor_Shadow();
 
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-			Details->Render(DetailsRenderMode::DepthOnly, &m_sun_cascades[cascade_ind].transform, &item.cull_frustum);
+			Details->Render(DetailsRenderMode::DepthOnly, &item.cull_transform, &item.cull_frustum);
 
 		sun->TransformContext.Sun.transluent = FALSE;
 	}
@@ -759,48 +757,68 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	set_light_accumulator();
 
 	accumulate_sun(	cascade_ind, 
-					m_sun_cascades[cascade_ind].transform, 
-					m_sun_cascades[cascade_ind].transform );
+					item.cull_transform, 
+					item.cull_transform );
+}
+
+void __stdcall CRender::schedule_cascades()
+{
+    SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
+    writeBuffer.Clear();
+
+    // Создаём контекст для фоновой сборки
+    SceneTraversalContext shadow_ctx;
+    shadow_ctx.RenderView = Engine.RenderView;
+    shadow_ctx.use_hom = false;
+    shadow_ctx.use_feedback = false;
+    shadow_ctx.fetch_config = SceneGraphFetchConfig(true, true, false);
+    shadow_ctx.culling_bounds = nullptr;
+    shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
+
+    // Подготовка матриц каскадов
+    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+        prepare_sun_cascade(i, *writeBuffer.items[i]);
+
+    // Сборка сцены для каждого каскада
+    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+        gather_scene_for_cascade(i, *writeBuffer.items[i], shadow_ctx);
+
+	// Отмечаем завершение
+	{
+		std::lock_guard<std::mutex> lock(m_sun_gather_mutex);
+		m_sun_gather_done = true;
+	}
+	m_sun_gather_cv.notify_one();
+}
+
+void CRender::wait_for_sun_task()
+{
+	std::unique_lock<std::mutex> lock(m_sun_gather_mutex);
+	m_sun_gather_cv.wait(lock, [this] { return m_sun_gather_done.load(); });
+}
+
+void CRender::swap_sun_buffers()
+{
+	m_sun_write_ix = (m_sun_write_ix + 1) % 2;
+	m_sun_read_ix = (m_sun_write_ix + 1) % 2;
+
+	SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
+	writeBuffer.Clear();
+
+	m_sun_gather_done = false;
 }
 
 void CRender::render_sun_cascades()
 {
 	PROFILE_FUNCTION();
 
-	m_sun_write_ix = (m_sun_write_ix + 1) % 2;
-	m_sun_read_ix = (m_sun_write_ix + 1) % 2;
-
-	SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
 	SunCascadeBuffer& readBuffer = GetSunReadBuffer();
-
-	writeBuffer.Clear();
-
-	SceneTraversalContext shadow_ctx;
-	shadow_ctx.RenderView = Engine.RenderView;
-	shadow_ctx.use_hom = false;
-	shadow_ctx.use_feedback = false;
-	shadow_ctx.fetch_config = SceneGraphFetchConfig(true, true, false);
-	shadow_ctx.culling_bounds = nullptr;
-	shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
-
-	{
-		OPTICK_EVENT("Prepare Cascades");
-		for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-			prepare_sun_cascade(i, *writeBuffer.items[i]);
-	}
-
-	{
-		OPTICK_EVENT("Gather Cascades");
-		gather_scene_for_cascade(SE_SUN_NEAR,   *writeBuffer.items[SE_SUN_NEAR], shadow_ctx);
-		gather_scene_for_cascade(SE_SUN_MIDDLE, *writeBuffer.items[SE_SUN_MIDDLE], shadow_ctx);
-		gather_scene_for_cascade(SE_SUN_FAR,    *writeBuffer.items[SE_SUN_FAR], shadow_ctx);
-	}
 
 	{
 		OPTICK_EVENT("Draw Cascades Sequence");
-		draw_sun_cascade(SE_SUN_NEAR,	*readBuffer.items[SE_SUN_NEAR]);
+		draw_sun_cascade(SE_SUN_NEAR, *readBuffer.items[SE_SUN_NEAR]);
 		draw_sun_cascade(SE_SUN_MIDDLE, *readBuffer.items[SE_SUN_MIDDLE]);
-		draw_sun_cascade(SE_SUN_FAR,	*readBuffer.items[SE_SUN_FAR]);
+		draw_sun_cascade(SE_SUN_FAR, *readBuffer.items[SE_SUN_FAR]);
 	}
 
 	RenderBackend.set_transform_world(Fidentity);

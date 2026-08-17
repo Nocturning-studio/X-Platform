@@ -70,14 +70,4 @@ void SoftXOcclusionCore::WaitForBuildAndSwap()
         SwapBuffers();
     }
 }
-
-void SoftXOcclusionCore::StartBuildTask(std::function<void()> task)
-{
-    // Ждём завершения предыдущей задачи, если она ещё не закончилась
-    if (m_buildFuture.valid())
-        m_buildFuture.wait();
-
-    // Запускаем новую асинхронную задачу
-    m_buildFuture = std::async(std::launch::async, std::move(task));
-}
 ////////////////////////////////////////////////////////////////////////////////

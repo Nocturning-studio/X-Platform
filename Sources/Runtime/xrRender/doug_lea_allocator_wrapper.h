@@ -7,6 +7,12 @@
 #ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 #include "doug_lea_memory_allocator.h"
 
+inline xrCriticalSection& get_dlmalloc_mutex()
+{
+    static xrCriticalSection mutex;
+    return mutex;
+}
+
 template <class T> class doug_lea_alloc
 {
 public:
@@ -38,7 +44,7 @@ public:
 
     pointer allocate(size_type n, const void* p = 0) const
     {
-        return (T*)dlmalloc(sizeof(T) * (u32)n);
+        return (T*)doug_lea_allocator::alloc(sizeof(T) * (u32)n);
     }
 
     char* __charalloc(size_type n)
@@ -48,12 +54,12 @@ public:
 
     void deallocate(pointer p, size_type n) const
     {
-        dlfree(p);
+        doug_lea_allocator::dealloc(p);
     }
 
     void deallocate(void* p, size_type n) const
     {
-        dlfree(p);
+        doug_lea_allocator::dealloc(p);
     }
 
     void construct(pointer p, const T& _Val)
@@ -92,13 +98,32 @@ struct doug_lea_allocator
 
     static void* alloc(const u32& n)
     {
-        return dlmalloc((u32)n);
+        xrCriticalSection& mutex = get_dlmalloc_mutex();
+        mutex.Enter();
+        void* ptr = dlmalloc((u32)n);
+        mutex.Leave();
+        return ptr;
+    }
+
+    static void dealloc(void* p)
+    {
+        if (!p)
+            return;
+        xrCriticalSection& mutex = get_dlmalloc_mutex();
+        mutex.Enter();
+        dlfree(p);
+        mutex.Leave();
     }
 
     template <typename T> static void dealloc(T*& p)
     {
+        if (!p)
+            return;
+        xrCriticalSection& mutex = get_dlmalloc_mutex();
+        mutex.Enter();
         dlfree(p);
-        p = 0;
+        mutex.Leave();
+        p = nullptr;
     }
 };
 
@@ -108,7 +133,7 @@ using render_allocator = doug_lea_allocator;
 
 #else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 
-// Fallback to standard xr_allocator
+// Fallback to standard xr_allocator (предполагаем, что он уже потокобезопасен)
 #define render_alloc xalloc
 using render_allocator = xr_allocator;
 

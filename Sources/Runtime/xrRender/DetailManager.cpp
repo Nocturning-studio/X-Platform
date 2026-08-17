@@ -858,9 +858,3 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	D.vis.box.set(Bounds);
 	D.vis.box.getsphere(D.vis.sphere.P, D.vis.sphere.R);
 }
-
-void CDetailManager::ClearVisible()
-{
-	// Метод оставлен пустым, так как очистка видимости теперь происходит
-	// в начале кадра внутри PrepareToCalc для swap-buffer логики.
-}

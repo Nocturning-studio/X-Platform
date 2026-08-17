@@ -233,6 +233,8 @@ void CRender::create()
 
 void CRender::destroy()
 {
+	CPUOCC.WaitForBuildAndSwap();
+	wait_for_sun_task();
 	m_scene_data.Destroy();
 	m_sun_cascades_buffer[0].Destroy();
 	m_sun_cascades_buffer[1].Destroy();
@@ -248,6 +250,8 @@ void CRender::destroy()
 
 void CRender::reset_begin()
 {
+	CPUOCC.WaitForBuildAndSwap();
+	wait_for_sun_task();
 	// Update incremental shadowmap-visibility solver
 	// BUG-ID: 10646
 	{
@@ -294,22 +298,22 @@ void CRender::OnFrame()
 
 	Models->DeleteQueue();
 
-	// Ожидание готовности depth-буфера и свап
-	CPUOCC.WaitForBuildAndSwap();
-
-	// Запускаем новое заполнение для следующего кадра
-	CPUOCC.BuildDepthBuffer(Engine.RenderView.ViewProjection);
+	{
+		CPUOCC.WaitForBuildAndSwap();
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(&CPUOCC, &CPUOcclusion::BuildDepthBuffer));
+	}
 
 	if (Details && Details->dtFS)
 	{
-		Details->ClearVisible();
-
-		// Подготовка: Своп буферов (новые данные -> в рендер, старые -> на перезапись)
-		// и захват позиции камеры.
 		Details->PrepareToCalc();
-
-		// Запуск задачи в параллель.
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
+	}
+
+	if (need_render_sun())
+	{
+		wait_for_sun_task();
+		swap_sun_buffers();
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CRender::schedule_cascades));
 	}
 }
 

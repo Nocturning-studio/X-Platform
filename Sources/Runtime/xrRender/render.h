@@ -162,15 +162,12 @@ class CRender : public IRender_interface, public pureFrame
 
 	bool m_need_render_sun;
 	xr_vector<Sun::Cascade> m_sun_cascades;
-
-	// Двойной буфер каскадов (0 и 1)
 	SunCascadeBuffer m_sun_cascades_buffer[2];
-
-	// Индексы для доступа
-	u32 m_sun_write_ix; // Куда пишем (Gather phase)
-	u32 m_sun_read_ix;	// Откуда читаем (Draw phase)
-
-	// Хелперы для доступа
+	u32 m_sun_write_ix;
+	u32 m_sun_read_ix;
+	std::atomic<bool> m_sun_gather_done{ true };
+	std::condition_variable m_sun_gather_cv;
+	std::mutex m_sun_gather_mutex;
 	IC SunCascadeBuffer& GetSunWriteBuffer()
 	{
 		return m_sun_cascades_buffer[m_sun_write_ix];
@@ -443,6 +440,9 @@ class CRender : public IRender_interface, public pureFrame
 	void render_lights(light_Package& LP);
 	void ProcessRemainingLights(light_Package& LP);
 	void init_cacades();
+	void __stdcall schedule_cascades();
+	void wait_for_sun_task();
+	void swap_sun_buffers();
 	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
