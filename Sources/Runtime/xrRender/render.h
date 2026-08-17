@@ -247,15 +247,18 @@ class CRender : public IRender_interface, public pureFrame
 
   public:
 	// Loading / Unloading
-	virtual void create();
-	virtual void destroy();
-	virtual void reset_begin();
-	virtual void reset_end();
+	virtual void Initialize() override;
+	virtual void Create() override;
+	virtual void Destroy() override;
+	virtual void ResetBegin() override;
+	virtual void ResetEnd() override;
 
-	virtual void level_Load(IReader*);
-	virtual void level_Unload();
+	virtual void LevelLoad(IReader*) override;
+	virtual void LevelUnload() override;
 
-	virtual IDirect3DBaseTexture9* texture_load(LPCSTR fname, u32& msize);
+	void WaitForPendingTasks();
+
+	virtual IDirect3DBaseTexture9* TextureLoad(LPCSTR fname, u32& msize) override;
 
 	/**/
 	#pragma todo(Deathman to Deathman: Переписать передачу здоровья в рендер)
@@ -271,23 +274,23 @@ class CRender : public IRender_interface, public pureFrame
 	/**/
 
 	// Information
-	virtual void Statistics(CGameFont* F);
+	virtual void Statistics(CGameFont* F) override;
 	virtual LPCSTR getShaderPath()
 	{
 		return "";
 	}
-	virtual ref_shader getShader(int id);
-	virtual IRender_Sector* getSector(int id);
-	virtual IRender_Visual* getVisual(int id);
-	virtual IRender_Sector* detectSector(const fvec3& P);
-	virtual IRender_Target* getTarget();
+	virtual ref_shader getShader(int id) override;
+	virtual IRender_Sector* getSector(int id) override;
+	virtual IRender_Visual* getVisual(int id) override;
+	virtual IRender_Sector* detectSector(const fvec3& P) override;
+	virtual IRender_Target* getTarget() override;
 
-	virtual IEffectorsManager* getEffectorsManager();
+	virtual IEffectorsManager* getEffectorsManager() override;
 
 	// Main
-	virtual void add_Occluder(Fbox2& bb_screenspace); // mask screen region as oclluded
-	virtual void add_Visual(IRender_Visual* V);		  // add visual leaf	(no culling performed at all)
-	virtual void add_Geometry(IRender_Visual* V);	  // add visual(s)	(all culling performed)
+	virtual void add_Occluder(Fbox2& bb_screenspace) override; // mask screen region as oclluded
+	virtual void add_Visual(IRender_Visual* V) override;		  // add visual leaf	(no culling performed at all)
+	virtual void add_Geometry(IRender_Visual* V) override;	  // add visual(s)	(all culling performed)
 
 	SceneTraversalContext m_TraversalContext;
 
@@ -341,43 +344,42 @@ class CRender : public IRender_interface, public pureFrame
 	}
 
 	// wallmarks
-	virtual void add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V);
-	virtual void clear_static_wallmarks();
-	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
-	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start,
-									  const fvec3& dir, float size);
+	virtual void add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V) override;
+	virtual void clear_static_wallmarks() override;
+	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) override;
+	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size) override;
 
 	//
-	virtual IBlender* blender_create(CLASS_ID cls);
-	virtual void blender_destroy(IBlender*&);
+	virtual IBlender* blender_create(CLASS_ID cls) override;
+	virtual void blender_destroy(IBlender*&) override;
 
 	//
-	virtual IRender_ObjectSpecific* ros_create(IRenderable* parent);
-	virtual void ros_destroy(IRender_ObjectSpecific*&);
+	virtual IRender_ObjectSpecific* ros_create(IRenderable* parent) override;
+	virtual void ros_destroy(IRender_ObjectSpecific*&) override;
 
 	// Lighting
-	virtual IRender_Light* light_create();
-	virtual IRender_Glow* glow_create();
+	virtual IRender_Light* light_create() override;
+	virtual IRender_Glow* glow_create() override;
 
 	// Models
-	virtual IRender_Visual* model_CreateParticles(LPCSTR name);
-	virtual IRender_DetailModel* model_CreateDM(IReader* F);
-	virtual IRender_Visual* model_Create(LPCSTR name, IReader* data = 0);
-	virtual IRender_Visual* model_CreateChild(LPCSTR name, IReader* data);
-	virtual IRender_Visual* model_Duplicate(IRender_Visual* V);
-	virtual void model_Delete(IRender_Visual*& V, BOOL bDiscard);
-	virtual void model_Delete(IRender_DetailModel*& F);
+	virtual IRender_Visual* model_CreateParticles(LPCSTR name) override;
+	virtual IRender_DetailModel* model_CreateDM(IReader* F) override;
+	virtual IRender_Visual* model_Create(LPCSTR name, IReader* data = 0) override;
+	virtual IRender_Visual* model_CreateChild(LPCSTR name, IReader* data) override;
+	virtual IRender_Visual* model_Duplicate(IRender_Visual* V) override;
+	virtual void model_Delete(IRender_Visual*& V, BOOL bDiscard) override;
+	virtual void model_Delete(IRender_DetailModel*& F) override;
 	virtual void model_Logging(BOOL bEnable)
 	{
 		Models->Logging(bEnable);
 	}
-	virtual void models_Prefetch();
-	virtual void models_Clear(BOOL b_complete);
+	virtual void models_Prefetch() override;
+	virtual void models_Clear(BOOL b_complete) override;
 
 	// Occlusion culling
-	virtual BOOL occ_visible(vis_data& V);
-	virtual BOOL occ_visible(Fbox& B);
-	virtual BOOL occ_visible(sPoly& P);
+	virtual BOOL occ_visible(vis_data& V) override;
+	virtual BOOL occ_visible(Fbox& B) override;
+	virtual BOOL occ_visible(sPoly& P) override;
 
 	// Main
 	void clear_gbuffer();
@@ -460,11 +462,11 @@ class CRender : public IRender_interface, public pureFrame
 	void render_postprocess();
 	void render_bent_normals();
 
-	virtual void Calculate();
+	virtual void Calculate() override;
 	void prepare_to_render();
-	virtual void Render();
-	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
-	virtual void OnFrame();
+	virtual void Render() override;
+	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) override;
+	virtual void OnFrame() override;
 
 	virtual u32 memory_usage()
 	{
@@ -476,9 +478,9 @@ class CRender : public IRender_interface, public pureFrame
 	}
 
 	// Render mode
-	virtual void set_render_mode(int mode);
+	virtual void set_render_mode(int mode) override;
 
-	virtual bool is_dynamic_sun_enabled();
+	virtual bool is_dynamic_sun_enabled() override;
 
 	u32 render_phase;
 

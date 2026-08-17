@@ -355,10 +355,6 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 
 BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {
-	// skeep a few frames before counting
-	if (Device.dwPrecacheFrame)
-		return TRUE;
-
 	// Защита на случай если файл придет пустой
 	if (m_frames_count == NULL)
 		Close();

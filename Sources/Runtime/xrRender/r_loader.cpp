@@ -19,20 +19,15 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-// Добавь структуру для хранения данных, чтобы не зависеть от IReader в потоке
-// Вспомогательная структура для передачи данных в поток
 struct ShaderRequest
 {
 	shared_str name;
 	shared_str textures;
 };
 
-void CRender::level_Load(IReader* fs)
+void CRender::LevelLoad(IReader* fs)
 {
-	////OPTICK_EVENT("CRender::level_Load");
-
 	R_ASSERT(0 != g_pGameLevel);
-	// b_loaded теперь приватный член, но доступен CRender как friend
 	R_ASSERT(!SceneGraph.b_loaded);
 
 	// Группа задач для Визуалов
@@ -51,7 +46,7 @@ void CRender::level_Load(IReader* fs)
 	Engine.LoadingScreen->Show();
 	Engine.ResourceManager->DeferredLoad(TRUE);
 
-	// 1. RAM BUFFERING
+	// RAM BUFFERING
 	fs->seek(0);
 	u32 level_size = fs->elapsed();
 	u8* level_data_ptr = (u8*)xr_malloc(level_size);
@@ -76,7 +71,7 @@ void CRender::level_Load(IReader* fs)
 	// ---------------------------------------------------------------------
 
 	// =================================================================================
-	// 2. ШЕЙДЕРЫ (MAIN THREAD - СИНХРОННО)
+	// ШЕЙДЕРЫ (MAIN THREAD - СИНХРОННО)
 	// =================================================================================
 	g_pGamePersistent->LoadTitle("st_loading_shaders");
 	{
@@ -114,9 +109,8 @@ void CRender::level_Load(IReader* fs)
 		}
 	}
 
-	// 3. Геометрия (Main Thread)
+	// Геометрия
 	{
-		// --- ВАЖНО: Геометрию загружаем всегда, иначе будет краш визуалов, как раньше.
 		g_pGamePersistent->LoadTitle("st_loading_geometry");
 
 		CStreamReader* geom = FS.rs_open("$level$", "level.geom");
@@ -138,7 +132,7 @@ void CRender::level_Load(IReader* fs)
 	g_pGamePersistent->LoadTitle("st_loading_spatial_db");
 
 	// =================================================================================
-	// 4. ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ОБЪЕКТОВ
+	// ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ОБЪЕКТОВ
 	// =================================================================================
 
 	// ЗАДАЧА A: Визуалы
@@ -158,12 +152,6 @@ void CRender::level_Load(IReader* fs)
 		// ЗАДАЧА C: Sun Occluder
 		run_task(tg_visuals, [this]() { m_SunOccluder->Load(); });
 	}
-	else
-	{
-		// Для сервера просто инициализируем пустой HOM, чтобы не крашило при обращении
-		// хотя HOM.Load() грузит данные для рендера, структуры всё равно нужны валидные
-		// Но Load требует чтения файла, поэтому пропускаем, а если Unload вызовется - он должен быть безопасным
-	}
 
 	// === ACTIVE WAIT ===
 	while (active_tasks > 0)
@@ -173,7 +161,7 @@ void CRender::level_Load(IReader* fs)
 	}
 	tg_visuals.wait();
 
-	// 5. Финализация (Main Thread)
+	// Финализация (Main Thread)
 	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
 	{
 		IReader local_fs_sectors(level_data_ptr, level_size);
@@ -182,7 +170,6 @@ void CRender::level_Load(IReader* fs)
 
 	Engine.LoadingScreen->ForceRender();
 
-	// --- ОПТИМИЗАЦИЯ: Лампы на сервере часто не нужны, если AI не завязан на уровень освещенности движком рендера ---
 	g_pGamePersistent->LoadTitle("st_loading_lights");
 	{
 		if (!g_dedicated_server)
@@ -195,8 +182,6 @@ void CRender::level_Load(IReader* fs)
 
 	xr_free(level_data_ptr);
 
-	Engine.LoadingScreen->Hide();
-
 	// Очищаем списки через m_packet
 	SceneGraph.m_packet.lstLODs.clear();
 	SceneGraph.m_packet.lstLODgroups.clear();
@@ -205,23 +190,22 @@ void CRender::level_Load(IReader* fs)
 	SceneGraph.b_loaded = TRUE;
 }
 
-void CRender::level_Unload()
+void CRender::LevelUnload()
 {
-	////OPTICK_EVENT("CRender::level_Unload");
-
 	if (0 == g_pGameLevel)
 		return;
 	if (!SceneGraph.b_loaded)
 		return;
+
+	WaitForPendingTasks();
 
 	u32 I;
 
 	// HOM
 	g_pGamePersistent->LoadTitle("st_unloading_hom");
 	CPUOCC.Unload();
-	HOM.Unload(); // HOM Unload безопасен даже если Load не вызывался, чистит вектора
+	HOM.Unload();
 
-	// --- ОПТИМИЗАЦИЯ: Проверяем перед удалением ---
 	if (m_SunOccluder)
 	{
 		m_SunOccluder->Unload();
@@ -295,8 +279,6 @@ void CRender::level_Unload()
 
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
-	////OPTICK_EVENT("CRender::LoadBuffers");
-
 	R_ASSERT2(base_fs, "Could not load geometry. File not found.");
 	Engine.ResourceManager->Evict();
 	u32 dwUsage = D3DUSAGE_WRITEONLY;
@@ -318,7 +300,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
 		for (u32 i = 0; i < count; i++)
 		{
-			// 1. Читаем декларацию
+			// Читаем декларацию
 			u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
 			D3DVERTEXELEMENT9* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
 			fs->r(dcl, buffer_size);
@@ -328,21 +310,21 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			_DC[i].resize(dcl_len);
 			fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
 
-			// 2. Читаем данные вершин
+			// Читаем данные вершин
 			u32 vCount = fs->r_u32();
 			u32 vSize = D3DXGetDeclVertexSize(dcl, 0);
 			u32 byteSize = vCount * vSize;
 
 			Msg("* [Loading VB] %d verts, %d Kb", vCount, byteSize / 1024);
 
-			// ОПТИМИЗАЦИЯ: Читаем в RAM
+			// Читаем в RAM
 			temp_buffer.resize(byteSize);
 			fs->r(temp_buffer.data(), byteSize);
 
 			// Создаем буфер
 			R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(byteSize, dwUsage, 0, D3DPOOL_DEFAULT, &_VB[i], 0));
 
-			// Копируем из RAM в VRAM (это очень быстро)
+			// Копируем из RAM в VRAM
 			void* pData = 0;
 			R_CHK(_VB[i]->Lock(0, 0, (void**)&pData, 0));
 			CopyMemory(pData, temp_buffer.data(), byteSize);
@@ -382,7 +364,6 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
 void CRender::LoadVisuals(IReader* fs)
 {
-	////OPTICK_EVENT("CRender::LoadVisuals");
 	IReader* chunk = 0;
 	u32 index = 0;
 	IRender_Visual* V = 0;
@@ -408,9 +389,6 @@ void CRender::LoadVisuals(IReader* fs)
 
 void CRender::LoadLights(IReader* fs)
 {
-	////OPTICK_EVENT("CRender::LoadLights");
-
-	// lights
 	Lights.Load(fs);
 }
 
@@ -482,17 +460,11 @@ void CRender::LoadSectors(IReader* fs)
 		rmPortals = 0;
 	}
 
-	// debug
-	//	for (int d=0; d<Sectors.size(); d++)
-	//		Sectors[d]->DebugDump	();
-
 	pLastSector = 0;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)
 {
-	////OPTICK_EVENT("CRender::LoadSWIs");
-
 	// allocate memory for portals
 	if (base_fs->find_chunk(fsL_SWIS))
 	{

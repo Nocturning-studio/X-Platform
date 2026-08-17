@@ -135,11 +135,16 @@ void CRender::CheckHWRenderSupporting()
 // update with vid_restart
 void CRender::update_options()
 {
+	m_skinning = -1;
+
 	o.smapsize = 1024;
 
 	o.nvdbt = false;//HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
 	if (o.nvdbt)
 		Msg("- Nvidia Depth Bounds supported");
+
+	o.noshadows = (strstr(Core.Params, "-noshadows")) ? TRUE : FALSE;
+	o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -186,28 +191,9 @@ CRender::~CRender()
 	}
 }
 
-void CRender::create()
+void CRender::Initialize()
 {
 	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
-
-	CheckHWRenderSupporting();
-	xrRender_console_apply_conditions();
-
-	m_skinning = -1;
-
-	// options
-	o.noshadows = (strstr(Core.Params, "-noshadows")) ? TRUE : FALSE;
-	o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
-
-	// constants
-	Engine.ResourceManager->RegisterConstantSetup("sun_far", &binder_sun_far);
-	Engine.ResourceManager->RegisterConstantSetup("sun_dir", &binder_sun_dir);
-	Engine.ResourceManager->RegisterConstantSetup("sun_normal_bias", &binder_sun_normal_bias);
-	Engine.ResourceManager->RegisterConstantSetup("sun_directional_bias", &binder_sun_directional_bias);
-	Engine.ResourceManager->RegisterConstantSetup("sun_color", &binder_sun_color);
-	Engine.ResourceManager->RegisterConstantSetup("debug_reserved", &binder_debug_reserved);
-	Engine.ResourceManager->RegisterConstantSetup("ao_brightness", &binder_ao_brightness);
-	Engine.ResourceManager->RegisterConstantSetup("is_hud_render_phase", &binder_is_hud_render_phase);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";
@@ -231,10 +217,23 @@ void CRender::create()
 	m_scene_data.Init();
 }
 
-void CRender::destroy()
+void CRender::Create()
 {
-	CPUOCC.WaitForBuildAndSwap();
-	wait_for_sun_task();
+	Engine.ResourceManager->RegisterConstantSetup("sun_far", &binder_sun_far);
+	Engine.ResourceManager->RegisterConstantSetup("sun_dir", &binder_sun_dir);
+	Engine.ResourceManager->RegisterConstantSetup("sun_normal_bias", &binder_sun_normal_bias);
+	Engine.ResourceManager->RegisterConstantSetup("sun_directional_bias", &binder_sun_directional_bias);
+	Engine.ResourceManager->RegisterConstantSetup("sun_color", &binder_sun_color);
+	Engine.ResourceManager->RegisterConstantSetup("debug_reserved", &binder_debug_reserved);
+	Engine.ResourceManager->RegisterConstantSetup("ao_brightness", &binder_ao_brightness);
+	Engine.ResourceManager->RegisterConstantSetup("is_hud_render_phase", &binder_is_hud_render_phase);
+
+	RenderTarget->CompileShaders();
+}
+
+void CRender::Destroy()
+{
+	WaitForPendingTasks();
 	m_scene_data.Destroy();
 	m_sun_cascades_buffer[0].Destroy();
 	m_sun_cascades_buffer[1].Destroy();
@@ -248,10 +247,9 @@ void CRender::destroy()
 	xr_delete(EffectorsManager);
 }
 
-void CRender::reset_begin()
+void CRender::ResetBegin()
 {
-	CPUOCC.WaitForBuildAndSwap();
-	wait_for_sun_task();
+	WaitForPendingTasks();
 	// Update incremental shadowmap-visibility solver
 	// BUG-ID: 10646
 	{
@@ -276,7 +274,7 @@ void CRender::reset_begin()
 	HWOCC.occq_destroy();
 }
 
-void CRender::reset_end()
+void CRender::ResetEnd()
 {
 	HWOCC.occq_create(occq_size);
 
@@ -290,6 +288,10 @@ void CRender::reset_end()
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)
 	m_bFirstFrameAfterReset = true;
+}
+
+void CRender::WaitForPendingTasks()
+{
 }
 
 void CRender::OnFrame()
@@ -313,6 +315,7 @@ void CRender::OnFrame()
 	{
 		wait_for_sun_task();
 		swap_sun_buffers();
+		m_sun_gather_done.store(false);
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CRender::schedule_cascades));
 	}
 }

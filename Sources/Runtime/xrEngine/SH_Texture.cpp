@@ -266,7 +266,7 @@ void CTexture::Load()
 			{
 				// Load another texture
 				u32 mem = 0;
-				pSurface = ::Render->texture_load(buffer, mem);
+				pSurface = Render->TextureLoad(buffer, mem);
 				if (pSurface)
 				{
 					seqDATA.push_back(pSurface);
@@ -281,7 +281,7 @@ void CTexture::Load()
 	{
 		// Normal texture
 		u32 mem = 0;
-		pSurface = ::Render->texture_load(*cName, mem);
+		pSurface = Render->TextureLoad(*cName, mem);
 
 		// Calc memory usage and preload into vid-mem
 		if (pSurface)

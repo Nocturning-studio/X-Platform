@@ -77,6 +77,8 @@ float get_aspect(const CRenderDevice* self)
 }
 // ------------------------------------------------
 
+u32 get_null(const CRenderDevice* self) { return 0; }
+
 #pragma optimize("s", on)
 void CScriptRenderDevice::script_register(lua_State* L)
 {
@@ -90,8 +92,6 @@ void CScriptRenderDevice::script_register(lua_State* L)
 				  .property("frame", &get_frame)
 				  .def("time_global", &time_global)
 
-				  // RenderView (Camera) getters
-				  // Используем .property(имя, геттер), так как данные лежат в другом месте
 				  .property("cam_pos", &get_cam_pos)
 				  .property("cam_dir", &get_cam_dir)
 				  .property("cam_top", &get_cam_top)
@@ -99,7 +99,7 @@ void CScriptRenderDevice::script_register(lua_State* L)
 				  .property("fov", &get_fov)
 				  .property("aspect_ratio", &get_aspect)
 
-				  .def_readonly("precache_frame", &CRenderDevice::dwPrecacheFrame)
+				  .property("precache_frame", &get_null)
 
 				  .def("is_paused", &is_device_paused)
 				  .def("pause", &set_device_paused),

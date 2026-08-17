@@ -14,7 +14,7 @@
 void CResourceManager::reset_begin()
 {
 	// destroy everything, renderer may use
-	::Render->reset_begin();
+	Render->ResetBegin();
 
 	if (0)
 	{
@@ -80,7 +80,7 @@ void CResourceManager::reset_end()
 	}
 
 	// create everything, renderer may use
-	::Render->reset_end();
+	Render->ResetEnd();
 }
 
 template <class C> void mdump(C c)

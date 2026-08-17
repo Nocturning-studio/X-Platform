@@ -23,11 +23,12 @@
 #include "build_identificator.h"
 #include "LogoWindow.h"
 #include "LevelLoadingScreen.h"
+#include "render.h"
+#include "xrBind_PSGP.h"
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
 //////////////////////////////////////////////////////////////////////////
-#include "xrBind_PSGP.h"
 //////////////////////////////////////////////////////////////////////////
 ENGINE_API CEngine* g_Engine;
 //////////////////////////////////////////////////////////////////////////
@@ -76,11 +77,11 @@ CEngine::~CEngine()
 
 bool CEngine::Initialize()
 {
-	// 1. Предварительная настройка интерфейса (Splash Screen)
+	// Предварительная настройка интерфейса (Splash Screen)
 	auto Logo = xr_make_unique<LogoWindow>();
 	Logo->Show();
 
-	// 2. Настройка Debug систем
+	// Настройка Debug систем
 #ifndef DEDICATED_SERVER
 	Debug.Initialize(false);
 #else  // DEDICATED_SERVER
@@ -88,17 +89,17 @@ bool CEngine::Initialize()
 	g_dedicated_server = true;
 #endif // DEDICATED_SERVER
 
-	// 3. Декодер ресурсов
+	// Декодер ресурсов
 	Msg("[CEngine]: Initializing Universal Resource Auto-Decoder...");
 	g_temporary_stuff = &DecodeGameResources;
 
-	// 4. Build Info
+	// Build Info
 	InitializeGlobalBuildID();
 
-	// 5. Инициализация ядра (xrCore)
+	// Инициализация ядра (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");
 
-	// 6. Инициализация настроек (Settings / INI)
+	// Инициализация настроек (Settings / INI)
 	{
 		Msg("Initializing Settings...");
 		string_path fname;
@@ -113,7 +114,7 @@ bool CEngine::Initialize()
 
 	Msg("Initializing Engine...");
 
-	// 7. Math extensions & Sheduler
+	// Math extensions & Sheduler
 	xrBind_PSGP(&PSGP, true);
 
 	Msg("Initializing Engine Sheduler...");
@@ -124,12 +125,14 @@ bool CEngine::Initialize()
 	msCreate("game");
 #endif
 
-	WindowManager.Initialize();
-
 	TimeManager.Initialize();
+	ThreadManager.Initialize();
 
 	Statistic = xr_new<CStats>();
 	Statistic->Initialize();
+
+	Logo->Hide();
+	WindowManager.Initialize();
 
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");
@@ -148,32 +151,19 @@ bool CEngine::Initialize()
 		Console = xr_new<CConsole>();
 #endif
 		Console->Initialize();
-
-		if (strstr(Core.Params, "-ltx "))
-		{
-			string64 c_name;
-			(void)sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
-			strcpy_s(Console->ConfigFile, c_name);
-			Msg("Execute custom game settings file: %s", c_name);
-		}
-		else
-		{
-			strcpy_s(Console->ConfigFile, sizeof(Console->ConfigFile), "user_game_settings");
-			Msg("Execute game settings file: %s", Console->ConfigFile);
-		}
 	}
 
 	{
 		// Render
-		Msg("Initializing Renderer...");
-		LPCSTR render_name = "xrRender.dll";
-		Log("Loading DLL:", render_name);
-		hRender = LoadLibrary(render_name);
-		R_ASSERT2(hRender, "! Can't load renderer");
+		{
+			LPCSTR render_name = "xrRender.dll";
+			Log("Loading DLL:", render_name);
+			hRender = LoadLibrary(render_name);
+			R_ASSERT2(hRender, "! Can't load renderer");
+		}
 
 		// Game
 		{
-			Msg("Initializing Game API...");
 			LPCSTR g_name = "xrGame.dll";
 			Msg("Loading DLL: %s", g_name);
 			hGame = LoadLibrary(g_name);
@@ -183,7 +173,6 @@ bool CEngine::Initialize()
 
 			R_ASSERT2(hGame, "Game DLL raised exception during loading or there is no game DLL at all");
 
-			Msg("Initializing xrFactory...");
 			pCreate = (Factory_Create*)GetProcAddress(hGame, "xrFactory_Create");
 			R_ASSERT2(pCreate, "Error in xrFactory_Create");
 
@@ -211,20 +200,17 @@ bool CEngine::Initialize()
 			}
 		}
 
-		LPCSTR g_name = "OptickCore.dll";
-		Log("Loading DLL:", g_name);
-		hOptick = LoadLibrary(g_name);
-		if (0 == hOptick)
 		{
-			R_CHK(GetLastError());
-			Msg("Optick is not installed");
+			LPCSTR g_name = "OptickCore.dll";
+			Log("Loading DLL:", g_name);
+			hOptick = LoadLibrary(g_name);
+			if (0 == hOptick)
+			{
+				R_CHK(GetLastError());
+				Msg("Optick is not installed");
+			}
 		}
 #endif
-	}
-
-	{
-		Msg("Initializing Sound...");
-		CSound_manager_interface::_create(u64(WindowManager.GetHandle()));
 	}
 
 	{
@@ -233,7 +219,43 @@ bool CEngine::Initialize()
 		Console->ExecuteScript(Console->ConfigFile);
 	}
 
+	{
+		Msg("Initializing Sound...");
+		CSound_manager_interface::_create(u64(WindowManager.GetHandle()));
+	}
+
+	ResourceManager = xr_new<CResourceManager>();
+
+	Statistic = xr_new<CStats>();
+	Statistic->Initialize();
+
+	Device.Initialize();
+	Render->Initialize();
 	DebugUI.Initialize();
+
+	LALib.OnCreate();
+
+	GameStateManager = xr_new<CGameStateManager>();
+	GameStateManager->Initialize();
+
+	FontManager.Initialize();
+
+	LevelManager.Scan();
+
+	Engine.ThreadManager.LegacyFrameMT.Add(&SoundProcessor);
+
+	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+	g_pGamePersistent->Initialize();
+
+	g_SpatialSpace = xr_new<ISpatial_DB>();
+	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+
+	LoadingScreen = xr_new<CLevelLoadingScreen>();
+	LoadingScreen->Show();
+	g_pGamePersistent->LoadTitle("st_loading_game");
+	LoadingScreen->ForceRender();
+
+	Memory.mem_usage();
 
 	{
 		// ...command line for auto start
@@ -261,40 +283,10 @@ bool CEngine::Initialize()
 #endif
 	}
 
-	ThreadManager.Initialize();
-
-	ResourceManager = xr_new<CResourceManager>();
-
-	Device.Initialize();
-	Device.Create();
-
-	LALib.OnCreate();
-
-	GameStateManager = xr_new<CGameStateManager>();
-	GameStateManager->Initialize();
-
-	Msg("Initializing Font Manager...");
-	FontManager.Initialize();
-
-	Msg("Scanning levels...");
-	LevelManager.Scan();
-
-	Engine.ThreadManager.LegacyFrameMT.Add(&SoundProcessor);
-
-	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-	g_pGamePersistent->Initialize();
-
-	g_SpatialSpace = xr_new<ISpatial_DB>();
-	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
-
-	 LoadingScreen = xr_new<CLevelLoadingScreen>();
-
-	// 15. Show Window
-	Memory.mem_usage();
-
-	Logo->Hide();
-
-	//ShowWindow(Engine.WindowManager.GetHandle(), SW_SHOWNORMAL);
+	g_pGamePersistent->LoadTitle("st_loading_shaders");
+	LoadingScreen->ForceRender();
+	Render->Create();
+	LoadingScreen->Hide();
 
 	return true;
 }
@@ -357,10 +349,6 @@ void CEngine::ProcessFrame()
 
 	// Обновление игровой логики (Input, AI, Game)
 	UpdateGameLogic();
-
-	// Precache (Прогрев рендера вращением камеры)
-	if (Device.dwPrecacheFrame)
-		Device.PreCache();
 
 	// Расчет камеры и матриц (View * Projection)
 	RenderView.UpdateViewProjection();
@@ -444,6 +432,7 @@ void CEngine::Destroy()
 	Events.Frame.R.clear();
 	Events.DeviceReset.R.clear();
 
+	Render->Destroy();
 	Device.Destroy();
 
 	xr_delete(ResourceManager);

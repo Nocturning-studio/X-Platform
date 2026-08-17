@@ -336,6 +336,5 @@ void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
 
 	m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
 	g_pGamePersistent->LoadTitle("st_client_synchronising");
-	Device.PreCache(30);
 	Engine.LoadingScreen->Hide();
 }

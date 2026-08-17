@@ -36,6 +36,8 @@ void CLevelManager::Level_Append(LPCSTR folder)
 
 void CLevelManager::Scan()
 {
+	Msg("Scanning levels...");
+
 	// Очищаем старое, если вызываем повторно
 	for (u32 i = 0; i < Levels.size(); i++)
 	{

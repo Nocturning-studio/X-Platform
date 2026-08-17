@@ -285,7 +285,6 @@ CRenderTarget::CRenderTarget()
 
 	phase_timer.Start();
 	create_blenders();
-	CompileShaders();
 	Msg("- All blenders successfully created");
 	phase_timer.Dump();
 

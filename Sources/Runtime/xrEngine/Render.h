@@ -180,24 +180,23 @@ class ENGINE_API IRender_interface
 
   public:
 	// Loading / Unloading
-	virtual void create() = 0;
-	virtual void destroy() = 0;
-	virtual void reset_begin() = 0;
-	virtual void reset_end() = 0;
+	virtual void Initialize() = 0;
+	virtual void Create() = 0;
+	virtual void Destroy() = 0;
+	virtual void ResetBegin() = 0;
+	virtual void ResetEnd() = 0;
 
-	virtual void level_Load(IReader*) = 0;
-	virtual void level_Unload() = 0;
+	virtual void LevelLoad(IReader*) = 0;
+	virtual void LevelUnload() = 0;
 
 	virtual void set_actor_health(float health) = 0;
 	virtual float get_actor_health() = 0;
 
-	virtual IDirect3DBaseTexture9* texture_load(LPCSTR fname, u32& msize) = 0;
+	virtual IDirect3DBaseTexture9* TextureLoad(LPCSTR fname, u32& msize) = 0;
 	void shader_option_skinning(s32 mode)
 	{
 		m_skinning = mode;
 	}
-	//virtual HRESULT shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName,
-	//							   LPCSTR pTarget, DWORD Flags, void*& result) = 0;
 
 	virtual CShaderMacros FetchShaderMacros() = 0;
 

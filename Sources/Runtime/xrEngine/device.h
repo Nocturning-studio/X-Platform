@@ -18,8 +18,6 @@ class ENGINE_API CGammaControl;
 #define VIEWPORT_NEAR 0.2f
 #define VIEWPORT_NEAR_HUD 0.01f
 
-#define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
-
 // refs
 class ENGINE_API CRenderDevice
 {
@@ -29,14 +27,7 @@ class ENGINE_API CRenderDevice
 	RECT m_rcWindowBounds;
 	RECT m_rcWindowClient;
 
-	void _Create(LPCSTR shName);
-	void _Destroy(BOOL bKeepTextures);
-	void _SetupStates();
-
   public:
-	u32 dwPrecacheFrame;
-	u32 dwPrecacheTotal;
-
 	u32 dwWidth, dwHeight;
 	float fWidth_2, fHeight_2;
 	BOOL b_is_Ready;
@@ -90,21 +81,14 @@ class ENGINE_API CRenderDevice
 public:
 
 	// Scene control
-	void PreCache(u32 frames);
-	void PreCache();
 	void Begin();
 	void End();
 
-	// Mode control
-	void DumpFlags();
-
 	// Creation & Destroying
-	void Create(void);
+	void Initialize();
 	void RenderFrame();
-	void Destroy(void);
-	void Reset(bool precache = true);
-
-	void Initialize(void);
+	void Destroy();
+	void Reset();
 };
 
 extern ENGINE_API CRenderDevice Device;

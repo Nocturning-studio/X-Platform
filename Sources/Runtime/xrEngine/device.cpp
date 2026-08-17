@@ -11,11 +11,7 @@
 #pragma warning(default : 4995)
 
 #include "Engine.h"
-#include "render.h"
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
+#include "Render.h"
 #include "resourcemanager.h"
 #include "optick_include.h"
 #include "IGame_Persistent.h"
@@ -52,66 +48,18 @@ void CRenderDevice::End(void)
 
     VERIFY(RenderBackend.GetDevice());
 
-    if (dwPrecacheFrame)
-    {
-        ::Sound->set_master_volume(psSoundVFactor);
-        dwPrecacheFrame--;
-        if (0 == dwPrecacheFrame)
-        {
-            if (precache_light)
-                precache_light->set_active(false);
-            if (precache_light)
-                precache_light.destroy();
-            ::Sound->set_master_volume(psSoundVFactor);
-            Engine.ResourceManager->DestroyNecessaryTextures();
-            Memory.mem_compact();
-            Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
-        }
-    }
-
     g_bRendering = FALSE;
     RenderBackend.OnFrameEnd();
     Engine.DebugUI.OnFrameEnd();
     Memory.dbg_check();
 
-    if (dwPrecacheFrame || !b_is_Active || IsIconic(Engine.WindowManager.GetHandle()))
+    if (IsIconic(Engine.WindowManager.GetHandle()))
         return;
 
     Engine.Statistic->RenderPresentation.Begin();
     RenderBackend.Present();
     Engine.Statistic->RenderPresentation.End();
 #endif
-}
-
-void CRenderDevice::PreCache(u32 amount)
-{
-#ifdef DEDICATED_SERVER
-    amount = 0;
-#endif
-    dwPrecacheFrame = dwPrecacheTotal = amount;
-    if (amount && !precache_light && g_pGameLevel)
-    {
-        precache_light = ::Render->light_create();
-        precache_light->set_shadow(false);
-        precache_light->set_position(Engine.RenderView.Position);
-        precache_light->set_color(255, 255, 255);
-        precache_light->set_range(5.0f);
-        precache_light->set_active(true);
-    }
-}
-
-void CRenderDevice::PreCache()
-{
-    float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
-    float angle = PI_MUL_2 * factor;
-
-    fvec3 dir, top, right;
-    dir.set(std::sin(angle), 0, std::cos(angle));
-    dir.normalize();
-    top.set(0, 1, 0);
-    right.crossproduct(top, dir);
-
-    Engine.RenderView.SetupView(Engine.RenderView.Position, dir, top);
 }
 
 int g_frametime = 166;
@@ -224,57 +172,16 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
     }
 }
 
-void CRenderDevice::_SetupStates()
-{
-    for (u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-    {
-        float fBias = 1.0f;
-        CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 4));
-        CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&fBias))));
-        CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
-        CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
-        CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR));
-    }
-    RenderBackend.SetRenderState(D3DRS_DITHERENABLE, TRUE);
-    RenderBackend.SetRenderState(D3DRS_COLORVERTEX, TRUE);
-    RenderBackend.SetRenderState(D3DRS_ZENABLE, TRUE);
-    RenderBackend.SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-    RenderBackend.SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-    RenderBackend.SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-    RenderBackend.SetRenderState(D3DRS_LOCALVIEWER, TRUE);
-
-    RenderBackend.SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
-    RenderBackend.SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-
-    RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-}
-
-void CRenderDevice::_Create(LPCSTR shName)
-{
-    Memory.mem_compact();
-
-    b_is_Ready = TRUE;
-    _SetupStates();
-
-    RenderBackend.OnDeviceCreate();
-    Engine.ResourceManager->OnDeviceCreate(shName);
-    ::Render->create();
-    Engine.Statistic->OnDeviceCreate();
-
-#ifndef DEDICATED_SERVER
-    m_WireShader.create("hud\\crosshair");
-    m_SelectionShader.create("hud\\crosshair");
-    DU.OnDeviceCreate();
-#endif
-}
-
-void CRenderDevice::Create()
+void CRenderDevice::Initialize()
 {
     if (b_is_Ready)
         return;
-    Engine.Statistic = xr_new<CStats>();
-    Engine.Statistic->Initialize();
-    Log("\nStarting RENDER device...");
+
+    Msg("Initializing Render Device...");
+
+    m_dwWindowStyle = GetWindowLong(Engine.WindowManager.GetHandle(), GWL_STYLE);
+    GetWindowRect(Engine.WindowManager.GetHandle(), &m_rcWindowBounds);
+    GetClientRect(Engine.WindowManager.GetHandle(), &m_rcWindowClient);
 
 #ifdef _EDITOR
     psCurrentVidMode[0] = dwWidth;
@@ -282,33 +189,29 @@ void CRenderDevice::Create()
 #endif
 
     RenderBackend.Create(Engine.WindowManager.GetHandle());
+
     dwWidth = RenderBackend.m_DevPP.BackBufferWidth;
     dwHeight = RenderBackend.m_DevPP.BackBufferHeight;
     Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
     fWidth_2 = float(dwWidth / 2);
     fHeight_2 = float(dwHeight / 2);
 
+    Memory.mem_compact();
+
+    b_is_Ready = TRUE;
+
+    RenderBackend.OnDeviceCreate();
+
     string_path fname;
     FS.update_path(fname, "$game_data$", "shaders.xr");
-    _Create(fname);
+    Engine.ResourceManager->OnDeviceCreate(fname);
+    Engine.Statistic->OnDeviceCreate();
 
-    PreCache(30);
-}
-
-void CRenderDevice::_Destroy(BOOL bKeepTextures)
-{
-    DU.OnDeviceDestroy();
-    m_WireShader.destroy();
-    m_SelectionShader.destroy();
-
-    b_is_Ready = FALSE;
-    Engine.Statistic->OnDeviceDestroy();
-    ::Render->destroy();
-    RenderBackend.DeleteResources();
-    Engine.ResourceManager->OnDeviceDestroy(bKeepTextures);
-    RenderBackend.OnDeviceDestroy();
-
-    Memory.mem_compact();
+#ifndef DEDICATED_SERVER
+    m_WireShader.create("hud\\crosshair");
+    m_SelectionShader.create("hud\\crosshair");
+    DU.OnDeviceCreate();
+#endif
 }
 
 void CRenderDevice::Destroy(void)
@@ -319,12 +222,22 @@ void CRenderDevice::Destroy(void)
     Log("\nDestroying Direct3D...");
     ShowCursor(TRUE);
 
-    _Destroy(FALSE);
+    DU.OnDeviceDestroy();
+    m_WireShader.destroy();
+    m_SelectionShader.destroy();
+
+    b_is_Ready = FALSE;
+    Engine.Statistic->OnDeviceDestroy();
+    RenderBackend.DeleteResources();
+    Engine.ResourceManager->OnDeviceDestroy(FALSE);
+    RenderBackend.OnDeviceDestroy();
+
+    Memory.mem_compact();
 
     RenderBackend.Destroy();
 }
 
-void CRenderDevice::Reset(bool precache)
+void CRenderDevice::Reset()
 {
     Engine.DebugUI.OnResetBegin();
 
@@ -339,7 +252,6 @@ void CRenderDevice::Reset(bool precache)
     Engine.ResourceManager->reset_begin();
     Memory.mem_compact();
     RenderBackend.Reset();
-    _SetupStates();
     dwWidth = Engine.WindowManager.GetWidth();
     dwHeight = Engine.WindowManager.GetHeight();
     fWidth_2 = float(dwWidth / 2);
@@ -365,38 +277,6 @@ void CRenderDevice::Reset(bool precache)
 #ifdef DEBUG
     _SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", RenderBackend.GetDevice());
 #endif
-}
-
-void CRenderDevice::Initialize()
-{
-    Msg("Initializing Render Device...");
-
-    m_dwWindowStyle = GetWindowLong(Engine.WindowManager.GetHandle(), GWL_STYLE);
-    GetWindowRect(Engine.WindowManager.GetHandle(), &m_rcWindowBounds);
-    GetClientRect(Engine.WindowManager.GetHandle(), &m_rcWindowClient);
-}
-
-static struct _DF
-{
-    char* name;
-    u32 mask;
-} DF[] = {
-    {"rsFullscreen", rsFullscreen},
-    {"rsClearBB", rsClearBB},
-    {"rsVSync", rsVSync},
-    {"rsWireframe", rsWireframe},
-    {NULL, 0}
-};
-
-void CRenderDevice::DumpFlags()
-{
-    Log("- Dumping device flags");
-    _DF* p = DF;
-    while (p->name)
-    {
-        Msg("* %20s %s", p->name, psDeviceFlags.test(p->mask) ? "on" : "off");
-        p++;
-    }
 }
 
 void CRenderDevice::SetNearer(BOOL enabled)

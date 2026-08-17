@@ -58,7 +58,7 @@ u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)
 	return iFloor(res);
 }
 
-IDirect3DBaseTexture9* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
+IDirect3DBaseTexture9* CRender::TextureLoad(LPCSTR fRName, u32& ret_msize)
 {
 	IDirect3DTexture9* pTexture2D = NULL;
 	IDirect3DCubeTexture9* pTextureCUBE = NULL;

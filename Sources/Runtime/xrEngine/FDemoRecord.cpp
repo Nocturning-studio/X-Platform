@@ -183,7 +183,7 @@ void CDemoRecord::MakeLevelMapProcess()
 		psDeviceFlags.set(rsClearBB | rsDrawStatic, TRUE);
 		psDeviceFlags.set(rsFullscreen, s_dev_flags.test(rsFullscreen));
 		break;
-	case DEVICE_RESET_PRECACHE_FRAME_COUNT + 1: {
+	case 1: {
 		s_hud_flag.assign(psHUD_Flags);
 		psHUD_Flags.assign(0);
 
@@ -212,7 +212,7 @@ void CDemoRecord::MakeLevelMapProcess()
 		Engine.RenderView.Project.build_projection_ortho(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.min.z, bb.max.z);
 	}
 	break;
-	case DEVICE_RESET_PRECACHE_FRAME_COUNT + 2: {
+	case 2: {
 		string_path tmp;
 		Fbox bb = g_pGameLevel->ObjectSpace.GetBoundingVolume();
 

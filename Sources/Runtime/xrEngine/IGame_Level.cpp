@@ -29,6 +29,8 @@ IGame_Level::IGame_Level()
 
 IGame_Level::~IGame_Level()
 {
+	Engine.ThreadManager.WaitForFrameEnd();
+
 	if (strstr(Core.Params, "-nes_texture_storing"))
 		Engine.ResourceManager->StoreNecessaryTextures();
 
@@ -38,7 +40,7 @@ IGame_Level::~IGame_Level()
 
 	// Render-level unload
 	g_pGamePersistent->LoadTitle("st_start_level_unloading");
-	Render->level_Unload();
+	Render->LevelUnload();
 
 	g_pGamePersistent->LoadTitle("st_unloading_env_mods");
 	g_pGamePersistent->Environment().mods_unload();
@@ -102,7 +104,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 
 	// Render-level Load
 	g_pGamePersistent->LoadTitle("st_start_loading_level");
-	Render->level_Load(LL_Stream);
+	Render->LevelLoad(LL_Stream);
 	tscreate.FrameEnd();
 
 	// Objects
@@ -138,11 +140,11 @@ BOOL IGame_Level::Load(u32 dwNum)
 
 void IGame_Level::OnRender()
 {
-	//OPTICK_EVENT("IGame_Level::OnRender");
+	PROFILE_FUNCTION();
 
 #ifndef DEDICATED_SERVER
-		Render->Calculate();
-		Render->Render();
+	Render->Calculate();
+	Render->Render();
 #endif
 }
 

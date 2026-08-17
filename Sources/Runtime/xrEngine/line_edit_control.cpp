@@ -130,6 +130,9 @@ static inline bool get_caps_lock_state()
 
 void line_edit_control::update_key_states()
 {
+	if (!pInput)
+		return;
+
 	m_key_state.zero();
 
 	set_key_state(ks_LShift, !!pInput->iGetAsyncKeyState(DIK_LSHIFT));

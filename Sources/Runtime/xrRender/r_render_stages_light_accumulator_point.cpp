@@ -33,14 +33,12 @@ void CRender::accumulate_point_lights(light* L)
 
 	// backfaces: if (stencil>=1 && zfail)	stencil = light_id
 	RenderBackend.set_CullMode(CULL_FRONTFACE);
-	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP,
-					   D3DSTENCILOP_REPLACE);
+	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume(L);
 
 	// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
 	RenderBackend.set_CullMode(CULL_BACKFACE);
-	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP,
-					   D3DSTENCILOP_REPLACE);
+	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume(L);
 
 	// *****************************	Minimize overdraw	*************************************
@@ -83,8 +81,7 @@ void CRender::accumulate_point_lights(light* L)
 		RenderBackend.set_Constant("m_texgen", m_Texgen);
 
 		// Render if (stencil >= light_id && z-pass)
-		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP,
-						   D3DSTENCILOP_KEEP);
+		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP);
 		draw_volume(L);
 	}
 

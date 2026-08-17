@@ -37,11 +37,11 @@ static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 	PROFILE_FUNCTION();
 
 	// Сортировка Front-to-Back по SSA для Early Z-Cull
-	std::sort(batch.begin(), batch.end(),
-			  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) 
-			  {
-				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
-			  });
+	//std::sort(batch.begin(), batch.end(),
+	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) 
+	//		  {
+	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+	//		  });
 
 	for (const auto& node : batch)
 	{
@@ -55,11 +55,11 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 	PROFILE_FUNCTION();
 
 	// Сортировка Front-to-Back
-	std::sort(batch.begin(), batch.end(),
-			  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) 
-			  {
-				  return a.ScreenSpaceArea > b.ScreenSpaceArea;
-			  });
+	//std::sort(batch.begin(), batch.end(),
+	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) 
+	//		  {
+	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+	//		  });
 
 	for (const auto& node : batch)
 	{

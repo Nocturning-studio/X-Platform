@@ -156,10 +156,8 @@ void IGame_Persistent::OnFrame()
 	PROFILE_FUNCTION();
 
 #ifndef DEDICATED_SERVER
-	if (!Device.Paused() || Device.dwPrecacheFrame)
-	{
+	if (!Device.Paused())
 		Environment().OnFrame();
-	}
 #endif
 
 #ifndef _EDITOR

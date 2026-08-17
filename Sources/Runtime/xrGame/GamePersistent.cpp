@@ -443,16 +443,13 @@ void CGamePersistent::start_logo_intro()
 		return;
 	}
 #endif
-	if (Device.dwPrecacheFrame == 0)
+	m_intro_event.bind(this, &CGamePersistent::update_logo_intro);
+	if (!g_dedicated_server && 0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pGameLevel)
 	{
-		m_intro_event.bind(this, &CGamePersistent::update_logo_intro);
-		if (!g_dedicated_server && 0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pGameLevel)
-		{
-			VERIFY(NULL == m_intro);
-			m_intro = xr_new<CUISequencer>();
-			m_intro->Start("intro_logo");
-			Console->Hide();
-		}
+		VERIFY(NULL == m_intro);
+		m_intro = xr_new<CUISequencer>();
+		m_intro->Start("intro_logo");
+		Console->Hide();
 	}
 }
 void CGamePersistent::update_logo_intro()
@@ -474,7 +471,7 @@ void CGamePersistent::start_game_intro()
 		return;
 	}
 #endif
-	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame <= 2)
+	if (g_pGameLevel && g_pGameLevel->bReady)
 	{
 		m_intro_event.bind(this, &CGamePersistent::update_game_intro);
 		if (0 == xr_stricmp(m_game_params.m_new_or_load, "new"))

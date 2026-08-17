@@ -174,6 +174,19 @@ void CConsole::Initialize()
 	// Commands
 	extern void CCC_Register();
 	CCC_Register();
+
+	if (strstr(Core.Params, "-ltx "))
+	{
+		string64 c_name;
+		(void)sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
+		strcpy_s(Console->ConfigFile, c_name);
+		Msg("Execute custom game settings file: %s", c_name);
+	}
+	else
+	{
+		strcpy_s(Console->ConfigFile, sizeof(Console->ConfigFile), "user_game_settings");
+		Msg("Execute game settings file: %s", Console->ConfigFile);
+	}
 }
 
 CConsole::~CConsole()

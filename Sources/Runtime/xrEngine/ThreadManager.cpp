@@ -306,11 +306,7 @@ void CThreadManager::SignalFrameStart()
 
 void CThreadManager::WaitForFrameEnd()
 {
-	if (IsWorkerThread())
-	{
-		Msg("! ERROR: CThreadManager::WaitForFrameEnd() called from worker thread %d. Deadlock imminent.", std::this_thread::get_id());
-		return;  // В релизе хотя бы не зависнем, но корректность не гарантирована
-	}
+	R_ASSERT2(!IsWorkerThread(), "! ERROR: CThreadManager::WaitForFrameEnd() called from worker thread!");
 
 	// Ждем сигнала о завершении кадра
 	{
@@ -331,7 +327,6 @@ void CThreadManager::WaitForFrameEnd()
 	}
 }
 
-// Остальные методы без изменений
 void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority priority, TaskType type)
 {
 	TaskItem item;

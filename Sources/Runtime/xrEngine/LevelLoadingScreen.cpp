@@ -148,9 +148,6 @@ void CLevelLoadingScreen::SetTitle(LPCSTR str)
 
 void CLevelLoadingScreen::ForceRender()
 {
-	if (!bIsActive)
-		return;
-
 	Engine.TimeManager.IncreaseFrameCount();
 
 	Device.Begin();
@@ -158,7 +155,7 @@ void CLevelLoadingScreen::ForceRender()
 	if (g_dedicated_server)
 		Console->OnRender();
 	else
-		DrawInternal(); // ¬нутренн€€ отрисовка
+		DrawInternal();
 
 	Device.End();
 }
@@ -198,16 +195,11 @@ u32 CLevelLoadingScreen::CalcProgressColor(u32 idx, u32 total, int stage, int ma
 	return color_argb_f(f, 1.0f, 1.0f, 1.0f);
 }
 
-#pragma optimize("g", off)
 void CLevelLoadingScreen::DrawInternal()
 {
-	//OPTICK_EVENT("CApplication::load_draw_internal");
+	RenderBackend.setRenderTarget(RenderBackend.GetBaseRT(), 0);
+	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0);
 
-	if (!sh_progress)
-	{
-		RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0);
-		return;
-	}
 	// Draw logo
 	u32 Offset;
 	u32 C = 0xffffffff;
