@@ -586,8 +586,6 @@ void DeviceContext::Impl::ClipAndRasterize(const PipelineStateObject& state,
 
     if (state.fillMode == FillMode::Solid)
     {
-        PROFILE_SCOPE("Create TriangleSetups");
-
         std::vector<RasterizerCommon::TriangleSetup> setups;
         setups.reserve(finalTriangles.size());
 

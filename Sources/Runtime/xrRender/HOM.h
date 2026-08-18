@@ -10,8 +10,6 @@ private:
 public:
     void Load();
     void Unload();
-    void Disable();
-    void Enable();
 
     const CDB::MODEL* get_occluder_model() const { return m_pModel; }
 

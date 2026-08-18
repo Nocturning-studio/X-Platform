@@ -68,6 +68,7 @@ void SoftXOcclusionCore::WaitForBuildAndSwap()
     {
         m_buildFuture.wait();
         SwapBuffers();
+        m_buildFuture = {};
     }
 }
 ////////////////////////////////////////////////////////////////////////////////

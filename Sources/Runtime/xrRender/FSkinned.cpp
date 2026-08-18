@@ -135,6 +135,8 @@ void CSkeletonX_ST::Copy(IRender_Visual* P)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX_PM::Render(float LOD)
 {
+	PROFILE_FUNCTION();
+
 	int lod_id = inherited1::last_lod;
 	if (LOD >= 0.f)
 	{

@@ -1091,7 +1091,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 	if (visibility_status == fcvNone)
 		return FALSE;
 
-	if (ctx.use_hom && RenderImplementation.HOM.invisible(pVisual->vis))
+	if (ctx.use_hom && !RenderImplementation.HOM.visible(pVisual->vis))
 		return FALSE;
 
 	// Проверка на значимость (Distance / Size Culling)
@@ -1247,7 +1247,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 
 	// Occlusion Culling (HOM - Hierarchical Occlusion Maps)
 	// Пропускаем невидимые за стенами/холмами объекты
-	if (ctx.use_hom && RenderImplementation.HOM.invisible(vis_data))
+	if (!RenderImplementation.HOM.visible(vis_data))
 		return;
 
 	// Проверка на значимость (Distance / Size Culling)

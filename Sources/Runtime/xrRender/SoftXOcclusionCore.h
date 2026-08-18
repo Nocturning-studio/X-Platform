@@ -25,8 +25,9 @@ public:
     // Двойная буферизация
     std::shared_ptr<SoftX::DepthBuffer> GetWriteBuffer() { return m_depthBuffers[m_writeIdx]; }
     std::shared_ptr<SoftX::DepthBuffer> GetReadBuffer() { return m_depthBuffers[m_readIdx]; }
+    void SetBuildFuture(std::future<void>&& fut) { m_buildFuture = std::move(fut); }
     void SwapBuffers();
-    void WaitForBuildAndSwap(); // ждёт завершения асинхронной задачи и делает свап буфферов
+    void WaitForBuildAndSwap();
 
     bool IsReadBufferReady() const { return m_readBufferReady; }
 

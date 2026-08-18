@@ -40,9 +40,6 @@ void CHOM::Unload()
     bEnabled = FALSE;
 }
 
-void CHOM::Disable() { bEnabled = FALSE; }
-void CHOM::Enable() { bEnabled = m_pModel ? TRUE : FALSE; }
-
 BOOL CHOM::visible(Fbox3& B)
 {
     if (!bEnabled) return TRUE;

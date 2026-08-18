@@ -115,8 +115,6 @@ void CRender::render_lights(light_Package& LP)
 
     // ------------------------------------------------------------------------
     // Рендер теней
-    HOM.Disable();
-
     while (!LP.v_shadowed.empty())
     {
         OPTICK_EVENT("Shadow map rendering");
@@ -192,7 +190,6 @@ void CRender::render_lights(light_Package& LP)
         {
             OPTICK_EVENT("Accumulation");
             set_light_accumulator();
-            HOM.Disable();
 
             if (!LP.v_point.empty())
             {

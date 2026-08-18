@@ -25,6 +25,7 @@ public:
     void Unload();
     void DrawDebug();
     bool IsLoaded() const { return m_loaded; }
+    void Update();
 
     void __stdcall BuildDepthBuffer() { m_occlusionMap.Build(); }
     void WaitForBuildAndSwap() { if (m_core) m_core->WaitForBuildAndSwap(); }

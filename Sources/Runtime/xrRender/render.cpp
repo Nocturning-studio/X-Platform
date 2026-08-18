@@ -290,11 +290,7 @@ void CRender::OnFrame()
 	PROFILE_FUNCTION();
 
 	Models->DeleteQueue();
-
-	{
-		CPUOCC.WaitForBuildAndSwap();
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(&CPUOCC, &CPUOcclusion::BuildDepthBuffer));
-	}
+	CPUOCC.Update();
 
 	if (Details && Details->dtFS)
 	{

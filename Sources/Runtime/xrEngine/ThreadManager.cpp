@@ -215,8 +215,10 @@ void CThreadManager::WorkerThreadProc(void* context)
 				if (taskIndex >= self->m_tasksAI.size())
 					break;
 
-				const auto& item = self->m_tasksAI[taskIndex];
-				if (item.Delegate)
+				auto& item = self->m_tasksAI[taskIndex];
+				if (item.PackagedTask)
+					(*item.PackagedTask)();
+				else if (item.Delegate)
 					item.Delegate();
 			}
 		}
@@ -230,8 +232,10 @@ void CThreadManager::WorkerThreadProc(void* context)
 				if (taskIndex >= self->m_tasksGeneral.size())
 					break;
 
-				const auto& item = self->m_tasksGeneral[taskIndex];
-				if (item.Delegate)
+				auto& item = self->m_tasksGeneral[taskIndex];
+				if (item.PackagedTask)
+					(*item.PackagedTask)();
+				else if (item.Delegate)
 					item.Delegate();
 			}
 		}
@@ -345,13 +349,36 @@ void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority 
 	}
 }
 
+std::future<void> CThreadManager::AddParallelTaskWithFuture(const ParallelTask& delegate, TaskPriority priority, TaskType type)
+{
+	auto task = std::make_shared<std::packaged_task<void()>>(delegate);
+	std::future<void> future = task->get_future();
+
+	TaskItem item;
+	item.Delegate = delegate;
+	item.Priority = priority;
+	item.PackagedTask = task;
+
+	if (type == TaskType::AI)
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
+		m_tasksAI.push_back(item);
+	}
+	else
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
+		m_tasksGeneral.push_back(item);
+	}
+
+	return future;
+}
+
 void CThreadManager::RemoveParallelTask(const ParallelTask& delegate)
 {
 	// Удаляем из General
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
-		auto it = std::remove_if(m_tasksGeneral.begin(), m_tasksGeneral.end(),
-								 [&](const TaskItem& item) { return item.Delegate == delegate; });
+		auto it = std::remove_if(m_tasksGeneral.begin(), m_tasksGeneral.end(), [&](const TaskItem& item) { return item.Delegate == delegate; });
 
 		if (it != m_tasksGeneral.end())
 			m_tasksGeneral.erase(it, m_tasksGeneral.end());
@@ -360,8 +387,7 @@ void CThreadManager::RemoveParallelTask(const ParallelTask& delegate)
 	// Удаляем из AI
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
-		auto it = std::remove_if(m_tasksAI.begin(), m_tasksAI.end(),
-								 [&](const TaskItem& item) { return item.Delegate == delegate; });
+		auto it = std::remove_if(m_tasksAI.begin(), m_tasksAI.end(), [&](const TaskItem& item) { return item.Delegate == delegate; });
 
 		if (it != m_tasksAI.end())
 			m_tasksAI.erase(it, m_tasksAI.end());

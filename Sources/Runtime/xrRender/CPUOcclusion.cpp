@@ -143,6 +143,15 @@ void CPUOcclusion::Unload()
     m_loaded = false;
 }
 
+void CPUOcclusion::Update()
+{
+    if (!m_core) return;
+    WaitForBuildAndSwap();
+    CThreadManager::ParallelTask task = CThreadManager::ParallelTask(this, &CPUOcclusion::BuildDepthBuffer);
+    std::future<void> fut = Engine.ThreadManager.AddParallelTaskWithFuture(task, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::General);
+    m_core->SetBuildFuture(std::move(fut));
+}
+
 // ---------------------------------------------------------------------------------------
 // D3D9 отладка
 // ---------------------------------------------------------------------------------------

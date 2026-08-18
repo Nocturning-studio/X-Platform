@@ -125,6 +125,8 @@ struct FTreeVisual_setup
 
 void FTreeVisual::Render(float LOD)
 {
+	PROFILE_FUNCTION();
+
 	static FTreeVisual_setup tvs;
 	if (tvs.dwFrame != Engine.TimeManager.GetFrameCount())
 		tvs.calculate();
@@ -191,6 +193,8 @@ void FTreeVisual_ST::Load(const char* N, IReader* data, u32 dwFlags)
 }
 void FTreeVisual_ST::Render(float LOD)
 {
+	PROFILE_FUNCTION();
+
 	inherited::Render(LOD);
 	RenderBackend.set_Geometry(rm_geom);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
@@ -227,6 +231,8 @@ void FTreeVisual_PM::Load(const char* N, IReader* data, u32 dwFlags)
 }
 void FTreeVisual_PM::Render(float LOD)
 {
+	PROFILE_FUNCTION();
+
 	inherited::Render(LOD);
 	int lod_id = last_lod;
 	if (LOD >= 0.f)

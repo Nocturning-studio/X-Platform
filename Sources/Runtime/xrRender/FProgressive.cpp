@@ -67,6 +67,8 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
 
 void FProgressive::Render(float LOD)
 {
+	PROFILE_FUNCTION();
+
 	if (m_fast && RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH)
 	{
 		int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);

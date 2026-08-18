@@ -66,6 +66,8 @@ inline void CROS_impl::accum_hemi(float* hemi_cube, fvec3& dir, float scale)
 
 void CROS_impl::smart_update(IRenderable* O)
 {
+	PROFILE_FUNCTION();
+
 	if (!O)
 		return;
 	if (0 == O->renderable.visual)
@@ -195,6 +197,8 @@ extern float ps_r_lt_smooth;
 
 void CROS_impl::update_smooth(IRenderable* O)
 {
+	PROFILE_FUNCTION();
+
 	if (dwFrameSmooth == Engine.TimeManager.GetFrameCount())
 		return;
 	dwFrameSmooth = Engine.TimeManager.GetFrameCount();

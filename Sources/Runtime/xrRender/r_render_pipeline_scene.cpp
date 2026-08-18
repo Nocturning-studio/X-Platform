@@ -19,13 +19,9 @@ void CRender::RenderScene()
 
 	prepare_to_render();
 
-	HOM.Enable();
-
 	calculate_scene_culling();
 
 	render_scene_to_gbuffer();
-
-	HOM.Disable();
 
 	// Directional light - sun
 	render_sun();

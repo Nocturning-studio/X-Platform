@@ -235,6 +235,8 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 	// PHASE 1: STATIC GEOMETRY (Level)
 	// -------------------------------------------------------------------------
 	{
+		OPTICK_EVENT("queue_static");
+
 		RenderBackend.set_transform_world(Fidentity);
 
 		mapNormalVS& map_vs = packet.queue_static[_priority];
@@ -314,6 +316,8 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 	// PHASE 2: DYNAMIC GEOMETRY (NPCs, Physics)
 	// -------------------------------------------------------------------------
 	{
+		OPTICK_EVENT("queue_dynamic");
+
 		mapMatrixVS& map_vs = packet.queue_dynamic[_priority];
 		map_vs.getANY_P(m_scratch.matVS);
 

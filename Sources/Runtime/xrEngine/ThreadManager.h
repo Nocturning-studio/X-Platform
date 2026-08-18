@@ -3,6 +3,7 @@
 #include "pure.h"
 #include <mutex>
 #include <atomic>
+#include <future>
 #include <thread>
 #include <array>
 #include <condition_variable>
@@ -33,6 +34,7 @@ class ENGINE_API CThreadManager
 	{
 		ParallelTask Delegate;
 		TaskPriority Priority;
+		std::shared_ptr<std::packaged_task<void()>> PackagedTask;
 
 		bool operator>(const TaskItem& other) const
 		{
@@ -88,7 +90,7 @@ class ENGINE_API CThreadManager
 	std::atomic<u32> m_threadsCompleted{0};
 
 	// Фиксированное количество воркеров
-	static constexpr u32 MAX_WORKERS = 2; // Максимальное количество потоков
+	static constexpr u32 MAX_WORKERS = 2;
 	WorkerContext m_workers[MAX_WORKERS];
 	u32 m_workerCount;
 
@@ -116,6 +118,7 @@ class ENGINE_API CThreadManager
 	void Destroy();
 
 	void AddParallelTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal, TaskType type = TaskType::General);
+	std::future<void> AddParallelTaskWithFuture(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal, TaskType type = TaskType::General);
 
 	void RemoveParallelTask(const ParallelTask& delegate);
 	bool HasParallelTask(const ParallelTask& delegate) const;
