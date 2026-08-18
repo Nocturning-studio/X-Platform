@@ -432,8 +432,8 @@ class CRender : public IRender_interface, public pureFrame
 	void __stdcall schedule_cascades();
 	void wait_for_sun_task();
 	void swap_sun_buffers();
-	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
-	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx);
+	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx);
+	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_ambient_occlusion();

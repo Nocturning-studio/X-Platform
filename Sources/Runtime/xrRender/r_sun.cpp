@@ -308,177 +308,6 @@ template <bool _debug> class FixedConvexVolume
 };
 
 //////////////////////////////////////////////////////////////////////////
-// OLES: naive builder of infinite volume expanded from base frustum towards
-//		 light source. really slow, but it works for our simple usage :)
-// note: normals points to 'outside'
-//////////////////////////////////////////////////////////////////////////
-template <bool _debug> class DumbConvexVolume
-{
-  public:
-	struct _poly
-	{
-		xr_vector<int> points;
-		fvec3 planeN;
-		float planeD;
-		float classify(fvec3& p)
-		{
-			return planeN.dotproduct(p) + planeD;
-		}
-	};
-	struct _edge
-	{
-		int p0, p1;
-		int counter;
-		_edge(int _p0, int _p1, int m) : p0(_p0), p1(_p1), counter(m)
-		{
-			if (p0 > p1)
-				swap(p0, p1);
-		}
-		bool equal(_edge& E)
-		{
-			return p0 == E.p0 && p1 == E.p1;
-		}
-	};
-
-  public:
-	xr_vector<fvec3> points;
-	xr_vector<_poly> polys;
-	xr_vector<_edge> edges;
-
-  public:
-	void compute_planes()
-	{
-		for (int it = 0; it < int(polys.size()); it++)
-		{
-			_poly& P = polys[it];
-			fvec3 t1, t2;
-			t1.sub(points[P.points[0]], points[P.points[1]]);
-			t2.sub(points[P.points[0]], points[P.points[2]]);
-			P.planeN.crossproduct(t1, t2).normalize();
-			P.planeD = -P.planeN.dotproduct(points[P.points[0]]);
-
-			// verify
-			if (_debug)
-			{
-				fvec3& p0 = points[P.points[0]];
-				fvec3& p1 = points[P.points[1]];
-				fvec3& p2 = points[P.points[2]];
-				fvec3& p3 = points[P.points[3]];
-				Fplane p012;
-				p012.build(p0, p1, p2);
-				Fplane p123;
-				p123.build(p1, p2, p3);
-				Fplane p230;
-				p230.build(p2, p3, p0);
-				Fplane p301;
-				p301.build(p3, p0, p1);
-				VERIFY(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
-			}
-		}
-	}
-
-	void compute_caster_model(xr_vector<Fplane>& dest, fvec3 direction)
-	{
-		CRenderTarget& T = *RenderImplementation.RenderTarget;
-
-		// COG
-		fvec3 cog = {0, 0, 0};
-		for (int it = 0; it < int(points.size()); it++)
-			cog.add(points[it]);
-		cog.div(float(points.size()));
-
-		// planes
-		compute_planes();
-		for (int it = 0; it < int(polys.size()); it++)
-		{
-			_poly& base = polys[it];
-			if (base.classify(cog) > 0)
-				std::reverse(base.points.begin(), base.points.end());
-		}
-
-		// remove faceforward polys, build list of edges -> find open ones
-		compute_planes();
-		for (int it = 0; it < int(polys.size()); it++)
-		{
-			_poly& base = polys[it];
-			VERIFY(base.classify(cog) < 0); // debug
-
-			int m_traversal_marker = (base.planeN.dotproduct(direction) <= 0) ? -1 : 1;
-
-			// register edges
-			xr_vector<int>& plist = polys[it].points;
-			for (int p = 0; p < int(plist.size()); p++)
-			{
-				_edge E(plist[p], plist[(p + 1) % plist.size()], m_traversal_marker);
-				bool found = false;
-				for (int e = 0; e < int(edges.size()); e++)
-					if (edges[e].equal(E))
-					{
-						edges[e].counter += m_traversal_marker;
-						found = true;
-						break;
-					}
-				if (!found)
-				{
-					edges.push_back(E);
-					if (_debug)
-						T.dbg_addline(points[E.p0], points[E.p1], color_rgba(255, 0, 0, 255));
-				}
-			}
-
-			// remove if unused
-			if (m_traversal_marker < 0)
-			{
-				polys.erase(polys.begin() + it);
-				it--;
-			}
-		}
-
-		// Extend model to infinity, the volume is not capped, so this is indeed up to infinity
-		for (int e = 0; e < int(edges.size()); e++)
-		{
-			if (edges[e].counter != 0)
-				continue;
-			_edge& E = edges[e];
-			if (_debug)
-				T.dbg_addline(points[E.p0], points[E.p1], color_rgba(255, 255, 255, 255));
-			fvec3 point;
-			points.push_back(point.sub(points[E.p0], direction));
-			points.push_back(point.sub(points[E.p1], direction));
-			polys.push_back(_poly());
-			_poly& P = polys.back();
-			int pend = int(points.size());
-			P.points.push_back(E.p0);
-			P.points.push_back(E.p1);
-			P.points.push_back(pend - 1); // p1 mod
-			P.points.push_back(pend - 2); // p0 mod
-			if (_debug)
-				T.dbg_addline(points[E.p0], point.mad(points[E.p0], direction, -1000), color_rgba(0, 255, 0, 255));
-			if (_debug)
-				T.dbg_addline(points[E.p1], point.mad(points[E.p1], direction, -1000), color_rgba(0, 255, 0, 255));
-		}
-
-		// Reorient planes (try to write more inefficient code :)
-		compute_planes();
-		for (int it = 0; it < int(polys.size()); it++)
-		{
-			_poly& base = polys[it];
-			if (base.classify(cog) > 0)
-				std::reverse(base.points.begin(), base.points.end());
-		}
-
-		// Export
-		compute_planes();
-		for (int it = 0; it < int(polys.size()); it++)
-		{
-			_poly& P = polys[it];
-			Fplane pp = {P.planeN, P.planeD};
-			dest.push_back(pp);
-		}
-	}
-};
-
-//////////////////////////////////////////////////////////////////////////
 fvec3 wform(fmat4x4& m, fvec3 const& v)
 {
 	fvec4 r;
@@ -486,7 +315,6 @@ fvec3 wform(fmat4x4& m, fvec3 const& v)
 	r.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42;
 	r.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43;
 	r.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + m._44;
-	// VERIFY		(r.w>0.f);
 	float invW = 1.0f / r.w;
 	fvec3 r3 = {r.x * invW, r.y * invW, r.z * invW};
 	return r3;
@@ -502,7 +330,7 @@ void CRender::init_cacades()
 	m_sun_cascades[SE_SUN_MIDDLE].size = ps_r_sun_near * 3;
 	m_sun_cascades[SE_SUN_FAR].size = ps_r_sun_far;
 
-	// Инициализируем ОБА буфера
+	// Инициализируем буфера
 	m_sun_cascades_buffer[0].Init();
 	m_sun_cascades_buffer[1].Init();
 
@@ -511,15 +339,15 @@ void CRender::init_cacades()
 	m_sun_read_ix = 0;
 }
 
-void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
+void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx)
 {
     light* sun = (light*)Lights.sun_adapted._get();
 
     // Calculate view-frustum bounds in world space
     fmat4x4 ex_project, ex_full, ex_full_inverse;
     {
-        ex_project = Engine.RenderView.Project;
-        ex_full.mul(ex_project, Engine.RenderView.View);
+        ex_project = ctx.RenderView.Project;
+        ex_full.mul(ex_project, ctx.RenderView.View);
         D3DXMatrixInverse((D3DXMATRIX*)&ex_full_inverse, 0, (D3DXMATRIX*)&ex_full);
     }
 
@@ -532,11 +360,6 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
     {
         fmat4x4 fulltransform_inv = ex_full_inverse;
-#ifdef _DEBUG
-        typedef DumbConvexVolume<true> t_volume;
-#else
-        typedef DumbConvexVolume<false> t_volume;
-#endif
 
         // Search for default sector (largest)
         CSector* largest_sector = 0;
@@ -555,7 +378,7 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
         cull_sector = largest_sector;
 
         // COP - 100 km away
-        cull_COP.mad(Engine.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
+        cull_COP.mad(ctx.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
 
         // Create approximate ortho-transform
         fmat4x4 mdir_View, mdir_Project;
@@ -596,15 +419,15 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
                 light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
             }
 
-            light_cuboid.view_ray.Position = Engine.RenderView.Position;
-            light_cuboid.view_ray.Direction = Engine.RenderView.Direction;
+            light_cuboid.view_ray.Position = ctx.RenderView.Position;
+            light_cuboid.view_ray.Direction = ctx.RenderView.Direction;
             light_cuboid.light_ray.Position = L_pos;
             light_cuboid.light_ray.Direction = L_dir;
         }
 
         Fplane light_top_plane;
         light_top_plane.build_unit_normal(L_pos, L_dir);
-        float dist = light_top_plane.classify(Engine.RenderView.Position);
+        float dist = light_top_plane.classify(ctx.RenderView.Position);
 
         float map_size = m_sun_cascades[cascade_ind].size;
         D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project,
@@ -646,7 +469,7 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
         if (cascade_ind < m_sun_cascades.size() - 1)
             m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
-        fvec3 proj_view = Engine.RenderView.Direction;
+        fvec3 proj_view = ctx.RenderView.Direction;
         proj_view.y = 0;
         proj_view.normalize();
 
@@ -664,7 +487,7 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
         for (u32 p = 0; p < cull_planes.size(); p++)
             cull_frustum._add(cull_planes[p]);
 
-        fvec3 cam_proj = Engine.RenderView.Position;
+        fvec3 cam_proj = ctx.RenderView.Position;
         const float align_aim_step_coef = 4.f;
         cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
                      floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
@@ -775,13 +598,14 @@ void __stdcall CRender::schedule_cascades()
     shadow_ctx.culling_bounds = nullptr;
     shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
-    // Подготовка матриц каскадов
-    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-        prepare_sun_cascade(i, *writeBuffer.items[i]);
+	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+	{
+		// Подготовка матриц каскадов
+		prepare_sun_cascade(i, *writeBuffer.items[i], shadow_ctx);
 
-    // Сборка сцены для каждого каскада
-    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-        gather_scene_for_cascade(i, *writeBuffer.items[i], shadow_ctx);
+		// Сборка сцены для каждого каскада
+		gather_scene_for_cascade(i, *writeBuffer.items[i], shadow_ctx);
+	}
 
 	// Отмечаем завершение
 	{
