@@ -62,6 +62,7 @@ X-Platform/
 - Видеокарта: GTX750Ti
 
 <img width="3500" height="1876" alt="Splash screen1" src="https://github.com/user-attachments/assets/f4f2b12e-a019-405c-bc74-4fd0d5eff0da" />
+<img width="1920" height="1040" alt="image" src="https://github.com/user-attachments/assets/d0c1971e-03fe-4d52-b9fe-de876cab8c84" />
 <img width="1920" height="1080" alt="Opener" src="https://github.com/user-attachments/assets/b7422e36-c5ce-4792-bb49-75d8ca376bb7" />
 <img width="1920" height="1080" alt="PBR" src="https://github.com/user-attachments/assets/ed1a3c22-8c4e-4607-8e72-bfe0a615352b" />
 <img width="1920" height="1080" alt="Material" src="https://github.com/user-attachments/assets/f1f760db-ab81-4458-b5e8-a8f5f0fabdc0" />
