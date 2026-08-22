@@ -205,10 +205,10 @@ template <class T> struct template_matrix4x4
 	};
 
 	IC SelfRef invert(const Self& a)
-	{ // important: this is 4x3 invert, not the 4x4 one
+	{ 
+		// important: this is 4x3 invert, not the 4x4 one
 		// faster than self-invert
-		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) +
-					 a._13 * (a._21 * a._32 - a._22 * a._31));
+		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
 
 		fDetInv = 1.0f / fDetInv;
 
@@ -235,10 +235,10 @@ template <class T> struct template_matrix4x4
 	}
 
 	IC bool invert_b(const Self& a)
-	{ // important: this is 4x3 invert, not the 4x4 one
+	{ 
+		// important: this is 4x3 invert, not the 4x4 one
 		// faster than self-invert
-		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) +
-					 a._13 * (a._21 * a._32 - a._22 * a._31));
+		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
 
 		if (_abs(fDetInv) <= flt_zero)
 			return false;
@@ -273,6 +273,74 @@ template <class T> struct template_matrix4x4
 		invert(a);
 		return *this;
 	}
+
+	// Полная инверсия произвольной 4x4 матрицы (метод Гаусса-Жордана)
+	IC bool invert_full(const Self& a)
+	{
+		Self temp = a;
+		Self result;
+		result.identity();
+
+		// Прямой ход (приведение к верхнетреугольному виду)
+		for (int col = 0; col < 4; ++col)
+		{
+			// Поиск ненулевого элемента в столбце
+			int pivot = -1;
+			for (int row = col; row < 4; ++row)
+			{
+				if (_abs(temp.m[row][col]) > flt_zero)
+				{
+					pivot = row;
+					break;
+				}
+			}
+			if (pivot == -1) return false; // вырожденная матрица
+
+			// Перестановка строк
+			if (pivot != col)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					std::swap(temp.m[col][j], temp.m[pivot][j]);
+					std::swap(result.m[col][j], result.m[pivot][j]);
+				}
+			}
+
+			// Нормировка ведущей строки
+			T div = temp.m[col][col];
+			for (int j = 0; j < 4; ++j) {
+				temp.m[col][j] /= div;
+				result.m[col][j] /= div;
+			}
+
+			// Обнуление остальных строк в этом столбце
+			for (int row = 0; row < 4; ++row)
+			{
+				if (row == col) continue;
+				T factor = temp.m[row][col];
+				for (int j = 0; j < 4; ++j)
+				{
+					temp.m[row][j] -= factor * temp.m[col][j];
+					result.m[row][j] -= factor * result.m[col][j];
+				}
+			}
+		}
+
+		// Копируем результат в this
+		for (int i = 0; i < 4; ++i)
+			for (int j = 0; j < 4; ++j)
+				this->m[i][j] = result.m[i][j];
+
+		return true;
+	}
+
+	IC bool invert_full()
+	{
+		Self a;
+		a.set(*this);
+		return invert_full(a);
+	}
+
 	IC SelfRef transpose(const Self& matSource) // faster version of transpose
 	{
 		_11 = matSource._11;

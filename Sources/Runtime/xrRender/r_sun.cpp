@@ -8,7 +8,8 @@ extern float ps_r_sun_far;
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static fvec3 corners[8] = {
+static fvec3 corners[8] = 
+{
 	{-1, -1, 0},	
 	{-1, -1, +1}, 
 	{-1, +1, +1}, 
@@ -19,7 +20,8 @@ static fvec3 corners[8] = {
 	{+1, -1, 0}
 };
 
-static int facetable[6][4] = {
+static int facetable[6][4] = 
+{
 	{6, 7, 5, 4},   // right
 	{1, 0, 7, 6},   // bottom
 	{1, 2, 3, 0},   // left
@@ -33,7 +35,6 @@ static int facetable[6][4] = {
 //		 light source. really slow, but it works for our simple usage :)
 // note: normals points to 'outside'
 //////////////////////////////////////////////////////////////////////////
-
 const u32 LIGHT_CUBOIDSIDEPOLYS_COUNT = 4;
 const u32 LIGHT_CUBOIDVERTICES_COUNT = 2 * LIGHT_CUBOIDSIDEPOLYS_COUNT;
 
@@ -59,8 +60,7 @@ template <bool _debug> class FixedConvexVolume
 		{
 			_poly& P = light_cuboid_polys[it];
 
-			P.plane.build(light_cuboid_points[P.points[0]], light_cuboid_points[P.points[2]],
-						  light_cuboid_points[P.points[1]]);
+			P.plane.build(light_cuboid_points[P.points[0]], light_cuboid_points[P.points[2]], light_cuboid_points[P.points[1]]);
 
 			// verify
 			if (_debug)
@@ -308,7 +308,7 @@ template <bool _debug> class FixedConvexVolume
 };
 
 //////////////////////////////////////////////////////////////////////////
-fvec3 wform(fmat4x4& m, fvec3 const& v)
+fvec3 project(fmat4x4& m, fvec3 const& v)
 {
 	fvec4 r;
 	r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
@@ -348,7 +348,7 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
     {
         ex_project = ctx.RenderView.Project;
         ex_full.mul(ex_project, ctx.RenderView.View);
-        D3DXMatrixInverse((D3DXMATRIX*)&ex_full_inverse, 0, (D3DXMATRIX*)&ex_full);
+        ex_full_inverse.invert_full(ex_full);
     }
 
     // Local variables for calculation
@@ -406,8 +406,8 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
                 fvec3 near_p, edge_vec;
                 for (int p = 0; p < 4; p++)
                 {
-                    near_p = wform(fulltransform_inv, corners[facetable[4][p]]);
-                    edge_vec = wform(fulltransform_inv, corners[facetable[5][p]]);
+                    near_p = project(fulltransform_inv, corners[facetable[4][p]]);
+                    edge_vec = project(fulltransform_inv, corners[facetable[5][p]]);
                     edge_vec.sub(near_p);
                     edge_vec.normalize();
 
@@ -430,18 +430,16 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
         float dist = light_top_plane.classify(ctx.RenderView.Position);
 
         float map_size = m_sun_cascades[cascade_ind].size;
-        D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project,
-                                    -map_size * 0.5f, map_size * 0.5f,
-                                    -map_size * 0.5f, map_size * 0.5f,
-                                    0.1, dist + map_size);
+		mdir_Project.build_projection_ortho(map_size, map_size, 0.1f, dist + map_size);
 
         float view_dim = float(RenderImplementation.o.smapsize);
-        fmat4x4 m_viewport = { view_dim / 2.f, 0.0f,          0.0f, 0.0f,
-                               0.0f,           -view_dim / 2.f, 0.0f, 0.0f,
-                               0.0f,           0.0f,          1.0f, 0.0f,
-                               view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f };
+        fmat4x4 m_viewport = { view_dim / 2.f,	0.0f,            0.0f, 0.0f,
+                               0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
+                               0.0f,			0.0f,            1.0f, 0.0f,
+                               view_dim / 2.f,	view_dim / 2.f,  0.0f, 1.0f };
+
         fmat4x4 m_viewport_inv;
-        D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
+		m_viewport_inv.invert(m_viewport);
 
         cull_transform.mul(mdir_Project, mdir_View);
         fmat4x4 cull_transform_inv;
@@ -449,7 +447,7 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
 
         for (int p = 0; p < 8; p++)
         {
-            fvec3 xf = wform(cull_transform_inv, corners[p]);
+            fvec3 xf = project(cull_transform_inv, corners[p]);
             light_cuboid.light_cuboid_points[p] = xf;
         }
 
@@ -461,10 +459,7 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
             }
 
         fvec3 lightXZshift;
-        light_cuboid.compute_caster_model_fixed(cull_planes,
-                                                lightXZshift,
-                                                m_sun_cascades[cascade_ind].size,
-                                                m_sun_cascades[cascade_ind].reset_chain);
+        light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size, m_sun_cascades[cascade_ind].reset_chain);
 
         if (cascade_ind < m_sun_cascades.size() - 1)
             m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
@@ -493,8 +488,8 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
                      floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
                      floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
         cam_proj.mul(align_aim_step_coef);
-        fvec3 cam_pixel = wform(cull_transform, cam_proj);
-        cam_pixel = wform(m_viewport, cam_pixel);
+        fvec3 cam_pixel = project(cull_transform, cam_proj);
+        cam_pixel = project(m_viewport, cam_pixel);
         fvec3 shift_proj = lightXZshift;
         cull_transform.transform_dir(shift_proj);
         m_viewport.transform_dir(shift_proj);

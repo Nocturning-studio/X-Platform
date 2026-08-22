@@ -118,10 +118,8 @@ void CLevelLoadingScreen::Hide()
 
 		Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
 		Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
-		Console->Execute("stat_memory");
 		g_appLoaded = TRUE;
 
-		// ќчистка ресурсов, чтобы не висели в видеопам€ти
 		hLevelLogo.destroy();
 		sh_progress.destroy();
 	}
