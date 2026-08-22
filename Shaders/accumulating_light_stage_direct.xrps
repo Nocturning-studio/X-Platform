@@ -32,7 +32,7 @@ float4 main(Interpolators Input) : COLOR0
 
     float4 ShadowMapTexCoords = mul(m_shadow, Position);
     
-    // Используем branching shadows вместо традиционного PCF
+    // РСЃРїРѕР»СЊР·СѓРµРј branching shadows РІРјРµСЃС‚Рѕ С‚СЂР°РґРёС†РёРѕРЅРЅРѕРіРѕ PCF
     float ShadowMap = GetBranchingShadowCoverage(ShadowMapTexCoords, Input.TexCoords.xy / Input.TexCoords.w);
     
     // Fading with distance

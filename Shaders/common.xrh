@@ -3,7 +3,7 @@
 //	Author	: NSDeathman
 //  Nocturning studio for NS Platform X
 ////////////////////////////////////////////////////////////////////////////
-// Список поддерживаемых в hlsl прагм
+// РЎРїРёСЃРѕРє РїРѕРґРґРµСЂР¶РёРІР°РµРјС‹С… РІ hlsl РїСЂР°РіРј
 // #pragma def
 // #pragma message
 // #pragma pack_matrix(row_major/row_column)

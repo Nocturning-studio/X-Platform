@@ -43,7 +43,7 @@ AmbientOcclusion CalculateAmbientOcclusion(GBuffer GBuffer, float3 WorldSpaceNor
     
     float LightmapFinal = (LightmapCurve * AMBIENT_BRIGHTNESS) + minAmbient;
     
-    float nvBoost = additional_ambient; // Сила подсветки
+    float nvBoost = additional_ambient; // РЎРёР»Р° РїРѕРґСЃРІРµС‚РєРё
     
     LightmapFinal = max(LightmapFinal, nvBoost * ao.RealTime);
     

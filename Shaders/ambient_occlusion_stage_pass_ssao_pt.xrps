@@ -7,82 +7,82 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 uniform float4 image_resolution;
 //////////////////////////////////////////////////////////////////////////////////////////
-#define AO_RADIUS 0.75f          // Ðàäèóñ â ìåòðàõ
-#define AO_SAMPLES 12           // Êîëè÷åñòâî ëó÷åé (12-16 îïòèìàëüíî äëÿ êà÷åñòâà)
-#define AO_STEPS 4              // Øàãè ìàðøà âäîëü ëó÷à
-#define AO_THICKNESS 0.5f       // Òîëùèíà îáúåêòîâ (÷òîáû òåíè íå ïðîñâå÷èâàëè ñêâîçü ñòåíû)
-#define AO_INTENSITY 6.0f       // Ñèëà çàòåíåíèÿ
-#define AO_BIAS 0.02f           // Ñìåùåíèå îò ïîâåðõíîñòè
-#define RENDER_DISTANCE 100.0f  // Äàëüíîñòü ïðîðèñîâêè ýôôåêòà
+#define AO_RADIUS 0.75f          // Ð Ð°Ð´Ð¸ÑƒÑ Ð² Ð¼ÐµÑ‚Ñ€Ð°Ñ…
+#define AO_SAMPLES 12           // ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð»ÑƒÑ‡ÐµÐ¹ (12-16 Ð¾Ð¿Ñ‚Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾ Ð´Ð»Ñ ÐºÐ°Ñ‡ÐµÑÑ‚Ð²Ð°)
+#define AO_STEPS 4              // Ð¨Ð°Ð³Ð¸ Ð¼Ð°Ñ€ÑˆÐ° Ð²Ð´Ð¾Ð»ÑŒ Ð»ÑƒÑ‡Ð°
+#define AO_THICKNESS 0.5f       // Ð¢Ð¾Ð»Ñ‰Ð¸Ð½Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² (Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ñ‚ÐµÐ½Ð¸ Ð½Ðµ Ð¿Ñ€Ð¾ÑÐ²ÐµÑ‡Ð¸Ð²Ð°Ð»Ð¸ ÑÐºÐ²Ð¾Ð·ÑŒ ÑÑ‚ÐµÐ½Ñ‹)
+#define AO_INTENSITY 6.0f       // Ð¡Ð¸Ð»Ð° Ð·Ð°Ñ‚ÐµÐ½ÐµÐ½Ð¸Ñ
+#define AO_BIAS 0.02f           // Ð¡Ð¼ÐµÑ‰ÐµÐ½Ð¸Ðµ Ð¾Ñ‚ Ð¿Ð¾Ð²ÐµÑ€Ñ…Ð½Ð¾ÑÑ‚Ð¸
+#define RENDER_DISTANCE 100.0f  // Ð”Ð°Ð»ÑŒÐ½Ð¾ÑÑ‚ÑŒ Ð¿Ñ€Ð¾Ñ€Ð¸ÑÐ¾Ð²ÐºÐ¸ ÑÑ„Ñ„ÐµÐºÑ‚Ð°
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-// Âûñîêî÷àñòîòíûé øóì, èäåàëüíûé äëÿ TAA
+// Ð’Ñ‹ÑÐ¾ÐºÐ¾Ñ‡Ð°ÑÑ‚Ð¾Ñ‚Ð½Ñ‹Ð¹ ÑˆÑƒÐ¼, Ð¸Ð´ÐµÐ°Ð»ÑŒÐ½Ñ‹Ð¹ Ð´Ð»Ñ TAA
 float GetInterleavedGradientNoise(float2 pos)
 {
     float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
     return frac(magic.z * frac(dot(pos, magic.xy)));
 }
 
-// Ïðîâåðêà ãðàíèö ýêðàíà
+// ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð³Ñ€Ð°Ð½Ð¸Ñ† ÑÐºÑ€Ð°Ð½Ð°
 bool IsOnScreen(float2 uv)
 {
     return all(uv >= 0.0f) && all(uv <= 1.0f);
 }
 
-// Ôóíêöèÿ òðàññèðîâêè îäíîãî ëó÷à
+// Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ Ñ‚Ñ€Ð°ÑÑÐ¸Ñ€Ð¾Ð²ÐºÐ¸ Ð¾Ð´Ð½Ð¾Ð³Ð¾ Ð»ÑƒÑ‡Ð°
 float RayMarch(float3 RayOrigin, float3 RayDir, float2 TexCoords, float Jitter)
 {
     float occlusion = 0.0f;
     
-    // Øàã ëó÷à
+    // Ð¨Ð°Ð³ Ð»ÑƒÑ‡Ð°
     float stepSize = AO_RADIUS / float(AO_STEPS);
     
-    // Íà÷èíàåì íå ñ 0, à ñî ñëó÷àéíîãî ñìåùåíèÿ (Dithering along ray)
-    // Ýòî ñêðûâàåò ìàëoe êîëè÷åñòâî øàãîâ
+    // ÐÐ°Ñ‡Ð¸Ð½Ð°ÐµÐ¼ Ð½Ðµ Ñ 0, Ð° ÑÐ¾ ÑÐ»ÑƒÑ‡Ð°Ð¹Ð½Ð¾Ð³Ð¾ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ (Dithering along ray)
+    // Ð­Ñ‚Ð¾ ÑÐºÑ€Ñ‹Ð²Ð°ÐµÑ‚ Ð¼Ð°Ð»oe ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑˆÐ°Ð³Ð¾Ð²
     float currentDist = (Jitter * stepSize) + stepSize; 
 
     [unroll]
     for (int i = 0; i < AO_STEPS; i++)
     {
-        // 1. Ïîëó÷àåì ïîçèöèþ òî÷êè íà ëó÷å
+        // 1. ÐŸÐ¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ñ‚Ð¾Ñ‡ÐºÐ¸ Ð½Ð° Ð»ÑƒÑ‡Ðµ
         float3 samplePos = RayOrigin + RayDir * currentDist;
         
-        // 2. Ïðîåöèðóåì íà ýêðàí
+        // 2. ÐŸÑ€Ð¾ÐµÑ†Ð¸Ñ€ÑƒÐµÐ¼ Ð½Ð° ÑÐºÑ€Ð°Ð½
         float4 offset = float4(samplePos, 1.0f);
         offset = mul(m_Project, offset);
         offset.xyz /= offset.w;
-        // Èíâåðòèðóåì Y äëÿ DirectX
+        // Ð˜Ð½Ð²ÐµÑ€Ñ‚Ð¸Ñ€ÑƒÐµÐ¼ Y Ð´Ð»Ñ DirectX
         float2 sampleUV = offset.xy * float2(0.5f, -0.5f) + 0.5f;
 
         if (IsOnScreen(sampleUV))
         {
-            // 3. ×èòàåì ðåàëüíóþ ãëóáèíó ñöåíû
+            // 3. Ð§Ð¸Ñ‚Ð°ÐµÐ¼ Ñ€ÐµÐ°Ð»ÑŒÐ½ÑƒÑŽ Ð³Ð»ÑƒÐ±Ð¸Ð½Ñƒ ÑÑ†ÐµÐ½Ñ‹
             float3 geometryPos = GetPosition(sampleUV);
             float sceneDepth = geometryPos.z;
             float sampleDepth = samplePos.z;
 
-            // 4. Ñ÷èòàåì ðàçíèöó ãëóáèí
-            // diff > 0 çíà÷èò ëó÷ óøåë ÇÀ ãåîìåòðèþ (ïîòåíöèàëüíîå çàòåíåíèå)
+            // 4. Ð¡Ñ‡Ð¸Ñ‚Ð°ÐµÐ¼ Ñ€Ð°Ð·Ð½Ð¸Ñ†Ñƒ Ð³Ð»ÑƒÐ±Ð¸Ð½
+            // diff > 0 Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ Ð»ÑƒÑ‡ ÑƒÑˆÐµÐ» Ð—Ð Ð³ÐµÐ¾Ð¼ÐµÑ‚Ñ€Ð¸ÑŽ (Ð¿Ð¾Ñ‚ÐµÐ½Ñ†Ð¸Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð·Ð°Ñ‚ÐµÐ½ÐµÐ½Ð¸Ðµ)
             float diff = sampleDepth - sceneDepth;
 
-            // 5. Ïðîâåðêà çàòåíåíèÿ ñ ó÷åòîì òîëùèíû
-            // AO_BIAS: ×òîáû íå çàòåíÿòü ñàìó ïîâåðõíîñòü (àêíå)
-            // AO_THICKNESS: Åñëè ðàçíèöà ñëèøêîì áîëüøàÿ, çíà÷èò ýòî îáúåêò äàëåêî íà ôîíå, à íå çàòåíåíèå
+            // 5. ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð·Ð°Ñ‚ÐµÐ½ÐµÐ½Ð¸Ñ Ñ ÑƒÑ‡ÐµÑ‚Ð¾Ð¼ Ñ‚Ð¾Ð»Ñ‰Ð¸Ð½Ñ‹
+            // AO_BIAS: Ð§Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ Ð·Ð°Ñ‚ÐµÐ½ÑÑ‚ÑŒ ÑÐ°Ð¼Ñƒ Ð¿Ð¾Ð²ÐµÑ€Ñ…Ð½Ð¾ÑÑ‚ÑŒ (Ð°ÐºÐ½Ðµ)
+            // AO_THICKNESS: Ð•ÑÐ»Ð¸ Ñ€Ð°Ð·Ð½Ð¸Ñ†Ð° ÑÐ»Ð¸ÑˆÐºÐ¾Ð¼ Ð±Ð¾Ð»ÑŒÑˆÐ°Ñ, Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ ÑÑ‚Ð¾ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð´Ð°Ð»ÐµÐºÐ¾ Ð½Ð° Ñ„Ð¾Ð½Ðµ, Ð° Ð½Ðµ Ð·Ð°Ñ‚ÐµÐ½ÐµÐ½Ð¸Ðµ
             if (diff > AO_BIAS && diff < AO_THICKNESS)
             {
-                // Âåñ âûáîðêè: ÷åì äàëüøå òî÷êà çàòåíåíèÿ îò îðèãèíàëà, òåì ñëàáåå òåíü (Distance Attenuation)
-                // Ôóíêöèÿ falloff: 1 / (1 + d^2)
+                // Ð’ÐµÑ Ð²Ñ‹Ð±Ð¾Ñ€ÐºÐ¸: Ñ‡ÐµÐ¼ Ð´Ð°Ð»ÑŒÑˆÐµ Ñ‚Ð¾Ñ‡ÐºÐ° Ð·Ð°Ñ‚ÐµÐ½ÐµÐ½Ð¸Ñ Ð¾Ñ‚ Ð¾Ñ€Ð¸Ð³Ð¸Ð½Ð°Ð»Ð°, Ñ‚ÐµÐ¼ ÑÐ»Ð°Ð±ÐµÐµ Ñ‚ÐµÐ½ÑŒ (Distance Attenuation)
+                // Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ falloff: 1 / (1 + d^2)
                 float weight = 1.0f - saturate(currentDist / AO_RADIUS);
                 occlusion = weight; 
                 
-                // Åñëè íàøëè ïåðåñå÷åíèå, ïðåðûâàåì ýòîò ëó÷ (First hit approximation)
-                // Äëÿ ÷èñòîãî AO ìîæíî íå ïðåðûâàòü, íî äëÿ ïðîèçâîäèòåëüíîñòè ëó÷øå break
+                // Ð•ÑÐ»Ð¸ Ð½Ð°ÑˆÐ»Ð¸ Ð¿ÐµÑ€ÐµÑÐµÑ‡ÐµÐ½Ð¸Ðµ, Ð¿Ñ€ÐµÑ€Ñ‹Ð²Ð°ÐµÐ¼ ÑÑ‚Ð¾Ñ‚ Ð»ÑƒÑ‡ (First hit approximation)
+                // Ð”Ð»Ñ Ñ‡Ð¸ÑÑ‚Ð¾Ð³Ð¾ AO Ð¼Ð¾Ð¶Ð½Ð¾ Ð½Ðµ Ð¿Ñ€ÐµÑ€Ñ‹Ð²Ð°Ñ‚ÑŒ, Ð½Ð¾ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚Ð¸ Ð»ÑƒÑ‡ÑˆÐµ break
                 break; 
             }
         }
         
-        // Óâåëè÷èâàåì äèñòàíöèþ
+        // Ð£Ð²ÐµÐ»Ð¸Ñ‡Ð¸Ð²Ð°ÐµÐ¼ Ð´Ð¸ÑÑ‚Ð°Ð½Ñ†Ð¸ÑŽ
         currentDist += stepSize;
     }
 
@@ -96,53 +96,53 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, float2 Position2D : VPOS) : COLOR
     ViewPos = GetPosition(TexCoords);
     Normal = GetNormal(TexCoords);
 
-    // Ðàííèé âûõîä ïî äàëüíîñòè
+    // Ð Ð°Ð½Ð½Ð¸Ð¹ Ð²Ñ‹Ñ…Ð¾Ð´ Ð¿Ð¾ Ð´Ð°Ð»ÑŒÐ½Ð¾ÑÑ‚Ð¸
     if (ViewPos.z > RENDER_DISTANCE || ViewPos.z <= 0.1f)
         return 1.0f;
 
-    // Ñäâèãàåì ïîçèöèþ íà÷àëà ëó÷à ÷óòü-÷óòü ïî íîðìàëè
+    // Ð¡Ð´Ð²Ð¸Ð³Ð°ÐµÐ¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð½Ð°Ñ‡Ð°Ð»Ð° Ð»ÑƒÑ‡Ð° Ñ‡ÑƒÑ‚ÑŒ-Ñ‡ÑƒÑ‚ÑŒ Ð¿Ð¾ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸
     float3 Origin = ViewPos + Normal * AO_BIAS;
 
-    // Ñòðîèì TBN áàçèñ
+    // Ð¡Ñ‚Ñ€Ð¾Ð¸Ð¼ TBN Ð±Ð°Ð·Ð¸Ñ
     float3 up = abs(Normal.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
     float3 tangent = normalize(cross(up, Normal));
     float3 bitangent = cross(Normal, tangent);
     float3x3 TBN = float3x3(tangent, bitangent, Normal);
 
-    // Ãåíåðàöèÿ øóìà
+    // Ð“ÐµÐ½ÐµÑ€Ð°Ñ†Ð¸Ñ ÑˆÑƒÐ¼Ð°
     float noise = GetInterleavedGradientNoise(Position2D);
     float occlusionAccum = 0.0f;
 
-    // Öèêë âûáîðîê (Golden Spiral)
+    // Ð¦Ð¸ÐºÐ» Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ðº (Golden Spiral)
     [unroll]
     for (int i = 0; i < AO_SAMPLES; i++)
     {
-        // Ôîðìóëà Çîëîòîé Ñïèðàëè äëÿ ðàñïðåäåëåíèÿ òî÷åê íà ïîëóñôåðå
+        // Ð¤Ð¾Ñ€Ð¼ÑƒÐ»Ð° Ð—Ð¾Ð»Ð¾Ñ‚Ð¾Ð¹ Ð¡Ð¿Ð¸Ñ€Ð°Ð»Ð¸ Ð´Ð»Ñ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ñ‚Ð¾Ñ‡ÐµÐº Ð½Ð° Ð¿Ð¾Ð»ÑƒÑÑ„ÐµÑ€Ðµ
         float t = (float(i) + noise) / float(AO_SAMPLES);
-        float phi = 2.0f * PI * 2.3999632f * float(i) + (noise * 2.0f * PI); // Çîëîòîé óãîë + âðàùåíèå øóìîì
+        float phi = 2.0f * PI * 2.3999632f * float(i) + (noise * 2.0f * PI); // Ð—Ð¾Ð»Ð¾Ñ‚Ð¾Ð¹ ÑƒÐ³Ð¾Ð» + Ð²Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ðµ ÑˆÑƒÐ¼Ð¾Ð¼
         
-        // Cosine-weighted sampling (áîëüøå ëó÷åé ââåðõ, ìåíüøå ê ãîðèçîíòó)
+        // Cosine-weighted sampling (Ð±Ð¾Ð»ÑŒÑˆÐµ Ð»ÑƒÑ‡ÐµÐ¹ Ð²Ð²ÐµÑ€Ñ…, Ð¼ÐµÐ½ÑŒÑˆÐµ Ðº Ð³Ð¾Ñ€Ð¸Ð·Ð¾Ð½Ñ‚Ñƒ)
         float cosTheta = 1.0f - t;
         float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
 
-        // Âåêòîð â Tangent Space
+        // Ð’ÐµÐºÑ‚Ð¾Ñ€ Ð² Tangent Space
         float3 localDir = float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
         
-        // Ïåðåâîä â View Space
+        // ÐŸÐµÑ€ÐµÐ²Ð¾Ð´ Ð² View Space
         float3 rayDir = mul(localDir, TBN);
         
-        // Òðàññèðîâêà
-        // Ïåðåäàåì noise êàê jitter äëÿ ñìåùåíèÿ øàãîâ ëó÷à
+        // Ð¢Ñ€Ð°ÑÑÐ¸Ñ€Ð¾Ð²ÐºÐ°
+        // ÐŸÐµÑ€ÐµÐ´Ð°ÐµÐ¼ noise ÐºÐ°Ðº jitter Ð´Ð»Ñ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ ÑˆÐ°Ð³Ð¾Ð² Ð»ÑƒÑ‡Ð°
         occlusionAccum += RayMarch(Origin, rayDir, TexCoords, noise);
     }
 
-    // Óñðåäíåíèå
+    // Ð£ÑÑ€ÐµÐ´Ð½ÐµÐ½Ð¸Ðµ
     float visibility = 1.0f - (occlusionAccum / float(AO_SAMPLES));
     
-    // Óñèëåíèå êîíòðàñòà (Power curve)
+    // Ð£ÑÐ¸Ð»ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð½Ñ‚Ñ€Ð°ÑÑ‚Ð° (Power curve)
     visibility = pow(saturate(visibility), AO_INTENSITY);
 
-    // Ïëàâíîå èñ÷åçíîâåíèå íà ðàññòîÿíèè
+    // ÐŸÐ»Ð°Ð²Ð½Ð¾Ðµ Ð¸ÑÑ‡ÐµÐ·Ð½Ð¾Ð²ÐµÐ½Ð¸Ðµ Ð½Ð° Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ð¸
     float fade = smoothstep(RENDER_DISTANCE * 0.8f, RENDER_DISTANCE, ViewPos.z);
     visibility = lerp(visibility, 1.0f, fade);
 

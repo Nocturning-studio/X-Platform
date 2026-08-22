@@ -30,50 +30,50 @@ float3 CalculateBentNormal(float3 ViewPos, float3 ViewNormal, float2 TexCoords, 
     float3 unoccludedDir = float3(0, 0, 0);
     float totalWeight = 0.0001f;
 
-    // 1. Случайное вращение на основе позиции пикселя
-    // Используем координаты экрана (VPOS) для генерации шума
+    // 1. РЎР»СѓС‡Р°Р№РЅРѕРµ РІСЂР°С‰РµРЅРёРµ РЅР° РѕСЃРЅРѕРІРµ РїРѕР·РёС†РёРё РїРёРєСЃРµР»СЏ
+    // РСЃРїРѕР»СЊР·СѓРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ СЌРєСЂР°РЅР° (VPOS) РґР»СЏ РіРµРЅРµСЂР°С†РёРё С€СѓРјР°
     float randomAngle = GetInterleavedGradientNoise(float2(screenPosX, screenPosY)) * 2.0 * PI;
 
-    // 2. Расчет радиуса в экранном пространстве (Примерный)
-    // Чтобы далекие объекты не имели гигантского радиуса выборки и ореолов
-    // Чем дальше объект (ViewPos.z), тем меньше должен быть шаг
+    // 2. Р Р°СЃС‡РµС‚ СЂР°РґРёСѓСЃР° РІ СЌРєСЂР°РЅРЅРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ (РџСЂРёРјРµСЂРЅС‹Р№)
+    // Р§С‚РѕР±С‹ РґР°Р»РµРєРёРµ РѕР±СЉРµРєС‚С‹ РЅРµ РёРјРµР»Рё РіРёРіР°РЅС‚СЃРєРѕРіРѕ СЂР°РґРёСѓСЃР° РІС‹Р±РѕСЂРєРё Рё РѕСЂРµРѕР»РѕРІ
+    // Р§РµРј РґР°Р»СЊС€Рµ РѕР±СЉРµРєС‚ (ViewPos.z), С‚РµРј РјРµРЅСЊС€Рµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С€Р°Рі
     float distanceScale = min(1.0, 10.0 / max(ViewPos.z, 0.1));
     float actualRadius = BENT_NORMALS_RADIUS; 
 
-    // 3. Цикл выборки по Золотой Спирали (Golden Spiral)
+    // 3. Р¦РёРєР» РІС‹Р±РѕСЂРєРё РїРѕ Р—РѕР»РѕС‚РѕР№ РЎРїРёСЂР°Р»Рё (Golden Spiral)
     for (int i = 0; i < SAMPLES_COUNT; i++)
     {
-        // --- Генерация направления ---
-        float t = float(i) + 0.5; // Смещение 0.5 для лучшего распределения
-        float r = sqrt(t / float(SAMPLES_COUNT)); // Радиус в 2D диске
-        float theta = 2.3999632 * t + randomAngle; // Золотой угол + случайный поворот
+        // --- Р“РµРЅРµСЂР°С†РёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ ---
+        float t = float(i) + 0.5; // РЎРјРµС‰РµРЅРёРµ 0.5 РґР»СЏ Р»СѓС‡С€РµРіРѕ СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЏ
+        float r = sqrt(t / float(SAMPLES_COUNT)); // Р Р°РґРёСѓСЃ РІ 2D РґРёСЃРєРµ
+        float theta = 2.3999632 * t + randomAngle; // Р—РѕР»РѕС‚РѕР№ СѓРіРѕР» + СЃР»СѓС‡Р°Р№РЅС‹Р№ РїРѕРІРѕСЂРѕС‚
 
-        // Конвертация из 2D диска в 3D полусферу (Cosine Weighted)
-        // Это автоматически ориентирует сэмплы преимущественно вдоль нормали
+        // РљРѕРЅРІРµСЂС‚Р°С†РёСЏ РёР· 2D РґРёСЃРєР° РІ 3D РїРѕР»СѓСЃС„РµСЂСѓ (Cosine Weighted)
+        // Р­С‚Рѕ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РѕСЂРёРµРЅС‚РёСЂСѓРµС‚ СЃСЌРјРїР»С‹ РїСЂРµРёРјСѓС‰РµСЃС‚РІРµРЅРЅРѕ РІРґРѕР»СЊ РЅРѕСЂРјР°Р»Рё
         float sinTheta, cosTheta;
         sincos(theta, sinTheta, cosTheta);
         
         float2 localUV = float2(cosTheta, sinTheta) * r;
-        // Проецируем точку с диска на полусферу (z = sqrt(1 - x^2 - y^2))
+        // РџСЂРѕРµС†РёСЂСѓРµРј С‚РѕС‡РєСѓ СЃ РґРёСЃРєР° РЅР° РїРѕР»СѓСЃС„РµСЂСѓ (z = sqrt(1 - x^2 - y^2))
         float z = sqrt(max(0.0f, 1.0f - dot(localUV, localUV)));
         
         float3 sampleDirLocal = float3(localUV, z);
         
-        // --- Ориентация вдоль нормали поверхности (без TBN матрицы для скорости) ---
-        // Техника "OnbFrisvad" или упрощенное вращение:
-        // Строим базис "на лету"
+        // --- РћСЂРёРµРЅС‚Р°С†РёСЏ РІРґРѕР»СЊ РЅРѕСЂРјР°Р»Рё РїРѕРІРµСЂС…РЅРѕСЃС‚Рё (Р±РµР· TBN РјР°С‚СЂРёС†С‹ РґР»СЏ СЃРєРѕСЂРѕСЃС‚Рё) ---
+        // РўРµС…РЅРёРєР° "OnbFrisvad" РёР»Рё СѓРїСЂРѕС‰РµРЅРЅРѕРµ РІСЂР°С‰РµРЅРёРµ:
+        // РЎС‚СЂРѕРёРј Р±Р°Р·РёСЃ "РЅР° Р»РµС‚Сѓ"
         float3 up = abs(ViewNormal.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
         float3 tangent = normalize(cross(up, ViewNormal));
         float3 bitangent = cross(ViewNormal, tangent);
         float3 sampleDirWorld = tangent * sampleDirLocal.x + bitangent * sampleDirLocal.y + ViewNormal * sampleDirLocal.z;
         
         // --- Raymarching ---
-        // Масштабируем длину луча случайным образом, чтобы разбить слои
-        float rayLength = actualRadius * (0.2 + 0.8 * r); // r уже содержит распределение дальности
+        // РњР°СЃС€С‚Р°Р±РёСЂСѓРµРј РґР»РёРЅСѓ Р»СѓС‡Р° СЃР»СѓС‡Р°Р№РЅС‹Рј РѕР±СЂР°Р·РѕРј, С‡С‚РѕР±С‹ СЂР°Р·Р±РёС‚СЊ СЃР»РѕРё
+        float rayLength = actualRadius * (0.2 + 0.8 * r); // r СѓР¶Рµ СЃРѕРґРµСЂР¶РёС‚ СЂР°СЃРїСЂРµРґРµР»РµРЅРёРµ РґР°Р»СЊРЅРѕСЃС‚Рё
         
         float3 samplePos = ViewPos + sampleDirWorld * rayLength;
 
-        // Проекция
+        // РџСЂРѕРµРєС†РёСЏ
         float4 offset = float4(samplePos, 1.0);
         offset = mul(m_Project, offset);
         offset.xyz /= offset.w;
@@ -85,29 +85,29 @@ float3 CalculateBentNormal(float3 ViewPos, float3 ViewNormal, float2 TexCoords, 
         {
             float3 geometryPos = GetPosition(sampleUV);
             float geometryDepth = geometryPos.z;
-            float sampleDepth = samplePos.z; // Z луча
+            float sampleDepth = samplePos.z; // Z Р»СѓС‡Р°
 
-            // Логика затенения (Horizon Based AO style check)
-            // diff положительный, если геометрия ближе к камере, чем конец луча
+            // Р›РѕРіРёРєР° Р·Р°С‚РµРЅРµРЅРёСЏ (Horizon Based AO style check)
+            // diff РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№, РµСЃР»Рё РіРµРѕРјРµС‚СЂРёСЏ Р±Р»РёР¶Рµ Рє РєР°РјРµСЂРµ, С‡РµРј РєРѕРЅРµС† Р»СѓС‡Р°
             float diff = sampleDepth - geometryDepth;
 
-            // Условие:
-            // 1. diff > BIAS: Геометрия перекрывает луч.
-            // 2. diff < actualRadius * 2.0: Защита от ореолов (не учитываем объекты, которые слишком далеко перед лучом)
+            // РЈСЃР»РѕРІРёРµ:
+            // 1. diff > BIAS: Р“РµРѕРјРµС‚СЂРёСЏ РїРµСЂРµРєСЂС‹РІР°РµС‚ Р»СѓС‡.
+            // 2. diff < actualRadius * 2.0: Р—Р°С‰РёС‚Р° РѕС‚ РѕСЂРµРѕР»РѕРІ (РЅРµ СѓС‡РёС‚С‹РІР°РµРј РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ СЃР»РёС€РєРѕРј РґР°Р»РµРєРѕ РїРµСЂРµРґ Р»СѓС‡РѕРј)
             if (diff > BIAS && diff < (actualRadius * 1.5))
             {
                 visibility = 0.0;
             }
         }
 
-        // Накопление
+        // РќР°РєРѕРїР»РµРЅРёРµ
         if (visibility > 0.5)
         {
             unoccludedDir += sampleDirWorld;
         }
     }
 
-    // Если все лучи перекрыты (угол), возвращаем нормаль, но чуть затемненную логикой освещения
+    // Р•СЃР»Рё РІСЃРµ Р»СѓС‡Рё РїРµСЂРµРєСЂС‹С‚С‹ (СѓРіРѕР»), РІРѕР·РІСЂР°С‰Р°РµРј РЅРѕСЂРјР°Р»СЊ, РЅРѕ С‡СѓС‚СЊ Р·Р°С‚РµРјРЅРµРЅРЅСѓСЋ Р»РѕРіРёРєРѕР№ РѕСЃРІРµС‰РµРЅРёСЏ
     if (length(unoccludedDir) < 0.001)
         return ViewNormal;
 
@@ -119,22 +119,22 @@ float4 main(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
     float3 Position, Normal;
     GetPositionAndNormal(TexCoords, Position, Normal);
     
-    // Отсечение неба и дальних объектов
+    // РћС‚СЃРµС‡РµРЅРёРµ РЅРµР±Р° Рё РґР°Р»СЊРЅРёС… РѕР±СЉРµРєС‚РѕРІ
     if (Position.z > RENDER_DISTANCE || Position.z <= 0.1)
     {
          return float4(Normal * 0.5f + 0.5f, 1.0f);
     }
     
-    // Передаем координаты пикселя для генерации стабильного шума
+    // РџРµСЂРµРґР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРёРєСЃРµР»СЏ РґР»СЏ РіРµРЅРµСЂР°С†РёРё СЃС‚Р°Р±РёР»СЊРЅРѕРіРѕ С€СѓРјР°
     float3 bentNormal = CalculateBentNormal(Position, Normal, TexCoords, (float)Position2D.x, (float)Position2D.y);
     
-    // Интерполяция
+    // РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ
     bentNormal = normalize(lerp(Normal, bentNormal, BENT_NORMALS_INTENSITY));
     
     #ifdef DEBUG_BENT_NORMALS
-        // Для дебага выводим разницу. Если картинка черная - различий нет.
+        // Р”Р»СЏ РґРµР±Р°РіР° РІС‹РІРѕРґРёРј СЂР°Р·РЅРёС†Сѓ. Р•СЃР»Рё РєР°СЂС‚РёРЅРєР° С‡РµСЂРЅР°СЏ - СЂР°Р·Р»РёС‡РёР№ РЅРµС‚.
         return float4(abs(bentNormal - Normal) * 2.0, 1.0);
-        // Или просто нормаль:
+        // РР»Рё РїСЂРѕСЃС‚Рѕ РЅРѕСЂРјР°Р»СЊ:
         // return float4(bentNormal * 0.5 + 0.5, 1.0);
     #endif
     

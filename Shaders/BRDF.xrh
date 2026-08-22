@@ -342,7 +342,7 @@ float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 L
         float3 CoatF0_Vec = float3(CoatF0_Val, CoatF0_Val, CoatF0_Val);
         clearCoatRad = CalculateClearCoat(Normal, ViewDirection, LightDir,
                                           GBuffer.CoatRoughness, GBuffer.CoatIntensity, CoatF0_Vec);
-        // Аттенюация базы на основе френеля лака
+        // РђС‚С‚РµРЅСЋР°С†РёСЏ Р±Р°Р·С‹ РЅР° РѕСЃРЅРѕРІРµ С„СЂРµРЅРµР»СЏ Р»Р°РєР°
         float HoV = saturate(dot(HalfWayDirection, ViewDirection));
         coatAttenuation = 1.0 - fresnelSchlick(HoV, 0.04) * GBuffer.CoatIntensity;
     }
@@ -356,7 +356,7 @@ float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 L
                                                  GBuffer.SheenIntensity, GBuffer.SpecularTint);
         sheenRad = CalculateSheen(Normal, ViewDirection, LightDir,
                                   GBuffer.SheenRoughness, SheenColor, GBuffer.SheenIntensity);
-        // Ослабление базы слоем sheen (приближённо)
+        // РћСЃР»Р°Р±Р»РµРЅРёРµ Р±Р°Р·С‹ СЃР»РѕРµРј sheen (РїСЂРёР±Р»РёР¶С‘РЅРЅРѕ)
         float HoV = saturate(dot(HalfWayDirection, ViewDirection));
         float3 Fsheen = Fresnel_Sheen(HoV, SheenColor);
         sheenAttenuation = 1.0 - Fsheen * GBuffer.SheenIntensity;
@@ -435,7 +435,7 @@ float CalculateSpotAttenuation(float3 Point, float3 LightPosition, float LightSo
     if (DistanceSqr > LightSourceRangeSqr)
         return 0.0;
     
-    // Физически корректное затухание по расстоянию
+    // Р¤РёР·РёС‡РµСЃРєРё РєРѕСЂСЂРµРєС‚РЅРѕРµ Р·Р°С‚СѓС…Р°РЅРёРµ РїРѕ СЂР°СЃСЃС‚РѕСЏРЅРёСЋ
     float Distance = sqrt(DistanceSqr);
     float InvDistanceSqr = 1.0 / (DistanceSqr + 1e-6);
     

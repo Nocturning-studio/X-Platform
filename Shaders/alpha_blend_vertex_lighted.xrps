@@ -22,7 +22,7 @@ PixelShaderOutputStruct main(v2p I)
     
     BaseTextureData.rgb = BaseTextureData.rgb * sRgbToLinear(I.c0) * 0.01f;; // * ambient_brightness
     
-    // NSDeathman - считаем туман второй раз, но теперь специально для этого конкретного объекта
+    // NSDeathman - СЃС‡РёС‚Р°РµРј С‚СѓРјР°РЅ РІС‚РѕСЂРѕР№ СЂР°Р·, РЅРѕ С‚РµРїРµСЂСЊ СЃРїРµС†РёР°Р»СЊРЅРѕ РґР»СЏ СЌС‚РѕРіРѕ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РѕР±СЉРµРєС‚Р°
     float Fog = CalcFogness(I.position);
     BaseTextureData.rgb = ApplyFogness(BaseTextureData.rgb, Fog);
     float FogOpacity = BaseTextureData.a * invert(safe_pow(Fog, 4.4f));

@@ -30,14 +30,14 @@ float GetFalloff(float distSq, float radiusSq)
     return saturate(1.0f - factor * factor);
 }
 
-// 1. IGN (Шахматный шум)
+// 1. IGN (РЁР°С…РјР°С‚РЅС‹Р№ С€СѓРј)
 float GetIGN(float2 position)
 {
     float3 magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
     return frac(magic.z * frac(dot(position, magic.xy)));
 }
 
-// 2. WHITE NOISE (Хаос)
+// 2. WHITE NOISE (РҐР°РѕСЃ)
 float GetWhiteNoise(float2 uv)
 {
     return frac(sin(dot(uv * 100, float2(12.9898f, 78.233f))) * 43758.5453f);
@@ -64,7 +64,6 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
     
     float currentThickness = lerp(THICKNESS_NEAR, THICKNESS_FAR, distanceFactor);
 
-    // Исправление 1: избегаем деления на ноль с помощью max()
     float pixelRadius = (currentWorldRadius * screen_res.y) / max(P.z, 0.0001f);
     pixelRadius = min(pixelRadius, MAX_PIXEL_RADIUS);
     
@@ -72,12 +71,12 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
 
     float currentRadiusSq = currentWorldRadius * currentWorldRadius;
     
-    // 1. Для УГЛА берем White Noise (зависит от TexCoords).
-    // Это гарантирует, что у каждого пикселя свой уникальный поворот.
+    // 1. Р”Р»СЏ РЈР“Р›Рђ Р±РµСЂРµРј White Noise (Р·Р°РІРёСЃРёС‚ РѕС‚ TexCoords).
+    // Р­С‚Рѕ РіР°СЂР°РЅС‚РёСЂСѓРµС‚, С‡С‚Рѕ Сѓ РєР°Р¶РґРѕРіРѕ РїРёРєСЃРµР»СЏ СЃРІРѕР№ СѓРЅРёРєР°Р»СЊРЅС‹Р№ РїРѕРІРѕСЂРѕС‚.
     float jitterAngle = GetWhiteNoise(TexCoords);
     
-    // 2. Для ШАГА берем IGN (зависит от экранных координат).
-    // Это гарантирует, что выборки распределены максимально равномерно.
+    // 2. Р”Р»СЏ РЁРђР“Рђ Р±РµСЂРµРј IGN (Р·Р°РІРёСЃРёС‚ РѕС‚ СЌРєСЂР°РЅРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚).
+    // Р­С‚Рѕ РіР°СЂР°РЅС‚РёСЂСѓРµС‚, С‡С‚Рѕ РІС‹Р±РѕСЂРєРё СЂР°СЃРїСЂРµРґРµР»РµРЅС‹ РјР°РєСЃРёРјР°Р»СЊРЅРѕ СЂР°РІРЅРѕРјРµСЂРЅРѕ.
     float jitterStep = GetIGN((float2)Position2D);
 
     float occlusion = 0.0f;
@@ -85,7 +84,7 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
     [unroll(GTAO_SLICES)]
     for (int slice = 0; slice < GTAO_SLICES; slice++)
     {
-        // Угол + Случайный поворот
+        // РЈРіРѕР» + РЎР»СѓС‡Р°Р№РЅС‹Р№ РїРѕРІРѕСЂРѕС‚
         float phi = (float(slice) + jitterAngle) * (PI / float(GTAO_SLICES));
         
         float2 dirUV = float2(cos(phi), sin(phi)) * screen_res.zw;
@@ -97,7 +96,7 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
         [unroll(GTAO_SAMPLES)]
         for (int s1 = 0; s1 < GTAO_SAMPLES; s1++)
         {
-            // Используем IGN для шага
+            // РСЃРїРѕР»СЊР·СѓРµРј IGN РґР»СЏ С€Р°РіР°
             float step = (float(s1) + jitterStep) / float(GTAO_SAMPLES);
             step = step * step; 
             
@@ -114,11 +113,10 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
 
                 if (distSq < currentRadiusSq)
                 {
-                    // Исправление 2: проверяем distSq перед вычислением dist
                     if (distSq > 0.0001f)
                     {
                         float dist = sqrt(distSq); 
-                        float3 L = diff / dist; // Теперь деление безопасно
+                        float3 L = diff / dist;
                         float elevation = dot(N, L); 
                         
                         horiz1 = max(horiz1, saturate(elevation - HORIZON_BIAS) * GetFalloff(distSq, currentRadiusSq));
@@ -147,11 +145,10 @@ float4 ao_pass(float2 TexCoords : TEXCOORD0, int2 Position2D : VPOS) : COLOR0
 
                 if (distSq < currentRadiusSq)
                 {
-                    // Исправление 3: аналогичная проверка для второй стороны
                     if (distSq > 0.0001f)
                     {
                         float dist = sqrt(distSq);
-                        float3 L = diff / dist; // Теперь деление безопасно
+                        float3 L = diff / dist;
                         float elevation = dot(N, L); 
                         
                         horiz2 = max(horiz2, saturate(elevation - HORIZON_BIAS) * GetFalloff(distSq, currentRadiusSq));

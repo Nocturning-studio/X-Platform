@@ -32,16 +32,16 @@ float EdgeSamplesManualPCF(float4 ShadowPosition, float3 ShadowPositionDiv, floa
 {
     float ShadowCoverage = 0;
 
-    // Используем синий шум для рандомизации
+    // РСЃРїРѕР»СЊР·СѓРµРј СЃРёРЅРёР№ С€СѓРј РґР»СЏ СЂР°РЅРґРѕРјРёР·Р°С†РёРё
     float2 Random = tex2Dlod0(s_blue_noise, JitterTC * 10).bg;
     float2 RandomCosSin = tex2Dlod0(s_blue_noise, Random * 10).xy * 2.0f - 1.0f;
     RandomCosSin = normalize(RandomCosSin);
     
-    // Нормализация накопленного покрытия (2 сэмпла на чанк)
+    // РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РЅР°РєРѕРїР»РµРЅРЅРѕРіРѕ РїРѕРєСЂС‹С‚РёСЏ (2 СЃСЌРјРїР»Р° РЅР° С‡Р°РЅРє)
     float SampleWeight = 0.5f / NUM_EDGE_SAMPLE_CHUNKS;
     float2 FlipVector = float2(1.0f, -1.0f);
     
-    // Проходим по каждому чанку для детектирования границ
+    // РџСЂРѕС…РѕРґРёРј РїРѕ РєР°Р¶РґРѕРјСѓ С‡Р°РЅРєСѓ РґР»СЏ РґРµС‚РµРєС‚РёСЂРѕРІР°РЅРёСЏ РіСЂР°РЅРёС†
     [unroll]
     for (int ChunkIndex = 0; ChunkIndex < NUM_EDGE_SAMPLE_CHUNKS; ChunkIndex++)
     {
@@ -50,15 +50,15 @@ float EdgeSamplesManualPCF(float4 ShadowPosition, float3 ShadowPositionDiv, floa
         float4 TexCoords;
         float2 Mask;
         
-        // Вращаем смещения сэмплов с использованием случайного угла
+        // Р’СЂР°С‰Р°РµРј СЃРјРµС‰РµРЅРёСЏ СЃСЌРјРїР»РѕРІ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј СЃР»СѓС‡Р°Р№РЅРѕРіРѕ СѓРіР»Р°
         ChunkSampleOffsets = EdgeSampleOffsets[ChunkIndex];
         TexCoords = FlipVector.xyxy * RandomCosSin.xyxy * ChunkSampleOffsets.xxzz + RandomCosSin.yxyx * ChunkSampleOffsets.yyww * 4;
         
-        // Берем два сэмпла из буфера глубины
+        // Р‘РµСЂРµРј РґРІР° СЃСЌРјРїР»Р° РёР· Р±СѓС„РµСЂР° РіР»СѓР±РёРЅС‹
         ShadowDepths.x = sample_shadow_map(ShadowPosition, TexCoords.xy);
         ShadowDepths.y = sample_shadow_map(ShadowPosition, TexCoords.zw);
         
-        // Сравнение глубины и комбинирование результатов
+        // РЎСЂР°РІРЅРµРЅРёРµ РіР»СѓР±РёРЅС‹ Рё РєРѕРјР±РёРЅРёСЂРѕРІР°РЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
         Mask = (ShadowPositionDiv.z < ShadowDepths) ? float2(1.0f, 1.0f) : float2(0.0f, 0.0f);
         ShadowCoverage += dot(Mask, float2(SampleWeight, SampleWeight));
     }
@@ -68,11 +68,11 @@ float EdgeSamplesManualPCF(float4 ShadowPosition, float3 ShadowPositionDiv, floa
 
 float RefiningSamplesManualPCF(float4 ShadowPosition, float3 ShadowPositionDiv)
 {
-    // Нормализация накопленного покрытия (4 сэмпла на чанк)
+    // РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РЅР°РєРѕРїР»РµРЅРЅРѕРіРѕ РїРѕРєСЂС‹С‚РёСЏ (4 СЃСЌРјРїР»Р° РЅР° С‡Р°РЅРє)
     float SampleWeight = 0.25f / NUM_REFINING_SAMPLE_CHUNKS;
     float RefinedShadowCoverage = 0;
     
-    // Проходим по каждому уточняющему чанку
+    // РџСЂРѕС…РѕРґРёРј РїРѕ РєР°Р¶РґРѕРјСѓ СѓС‚РѕС‡РЅСЏСЋС‰РµРјСѓ С‡Р°РЅРєСѓ
     [unroll]
     for (int ChunkIndex = 0; ChunkIndex < NUM_REFINING_SAMPLE_CHUNKS; ChunkIndex++)
     {
@@ -88,7 +88,7 @@ float RefiningSamplesManualPCF(float4 ShadowPosition, float3 ShadowPositionDiv)
         ShadowDepths.z = sample_shadow_map(ShadowPosition, FinalCoords.xy);
         ShadowDepths.w = sample_shadow_map(ShadowPosition, FinalCoords.zw);
         
-        // Сравнение и накопление всех 4 результатов
+        // РЎСЂР°РІРЅРµРЅРёРµ Рё РЅР°РєРѕРїР»РµРЅРёРµ РІСЃРµС… 4 СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
         Mask = (ShadowPositionDiv.z < ShadowDepths) ? float4(1.0f, 1.0f, 1.0f, 1.0f) : float4(0.0f, 0.0f, 0.0f, 0.0f);
         RefinedShadowCoverage += dot(Mask, float4(SampleWeight, SampleWeight, SampleWeight, SampleWeight));
     }
@@ -101,14 +101,14 @@ float GetBranchingShadowCoverage(float4 ShadowPosition, float2 TC)
     float3 ShadowPositionDiv = ShadowPosition.xyz / ShadowPosition.w;
     float ShadowCoverage = EdgeSamplesManualPCF(ShadowPosition, ShadowPositionDiv, TC);
     
-    // Если мы не полностью в тени или полностью на свету, значит мы в полутени
+    // Р•СЃР»Рё РјС‹ РЅРµ РїРѕР»РЅРѕСЃС‚СЊСЋ РІ С‚РµРЅРё РёР»Рё РїРѕР»РЅРѕСЃС‚СЊСЋ РЅР° СЃРІРµС‚Сѓ, Р·РЅР°С‡РёС‚ РјС‹ РІ РїРѕР»СѓС‚РµРЅРё
     if (ShadowCoverage > 0.0001f && ShadowCoverage < 0.9999f)
     {
         float RefinedShadowCoverage = RefiningSamplesManualPCF(ShadowPosition, ShadowPositionDiv);
-        // Взвешиваем покрытие границ с уточненным покрытием
+        // Р’Р·РІРµС€РёРІР°РµРј РїРѕРєСЂС‹С‚РёРµ РіСЂР°РЅРёС† СЃ СѓС‚РѕС‡РЅРµРЅРЅС‹Рј РїРѕРєСЂС‹С‚РёРµРј
         ShadowCoverage = lerp(ShadowCoverage, RefinedShadowCoverage, 0.7f);
     }
 
-    // Кубическое затемнение для лучшего смешивания краев полутени
+    // РљСѓР±РёС‡РµСЃРєРѕРµ Р·Р°С‚РµРјРЅРµРЅРёРµ РґР»СЏ Р»СѓС‡С€РµРіРѕ СЃРјРµС€РёРІР°РЅРёСЏ РєСЂР°РµРІ РїРѕР»СѓС‚РµРЅРё
     return ShadowCoverage * ShadowCoverage * ShadowCoverage;
 }

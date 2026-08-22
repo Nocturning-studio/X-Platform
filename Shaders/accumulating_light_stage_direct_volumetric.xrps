@@ -28,14 +28,14 @@ struct Interpolators
 #define FOG_DENSITY 0.1f
 #define MAX_RAY_DISTANCE 70.0f
 
-// --- ИЗМЕНЕНИЕ 1: Добавил настройки смещения ---
-// Насколько сильно "вдавливать" тень. 
-// Если лучи все еще просвечивают - увеличивай (0.002, 0.005). 
-// Если тени исчезли там, где не надо (Peter Panning) - уменьшай.
+// --- РР—РњР•РќР•РќРР• 1: Р”РѕР±Р°РІРёР» РЅР°СЃС‚СЂРѕР№РєРё СЃРјРµС‰РµРЅРёСЏ ---
+// РќР°СЃРєРѕР»СЊРєРѕ СЃРёР»СЊРЅРѕ "РІРґР°РІР»РёРІР°С‚СЊ" С‚РµРЅСЊ. 
+// Р•СЃР»Рё Р»СѓС‡Рё РІСЃРµ РµС‰Рµ РїСЂРѕСЃРІРµС‡РёРІР°СЋС‚ - СѓРІРµР»РёС‡РёРІР°Р№ (0.002, 0.005). 
+// Р•СЃР»Рё С‚РµРЅРё РёСЃС‡РµР·Р»Рё С‚Р°Рј, РіРґРµ РЅРµ РЅР°РґРѕ (Peter Panning) - СѓРјРµРЅСЊС€Р°Р№.
 #define SHADOW_BIAS 0.003f 
 
-// Отступ от геометрии (в метрах). 
-// Луч остановится за 15 см до стены, чтобы не собирать глюки с поверхности.
+// РћС‚СЃС‚СѓРї РѕС‚ РіРµРѕРјРµС‚СЂРёРё (РІ РјРµС‚СЂР°С…). 
+// Р›СѓС‡ РѕСЃС‚Р°РЅРѕРІРёС‚СЃСЏ Р·Р° 15 СЃРј РґРѕ СЃС‚РµРЅС‹, С‡С‚РѕР±С‹ РЅРµ СЃРѕР±РёСЂР°С‚СЊ РіР»СЋРєРё СЃ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё.
 #define GEOMETRY_MARGIN 0.15f 
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -74,11 +74,11 @@ float4 main(Interpolators Input) : COLOR0
     sincos(rotationAngle, sine, cosine);
     float2x2 rotationMatrix = float2x2(cosine, -sine, sine, cosine);
 
-    // --- ИЗМЕНЕНИЕ: Используем IGN вместо fmod ---
+    // --- РР—РњР•РќР•РќРР•: РСЃРїРѕР»СЊР·СѓРµРј IGN РІРјРµСЃС‚Рѕ fmod ---
     float JitterOffset = InterleavedGradientNoise(Input.PixelPosition);
 
     float2 sampleDirection;
-    // Увеличил множитель частоты для sampleDirection, чтобы тени тоже шумели приятно
+    // РЈРІРµР»РёС‡РёР» РјРЅРѕР¶РёС‚РµР»СЊ С‡Р°СЃС‚РѕС‚С‹ РґР»СЏ sampleDirection, С‡С‚РѕР±С‹ С‚РµРЅРё С‚РѕР¶Рµ С€СѓРјРµР»Рё РїСЂРёСЏС‚РЅРѕ
     sincos(7.0f * PI * JitterOffset, sampleDirection.y, sampleDirection.x);
     sampleDirection = lerp(sampleDirection, JitterOffset, 0.5f);
 
@@ -86,7 +86,7 @@ float4 main(Interpolators Input) : COLOR0
     float rayLength = min(safeViewLength, MAX_RAY_DISTANCE);
     
     float stepSize = rayLength / RAY_SAMPLES;
-    float currentDist = JitterOffset * stepSize; // Используем скалярный JitterOffset
+    float currentDist = JitterOffset * stepSize; // РСЃРїРѕР»СЊР·СѓРµРј СЃРєР°Р»СЏСЂРЅС‹Р№ JitterOffset
     
     float volumetricLight = 0.0f;
 
