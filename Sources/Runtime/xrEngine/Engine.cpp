@@ -25,6 +25,7 @@
 #include "LevelLoadingScreen.h"
 #include "render.h"
 #include "xrBind_PSGP.h"
+#include "SDL3/SDL.h"
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
@@ -57,6 +58,18 @@ struct _SoundProcessor : public pureFrame
 typedef void DUMMY_STUFF(const void*, const u32&, void*);
 XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 //////////////////////////////////////////////////////////////////////////
+
+static void InitSDL3()
+{
+	SDL_InitFlags sdl_flags = SDL_INIT_VIDEO;
+
+	R_ASSERT3(SDL_Init(sdl_flags), "Failed to initialize SDL3", SDL_GetError());
+}
+
+static void ShutdownSDL3()
+{
+	SDL_Quit();
+}
 
 CEngine::CEngine()
 {
@@ -95,6 +108,8 @@ bool CEngine::Initialize()
 
 	// Build Info
 	InitializeGlobalBuildID();
+
+	InitSDL3();
 
 	// Инициализация ядра (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");
@@ -471,6 +486,8 @@ void CEngine::Destroy()
 	XRC.r_clear_compact();
 
 	Core.Destroy();
+
+	ShutdownSDL3();
 }
 
 void CEngine::Run()
