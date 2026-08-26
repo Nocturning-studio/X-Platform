@@ -31,8 +31,8 @@ class ENGINE_API CRenderDevice
 	u32 dwWidth, dwHeight;
 	float fWidth_2, fHeight_2;
 	BOOL b_is_Ready;
-	BOOL b_is_Active;
-	void OnWM_Activate(WPARAM wParam, LPARAM lParam);
+	bool b_is_Active;
+	void SetActivate(bool bActive);
 
 	fvec2 GetScreenResolution()
 	{

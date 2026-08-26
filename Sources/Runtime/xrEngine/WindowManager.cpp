@@ -252,7 +252,13 @@ LRESULT CALLBACK CWindowManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     switch (uMsg)
     {
     case WM_ACTIVATE:
-        Device.OnWM_Activate(wParam, lParam);
+        {
+            u16 fActive = LOWORD(wParam);
+            BOOL fMinimized = (BOOL)HIWORD(wParam);
+            BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+
+            Device.SetActivate(bActive);
+        }
         break;
     case WM_SETCURSOR:
         return 1;
