@@ -750,6 +750,7 @@ void CConsole::Hide()
 
 	Engine.ThreadManager.LegacyFrameMT.Remove(this);
 	Engine.Events.Render.Remove(this);
+	Engine.Events.Frame.Remove(this);
 	m_editor->IR_Release();
 }
 
