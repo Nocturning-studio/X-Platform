@@ -161,6 +161,7 @@ CEngine::CEngine()
 	tune_pause = dummy;
 	tune_resume = dummy;
 	m_bLoaded = FALSE;
+	m_bUseSDL3 = false;
 }
 
 CEngine::~CEngine()
@@ -191,8 +192,15 @@ bool CEngine::Initialize()
 	// Инициализация ядра (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");
 
-	// Called after Core.Initialize() to ensure the SDL3 messages would end up in the .log files
-	InitSDL3();
+	m_bUseSDL3 = strstr(Core.Params, "-sdl3");
+
+	if (m_bUseSDL3)
+	{
+		Msg("~ SDL3 requested. Work In Progress.");
+
+		// Called after Core.Initialize() to ensure the SDL3 messages would end up in the .log files
+		InitSDL3();
+	}
 
 	// Инициализация настроек (Settings / INI)
 	{
@@ -565,7 +573,10 @@ void CEngine::Destroy()
 	Event._destroy();
 	XRC.r_clear_compact();
 
-	ShutdownSDL3();
+	if (m_bUseSDL3)
+	{
+		ShutdownSDL3();
+	}
 
 	Core.Destroy();
 }
