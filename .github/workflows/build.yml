@@ -31,10 +31,3 @@ jobs:
     - name: Build Release (Win32)
       run: msbuild xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142 /m
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: Release-Win32
-        path: |
-          Binaries\x86\*
-        if-no-files-found: error
