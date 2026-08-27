@@ -83,25 +83,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Third-party\include\PresenceAudioSDK\Include;$(SolutionDir)Sources\Third-party\include\;$(ExternalIncludePath)</ExternalIncludePath>
-    <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
+    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Third-party\include\PresenceAudioSDK\Include;$(SolutionDir)Sources\Third-party\include\;$(ExternalIncludePath)</ExternalIncludePath>
-    <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
+    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Third-party\include\PresenceAudioSDK\Include;$(SolutionDir)Sources\Third-party\include\;$(ExternalIncludePath)</ExternalIncludePath>
-    <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
+    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Third-party\include\PresenceAudioSDK\Include;$(SolutionDir)Sources\Third-party\include\;$(ExternalIncludePath)</ExternalIncludePath>
-    <OutDir>$(SolutionDir)\Binaries\$(PlatformShortName)\</OutDir>
+    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
