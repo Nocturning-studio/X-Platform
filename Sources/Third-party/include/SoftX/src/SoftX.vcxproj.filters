@@ -45,7 +45,7 @@
     <ClInclude Include="InternalTypes.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="QueryRasterizer.h">
+    <ClInclude Include="DepthRasterizer.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Rasterizer.h">

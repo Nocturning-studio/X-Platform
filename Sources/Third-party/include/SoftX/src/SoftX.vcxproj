@@ -31,7 +31,7 @@
     <ClInclude Include="..\include\Types.h" />
     <ClInclude Include="CPUDetector.h" />
     <ClInclude Include="InternalTypes.h" />
-    <ClInclude Include="QueryRasterizer.h" />
+    <ClInclude Include="DepthRasterizer.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RasterizerCommon.h" />
     <ClInclude Include="ThreadPool.h" />

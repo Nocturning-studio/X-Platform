@@ -4,6 +4,7 @@
 // Licensed under the MIT License.
 /////////////////////////////////////////////////////////////////
 #include "../include/SoftX.h"
+#include "DepthRasterizer.h"
 #include "Rasterizer.h"
 #include "TileGrid.h"
 #include "ThreadPoolManager.h"
@@ -660,16 +661,24 @@ void DeviceContext::Impl::ClipAndRasterize(const PipelineStateObject& state,
                             const Tile& tile = tiles[idx];
                             for (int triIdx : tile.triangleIndices)
                             {
-                                Rasterizer::RasterizeTriangle(setups[triIdx],
-                                                              rasterState,
-                                                              *db,
-                                                              rt,
-                                                              state.viewport,
-                                                              state.pixelShader,
-                                                              state.constantBuffer,
-                                                              &state.textureTable,
-                                                              tile.min,
-                                                              tile.max);
+                                if(state.renderTarget)
+                                    Rasterizer::RasterizeTriangle(setups[triIdx],
+                                                                  rasterState,
+                                                                  *db,
+                                                                  rt,
+                                                                  state.viewport,
+                                                                  state.pixelShader,
+                                                                  state.constantBuffer,
+                                                                  &state.textureTable,
+                                                                  tile.min,
+                                                                  tile.max);
+                                else
+                                    DepthRasterizer::RasterizeTriangle(setups[triIdx],
+                                                                       rasterState,
+                                                                       *db,
+                                                                       state.viewport,
+                                                                       tile.min,
+                                                                       tile.max);
                             }
                         }
                     };
