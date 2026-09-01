@@ -581,7 +581,7 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 void __stdcall CRender::schedule_cascades()
 {
-    SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
+    SunCascadeBuffer& writeBuffer = GetSunReadBuffer();//GetSunWriteBuffer();
     writeBuffer.Clear();
 
     // Создаём контекст для фоновой сборки
