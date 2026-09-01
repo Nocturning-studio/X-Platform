@@ -279,10 +279,9 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const fvec3* pVerts,
 		Fbox bb;
 		bb.invalidate();
 
-		FVF::LIT* I = &*W->verts.begin();
-		FVF::LIT* E = &*W->verts.end();
-		for (; I != E; I++)
-			bb.modify(I->p);
+		for (const auto& I : W->verts)
+			bb.modify(I.p);
+
 		bb.getsphere(W->bounds.P, W->bounds.R);
 	}
 
