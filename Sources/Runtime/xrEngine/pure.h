@@ -1,6 +1,8 @@
 #ifndef _PURE_H_AAA_
 #define _PURE_H_AAA_
 
+#include <algorithm>
+
 // messages
 #define REG_PRIORITY_LOW 0x11111111ul
 #define REG_PRIORITY_NORMAL 0x22222222ul
@@ -38,12 +40,8 @@ struct _REG_INFO
 	u32 Flags;
 };
 
-ENGINE_API extern int __cdecl _REG_Compare(const void*, const void*);
-
 template <class T> class CRegistrator // the registrator itself
 {
-	friend ENGINE_API int __cdecl _REG_Compare(const void*, const void*);
-
   public:
 	xr_vector<_REG_INFO> R;
 	// constructor
@@ -109,11 +107,11 @@ template <class T> class CRegistrator // the registrator itself
 	};
 	void Resort(void)
 	{
-		qsort(&*R.begin(), R.size(), sizeof(_REG_INFO), _REG_Compare);
+		std::sort(R.begin(), R.end(), [](const _REG_INFO& a, const _REG_INFO& b) { return a.Prio > b.Prio; });
+
 		while ((R.size()) && (R[R.size() - 1].Prio == REG_PRIORITY_INVALID))
 			R.pop_back();
-		if (R.empty())
-			R.clear();
+
 		changed = false;
 	};
 };
