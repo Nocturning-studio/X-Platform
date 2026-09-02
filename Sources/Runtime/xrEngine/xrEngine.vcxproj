@@ -702,6 +702,7 @@
     <ClInclude Include="CameraDefs.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="CPhotoMode.h" />
+    <ClInclude Include="EngineQuit.hpp" />
     <ClInclude Include="RenderView.h" />
     <ClInclude Include="CustomHUD.h" />
     <ClInclude Include="D3DUtils.h" />
@@ -841,6 +842,7 @@
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="CPhotoMode.cpp" />
+    <ClCompile Include="EngineQuit.cpp" />
     <ClCompile Include="RenderView.cpp" />
     <ClCompile Include="CustomHUD.cpp" />
     <ClCompile Include="D3DUtils.cpp" />

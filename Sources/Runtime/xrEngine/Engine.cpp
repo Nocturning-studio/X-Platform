@@ -25,6 +25,7 @@
 #include "LevelLoadingScreen.h"
 #include "render.h"
 #include "xrBind_PSGP.h"
+#include "EngineQuit.hpp"
 #include "SDL3/SDL.h"
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
@@ -484,7 +485,7 @@ void CEngine::ProcessEventLoop()
 	Events.AppStart.Process(rp_AppStart);
 	Engine.SetUnloaded();
 
-	while (true)
+	while (!g_QuitRequested)
 	{
 		if (!WindowManager.ProcessMessages())
 			break;
