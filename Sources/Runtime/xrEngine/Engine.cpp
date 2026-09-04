@@ -236,7 +236,7 @@ bool CEngine::Initialize()
 	Statistic->Initialize();
 
 	Logo->Hide();
-	WindowManager.Initialize();
+	WindowManager.Initialize(m_bUseSDL3);
 
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");

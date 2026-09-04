@@ -130,24 +130,10 @@ void CRenderBackend::Create(HWND m_hWnd)
     wm.SetRefreshRate(refreshHz);
     wm.Apply();
 
-    SetWindowPos(m_hWnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-    UpdateWindow(m_hWnd);
-
     RECT rcClient;
     GetClientRect(m_hWnd, &rcClient);
     LONG clientW = rcClient.right - rcClient.left;
     LONG clientH = rcClient.bottom - rcClient.top;
-
-    if (clientW != width || clientH != height)
-    {
-        Msg("! Window client size mismatch: expected %dx%d, got %dx%d. Forcing resize.", width, height, clientW, clientH);
-        SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-        SetWindowPos(m_hWnd, HWND_TOP, 0, 0, width, height, SWP_NOMOVE | SWP_SHOWWINDOW);
-        UpdateWindow(m_hWnd);
-        GetClientRect(m_hWnd, &rcClient);
-        clientW = rcClient.right - rcClient.left;
-        clientH = rcClient.bottom - rcClient.top;
-    }
 
     xrRHI::RHIPresentationParams params;
     params.BackBufferWidth = clientW;
@@ -260,24 +246,11 @@ void CRenderBackend::Reset()
     wm.Apply();
 
     HWND hWnd = wm.GetHandle();
-    SetWindowPos(hWnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-    UpdateWindow(hWnd);
 
     RECT rcClient;
     GetClientRect(hWnd, &rcClient);
     LONG clientW = rcClient.right - rcClient.left;
     LONG clientH = rcClient.bottom - rcClient.top;
-
-    if (clientW != width || clientH != height)
-    {
-        Msg("! Window client size mismatch: expected %dx%d, got %dx%d. Forcing resize.", width, height, clientW, clientH);
-        SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-        SetWindowPos(hWnd, HWND_TOP, 0, 0, width, height, SWP_NOMOVE | SWP_SHOWWINDOW);
-        UpdateWindow(hWnd);
-        GetClientRect(hWnd, &rcClient);
-        clientW = rcClient.right - rcClient.left;
-        clientH = rcClient.bottom - rcClient.top;
-    }
 
     xrRHI::RHIPresentationParams params;
     params.BackBufferWidth = clientW;
