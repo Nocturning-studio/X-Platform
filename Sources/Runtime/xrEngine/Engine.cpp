@@ -25,6 +25,7 @@
 #include "LevelLoadingScreen.h"
 #include "render.h"
 #include "xrBind_PSGP.h"
+#include "EngineQuit.hpp"
 #include "SDL3/SDL.h"
 //////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
@@ -59,8 +60,87 @@ typedef void DUMMY_STUFF(const void*, const u32&, void*);
 XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 //////////////////////////////////////////////////////////////////////////
 
+// Log callback to route SDL3 messages to console/logs
+static void LogCallbackSDL3(void* userdata, int category, SDL_LogPriority priority, const char* message)
+{
+	(void)userdata;
+
+	pcstr category_str = "unknown";
+	switch (category)
+	{
+	case SDL_LOG_CATEGORY_APPLICATION:
+		category_str = "app";
+		break;
+	case SDL_LOG_CATEGORY_ERROR:
+		category_str = "error";
+		break;
+	case SDL_LOG_CATEGORY_ASSERT:
+		category_str = "assert";
+		break;
+	case SDL_LOG_CATEGORY_SYSTEM:
+		category_str = "system";
+		break;
+	case SDL_LOG_CATEGORY_AUDIO:
+		category_str = "audio";
+		break;
+	case SDL_LOG_CATEGORY_VIDEO:
+		category_str = "video";
+		break;
+	case SDL_LOG_CATEGORY_RENDER:
+		category_str = "render";
+		break;
+	case SDL_LOG_CATEGORY_INPUT:
+		category_str = "input";
+		break;
+	case SDL_LOG_CATEGORY_TEST:
+		category_str = "test";
+		break;
+	case SDL_LOG_CATEGORY_GPU:
+		category_str = "gpu";
+		break;
+	}
+
+	char console_mark = '?';
+	pcstr priority_str = "unknown";
+	switch (priority)
+	{
+	case SDL_LOG_PRIORITY_TRACE:
+		priority_str = "trace";
+		console_mark = '%';
+		break;
+	case SDL_LOG_PRIORITY_VERBOSE:
+		priority_str = "verbose";
+		console_mark = '%';
+		break;
+	case SDL_LOG_PRIORITY_DEBUG:
+		priority_str = "debug";
+		console_mark = '#';
+		break;
+	case SDL_LOG_PRIORITY_INFO:
+		priority_str = "info";
+		console_mark = '*';
+		break;
+	case SDL_LOG_PRIORITY_WARN:
+		priority_str = "warn";
+		console_mark = '~';
+		break;
+	case SDL_LOG_PRIORITY_ERROR:
+		priority_str = "error";
+		console_mark = '!';
+		break;
+	case SDL_LOG_PRIORITY_CRITICAL:
+		priority_str = "critical";
+		console_mark = '$';
+		break;
+	}
+
+	Msg("%c [SDL3][%s][%s] %s", console_mark, category_str, priority_str, message);
+}
+
 static void InitSDL3()
 {
+	SDL_SetLogOutputFunction(LogCallbackSDL3, nullptr);
+
 	SDL_InitFlags sdl_flags = SDL_INIT_VIDEO;
 
 	R_ASSERT3(SDL_Init(sdl_flags), "Failed to initialize SDL3", SDL_GetError());
@@ -82,6 +162,7 @@ CEngine::CEngine()
 	tune_pause = dummy;
 	tune_resume = dummy;
 	m_bLoaded = FALSE;
+	m_bUseSDL3 = false;
 }
 
 CEngine::~CEngine()
@@ -109,10 +190,18 @@ bool CEngine::Initialize()
 	// Build Info
 	InitializeGlobalBuildID();
 
-	InitSDL3();
-
 	// Инициализация ядра (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");
+
+	m_bUseSDL3 = strstr(Core.Params, "-sdl3");
+
+	if (m_bUseSDL3)
+	{
+		Msg("~ SDL3 requested. Work In Progress.");
+
+		// Called after Core.Initialize() to ensure the SDL3 messages would end up in the .log files
+		InitSDL3();
+	}
 
 	// Инициализация настроек (Settings / INI)
 	{
@@ -147,7 +236,7 @@ bool CEngine::Initialize()
 	Statistic->Initialize();
 
 	Logo->Hide();
-	WindowManager.Initialize();
+	WindowManager.Initialize(m_bUseSDL3);
 
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");
@@ -396,7 +485,7 @@ void CEngine::ProcessEventLoop()
 	Events.AppStart.Process(rp_AppStart);
 	Engine.SetUnloaded();
 
-	while (true)
+	while (!g_QuitRequested)
 	{
 		if (!WindowManager.ProcessMessages())
 			break;
@@ -485,9 +574,12 @@ void CEngine::Destroy()
 	Event._destroy();
 	XRC.r_clear_compact();
 
-	Core.Destroy();
+	if (m_bUseSDL3)
+	{
+		ShutdownSDL3();
+	}
 
-	ShutdownSDL3();
+	Core.Destroy();
 }
 
 void CEngine::Run()

@@ -14,6 +14,7 @@
 #include "Text_Console.h"
 #include <process.h>
 #include "LevelLoadingScreen.h"
+#include "EngineQuit.hpp"
 
 void CGameStateManager::Initialize()
 {
@@ -49,7 +50,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 
 	if (E == eQuit)
 	{
-		PostQuitMessage(0);
+		g_QuitRequested = true;
 	}
 	else if (E == eStart)
 	{

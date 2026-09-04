@@ -63,6 +63,8 @@ class ENGINE_API CEngine
 
 	bool m_bLoaded;
 
+	bool m_bUseSDL3;
+
 	xr_list<LOADING_EVENT> m_loading_events;
 
   public:

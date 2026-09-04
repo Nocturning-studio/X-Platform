@@ -3,6 +3,7 @@
 #include "device.h"
 #include "resource.h"
 #include "xr_ioc_cmd.h"
+#include "SDL3/SDL.h"
 
 // -----------------------------------------------------------------------------------
 // Construction / Destruction
@@ -14,6 +15,9 @@ CWindowManager::CWindowManager()
     m_RefreshRate(0),
     m_PositionX(CW_USEDEFAULT), m_PositionY(CW_USEDEFAULT),
     m_bQuitRequested(false),
+    m_bUseSDL3(false),
+    m_pSdlWindow(nullptr),
+    m_WindowTitle("S.T.A.L.K.E.R.: Shadow Of Chernobyl"),
     m_bInitialized(false)
 {}
 
@@ -22,27 +26,25 @@ CWindowManager::~CWindowManager() {}
 // -----------------------------------------------------------------------------------
 // Public API
 // -----------------------------------------------------------------------------------
-void CWindowManager::Initialize()
+void CWindowManager::InitializeWin32()
 {
-    Msg("Initializing Window Manager...");
     m_hInstance = GetModuleHandle(nullptr);
-    RegisterWindowClass();
-    CreateGameWindow();
-    m_bInitialized = true;
+    RegisterWindowClassWin32();
+    CreateGameWindowWin32();
 }
 
-void CWindowManager::Apply()
+void CWindowManager::ApplyWin32()
 {
     if (!m_bInitialized)
     {
-        CreateGameWindow();
+        CreateGameWindowWin32();
         m_bInitialized = true;
         return;
     }
-    UpdateWindowAttributes();   // окно уже существует Ц мен€ем атрибуты без пересоздани€
+    UpdateWindowAttributesWin32();   // окно уже существует Ц мен€ем атрибуты без пересоздани€
 }
 
-void CWindowManager::Destroy()
+void CWindowManager::DestroyWin32()
 {
     if (m_hWnd)
     {
@@ -51,7 +53,7 @@ void CWindowManager::Destroy()
     }
 }
 
-bool CWindowManager::ProcessMessages()
+bool CWindowManager::ProcessMessagesWin32()
 {
     MSG msg;
     while (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
@@ -67,7 +69,7 @@ bool CWindowManager::ProcessMessages()
     return !m_bQuitRequested;
 }
 
-void CWindowManager::SetResolution(u32 w, u32 h)
+void CWindowManager::SetResolutionWin32(u32 w, u32 h)
 {
     m_width = w;
     m_height = h;
@@ -76,7 +78,7 @@ void CWindowManager::SetResolution(u32 w, u32 h)
     m_PositionY = CW_USEDEFAULT;
 }
 
-void CWindowManager::CenterWindow()
+void CWindowManager::CenterWindowWin32()
 {
     if (!m_hWnd || !m_bWindowed)
         return;
@@ -88,7 +90,7 @@ void CWindowManager::CenterWindow()
 
     HMONITOR hMon = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
     int newX, newY;
-    ComputeCenteredPosition(hMon, winW, winH, newX, newY);
+    ComputeCenteredPositionWin32(hMon, winW, winH, newX, newY);
 
     m_PositionX = newX;
     m_PositionY = newY;
@@ -100,11 +102,11 @@ void CWindowManager::CenterWindow()
 // -----------------------------------------------------------------------------------
 // Private helpers
 // -----------------------------------------------------------------------------------
-void CWindowManager::RegisterWindowClass()
+void CWindowManager::RegisterWindowClassWin32()
 {
     WNDCLASS wndClass = {};
     wndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-    wndClass.lpfnWndProc = WndProc;
+    wndClass.lpfnWndProc = WndProcWin32;
     wndClass.hInstance = m_hInstance;
     wndClass.hIcon = LoadIcon(m_hInstance, MAKEINTRESOURCE(IDI_ICON1));
     wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
@@ -114,12 +116,11 @@ void CWindowManager::RegisterWindowClass()
     RegisterClass(&wndClass);
 }
 
-void CWindowManager::CreateGameWindow()
+void CWindowManager::CreateGameWindowWin32()
 {
     const char* wndclass = "_XRAY_";
-    const char* title = "S.T.A.L.K.E.R.: Shadow Of Chernobyl";
 
-    DWORD style = GetStyle();
+    DWORD style = GetStyleWin32();
     int winW = m_width, winH = m_height;   // дл€ borderless это и есть размер окна
 
     int x = CW_USEDEFAULT, y = CW_USEDEFAULT;
@@ -127,7 +128,7 @@ void CWindowManager::CreateGameWindow()
     {
         // ѕервое создание Ч центрируем по основному монитору
         HMONITOR hMon = MonitorFromPoint({ 0,0 }, MONITOR_DEFAULTTOPRIMARY);
-        ComputeCenteredPosition(hMon, winW, winH, x, y);
+        ComputeCenteredPositionWin32(hMon, winW, winH, x, y);
         m_PositionX = x;
         m_PositionY = y;
     }
@@ -139,7 +140,7 @@ void CWindowManager::CreateGameWindow()
 
     m_hWnd = CreateWindowEx(
         m_bWindowed ? 0 : WS_EX_TOPMOST,   // полноэкранный Ц всегда поверх
-        wndclass, title, style,
+        wndclass, m_WindowTitle, style,
         x, y, winW, winH,
         nullptr, nullptr, m_hInstance, nullptr);
 
@@ -164,12 +165,12 @@ void CWindowManager::CreateGameWindow()
         m_hWnd, m_width, m_height, m_bWindowed ? "yes" : "no");
 }
 
-void CWindowManager::UpdateWindowAttributes()
+void CWindowManager::UpdateWindowAttributesWin32()
 {
     if (!m_hWnd) return;
 
     // 1. ѕримен€ем стиль окна (без рамок) и расширенный стиль (TopMost дл€ fullscreen)
-    ApplyWindowStyle(m_bWindowed ? 0 : WS_EX_TOPMOST);
+    ApplyWindowStyleWin32(m_bWindowed ? 0 : WS_EX_TOPMOST);
 
     const int winW = m_width;
     const int winH = m_height;
@@ -179,7 +180,7 @@ void CWindowManager::UpdateWindowAttributes()
         // ќконный режим: всегда центрируем на текущем мониторе
         HMONITOR hMon = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
         int centerX, centerY;
-        ComputeCenteredPosition(hMon, winW, winH, centerX, centerY);
+        ComputeCenteredPositionWin32(hMon, winW, winH, centerX, centerY);
 
         // ѕеремещаем окно в центр, не отбира€ фокус
         SetWindowPos(m_hWnd, nullptr, centerX, centerY, winW, winH,
@@ -205,7 +206,7 @@ void CWindowManager::UpdateWindowAttributes()
     m_height = rcClient.bottom - rcClient.top;
 }
 
-void CWindowManager::ComputeCenteredPosition(HMONITOR hMonitor, int winW, int winH, int& outX, int& outY)
+void CWindowManager::ComputeCenteredPositionWin32(HMONITOR hMonitor, int winW, int winH, int& outX, int& outY)
 {
     MONITORINFO mi = { sizeof(mi) };
     GetMonitorInfo(hMonitor, &mi);
@@ -215,7 +216,7 @@ void CWindowManager::ComputeCenteredPosition(HMONITOR hMonitor, int winW, int wi
     outY = work.top + (work.bottom - work.top - winH) / 2;
 }
 
-void CWindowManager::SaveWindowPosition()
+void CWindowManager::SaveWindowPositionWin32()
 {
     if (!m_hWnd)
         return;
@@ -234,9 +235,9 @@ void CWindowManager::SaveWindowPosition()
     }
 }
 
-void CWindowManager::ApplyWindowStyle(DWORD exStyle)
+void CWindowManager::ApplyWindowStyleWin32(DWORD exStyle)
 {
-    SetWindowLongPtr(m_hWnd, GWL_STYLE, GetStyle());
+    SetWindowLongPtr(m_hWnd, GWL_STYLE, GetStyleWin32());
     SetWindowLongPtr(m_hWnd, GWL_EXSTYLE, exStyle);
 
     // «аставл€ем систему пересчитать неклиентскую область (она исчезнет/по€витс€)
@@ -247,12 +248,18 @@ void CWindowManager::ApplyWindowStyle(DWORD exStyle)
 // -----------------------------------------------------------------------------------
 // Static window procedure
 // -----------------------------------------------------------------------------------
-LRESULT CALLBACK CWindowManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK CWindowManager::WndProcWin32(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
     case WM_ACTIVATE:
-        Device.OnWM_Activate(wParam, lParam);
+        {
+            u16 fActive = LOWORD(wParam);
+            BOOL fMinimized = (BOOL)HIWORD(wParam);
+            BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+
+            Device.SetActivate(bActive);
+        }
         break;
     case WM_SETCURSOR:
         return 1;
@@ -281,4 +288,182 @@ LRESULT CALLBACK CWindowManager::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     }
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void CWindowManager::Initialize(bool use_sdl3)
+{
+    Msg("Initializing Window Manager...");
+
+    m_bUseSDL3 = use_sdl3;
+
+    if (m_bUseSDL3)
+        InitializeSDL3();
+    else
+        InitializeWin32();
+
+    m_bInitialized = true;
+}
+
+void CWindowManager::Destroy()
+{
+    if (m_bUseSDL3)
+        DestroySDL3();
+    else
+        DestroyWin32();
+}
+
+void CWindowManager::Apply()
+{
+    if (m_bUseSDL3)
+        ApplySDL3();
+    else
+        ApplyWin32();
+}
+
+bool CWindowManager::ProcessMessages()
+{
+    if (m_bUseSDL3)
+        return ProcessMessagesSDL3();
+    else
+        return ProcessMessagesWin32();
+}
+
+void CWindowManager::SetResolution(u32 w, u32 h)
+{
+    if (m_bUseSDL3)
+        SetResolutionSDL3(w, h);
+    else
+        SetResolutionWin32(w, h);
+}
+
+void CWindowManager::CenterWindow()
+{
+    if (m_bUseSDL3)
+        CenterWindowSDL3();
+    else
+        CenterWindowWin32();
+}
+
+void CWindowManager::InitializeSDL3()
+{
+    SDL_Log("Creating game window");
+
+    SDL_WindowFlags sdl_window_flags = SDL_WINDOW_MOUSE_GRABBED;
+
+    m_pSdlWindow = SDL_CreateWindow(
+        m_WindowTitle,
+        m_width, m_height,
+        sdl_window_flags
+    );
+
+    R_ASSERT3(m_pSdlWindow, "Failed to create SDL3 window", SDL_GetError());
+
+    SDL_Log("Getting HWND handle from game window");
+
+    SDL_PropertiesID window_props = SDL_GetWindowProperties(m_pSdlWindow);
+
+    void* sdl_hwnd = SDL_GetPointerProperty(window_props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+
+    R_ASSERT3(sdl_hwnd, "Failed to get HWND from SDL3 window", SDL_GetError());
+
+    m_hWnd = (HWND)sdl_hwnd;
+
+    SDL_Log("Created SDL3 window: window 0x%p, hwnd 0x%p", m_pSdlWindow, m_hWnd);
+}
+
+void CWindowManager::DestroySDL3()
+{
+    if (m_hWnd)
+    {
+        m_hWnd = nullptr;
+    }
+
+    if (m_pSdlWindow)
+    {
+        SDL_DestroyWindow(m_pSdlWindow);
+        m_pSdlWindow = nullptr;
+    }
+}
+
+void CWindowManager::ApplySDL3()
+{
+    if (!m_pSdlWindow)
+    {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s: the m_pSdlWindow is null!", __FUNCTION__);
+        return;
+    }
+
+    SDL_SetWindowSize(m_pSdlWindow, m_width, m_height);
+    SDL_SetWindowFullscreen(m_pSdlWindow, !m_bWindowed);
+
+    CenterWindowSDL3();
+
+    R_ASSERT3(SDL_SyncWindow(m_pSdlWindow), "SDL_SyncWindow timeout", SDL_GetError());
+
+    int w{};
+    int h{};
+    R_ASSERT3(SDL_GetWindowSize(m_pSdlWindow, &w, &h), "SDL_GetWindowSize failed", SDL_GetError());
+    m_width = w;
+    m_height = h;
+}
+
+bool CWindowManager::ProcessMessagesSDL3()
+{
+    static bool minimized = false;
+    static bool focused = false;
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        if (SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION) <= SDL_LOG_PRIORITY_VERBOSE)
+        {
+            string512 event_desc;
+
+            SDL_GetEventDescription(&event, event_desc, sizeof(event_desc));
+
+            SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, "Received event %s", event_desc);
+        }
+
+        switch (event.type)
+        {
+        case SDL_EVENT_QUIT:
+            m_bQuitRequested = true;
+            break;
+        case SDL_EVENT_WINDOW_MINIMIZED:
+            minimized = true;
+            break;
+        case SDL_EVENT_WINDOW_RESTORED:
+            minimized = false;
+            break;
+        case SDL_EVENT_WINDOW_FOCUS_GAINED:
+            focused = true;
+            break;
+        case SDL_EVENT_WINDOW_FOCUS_LOST:
+            focused = false;
+            break;
+        }
+    }
+
+    bool device_should_be_active = !minimized && focused;
+
+    Device.SetActivate(device_should_be_active);
+
+    return !m_bQuitRequested;
+}
+
+void CWindowManager::SetResolutionSDL3(u32 w, u32 h)
+{
+    m_width = w;
+    m_height = h;
+}
+
+void CWindowManager::CenterWindowSDL3()
+{
+    if (!m_pSdlWindow)
+    {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s: the m_pSdlWindow is null!", __FUNCTION__);
+        return;
+    }
+
+    SDL_SetWindowPosition(m_pSdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }

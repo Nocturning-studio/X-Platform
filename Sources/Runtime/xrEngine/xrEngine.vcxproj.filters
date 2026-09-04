@@ -630,6 +630,9 @@
     <ClInclude Include="R_Backend_tree.h">
       <Filter>Render\Execution &amp; 3D\Backend</Filter>
     </ClInclude>
+    <ClInclude Include="EngineQuit.hpp">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">
@@ -1048,6 +1051,9 @@
     </ClCompile>
     <ClCompile Include="R_Backend_tree.cpp">
       <Filter>Render\Execution &amp; 3D\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineQuit.cpp">
+      <Filter>Engine\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -147,12 +147,8 @@ BOOL CRenderDevice::Paused()
     return g_pauseMngr.Paused();
 }
 
-void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
+void CRenderDevice::SetActivate(bool bActive)
 {
-    u16 fActive = LOWORD(wParam);
-    BOOL fMinimized = (BOOL)HIWORD(wParam);
-    BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
-
     if (bActive != Device.b_is_Active)
     {
         Device.b_is_Active = bActive;
