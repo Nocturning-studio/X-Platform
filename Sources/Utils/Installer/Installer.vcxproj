@@ -21,10 +21,11 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{60670c5e-277e-46f5-9af5-608df325f3c5}</ProjectGuid>
-    <RootNamespace>UpdateService</RootNamespace>
+    <ProjectGuid>{762d3cf8-dd6d-44b4-881c-dbc6f15544f1}</ProjectGuid>
+    <RootNamespace>Installer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\engine.globals.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -72,23 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\network\</OutDir>
+    <OutDir>$(SolutionDir)..\</OutDir>
     <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\network\</OutDir>
+    <OutDir>$(SolutionDir)..\</OutDir>
     <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\network\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binaries\$(Configuration)-$(Platform)\network\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,22 +97,9 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\AuthLib.dll" "$(OutDir)AuthLib.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\curl.exe" "$(OutDir)curl.exe"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\trurl.exe" "$(OutDir)trurl.exe"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\libcurl-x64.dll" "$(OutDir)libcurl-x64.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\libcurl-x64.def" "$(OutDir)libcurl-x64.def"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\curl-ca-bundle.crt" "$(OutDir)curl-ca-bundle.crt"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\7za.dll" "$(OutDir)7za.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\7za.exe" "$(OutDir)7za.exe"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\License.txt" "$(OutDir)License.txt"
-
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -129,24 +113,11 @@ copy /Y "$(SolutionDir)\Sources\Third-party\bin\License.txt" "$(OutDir)License.t
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Sources\Third-party\bin\x86\AuthLib.dll" "$(OutDir)AuthLib.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\curl.exe" "$(OutDir)curl.exe"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\trurl.exe" "$(OutDir)trurl.exe"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\libcurl-x64.dll" "$(OutDir)libcurl-x64.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\libcurl-x64.def" "$(OutDir)libcurl-x64.def"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\curl-ca-bundle.crt" "$(OutDir)curl-ca-bundle.crt"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\7za.dll" "$(OutDir)7za.dll"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\7za.exe" "$(OutDir)7za.exe"
-copy /Y "$(SolutionDir)\Sources\Third-party\bin\License.txt" "$(OutDir)License.txt"
-
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -158,7 +129,7 @@ copy /Y "$(SolutionDir)\Sources\Third-party\bin\License.txt" "$(OutDir)License.t
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -174,14 +145,23 @@ copy /Y "$(SolutionDir)\Sources\Third-party\bin\License.txt" "$(OutDir)License.t
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="UpdateService.cpp" />
+    <ClCompile Include="Installer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Installer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Third-party\bin\7zr.exe" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

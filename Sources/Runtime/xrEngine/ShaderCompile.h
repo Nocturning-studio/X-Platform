@@ -7,7 +7,7 @@
 #include <string>
 #include <set>
 #include <boost/crc.hpp>
-#include "../xrCore/build_identificator.h"
+#include <xrCore/build_identificator.h>
 
 static time_t GetFileModTime(const char* filename)
 {

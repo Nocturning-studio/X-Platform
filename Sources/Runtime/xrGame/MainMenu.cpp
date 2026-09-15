@@ -690,7 +690,7 @@ void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 	Hide_CTMS_Dialog();
 }
 
-#include "../xrCore/build_identificator.h"
+#include <xrCore/build_identificator.h>
 
 LPCSTR CMainMenu::GetGSVer()
 {

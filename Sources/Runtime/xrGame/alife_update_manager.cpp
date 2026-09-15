@@ -22,7 +22,7 @@
 #include "restriction_space.h"
 #include "profiler.h"
 #include "mt_config.h"
-#include <string_table.h>
+#include <xrGame/string_table.h>
 
 using namespace ALife;
 

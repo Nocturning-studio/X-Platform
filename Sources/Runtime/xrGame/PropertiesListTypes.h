@@ -41,7 +41,7 @@ DEFINE_VECTOR(PropItem*, PropItemVec, PropItemIt);
 
 //------------------------------------------------------------------------------
 #include "ChooseTypes.H"
-#include "fastdelegate.h"
+#include <FastDelegate/FastDelegate.h>
 //------------------------------------------------------------------------------
 typedef fastdelegate::FastDelegate2<PropValue*, xr_string&> TOnDrawTextEvent;
 typedef fastdelegate::FastDelegate1<PropItem*> TOnClick;

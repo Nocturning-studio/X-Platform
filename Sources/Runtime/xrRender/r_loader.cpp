@@ -6,7 +6,7 @@
 #include "../xrEngine/xrLevel.h"
 #include "../xrEngine/Engine.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "../xrCore/stream_reader.h"
+#include <xrCore/stream_reader.h>
 #include "../xrEngine/xr_ioconsole.h"
 #include "../xrEngine/LevelLoadingScreen.h"
 

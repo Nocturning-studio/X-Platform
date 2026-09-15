@@ -1,5 +1,5 @@
 #pragma once
-#include "ftimer.h"
+#include <xrCore/ftimer.h>
 
 class ENGINE_API CTimeManager
 {

@@ -11,6 +11,7 @@
   <PropertyGroup Label="Globals">
   </PropertyGroup>
 
+  <Import Project="$(SolutionDir)\engine.globals.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" Label="Configuration">

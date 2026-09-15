@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ImportGroup Label="PropertySheets" />
+    <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+        <IncludePath>$(IncludePath)</IncludePath>
+        <xrRoot>$(SolutionDir)\</xrRoot>
+        <xrSourcesRoot>$(SolutionDir)\Sources\</xrSourcesRoot>
+        <xrEngineDir>$(xrSourcesRoot)\Runtime\</xrEngineDir>
+        <xrUtilsDir>$(xrSourcesRoot)\Sources\Utils\</xrUtilsDir>
+	<ThirdPartyDir>$(xrSourcesRoot)Third-Party\</ThirdPartyDir>
+        <ThirdPartyBin>$(ThirdPartyDir)\binaries\$(PlatformShortName)\</ThirdPartyBin>
+        <ThirdPartyLib>$(ThirdPartyDir)\libraries\$(PlatformShortName)\</ThirdPartyLib>
+        <ThirdPartyInclude>$(ThirdPartyDir)\include\</ThirdPartyInclude>
+	<xrBuildDir>$(xrRoot)Build\</xrBuildDir>
+	<xrBuildBinDir>$(xrBuildDir)\Binaries\</xrBuildBinDir>
+	<xrBuildSymDir>$(xrBuildDir)\Binaries\</xrBuildSymDir>
+	<xrBuildIntDir>$(xrBuildDir)\Intermediate\</xrBuildIntDir>
+	<xrBuildLibDir>$(xrBuildDir)\Libraries\</xrBuildLibDir>
+    </PropertyGroup>
+    <ItemGroup>
+    <BuildMacro Include="xrRoot">
+        <Value>$(xrRoot)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrSourcesRoot">
+        <Value>$(xrSourcesRoot)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrEngineDir">
+        <Value>$(xrEngineDir)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrBuildDir">
+	<Value>$(xrBuildDir)</Value>
+	<EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrBuildBinDir">
+	<Value>$(xrBuildBinDir)</Value>
+	<EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrBuildSymDir">
+	<Value>$(xrBuildSymDir)</Value>
+	<EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrBuildIntDir">
+	<Value>$(xrBuildIntDir)</Value>
+	<EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrBuildLibDir">
+	<Value>$(xrBuildLibDir)</Value>
+	<EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrEngineDir">
+        <Value>$(xrEngineDir)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="xrUtilsDir">
+        <Value>$(xrUtilsDir)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ThirdPartyInclude">
+        <Value>$(ThirdPartyInclude)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ThirdPartyLib">
+        <Value>$(ThirdPartyLib)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ThirdPartyDir">
+        <Value>$(ThirdPartyDir)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ThirdPartyBin">
+        <Value>$(ThirdPartyBin)</Value>
+        <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    </ItemGroup>
+</Project>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fixedmap.h"
+#include <xrCore/FixedMap.h>
 #include "doug_lea_allocator_wrapper.h"
 
 //#define USE_RESOURCE_DEBUGGER

@@ -12,7 +12,7 @@
 #include "../xrEngine/StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
-#include "xrDebug.h"
+#include <xrCore/xrDebug.h>
 #include "xrServer.h"
 #include "battleye_system.h"
 

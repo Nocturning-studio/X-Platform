@@ -33,7 +33,7 @@ static void dasm_m_free(Dst_DECL, void *p, size_t sz)
 
 /* Embed architecture-specific DynASM encoder. */
 #if defined(__i386) || defined(__i386__) || defined(_M_IX86)
-#include "dasm_x86.h"
+#include <xrLua/dynasm/dasm_x86.h>
 #else
 #error "No support for this architecture (yet)"
 #endif

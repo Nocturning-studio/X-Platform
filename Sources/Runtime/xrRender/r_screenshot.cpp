@@ -2,7 +2,7 @@
 #include "tga.h"
 #include "..\xrEngine\xrImage_Resampler.h"
 #include "..\xrEngine\XR_IOConsole.h"
-#include "../xrCore/build_identificator.h"
+#include <xrCore/build_identificator.h>
 
 IC u32 convert(float c)
 {

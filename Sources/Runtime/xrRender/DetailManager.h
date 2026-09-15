@@ -2,7 +2,7 @@
 #ifndef DetailManagerH
 #define DetailManagerH
 
-#include "xrpool.h"
+#include <xrCore/xrPool.h>
 #include "detailformat.h"
 #include "detailmodel.h"
 #include <ppl.h> // PPL для многопоточности

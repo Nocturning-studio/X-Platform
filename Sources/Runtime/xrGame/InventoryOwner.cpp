@@ -28,7 +28,7 @@
 #include "alife_object_registry.h"
 
 #include "CustomOutfit.h"
-#include <GamePersistent.h>
+#include <xrGame/GamePersistent.h>
 
 CInventoryOwner::CInventoryOwner()
 {

@@ -21,7 +21,7 @@
 #endif
 
 #include "D3DUtils.h"
-#include "xrCore.h"
+#include <xrCore/xrCore.h>
 
 #pragma warning(push)
 #pragma warning(disable : 4995)

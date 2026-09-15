@@ -45,7 +45,7 @@ if not exist "%OUTDIR%" (
 :: --------------------------------------------------
 :: Копируем DLL из Third-Party (лежат в Sources\Third-Party\bin\%PLATFORM%)
 :: --------------------------------------------------
-set "THIRDPARTY_BIN=%SOLUTIONDIR%\Sources\Third-Party\bin\%PLATFORM%"
+set "THIRDPARTY_BIN=%SOLUTIONDIR%\Sources\Third-Party\binaries\%PLATFORM%"
 if exist "%THIRDPARTY_BIN%\*.dll" (
     echo   Copying DLLs from "%THIRDPARTY_BIN%"...
     xcopy /Y /Q "%THIRDPARTY_BIN%\*.dll" "%OUTDIR%\"

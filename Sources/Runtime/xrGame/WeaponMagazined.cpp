@@ -16,7 +16,7 @@
 #include "level.h"
 #include "object_broker.h"
 #include "string_table.h"
-#include <GamePersistent.h>
+#include <xrGame/GamePersistent.h>
 
 CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
 {

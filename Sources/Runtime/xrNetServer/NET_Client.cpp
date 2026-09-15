@@ -5,12 +5,12 @@
 #include "net_messages.h"
 #include "NET_Log.h"
 #include "../xrGame/battleye.h"
-#include "../xrCore/_std_extensions.h"
+#include <xrCore/_std_extensions.h>
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <malloc.h>
-#include "dxerr.h"
+#include <DXSDK/Include/DxErr.h>
 #include <thread>
 // #pragma warning(pop)
 

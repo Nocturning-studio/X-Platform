@@ -6,9 +6,8 @@
 #define SHADER__INCLUDED_
 #pragma once
 
+#include <xrCore/xr_resource.h>
 #include "r_constants.h"
-#include "xr_resource.h"
-
 #include "sh_atomic.h"
 #include "sh_texture.h"
 #include "R_Backend_RenderTarget.h"

@@ -17,10 +17,10 @@
 extern "C"
 {
 	// #define BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-#include "luajit.h"
+#include <xrLua/src/lua.h>
+#include <xrLua/src/lualib.h>
+#include <xrLua/src/lauxlib.h>
+#include <xrLua/src/luajit.h>
 }
 
 // Lua-bind

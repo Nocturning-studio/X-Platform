@@ -7,7 +7,8 @@
 #include <thread>
 #include <array>
 #include <condition_variable>
-#include <FastDelegate.h>
+#include <FastDelegate/FastDelegate.h>
+#include "xr_engine_common.h"
 
 class ENGINE_API CThreadManager
 {

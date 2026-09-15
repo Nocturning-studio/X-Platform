@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIHint.h"
 #include "UIStatic.h"
-#include <ui/UIBtnHint.h>
+#include <xrGame/ui/UIBtnHint.h>
 
 CUIHint::CUIHint()
 {

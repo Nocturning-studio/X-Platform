@@ -23,6 +23,7 @@
     <ProjectGuid>{E48B6A8B-F7FE-4DA8-8248-E64DBAC4F56C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\engine.globals.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

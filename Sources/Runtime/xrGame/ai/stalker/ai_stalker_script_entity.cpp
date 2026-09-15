@@ -19,8 +19,8 @@
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"
 #include "../../ai_space.h"
-#include <medkit.h>
-#include <FoodItem.h>
+#include <xrGame/medkit.h>
+#include <xrGame/FoodItem.h>
 
 CWeapon* CAI_Stalker::GetCurrentWeapon() const
 {

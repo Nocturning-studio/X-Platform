@@ -4,7 +4,7 @@
 
 #include <libtheora/include/theora/theora.h>
 #include <libogg/include/ogg/ogg.h>
-#include "../xrCore/Stream_Reader.h"
+#include <xrCore/Stream_Reader.h>
 
 class ENGINE_API CTheoraStream
 {

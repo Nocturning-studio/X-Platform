@@ -9,7 +9,7 @@
 class ENGINE_API CGammaControl;
 
 #include "pure.h"
-#include "ftimer.h"
+#include <xrCore/ftimer.h>
 #include "stats.h"
 #include "shader.h"
 #include "R_Backend.h"

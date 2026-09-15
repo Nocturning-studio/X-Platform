@@ -5,7 +5,7 @@
 ---------------------------------------------------------------------------------------------*/
 #pragma once
 
-#include "../xrCore/xrMemory.h"
+#include <xrCore/xrMemory.h>
 #include <memory>
 #include <functional>
 

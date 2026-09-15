@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "line_edit_control.h"
 
-#include "../xrCore/os_clipboard.h"
+#include <xrCore/os_clipboard.h>
 #include "../xrGame/object_broker.h"
 #include "xr_input.h"
 

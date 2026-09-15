@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrCore/xrCore.h"
+#include <xrCore/xrCore.h>
 
 // mmsystem.h
 #define MMNOSOUND
@@ -24,6 +24,6 @@
 #include "../xrCDB/xrCDB.h"
 #include "sound.h"
 
-#include "../xrCore/xr_resource.h"
+#include <xrCore/xr_resource.h>
 
 #pragma comment(lib, "PresenceAudioSDK.lib")

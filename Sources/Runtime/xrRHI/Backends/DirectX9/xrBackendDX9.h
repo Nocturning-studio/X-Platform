@@ -1,7 +1,7 @@
 #pragma once
 
 #include <d3d9.h>
-#include <d3dx9.h>
+#include <DXSDK/Include/d3dx9.h>
 
 #include "../../xrRHI.h"
 #include "xrBackendDX9_Internal.h"

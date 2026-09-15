@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xr_resource.h"
+#include <xrCore/xr_resource.h>
 #include "SH_Texture.h"
 #include "../xrRHI/xrRHI_Types.h"
 

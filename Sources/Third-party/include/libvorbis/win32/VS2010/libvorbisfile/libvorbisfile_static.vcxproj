@@ -25,6 +25,7 @@
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\engine.globals.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -67,23 +68,23 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(xrBuildLibDir)\$(Configuration)-$(Platform)\</OutDir>
+    <IntDir>$(xrBuildIntDir)\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(xrBuildLibDir)\$(Configuration)-$(Platform)\</OutDir>
+    <IntDir>$(xrBuildIntDir)\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(xrBuildLibDir)\$(Configuration)-$(Platform)\</OutDir>
+    <IntDir>$(xrBuildIntDir)\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\Temp\Libraries\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(xrBuildLibDir)\$(Configuration)-$(Platform)\</OutDir>
+    <IntDir>$(xrBuildIntDir)\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

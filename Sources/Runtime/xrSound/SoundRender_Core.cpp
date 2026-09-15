@@ -7,7 +7,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <eax/eax.h>
-#include <xrLevel.h>
+#include <xrEngine/xrLevel.h>
 #pragma warning(pop)
 
 int psSoundTargets = 64;
