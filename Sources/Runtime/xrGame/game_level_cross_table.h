@@ -11,7 +11,7 @@
 #ifdef AI_COMPILER
 #include "xrLevel.h"
 #else // AI_COMPILER
-#include "../xrEngine/xrLevel.h"
+#include "xrEngine/xrLevel.h"
 #endif // AI_COMPILER
 
 #include "alife_space.h"

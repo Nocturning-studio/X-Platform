@@ -149,7 +149,7 @@ void CActor::PickupModeUpdate()
 			PickupInfoDraw(*it);
 }
 
-#include "../xrEngine/CameraBase.h"
+#include "xrEngine/CameraBase.h"
 BOOL g_b_COD_PickUpMode = TRUE;
 void CActor::PickupModeUpdate_COD()
 {

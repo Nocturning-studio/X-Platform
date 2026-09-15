@@ -9,9 +9,9 @@
 #include "stdafx.h"
 #include "base_monster.h"
 #include "../corpse_cover.h"
-#include "../../../cover_manager.h"
-#include "../../../cover_point.h"
-#include "../../../ai_space.h"
+#include "xrGame/cover_manager.h"
+#include "xrGame/cover_point.h"
+#include "xrGame/ai_space.h"
 #include "../control_direction_base.h"
 
 // каждый монстр может по-разному реализвать эту функ (e.g. кровосос с поворотом головы и т.п.)

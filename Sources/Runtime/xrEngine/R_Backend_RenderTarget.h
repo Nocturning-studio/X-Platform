@@ -2,7 +2,7 @@
 
 #include <xrCore/xr_resource.h>
 #include "SH_Texture.h"
-#include "../xrRHI/xrRHI_Types.h"
+#include "xrRHI/xrRHI_Types.h"
 
 //////////////////////////////////////////////////////////////////////////
 class ENGINE_API CRT : public xr_resource_named

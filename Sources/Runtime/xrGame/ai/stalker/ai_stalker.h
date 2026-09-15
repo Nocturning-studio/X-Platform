@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "../../CustomMonster.h"
-#include "../../object_handler.h"
-#include "../../AI_PhraseDialogManager.h"
-#include "../../step_manager.h"
-#include "../../script_export_space.h"
+#include "xrGame/CustomMonster.h"
+#include "xrGame/object_handler.h"
+#include "xrGame/AI_PhraseDialogManager.h"
+#include "xrGame/step_manager.h"
+#include "xrGame/script_export_space.h"
 
 #ifdef DEBUG
 template <typename _object_type> class CActionBase;

@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "Environment.h"
-#include "../xrGame/object_broker.h"
+#include "xrGame/object_broker.h"
 
 void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
 {

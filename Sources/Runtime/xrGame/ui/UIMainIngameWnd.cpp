@@ -15,7 +15,7 @@
 #include "../weaponmagazined.h"
 #include "../missile.h"
 #include "../Grenade.h"
-#include "../xrServer_objects_ALife.h"
+#include "xrGame/xrServer_objects_ALife.h"
 #include "../alife_simulator.h"
 #include "../alife_object_registry.h"
 #include "../game_cl_base.h"
@@ -23,8 +23,8 @@
 #include "../seniority_hierarchy_holder.h"
 
 #include "../date_time.h"
-#include "../xrServer_Objects_ALife_Monsters.h"
-#include "../../xrEngine/LightAnimLibrary.h"
+#include "xrGame/xrServer_Objects_ALife_Monsters.h"
+#include "xrEngine/LightAnimLibrary.h"
 
 #include "UIInventoryUtilities.h"
 
@@ -39,7 +39,7 @@
 
 #ifdef DEBUG
 #include "../attachable_item.h"
-#include "../../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 #endif
 
 #include "UIScrollView.h"

@@ -12,7 +12,7 @@
 #include "object_interfaces.h"
 #include "script_value_container.h"
 #include "alife_space.h"
-#include "../xrEngine/../xrNetServer/client_id.h"
+#include "xrEngine/../xrNetServer/client_id.h"
 
 class NET_Packet;
 class xrClientData;

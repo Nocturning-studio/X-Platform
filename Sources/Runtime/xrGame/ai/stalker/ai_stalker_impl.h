@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "../../level.h"
-#include "../../seniority_hierarchy_holder.h"
-#include "../../team_hierarchy_holder.h"
-#include "../../squad_hierarchy_holder.h"
-#include "../../group_hierarchy_holder.h"
-#include "../../effectorshot.h"
+#include "xrGame/level.h"
+#include "xrGame/seniority_hierarchy_holder.h"
+#include "xrGame/team_hierarchy_holder.h"
+#include "xrGame/squad_hierarchy_holder.h"
+#include "xrGame/group_hierarchy_holder.h"
+#include "xrGame/effectorshot.h"
 
 IC CAgentManager& CAI_Stalker::agent_manager() const
 {

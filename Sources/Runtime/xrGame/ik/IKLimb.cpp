@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "IKLimb.h"
-#include "../../xrEngine/SkeletonCustom.h"
+#include "xrEngine/SkeletonCustom.h"
 #include "../ode_include.h"
 #include "../MathUtils.h"
 #include "../GameObject.h"

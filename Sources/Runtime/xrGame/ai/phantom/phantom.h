@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../entity.h"
-#include "../../fastdelegate.h"
-#include "../../../xrEngine/SkeletonAnimated.h"
+#include "xrGame/entity.h"
+#include "xrGame/fastdelegate.h"
+#include "xrEngine/SkeletonAnimated.h"
 
 class CParticlesObject;
 

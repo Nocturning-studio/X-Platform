@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrCDB/cl_intersect.h"
+#include "xrCDB/cl_intersect.h"
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity.h"
@@ -14,7 +14,7 @@
 #include "Level.h"
 #include "ElevatorState.h"
 #include "CalculateTriangle.h"
-#include "../xrEngine/SkeletonCustom.h"
+#include "xrEngine/SkeletonCustom.h"
 #define GROUND_FRICTION 10.0f
 #define AIR_FRICTION 0.01f
 #define WALL_FRICTION 3.0f

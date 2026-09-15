@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../CameraEffector.h"
+#include "xrGame/CameraEffector.h"
 
 class CPseudogigantStepEffector : public CEffectorCam
 {

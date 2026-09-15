@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game_base.h"
-#include "../xrEngine/../xrNetServer/client_id.h"
+#include "xrEngine/../xrNetServer/client_id.h"
 #include "WeaponAmmo.h"
 // #include "Level_Bullet_Manager.h"
 

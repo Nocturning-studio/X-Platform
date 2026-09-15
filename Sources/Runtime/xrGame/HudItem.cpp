@@ -13,8 +13,8 @@
 #include "xrmessages.h"
 #include "level.h"
 #include "inventory.h"
-#include "../xrEngine/CameraBase.h"
-#include "../xrEngine/xr_input.h"
+#include "xrEngine/CameraBase.h"
+#include "xrEngine/xr_input.h"
 
 CHudItem::CHudItem(void)
 {

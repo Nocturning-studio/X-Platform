@@ -21,7 +21,7 @@
 #include "../states/monster_state_hitted.h"
 #include "../states/monster_state_attack.h"
 
-#include "../../../entitycondition.h"
+#include "xrGame/entitycondition.h"
 
 #include "../states/state_test_state.h"
 

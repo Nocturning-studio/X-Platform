@@ -10,7 +10,7 @@
 #include "GameMtlLib.h"
 #include "Level.h"
 #include "PHWorld.h"
-#include "../xrEngine/../xrODE/ode/src/util.h"
+#include "xrEngine/../xrODE/ode/src/util.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"

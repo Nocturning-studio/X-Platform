@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "HOM.h"
-#include "../xrEngine/GameFont.h"
+#include "xrEngine/GameFont.h"
 #include "CPUOcclusion.h"
 
 float psOSSR = .001f;

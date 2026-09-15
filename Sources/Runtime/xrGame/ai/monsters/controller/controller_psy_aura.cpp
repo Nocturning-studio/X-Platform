@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "controller_psy_aura.h"
 #include "controller.h"
-#include "../../../actor.h"
-#include "../../../level.h"
-#include "../../../CameraEffector.h"
-#include "../../../ActorEffector.h"
+#include "xrGame/actor.h"
+#include "xrGame/level.h"
+#include "xrGame/CameraEffector.h"
+#include "xrGame/ActorEffector.h"
 
 CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo& ppi, u32 time_to_fade, const ref_sound& snd_left,
 													 const ref_sound& snd_right)

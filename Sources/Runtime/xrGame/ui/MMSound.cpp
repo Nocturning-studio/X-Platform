@@ -2,7 +2,7 @@
 
 #include "MMSound.h"
 #include "xrUIXmlParser.h"
-#include "../../xrSound/Sound.h"
+#include "xrSound/Sound.h"
 
 CMMSound::CMMSound()
 {

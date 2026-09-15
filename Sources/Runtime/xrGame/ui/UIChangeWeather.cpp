@@ -95,7 +95,7 @@ bool CUIChangeWeather::OnKeyboard(int dik, EUIMessages keyboard_action)
 	return false;
 }
 
-#include "../../xrEngine/xr_ioconsole.h"
+#include "xrEngine/xr_ioconsole.h"
 
 void CUIChangeWeather::OnBtn(int i)
 {

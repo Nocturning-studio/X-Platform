@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "corpse_cover.h"
-#include "../../cover_point.h"
-#include "../../ai_space.h"
-#include "../../level_graph.h"
+#include "xrGame/cover_point.h"
+#include "xrGame/ai_space.h"
+#include "xrGame/level_graph.h"
 
 void CMonsterCorpseCoverEvaluator::evaluate(const CCoverPoint* cover_point, float weight)
 {

@@ -9,7 +9,7 @@
 
 #include "actor.h"
 #include "actor_defs.h"
-#include "../xrEngine/xr_ioc_cmd.h"
+#include "xrEngine/xr_ioc_cmd.h"
 
 #define BOBBING_SECT "bobbing_effector"
 

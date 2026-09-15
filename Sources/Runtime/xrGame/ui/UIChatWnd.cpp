@@ -4,9 +4,9 @@
 #include "UIEditBox.h"
 #include "UIXmlInit.h"
 #include "../game_cl_base.h"
-#include "../xr_level_controller.h"
+#include "xrGame/xr_level_controller.h"
 #include "../Level.h"
-#include "../../xrEngine/xr_object.h"
+#include "xrEngine/xr_object.h"
 
 CUIChatWnd::CUIChatWnd(CUIGameLog* pList) : pUILogList(pList), sendNextMessageToTeam(false), pOwner(NULL)
 {

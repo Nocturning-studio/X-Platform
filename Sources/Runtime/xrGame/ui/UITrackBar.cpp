@@ -5,7 +5,7 @@
 #include "UIFrameLineWnd.h"
 #include "UI3tButton.h"
 #include "UITextureMaster.h"
-#include "../../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 #include "UIStatic.h"
 
 #define DEF_CONTROL_HEIGHT 21

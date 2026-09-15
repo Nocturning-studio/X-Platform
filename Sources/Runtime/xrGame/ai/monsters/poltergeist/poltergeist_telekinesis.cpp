@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "poltergeist.h"
-#include "../../../PhysicsShellHolder.h"
-#include "../../../level.h"
-#include "../../../actor.h"
+#include "xrGame/PhysicsShellHolder.h"
+#include "xrGame/level.h"
+#include "xrGame/actor.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4995)

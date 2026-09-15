@@ -1,23 +1,23 @@
 #include "pch_script.h"
 #include "base_monster.h"
-#include "../../../script_entity_action.h"
-#include "../../../phmovementcontrol.h"
-#include "../../../sight_manager.h"
-#include "../../../detail_path_manager.h"
-#include "../../../ai_object_location.h"
-#include "../../../sound_player.h"
-#include "../../../ai_monster_space.h"
+#include "xrGame/script_entity_action.h"
+#include "xrGame/phmovementcontrol.h"
+#include "xrGame/sight_manager.h"
+#include "xrGame/detail_path_manager.h"
+#include "xrGame/ai_object_location.h"
+#include "xrGame/sound_player.h"
+#include "xrGame/ai_monster_space.h"
 #include "../state_manager.h"
 
-#include "../../../ai_debug.h"
-#include "../../../level.h"
-#include "../../../level_debug.h"
+#include "xrGame/ai_debug.h"
+#include "xrGame/level.h"
+#include "xrGame/level_debug.h"
 
 #include "../control_animation_base.h"
 #include "../control_path_builder_base.h"
 
-#include "../../../patrol_path_manager.h"
-#include "../../../patrol_path_manager_space.h"
+#include "xrGame/patrol_path_manager.h"
+#include "xrGame/patrol_path_manager_space.h"
 
 using namespace MonsterSpace;
 using namespace MonsterSound;

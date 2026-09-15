@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "actor_mp_server.h"
-#include "../xrEngine/../xrNetServer/net_utils.h"
+#include "xrEngine/../xrNetServer/net_utils.h"
 
 void CSE_ActorMP::UPDATE_Read(NET_Packet& packet)
 {

@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "snork.h"
 #include "snork_state_manager.h"
-#include "../../../detail_path_manager_space.h"
-#include "../../../detail_path_manager.h"
-#include "../../../level.h"
+#include "xrGame/detail_path_manager_space.h"
+#include "xrGame/detail_path_manager.h"
+#include "xrGame/level.h"
 #include "../monster_velocity_space.h"
-#include "../../../sound_player.h"
+#include "xrGame/sound_player.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
-#include "../../../PHMovementControl.h"
+#include "xrGame/PHMovementControl.h"
 
 #ifdef _DEBUG
 #include <dinput.h>
-#include "../../../actor.h"
-#include "../../../ai_object_location.h"
-#include "../../../level_debug.h"
-#include "../../../cover_point.h"
+#include "xrGame/actor.h"
+#include "xrGame/ai_object_location.h"
+#include "xrGame/level_debug.h"
+#include "xrGame/cover_point.h"
 #include "../monster_cover_manager.h"
 #endif
 

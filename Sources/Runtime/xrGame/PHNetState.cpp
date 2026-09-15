@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #include "PHNetState.h"
-#include "../xrEngine/../xrNetServer/net_utils.h"
+#include "xrEngine/../xrNetServer/net_utils.h"
 
 //////////////////////////////////////8/////////////////////////////////////////////////////
 

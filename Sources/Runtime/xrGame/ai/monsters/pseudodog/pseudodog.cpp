@@ -1,23 +1,23 @@
 #include "stdafx.h"
 #include "pseudodog.h"
 #include "pseudodog_state_manager.h"
-#include "../../../../xrEngine/skeletonanimated.h"
-#include "../../../sound_player.h"
-#include "../../../level.h"
-#include "../../../ai_monster_space.h"
+#include "xrEngine/skeletonanimated.h"
+#include "xrGame/sound_player.h"
+#include "xrGame/level.h"
+#include "xrGame/ai_monster_space.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
 #ifdef _DEBUG
 #include <dinput.h>
-#include "../../../ai_object_location.h"
-#include "../../../level_debug.h"
-#include "../../../level_graph.h"
-#include "../../../ai_space.h"
-#include "../../../alife_simulator.h"
-#include "../../../xrServer_Object_Base.h"
-#include "../../../xrserver.h"
+#include "xrGame/ai_object_location.h"
+#include "xrGame/level_debug.h"
+#include "xrGame/level_graph.h"
+#include "xrGame/ai_space.h"
+#include "xrGame/alife_simulator.h"
+#include "xrGame/xrServer_Object_Base.h"
+#include "xrGame/xrserver.h"
 #endif
 
 CAI_PseudoDog::CAI_PseudoDog()

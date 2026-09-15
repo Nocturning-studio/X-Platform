@@ -8,7 +8,7 @@
 #include "UIStatix.h"
 #include "UIScrollView.h"
 #include "UI3tButton.h"
-#include "../xr_level_controller.h"
+#include "xrGame/xr_level_controller.h"
 
 // #include "UIMapDesc.h"
 

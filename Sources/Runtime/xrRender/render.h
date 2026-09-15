@@ -20,8 +20,8 @@
 #include "LightTrack.h"
 #include "r_sun_cascades.h"
 
-#include "../xrEngine\irenderable.h"
-#include "../xrEngine\fmesh.h"
+#include "xrEngine\irenderable.h"
+#include "xrEngine\fmesh.h"
 #include "xrRender_console.h"
 
 #include "SunOccluder.h" 

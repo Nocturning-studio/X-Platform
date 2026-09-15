@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "zombie.h"
 #include "zombie_state_manager.h"
-#include "../../../profiler.h"
-#include "../../../../xrEngine/skeletonanimated.h"
-#include "../../../entitycondition.h"
+#include "xrGame/profiler.h"
+#include "xrEngine/skeletonanimated.h"
+#include "xrGame/entitycondition.h"
 #include "../monster_velocity_space.h"
 
 #include "../control_animation_base.h"

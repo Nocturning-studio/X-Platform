@@ -8,17 +8,17 @@
 
 #include "stdafx.h"
 #include "ai_stalker.h"
-#include "../../stalker_animation_manager.h"
-#include "../../script_entity_action.h"
-#include "../../torch.h"
-#include "../../inventory.h"
-#include "../../weapon.h"
-#include "../../weaponmagazined.h"
-#include "../../../xrEngine/skeletoncustom.h"
-#include "../../script_engine.h"
-#include "../../sight_manager.h"
-#include "../../stalker_movement_manager.h"
-#include "../../ai_space.h"
+#include "xrGame/stalker_animation_manager.h"
+#include "xrGame/script_entity_action.h"
+#include "xrGame/torch.h"
+#include "xrGame/inventory.h"
+#include "xrGame/weapon.h"
+#include "xrGame/weaponmagazined.h"
+#include "xrEngine/skeletoncustom.h"
+#include "xrGame/script_engine.h"
+#include "xrGame/sight_manager.h"
+#include "xrGame/stalker_movement_manager.h"
+#include "xrGame/ai_space.h"
 #include <xrGame/medkit.h>
 #include <xrGame/FoodItem.h>
 

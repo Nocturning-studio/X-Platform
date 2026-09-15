@@ -4,8 +4,8 @@
 #include "UIStatic.h"
 #include "UIXmlInit.h"
 #include "../object_broker.h"
-#include "../../xrEngine/xr_input.h"
-#include "../xr_level_controller.h"
+#include "xrEngine/xr_input.h"
+#include "xrGame/xr_level_controller.h"
 #include <xrDebug_macros.h>
 
 extern ENGINE_API BOOL bShowPauseString;

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ai_monster_bones.h"
-#include "../../../xrEngine/skeletoncustom.h"
+#include "xrEngine/skeletoncustom.h"
 
 //****************************************************************************************************
 // class bonesBone

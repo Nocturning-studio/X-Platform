@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../xrRHI/xrRHI.h"
+#include "xrRHI/xrRHI.h"
 
 #pragma warning(disable : 4995)
 #include "..\xrEngine\stdafx.h"
@@ -26,7 +26,7 @@
 #include "xrRender_console.h"
 #include "render.h"
 #include "r_color_converting.h"
-#include "../xrEngine/Engine.h"
+#include "xrEngine/Engine.h"
 
 #include <SoftX/include/SoftX.h>
 

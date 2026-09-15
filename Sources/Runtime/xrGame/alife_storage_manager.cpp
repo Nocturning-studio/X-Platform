@@ -17,10 +17,10 @@
 #include "alife_registry_container.h"
 #include "xrserver.h"
 #include "level.h"
-#include "../xrEngine/Engine.h"
+#include "xrEngine/Engine.h"
 #include "saved_game_wrapper.h"
 #include "string_table.h"
-#include "../xrEngine/igame_persistent.h"
+#include "xrEngine/igame_persistent.h"
 
 using namespace ALife;
 

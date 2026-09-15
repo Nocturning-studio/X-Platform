@@ -10,7 +10,7 @@
 #include "Blender_Recorder.h"
 #include "Blender.h"
 
-#include "../xrRender/r_color_converting.h"
+#include "xrRender/r_color_converting.h"
 
 #include "igame_persistent.h"
 #include "environment.h"

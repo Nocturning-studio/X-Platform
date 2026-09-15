@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrCDB/cl_intersect.h"
+#include "xrCDB/cl_intersect.h"
 
 extern fvec3 du_cone_vertices[DU_CONE_NUMVERTEX];
 

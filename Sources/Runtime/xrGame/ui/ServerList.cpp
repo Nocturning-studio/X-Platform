@@ -2,7 +2,7 @@
 #include "ServerList.h"
 #include "UIXmlInit.h"
 #include "../string_table.h"
-#include "../../xrEngine/xr_ioconsole.h"
+#include "xrEngine/xr_ioconsole.h"
 #include "UIEditBox.h"
 #include "UIColorAnimatorWrapper.h"
 #include "UIListItemAdv.h"
@@ -17,7 +17,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <ppl.h>
-#include "../../xrGameSpy/xrGameSpy_MainDefs.h"
+#include "xrGameSpy/xrGameSpy_MainDefs.h"
 #pragma warning(pop)
 
 CGameSpy_Browser* g_gs_browser = NULL;

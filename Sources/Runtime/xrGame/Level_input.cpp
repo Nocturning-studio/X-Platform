@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <dinput.h>
 #include "HUDmanager.h"
-#include "../xrEngine/xr_ioconsole.h"
+#include "xrEngine/xr_ioconsole.h"
 #include "entity_alive.h"
 #include "game_sv_single.h"
 #include "alife_simulator.h"
 #include "alife_simulator_header.h"
 #include "level_graph.h"
-#include "../xrEngine/fdemorecord.h"
+#include "xrEngine/fdemorecord.h"
 #include "level.h"
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
@@ -21,14 +21,14 @@
 #include "huditem.h"
 #include "ui/UIDialogWnd.h"
 #include "clsid_game.h"
-#include "../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 #include "saved_game_wrapper.h"
-#include "../xrEngine/xrSheduler.h"
+#include "xrEngine/xrSheduler.h"
 
 #ifdef DEBUG
 #include "ai/monsters/BaseMonster/base_monster.h"
 #endif
-#include "../xrEngine/debug_ui.h"
+#include "xrEngine/debug_ui.h"
 
 #ifdef DEBUG
 extern void try_change_current_entity();

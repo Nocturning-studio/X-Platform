@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../xrEngine/effectorPP.h"
-#include "../../ActorEffector.h"
+#include "xrEngine/effectorPP.h"
+#include "xrGame/ActorEffector.h"
 
 //////////////////////////////////////////////////////////////////////////
 // CMonsterEffector

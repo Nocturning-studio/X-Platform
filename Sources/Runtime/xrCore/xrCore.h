@@ -88,7 +88,7 @@
 #pragma warning(pop)
 #pragma warning(disable : 4100) // unreferenced formal parameter
 
-#include "../xrMath/xrMath.h"
+#include "xrMath/xrMath.h"
 
 #include "xrDebug.h"
 

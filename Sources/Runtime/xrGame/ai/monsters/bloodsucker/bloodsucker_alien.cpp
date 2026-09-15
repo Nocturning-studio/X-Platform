@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "bloodsucker_alien.h"
 #include "bloodsucker.h"
-#include "../../../level.h"
-#include "../../../actor.h"
-#include "../../../ActorEffector.h"
-#include "../../../inventory.h"
-#include "../../../HudItem.h"
-#include "../../../../xrEngine/CustomHUD.h"
-#include "../../../../xrEngine/effector.h"
-#include "../../../../xrEngine/effectorPP.h"
+#include "xrGame/level.h"
+#include "xrGame/actor.h"
+#include "xrGame/ActorEffector.h"
+#include "xrGame/inventory.h"
+#include "xrGame/HudItem.h"
+#include "xrEngine/CustomHUD.h"
+#include "xrEngine/effector.h"
+#include "xrEngine/effectorPP.h"
 
 #define EFFECTOR_ID_GEN(type) (type(u32(u64(this) & u32(-1))))
 

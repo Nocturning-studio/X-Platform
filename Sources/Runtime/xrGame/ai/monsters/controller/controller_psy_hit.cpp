@@ -5,12 +5,12 @@
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
-#include "../../../level.h"
-#include "../../../actor.h"
-#include "../../../ActorEffector.h"
-#include "../../../../xrEngine/CameraBase.h"
-#include "../../../CharacterPhysicsSupport.h"
-#include "../../../level_debug.h"
+#include "xrGame/level.h"
+#include "xrGame/actor.h"
+#include "xrGame/ActorEffector.h"
+#include "xrEngine/CameraBase.h"
+#include "xrGame/CharacterPhysicsSupport.h"
+#include "xrGame/level_debug.h"
 
 void CControllerPsyHit::load(LPCSTR section)
 {

@@ -2,22 +2,22 @@
 #include "torch.h"
 #include "entity.h"
 #include "actor.h"
-#include "../xrEngine/LightAnimLibrary.h"
+#include "xrEngine/LightAnimLibrary.h"
 #include "PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
 #include "ai_sounds.h"
 
 #include "HUDManager.h"
 #include "level.h"
-#include "../xrEngine/skeletoncustom.h"
-#include "../xrEngine/camerabase.h"
+#include "xrEngine/skeletoncustom.h"
+#include "xrEngine/camerabase.h"
 #include "inventory.h"
 #include "game_base_space.h"
 
 #include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
-#include "../xrEngine/IGame_Persistent.h"
+#include "xrEngine/IGame_Persistent.h"
 
 #pragma todo("NSDeathman to NSDeathman: Отрефакторить и разделить ответственности")
 

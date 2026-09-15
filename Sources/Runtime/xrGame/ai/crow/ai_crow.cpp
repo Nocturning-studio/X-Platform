@@ -7,11 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "../../physicsshell.h"
+#include "xrGame/physicsshell.h"
 #include "ai_crow.h"
-#include "../../hudmanager.h"
-#include "../../level.h"
-#include "../../../xrEngine/skeletonanimated.h"
+#include "xrGame/hudmanager.h"
+#include "xrGame/level.h"
+#include "xrEngine/skeletonanimated.h"
 
 void CAI_Crow::SAnim::Load(CKinematicsAnimated* visual, LPCSTR prefix)
 {
@@ -130,7 +130,7 @@ void CAI_Crow::Load(LPCSTR section)
 }
 /*----------------------------------Исправление бага с разлетающимися из одной точки воронами (Взял из кода
  * Kondr48/gz_team_engine)-----------------------------*/
-#include "../../Actor.h"
+#include "xrGame/Actor.h"
 
 BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
 {

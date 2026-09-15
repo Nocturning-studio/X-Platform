@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "poltergeist.h"
-#include "../../../PhysicsShell.h"
-#include "../../../level.h"
-#include "../../../material_manager.h"
-#include "../../../level_debug.h"
+#include "xrGame/PhysicsShell.h"
+#include "xrGame/level.h"
+#include "xrGame/material_manager.h"
+#include "xrGame/level_debug.h"
 
 CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist* polter)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrGame/PresenceAudioIntegration/Sound_environment_common.h"
+#include "xrGame/PresenceAudioIntegration/Sound_environment_common.h"
 
 #ifdef XRSOUND_EXPORTS
 #define XRSOUND_API __declspec(dllexport)

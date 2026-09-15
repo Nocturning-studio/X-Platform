@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "profiler.h"
-#include "../xrEngine/gamefont.h"
+#include "xrEngine/gamefont.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4995)

@@ -9,7 +9,7 @@
 #pragma once
 
 #ifndef AI_COMPILER
-#include "../xrEngine/xrLevel.h"
+#include "xrEngine/xrLevel.h"
 #else
 #include "xrLevel.h"
 #endif

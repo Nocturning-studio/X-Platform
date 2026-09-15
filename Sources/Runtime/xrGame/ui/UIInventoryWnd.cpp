@@ -481,7 +481,7 @@ void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 	lst->m_f_item_rbutton_click = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIInventoryWnd::OnItemRButtonClick);
 }
 
-#include "../xr_level_controller.h"
+#include "xrGame/xr_level_controller.h"
 #include <dinput.h>
 
 bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)

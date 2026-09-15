@@ -2,7 +2,7 @@
 
 #include "../control_direction_base.h"
 #include "../ai_monster_bones.h"
-#include "../../../ai_monster_space.h"
+#include "xrGame/ai_monster_space.h"
 
 class CController;
 

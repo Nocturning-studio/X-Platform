@@ -16,7 +16,7 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
-#include "../../../entitycondition.h"
+#include "xrGame/entitycondition.h"
 
 CStateManagerTushkano::CStateManagerTushkano(CTushkano* obj) : inherited(obj)
 {

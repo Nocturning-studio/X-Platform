@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "script_render_device.h"
-#include "../../xrEngine/Engine.h"	   // Обязательно: доступ к Engine
-#include "../../xrEngine/RenderView.h" // Обязательно: доступ к структуре RenderView
+#include "xrEngine/Engine.h"	   // Обязательно: доступ к Engine
+#include "xrEngine/RenderView.h" // Обязательно: доступ к структуре RenderView
 
 using namespace luabind;
 

@@ -10,19 +10,19 @@
 #include "SpaceUtils.h"
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "xrEngine/skeletoncustom.h"
 #include "PHCollideValidator.h"
 #include "game_object_space.h"
 // #pragma warning(disable:4995)
 // #pragma warning(disable:4267)
-// #include "../xrEngine/../xrODE/ode/src/collision_kernel.h"
+// #include "xrEngine/../xrODE/ode/src/collision_kernel.h"
 // #pragma warning(default:4995)
 // #pragma warning(default:4267)
 ///////////////////////////////////////////////////////////////
 /// #pragma warning(disable:4995)
 
-// #include "../xrEngine/../xrODE/ode/src/joint.h"
-// #include "../xrEngine/../xrODE/ode/src/objects.h"
+// #include "xrEngine/../xrODE/ode/src/joint.h"
+// #include "xrEngine/../xrODE/ode/src/objects.h"
 
 // #pragma warning(default:4995)
 ///////////////////////////////////////////////////////////////////

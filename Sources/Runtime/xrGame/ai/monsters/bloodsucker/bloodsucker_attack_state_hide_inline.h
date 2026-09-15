@@ -5,13 +5,13 @@
 #include "../states/state_move_to_point.h"
 #include "bloodsucker_predator_lite.h"
 
-#include "../../../cover_point.h"
+#include "xrGame/cover_point.h"
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 
-#include "../../../actor.h"
-#include "../../../actor_memory.h"
-#include "../../../visual_memory_manager.h"
+#include "xrGame/actor.h"
+#include "xrGame/actor_memory.h"
+#include "xrGame/visual_memory_manager.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 

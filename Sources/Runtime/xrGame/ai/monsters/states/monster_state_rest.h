@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../state.h"
-#include "../../../entitycondition.h"
+#include "xrGame/entitycondition.h"
 
 template <typename _Object> class CStateMonsterRest : public CState<_Object>
 {

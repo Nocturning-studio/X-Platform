@@ -42,7 +42,7 @@
 #pragma once
 
 // Подключение базовых типов движка (для fvec3, u32 и т.д., если нужно)
-#include "../xrEngine/xr_collide_defs.h"
+#include "xrEngine/xr_collide_defs.h"
 
 // =================================================================================================
 // EAX ENVIRONMENT DATA STRUCTURE

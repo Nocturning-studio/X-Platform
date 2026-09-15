@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrEngine/fmesh.h"
+#include "xrEngine/fmesh.h"
 #include "flod.h"
 #pragma warning(push)
 #pragma warning(disable : 4995)

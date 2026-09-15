@@ -20,12 +20,12 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "xrEngine/skeletoncustom.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
 #include "object_broker.h"
-#include "../xrEngine/igame_persistent.h"
+#include "xrEngine/igame_persistent.h"
 #include "GamePersistent.h"
 #include "EffectorFall.h"
 

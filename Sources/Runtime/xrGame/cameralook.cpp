@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #include "CameraLook.h"
-#include "../xrEngine/Cameramanager.h"
+#include "xrEngine/Cameramanager.h"
 #include "xr_level_controller.h"
 #include "actor.h"
 
@@ -95,7 +95,7 @@ void CCameraLook::OnActivate(CCameraBase* old_cam)
 }
 
 #pragma todo("NSDeathman to NSDeathman: починить автоаим")
-#include "../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 #include "visual_memory_manager.h"
 #include "actor_memory.h"
 

@@ -6,9 +6,9 @@
 #include "igame_persistent.h"
 #include "Environment.h"
 #include "SkeletonCustom.h"
-#include "../xrCDB/cl_intersect.h"
+#include "xrCDB/cl_intersect.h"
 
-#include "../xrGame/object_broker.h"
+#include "xrGame/object_broker.h"
 
 #ifdef _EDITOR
 #include "ui_toolscustom.h"

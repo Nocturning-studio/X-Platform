@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "psy_dog_aura.h"
 #include "psy_dog.h"
-#include "../../../actor.h"
-#include "../../../ActorEffector.h"
-#include "../../../actor_memory.h"
-#include "../../../visual_memory_manager.h"
-#include "../../../level.h"
+#include "xrGame/actor.h"
+#include "xrGame/ActorEffector.h"
+#include "xrGame/actor_memory.h"
+#include "xrGame/visual_memory_manager.h"
+#include "xrGame/level.h"
 
 CPPEffectorPsyDogAura::CPPEffectorPsyDogAura(const SPPInfo& ppi, u32 time_to_fade) : inherited(ppi)
 {

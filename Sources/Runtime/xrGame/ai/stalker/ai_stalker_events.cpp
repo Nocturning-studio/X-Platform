@@ -8,14 +8,14 @@
 
 #include "stdafx.h"
 #include "ai_stalker.h"
-#include "../../pda.h"
-#include "../../inventory.h"
-#include "../../xrmessages.h"
-#include "../../shootingobject.h"
-#include "../../../xrNetServer/net_utils.h"
-#include "../../level.h"
-#include "../../ai_monster_space.h"
-#include "../../CharacterPhysicsSupport.h"
+#include "xrGame/pda.h"
+#include "xrGame/inventory.h"
+#include "xrGame/xrmessages.h"
+#include "xrGame/shootingobject.h"
+#include "xrNetServer/net_utils.h"
+#include "xrGame/level.h"
+#include "xrGame/ai_monster_space.h"
+#include "xrGame/CharacterPhysicsSupport.h"
 
 using namespace StalkerSpace;
 using namespace MonsterSpace;

@@ -8,15 +8,15 @@
 
 #include "stdafx.h"
 #include "ai_stalker.h"
-#include "../../cover_point.h"
-#include "../../cover_evaluators.h"
-#include "../../ai_space.h"
-#include "../../cover_manager.h"
-#include "../../stalker_movement_restriction.h"
-#include "../../level_graph.h"
-#include "../../inventory_item.h" 
-#include "../../weapon.h"
-#include "../../inventory.h"
+#include "xrGame/cover_point.h"
+#include "xrGame/cover_evaluators.h"
+#include "xrGame/ai_space.h"
+#include "xrGame/cover_manager.h"
+#include "xrGame/stalker_movement_restriction.h"
+#include "xrGame/level_graph.h"
+#include "xrGame/inventory_item.h" 
+#include "xrGame/weapon.h"
+#include "xrGame/inventory.h"
 
 extern const float MIN_SUITABLE_ENEMY_DISTANCE = 3.f;
 

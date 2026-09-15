@@ -8,12 +8,12 @@
 #include "hudmanager.h"
 #include "GameMtlLib.h"
 
-#include "../xrEngine/Environment.h"
-#include "../xrEngine/CustomHUD.h"
+#include "xrEngine/Environment.h"
+#include "xrEngine/CustomHUD.h"
 #include "Entity.h"
 #include "level.h"
 #include "game_cl_base.h"
-#include "../xrEngine/igame_persistent.h"
+#include "xrEngine/igame_persistent.h"
 
 #include "InventoryOwner.h"
 #include "relation_registry.h"

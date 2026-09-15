@@ -9,9 +9,9 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "ai_space.h"
-#include "../xrEngine/IGame_Persistent.h"
+#include "xrEngine/IGame_Persistent.h"
 
-#include "../xrEngine/XR_IOConsole.h"
+#include "xrEngine/XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"
 
 #pragma warning(push)

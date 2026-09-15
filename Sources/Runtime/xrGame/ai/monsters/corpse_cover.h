@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../cover_evaluators.h"
+#include "xrGame/cover_evaluators.h"
 
 class CMonsterCorpseCoverEvaluator : public CCoverEvaluatorBase
 {

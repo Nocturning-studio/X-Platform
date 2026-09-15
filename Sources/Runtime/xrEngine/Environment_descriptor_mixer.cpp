@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "Environment.h"
-#include "../xrGame/LevelGameDef.h"
+#include "xrGame/LevelGameDef.h"
 
 CEnvDescriptorMixer::CEnvDescriptorMixer(shared_str const& identifier) : CEnvDescriptor(identifier)
 {

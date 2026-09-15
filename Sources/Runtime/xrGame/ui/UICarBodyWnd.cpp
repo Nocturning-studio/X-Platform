@@ -440,7 +440,7 @@ void CUICarBodyWnd::TakeAll()
 	}
 }
 
-#include "../xr_level_controller.h"
+#include "xrGame/xr_level_controller.h"
 
 bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {

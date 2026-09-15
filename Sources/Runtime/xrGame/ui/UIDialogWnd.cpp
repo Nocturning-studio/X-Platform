@@ -5,8 +5,8 @@
 #include "stdafx.h"
 #include "uidialogwnd.h"
 #include "../hudmanager.h"
-#include "../xr_level_controller.h"
-#include "../../xrEngine/xr_ioconsole.h"
+#include "xrGame/xr_level_controller.h"
+#include "xrEngine/xr_ioconsole.h"
 #include "../level.h"
 #include "../GameObject.h"
 

@@ -3,7 +3,7 @@
 #include "hudmanager.h"
 #ifdef DEBUG
 #include "ode_include.h"
-#include "../xrEngine/StatGraph.h"
+#include "xrEngine/StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
 #include "alife_space.h"
@@ -26,7 +26,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 
 // breakpoints
-#include "../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 
 //
 #include "Actor.h"
@@ -45,10 +45,10 @@
 #include "xrmessages.h"
 #include "string_table.h"
 #include "usablescriptobject.h"
-#include "../xrCDB/cl_intersect.h"
+#include "xrCDB/cl_intersect.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "xrEngine/skeletonanimated.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"
@@ -63,8 +63,8 @@
 #include "script_callback_ex.h"
 #include "InventoryBox.h"
 #include "location_manager.h"
-#include "../xrEngine/xr_ioc_cmd.h"
-#include "../xrEngine/XR_IOConsole.h"
+#include "xrEngine/xr_ioc_cmd.h"
+#include "xrEngine/XR_IOConsole.h"
 
 const u32 patch_frames = 50;
 const float respawn_delay = 1.f;

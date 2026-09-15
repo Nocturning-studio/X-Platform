@@ -6,7 +6,7 @@
 #include "physicsshellholder.h"
 
 #include "ik_anim_state.h"
-#include "../xrEngine/ennumerateVertices.h"
+#include "xrEngine/ennumerateVertices.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif

@@ -3,7 +3,7 @@
 #include "state_move_to_point.h"
 #include "state_look_point.h"
 #include "monster_state_attack_camp_stealout.h"
-#include "../../../cover_point.h"
+#include "xrGame/cover_point.h"
 #include "../monster_cover_manager.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>

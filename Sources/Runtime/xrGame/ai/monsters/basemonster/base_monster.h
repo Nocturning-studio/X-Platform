@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../CustomMonster.h"
+#include "xrGame/CustomMonster.h"
 
 #include "../monster_enemy_memory.h"
 #include "../monster_corpse_memory.h"
@@ -10,7 +10,7 @@
 #include "../monster_enemy_manager.h"
 #include "../monster_corpse_manager.h"
 
-#include "../../../step_manager.h"
+#include "xrGame/step_manager.h"
 #include "../monster_event_manager.h"
 #include "../melee_checker.h"
 #include "../monster_morale.h"
@@ -23,7 +23,7 @@
 #include "../control_manager_custom.h"
 #include "../ai_monster_shared_data.h"
 #include "../monster_sound_defs.h"
-#include "../../../inventoryowner.h"
+#include "xrGame/inventoryowner.h"
 
 class CCharacterPhysicsSupport;
 class CMonsterCorpseCoverEvaluator;

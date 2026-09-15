@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../../ai_space.h"
+#include "xrGame/ai_space.h"
 #include "../monster_cover_manager.h"
-#include "../../../cover_point.h"
-#include "../../../level.h"
-#include "../../../level_debug.h"
+#include "xrGame/cover_point.h"
+#include "xrGame/level.h"
+#include "xrGame/level_debug.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 #define CStateControllerHideLiteAbstract CStateControlHideLite<_Object>

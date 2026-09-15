@@ -8,7 +8,7 @@
 #ifdef ENGINE_BUILD
 #include "ShaderMacros.h"
 #else
-#include "../xrEngine/ShaderMacros.h"
+#include "xrEngine/ShaderMacros.h"
 #endif
 
 #pragma pack(push, 4)

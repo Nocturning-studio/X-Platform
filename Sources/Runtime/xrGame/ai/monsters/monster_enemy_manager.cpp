@@ -2,11 +2,11 @@
 #include "monster_enemy_manager.h"
 #include "BaseMonster/base_monster.h"
 #include "../ai_monsters_misc.h"
-#include "../../ai_object_location.h"
-#include "../../memory_manager.h"
-#include "../../visual_memory_manager.h"
-#include "../../actor.h"
-#include "../../actor_memory.h"
+#include "xrGame/ai_object_location.h"
+#include "xrGame/memory_manager.h"
+#include "xrGame/visual_memory_manager.h"
+#include "xrGame/actor.h"
+#include "xrGame/actor_memory.h"
 
 CMonsterEnemyManager::CMonsterEnemyManager()
 {

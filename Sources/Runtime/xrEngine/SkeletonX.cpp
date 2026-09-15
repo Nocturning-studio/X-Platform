@@ -243,7 +243,7 @@ BOOL CSkeletonX::has_visible_bones()
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "../xrCDB/cl_intersect.h"
+#include "xrCDB/cl_intersect.h"
 BOOL CSkeletonX::_PickBoneSoft1W(fvec3& normal, float& dist, const fvec3& S, const fvec3& D, u16* indices,
 								 CBoneData::FacesVec& faces)
 {

@@ -3,14 +3,14 @@
 #include "control_direction_base.h"
 #include "control_movement_base.h"
 #include "BaseMonster/base_monster.h"
-#include "../../PHMovementControl.h"
+#include "xrGame/PHMovementControl.h"
 #include "anim_triple.h"
-#include "../../../xrEngine/skeletonanimated.h"
-#include "../../detail_path_manager.h"
+#include "xrEngine/skeletonanimated.h"
+#include "xrGame/detail_path_manager.h"
 #include "monster_velocity_space.h"
 #include "monster_event_manager.h"
 #include "control_jump.h"
-#include "../../sound_player.h"
+#include "xrGame/sound_player.h"
 
 // DEBUG purpose only
 char* dbg_action_name_table[] = {"ACT_STAND_IDLE", "ACT_SIT_IDLE", "ACT_LIE_IDLE",	  "ACT_WALK_FWD", "ACT_WALK_BKWD",

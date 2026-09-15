@@ -3,7 +3,7 @@
 
 #include "R_Backend_RenderTarget.h"
 #include "ResourceManager.h"
-#include "../xrRHI/xrRHI_Types.h"
+#include "xrRHI/xrRHI_Types.h"
 
 using namespace xrRHI;
 

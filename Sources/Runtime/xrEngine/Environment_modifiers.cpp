@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "Environment.h"
-#include "../xrGame/LevelGameDef.h"
+#include "xrGame/LevelGameDef.h"
 
 bool CEnvModifier::load(IReader* fs)
 {

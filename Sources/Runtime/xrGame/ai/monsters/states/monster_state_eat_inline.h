@@ -6,12 +6,12 @@
 #include "state_custom_action.h"
 #include "monster_state_eat_eat.h"
 #include "monster_state_eat_drag.h"
-#include "../../../PhysicsShell.h"
-#include "../../../PHMovementControl.h"
-#include "../../../CharacterPhysicsSupport.h"
+#include "xrGame/PhysicsShell.h"
+#include "xrGame/PHMovementControl.h"
+#include "xrGame/CharacterPhysicsSupport.h"
 #ifdef _DEBUG
-#include "../../../level.h"
-#include "../../../level_debug.h"
+#include "xrGame/level.h"
+#include "xrGame/level_debug.h"
 #endif
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>

@@ -3,7 +3,7 @@
 #ifdef DEBUG
 struct dContact;
 // #include <FastDelegate/FastDelegate.h>
-#include "../xrEngine/StatGraph.h"
+#include "xrEngine/StatGraph.h"
 #define DRAW_CONTACTS
 
 extern Flags32 ph_dbg_draw_mask;

@@ -6,8 +6,8 @@
 #ifndef __XRAY_AI_CROW__
 #define __XRAY_AI_CROW__
 
-#include "../../entity_alive.h"
-#include "../../../xrEngine/SkeletonAnimated.h"
+#include "xrGame/entity_alive.h"
+#include "xrEngine/SkeletonAnimated.h"
 
 class CMotionDef;
 class CBlend;

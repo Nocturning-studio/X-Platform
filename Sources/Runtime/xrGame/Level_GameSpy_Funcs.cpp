@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Level.h"
 #include "xrMessages.h"
-#include "../xrEngine/Engine.h"
+#include "xrEngine/Engine.h"
 #include "GameSpy/GameSpy_GCD_Client.h"
 
-#include "../xrEngine/igame_persistent.h"
+#include "xrEngine/igame_persistent.h"
 void CLevel::OnGameSpyChallenge(NET_Packet* P)
 {
 	Msg("xrGS::CDKey::Level : Responding on Challenge");

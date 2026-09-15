@@ -6,7 +6,7 @@
 #include "Stdafx.h"
 #include "SoftXAABBOcclusion.h"
 #include "SoftXOcclusionCore.h"
-#include "../xrCDB/xrCDB.h"
+#include "xrCDB/xrCDB.h"
 ////////////////////////////////////////////////////////////////////////////////
 SoftXAABBOcclusion::ProjectedVertex SoftXAABBOcclusion::Project(const fvec3& worldPos,
                                                                 const fmat4x4& viewProj) const

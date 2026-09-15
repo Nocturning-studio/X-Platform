@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "render.h"
-#include "../xrEngine/resourcemanager.h"
-#include "../xrEngine/fbasicvisual.h"
-#include "../xrEngine/fmesh.h"
-#include "../xrEngine/xrLevel.h"
-#include "../xrEngine/Engine.h"
-#include "../xrEngine/IGame_Persistent.h"
+#include "xrEngine/resourcemanager.h"
+#include "xrEngine/fbasicvisual.h"
+#include "xrEngine/fmesh.h"
+#include "xrEngine/xrLevel.h"
+#include "xrEngine/Engine.h"
+#include "xrEngine/IGame_Persistent.h"
 #include <xrCore/stream_reader.h>
-#include "../xrEngine/xr_ioconsole.h"
-#include "../xrEngine/LevelLoadingScreen.h"
+#include "xrEngine/xr_ioconsole.h"
+#include "xrEngine/LevelLoadingScreen.h"
 
 #include <ppl.h>
 #include <future>

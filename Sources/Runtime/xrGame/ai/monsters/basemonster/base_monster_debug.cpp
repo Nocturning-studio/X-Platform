@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "base_monster.h"
-#include "../../../level.h"
-#include "../../../level_debug.h"
-#include "../../../entitycondition.h"
-#include "../../../ai_debug.h"
+#include "xrGame/level.h"
+#include "xrGame/level_debug.h"
+#include "xrGame/entitycondition.h"
+#include "xrGame/ai_debug.h"
 #include "../state_defs.h"
 #include "../state_manager.h"
-#include "../../../phmovementcontrol.h"
-#include "../../../characterphysicssupport.h"
-#include "../../../actor.h"
+#include "xrGame/phmovementcontrol.h"
+#include "xrGame/characterphysicssupport.h"
+#include "xrGame/actor.h"
 
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()

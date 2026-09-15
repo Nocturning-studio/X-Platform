@@ -8,11 +8,11 @@
 #include <DXSDK/Include/d3dx9.h>
 #pragma warning(default : 4995)
 
-#include "../xrEngine/fmesh.h"
-#include "../xrEngine/xrBind_PSGP.h"
+#include "xrEngine/fmesh.h"
+#include "xrEngine/xrBind_PSGP.h"
 #include "FSkinned.h"
 
-#include "../xrEngine/EnnumerateVertices.h"
+#include "xrEngine/EnnumerateVertices.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "../xrCDB/cl_intersect.h"
+#include "xrCDB/cl_intersect.h"
 void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 {
 	u16* indices = 0;

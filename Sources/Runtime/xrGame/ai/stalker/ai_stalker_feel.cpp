@@ -8,15 +8,15 @@
 
 #include "stdafx.h"
 #include "ai_stalker.h"
-#include "../../inventory_item.h"
-#include "../../memory_manager.h"
-#include "../../visual_memory_manager.h"
-#include "../../sight_manager.h"
-#include "../../stalker_movement_manager.h"
-#include "../../stalker_animation_manager.h"
+#include "xrGame/inventory_item.h"
+#include "xrGame/memory_manager.h"
+#include "xrGame/visual_memory_manager.h"
+#include "xrGame/sight_manager.h"
+#include "xrGame/stalker_movement_manager.h"
+#include "xrGame/stalker_animation_manager.h"
 
 #ifdef DEBUG
-#include "../../ai_debug.h"
+#include "xrGame/ai_debug.h"
 extern Flags32 psAI_Flags;
 #endif // DEBUG
 

@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "../../CustomMonster.h"
-#include "../../inventoryowner.h"
-#include "../../script_entity.h"
-#include "../../sound_player.h"
-#include "../../AI_PhraseDialogManager.h"
-#include "../../script_export_space.h"
+#include "xrGame/CustomMonster.h"
+#include "xrGame/inventoryowner.h"
+#include "xrGame/script_entity.h"
+#include "xrGame/sound_player.h"
+#include "xrGame/AI_PhraseDialogManager.h"
+#include "xrGame/script_export_space.h"
 
 class CInventoryItem;
 class CArtefact;

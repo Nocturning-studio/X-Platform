@@ -7,8 +7,8 @@
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
 #include "game_object_space.h"
-// #include "../xrEngine/skeletoncustom.h"
-#include "../xrEngine/skeletonanimated.h"
+// #include "xrEngine/skeletoncustom.h"
+#include "xrEngine/skeletonanimated.h"
 #include <../../xrODE/ode/src/util.h>
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -18,7 +18,7 @@
 #pragma warning(disable : 4995)
 #pragma warning(disable : 4267)
 
-#include "../xrEngine/../xrODE/ode/src/collision_kernel.h"
+#include "xrEngine/../xrODE/ode/src/collision_kernel.h"
 
 #pragma warning(default : 4267)
 #pragma warning(default : 4995)

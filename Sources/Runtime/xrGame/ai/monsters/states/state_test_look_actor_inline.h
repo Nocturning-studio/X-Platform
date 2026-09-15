@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../level.h"
+#include "xrGame/level.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 

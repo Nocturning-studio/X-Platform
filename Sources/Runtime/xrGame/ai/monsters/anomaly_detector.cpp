@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "anomaly_detector.h"
 #include "BaseMonster/base_monster.h"
-#include "../../restricted_object.h"
-#include "../../customzone.h"
-#include "../../level.h"
-#include "../../space_restriction_manager.h"
+#include "xrGame/restricted_object.h"
+#include "xrGame/customzone.h"
+#include "xrGame/level.h"
+#include "xrGame/space_restriction_manager.h"
 
 CAnomalyDetector::CAnomalyDetector(CBaseMonster* monster) : m_object(monster)
 {

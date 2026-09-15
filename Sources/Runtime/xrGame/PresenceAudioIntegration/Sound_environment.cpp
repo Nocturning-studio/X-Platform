@@ -16,10 +16,10 @@
 
 #include "Sound_environment.h"
 #include "Sound_environment_geometry_provider.h"
-#include "../../xrEngine/IGame_Persistent.h"
-#include "../../xrEngine/Environment.h"
-#include "../../xrEngine/xr_ioconsole.h" // Для регистрации команд
-#include "../../xrSound/SoundRender_Core.h"
+#include "xrEngine/IGame_Persistent.h"
+#include "xrEngine/Environment.h"
+#include "xrEngine/xr_ioconsole.h" // Для регистрации команд
+#include "xrSound/SoundRender_Core.h"
 
 // -------------------------------------------------------------------------------------------------
 // Console Variables (Default Values)

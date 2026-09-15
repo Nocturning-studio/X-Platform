@@ -303,7 +303,7 @@ void CUIBuyWnd::Update()
 	}
 }
 
-#include "../../xrEngine/xr_input.h"
+#include "xrEngine/xr_input.h"
 
 void CUIBuyWnd::OnBtnBulletBuy(int slot)
 {

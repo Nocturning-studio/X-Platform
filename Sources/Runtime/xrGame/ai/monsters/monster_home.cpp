@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "monster_home.h"
 #include "BaseMonster/base_monster.h"
-#include "../../ai_space.h"
-#include "../../patrol_path_storage.h"
-#include "../../patrol_path.h"
-#include "../../level_graph.h"
-#include "../../cover_point.h"
+#include "xrGame/ai_space.h"
+#include "xrGame/patrol_path_storage.h"
+#include "xrGame/patrol_path.h"
+#include "xrGame/level_graph.h"
+#include "xrGame/cover_point.h"
 #include "monster_cover_manager.h"
-#include "../../ai_object_location.h"
-#include "../../restricted_object.h"
+#include "xrGame/ai_object_location.h"
+#include "xrGame/restricted_object.h"
 
 #ifdef DEBUG
-#include "../../game_graph.h"
+#include "xrGame/game_graph.h"
 void check_path(const CBaseMonster* monster, const CPatrolPath* path)
 {
 	VERIFY2(

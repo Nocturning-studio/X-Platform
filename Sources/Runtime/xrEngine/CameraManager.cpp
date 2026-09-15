@@ -16,7 +16,7 @@
 #include "gamefont.h"
 #include "render.h"
 
-#include "../xrGame/ActorEffector.h"
+#include "xrGame/ActorEffector.h"
 
 //float psCamInert = 1.0f;
 float psCamSlideInert = 0.25f;

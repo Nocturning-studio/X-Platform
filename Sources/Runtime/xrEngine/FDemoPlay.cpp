@@ -12,7 +12,7 @@
 #include "xr_input.h"
 #include "igame_level.h"
 #include "iinputreceiver.h"
-#include "../xrGame/Level.h"
+#include "xrGame/Level.h"
 #include "CustomHUD.h"
 #include <ctime> // Для даты в отчете
 //////////////////////////////////////////////////////////////////////

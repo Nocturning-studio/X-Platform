@@ -7,8 +7,8 @@
 #pragma once
 #include "stdafx.h"
 #include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
-#include "../xrEngine/igame_level.h"
-#include "../xrEngine/xr_area.h"
+#include "xrEngine/igame_level.h"
+#include "xrEngine/xr_area.h"
 #include "..\xrGame\GameMtlLib.h"
 
 class XRayGeometryAdapter : public Presence::IGeometryProvider

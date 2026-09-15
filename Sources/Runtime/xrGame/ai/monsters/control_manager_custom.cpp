@@ -4,9 +4,9 @@
 #include "control_sequencer.h"
 #include "control_run_attack.h"
 #include "control_threaten.h"
-#include "../../PhysicsShell.h"
-#include "../../detail_path_manager.h"
-#include "../../level.h"
+#include "xrGame/PhysicsShell.h"
+#include "xrGame/detail_path_manager.h"
+#include "xrGame/level.h"
 #include "control_animation_base.h"
 #include "control_critical_wound.h"
 

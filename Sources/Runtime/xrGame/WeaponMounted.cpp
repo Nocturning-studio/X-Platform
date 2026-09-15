@@ -12,7 +12,7 @@
 #include "ai_sounds.h"
 #include "level.h"
 #include "xr_level_controller.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "xrEngine/skeletoncustom.h"
 #include "game_object_space.h"
 
 //----------------------------------------------------------------------------------------

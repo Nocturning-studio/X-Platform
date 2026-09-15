@@ -12,8 +12,8 @@
 #include "../states/monster_state_eat.h"
 #include "../states/monster_state_hear_int_sound.h"
 #include "zombie_state_attack_run.h"
-#include "../../../entitycondition.h"
-#include "../../../detail_path_manager.h"
+#include "xrGame/entitycondition.h"
+#include "xrGame/detail_path_manager.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 

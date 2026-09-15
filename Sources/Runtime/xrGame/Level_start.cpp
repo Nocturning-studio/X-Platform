@@ -5,12 +5,12 @@
 #include "game_cl_base.h"
 #include "xrmessages.h"
 #include "xrGameSpyServer.h"
-#include "../xrEngine/Engine.h"
-#include "../xrEngine/device.h"
-#include "../xrEngine/IGame_Persistent.h"
-#include "../xrEngine/xr_ioconsole.h"
+#include "xrEngine/Engine.h"
+#include "xrEngine/device.h"
+#include "xrEngine/IGame_Persistent.h"
+#include "xrEngine/xr_ioconsole.h"
 #include "MainMenu.h"
-#include "../xrEngine/LevelLoadingScreen.h"
+#include "xrEngine/LevelLoadingScreen.h"
 
 BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 {

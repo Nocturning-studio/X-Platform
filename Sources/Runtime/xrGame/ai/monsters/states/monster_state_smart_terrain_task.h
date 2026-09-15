@@ -1,7 +1,7 @@
 #pragma once
 #include "../state.h"
 
-#include "../../../alife_smart_terrain_task.h"
+#include "xrGame/alife_smart_terrain_task.h"
 
 template <typename _Object> class CStateMonsterSmartTerrainTask : public CState<_Object>
 {

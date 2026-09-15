@@ -17,14 +17,14 @@
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
-#include "../xrEngine/CameraManager.h"
+#include "xrEngine/CameraManager.h"
 #include "Inventory.h"
 #include "huditem.h"
 #include "clsid_game.h"
 #include "game_cl_mp.h"
 #include "string_table.h"
 #include "map_manager.h"
-#include "../xrEngine/xrSheduler.h"
+#include "xrEngine/xrSheduler.h"
 
 //--------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////
@@ -438,7 +438,7 @@ BOOL CSpectator::net_Spawn(CSE_Abstract* DC)
 	return TRUE;
 };
 
-#include "../xrEngine/IGame_Persistent.h"
+#include "xrEngine/IGame_Persistent.h"
 void CSpectator::net_Destroy()
 {
 	inherited::net_Destroy();

@@ -8,7 +8,7 @@
 
 #include "pch_script.h"
 #include "script_net_packet.h"
-#include "../xrEngine/../xrNetServer/net_utils.h"
+#include "xrEngine/../xrNetServer/net_utils.h"
 
 using namespace luabind;
 

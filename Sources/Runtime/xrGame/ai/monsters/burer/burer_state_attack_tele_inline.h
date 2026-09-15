@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../level.h"
+#include "xrGame/level.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4995)

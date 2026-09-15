@@ -12,7 +12,7 @@
 #include "../Level.h"
 #include "../pda.h"
 #include "../actor.h"
-#include "../xrServer_Objects_ALife_Monsters.h"
+#include "xrGame/xrServer_Objects_ALife_Monsters.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4995)

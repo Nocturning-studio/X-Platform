@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "base_monster.h"
 
-#include "../../../ai_object_location.h"
-#include "../../../game_graph.h"
-#include "../../../../xrNetServer/net_utils.h"
-#include "../../../ai_space.h"
-#include "../../../hit.h"
-#include "../../../PHDestroyable.h"
-#include "../../../CharacterPhysicsSupport.h"
+#include "xrGame/ai_object_location.h"
+#include "xrGame/game_graph.h"
+#include "xrGame/../xrNetServer/net_utils.h"
+#include "xrGame/ai_space.h"
+#include "xrGame/hit.h"
+#include "xrGame/PHDestroyable.h"
+#include "xrGame/CharacterPhysicsSupport.h"
 void CBaseMonster::net_Save(NET_Packet& P)
 {
 	inherited::net_Save(P);

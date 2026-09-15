@@ -1,15 +1,15 @@
 #include "stdafx.h"
-#include "../xrEngine/resourcemanager.h"
+#include "xrEngine/resourcemanager.h"
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"
 #include "Physics.h"
 #include "level.h"
-#include "../xrEngine/Engine.h"
-#include "../xrEngine/igame_persistent.h"
+#include "xrEngine/Engine.h"
+#include "xrEngine/igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
-#include "../xrEngine/xr_ioconsole.h"
-#include "../xrEngine/LevelLoadingScreen.h"
+#include "xrEngine/xr_ioconsole.h"
+#include "xrEngine/LevelLoadingScreen.h"
 
 extern pureFrame* g_pNetProcessor;
 

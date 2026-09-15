@@ -8,9 +8,9 @@
 
 #include "stdafx.h"
 #include "base_monster.h"
-#include "../../../../xrEngine/skeletonanimated.h"
-#include "../../../sound_player.h"
-#include "../../../ai_monster_space.h"
+#include "xrEngine/skeletonanimated.h"
+#include "xrGame/sound_player.h"
+#include "xrGame/ai_monster_space.h"
 #include "../control_animation_base.h"
 
 // Установка анимации

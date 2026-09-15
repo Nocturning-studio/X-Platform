@@ -10,7 +10,7 @@
 #include "script_effector.h"
 #include "actor.h"
 #include "ActorEffector.h"
-#include "../xrEngine/cameramanager.h"
+#include "xrEngine/cameramanager.h"
 
 CScriptEffector::~CScriptEffector()
 {

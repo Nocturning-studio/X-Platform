@@ -8,8 +8,8 @@
 
 #include "stdafx.h"
 #include "damage_manager.h"
-#include "../xrEngine/xr_object.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "xrEngine/xr_object.h"
+#include "xrEngine/skeletoncustom.h"
 
 CDamageManager::CDamageManager()
 {

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "PhysicsShellAnimator.h"
 #include "PhysicsShellAnimatorBoneData.h"
-#include "../xrEngine/SkeletonCustom.h"
+#include "xrEngine/SkeletonCustom.h"
 #include "PHDynamicData.h"
 #include "game_object_space.h"
 #include "PhysicsShellHolder.h"

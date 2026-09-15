@@ -8,7 +8,7 @@
 #include "r_backend_transform.h"
 #include "r_backend_tree.h"
 #include "fvf.h"
-#include "../xrRHI/xrRHI.h"
+#include "xrRHI/xrRHI.h"
 #include <DXSDK/Include/d3dx9.h>
 
 const u32 CULL_BACKFACE = D3DCULL_CCW;

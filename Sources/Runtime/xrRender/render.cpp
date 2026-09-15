@@ -8,7 +8,7 @@
 #include "..\xrEngine\SkeletonCustom.h"
 #include "LightTrack.h"
 #include <boost/crc.hpp>
-#include "../xrEngine\r_constants.h"
+#include "xrEngine\r_constants.h"
 //////////////////////////////////////////////////////////////////////////
 CRender RenderImplementation;
 //////////////////////////////////////////////////////////////////////////
@@ -583,7 +583,7 @@ void CRender::set_render_mode(int mode)
 }
 
 #include "..\xrEngine\GameFont.h"
-// #include "../xrRender/xrRender_console.cpp"
+// #include "xrRender/xrRender_console.cpp"
 void CRender::Statistics(CGameFont* _F)
 {
 	CGameFont& F = *_F;

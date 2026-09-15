@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../PHCharacter.h"
-#include "../../../PHCapture.h"
+#include "xrGame/PHCharacter.h"
+#include "xrGame/PHCapture.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 

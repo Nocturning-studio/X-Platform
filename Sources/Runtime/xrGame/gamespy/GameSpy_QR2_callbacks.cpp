@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "../xrGameSpyServer.h"
+#include "xrGame/xrGameSpyServer.h"
 #include "GameSpy_Keys.h"
 #include "../Level.h"
 
