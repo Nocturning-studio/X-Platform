@@ -1,75 +1,22 @@
-# Global ignoring of different binaries and another temporary files
-
-# Visual Studio cache and settings
-.vs/
-.idea/
-ipch/
+# User-specific files
 *.suo
 *.user
-*.ncb
+*.userosscache
+*.sln.docstates
+*.db
 *.opendb
-*.sdf
-*.opensdf
-*.VC.db
-*.VC.VC.opendb
-*.aps
-
-# Visual Studio Code old files
-XRay.code-workspace
+*.bin
+*.db-shm
+*.ipch
+*.db-wal
+*.bak
 
 # Build results
-obj/
-Build*/
-intermediate/
-libraries/
-binaries/
+[Bb]uild/
 
-# Common logs
-*.log
+# X-Ray specific
+[Gg]amedata/
+[Aa]ppdata/
 
-# Migrating report files
-_UpgradeReport_Files/
-UpgradeLog*.XML
-UpgradeLog*.htm
-
-# C++ Builder backups
-*.~*
-
-# X-Ray resources
-mods/
-*.db*
-
-# X-Ray user files
-_appdata_*/
-fs_*.ltx
-fsgame_*.ltx
-fsfactory_*.ltx
-
-# masOS cache
-.DS_Store
-
-# Windows cache
-Thumbs.db
-
-# Dependencies
-sdk/3d_sdk/
-sdk/dxsdk_mar2009/
-dep/
-packages/
-
-# Temporary files
-temp/
-gamedata_origin/
-patch/
-
-# Generated files
-imgui.ini
-git_version.h
-changelog.txt
-
-# CLion cache
-cmake-build*/
-*.pdb
-*.exp
-*.opt
-*.lastcodeanalysissucceeded
+# Visual studio specific
+.vs/

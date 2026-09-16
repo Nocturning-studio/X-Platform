@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <DXSDK/Include/DxErr.h>
+#include <DXSDK/DxErr.h>
 #include "NET_Common.h"
 #include "net_server.h"
 

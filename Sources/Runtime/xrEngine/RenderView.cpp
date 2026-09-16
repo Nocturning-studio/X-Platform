@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "RenderView.h"
 #include "R_Backend.h"
-#include <DXSDK/Include/d3dx9.h>
+#include <DXSDK/d3dx9.h>
 
 CRenderView::CRenderView()
 {

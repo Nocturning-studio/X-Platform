@@ -3,7 +3,7 @@
 #include "../../xrRHI.h"
 
 #include <d3d9.h>
-#include <DXSDK/Include/d3dx9.h>
+#include <DXSDK/d3dx9.h>
 
 RHI_BEGIN
 

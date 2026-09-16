@@ -1,7 +1,7 @@
 #ifndef SHADER_MACROS_INCLUDED
 #define SHADER_MACROS_INCLUDED
 #pragma once
-#include <DXSDK/Include/d3dx9.h>
+#include <DXSDK/d3dx9.h>
 #include <xrCore/xrstring.h>
 #include "xr_engine_common.h"
 

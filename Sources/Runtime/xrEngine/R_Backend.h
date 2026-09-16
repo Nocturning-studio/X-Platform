@@ -9,7 +9,7 @@
 #include "r_backend_tree.h"
 #include "fvf.h"
 #include "xrRHI/xrRHI.h"
-#include <DXSDK/Include/d3dx9.h>
+#include <DXSDK/d3dx9.h>
 
 const u32 CULL_BACKFACE = D3DCULL_CCW;
 const u32 CULL_FRONTFACE = D3DCULL_CW;

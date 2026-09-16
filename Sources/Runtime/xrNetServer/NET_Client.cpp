@@ -10,7 +10,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <malloc.h>
-#include <DXSDK/Include/DxErr.h>
+#include <DXSDK/DxErr.h>
 #include <thread>
 // #pragma warning(pop)
 

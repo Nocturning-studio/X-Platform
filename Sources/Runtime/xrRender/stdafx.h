@@ -9,7 +9,7 @@
 #pragma warning(disable : 4995)
 #include "..\xrEngine\stdafx.h"
 #pragma warning(disable : 4995)
-#include <DXSDK/Include/d3dx9.h>
+#include <DXSDK/d3dx9.h>
 #pragma warning(default : 4995)
 #pragma warning(disable : 4714)
 #pragma warning(4 : 4018)
