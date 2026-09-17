@@ -1,6 +1,6 @@
 #pragma once
 
-const int lt_hemisamples = 26;
+constexpr int lt_aosamples = 26;
 
 class CROS_impl : public IRender_ObjectSpecific
 {
@@ -15,48 +15,49 @@ class CROS_impl : public IRender_ObjectSpecific
 		CUBE_FACE_NEG_Z,
 		NUM_FACES
 	};
+	using AOCube = std::array<float, NUM_FACES>;
 
   public:
 	CROS_impl();
 	virtual void update(IRenderable* O);
 	virtual void update_smooth(IRenderable* O = 0);
 
-	virtual float get_hemi();
-	virtual const float* get_hemi_cube();
+	virtual float get_ao();
+	virtual const float* get_ao_cube();
 
 	// Интерфейс IRender_ObjectSpecific
-	virtual void force_mode(u32 mode)
+	virtual void force_mode(u32 mode) override
 	{
 		MODE = mode;
 	}
-	virtual float get_luminocity()
+	virtual float get_luminocity() override
 	{
 		return 0.5f;
 	} // Заглушка
-	virtual float get_luminocity_hemi()
+	virtual float get_luminocity_ao() override
 	{
-		return get_hemi();
+		return get_ao();
 	}
-	virtual float* get_luminocity_hemi_cube()
+	float* get_luminocity_ao_cube()
 	{
-		return hemi_cube_smooth;
+		return ao_cube_smooth;
 	}
 
   private:
 	void smart_update(IRenderable* O);
-	void calc_sky_hemi_value(fvec3& position, CObject* _object);
-	static inline void accum_hemi(float* hemi_cube, fvec3& dir, float scale);
+	void calc_sky_ao_value(fvec3& position, CObject* _object);
+	static inline void accum_ao(float* ao_cube, fvec3& dir, float scale);
 
   private:
 	// Состояние трассировки
-	bool result[lt_hemisamples];
-	collide::ray_cache cache[lt_hemisamples];
+	bool result[lt_aosamples];
+	collide::ray_cache cache[lt_aosamples];
 
 	// Текущие значения AO
-	float hemi_value;
-	float hemi_smooth;
-	float hemi_cube[NUM_FACES];
-	float hemi_cube_smooth[NUM_FACES];
+	float ao_value;
+	float ao_smooth;
+	float ao_cube[NUM_FACES];
+	float ao_cube_smooth[NUM_FACES];
 
 	// Управление обновлением
 	u32 dwFrame;

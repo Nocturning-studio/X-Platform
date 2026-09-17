@@ -92,14 +92,14 @@ class ENGINE_API IRender_ObjectSpecific
 	{
 		TRACE_LIGHTS = (1 << 0),
 		TRACE_SUN = (1 << 1),
-		TRACE_HEMI = (1 << 2),
-		TRACE_ALL = (TRACE_LIGHTS | TRACE_SUN | TRACE_HEMI),
+		TRACE_AO = (1 << 2),
+		TRACE_ALL = (TRACE_LIGHTS | TRACE_SUN | TRACE_AO),
 	};
 
   public:
 	virtual void force_mode(u32 mode) = 0;
 	virtual float get_luminocity() = 0;
-	virtual float get_luminocity_hemi() = 0;
+	virtual float get_luminocity_ao() = 0;
 
 	virtual ~IRender_ObjectSpecific(){};
 };
@@ -228,8 +228,7 @@ class ENGINE_API IRender_interface
 	virtual void add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V) = 0;
 	virtual void clear_static_wallmarks() = 0;
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0;
-	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start,
-									  const fvec3& dir, float size) = 0;
+	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size) = 0;
 
 	virtual IBlender* blender_create(CLASS_ID cls) = 0;
 	virtual void blender_destroy(IBlender*&) = 0;

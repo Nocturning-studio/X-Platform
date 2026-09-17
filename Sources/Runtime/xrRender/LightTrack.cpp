@@ -5,7 +5,7 @@
 #include "..\xrEngine\environment.h"
 
 // Оптимизированные направления гемисферы из X-Ray 1.6
-const float hdir[lt_hemisamples][3] = {
+constexpr float hdir[lt_aosamples][3] = {
 	{-0.26287f, 0.52573f, 0.80902f},  {0.27639f, 0.44721f, 0.85065f},	{-0.95106f, 0.00000f, 0.30902f},
 	{-0.95106f, 0.00000f, -0.30902f}, {0.58779f, 0.00000f, -0.80902f},	{0.58779f, 0.00000f, 0.80902f},
 	{-0.00000f, 0.00000f, 1.00000f},  {0.52573f, 0.85065f, 0.00000f},	{-0.26287f, 0.52573f, -0.80902f},
@@ -19,18 +19,18 @@ const float hdir[lt_hemisamples][3] = {
 CROS_impl::CROS_impl()
 {
 	// Инициализация значений HEMI
-	hemi_value = 0.5f;
-	hemi_smooth = 0.5f;
+	ao_value = 0.5f;
+	ao_smooth = 0.5f;
 
 	// Инициализация массивов
-	for (int i = 0; i < lt_hemisamples; i++)
+	for (int i = 0; i < lt_aosamples; i++)
 	{
 		result[i] = false;
 	}
 	for (size_t i = 0; i < NUM_FACES; i++)
 	{
-		hemi_cube[i] = 0.0f;
-		hemi_cube_smooth[i] = 0.0f;
+		ao_cube[i] = 0.0f;
+		ao_cube_smooth[i] = 0.0f;
 	}
 
 	// Инициализация управления обновлением
@@ -43,25 +43,25 @@ CROS_impl::CROS_impl()
 	sky_rays_uptodate = 0;
 	last_position.set(0, 0, 0);
 
-	MODE = IRender_ObjectSpecific::TRACE_HEMI;
+	MODE = IRender_ObjectSpecific::TRACE_AO;
 }
 
-inline void CROS_impl::accum_hemi(float* hemi_cube, fvec3& dir, float scale)
+inline void CROS_impl::accum_ao(float* ao_cube, fvec3& dir, float scale)
 {
 	if (dir.x > 0)
-		hemi_cube[CUBE_FACE_POS_X] += dir.x * scale;
+		ao_cube[CUBE_FACE_POS_X] += dir.x * scale;
 	else
-		hemi_cube[CUBE_FACE_NEG_X] -= dir.x * scale;
+		ao_cube[CUBE_FACE_NEG_X] -= dir.x * scale;
 
 	if (dir.y > 0)
-		hemi_cube[CUBE_FACE_POS_Y] += dir.y * scale;
+		ao_cube[CUBE_FACE_POS_Y] += dir.y * scale;
 	else
-		hemi_cube[CUBE_FACE_NEG_Y] -= dir.y * scale;
+		ao_cube[CUBE_FACE_NEG_Y] -= dir.y * scale;
 
 	if (dir.z > 0)
-		hemi_cube[CUBE_FACE_POS_Z] += dir.z * scale;
+		ao_cube[CUBE_FACE_POS_Z] += dir.z * scale;
 	else
-		hemi_cube[CUBE_FACE_NEG_Z] -= dir.z * scale;
+		ao_cube[CUBE_FACE_NEG_Z] -= dir.z * scale;
 }
 
 void CROS_impl::smart_update(IRenderable* O)
@@ -84,9 +84,9 @@ void CROS_impl::smart_update(IRenderable* O)
 		update(O);
 		last_position = position;
 
-		if (result_count < lt_hemisamples)
+		if (result_count < lt_aosamples)
 			ticks_to_update = ::Random.randI(1, 2);
-		else if (sky_rays_uptodate < lt_hemisamples)
+		else if (sky_rays_uptodate < lt_aosamples)
 			ticks_to_update = ::Random.randI(3, 7);
 		else
 			ticks_to_update = ::Random.randI(1000, 2001);
@@ -99,7 +99,7 @@ void CROS_impl::smart_update(IRenderable* O)
 			update(O);
 			last_position = position;
 
-			if (result_count < lt_hemisamples)
+			if (result_count < lt_aosamples)
 				ticks_to_update = ::Random.randI(1, 2);
 			else
 				ticks_to_update = ::Random.randI(3, 7);
@@ -107,31 +107,30 @@ void CROS_impl::smart_update(IRenderable* O)
 	}
 }
 
-void CROS_impl::calc_sky_hemi_value(fvec3& position, CObject* _object)
+void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 {
 	// hemi-tracing
 	sky_rays_uptodate += ps_r_dhemi_count;
-	sky_rays_uptodate = _min(sky_rays_uptodate, lt_hemisamples);
+	sky_rays_uptodate = _min(sky_rays_uptodate, lt_aosamples);
 
 	for (u32 it = 0; it < (u32)ps_r_dhemi_count; it++)
 	{
 		u32 sample = 0;
-		if (result_count < lt_hemisamples)
+		if (result_count < lt_aosamples)
 		{
 			sample = result_count;
 			result_count++;
 		}
 		else
 		{
-			sample = (result_iterator % lt_hemisamples);
+			sample = (result_iterator % lt_aosamples);
 			result_iterator++;
 		}
 
 		// take sample
 		fvec3 direction;
 		direction.set(hdir[sample][0], hdir[sample][1], hdir[sample][2]).normalize();
-		result[sample] =
-			!g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
+		result[sample] = !g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
 	}
 
 	// Расчет значения гемисферы
@@ -140,8 +139,8 @@ void CROS_impl::calc_sky_hemi_value(fvec3& position, CObject* _object)
 		if (result[it])
 			_pass++;
 
-	hemi_value = float(_pass) / float(result_count ? result_count : 1);
-	hemi_value *= ps_r_dhemi_sky_scale;
+	ao_value = float(_pass) / float(result_count ? result_count : 1);
+	ao_value *= ps_r_dhemi_sky_scale;
 
 	// Накопление в кубические грани для каждого успешного сэмпла
 	for (int it = 0; it < result_count; it++)
@@ -150,7 +149,7 @@ void CROS_impl::calc_sky_hemi_value(fvec3& position, CObject* _object)
 		{
 			fvec3 dir;
 			dir.set(hdir[it][0], hdir[it][1], hdir[it][2]);
-			accum_hemi(hemi_cube, dir, ps_r_dhemi_sky_scale);
+			accum_ao(ao_cube, dir, ps_r_dhemi_sky_scale);
 		}
 	}
 }
@@ -177,19 +176,19 @@ void CROS_impl::update(IRenderable* O)
 	// Инициализация кубических граней
 	for (size_t i = 0; i < NUM_FACES; ++i)
 	{
-		hemi_cube[i] = 0;
+		ao_cube[i] = 0;
 	}
 
 	bool bFirstTime = (0 == result_count);
 
 	// Основной расчет HEMI
-	calc_sky_hemi_value(position, _object);
+	calc_sky_ao_value(position, _object);
 
 	// Сглаживание HEMI при первом обновлении
 	if (bFirstTime)
 	{
-		hemi_smooth = hemi_value;
-		CopyMemory(hemi_cube_smooth, hemi_cube, NUM_FACES * sizeof(float));
+		ao_smooth = ao_value;
+		CopyMemory(ao_cube_smooth, ao_cube, NUM_FACES * sizeof(float));
 	}
 }
 
@@ -209,25 +208,25 @@ void CROS_impl::update_smooth(IRenderable* O)
 	float l_f = Engine.TimeManager.GetDeltaTime() * ps_r_lt_smooth;
 	clamp(l_f, 0.f, 1.f);
 	float l_i = 1.f - l_f;
-	hemi_smooth = hemi_value * l_f + hemi_smooth * l_i;
+	ao_smooth = ao_value * l_f + ao_smooth * l_i;
 
 	// Сглаживание кубических граней
 	for (size_t i = 0; i < NUM_FACES; ++i)
 	{
-		hemi_cube_smooth[i] = hemi_cube[i] * l_f + hemi_cube_smooth[i] * l_i;
+		ao_cube_smooth[i] = ao_cube[i] * l_f + ao_cube_smooth[i] * l_i;
 	}
 }
 
-float CROS_impl::get_hemi()
+float CROS_impl::get_ao()
 {
 	if (dwFrameSmooth != Engine.TimeManager.GetFrameCount())
 		update_smooth();
-	return hemi_smooth;
+	return ao_smooth;
 }
 
-const float* CROS_impl::get_hemi_cube()
+const float* CROS_impl::get_ao_cube()
 {
 	if (dwFrameSmooth != Engine.TimeManager.GetFrameCount())
 		update_smooth();
-	return hemi_cube_smooth;
+	return ao_cube_smooth;
 }

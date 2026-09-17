@@ -289,6 +289,7 @@ void CRender::OnFrame()
 {
 	PROFILE_FUNCTION();
 
+	WaitForPendingTasks();
 	Models->DeleteQueue();
 	CPUOCC.Update();
 
@@ -300,11 +301,10 @@ void CRender::OnFrame()
 
 	if (need_render_sun())
 	{
-		//wait_for_sun_task();
-		//swap_sun_buffers();
-		//m_sun_gather_done.store(false);
-		schedule_cascades();
-		//Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CRender::schedule_cascades));
+		wait_for_sun_task();
+		swap_sun_buffers();
+		m_sun_gather_done.store(false);
+		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CRender::schedule_cascades));
 	}
 }
 

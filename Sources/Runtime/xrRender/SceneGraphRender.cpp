@@ -40,12 +40,12 @@ static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 	//std::sort(batch.begin(), batch.end(),
 	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) 
 	//		  {
-	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+	//			  return a.screenSpaceArea > b.screenSpaceArea;
 	//		  });
 
 	for (const auto& node : batch)
 	{
-		node.pVisual->Render(CalculateLODFactor(node.ScreenSpaceArea, node.pVisual->vis.sphere.R));
+		node.pVisual->Render(CalculateLODFactor(node.screenSpaceArea, node.pVisual->vis.sphere.R));
 	}
 }
 
@@ -58,16 +58,15 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 	//std::sort(batch.begin(), batch.end(),
 	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) 
 	//		  {
-	//			  return a.ScreenSpaceArea > b.ScreenSpaceArea;
+	//			  return a.screenSpaceArea > b.screenSpaceArea;
 	//		  });
 
 	for (const auto& node : batch)
 	{
-		RenderBackend.set_transform_world(*node.pMatrix);
-		RenderImplementation.apply_object(node.pObject);
-		RenderImplementation.apply_lmaterial();
+		RenderBackend.set_transform_world(node.transform);
+		RenderImplementation.apply_ao_lighting(node.ao_cube);
 
-		node.pVisual->Render(CalculateLODFactor(node.ScreenSpaceArea, node.pVisual->vis.sphere.R));
+		node.pVisual->Render(CalculateLODFactor(node.screenSpaceArea, node.pVisual->vis.sphere.R));
 	}
 	batch.clear();
 }
@@ -80,9 +79,8 @@ static void __fastcall RenderSortedNode(SceneGraphTypes::mapSorted_Node* node)
 	VERIFY(pVisual && pVisual->shader._get());
 
 	RenderBackend.set_Element(node->val.se);
-	RenderBackend.set_transform_world(*node->val.pMatrix);
-	RenderImplementation.apply_object(node->val.pObject);
-	RenderImplementation.apply_lmaterial();
+	RenderBackend.set_transform_world(node->val.transform);
+	RenderImplementation.apply_ao_lighting(node->val.ao_cube);
 
 	pVisual->Render(CalculateLODFactor(node->key, pVisual->vis.sphere.R));
 }
@@ -127,7 +125,7 @@ template <typename TNode> bool CompareTexturesLexN(TNode* N1, TNode* N2)
 
 template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
 {
-	return (N1->val.ScreenSpaceArea > N2->val.ScreenSpaceArea);
+	return (N1->val.screenSpaceArea > N2->val.screenSpaceArea);
 }
 
 // --- Texture List Sorting Logic ---
@@ -151,7 +149,7 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 			// Разделяем на "близкие" (важные для HZB) и "дальние"
 			for (auto it = textures_map.begin(); it != textures_map.end(); ++it)
 			{
-				if (it->val.ScreenSpaceArea > r_ssaHZBvsTEX)
+				if (it->val.screenSpaceArea > r_ssaHZBvsTEX)
 					list.push_back(it);
 				else
 					temp_list.push_back(it);
@@ -248,7 +246,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 			RenderBackend.set_Vertex_Shader(node_vs->key);
 
 			mapNormalPS& map_ps = node_vs->val;
-			map_ps.ScreenSpaceArea = 0;
+			map_ps.screenSpaceArea = 0;
 			map_ps.getANY_P(m_scratch.nrmPS);
 
 			for (auto* node_ps : m_scratch.nrmPS)
@@ -256,7 +254,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 				RenderBackend.set_Pixel_Shader(node_ps->key);
 
 				mapNormalCS& map_cs = node_ps->val;
-				map_cs.ScreenSpaceArea = 0;
+				map_cs.screenSpaceArea = 0;
 				map_cs.getANY_P(m_scratch.nrmCS);
 
 				for (auto* node_cs : m_scratch.nrmCS)
@@ -264,7 +262,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 					RenderBackend.set_Constants(node_cs->key);
 
 					mapNormalStates& map_states = node_cs->val;
-					map_states.ScreenSpaceArea = 0;
+					map_states.screenSpaceArea = 0;
 					map_states.getANY_P(m_scratch.nrmStates);
 
 					for (auto* node_state : m_scratch.nrmStates)
@@ -272,17 +270,16 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 						RenderBackend.set_States(node_state->key);
 
 						mapNormalTextures& map_tex = node_state->val;
-						map_tex.ScreenSpaceArea = 0;
+						map_tex.screenSpaceArea = 0;
 
 						SortTextureList(m_scratch.nrmTextures, m_scratch.nrmTexturesTemp, map_tex, TRUE);
 
 						for (auto* node_tex : m_scratch.nrmTextures)
 						{
 							RenderBackend.set_Textures(node_tex->key);
-							RenderImplementation.apply_lmaterial();
 
 							mapNormalItems& items = node_tex->val;
-							items.ScreenSpaceArea = 0;
+							items.screenSpaceArea = 0;
 
 							RenderStaticBatch(items);
 
@@ -326,7 +323,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 			RenderBackend.set_Vertex_Shader(node_vs->key);
 
 			mapMatrixPS& map_ps = node_vs->val;
-			map_ps.ScreenSpaceArea = 0;
+			map_ps.screenSpaceArea = 0;
 			map_ps.getANY_P(m_scratch.matPS);
 
 			for (auto* node_ps : m_scratch.matPS)
@@ -334,7 +331,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 				RenderBackend.set_Pixel_Shader(node_ps->key);
 
 				mapMatrixCS& map_cs = node_ps->val;
-				map_cs.ScreenSpaceArea = 0;
+				map_cs.screenSpaceArea = 0;
 				map_cs.getANY_P(m_scratch.matCS);
 
 				for (auto* node_cs : m_scratch.matCS)
@@ -342,7 +339,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 					RenderBackend.set_Constants(node_cs->key);
 
 					mapMatrixStates& map_states = node_cs->val;
-					map_states.ScreenSpaceArea = 0;
+					map_states.screenSpaceArea = 0;
 					map_states.getANY_P(m_scratch.matStates);
 
 					for (auto* node_state : m_scratch.matStates)
@@ -350,17 +347,16 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 						RenderBackend.set_States(node_state->key);
 
 						mapMatrixTextures& map_tex = node_state->val;
-						map_tex.ScreenSpaceArea = 0;
+						map_tex.screenSpaceArea = 0;
 
 						SortTextureList(m_scratch.matTextures, m_scratch.matTexturesTemp, map_tex, TRUE);
 
 						for (auto* node_tex : m_scratch.matTextures)
 						{
 							RenderBackend.set_Textures(node_tex->key);
-							RenderImplementation.apply_lmaterial();
 
 							mapMatrixItems& items = node_tex->val;
-							items.ScreenSpaceArea = 0;
+							items.screenSpaceArea = 0;
 
 							RenderDynamicBatch(items);
 						}
@@ -503,7 +499,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		FLOD* lod_visual = (FLOD*)Node.pVisual;
 
 		// Вычисление Alpha
-		float ssa_diff = Node.ScreenSpaceArea - ssa_limit_b;
+		float ssa_diff = Node.screenSpaceArea - ssa_limit_b;
 		float scale = ssa_diff / ssa_range;
 		int alpha_int = iFloor((1.0f - scale) * 255.f);
 		u32 alpha_final = u32(clampr(alpha_int, 0, 255));

@@ -523,7 +523,7 @@ float light::get_LOD()
 	if (!LightFlags.bShadow)
 		return 1;
 	float distSQ = Engine.RenderView.Position.distance_to_sqr(spatial.sphere.P) + EPS;
-	float ScreenSpaceArea = ps_r_slight_fade * spatial.sphere.R / distSQ;
-	float lod = std::sqrt(clampr((ScreenSpaceArea - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
+	float screenSpaceArea = ps_r_slight_fade * spatial.sphere.R / distSQ;
+	float lod = std::sqrt(clampr((screenSpaceArea - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 	return lod;
 }

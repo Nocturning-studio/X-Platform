@@ -52,6 +52,18 @@ class CModelPool
 
 	void Destroy();
 
+  private:
+	struct DeferredDelete
+	{
+		IRender_Visual* V;
+		BOOL bDiscard;
+	};
+
+	xr_vector<DeferredDelete> m_deferred;
+	xrCriticalSection m_deferredCS;
+
+	void QueueDelete(IRender_Visual*& V, BOOL bDiscard);
+
   public:
 	CModelPool();
 	virtual ~CModelPool();
@@ -70,6 +82,7 @@ class CModelPool
 	void Discard(IRender_Visual*& V, BOOL b_complete);
 	void DeleteInternal(IRender_Visual*& V, BOOL bDiscard = FALSE);
 	void DeleteQueue();
+	void FlushDeferred();
 
 	void Logging(BOOL bEnable)
 	{

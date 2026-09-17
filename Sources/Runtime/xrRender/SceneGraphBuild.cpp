@@ -231,8 +231,12 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 		priority = 1;
 	}
 
+	dest.AddVisualRef(pVisual);
+
+	CROS_impl::AOCube ao_cube = {};
 	if (ctx.render_phase == CRender::PHASE_NORMAL)
 	{
+		ao_cube = RenderImplementation.compute_object_ao_cube(ctx.owner);
 		SceneGraphPacket::DReuseItem item = {pVisual, *ctx.transform};
 		dest.m_visuals_dynamic_visible.push_back(item);
 
@@ -242,10 +246,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 			if (se && se->flags.bDistort)
 			{
 				auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
-				node->val.ScreenSpaceArea = screen_space_area;
-				node->val.pObject = ctx.owner;
-				node->val.pVisual = pVisual;
-				node->val.pMatrix = ctx.transform;
+				node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 				node->val.se = se;
 			}
 		}
@@ -258,25 +259,18 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 	// Маршрутизация (Routing)
 	// -------------------------------------------------------------------------
-
 	if (ctx.is_hud_pass)
 	{
 		if (shader_element->flags.bStrictB2F)
 		{
 			auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = ctx.owner;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = ctx.transform;
+			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = shader_element;
 		}
 		else
 		{
 			auto* node = dest.queue_hud.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = ctx.owner;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = ctx.transform;
+			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = shader_element;
 		}
 		return;
@@ -286,10 +280,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	if (shader_element->flags.bStrictB2F)
 	{
 		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
-		node->val.ScreenSpaceArea = screen_space_area;
-		node->val.pObject = ctx.owner;
-		node->val.pVisual = pVisual;
-		node->val.pMatrix = ctx.transform;
+		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 		node->val.se = shader_element;
 		return;
 	}
@@ -299,20 +290,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 		if (shader_element->flags.bEmissive)
 		{
 			auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = ctx.owner;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = ctx.transform;
+			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = pVisual->shader->E[4]._get();
 		}
 
 		if (shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
 		{
 			auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = ctx.owner;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = ctx.transform;
+			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = shader_element;
 			return;
 		}
@@ -323,7 +308,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 
 	// Создаем узел, используя данные из ctx
-	DynamicRenderNode item = {screen_space_area, ctx.owner, pVisual, ctx.transform};
+	DynamicRenderNode item = {screen_space_area, pVisual, *ctx.transform, ao_cube.data() };
 
 	if (shader_element->passes.empty())
 	{
@@ -389,21 +374,21 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	node_tex->val.push_back(item);
 
 	// Пробрасываем максимальный SSA вверх по иерархии для сортировки групп (Early Z)
-	if (screen_space_area > node_tex->val.ScreenSpaceArea)
+	if (screen_space_area > node_tex->val.screenSpaceArea)
 	{
-		node_tex->val.ScreenSpaceArea = screen_space_area;
-		if (screen_space_area > node_state->val.ScreenSpaceArea)
+		node_tex->val.screenSpaceArea = screen_space_area;
+		if (screen_space_area > node_state->val.screenSpaceArea)
 		{
-			node_state->val.ScreenSpaceArea = screen_space_area;
-			if (screen_space_area > node_cs->val.ScreenSpaceArea)
+			node_state->val.screenSpaceArea = screen_space_area;
+			if (screen_space_area > node_cs->val.screenSpaceArea)
 			{
-				node_cs->val.ScreenSpaceArea = screen_space_area;
-				if (screen_space_area > node_ps->val.ScreenSpaceArea)
+				node_cs->val.screenSpaceArea = screen_space_area;
+				if (screen_space_area > node_ps->val.screenSpaceArea)
 				{
-					node_ps->val.ScreenSpaceArea = screen_space_area;
-					if (screen_space_area > node_vs->val.ScreenSpaceArea)
+					node_ps->val.screenSpaceArea = screen_space_area;
+					if (screen_space_area > node_vs->val.screenSpaceArea)
 					{
-						node_vs->val.ScreenSpaceArea = screen_space_area;
+						node_vs->val.screenSpaceArea = screen_space_area;
 					}
 				}
 			}
@@ -471,8 +456,12 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		priority = 1;
 	}
 
+	dest.AddVisualRef(pVisual);
+
+	CROS_impl::AOCube ao_cube = {};
 	if (ctx.render_phase == CRender::PHASE_NORMAL)
 	{
+		ao_cube = RenderImplementation.compute_object_ao_cube(ctx.owner);
 		dest.m_visuals_static_visible.push_back(pVisual);
 
 		for (int i = 0; i < pVisual->shader->elements_count; ++i)
@@ -481,10 +470,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 			if (se && se->flags.bDistort)
 			{
 				auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
-				node->val.ScreenSpaceArea = screen_space_area;
-				node->val.pObject = ctx.owner;
-				node->val.pVisual = pVisual;
-				node->val.pMatrix = ctx.transform;
+				node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 				node->val.se = se;
 			}
 		}
@@ -496,10 +482,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	if (shader_element->flags.bStrictB2F)
 	{
 		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
-		node->val.ScreenSpaceArea = screen_space_area;
-		node->val.pObject = nullptr;
-		node->val.pVisual = pVisual;
-		node->val.pMatrix = &Fidentity;
+		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 		node->val.se = shader_element;
 		return;
 	}
@@ -509,20 +492,14 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		if (shader_element->flags.bEmissive)
 		{
 			auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = nullptr;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = &Fidentity;
+			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = pVisual->shader->E[4]._get();
 		}
 
 		if (shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
 		{
 			auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
-			node->val.ScreenSpaceArea = screen_space_area;
-			node->val.pObject = nullptr;
-			node->val.pVisual = pVisual;
-			node->val.pMatrix = &Fidentity;
+			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = shader_element;
 			return;
 		}
@@ -600,21 +577,21 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	node_tex->val.push_back(item);
 
 	// Обновление SSA
-	if (screen_space_area > node_tex->val.ScreenSpaceArea)
+	if (screen_space_area > node_tex->val.screenSpaceArea)
 	{
-		node_tex->val.ScreenSpaceArea = screen_space_area;
-		if (screen_space_area > node_state->val.ScreenSpaceArea)
+		node_tex->val.screenSpaceArea = screen_space_area;
+		if (screen_space_area > node_state->val.screenSpaceArea)
 		{
-			node_state->val.ScreenSpaceArea = screen_space_area;
-			if (screen_space_area > node_cs->val.ScreenSpaceArea)
+			node_state->val.screenSpaceArea = screen_space_area;
+			if (screen_space_area > node_cs->val.screenSpaceArea)
 			{
-				node_cs->val.ScreenSpaceArea = screen_space_area;
-				if (screen_space_area > node_ps->val.ScreenSpaceArea)
+				node_cs->val.screenSpaceArea = screen_space_area;
+				if (screen_space_area > node_ps->val.screenSpaceArea)
 				{
-					node_ps->val.ScreenSpaceArea = screen_space_area;
-					if (screen_space_area > node_vs->val.ScreenSpaceArea)
+					node_ps->val.screenSpaceArea = screen_space_area;
+					if (screen_space_area > node_vs->val.screenSpaceArea)
 					{
-						node_vs->val.ScreenSpaceArea = screen_space_area;
+						node_vs->val.screenSpaceArea = screen_space_area;
 					}
 				}
 			}
@@ -847,8 +824,8 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 			ctx.transform->transform_tiny(Tpos, pV->vis.sphere.P);
 
 			// Вычисляем SSA для переключения на LOD
-			float ScreenSpaceArea = CalcScreenSpaceArea(D, Tpos, pV->vis.sphere.R / 2.f, ctx);
-			if (ScreenSpaceArea < r_ssaLOD_A)
+			float screenSpaceArea = CalcScreenSpaceArea(D, Tpos, pV->vis.sphere.R / 2.f, ctx);
+			if (screenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
 
@@ -1008,19 +985,21 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		// Статические деревья и объекты с билборд-LODами
 		FLOD* pV = (FLOD*)pVisual;
 		float D;
-		float ScreenSpaceArea = CalcScreenSpaceArea(D, pV->vis.sphere.P, pV, ctx);
+		float screenSpaceArea = CalcScreenSpaceArea(D, pV->vis.sphere.P, pV, ctx);
 
 		// Учитываем коэффициент качества LOD
-		ScreenSpaceArea *= pV->lod_factor;
+		screenSpaceArea *= pV->lod_factor;
 
 		// Если далеко - добавляем в список LOD-ов (билбордов)
-		if (ScreenSpaceArea < r_ssaLOD_A)
+		if (screenSpaceArea < r_ssaLOD_A)
 		{
 			if (pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
 				return;
 			pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
-			if (ScreenSpaceArea < r_ssaDISCARD)
+			dest.AddVisualRef(pVisual);
+
+			if (screenSpaceArea < r_ssaDISCARD)
 				return;
 
 			if (ctx.render_phase == CRender::PHASE_NORMAL)
@@ -1028,13 +1007,13 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 				dest.m_visuals_static_visible.push_back(pVisual);
 
 				auto* N = dest.mapLOD.insertInAnyWay(D);
-				N->val.ScreenSpaceArea = ScreenSpaceArea;
+				N->val.screenSpaceArea = screenSpaceArea;
 				N->val.pVisual = pVisual;
 			}
 		}
 
 		// Если близко - рендерим детальную геометрию (детей)
-		if (ScreenSpaceArea > r_ssaLOD_B)
+		if (screenSpaceArea > r_ssaLOD_B)
 		{
 			I = pV->children.begin();
 			E = pV->children.end();
@@ -1366,7 +1345,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 
 			// Вставляем в mapLOD целевого пакета
 			auto* node = dest.mapLOD.insertInAnyWay(dist_unused);
-			node->val.ScreenSpaceArea = screen_space_area;
+			node->val.screenSpaceArea = screen_space_area;
 			node->val.pVisual = pVisual;
 		}
 		else if (screen_space_area > r_ssaLOD_B) // Если объект близко - рисуем его детальную геометрию (детей)

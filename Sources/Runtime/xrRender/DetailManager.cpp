@@ -249,11 +249,11 @@ void CDetailManager::UpdateVisibility()
 							for (auto& item : sp.items)
 							{
 								item.scale_calculated = item.scale * alpha_i;
-								float ScreenSpaceArea = item.scale_calculated * item.scale_calculated * Rq_drcp;
+								float screenSpaceArea = item.scale_calculated * item.scale_calculated * Rq_drcp;
 
-								if (ScreenSpaceArea < r_ssaDISCARD)
+								if (screenSpaceArea < r_ssaDISCARD)
 									item.vis_ID = 0xff;
-								else if (ScreenSpaceArea > r_ssaCHEAP)
+								else if (screenSpaceArea > r_ssaCHEAP)
 									item.vis_ID = item.vis_ID_backup;
 								else
 									item.vis_ID = 0;

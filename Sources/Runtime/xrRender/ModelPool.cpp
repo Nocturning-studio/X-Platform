@@ -173,6 +173,8 @@ void CModelPool::Instance_Register(LPCSTR N, IRender_Visual* V)
 
 void CModelPool::Destroy()
 {
+	FlushDeferred();
+
 	// Pool
 	Pool.clear();
 
@@ -335,35 +337,56 @@ void CModelPool::DeleteInternal(IRender_Visual*& V, BOOL bDiscard)
 	V = NULL;
 }
 
+void CModelPool::QueueDelete(IRender_Visual*& V, BOOL bDiscard)
+{
+	if (!V) return;
+
+	m_deferredCS.Enter();
+	m_deferred.push_back({ V, bDiscard });
+	m_deferredCS.Leave();
+
+	V = nullptr;
+}
+
 void CModelPool::Delete(IRender_Visual*& V, BOOL bDiscard)
 {
-	if (NULL == V)
-		return;
-
-	// ƒл€ всех остальных типов Ц стандартное поведение
-	if (g_bRendering)
-	{
-		VERIFY(!bDiscard);
-		ModelsToDelete.push_back(V);
-	}
-	else
-	{
-		DeleteInternal(V, bDiscard);
-	}
-	V = NULL;
+	if (!V) return;
+	QueueDelete(V, bDiscard);
 }
 
 void CModelPool::DeleteQueue()
 {
-	for (u32 it = 0; it < ModelsToDelete.size(); it++)
+	xr_vector<DeferredDelete> toDelete;
+	xr_vector<DeferredDelete> keep;
+
+	m_deferredCS.Enter();
+	for (auto& d : m_deferred)
 	{
-		IRender_Visual* V = ModelsToDelete[it];
-		if (V && V->Type != MT_PARTICLE_EFFECT && V->Type != MT_PARTICLE_GROUP)
-		{
-			DeleteInternal(V, FALSE);
-		}
+		// ¬изуал, на который сцена ещЄ держит ссылку, удал€ть нельз€:
+		// указатель может лежать в готовом к отрисовке пакете.
+		if (d.V && d.V->GetRefs() == 0)
+			toDelete.push_back(d);
+		else
+			keep.push_back(d);   // повторим попытку на следующем кадре
 	}
-	ModelsToDelete.clear();
+	m_deferred.swap(keep);
+	m_deferredCS.Leave();
+
+	// DeleteInternal вызываем только в одном потоке и только вне g_bRendering.
+	for (auto& d : toDelete)
+		DeleteInternal(d.V, d.bDiscard);
+}
+
+void CModelPool::FlushDeferred()
+{
+	xr_vector<DeferredDelete> toDelete;
+
+	m_deferredCS.Enter();
+	toDelete.swap(m_deferred);
+	m_deferredCS.Leave();
+
+	for (auto& d : toDelete)
+		DeleteInternal(d.V, d.bDiscard);
 }
 
 void CModelPool::Discard(IRender_Visual*& V, BOOL b_complete)

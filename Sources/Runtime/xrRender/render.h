@@ -212,27 +212,37 @@ class CRender : public IRender_interface, public pureFrame
 		return HWOCC.occq_get(ID, wait);
 	}
 
-	ICF void apply_object(IRenderable* O)
+	CROS_impl::AOCube compute_object_ao_cube(IRenderable* O)
 	{
-		if (0 == O)
-			return;
-		if (0 == O->renderable_ROS())
-			return;
-		CROS_impl& LT = *((CROS_impl*)O->renderable_ROS());
+		CROS_impl::AOCube cube{};
+		if (nullptr == O)
+			return cube;
+
+		IRender_ObjectSpecific* ros = O->renderable_ROS();
+		if (nullptr == ros)
+			return cube;
+
+		CROS_impl& LT = *static_cast<CROS_impl*>(ros);
 		LT.update_smooth(O);
-		CopyMemory(o_hemi_cube, LT.get_hemi_cube(), CROS_impl::NUM_FACES * sizeof(float));
+		CopyMemory(cube.data(), LT.get_ao_cube(), CROS_impl::NUM_FACES * sizeof(float));
+		return cube;
 	}
 
-	float o_hemi_cube[CROS_impl::NUM_FACES];
-	IC void apply_lmaterial()
+	IC void apply_ao_lighting(const CROS_impl::AOCube& cube)
 	{
-		R_constant* C = &*RenderBackend.get_Constant(c_sbase); // get sampler
+		R_constant* C = &*RenderBackend.get_Constant(c_sbase);
 		if (0 == C)
 			return;
 		VERIFY(RC_dest_sampler == C->destination);
 		VERIFY(RC_sampler == C->type);
-		RenderBackend.set_Constant("hemi_cube_pos_faces", o_hemi_cube[CROS_impl::CUBE_FACE_POS_X], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
-		RenderBackend.set_Constant("hemi_cube_neg_faces", o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
+		RenderBackend.set_Constant("ao_cube_pos_faces",
+			cube[CROS_impl::CUBE_FACE_POS_X],
+			cube[CROS_impl::CUBE_FACE_POS_Y],
+			cube[CROS_impl::CUBE_FACE_POS_Z]);
+		RenderBackend.set_Constant("ao_cube_neg_faces",
+			cube[CROS_impl::CUBE_FACE_NEG_X],
+			cube[CROS_impl::CUBE_FACE_NEG_Y],
+			cube[CROS_impl::CUBE_FACE_NEG_Z]);
 	}
 
   public:

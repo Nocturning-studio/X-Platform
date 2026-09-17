@@ -2,6 +2,7 @@
 
 #include <xrCore/FixedMap.h>
 #include "doug_lea_allocator_wrapper.h"
+#include "LightTrack.h"
 
 //#define USE_RESOURCE_DEBUGGER
 
@@ -13,16 +14,46 @@ namespace SceneGraphTypes
 
 struct StaticRenderNode
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 	IRender_Visual* pVisual;
 };
 
 struct DynamicRenderNode
 {
-	float ScreenSpaceArea;
-	IRenderable* pObject;
-	IRender_Visual* pVisual;
-	fmat4x4* pMatrix;
+    float           screenSpaceArea;
+    IRender_Visual* pVisual;
+    fmat4x4         transform;
+    CROS_impl::AOCube ao_cube;
+
+    // ƒефолтный Ч чтобы ноды в контейнерах не содержали мусора
+    // до того, как их заполн€т через Copy()/конструктор.
+    DynamicRenderNode()
+        : screenSpaceArea(0.f)
+        , pVisual(nullptr)
+    {
+        transform.identity();
+        ZeroMemory(ao_cube.data(), sizeof(ao_cube));
+    }
+
+    //  онструктор "на месте" Ч то, что чаще всего нужно
+    // в EnqueueDynamic / EnqueueStatic.
+    DynamicRenderNode(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
+        : screenSpaceArea(ssa)
+        , pVisual(pVis)
+        , transform(trans)
+    {
+        CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
+    }
+
+    // ”ниверсальный заполнитель, если нода уже создана
+    // (например, в FixedMAP вернулась из insert()).
+    IC void Copy(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
+    {
+        screenSpaceArea = ssa;
+        pVisual = pVis;
+        transform = trans;
+        CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
+    }
 };
 
 struct _MatrixItemS : public DynamicRenderNode
@@ -32,7 +63,7 @@ struct _MatrixItemS : public DynamicRenderNode
 
 struct LodRenderNode
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 	IRender_Visual* pVisual;
 };
 
@@ -57,27 +88,27 @@ using mapNormalDirect = xr_vector<StaticRenderNode, render_allocator::helper<Sta
 
 struct mapNormalItems : public mapNormalDirect
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapNormalTextures : public FixedMAP<STextureList*, mapNormalItems, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapNormalStates : public FixedMAP<IDirect3DStateBlock9*, mapNormalTextures, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapNormalCS : public FixedMAP<R_constant_table*, mapNormalStates, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapNormalPS : public FixedMAP<ps_type, mapNormalCS, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapNormalVS : public FixedMAP<vs_type, mapNormalPS, render_allocator>
@@ -91,27 +122,27 @@ using mapMatrixDirect = xr_vector<DynamicRenderNode, render_allocator::helper<Dy
 
 struct mapMatrixItems : public mapMatrixDirect
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapMatrixTextures : public FixedMAP<STextureList*, mapMatrixItems, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapMatrixStates : public FixedMAP<IDirect3DStateBlock9*, mapMatrixTextures, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapMatrixCS : public FixedMAP<R_constant_table*, mapMatrixStates, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapMatrixPS : public FixedMAP<ps_type, mapMatrixCS, render_allocator>
 {
-	float ScreenSpaceArea;
+	float screenSpaceArea;
 };
 
 struct mapMatrixVS : public FixedMAP<vs_type, mapMatrixPS, render_allocator>

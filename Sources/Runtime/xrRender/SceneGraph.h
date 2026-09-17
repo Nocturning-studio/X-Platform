@@ -8,6 +8,7 @@
 #include "r_sector.h"
 #include "r_portal.h"
 #include "r_portal_traverser.h"
+#include <xrEngine/FBasicVisual.h>
 
 class CRender;
 class IRender_Visual;
@@ -84,6 +85,22 @@ struct SceneGraphPacket
 	xr_vector<IRenderable*> m_culled_dynamics;
 	xr_vector<light*> m_culled_lights;
 
+	xr_vector<IRender_Visual*> m_visual_refs;
+
+	IC void AddVisualRef(IRender_Visual* V)
+	{
+		if (!V) return;
+		V->AddRef();
+		m_visual_refs.push_back(V);
+	}
+
+	void ReleaseVisualRefs()
+	{
+		for (IRender_Visual* V : m_visual_refs)
+			V->ReleaseRef();
+		m_visual_refs.clear();
+	}
+
 	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
 
@@ -106,6 +123,7 @@ struct SceneGraphPacket
 
 	void Clear()
 	{
+		ReleaseVisualRefs();
 		m_culled_lights.clear();
 		m_culled_dynamics.clear();
 		portal_traverser.Reset();
@@ -130,6 +148,7 @@ struct SceneGraphPacket
 
 	void Destroy()
 	{
+		ReleaseVisualRefs();
 		queue_static[0].destroy();
 		queue_static[1].destroy();
 		queue_dynamic[0].destroy();

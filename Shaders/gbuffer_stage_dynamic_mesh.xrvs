@@ -6,8 +6,8 @@
 #include "common.xrh"
 #include "skinning.xrh"
 ///////////////////////////////////////////////////////////////////////////////////
-uniform float3 hemi_cube_pos_faces;
-uniform float3 hemi_cube_neg_faces;
+uniform float3 ao_cube_pos_faces;
+uniform float3 ao_cube_neg_faces;
 ///////////////////////////////////////////////////////////////////////////////////
 
 // Улучшенная функция вычисления AO
@@ -66,7 +66,7 @@ Interpolators _main(v_model Input)
     float3 Nw = mul((float3x3)m_World, (float3)Input.N);
     Nw = normalize(Nw);
     
-    float ao = calculate_improved_ao(Nw, hemi_cube_pos_faces, hemi_cube_neg_faces);
+    float ao = calculate_improved_ao(Nw, ao_cube_pos_faces, ao_cube_neg_faces);
     Output.AO = saturate(ao);
 
     return Output;

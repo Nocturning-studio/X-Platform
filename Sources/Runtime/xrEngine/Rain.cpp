@@ -473,7 +473,7 @@ void CEffect_Rain::OnFrame()
 	CObject* E = g_pGameLevel->CurrentViewEntity();
 	if (E && E->renderable_ROS())
 	{
-		float lumi = E->renderable_ROS()->get_luminocity_hemi();
+		float lumi = E->renderable_ROS()->get_luminocity_ao();
 		hemi_factor = 1.f - 2.0f * (0.3f - _min(_min(1.f, lumi), 0.3f));
 	}
 #endif
