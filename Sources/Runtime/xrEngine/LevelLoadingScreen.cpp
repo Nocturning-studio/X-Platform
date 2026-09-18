@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "LevelLoadingScreen.h"
-#include "Engine.h"			  // Äëÿ äîñòóïà ê Engine.LevelManager
-#include "igame_persistent.h" // Äëÿ g_pGamePersistent
+#include "Engine.h"			  // Ð”Ð»Ñ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð° Ðº Engine.LevelManager
+#include "igame_persistent.h" // Ð”Ð»Ñ g_pGamePersistent
 #include "xr_ioconsole.h"
 
-// Ãëîáàëüíàÿ ïåðåìåííàÿ äëÿ ñîâìåñòèìîñòè, åñëè îíà èñïîëüçóåòñÿ ãäå-òî åùå
+// Ð“Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ð°Ñ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ Ð´Ð»Ñ ÑÐ¾Ð²Ð¼ÐµÑÑ‚Ð¸Ð¼Ð¾ÑÑ‚Ð¸, ÐµÑÐ»Ð¸ Ð¾Ð½Ð° Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð³Ð´Ðµ-Ñ‚Ð¾ ÐµÑ‰Ðµ
 ENGINE_API BOOL g_appLoaded;
 
-// Âñïîìîãàòåëüíàÿ ôóíêöèÿ äëÿ âûáîðà òåêñòóðû øðèôòà (ñêðûòà â cpp)
+// Ð’ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð°Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð»Ñ Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ ÑˆÑ€Ð¸Ñ„Ñ‚Ð° (ÑÐºÑ€Ñ‹Ñ‚Ð° Ð² cpp)
 static LPCSTR _GetFontTexName(LPCSTR section)
 {
 	static char* tex_names[] = {"texture800", "texture", "texture1600", "texture2k"};
@@ -94,12 +94,12 @@ void CLevelLoadingScreen::Show()
 #ifndef DEDICATED_SERVER
 		InitializeFont();
 
-		// Èíèöèàëèçàöèÿ øåéäåðîâ è ãåîìåòðèè
+		// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ ÑˆÐµÐ¹Ð´ÐµÑ€Ð¾Ð² Ð¸ Ð³ÐµÐ¾Ð¼ÐµÑ‚Ñ€Ð¸Ð¸
 		ll_hGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 		sh_progress.create("hud\\default", "ui\\ui_load");
 		ll_hGeom2.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), NULL);
 
-		// Îáíîâëÿåì ëîãîòèï óðîâíÿ
+		// ÐžÐ±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð»Ð¾Ð³Ð¾Ñ‚Ð¸Ð¿ ÑƒÑ€Ð¾Ð²Ð½Ñ
 		UpdateLevelLogo();
 #endif
 		phase_timer.Start();
@@ -160,7 +160,7 @@ void CLevelLoadingScreen::ForceRender()
 
 void CLevelLoadingScreen::UpdateLevelLogo()
 {
-	// Èñïîëüçóåì íàø íîâûé Engine.LevelManager
+	// Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼ Ð½Ð°Ñˆ Ð½Ð¾Ð²Ñ‹Ð¹ Engine.LevelManager
 	LPCSTR folderName = Engine.LevelManager.GetCurrentLevelFolderName();
 
 	if(!folderName)
@@ -173,7 +173,7 @@ void CLevelLoadingScreen::UpdateLevelLogo()
 	string_path temp2;
 	strconcat(sizeof(temp), temp, "intro\\intro_", folderName);
 
-	// Óáèðàåì ñëåø â êîíöå, åñëè åñòü
+	// Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ ÑÐ»ÐµÑˆ Ð² ÐºÐ¾Ð½Ñ†Ðµ, ÐµÑÐ»Ð¸ ÐµÑÑ‚ÑŒ
 	size_t len = xr_strlen(temp);
 	if(len > 0 && temp[len - 1] == '\\')
 		temp[len - 1] = 0;

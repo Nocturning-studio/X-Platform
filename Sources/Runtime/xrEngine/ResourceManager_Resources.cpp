@@ -247,7 +247,7 @@ SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, IDirect3DVertex
 			return G;
 	}
 
-	// Если не нашли - создаем новый
+	// Р•СЃР»Рё РЅРµ РЅР°С€Р»Рё - СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№
 	SGeometry* Geom = xr_new<SGeometry>();
 	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	Geom->dcl = dcl;
@@ -281,7 +281,7 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-#pragma todo("NSDeathman to NSDeathman: Вынести на второй поток")
+#pragma todo("NSDeathman to NSDeathman: Р’С‹РЅРµСЃС‚Рё РЅР° РІС‚РѕСЂРѕР№ РїРѕС‚РѕРє")
 CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 {
 	if(0 == xr_strcmp(_Name, "null"))
@@ -341,7 +341,7 @@ STextureList* CResourceManager::_CreateTextureList(STextureList& L)
 			return base;
 	}
 
-	// 3. Создание нового.
+	// 3. РЎРѕР·РґР°РЅРёРµ РЅРѕРІРѕРіРѕ.
 	STextureList* lst = xr_new<STextureList>(L);
 	lst->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	lst_textures.push_back(lst);

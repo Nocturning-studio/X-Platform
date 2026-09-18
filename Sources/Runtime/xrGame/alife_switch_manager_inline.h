@@ -18,7 +18,7 @@ IC CALifeSwitchManager::CALifeSwitchManager(xrServer* server, LPCSTR section) : 
 	seed(u32(CPU::QPC() & 0xffffffff));
 
 	m_online_switched_current = 0;
-	// Ïîïðîáóåì ïðî÷èòàòü èç alife.ltx, åñëè íåò - ñòàâèì äåôîëò
+	// ÐŸÐ¾Ð¿Ñ€Ð¾Ð±ÑƒÐµÐ¼ Ð¿Ñ€Ð¾Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð¸Ð· alife.ltx, ÐµÑÐ»Ð¸ Ð½ÐµÑ‚ - ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð´ÐµÑ„Ð¾Ð»Ñ‚
 	if(pSettings->line_exist(section, "switch_online_limit"))
 		m_online_limit_per_update = pSettings->r_u32(section, "switch_online_limit");
 	else

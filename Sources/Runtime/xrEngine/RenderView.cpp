@@ -29,10 +29,10 @@ void CRenderView::SetupView(const fvec3& pos, const fvec3& dir, const fvec3& top
 	Direction.set(dir);
 	Top.set(top);
 
-	// Рассчитываем вектор Right (право)
+	// Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РІРµРєС‚РѕСЂ Right (РїСЂР°РІРѕ)
 	Right.crossproduct(Top, Direction);
 
-	// Строим матрицу вида
+	// РЎС‚СЂРѕРёРј РјР°С‚СЂРёС†Сѓ РІРёРґР°
 	View.build_camera_dir(Position, Direction, Top);
 }
 
@@ -41,10 +41,10 @@ void CRenderView::UpdateViewProjection()
 	// VP = P * V
 	ViewProjection.mul(Project, View);
 
-	// Обратная VP (используем D3DX для точности, как в оригинале)
+	// РћР±СЂР°С‚РЅР°СЏ VP (РёСЃРїРѕР»СЊР·СѓРµРј D3DX РґР»СЏ С‚РѕС‡РЅРѕСЃС‚Рё, РєР°Рє РІ РѕСЂРёРіРёРЅР°Р»Рµ)
 	D3DXMatrixInverse((D3DXMATRIX*)&InvViewProjection, 0, (D3DXMATRIX*)&ViewProjection);
 
-	// Сразу отправляем в бекенд (так как это данные рендера)
+	// РЎСЂР°Р·Сѓ РѕС‚РїСЂР°РІР»СЏРµРј РІ Р±РµРєРµРЅРґ (С‚Р°Рє РєР°Рє СЌС‚Рѕ РґР°РЅРЅС‹Рµ СЂРµРЅРґРµСЂР°)
 	RenderBackend.set_transform_view(View);
 	RenderBackend.set_transform_project(Project);
 }

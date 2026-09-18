@@ -1,6 +1,6 @@
 #pragma once
 
-// Структура информации об уровне
+// РЎС‚СЂСѓРєС‚СѓСЂР° РёРЅС„РѕСЂРјР°С†РёРё РѕР± СѓСЂРѕРІРЅРµ
 struct sLevelInfo
 {
 	char* folder;
@@ -19,9 +19,9 @@ class ENGINE_API CLevelManager
 	CLevelManager();
 	~CLevelManager();
 
-	void Scan(); // Бывший Level_Scan
+	void Scan(); // Р‘С‹РІС€РёР№ Level_Scan
 
-	// Методы для получения данных (чтобы UI мог их читать)
+	// РњРµС‚РѕРґС‹ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°РЅРЅС‹С… (С‡С‚РѕР±С‹ UI РјРѕРі РёС… С‡РёС‚Р°С‚СЊ)
 	const xr_vector<sLevelInfo>& GetLevels() const
 	{
 		return Levels;
@@ -29,7 +29,7 @@ class ENGINE_API CLevelManager
 	const sLevelInfo* GetCurrentLevelInfo() const;
 	LPCSTR GetCurrentLevelFolderName() const;
 
-	// Основная логика
+	// РћСЃРЅРѕРІРЅР°СЏ Р»РѕРіРёРєР°
 	int GetLevelID(LPCSTR name);
-	void SetLevel(u32 ID); // Тут будет только установка FS путей
+	void SetLevel(u32 ID); // РўСѓС‚ Р±СѓРґРµС‚ С‚РѕР»СЊРєРѕ СѓСЃС‚Р°РЅРѕРІРєР° FS РїСѓС‚РµР№
 };

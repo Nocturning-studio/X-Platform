@@ -47,7 +47,7 @@ struct st_BoneMotion
 		name = nm;
 	}
 };
-// vector по костям
+// vector РїРѕ РєРѕСЃС‚СЏРј
 DEFINE_VECTOR(st_BoneMotion, BoneMotionVec, BoneMotionIt);
 
 //--------------------------------------------------------------------------

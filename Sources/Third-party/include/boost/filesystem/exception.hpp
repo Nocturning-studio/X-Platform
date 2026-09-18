@@ -1,8 +1,8 @@
 //  boost/filesystem/exception.hpp  ------------------------------------------//
 
 // < ----------------------------------------------------------------------- > 
-// <   Copyright © 2002 Beman Dawes                                          > 
-// <   Copyright © 2001 Dietmar Kühl, All Rights Reserved                    > 
+// <   Copyright Â© 2002 Beman Dawes                                          > 
+// <   Copyright Â© 2001 Dietmar KÑŒhl, All Rights Reserved                    > 
 // <                                                                         > 
 // <   Permission to use, copy, modify, distribute and sell this             > 
 // <   software for any purpose is hereby granted without fee, provided      > 

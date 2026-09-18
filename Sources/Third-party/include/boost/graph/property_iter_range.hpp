@@ -1,5 +1,5 @@
 
-// (C) Copyright François Faure, iMAGIS-GRAVIR / UJF, 2001. Permission
+// (C) Copyright FranÐ·ois Faure, iMAGIS-GRAVIR / UJF, 2001. Permission
 // to copy, use, modify, sell and distribute this software is granted
 // provided this copyright notice appears in all copies. This software
 // is provided "as is" without express or implied warranty, and with
@@ -12,7 +12,7 @@
 //      differentiate between const/mutable graphs and
 //      added a workaround to avoid partial specialization.
 
-// 02 May 2001   François Faure
+// 02 May 2001   FranÐ·ois Faure
 //     Initial version.
 
 #ifndef BOOST_GRAPH_PROPERTY_ITER_RANGE_HPP

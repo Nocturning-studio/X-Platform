@@ -131,7 +131,7 @@ void IGame_Persistent::OnGameStart()
 	Log("Loading models...");
 	Render->models_Prefetch();
 
-#pragma todo("NSDeathman to all: Òàê íå äîëæíî áûòü - âåğíóòü ïğè ôèêñå áàãà ñ èñïîëüçîâàíèåì ñòàğûõ lmap íà íîâîì óğîâíå, è óáîğêå êàñòûëÿ ñ ïåğåçàãğóçêîé òåêñòóğ")
+#pragma todo("NSDeathman to all: Ğ¢Ğ°Ğº Ğ½Ğµ Ğ´Ğ¾Ğ»Ğ¶Ğ½Ğ¾ Ğ±Ñ‹Ñ‚ÑŒ - Ğ²ĞµÑ€Ğ½ÑƒÑ‚ÑŒ Ğ¿Ñ€Ğ¸ Ñ„Ğ¸ĞºÑĞµ Ğ±Ğ°Ğ³Ğ° Ñ Ğ¸ÑĞ¿Ğ¾Ğ»ÑŒĞ·Ğ¾Ğ²Ğ°Ğ½Ğ¸ĞµĞ¼ ÑÑ‚Ğ°Ñ€Ñ‹Ñ… lmap Ğ½Ğ° Ğ½Ğ¾Ğ²Ğ¾Ğ¼ ÑƒÑ€Ğ¾Ğ²Ğ½Ğµ, Ğ¸ ÑƒĞ±Ğ¾Ñ€ĞºĞµ ĞºĞ°ÑÑ‚Ñ‹Ğ»Ñ Ñ Ğ¿ĞµÑ€ĞµĞ·Ğ°Ğ³Ñ€ÑƒĞ·ĞºĞ¾Ğ¹ Ñ‚ĞµĞºÑÑ‚ÑƒÑ€")
 	// Log("Loading textures...");
 	// Engine.ResourceManager->DeferredUpload();
 

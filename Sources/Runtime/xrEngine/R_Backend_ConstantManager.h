@@ -1,6 +1,6 @@
 // CConstantManager.h
 #pragma once
-#include "r_constants.h" // R_constant, R_constant_load ещё нужны
+#include "r_constants.h" // R_constant, R_constant_load РµС‰С‘ РЅСѓР¶РЅС‹
 
 class ENGINE_API CConstantManager
 {
@@ -16,19 +16,19 @@ class ENGINE_API CConstantManager
 	void SetConstant(R_constant* C, const fvec4& A);
 	void SetConstant(R_constant* C, float x, float y, float z, float w);
 
-	// Массивы (установка элемента e)
+	// РњР°СЃСЃРёРІС‹ (СѓСЃС‚Р°РЅРѕРІРєР° СЌР»РµРјРµРЅС‚Р° e)
 	void SetArrayConstant(R_constant* C, u32 e, const fmat4x4& A);
 	void SetArrayConstant(R_constant* C, u32 e, const fvec4& A);
 	void SetArrayConstant(R_constant* C, u32 e, float x, float y, float z, float w);
 
   private:
-	// Внутренние методы для работы с конкретным массивом (пиксельным или вершинным)
+	// Р’РЅСѓС‚СЂРµРЅРЅРёРµ РјРµС‚РѕРґС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєРѕРЅРєСЂРµС‚РЅС‹Рј РјР°СЃСЃРёРІРѕРј (РїРёРєСЃРµР»СЊРЅС‹Рј РёР»Рё РІРµСЂС€РёРЅРЅС‹Рј)
 	void SetConstantInternal(R_constant* C, R_constant_load& L, const fmat4x4& A, bool isPixel);
 	void SetConstantInternal(R_constant* C, R_constant_load& L, const fvec4& A, bool isPixel);
 	void SetArrayConstantInternal(R_constant* C, R_constant_load& L, u32 e, const fmat4x4& A, bool isPixel);
 	void SetArrayConstantInternal(R_constant* C, R_constant_load& L, u32 e, const fvec4& A, bool isPixel);
 
-	// Данные
+	// Р”Р°РЅРЅС‹Рµ
 	ALIGN(16)
 	fvec4 m_pixelData[256];
 	ALIGN(16)
@@ -36,8 +36,8 @@ class ENGINE_API CConstantManager
 
 	bool m_pixelDirty;
 	bool m_vertexDirty;
-	u32 m_pixelDirtyLo; // минимальный индекс изменившегося регистра
-	u32 m_pixelDirtyHi; // максимальный индекс + 1 (диапазон [lo, hi))
+	u32 m_pixelDirtyLo; // РјРёРЅРёРјР°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ РёР·РјРµРЅРёРІС€РµРіРѕСЃСЏ СЂРµРіРёСЃС‚СЂР°
+	u32 m_pixelDirtyHi; // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ + 1 (РґРёР°РїР°Р·РѕРЅ [lo, hi))
 	u32 m_vertexDirtyLo;
 	u32 m_vertexDirtyHi;
 };

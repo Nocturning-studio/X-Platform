@@ -172,7 +172,7 @@ ConstantBufferHandle CRenderBackendDX9::CreateConstantBuffer(u32 size)
 	}
 
 	DX9ConstantBuffer* impl = new DX9ConstantBuffer;
-	impl->data.resize(size / sizeof(float)); // кратно 4 из-за проверки выше
+	impl->data.resize(size / sizeof(float)); // РєСЂР°С‚РЅРѕ 4 РёР·-Р·Р° РїСЂРѕРІРµСЂРєРё РІС‹С€Рµ
 	return AllocConstantBufferHandle(impl);
 }
 
@@ -222,7 +222,7 @@ void CRenderBackendDX9::SetShaderConstantBuffer(ShaderType type, u32 startRegist
 	{
 	case ShaderType::Vertex:
 		m_pDevice->SetVertexShaderConstantF(startRegister, cb->data.data(),
-											static_cast<UINT>(cb->data.size() / 4) // 4 float = 1 регистр
+											static_cast<UINT>(cb->data.size() / 4) // 4 float = 1 СЂРµРіРёСЃС‚СЂ
 		);
 		break;
 	case ShaderType::Pixel:
@@ -314,7 +314,7 @@ ShaderConstantLayout CRenderBackendDX9::ReflectConstantLayout(ShaderHandle handl
 
 		if(type == ConstantType::Sampler)
 		{
-			// семплеры храним в layout с size=0
+			// СЃРµРјРїР»РµСЂС‹ С…СЂР°РЅРёРј РІ layout СЃ size=0
 			layout.fields.push_back({name, static_cast<u32>(info->RegisterIndex * 16), 0u, type, ConstantClass::Object,
 									 static_cast<u16>(info->RegisterIndex), static_cast<u16>(info->RegisterCount)});
 			continue;
@@ -330,7 +330,7 @@ ShaderConstantLayout CRenderBackendDX9::ReflectConstantLayout(ShaderHandle handl
 			maxReg = endReg;
 	}
 	layout.totalSize = maxReg * 16;
-	layout.registerBase = 0; // DX9 всегда c0
+	layout.registerBase = 0; // DX9 РІСЃРµРіРґР° c0
 	return layout;
 }
 

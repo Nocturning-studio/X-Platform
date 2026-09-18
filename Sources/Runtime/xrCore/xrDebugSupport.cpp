@@ -6,7 +6,7 @@
 #pragma comment(lib, "dbghelp.lib")
 
 // ============================================================
-// Реализация DebugSupport
+// Р РµР°Р»РёР·Р°С†РёСЏ DebugSupport
 // ============================================================
 
 DebugSupport& DebugSupport::Instance()
@@ -22,7 +22,7 @@ bool DebugSupport::Initialize(HANDLE hProcess)
 
 	m_hProcess = hProcess;
 
-	// Настройка опций символьного движка
+	// РќР°СЃС‚СЂРѕР№РєР° РѕРїС†РёР№ СЃРёРјРІРѕР»СЊРЅРѕРіРѕ РґРІРёР¶РєР°
 	SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
 
 	if(!SymInitialize(hProcess, nullptr, TRUE))
@@ -81,10 +81,10 @@ std::vector<std::string> DebugSupport::GetStackTrace(CONTEXT* context, HANDLE hT
 	stackFrame.AddrFrame.Mode = AddrModeFlat;
 #else
 	LeaveCriticalSection(&m_cs);
-	return result; // Неподдерживаемая архитектура
+	return result; // РќРµРїРѕРґРґРµСЂР¶РёРІР°РµРјР°СЏ Р°СЂС…РёС‚РµРєС‚СѓСЂР°
 #endif
 
-	// Идём по стеку
+	// РРґС‘Рј РїРѕ СЃС‚РµРєСѓ
 	while(StackWalk64(machineType, m_hProcess, hThread, &stackFrame, context, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
 	{
 		if(stackFrame.AddrPC.Offset == 0)
@@ -109,10 +109,10 @@ std::string DebugSupport::FormatFrame(DWORD64 address)
 	char buffer[2048] = {};
 	int len = 0;
 
-	// 1. Адрес
+	// 1. РђРґСЂРµСЃ
 	len += sprintf_s(buffer + len, sizeof(buffer) - len, "0x%p", (void*)address);
 
-	// 2. Имя символа
+	// 2. РРјСЏ СЃРёРјРІРѕР»Р°
 	char symbolInfoBuf[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)] = {};
 	PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)symbolInfoBuf;
 	pSymbol->SizeOfStruct = sizeof(SYMBOL_INFO);
@@ -130,7 +130,7 @@ std::string DebugSupport::FormatFrame(DWORD64 address)
 		len += sprintf_s(buffer + len, sizeof(buffer) - len, " <unknown_symbol>");
 	}
 
-	// 3. Информация о модуле (имя)
+	// 3. РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РјРѕРґСѓР»Рµ (РёРјСЏ)
 	IMAGEHLP_MODULE64 modInfo = {sizeof(IMAGEHLP_MODULE64)};
 	if(SymGetModuleInfo64(m_hProcess, address, &modInfo))
 	{
@@ -138,7 +138,7 @@ std::string DebugSupport::FormatFrame(DWORD64 address)
 		len += sprintf_s(buffer + len, sizeof(buffer) - len, " [%s]", modName);
 	}
 
-	// 4. Исходный файл и строка
+	// 4. РСЃС…РѕРґРЅС‹Р№ С„Р°Р№Р» Рё СЃС‚СЂРѕРєР°
 	IMAGEHLP_LINE64 lineInfo = {sizeof(IMAGEHLP_LINE64)};
 	DWORD lineDisplacement = 0;
 	if(SymGetLineFromAddr64(m_hProcess, address, &lineDisplacement, &lineInfo))
@@ -153,7 +153,7 @@ std::string DebugSupport::FormatFrame(DWORD64 address)
 }
 
 // ============================================================
-// Вспомогательные функции для модулей
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РјРѕРґСѓР»РµР№
 // ============================================================
 
 bool GetProcessModules(DWORD processId, std::vector<HMODULE>& outModules)

@@ -6,7 +6,7 @@ class CInifile;
 struct xr_token;
 
 //-----------------------------------------------------------------------------------------------------------
-// Описание Inifile
+// РћРїРёСЃР°РЅРёРµ Inifile
 //-----------------------------------------------------------------------------------------------------------
 
 class XRCORE_API CInifile
@@ -91,16 +91,16 @@ class XRCORE_API CInifile
 	{
 		return r_clsid(*S, L);
 	}
-	LPCSTR r_string(LPCSTR S, LPCSTR L); // оставляет кавычки
+	LPCSTR r_string(LPCSTR S, LPCSTR L); // РѕСЃС‚Р°РІР»СЏРµС‚ РєР°РІС‹С‡РєРё
 	LPCSTR r_string(const shared_str& S, LPCSTR L)
 	{
 		return r_string(*S, L);
-	} // оставляет кавычки
-	shared_str r_string_wb(LPCSTR S, LPCSTR L); // убирает кавычки
+	} // РѕСЃС‚Р°РІР»СЏРµС‚ РєР°РІС‹С‡РєРё
+	shared_str r_string_wb(LPCSTR S, LPCSTR L); // СѓР±РёСЂР°РµС‚ РєР°РІС‹С‡РєРё
 	shared_str r_string_wb(const shared_str& S, LPCSTR L)
 	{
 		return r_string_wb(*S, L);
-	} // убирает кавычки
+	} // СѓР±РёСЂР°РµС‚ РєР°РІС‹С‡РєРё
 	u8 r_u8(LPCSTR S, LPCSTR L);
 	u8 r_u8(const shared_str& S, LPCSTR L)
 	{

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "TimeManager.h"
-#include "IGame_Persistent.h" // Для g_pauseMngr, если нужно, или передавать через Engine
+#include "IGame_Persistent.h" // Р”Р»СЏ g_pauseMngr, РµСЃР»Рё РЅСѓР¶РЅРѕ, РёР»Рё РїРµСЂРµРґР°РІР°С‚СЊ С‡РµСЂРµР· Engine
 #include <timeapi.h>
 
-// Необходимо для доступа к флагам (rsConstantFPS)
-// В X-Ray это обычно глобальная структура, либо через Device.
-// Если psDeviceFlags глобальна:
+// РќРµРѕР±С…РѕРґРёРјРѕ РґР»СЏ РґРѕСЃС‚СѓРїР° Рє С„Р»Р°РіР°Рј (rsConstantFPS)
+// Р’ X-Ray СЌС‚Рѕ РѕР±С‹С‡РЅРѕ РіР»РѕР±Р°Р»СЊРЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР°, Р»РёР±Рѕ С‡РµСЂРµР· Device.
+// Р•СЃР»Рё psDeviceFlags РіР»РѕР±Р°Р»СЊРЅР°:
 extern ENGINE_API Flags32 psDeviceFlags;
 
 CTimeManager::CTimeManager()
@@ -32,7 +32,7 @@ void CTimeManager::Initialize()
 	m_TimerGlobal.Start();
 	m_TimerMM.Start();
 
-	// Расчет дельты мультимедийного таймера (код из старого Device::PrepareEventLoop)
+	// Р Р°СЃС‡РµС‚ РґРµР»СЊС‚С‹ РјСѓР»СЊС‚РёРјРµРґРёР№РЅРѕРіРѕ С‚Р°Р№РјРµСЂР° (РєРѕРґ РёР· СЃС‚Р°СЂРѕРіРѕ Device::PrepareEventLoop)
 	m_dwTimeGlobal = 0;
 	m_Timer_MM_Delta = 0;
 	{
@@ -47,7 +47,7 @@ void CTimeManager::Initialize()
 
 void CTimeManager::Destroy()
 {
-	// Очистка, если требуется
+	// РћС‡РёСЃС‚РєР°, РµСЃР»Рё С‚СЂРµР±СѓРµС‚СЃСЏ
 }
 
 void CTimeManager::SetTimeFactor(float factor)
@@ -90,7 +90,7 @@ void CTimeManager::Update()
 
 	m_dwTimeContinual = m_TimerMM.GetElapsed_ms();
 
-	// Логика rsConstantFPS (обычно используется для записи демок или бенчмарков)
+	// Р›РѕРіРёРєР° rsConstantFPS (РѕР±С‹С‡РЅРѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р·Р°РїРёСЃРё РґРµРјРѕРє РёР»Рё Р±РµРЅС‡РјР°СЂРєРѕРІ)
 	if(psDeviceFlags.test(rsConstantFPS))
 	{
 		// 20ms = 50fps fix
@@ -101,19 +101,19 @@ void CTimeManager::Update()
 	}
 	else
 	{
-		// Обычный расчет времени
+		// РћР±С‹С‡РЅС‹Р№ СЂР°СЃС‡РµС‚ РІСЂРµРјРµРЅРё
 		float fPreviousFrameTime = m_Timer.GetElapsed_sec();
-		m_Timer.Start(); // начало нового кадра для локального таймера
+		m_Timer.Start(); // РЅР°С‡Р°Р»Рѕ РЅРѕРІРѕРіРѕ РєР°РґСЂР° РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕРіРѕ С‚Р°Р№РјРµСЂР°
 
-		m_fTimeDelta = 0.1f * m_fTimeDelta + 0.9f * fPreviousFrameTime; // сглаживание
+		m_fTimeDelta = 0.1f * m_fTimeDelta + 0.9f * fPreviousFrameTime; // СЃРіР»Р°Р¶РёРІР°РЅРёРµ
 
 		if(m_fTimeDelta > 0.1f)
-			m_fTimeDelta = 0.1f; // лимит минимум 10fps (защита от гигантских лагов)
+			m_fTimeDelta = 0.1f; // Р»РёРјРёС‚ РјРёРЅРёРјСѓРј 10fps (Р·Р°С‰РёС‚Р° РѕС‚ РіРёРіР°РЅС‚СЃРєРёС… Р»Р°РіРѕРІ)
 
-		// Проверка на паузу (g_pauseMngr обычно управляет тем, идет ли время в игре)
-		// В оригинале: if (Paused()) fTimeDelta = 0.0f;
-		// Здесь нам нужно получить состояние паузы.
-		// Если g_pauseMngr глобален:
+		// РџСЂРѕРІРµСЂРєР° РЅР° РїР°СѓР·Сѓ (g_pauseMngr РѕР±С‹С‡РЅРѕ СѓРїСЂР°РІР»СЏРµС‚ С‚РµРј, РёРґРµС‚ Р»Рё РІСЂРµРјСЏ РІ РёРіСЂРµ)
+		// Р’ РѕСЂРёРіРёРЅР°Р»Рµ: if (Paused()) fTimeDelta = 0.0f;
+		// Р—РґРµСЃСЊ РЅР°Рј РЅСѓР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РїР°СѓР·С‹.
+		// Р•СЃР»Рё g_pauseMngr РіР»РѕР±Р°Р»РµРЅ:
 		if(g_pauseMngr.Paused())
 			m_fTimeDelta = 0.0f;
 
@@ -126,10 +126,10 @@ void CTimeManager::Update()
 
 void CTimeManager::OnFrameStart()
 {
-	// Запоминаем время начала кадра для лимитера
+	// Р—Р°РїРѕРјРёРЅР°РµРј РІСЂРµРјСЏ РЅР°С‡Р°Р»Р° РєР°РґСЂР° РґР»СЏ Р»РёРјРёС‚РµСЂР°
 	m_FrameStartTime = GetGlobalTimeMs();
 
-	// Обновляем специфичные тайм значения
+	// РћР±РЅРѕРІР»СЏРµРј СЃРїРµС†РёС„РёС‡РЅС‹Рµ С‚Р°Р№Рј Р·РЅР°С‡РµРЅРёСЏ
 	m_dwTimeGlobalFixed = m_TimerGlobal.GetElapsed_ms();
 	m_fTimeGlobalFixed = m_TimerGlobal.GetElapsed_sec();
 }
@@ -137,7 +137,7 @@ void CTimeManager::OnFrameStart()
 u32 CTimeManager::CalculateFrameLimitDelay(u32 targetFPS)
 {
 	if(targetFPS == 0)
-		return 0; // Без лимита
+		return 0; // Р‘РµР· Р»РёРјРёС‚Р°
 
 	m_FrameEndTime = GetGlobalTimeMs();
 	u32 frameDuration = m_FrameEndTime - m_FrameStartTime;

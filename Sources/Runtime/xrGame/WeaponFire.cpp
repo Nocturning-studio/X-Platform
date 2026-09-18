@@ -66,7 +66,7 @@ void CWeapon::FireTrace(const fvec3& P, const fvec3& D)
 	if(m_u8TracerColorID != u8(-1))
 		l_cartridge.m_u8ColorID = m_u8TracerColorID;
 	//-------------------------------------------------------------
-	// повысить изношенность оружия с учетом влияния конкретного патрона
+	// РїРѕРІС‹СЃРёС‚СЊ РёР·РЅРѕС€РµРЅРЅРѕСЃС‚СЊ РѕСЂСѓР¶РёСЏ СЃ СѓС‡РµС‚РѕРј РІР»РёСЏРЅРёСЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РїР°С‚СЂРѕРЅР°
 	//	float Deterioration = GetWeaponDeterioration();
 	//	Msg("Deterioration = %f", Deterioration);
 	ChangeCondition(-GetWeaponDeterioration() * l_cartridge.m_impair);
@@ -74,7 +74,7 @@ void CWeapon::FireTrace(const fvec3& P, const fvec3& D)
 	float fire_disp = GetFireDispersion(true);
 
 	bool SendHit = SendHitAllowed(H_Parent());
-	// выстерлить пулю (с учетом возможной стрельбы дробью)
+	// РІС‹СЃС‚РµСЂР»РёС‚СЊ РїСѓР»СЋ (СЃ СѓС‡РµС‚РѕРј РІРѕР·РјРѕР¶РЅРѕР№ СЃС‚СЂРµР»СЊР±С‹ РґСЂРѕР±СЊСЋ)
 	for(int i = 0; i < l_cartridge.m_buckShot; ++i)
 	{
 		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
@@ -89,7 +89,7 @@ void CWeapon::FireTrace(const fvec3& P, const fvec3& D)
 	m_magazine.pop_back();
 	--iAmmoElapsed;
 
-	// проверить не произошла ли осечка
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅРµ РїСЂРѕРёР·РѕС€Р»Р° Р»Рё РѕСЃРµС‡РєР°
 	CheckForMisfire();
 }
 
@@ -99,7 +99,7 @@ void CWeapon::Fire2Start()
 }
 void CWeapon::Fire2End()
 {
-	// принудительно останавливать зацикленные партиклы
+	// РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РѕСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ Р·Р°С†РёРєР»РµРЅРЅС‹Рµ РїР°СЂС‚РёРєР»С‹
 	if(m_pFlameParticles2 && m_pFlameParticles2->IsLooped())
 		StopFlameParticles2();
 
@@ -110,7 +110,7 @@ void CWeapon::StopShooting()
 {
 	m_bPending = true;
 
-	// принудительно останавливать зацикленные партиклы
+	// РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РѕСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ Р·Р°С†РёРєР»РµРЅРЅС‹Рµ РїР°СЂС‚РёРєР»С‹
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
 		StopFlameParticles();
 

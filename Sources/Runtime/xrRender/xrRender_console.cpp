@@ -256,7 +256,7 @@ float ps_r_sun_tsm_bias = -0.05f;
 float ps_r_sun_near = 12.f;
 float ps_r_sun_far = 200.f;
 
-// Эмпирически подобранные данные - настраиваются командами
+// Р­РјРїРёСЂРёС‡РµСЃРєРё РїРѕРґРѕР±СЂР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ - РЅР°СЃС‚СЂР°РёРІР°СЋС‚СЃСЏ РєРѕРјР°РЅРґР°РјРё
 float ps_r_sun_depth_far_normal_bias = 0.0f;
 float ps_r_sun_depth_far_directional_bias = 0.0f;
 float ps_r_sun_depth_far_bias = -0.0025f;
@@ -587,7 +587,7 @@ class CCC_DetailQuality : public CCC_Token
 			break;
 		}
 
-		// Обновляем кеш
+		// РћР±РЅРѕРІР»СЏРµРј РєРµС€
 		if(RenderImplementation.Details)
 			RenderImplementation.Details->InvalidateCache();
 	}
@@ -782,8 +782,8 @@ void xrRender_initconsole()
 
 	CMD3(CCC_Token, "r_geometry_quality_mode", &ps_geometry_quality_mode, geometry_quality_mode_token);
 
-	// !!! СТРОГО ВНИЗУ ПОСЛЕ ВСЕХ ОПЦИЙ !!!
-	// #pragma todo("Брух")
+	// !!! РЎРўР РћР“Рћ Р’РќРР—РЈ РџРћРЎР›Р• Р’РЎР•РҐ РћРџР¦РР™ !!!
+	// #pragma todo("Р‘СЂСѓС…")
 	// CMD3(CCC_ConditionsToken, "r1_aa_type", &ps_r1_aa, r1_aa_token);
 	// CMD3(CCC_ConditionsToken, "r1_aa_transluency", &ps_r1_aa_transluency, r1_aa_transluency_token);
 }

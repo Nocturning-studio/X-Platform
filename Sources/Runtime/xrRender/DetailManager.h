@@ -5,15 +5,15 @@
 #include <xrCore/xrPool.h>
 #include "detailformat.h"
 #include "detailmodel.h"
-#include <ppl.h> // PPL для многопоточности
+#include <ppl.h> // PPL РґР»СЏ РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚Рё
 
 #ifdef _EDITOR
 #include "ESceneClassList.h"
 #endif
 
-// === НАСТРОЙКИ БУФЕРА ===
-// Увеличиваем размер кеша, чтобы физически поддерживать большой радиус.
-// 128 слотов * 2 метра = 256 метров максимальный радиус.
+// === РќРђРЎРўР РћР™РљР Р‘РЈР¤Р•Р Рђ ===
+// РЈРІРµР»РёС‡РёРІР°РµРј СЂР°Р·РјРµСЂ РєРµС€Р°, С‡С‚РѕР±С‹ С„РёР·РёС‡РµСЃРєРё РїРѕРґРґРµСЂР¶РёРІР°С‚СЊ Р±РѕР»СЊС€РѕР№ СЂР°РґРёСѓСЃ.
+// 128 СЃР»РѕС‚РѕРІ * 2 РјРµС‚СЂР° = 256 РјРµС‚СЂРѕРІ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°РґРёСѓСЃ.
 const int dm_size = 128;
 
 const int dm_max_decompress = 7;
@@ -25,8 +25,8 @@ const int dm_cache_line = dm_size + 1 + dm_size;
 const int dm_cache_size = dm_cache_line * dm_cache_line;
 const float dm_slot_size = DETAIL_SLOT_SIZE;
 
-// === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (EXTERN) ===
-// Это позволяет DetailManager.cpp видеть переменные, объявленные в xrRender_console.cpp
+// === Р“Р›РћР‘РђР›Р¬РќР«Р• РџР•Р Р•РњР•РќРќР«Р• (EXTERN) ===
+// Р­С‚Рѕ РїРѕР·РІРѕР»СЏРµС‚ DetailManager.cpp РІРёРґРµС‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ, РѕР±СЉСЏРІР»РµРЅРЅС‹Рµ РІ xrRender_console.cpp
 extern float ps_r_Detail_density;
 extern float ps_r_Detail_radius;
 extern float ps_r_Detail_scale;
@@ -42,7 +42,7 @@ enum class DetailsRenderMode
 class CDetailManager
 {
   public:
-	// Структура для передачи параметров рендеринга
+	// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РїРµСЂРµРґР°С‡Рё РїР°СЂР°РјРµС‚СЂРѕРІ СЂРµРЅРґРµСЂРёРЅРіР°
 	struct SDetailRenderContext
 	{
 		DetailsRenderMode mode;
@@ -62,7 +62,7 @@ class CDetailManager
 		}
 	};
 
-	// Индексы для списков видимости m_visibles[id][INDEX]
+	// РРЅРґРµРєСЃС‹ РґР»СЏ СЃРїРёСЃРєРѕРІ РІРёРґРёРјРѕСЃС‚Рё m_visibles[id][INDEX]
 	enum EDetailVisibilityList
 	{
 		DVL_Static = 0,
@@ -70,15 +70,15 @@ class CDetailManager
 		DVL_Wave2 = 2
 	};
 
-	// Тип шейдера (для выбора внутри шейдерного элемента объекта)
+	// РўРёРї С€РµР№РґРµСЂР° (РґР»СЏ РІС‹Р±РѕСЂР° РІРЅСѓС‚СЂРё С€РµР№РґРµСЂРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РѕР±СЉРµРєС‚Р°)
 	enum EDetailShaderType
 	{
 		DST_Animated = 0,
 		DST_Static = 1
 	};
 
-	// Структуры
-	// Выравниваем структуру для SSE операций
+	// РЎС‚СЂСѓРєС‚СѓСЂС‹
+	// Р’С‹СЂР°РІРЅРёРІР°РµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР»СЏ SSE РѕРїРµСЂР°С†РёР№
 	struct __declspec(align(16)) SlotItem
 	{
 		fmat4x4 mRotY;			// 64 bytes
@@ -90,7 +90,7 @@ class CDetailManager
 		u32 vis_ID_backup;		// 4
 		u32 _pad;				// padding to 88 bytes or optimize order later
 	};
-	// Используем xr_vector с объектами
+	// РСЃРїРѕР»СЊР·СѓРµРј xr_vector СЃ РѕР±СЉРµРєС‚Р°РјРё
 	typedef xr_vector<SlotItem> SlotItemVec;
 	typedef SlotItemVec::iterator SlotItemVecIt;
 
@@ -104,7 +104,7 @@ class CDetailManager
 
 	struct DetailBatch
 	{
-		xr_vector<InstanceData> instances; // Для GPU (Memcpy)
+		xr_vector<InstanceData> instances; // Р”Р»СЏ GPU (Memcpy)
 		Fbox bbox;
 
 		void clear_not_free()
@@ -123,7 +123,7 @@ class CDetailManager
 	struct SlotPart
 	{
 		u32 id;
-		SlotItemVec items; // Исходные айтемы (для логики)
+		SlotItemVec items; // РСЃС…РѕРґРЅС‹Рµ Р°Р№С‚РµРјС‹ (РґР»СЏ Р»РѕРіРёРєРё)
 	};
 
 	enum SlotType
@@ -166,16 +166,16 @@ class CDetailManager
 		}
 	};
 
-	// === ИЗМЕНЕНИЕ: Двойной буфер ===
-	// [2] - два набора данных
-	// [3] - три волны (Static, Wave1, Wave2)
+	// === РР—РњР•РќР•РќРР•: Р”РІРѕР№РЅРѕР№ Р±СѓС„РµСЂ ===
+	// [2] - РґРІР° РЅР°Р±РѕСЂР° РґР°РЅРЅС‹С…
+	// [3] - С‚СЂРё РІРѕР»РЅС‹ (Static, Wave1, Wave2)
 	using vis_per_wave = xr_vector<DetailRenderVec>;
 	vis_per_wave m_visibles[2][3];
 
-	u32 m_vis_render_id; // Индекс буфера, который сейчас рисуем
-	u32 m_vis_calc_id;	 // Индекс буфера, который сейчас считаем
+	u32 m_vis_render_id; // РРЅРґРµРєСЃ Р±СѓС„РµСЂР°, РєРѕС‚РѕСЂС‹Р№ СЃРµР№С‡Р°СЃ СЂРёСЃСѓРµРј
+	u32 m_vis_calc_id;	 // РРЅРґРµРєСЃ Р±СѓС„РµСЂР°, РєРѕС‚РѕСЂС‹Р№ СЃРµР№С‡Р°СЃ СЃС‡РёС‚Р°РµРј
 
-	// Сохраненная позиция камеры для расчета в потоке (чтобы не было гонок данных с Device)
+	// РЎРѕС…СЂР°РЅРµРЅРЅР°СЏ РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РґР»СЏ СЂР°СЃС‡РµС‚Р° РІ РїРѕС‚РѕРєРµ (С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ РіРѕРЅРѕРє РґР°РЅРЅС‹С… СЃ Device)
 	fvec3 m_vCameraPos_calc;
 	fmat4x4 m_mFullTransform_calc;
 	typedef svector<CDetail*, dm_max_objects> DetailVec;
@@ -183,15 +183,15 @@ class CDetailManager
 	typedef poolSS<SlotItem, 4096> PSS;
 
   private:
-	// Внутренние методы рендеринга (Single Responsibility)
+	// Р’РЅСѓС‚СЂРµРЅРЅРёРµ РјРµС‚РѕРґС‹ СЂРµРЅРґРµСЂРёРЅРіР° (Single Responsibility)
 	void ExecuteRenderPasses(const SDetailRenderContext& ctx);
 	void ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
 						EDetailShaderType shaderType);
 
-	// Хелпер для отрисовки батча
+	// РҐРµР»РїРµСЂ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё Р±Р°С‚С‡Р°
 	void FlushBatch(CDetail& Object, u32 instanceCount, u32 vOffset, u32 iOffset, u32 baseInstanceOffset);
 
-	// Хелпер для выбора шейдера
+	// РҐРµР»РїРµСЂ РґР»СЏ РІС‹Р±РѕСЂР° С€РµР№РґРµСЂР°
 	ref_selement SelectShader(CDetail& Object, DetailsRenderMode mode, EDetailShaderType shaderType);
 
   public:
@@ -210,7 +210,7 @@ class CDetailManager
 	u32 hw_BatchOffset;
 
 #ifndef _EDITOR
-	xrXRC xrc; // Глобальный XRC (не для потоков)
+	xrXRC xrc; // Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ XRC (РЅРµ РґР»СЏ РїРѕС‚РѕРєРѕРІ)
 #endif
 
 	CacheSlot1 cache_level1[dm_cache1_line][dm_cache1_line];
@@ -244,10 +244,10 @@ class CDetailManager
 	void cache_Task(int gx, int gz, Slot* D);
 	Slot* cache_Query(int sx, int sz);
 
-	// Decompress принимает локальный XRC
+	// Decompress РїСЂРёРЅРёРјР°РµС‚ Р»РѕРєР°Р»СЊРЅС‹Р№ XRC
 	void cache_Decompress(Slot* D, xrXRC& local_xrc);
 
-	// Метод сброса кеша при смене настроек
+	// РњРµС‚РѕРґ СЃР±СЂРѕСЃР° РєРµС€Р° РїСЂРё СЃРјРµРЅРµ РЅР°СЃС‚СЂРѕРµРє
 	void InvalidateCache();
 
 	BOOL cache_Validate();

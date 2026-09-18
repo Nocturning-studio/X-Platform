@@ -824,7 +824,7 @@ void CGameObject::DestroyObject()
 
 void CGameObject::shedule_Update(u32 dt)
 {
-	// уничтожить
+	// СѓРЅРёС‡С‚РѕР¶РёС‚СЊ
 	if(!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
@@ -845,7 +845,7 @@ BOOL CGameObject::net_SaveRelevant()
 	return (CScriptBinder::net_SaveRelevant());
 }
 
-// игровое имя объекта
+// РёРіСЂРѕРІРѕРµ РёРјСЏ РѕР±СЉРµРєС‚Р°
 LPCSTR CGameObject::Name() const
 {
 	return (*cName());

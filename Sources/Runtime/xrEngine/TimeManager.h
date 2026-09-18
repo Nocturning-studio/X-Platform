@@ -10,20 +10,20 @@ class ENGINE_API CTimeManager
 	void Initialize();
 	void Destroy();
 
-	// Вызывается каждый кадр перед основной логикой
+	// Р’С‹Р·С‹РІР°РµС‚СЃСЏ РєР°Р¶РґС‹Р№ РєР°РґСЂ РїРµСЂРµРґ РѕСЃРЅРѕРІРЅРѕР№ Р»РѕРіРёРєРѕР№
 	void Update();
 
-	// Управление временем
+	// РЈРїСЂР°РІР»РµРЅРёРµ РІСЂРµРјРµРЅРµРј
 	void SetTimeFactor(float factor);
 	float GetTimeFactor() const;
 	void StopTime();
 
-	// Функции таймеров (аналоги старых методов Device)
-	u32 TimerAsync();	   // Время с начала запуска Engine (Global)
-	u32 TimerAsync_MMT();  // Мультимедийное время (с коррекцией)
-	u32 GetFrameElapsed(); // Время, затраченное на кадр
+	// Р¤СѓРЅРєС†РёРё С‚Р°Р№РјРµСЂРѕРІ (Р°РЅР°Р»РѕРіРё СЃС‚Р°СЂС‹С… РјРµС‚РѕРґРѕРІ Device)
+	u32 TimerAsync();	   // Р’СЂРµРјСЏ СЃ РЅР°С‡Р°Р»Р° Р·Р°РїСѓСЃРєР° Engine (Global)
+	u32 TimerAsync_MMT();  // РњСѓР»СЊС‚РёРјРµРґРёР№РЅРѕРµ РІСЂРµРјСЏ (СЃ РєРѕСЂСЂРµРєС†РёРµР№)
+	u32 GetFrameElapsed(); // Р’СЂРµРјСЏ, Р·Р°С‚СЂР°С‡РµРЅРЅРѕРµ РЅР° РєР°РґСЂ
 
-	// Геттеры состояния
+	// Р“РµС‚С‚РµСЂС‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	IC u32 GetFrameCount() const
 	{
 		return m_dwFrame;
@@ -66,7 +66,7 @@ class ENGINE_API CTimeManager
 		return m_fTimeGlobalFixed;
 	}
 
-	// Сброс счетчика кадров (например, при смене уровня)
+	// РЎР±СЂРѕСЃ СЃС‡РµС‚С‡РёРєР° РєР°РґСЂРѕРІ (РЅР°РїСЂРёРјРµСЂ, РїСЂРё СЃРјРµРЅРµ СѓСЂРѕРІРЅСЏ)
 	void ResetFrameCount()
 	{
 		m_dwFrame = 0;
@@ -89,23 +89,23 @@ class ENGINE_API CTimeManager
 		m_fTimeGlobal = val;
 	}
 
-	// Вызывается в самом начале кадра
+	// Р’С‹Р·С‹РІР°РµС‚СЃСЏ РІ СЃР°РјРѕРј РЅР°С‡Р°Р»Рµ РєР°РґСЂР°
 	void OnFrameStart();
 
-	// Вызывается в конце кадра, возвращает время, которое нужно поспать (в мс)
+	// Р’С‹Р·С‹РІР°РµС‚СЃСЏ РІ РєРѕРЅС†Рµ РєР°РґСЂР°, РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ РЅСѓР¶РЅРѕ РїРѕСЃРїР°С‚СЊ (РІ РјСЃ)
 	u32 CalculateFrameLimitDelay(u32 targetFPS);
 
 	void DoFrameLimit();
 
   private:
-	// Таймеры
+	// РўР°Р№РјРµСЂС‹
 	u32 m_Timer_MM_Delta;
-	CTimer_paused m_Timer;		 // Игровой таймер (паузится)
-	CTimer_paused m_TimerGlobal; // Глобальный таймер (не паузится обычно, но зависит от time_factor)
-	CTimer m_TimerMM;			 // Мультимедийный таймер
-	CTimer m_FrameTimer;		 // Таймер длительности кадра
+	CTimer_paused m_Timer;		 // РРіСЂРѕРІРѕР№ С‚Р°Р№РјРµСЂ (РїР°СѓР·РёС‚СЃСЏ)
+	CTimer_paused m_TimerGlobal; // Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ С‚Р°Р№РјРµСЂ (РЅРµ РїР°СѓР·РёС‚СЃСЏ РѕР±С‹С‡РЅРѕ, РЅРѕ Р·Р°РІРёСЃРёС‚ РѕС‚ time_factor)
+	CTimer m_TimerMM;			 // РњСѓР»СЊС‚РёРјРµРґРёР№РЅС‹Р№ С‚Р°Р№РјРµСЂ
+	CTimer m_FrameTimer;		 // РўР°Р№РјРµСЂ РґР»РёС‚РµР»СЊРЅРѕСЃС‚Рё РєР°РґСЂР°
 
-	// Переменные состояния
+	// РџРµСЂРµРјРµРЅРЅС‹Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	u32 m_dwFrame;
 
 	float m_fTimeDelta;
@@ -115,14 +115,14 @@ class ENGINE_API CTimeManager
 	u32 m_dwTimeGlobal;
 	u32 m_dwTimeContinual;
 
-	// Внутренние настройки
+	// Р’РЅСѓС‚СЂРµРЅРЅРёРµ РЅР°СЃС‚СЂРѕР№РєРё
 	float m_psTimeFactor;
 
-	// Ограничение количества кадров
+	// РћРіСЂР°РЅРёС‡РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° РєР°РґСЂРѕРІ
 	u32 m_FrameStartTime;
 	u32 m_FrameEndTime;
 
-	// Время, обновляемое один раз за кадр
+	// Р’СЂРµРјСЏ, РѕР±РЅРѕРІР»СЏРµРјРѕРµ РѕРґРёРЅ СЂР°Р· Р·Р° РєР°РґСЂ
 	u32 m_dwTimeGlobalFixed;
 	float m_fTimeGlobalFixed;
 };

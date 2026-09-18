@@ -26,7 +26,7 @@ void CMonsterEnemyMemory::init_external(CBaseMonster* M, TTime mem_time)
 void CMonsterEnemyMemory::update()
 {
 	VERIFY(monster->g_Alive());
-	// Обновить врагов
+	// РћР±РЅРѕРІРёС‚СЊ РІСЂР°РіРѕРІ
 	for(xr_vector<const CEntityAlive*>::const_iterator I = monster->memory().enemy().objects().begin();
 		I != monster->memory().enemy().objects().end(); ++I)
 	{
@@ -34,10 +34,10 @@ void CMonsterEnemyMemory::update()
 			add_enemy(*I);
 	}
 
-	// удалить устаревших врагов
+	// СѓРґР°Р»РёС‚СЊ СѓСЃС‚Р°СЂРµРІС€РёС… РІСЂР°РіРѕРІ
 	remove_non_actual();
 
-	// обновить опасность
+	// РѕР±РЅРѕРІРёС‚СЊ РѕРїР°СЃРЅРѕСЃС‚СЊ
 	for(ENEMIES_MAP_IT it = m_objects.begin(); it != m_objects.end(); it++)
 	{
 		u8 relation_value = u8(monster->tfGetRelationType(it->first));
@@ -57,12 +57,12 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy)
 	ENEMIES_MAP_IT it = m_objects.find(enemy);
 	if(it != m_objects.end())
 	{
-		// обновить данные о враге
+		// РѕР±РЅРѕРІРёС‚СЊ РґР°РЅРЅС‹Рµ Рѕ РІСЂР°РіРµ
 		it->second = enemy_info;
 	}
 	else
 	{
-		// добавить врага в список объектов
+		// РґРѕР±Р°РІРёС‚СЊ РІСЂР°РіР° РІ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ
 		m_objects.insert(mk_pair(enemy, enemy_info));
 	}
 }
@@ -78,13 +78,13 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy, const fvec3& pos,
 	ENEMIES_MAP_IT it = m_objects.find(enemy);
 	if(it != m_objects.end())
 	{
-		// обновить данные о враге
+		// РѕР±РЅРѕРІРёС‚СЊ РґР°РЅРЅС‹Рµ Рѕ РІСЂР°РіРµ
 		if(it->second.time < enemy_info.time)
 			it->second = enemy_info;
 	}
 	else
 	{
-		// добавить врага в список объектов
+		// РґРѕР±Р°РІРёС‚СЊ РІСЂР°РіР° РІ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ
 		m_objects.insert(mk_pair(enemy, enemy_info));
 	}
 }
@@ -93,12 +93,12 @@ void CMonsterEnemyMemory::remove_non_actual()
 {
 	TTime cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
-	// удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
+	// СѓРґР°Р»РёС‚СЊ 'СЃС‚Р°СЂС‹С…' РІСЂР°РіРѕРІ Рё С‚РµС…, СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РєРѕС‚РѕСЂС‹С… > 30Рј Рё РґСЂ.
 	for(ENEMIES_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
 	{
 		nit = it;
 		++nit;
-		// проверить условия удаления
+		// РїСЂРѕРІРµСЂРёС‚СЊ СѓСЃР»РѕРІРёСЏ СѓРґР°Р»РµРЅРёСЏ
 		if(!it->first || !it->first->g_Alive() || it->first->getDestroy() ||
 		   (it->second.time + time_memory < cur_time) || (it->first->g_Team() == monster->g_Team()))
 			m_objects.erase(it);

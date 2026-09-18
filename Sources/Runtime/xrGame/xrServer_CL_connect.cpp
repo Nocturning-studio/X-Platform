@@ -141,7 +141,7 @@ bool xrServer::NeedToCheckClient_BuildVersion(IClient* CL)
 	// #endif
 };
 
-#pragma todo(NSDeathman to NSDeathman : Переписать проверку версии при соединении)
+#pragma todo(NSDeathman to NSDeathman : РџРµСЂРµРїРёСЃР°С‚СЊ РїСЂРѕРІРµСЂРєСѓ РІРµСЂСЃРёРё РїСЂРё СЃРѕРµРґРёРЅРµРЅРёРё)
 void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 {
 	u16 Type;
@@ -154,15 +154,15 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 	Msg("_him = %d", _him);
 #endif // DEBUG
 
-	// --- НАЧАЛО ИСПРАВЛЕНИЯ ---
-	// Мы намеренно ломаем проверку. Если версии разные - просто пишем в лог, но не кикаем.
+	// --- РќРђР§РђР›Рћ РРЎРџР РђР’Р›Р•РќРРЇ ---
+	// РњС‹ РЅР°РјРµСЂРµРЅРЅРѕ Р»РѕРјР°РµРј РїСЂРѕРІРµСЂРєСѓ. Р•СЃР»Рё РІРµСЂСЃРёРё СЂР°Р·РЅС‹Рµ - РїСЂРѕСЃС‚Рѕ РїРёС€РµРј РІ Р»РѕРі, РЅРѕ РЅРµ РєРёРєР°РµРј.
 	if(_our != _him)
 	{
 		Msg("! Version mismatch ignored for Dedicated Server: Server[%llu] != Client[%llu]", _our, _him);
-		// SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]"); <--- ЗАКОММЕНТИРОВАНО
+		// SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]"); <--- Р—РђРљРћРњРњР•РќРўРР РћР’РђРќРћ
 	}
 
-	// Убираем 'else', чтобы код успешного входа выполнялся ВСЕГДА, даже если версии не совпали
+	// РЈР±РёСЂР°РµРј 'else', С‡С‚РѕР±С‹ РєРѕРґ СѓСЃРїРµС€РЅРѕРіРѕ РІС…РѕРґР° РІС‹РїРѕР»РЅСЏР»СЃСЏ Р’РЎР•Р“Р”Рђ, РґР°Р¶Рµ РµСЃР»Рё РІРµСЂСЃРёРё РЅРµ СЃРѕРІРїР°Р»Рё
 	// else
 	{
 		bool bAccessUser = false;

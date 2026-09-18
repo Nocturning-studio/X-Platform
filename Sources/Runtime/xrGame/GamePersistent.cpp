@@ -726,7 +726,7 @@ void CGamePersistent::RestoreEffectorDOF()
 }
 
 #include "hudmanager.h"
-#pragma todo(NSDeathman to NSDeathman : Доработать)
+#pragma todo(NSDeathman to NSDeathman : Р”РѕСЂР°Р±РѕС‚Р°С‚СЊ)
 //	m_dof		[4];	// 0-dest 1-current 2-from 3-original
 void CGamePersistent::UpdateDof()
 {

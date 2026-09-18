@@ -13,7 +13,7 @@ class CAI_PseudoDog : public CBaseMonster
 
 	TTime m_time_became_angry;
 
-	TTime time_growling; // время нахождения в состоянии пугания
+	TTime time_growling; // РІСЂРµРјСЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РІ СЃРѕСЃС‚РѕСЏРЅРёРё РїСѓРіР°РЅРёСЏ
 
 	enum
 	{

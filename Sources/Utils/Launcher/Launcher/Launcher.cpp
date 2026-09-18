@@ -1,4 +1,4 @@
-﻿// Launcher.cpp - Game Launcher with Update System and Feedback
+// Launcher.cpp - Game Launcher with Update System and Feedback
 // Компилировать как Windows Application
 #define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>

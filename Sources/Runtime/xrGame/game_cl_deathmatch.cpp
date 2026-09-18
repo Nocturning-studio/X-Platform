@@ -938,13 +938,13 @@ void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, fvec3& pos)
 {
 	if(!EffName)
 		return;
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	fmat4x4 M;
 	M.translate(pos);
 
 	//	CParticlesPlayer::MakeTransform(pObj,0,fvec3().set(0.f,1.f,0.f),fvec3().set(0.f,0.f,0.f),pos);
 
-	// установить particles
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ particles
 	CParticlesObject* ps = NULL;
 
 	ps = CParticlesObject::Create(EffName, TRUE);

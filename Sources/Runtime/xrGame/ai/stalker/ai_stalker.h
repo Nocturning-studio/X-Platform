@@ -338,8 +338,8 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	virtual BOOL feel_touch_contact(CObject* O);
 	virtual BOOL feel_touch_on_contact(CObject* O);
 
-	// флаги, какие действия совершал актер по отношению к сталкеру
-	//(помог, атаковал и т.д.)
+	// С„Р»Р°РіРё, РєР°РєРёРµ РґРµР№СЃС‚РІРёСЏ СЃРѕРІРµСЂС€Р°Р» Р°РєС‚РµСЂ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє СЃС‚Р°Р»РєРµСЂСѓ
+	//(РїРѕРјРѕРі, Р°С‚Р°РєРѕРІР°Р» Рё С‚.Рґ.)
 	Flags32 m_actor_relation_flags;
 
 	// ALife
@@ -600,12 +600,12 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
   private:
 	bool m_can_select_items;
 
-	u32 m_dwLastHitTime;		 // Время последнего получения урона
-	u32 m_rage_end_time;		 // Время окончания режима "Ярости"
-	u32 m_body_block_time;		 // Сколько времени мы блокируем линию огня
-	float m_previous_yaw;		 // Куда смотрел корпус в прошлом кадре (для штрафа)
-	u32 m_suppression_end_time;	 // До какого времени сталкер "прижат" и боится высовываться
-	bool m_is_counter_attacking; // Флаг режима контратаки
+	u32 m_dwLastHitTime;		 // Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РїРѕР»СѓС‡РµРЅРёСЏ СѓСЂРѕРЅР°
+	u32 m_rage_end_time;		 // Р’СЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ СЂРµР¶РёРјР° "РЇСЂРѕСЃС‚Рё"
+	u32 m_body_block_time;		 // РЎРєРѕР»СЊРєРѕ РІСЂРµРјРµРЅРё РјС‹ Р±Р»РѕРєРёСЂСѓРµРј Р»РёРЅРёСЋ РѕРіРЅСЏ
+	float m_previous_yaw;		 // РљСѓРґР° СЃРјРѕС‚СЂРµР» РєРѕСЂРїСѓСЃ РІ РїСЂРѕС€Р»РѕРј РєР°РґСЂРµ (РґР»СЏ С€С‚СЂР°С„Р°)
+	u32 m_suppression_end_time;	 // Р”Рѕ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё СЃС‚Р°Р»РєРµСЂ "РїСЂРёР¶Р°С‚" Рё Р±РѕРёС‚СЃСЏ РІС‹СЃРѕРІС‹РІР°С‚СЊСЃСЏ
+	bool m_is_counter_attacking; // Р¤Р»Р°Рі СЂРµР¶РёРјР° РєРѕРЅС‚СЂР°С‚Р°РєРё
 	u32 m_counter_attack_end_time;
 
   public:

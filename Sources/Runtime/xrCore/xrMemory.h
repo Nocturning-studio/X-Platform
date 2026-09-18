@@ -4,8 +4,8 @@
 #pragma warning(disable : 4595)
 
 #include "memory_monitor.h"
-#include <cstring>	 // для memcpy, memset
-#include <algorithm> // для std::fill_n
+#include <cstring>	 // РґР»СЏ memcpy, memset
+#include <algorithm> // РґР»СЏ std::fill_n
 
 #ifdef USE_MEMORY_MONITOR
 #define DEBUG_MEMORY_NAME

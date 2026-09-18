@@ -76,7 +76,7 @@ void CMissile::Load(LPCSTR section)
 	m_vHudThrowPoint = pSettings->r_fvector3(*hud_sect, "throw_point");
 	m_vHudThrowDir = pSettings->r_fvector3(*hud_sect, "throw_dir");
 
-	// çàãğóçèòü àíèìàöèè HUD-à
+	// Ğ·Ğ°Ğ³Ñ€ÑƒĞ·Ğ¸Ñ‚ÑŒ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ğ¸ HUD-Ğ°
 	m_sAnimShow = pSettings->r_string(*hud_sect, "anim_show");
 	m_sAnimHide = pSettings->r_string(*hud_sect, "anim_hide");
 	m_sAnimIdle = pSettings->r_string(*hud_sect, "anim_idle");

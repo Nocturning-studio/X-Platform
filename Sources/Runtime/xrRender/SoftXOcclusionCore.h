@@ -14,15 +14,15 @@ class SoftXOcclusionCore
 	SoftXOcclusionCore() = default;
 	~SoftXOcclusionCore();
 
-	// Инициализация / деинициализация
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ / РґРµРёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	void Initialize(uint2 depthMapSize);
 	void Shutdown();
 
-	// Доступ к устройству (для создания буферов, запросов и т.д.)
+	// Р”РѕСЃС‚СѓРї Рє СѓСЃС‚СЂРѕР№СЃС‚РІСѓ (РґР»СЏ СЃРѕР·РґР°РЅРёСЏ Р±СѓС„РµСЂРѕРІ, Р·Р°РїСЂРѕСЃРѕРІ Рё С‚.Рґ.)
 	SoftX::Device& GetDevice() { return *m_device; }
 	SoftX::DeviceContext& GetImmediateContext() { return m_device->GetImmediateContext(); }
 
-	// Двойная буферизация
+	// Р”РІРѕР№РЅР°СЏ Р±СѓС„РµСЂРёР·Р°С†РёСЏ
 	std::shared_ptr<SoftX::DepthBuffer> GetWriteBuffer() { return m_depthBuffers[m_writeIdx]; }
 	std::shared_ptr<SoftX::DepthBuffer> GetReadBuffer() { return m_depthBuffers[m_readIdx]; }
 	void SetBuildFuture(std::future<void>&& fut) { m_buildFuture = std::move(fut); }

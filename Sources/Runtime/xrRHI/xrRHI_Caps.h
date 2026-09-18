@@ -7,18 +7,18 @@ RHI_BEGIN
 
 struct RHIDeviceCaps
 {
-	// ---- Идентификация адаптера ----
+	// ---- РРґРµРЅС‚РёС„РёРєР°С†РёСЏ Р°РґР°РїС‚РµСЂР° ----
 	u32 VendorId = 0;
 	u32 DeviceId = 0;
-	std::string Description; // например "AMD Radeon RX 6800"
+	std::string Description; // РЅР°РїСЂРёРјРµСЂ "AMD Radeon RX 6800"
 
-	// ---- Текущий режим рабочего стола (при создании устройства) ----
+	// ---- РўРµРєСѓС‰РёР№ СЂРµР¶РёРј СЂР°Р±РѕС‡РµРіРѕ СЃС‚РѕР»Р° (РїСЂРё СЃРѕР·РґР°РЅРёРё СѓСЃС‚СЂРѕР№СЃС‚РІР°) ----
 	u32 DisplayWidth = 0;
 	u32 DisplayHeight = 0;
 	u32 DisplayRefreshRate = 0;
 	RHI_Format DisplayFormat = RHI_Format::Unknown;
 
-	// ---- Максимальные размеры ресурсов ----
+	// ---- РњР°РєСЃРёРјР°Р»СЊРЅС‹Рµ СЂР°Р·РјРµСЂС‹ СЂРµСЃСѓСЂСЃРѕРІ ----
 	u32 MaxTextureWidth = 0;
 	u32 MaxTextureHeight = 0;
 	u32 MaxVolumeExtent = 0;
@@ -26,7 +26,7 @@ struct RHIDeviceCaps
 	// ---- MRT ----
 	u32 MaxSimultaneousRTs = 0;
 
-	// ---- Шейдеры ----
+	// ---- РЁРµР№РґРµСЂС‹ ----
 	bool HasVertexShader = false;
 	bool HasPixelShader = false;
 	u32 VertexShaderMajor = 0;
@@ -41,14 +41,14 @@ struct RHIDeviceCaps
 	// ---- Depth/Stencil ----
 	bool HasDepthStencil = false;
 
-	// ---- Фильтрация ----
+	// ---- Р¤РёР»СЊС‚СЂР°С†РёСЏ ----
 	u32 MaxAnisotropy = 1;
 
-	// ---- Текстурные стадии ----
+	// ---- РўРµРєСЃС‚СѓСЂРЅС‹Рµ СЃС‚Р°РґРёРё ----
 	u32 MaxTextureBlendStages = 0;
 	u32 MaxSimultaneousTextures = 0;
 
-	// ---- Аппаратные возможности ----
+	// ---- РђРїРїР°СЂР°С‚РЅС‹Рµ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё ----
 	bool HardwareTnL = false;
 	bool SupportsPureDevice = false;
 	bool SupportsNonPow2Textures = false;

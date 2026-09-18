@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////
-// Для персонажей, имеющих инвентарь
+// Р”Р»СЏ РїРµСЂСЃРѕРЅР°Р¶РµР№, РёРјРµСЋС‰РёС… РёРЅРІРµРЅС‚Р°СЂСЊ
 // InventoryOwner.h
 //////////////////////////////////////////////////////
 
@@ -54,7 +54,7 @@ class CInventoryOwner : public CAttachmentOwner
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
 
-	// обновление
+	// РѕР±РЅРѕРІР»РµРЅРёРµ
 	virtual void UpdateInventoryOwner(u32 deltaT);
 	virtual bool CanPutInSlot(PIItem item, u32 slot)
 	{
@@ -63,18 +63,18 @@ class CInventoryOwner : public CAttachmentOwner
 
 	CPda* GetPDA() const;
 
-	// инвентарь
+	// РёРЅРІРµРЅС‚Р°СЂСЊ
 	CInventory* m_inventory;
 
 	////////////////////////////////////
-	// торговля и общение с персонажем
+	// С‚РѕСЂРіРѕРІР»СЏ Рё РѕР±С‰РµРЅРёРµ СЃ РїРµСЂСЃРѕРЅР°Р¶РµРј
 
 	virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
 	virtual void OnFollowerCmd(int cmd) {}; // redefine for CAI_Stalkker
-	// инициализация объекта торговли
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° С‚РѕСЂРіРѕРІР»Рё
 	CTrade* GetTrade();
 
-	// для включения разговора
+	// РґР»СЏ РІРєР»СЋС‡РµРЅРёСЏ СЂР°Р·РіРѕРІРѕСЂР°
 	virtual bool OfferTalk(CInventoryOwner* talk_partner);
 	virtual void StartTalk(CInventoryOwner* talk_partner, bool start_trade = true);
 	virtual void StopTalk();
@@ -113,7 +113,7 @@ class CInventoryOwner : public CAttachmentOwner
 	virtual void NewPdaContact(CInventoryOwner*);
 	virtual void LostPdaContact(CInventoryOwner*);
 
-	// игровое имя
+	// РёРіСЂРѕРІРѕРµ РёРјСЏ
 	virtual LPCSTR Name() const;
 	u32 get_money() const
 	{
@@ -123,7 +123,7 @@ class CInventoryOwner : public CAttachmentOwner
 
   protected:
 	u32 m_money;
-	// торговля
+	// С‚РѕСЂРіРѕРІР»СЏ
 	CTrade* m_pTrade;
 	bool m_bTalking;
 	CInventoryOwner* m_pTalkPartner;
@@ -133,15 +133,15 @@ class CInventoryOwner : public CAttachmentOwner
 
 	u32 m_tmp_active_slot_num;
 	//////////////////////////////////////////////////////////////////////////
-	// сюжетная информация
+	// СЃСЋР¶РµС‚РЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ
   public:
-	// персонаж получил новую порцию информации
+	// РїРµСЂСЃРѕРЅР°Р¶ РїРѕР»СѓС‡РёР» РЅРѕРІСѓСЋ РїРѕСЂС†РёСЋ РёРЅС„РѕСЂРјР°С†РёРё
 	virtual bool OnReceiveInfo(shared_str info_id) const;
-	// убрать информацию
+	// СѓР±СЂР°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ
 	virtual void OnDisableInfo(shared_str info_id) const;
-	// передать/удалить информацию через сервер
+	// РїРµСЂРµРґР°С‚СЊ/СѓРґР°Р»РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ С‡РµСЂРµР· СЃРµСЂРІРµСЂ
 	virtual void TransferInfo(shared_str info_id, bool add_info) const;
-	// есть ли информация у персонажа
+	// РµСЃС‚СЊ Р»Рё РёРЅС„РѕСЂРјР°С†РёСЏ Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 	virtual bool HasInfo(shared_str info_id) const;
 	virtual bool GetInfo(shared_str info_id, INFO_DATA&) const;
 
@@ -152,7 +152,7 @@ class CInventoryOwner : public CAttachmentOwner
 	CInfoPortionWrapper* m_known_info_registry;
 
 	//////////////////////////////////////////////////////////////////////////
-	// инвентарь
+	// РёРЅРІРµРЅС‚Р°СЂСЊ
   public:
 	const CInventory& inventory() const
 	{
@@ -165,9 +165,9 @@ class CInventoryOwner : public CAttachmentOwner
 		return (*m_inventory);
 	}
 
-	// возвращает текуший разброс стрельбы (в радианах) с учетом движения
+	// РІРѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС€РёР№ СЂР°Р·Р±СЂРѕСЃ СЃС‚СЂРµР»СЊР±С‹ (РІ СЂР°РґРёР°РЅР°С…) СЃ СѓС‡РµС‚РѕРј РґРІРёР¶РµРЅРёСЏ
 	virtual float GetWeaponAccuracy() const;
-	// максимальный переносимы вес
+	// РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РїРµСЂРµРЅРѕСЃРёРјС‹ РІРµСЃ
 	virtual float MaxCarryWeight() const;
 
 	virtual CCustomOutfit* GetOutfit() const
@@ -176,7 +176,7 @@ class CInventoryOwner : public CAttachmentOwner
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	// игровые характеристики персонажа
+	// РёРіСЂРѕРІС‹Рµ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РїРµСЂСЃРѕРЅР°Р¶Р°
   public:
 	CCharacterInfo& CharacterInfo() const
 	{
@@ -192,14 +192,14 @@ class CInventoryOwner : public CAttachmentOwner
 		return CharacterInfo().m_SpecificCharacter.MoneyDef().inf_money;
 	}
 
-	// установка группировки на клиентском и серверном объкте
+	// СѓСЃС‚Р°РЅРѕРІРєР° РіСЂСѓРїРїРёСЂРѕРІРєРё РЅР° РєР»РёРµРЅС‚СЃРєРѕРј Рё СЃРµСЂРІРµСЂРЅРѕРј РѕР±СЉРєС‚Рµ
 	virtual void SetCommunity(CHARACTER_COMMUNITY_INDEX);
 	virtual void SetRank(CHARACTER_RANK_VALUE);
 	virtual void ChangeRank(CHARACTER_RANK_VALUE);
 	virtual void SetReputation(CHARACTER_REPUTATION_VALUE);
 	virtual void ChangeReputation(CHARACTER_REPUTATION_VALUE);
 
-	// для работы с relation system
+	// РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ relation system
 	u16 object_id() const;
 	CHARACTER_COMMUNITY_INDEX Community() const
 	{
@@ -238,7 +238,7 @@ class CInventoryOwner : public CAttachmentOwner
 	CInventoryItem* CInventoryOwner::GetCurrentOutfit() const;
 
 	//////////////////////////////////////////////////////////////////////////
-	// связь со скриптами
+	// СЃРІСЏР·СЊ СЃРѕ СЃРєСЂРёРїС‚Р°РјРё
 	//////////////////////////////////////////////////////////////////////////
   protected:
 	shared_str m_item_to_spawn;

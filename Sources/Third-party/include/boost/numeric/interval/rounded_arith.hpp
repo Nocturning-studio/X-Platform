@@ -1,6 +1,6 @@
 /* Boost interval/rounded_arith.hpp template implementation file
  *
- * Copyright Hervé Brönnimann, Guillaume Melquiond, Sylvain Pion 2002-2003
+ * Copyright HervÐ¹ BrÑ†nnimann, Guillaume Melquiond, Sylvain Pion 2002-2003
  * Permission to use, copy, modify, sell, and distribute this software
  * is hereby granted without fee provided that the above copyright notice
  * appears in all copies and that both that copyright notice and this

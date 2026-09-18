@@ -11,7 +11,7 @@
 
 class XRayGeometryAdapter;
 
-// Глобальные переменные для консольных команд
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РєРѕРЅСЃРѕР»СЊРЅС‹С… РєРѕРјР°РЅРґ
 extern float g_fPresenceRayDist;
 extern int g_iPresenceBounces;
 extern bool g_bPresenceThreads;
@@ -34,12 +34,12 @@ class CSoundEnvironment : public Presence::ISoundOcclusionCalculator
 	CSoundEnvironment();
 	~CSoundEnvironment();
 
-	// Основной цикл
+	// РћСЃРЅРѕРІРЅРѕР№ С†РёРєР»
 	void Update();
 	void OnLevelLoad();
 	void OnLevelUnload();
 
-	// Управление
+	// РЈРїСЂР°РІР»РµРЅРёРµ
 	void Pause()
 	{
 		m_bPaused = true;
@@ -49,16 +49,16 @@ class CSoundEnvironment : public Presence::ISoundOcclusionCalculator
 		m_bPaused = false;
 	}
 
-	// Перезагрузка конфигов материалов на лету (для консольной команды)
+	// РџРµСЂРµР·Р°РіСЂСѓР·РєР° РєРѕРЅС„РёРіРѕРІ РјР°С‚РµСЂРёР°Р»РѕРІ РЅР° Р»РµС‚Сѓ (РґР»СЏ РєРѕРЅСЃРѕР»СЊРЅРѕР№ РєРѕРјР°РЅРґС‹)
 	void ReloadMaterials();
 
-	// Передача данных в OpenAL
+	// РџРµСЂРµРґР°С‡Р° РґР°РЅРЅС‹С… РІ OpenAL
 	void ApplyToSoundDriver(const Presence::EAXResult& res);
 
-	// Интерфейс расчета окклюзии
+	// РРЅС‚РµСЂС„РµР№СЃ СЂР°СЃС‡РµС‚Р° РѕРєРєР»СЋР·РёРё
 	virtual float CalculateOcclusion(const Presence::float3& listenerPos, const Presence::float3& sourcePos) override;
 
-	// Геттеры для отладки
+	// Р“РµС‚С‚РµСЂС‹ РґР»СЏ РѕС‚Р»Р°РґРєРё
 	bool IsReady() const
 	{
 		return m_bLoaded && m_pAudioSystem;

@@ -9,7 +9,7 @@
 //  in all copies. This software is provided "as is" without express or implied
 //  warranty, and with no claim as to its suitability for any purpose.
 
-// ideas taken from Rüdiger Loos's format class
+// ideas taken from RÑŒdiger Loos's format class
 // and Karl Nelson's ofstream (also took its parsing code as basis for printf parsing)
 
 // ------------------------------------------------------------------------------

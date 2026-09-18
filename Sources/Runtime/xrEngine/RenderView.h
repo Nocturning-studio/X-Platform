@@ -1,6 +1,6 @@
 #pragma once
 
-// Микро-класс для хранения состояния камеры рендера
+// РњРёРєСЂРѕ-РєР»Р°СЃСЃ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєР°РјРµСЂС‹ СЂРµРЅРґРµСЂР°
 class ENGINE_API CRenderView
 {
   public:
@@ -11,32 +11,32 @@ class ENGINE_API CRenderView
 
 	fmat4x4 View;
 	fmat4x4 Project;
-	fmat4x4 ProjectHUD;		   // бывшая mProject_hud
-	fmat4x4 ViewProjection;	   // бывшая mFullTransform (View * Project)
-	fmat4x4 InvViewProjection; // бывшая mInvFullTransform
+	fmat4x4 ProjectHUD;		   // Р±С‹РІС€Р°СЏ mProject_hud
+	fmat4x4 ViewProjection;	   // Р±С‹РІС€Р°СЏ mFullTransform (View * Project)
+	fmat4x4 InvViewProjection; // Р±С‹РІС€Р°СЏ mInvFullTransform
 
-	// Предыдущий кадр (для интерполяции/velocity buffer)
+	// РџСЂРµРґС‹РґСѓС‰РёР№ РєР°РґСЂ (РґР»СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё/velocity buffer)
 	fvec3 PositionSaved;
 	fmat4x4 ViewProjectionSaved;
 
-	// Параметры
+	// РџР°СЂР°РјРµС‚СЂС‹
 	float Fov;
 	float Aspect;
 
   public:
 	CRenderView();
 
-	// Конструктор копирования
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	CRenderView(const CRenderView& other) = default;
-	// Конструктор перемещения
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	CRenderView(CRenderView&& other) noexcept = default;
-	// Оператор присваивания копированием
+	// РћРїРµСЂР°С‚РѕСЂ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ РєРѕРїРёСЂРѕРІР°РЅРёРµРј
 	CRenderView& operator=(const CRenderView& other) = default;
-	// Оператор присваивания перемещением
+	// РћРїРµСЂР°С‚РѕСЂ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ РїРµСЂРµРјРµС‰РµРЅРёРµРј
 	CRenderView& operator=(CRenderView&& other) noexcept = default;
 
-	// Основные методы расчета
+	// РћСЃРЅРѕРІРЅС‹Рµ РјРµС‚РѕРґС‹ СЂР°СЃС‡РµС‚Р°
 	void SetupView(const fvec3& pos, const fvec3& dir, const fvec3& top);
-	void UpdateViewProjection(); // Расчет VP и InvVP
-	void SaveState();			 // Сохранение текущего кадра как предыдущего
+	void UpdateViewProjection(); // Р Р°СЃС‡РµС‚ VP Рё InvVP
+	void SaveState();			 // РЎРѕС…СЂР°РЅРµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ РєР°РґСЂР° РєР°Рє РїСЂРµРґС‹РґСѓС‰РµРіРѕ
 };

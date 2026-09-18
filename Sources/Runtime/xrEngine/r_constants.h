@@ -14,14 +14,14 @@ enum
 
 enum
 {
-	RC_1x1 = 0, // скаляр
-	RC_1x4,		// вектор (float4)
-	RC_2x4,		// 4x2 матрица (транспонированная)
-	RC_3x4,		// 4x3 матрица
-	RC_4x4,		// 4x4 матрица
-	RC_1x4a,	// массив векторов
-	RC_3x4a,	// массив 4x3 матриц
-	RC_4x4a		// массив 4x4 матриц
+	RC_1x1 = 0, // СЃРєР°Р»СЏСЂ
+	RC_1x4,		// РІРµРєС‚РѕСЂ (float4)
+	RC_2x4,		// 4x2 РјР°С‚СЂРёС†Р° (С‚СЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅРЅР°СЏ)
+	RC_3x4,		// 4x3 РјР°С‚СЂРёС†Р°
+	RC_4x4,		// 4x4 РјР°С‚СЂРёС†Р°
+	RC_1x4a,	// РјР°СЃСЃРёРІ РІРµРєС‚РѕСЂРѕРІ
+	RC_3x4a,	// РјР°СЃСЃРёРІ 4x3 РјР°С‚СЂРёС†
+	RC_4x4a		// РјР°СЃСЃРёРІ 4x4 РјР°С‚СЂРёС†
 };
 
 enum
@@ -33,8 +33,8 @@ enum
 
 struct R_constant_load
 {
-	u16 offset;		// раньше index – смещение в массиве констант (в float4)
-	u16 size_class; // раньше cls – класс размера (RC_1x4, RC_4x4 и т.д.)
+	u16 offset;		// СЂР°РЅСЊС€Рµ index вЂ“ СЃРјРµС‰РµРЅРёРµ РІ РјР°СЃСЃРёРІРµ РєРѕРЅСЃС‚Р°РЅС‚ (РІ float4)
+	u16 size_class; // СЂР°РЅСЊС€Рµ cls вЂ“ РєР»Р°СЃСЃ СЂР°Р·РјРµСЂР° (RC_1x4, RC_4x4 Рё С‚.Рґ.)
 
 	R_constant_load() : offset(u16(-1)), size_class(u16(-1)) {}
 
@@ -46,15 +46,15 @@ struct R_constant_load
 
 struct R_constant : public xr_resource
 {
-	shared_str name; // HLSL-имя
+	shared_str name; // HLSL-РёРјСЏ
 	u16 type;		 // RC_float, RC_int, RC_bool, RC_sampler
-	u16 destination; // битовая маска RC_dest_*
+	u16 destination; // Р±РёС‚РѕРІР°СЏ РјР°СЃРєР° RC_dest_*
 
-	R_constant_load ps;	  // привязка для пиксельного шейдера
-	R_constant_load vs;	  // привязка для вершинного шейдера
-	R_constant_load samp; // привязка для семплера
+	R_constant_load ps;	  // РїСЂРёРІСЏР·РєР° РґР»СЏ РїРёРєСЃРµР»СЊРЅРѕРіРѕ С€РµР№РґРµСЂР°
+	R_constant_load vs;	  // РїСЂРёРІСЏР·РєР° РґР»СЏ РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР°
+	R_constant_load samp; // РїСЂРёРІСЏР·РєР° РґР»СЏ СЃРµРјРїР»РµСЂР°
 
-	R_constant_setup* handler; // автоматическая установка (для глобальных констант)
+	R_constant_setup* handler; // Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ СѓСЃС‚Р°РЅРѕРІРєР° (РґР»СЏ РіР»РѕР±Р°Р»СЊРЅС‹С… РєРѕРЅСЃС‚Р°РЅС‚)
 
 	R_constant() : type(u16(-1)), destination(0), handler(nullptr) {}
 

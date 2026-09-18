@@ -81,8 +81,8 @@ class game_sv_GameState : public game_GameState
 	virtual void OnPlayer_Sell_Item(ClientID id_who, NET_Packet& P) {};
 	void GenerateGameMessage(NET_Packet& P);
 
-	virtual void OnRoundStart(); // старт раунда
-	virtual void OnRoundEnd();	 //	round_end_reason			// конец раунда
+	virtual void OnRoundStart(); // СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
+	virtual void OnRoundEnd();	 //	round_end_reason			// РєРѕРЅРµС† СЂР°СѓРЅРґР°
 
 	virtual void MapRotation_AddMap(LPCSTR MapName);
 	virtual void MapRotation_ListMaps();
@@ -160,8 +160,8 @@ class game_sv_GameState : public game_GameState
 	virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
 	virtual void OnDestroyObject(u16 eid_who) {};
 
-	virtual void OnHit(u16 id_hitter, u16 id_hitted, NET_Packet& P);				// кто-то получил Hit
-	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P) {}; // игрок получил Hit
+	virtual void OnHit(u16 id_hitter, u16 id_hitted, NET_Packet& P);				// РєС‚Рѕ-С‚Рѕ РїРѕР»СѓС‡РёР» Hit
+	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P) {}; // РёРіСЂРѕРє РїРѕР»СѓС‡РёР» Hit
 
 	// Main
 	virtual void Create(shared_str& options);

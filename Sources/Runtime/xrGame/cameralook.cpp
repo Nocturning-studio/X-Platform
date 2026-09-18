@@ -94,7 +94,7 @@ void CCameraLook::OnActivate(CCameraBase* old_cam)
 		yaw += PI_MUL_2;
 }
 
-#pragma todo("NSDeathman to NSDeathman: починить автоаим")
+#pragma todo("NSDeathman to NSDeathman: РїРѕС‡РёРЅРёС‚СЊ Р°РІС‚РѕР°РёРј")
 #include "xrEngine/xr_input.h"
 #include "visual_memory_manager.h"
 #include "actor_memory.h"

@@ -12,7 +12,7 @@ void CRender::render_lights(light_Package& LP)
 	OPTICK_EVENT("render_lights");
 
 	// ------------------------------------------------------------------------
-	// Базовая фильтрация нулевых указателей
+	// Р‘Р°Р·РѕРІР°СЏ С„РёР»СЊС‚СЂР°С†РёСЏ РЅСѓР»РµРІС‹С… СѓРєР°Р·Р°С‚РµР»РµР№
 	auto is_valid_light = [](light* L)
 	{
 		if(L == nullptr)
@@ -37,13 +37,13 @@ void CRender::render_lights(light_Package& LP)
 					LP.v_spot.end());
 
 	// ------------------------------------------------------------------------
-	// Вычисление матриц видимых источников
+	// Р’С‹С‡РёСЃР»РµРЅРёРµ РјР°С‚СЂРёС† РІРёРґРёРјС‹С… РёСЃС‚РѕС‡РЅРёРєРѕРІ
 	{
 		OPTICK_EVENT("Compute matrices for visible shadowed lights");
 
 		xr_vector<light*>& source = LP.v_shadowed;
 
-		// Параллельное вычисление матриц для видимых источников
+		// РџР°СЂР°Р»Р»РµР»СЊРЅРѕРµ РІС‹С‡РёСЃР»РµРЅРёРµ РјР°С‚СЂРёС† РґР»СЏ РІРёРґРёРјС‹С… РёСЃС‚РѕС‡РЅРёРєРѕРІ
 		if(source.size() > 16)
 		{
 			concurrency::parallel_for_each(source.begin(), source.end(),
@@ -64,7 +64,7 @@ void CRender::render_lights(light_Package& LP)
 	}
 
 	// ------------------------------------------------------------------------
-	// Удаление невидимых источников
+	// РЈРґР°Р»РµРЅРёРµ РЅРµРІРёРґРёРјС‹С… РёСЃС‚РѕС‡РЅРёРєРѕРІ
 	{
 		OPTICK_EVENT("Remove invisible");
 
@@ -76,7 +76,7 @@ void CRender::render_lights(light_Package& LP)
 	}
 
 	// ------------------------------------------------------------------------
-	// Упаковка shadow map
+	// РЈРїР°РєРѕРІРєР° shadow map
 	{
 		OPTICK_EVENT("Pack shadow maps");
 
@@ -87,7 +87,7 @@ void CRender::render_lights(light_Package& LP)
 		xr_vector<light*> refactored;
 		refactored.reserve(source.size());
 
-		// Сортировка по убыванию размера
+		// РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ СѓР±С‹РІР°РЅРёСЋ СЂР°Р·РјРµСЂР°
 		if(source.size() > 16)
 			concurrency::parallel_sort(source.begin(), source.end(), pred_area);
 		else
@@ -123,7 +123,7 @@ void CRender::render_lights(light_Package& LP)
 	}
 
 	// ------------------------------------------------------------------------
-	// Рендер теней
+	// Р РµРЅРґРµСЂ С‚РµРЅРµР№
 	while(!LP.v_shadowed.empty())
 	{
 		OPTICK_EVENT("Shadow map rendering");
@@ -195,7 +195,7 @@ void CRender::render_lights(light_Package& LP)
 		}
 
 		// --------------------------------------------------------------------
-		// Аккумуляция света
+		// РђРєРєСѓРјСѓР»СЏС†РёСЏ СЃРІРµС‚Р°
 		{
 			OPTICK_EVENT("Accumulation");
 			set_light_accumulator();
@@ -250,7 +250,7 @@ void CRender::render_lights(light_Package& LP)
 	}
 
 	// ------------------------------------------------------------------------
-	// Оставшиеся источники света
+	// РћСЃС‚Р°РІС€РёРµСЃСЏ РёСЃС‚РѕС‡РЅРёРєРё СЃРІРµС‚Р°
 	ProcessRemainingLights(LP);
 }
 
@@ -263,7 +263,7 @@ void CRender::ProcessRemainingLights(light_Package& LP)
 	{
 		OPTICK_EVENT("remaining point");
 
-		// Фильтрация и накопление
+		// Р¤РёР»СЊС‚СЂР°С†РёСЏ Рё РЅР°РєРѕРїР»РµРЅРёРµ
 		LP.v_point.erase(std::remove_if(LP.v_point.begin(), LP.v_point.end(),
 										[this](light* L)
 										{
@@ -288,7 +288,7 @@ void CRender::ProcessRemainingLights(light_Package& LP)
 				LR.compute_xf_spot(L);
 		}
 
-		// Фильтрация и накопление
+		// Р¤РёР»СЊС‚СЂР°С†РёСЏ Рё РЅР°РєРѕРїР»РµРЅРёРµ
 		LP.v_spot.erase(std::remove_if(LP.v_spot.begin(), LP.v_spot.end(),
 									   [this](light* L)
 									   {

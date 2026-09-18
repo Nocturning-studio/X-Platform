@@ -27,22 +27,22 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 	VERIFY(initialized());
 	VERIFY(!restriction->border().empty());
 
-	// 1. Кэшируем ссылку на список, чтобы не вызывать функцию дважды
+	// 1. РљСЌС€РёСЂСѓРµРј СЃСЃС‹Р»РєСѓ РЅР° СЃРїРёСЃРѕРє, С‡С‚РѕР±С‹ РЅРµ РІС‹Р·С‹РІР°С‚СЊ С„СѓРЅРєС†РёСЋ РґРІР°Р¶РґС‹
 	const auto& border_list = restriction->accessible_neighbour_border(restriction, out_restriction);
 	VERIFY(!border_list.empty());
 
-	// 2. Кэшируем LevelGraph, чтобы избежать постоянного вызова ai().level_graph()
-	// Это критическая оптимизация, так как ai() - это синглтон, часто скрытый за функциями.
+	// 2. РљСЌС€РёСЂСѓРµРј LevelGraph, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РїРѕСЃС‚РѕСЏРЅРЅРѕРіРѕ РІС‹Р·РѕРІР° ai().level_graph()
+	// Р­С‚Рѕ РєСЂРёС‚РёС‡РµСЃРєР°СЏ РѕРїС‚РёРјРёР·Р°С†РёСЏ, С‚Р°Рє РєР°Рє ai() - СЌС‚Рѕ СЃРёРЅРіР»С‚РѕРЅ, С‡Р°СЃС‚Рѕ СЃРєСЂС‹С‚С‹Р№ Р·Р° С„СѓРЅРєС†РёСЏРјРё.
 	const auto& level_graph = ai().level_graph();
 
 	float min_dist_sqr = flt_max;
 	u32 selected = u32(-1);
 
-	// --- PHASE 1: Грубый поиск по границе ---
-	// Используем range-based for для чистоты и скорости
+	// --- PHASE 1: Р“СЂСѓР±С‹Р№ РїРѕРёСЃРє РїРѕ РіСЂР°РЅРёС†Рµ ---
+	// РСЃРїРѕР»СЊР·СѓРµРј range-based for РґР»СЏ С‡РёСЃС‚РѕС‚С‹ Рё СЃРєРѕСЂРѕСЃС‚Рё
 	for(u32 vertex_id : border_list)
 	{
-		// vertex_position обычно возвращает значение, а не ссылку, но это легковесный fvec3
+		// vertex_position РѕР±С‹С‡РЅРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ, Р° РЅРµ СЃСЃС‹Р»РєСѓ, РЅРѕ СЌС‚Рѕ Р»РµРіРєРѕРІРµСЃРЅС‹Р№ fvec3
 		float distance_sqr = level_graph.vertex_position(vertex_id).distance_to_sqr(position);
 		if(distance_sqr < min_dist_sqr)
 		{
@@ -52,9 +52,9 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 	}
 	VERIFY2(level_graph.valid_vertex_id(selected), *name());
 
-	// --- PHASE 2: Уточнение по соседям ---
+	// --- PHASE 2: РЈС‚РѕС‡РЅРµРЅРёРµ РїРѕ СЃРѕСЃРµРґСЏРј ---
 	{
-		float current_min_dist = flt_max; // Локальная переменная для фазы 2
+		float current_min_dist = flt_max; // Р›РѕРєР°Р»СЊРЅР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ С„Р°Р·С‹ 2
 		u32 new_selected = u32(-1);
 
 		CLevelGraph::const_iterator I, E;
@@ -67,9 +67,9 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 			if(!level_graph.valid_vertex_id(current))
 				continue;
 
-			// Проверка ограничения
-			// Логика: если мы внутри, нам нужны соседи снаружи, и наоборот.
-			// restriction->inside возвращает bool.
+			// РџСЂРѕРІРµСЂРєР° РѕРіСЂР°РЅРёС‡РµРЅРёСЏ
+			// Р›РѕРіРёРєР°: РµСЃР»Рё РјС‹ РІРЅСѓС‚СЂРё, РЅР°Рј РЅСѓР¶РЅС‹ СЃРѕСЃРµРґРё СЃРЅР°СЂСѓР¶Рё, Рё РЅР°РѕР±РѕСЂРѕС‚.
+			// restriction->inside РІРѕР·РІСЂР°С‰Р°РµС‚ bool.
 			if(restriction->inside(current, !out_restriction) != out_restriction)
 				continue;
 
@@ -80,20 +80,20 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 				new_selected = current;
 			}
 		}
-		// Если нашли лучшего соседа, обновляем selected
+		// Р•СЃР»Рё РЅР°С€Р»Рё Р»СѓС‡С€РµРіРѕ СЃРѕСЃРµРґР°, РѕР±РЅРѕРІР»СЏРµРј selected
 		if(new_selected != u32(-1))
 			selected = new_selected;
 	}
 	VERIFY(level_graph.valid_vertex_id(selected));
 
-	// --- PHASE 3: Суб-вертексная точность (5 точек) ---
-	// Оптимизация: разворачиваем цикл switch, убираем sqrt
+	// --- PHASE 3: РЎСѓР±-РІРµСЂС‚РµРєСЃРЅР°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ (5 С‚РѕС‡РµРє) ---
+	// РћРїС‚РёРјРёР·Р°С†РёСЏ: СЂР°Р·РІРѕСЂР°С‡РёРІР°РµРј С†РёРєР» switch, СѓР±РёСЂР°РµРј sqrt
 	{
 		fvec3 center = level_graph.vertex_position(selected);
-		// Предвычисляем оффсет
+		// РџСЂРµРґРІС‹С‡РёСЃР»СЏРµРј РѕС„С„СЃРµС‚
 		float offset = level_graph.header().cell_size() * .5f - EPS_L;
 
-		// Массив смещений для 4 углов: (x, z). Y вычисляется по плоскости.
+		// РњР°СЃСЃРёРІ СЃРјРµС‰РµРЅРёР№ РґР»СЏ 4 СѓРіР»РѕРІ: (x, z). Y РІС‹С‡РёСЃР»СЏРµС‚СЃСЏ РїРѕ РїР»РѕСЃРєРѕСЃС‚Рё.
 		// 0: ++, 1: +-, 2: -+, 3: --
 		const float offsets_x[4] = {offset, offset, -offset, -offset};
 		const float offsets_z[4] = {offset, -offset, offset, -offset};
@@ -101,31 +101,31 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 		min_dist_sqr = flt_max;
 		bool found = false;
 
-		// 1. Проверяем 4 угла
+		// 1. РџСЂРѕРІРµСЂСЏРµРј 4 СѓРіР»Р°
 		for(int i = 0; i < 4; ++i)
 		{
 			fvec3 pt;
 			pt.x = center.x + offsets_x[i];
 			pt.z = center.z + offsets_z[i];
-			// Тяжелая операция вычисления Y через плоскость ноды
+			// РўСЏР¶РµР»Р°СЏ РѕРїРµСЂР°С†РёСЏ РІС‹С‡РёСЃР»РµРЅРёСЏ Y С‡РµСЂРµР· РїР»РѕСЃРєРѕСЃС‚СЊ РЅРѕРґС‹
 			pt.y = level_graph.vertex_plane_y(selected, pt.x, pt.z);
 
-			// Быстрая проверка расстояния без sqrt
+			// Р‘С‹СЃС‚СЂР°СЏ РїСЂРѕРІРµСЂРєР° СЂР°СЃСЃС‚РѕСЏРЅРёСЏ Р±РµР· sqrt
 			float dist_sqr = pt.distance_to_sqr(position);
 			if(dist_sqr < min_dist_sqr)
 			{
-				// Дорогие проверки делаем ТОЛЬКО если точка ближе текущего минимума
-				// В оригинале VERIFY выполнялись всегда, в Release их нет, но логика осталась бы
-				// Здесь мы доверяем геометрии Level Graph
+				// Р”РѕСЂРѕРіРёРµ РїСЂРѕРІРµСЂРєРё РґРµР»Р°РµРј РўРћР›Р¬РљРћ РµСЃР»Рё С‚РѕС‡РєР° Р±Р»РёР¶Рµ С‚РµРєСѓС‰РµРіРѕ РјРёРЅРёРјСѓРјР°
+				// Р’ РѕСЂРёРіРёРЅР°Р»Рµ VERIFY РІС‹РїРѕР»РЅСЏР»РёСЃСЊ РІСЃРµРіРґР°, РІ Release РёС… РЅРµС‚, РЅРѕ Р»РѕРіРёРєР° РѕСЃС‚Р°Р»Р°СЃСЊ Р±С‹
+				// Р—РґРµСЃСЊ РјС‹ РґРѕРІРµСЂСЏРµРј РіРµРѕРјРµС‚СЂРёРё Level Graph
 				min_dist_sqr = dist_sqr;
 				result = pt;
 				found = true;
 			}
 		}
 
-		// 2. Проверяем центр (i=4 в оригинале)
+		// 2. РџСЂРѕРІРµСЂСЏРµРј С†РµРЅС‚СЂ (i=4 РІ РѕСЂРёРіРёРЅР°Р»Рµ)
 		{
-			// center.y уже корректен из vertex_position
+			// center.y СѓР¶Рµ РєРѕСЂСЂРµРєС‚РµРЅ РёР· vertex_position
 			float dist_sqr = center.distance_to_sqr(position);
 			if(dist_sqr < min_dist_sqr)
 			{
@@ -136,12 +136,12 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 		}
 
 #ifdef DEBUG
-		// Оставляем проверки для дебага, но только для финального результата,
-		// чтобы не тормозить цикл поиска
+		// РћСЃС‚Р°РІР»СЏРµРј РїСЂРѕРІРµСЂРєРё РґР»СЏ РґРµР±Р°РіР°, РЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ С„РёРЅР°Р»СЊРЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Р°,
+		// С‡С‚РѕР±С‹ РЅРµ С‚РѕСЂРјРѕР·РёС‚СЊ С†РёРєР» РїРѕРёСЃРєР°
 		if(found)
 		{
-			// Проверки немного избыточны для релиза, но важны для отладки AI
-			// VERIFY(level_graph.inside(selected, result)); // Может давать false из-за EPS
+			// РџСЂРѕРІРµСЂРєРё РЅРµРјРЅРѕРіРѕ РёР·Р±С‹С‚РѕС‡РЅС‹ РґР»СЏ СЂРµР»РёР·Р°, РЅРѕ РІР°Р¶РЅС‹ РґР»СЏ РѕС‚Р»Р°РґРєРё AI
+			// VERIFY(level_graph.inside(selected, result)); // РњРѕР¶РµС‚ РґР°РІР°С‚СЊ false РёР·-Р·Р° EPS
 			VERIFY(restriction->inside(selected, !out_restriction) == out_restriction);
 		}
 #endif

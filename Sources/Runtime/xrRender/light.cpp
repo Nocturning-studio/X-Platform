@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "light.h"
 
 light::light(void) : ISpatial(g_SpatialSpace)

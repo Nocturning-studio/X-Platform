@@ -95,11 +95,11 @@ void CStalkerAnimationManager::reload(CAI_Stalker* _object)
 
 void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 {
-	// Безопасное получение максимального индекса
+	// Р‘РµР·РѕРїР°СЃРЅРѕРµ РїРѕР»СѓС‡РµРЅРёРµ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ РёРЅРґРµРєСЃР°
 	int max_fx_index =
 		(int)m_data_storage->m_part_animations.A[object().movement().body_state()].m_global.A[0].A.size() - 1;
 
-	// Проверка и коррекция индекса
+	// РџСЂРѕРІРµСЂРєР° Рё РєРѕСЂСЂРµРєС†РёСЏ РёРЅРґРµРєСЃР°
 	int safe_fx_index = fx_index;
 	if(fx_index < 0)
 	{
@@ -113,33 +113,33 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 		safe_fx_index = max_fx_index;
 	}
 
-	// Получаем MotionID для безопасного индекса
+	// РџРѕР»СѓС‡Р°РµРј MotionID РґР»СЏ Р±РµР·РѕРїР°СЃРЅРѕРіРѕ РёРЅРґРµРєСЃР°
 	MotionID motion_id =
 		m_data_storage->m_part_animations.A[object().movement().body_state()].m_global.A[0].A[safe_fx_index];
 
-	// Вывод информации об анимации
+	// Р’С‹РІРѕРґ РёРЅС„РѕСЂРјР°С†РёРё РѕР± Р°РЅРёРјР°С†РёРё
 	LPCSTR animation_name = "unknown";
 #ifdef DEBUG
-	// В дебаге получаем настоящее имя анимации
+	// Р’ РґРµР±Р°РіРµ РїРѕР»СѓС‡Р°РµРј РЅР°СЃС‚РѕСЏС‰РµРµ РёРјСЏ Р°РЅРёРјР°С†РёРё
 	animation_name = m_skeleton_animated->LL_MotionDefName_dbg(motion_id).first;
 #else
-	// В релизе используем общее сообщение
+	// Р’ СЂРµР»РёР·Рµ РёСЃРїРѕР»СЊР·СѓРµРј РѕР±С‰РµРµ СЃРѕРѕР±С‰РµРЅРёРµ
 	animation_name = "fx animation not present - try debug build";
 #endif
 
-	// Вывод информации в обоих билдах
+	// Р’С‹РІРѕРґ РёРЅС„РѕСЂРјР°С†РёРё РІ РѕР±РѕРёС… Р±РёР»РґР°С…
 	if(safe_fx_index != fx_index)
 	{
-		// Если индекс был скорректирован, выводим предупреждение
+		// Р•СЃР»Рё РёРЅРґРµРєСЃ Р±С‹Р» СЃРєРѕСЂСЂРµРєС‚РёСЂРѕРІР°РЅ, РІС‹РІРѕРґРёРј РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ
 		Msg("%6d [%s][FX][%s][%f] (index corrected %d->%d)", Engine.TimeManager.GetGlobalTimeMs(), *object().cName(), animation_name,
 			power_factor, fx_index, safe_fx_index);
 	}
 	else
 	{
-		// Обычное сообщение
+		// РћР±С‹С‡РЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ
 		Msg("%6d [%s][FX][%s][%f]", Engine.TimeManager.GetGlobalTimeMs(), *object().cName(), animation_name, power_factor);
 	}
 
-	// Воспроизведение анимации
+	// Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ Р°РЅРёРјР°С†РёРё
 	m_skeleton_animated->PlayFX(motion_id, power_factor);
 }

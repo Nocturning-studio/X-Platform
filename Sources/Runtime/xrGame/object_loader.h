@@ -38,7 +38,7 @@ struct CLoader
 		IC static void load_data(T& data, M& stream, const P& p)
 		{
 			CHelper1<T>::load_data<
-				object_type_traits::is_base_and_derived_or_same_from_template<IPureLîadableObject, T>::value>(
+				object_type_traits::is_base_and_derived_or_same_from_template<IPureLÐ¾adableObject, T>::value>(
 				data, stream, p);
 		}
 

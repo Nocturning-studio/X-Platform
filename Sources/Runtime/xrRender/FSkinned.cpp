@@ -28,12 +28,12 @@ static D3DVERTEXELEMENT9 dwDecl_1W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD
 
 struct vertHW_1W
 {
-	float _P[4]; // позиция (x,y,z,1)
-	float _N[3]; // нормаль
-	float _T[3]; // тангент
-	float _B[3]; // бинормаль
+	float _P[4]; // РїРѕР·РёС†РёСЏ (x,y,z,1)
+	float _N[3]; // РЅРѕСЂРјР°Р»СЊ
+	float _T[3]; // С‚Р°РЅРіРµРЅС‚
+	float _B[3]; // Р±РёРЅРѕСЂРјР°Р»СЊ
 	fvec2 tc;	 // UV
-	u32 index;	 // индекс кости (умножен на 3)
+	u32 index;	 // РёРЅРґРµРєСЃ РєРѕСЃС‚Рё (СѓРјРЅРѕР¶РµРЅ РЅР° 3)
 
 	void set(const fvec3& P, const fvec3& N, const fvec3& T, const fvec3& B, const fvec2& tc, int idx)
 	{
@@ -73,12 +73,12 @@ static D3DVERTEXELEMENT9 dwDecl_2W[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD
 										D3DDECL_END()};
 struct vertHW_2W
 {
-	float _P[4];	// позиция (xyz, w=weight)
-	float _N[3];	// нормаль
-	float _T[3];	// тангент
-	float _B[3];	// бинормаль
+	float _P[4];	// РїРѕР·РёС†РёСЏ (xyz, w=weight)
+	float _N[3];	// РЅРѕСЂРјР°Р»СЊ
+	float _T[3];	// С‚Р°РЅРіРµРЅС‚
+	float _B[3];	// Р±РёРЅРѕСЂРјР°Р»СЊ
 	fvec2 tc;		// UV
-	s16 indices[2]; // индексы костей (умножены на 3)
+	s16 indices[2]; // РёРЅРґРµРєСЃС‹ РєРѕСЃС‚РµР№ (СѓРјРЅРѕР¶РµРЅС‹ РЅР° 3)
 
 	void set(const fvec3& P, const fvec3& N, const fvec3& T, const fvec3& B, const fvec2& tc, int idx0, int idx1,
 			 float w)

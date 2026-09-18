@@ -27,7 +27,7 @@ XRCORE_API u64 QPC()
 	return static_cast<u64>(li.QuadPart);
 }
 
-// Реализация GetCLK через интринсик
+// Р РµР°Р»РёР·Р°С†РёСЏ GetCLK С‡РµСЂРµР· РёРЅС‚СЂРёРЅСЃРёРє
 XRCORE_API u64 GetCLK()
 {
 	return __rdtsc();
@@ -37,34 +37,34 @@ namespace Impl
 {
 void Detect()
 {
-	// 1. Частота QPC
+	// 1. Р§Р°СЃС‚РѕС‚Р° QPC
 	LARGE_INTEGER liFreq;
 	if(QueryPerformanceFrequency(&liFreq))
 		qpc_freq = static_cast<u64>(liFreq.QuadPart);
 	else
 		qpc_freq = 1000;
 
-	// 2. Оверхед QPC
+	// 2. РћРІРµСЂС…РµРґ QPC
 	u64 start = QPC();
 	for(int i = 0; i < 256; i++)
 		QPC();
 	u64 end = QPC();
 	qpc_overhead = (end - start) / 256;
 
-	// 3. Оверхед RDTSC
+	// 3. РћРІРµСЂС…РµРґ RDTSC
 	start = GetCLK();
 	for(int i = 0; i < 256; i++)
 		GetCLK();
 	end = GetCLK();
 	clk_overhead = (end - start) / 256;
 
-	// 4. Калибровка
+	// 4. РљР°Р»РёР±СЂРѕРІРєР°
 	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
 
 	u64 qpc_start = QPC();
 	u64 tsc_start = GetCLK();
 
-	u64 qpc_wait = qpc_freq / 10; // Ждем 100мс
+	u64 qpc_wait = qpc_freq / 10; // Р–РґРµРј 100РјСЃ
 
 	while((QPC() - qpc_start) < qpc_wait)
 	{
@@ -82,7 +82,7 @@ void Detect()
 	if(qpc_elapsed > 0)
 		clk_per_second = (tsc_elapsed * qpc_freq) / qpc_elapsed;
 	else
-		clk_per_second = 2500000000ULL; // Фолбэк
+		clk_per_second = 2500000000ULL; // Р¤РѕР»Р±СЌРє
 
 	clk_per_milisec = clk_per_second / 1000;
 	clk_per_microsec = clk_per_milisec / 1000;
@@ -120,8 +120,8 @@ void Initialize()
 
 	Msg("* CPU features: %s", features);
 
-	// Включаем Flush-to-Zero (FTZ) и Denormals-are-Zero (DAZ).
-	// Это предотвращает падение FPS, когда значения становятся очень близкими к нулю.
+	// Р’РєР»СЋС‡Р°РµРј Flush-to-Zero (FTZ) Рё Denormals-are-Zero (DAZ).
+	// Р­С‚Рѕ РїСЂРµРґРѕС‚РІСЂР°С‰Р°РµС‚ РїР°РґРµРЅРёРµ FPS, РєРѕРіРґР° Р·РЅР°С‡РµРЅРёСЏ СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ РѕС‡РµРЅСЊ Р±Р»РёР·РєРёРјРё Рє РЅСѓР»СЋ.
 	_mm_setcsr(_mm_getcsr() | 0x8000 | 0x0040);
 
 	::Random.seed(u32(CPU::GetCLK()));

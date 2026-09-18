@@ -995,8 +995,8 @@ struct OptickApp
 
 #define PROFILE_FUNCTION() OPTICK_EVENT(__FUNCTION__)
 
-// Альтернативный вариант (если вдруг захочется больше деталей, включая аргументы)
-// Передает "void ClassName::MethodName(int arg)"
+// РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅС‹Р№ РІР°СЂРёР°РЅС‚ (РµСЃР»Рё РІРґСЂСѓРі Р·Р°С…РѕС‡РµС‚СЃСЏ Р±РѕР»СЊС€Рµ РґРµС‚Р°Р»РµР№, РІРєР»СЋС‡Р°СЏ Р°СЂРіСѓРјРµРЅС‚С‹)
+// РџРµСЂРµРґР°РµС‚ "void ClassName::MethodName(int arg)"
 #define PROFILE_FUNCTION_FULL() OPTICK_EVENT(__FUNCSIG__)
 #else
 #define OPTICK_EVENT(...)

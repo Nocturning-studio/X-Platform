@@ -16,12 +16,12 @@ class XRCORE_API DebugSupport
 	void Cleanup();
 	bool IsInitialized() const { return m_bInitialized; }
 
-	// Получение стека вызовов текущего потока
+	// РџРѕР»СѓС‡РµРЅРёРµ СЃС‚РµРєР° РІС‹Р·РѕРІРѕРІ С‚РµРєСѓС‰РµРіРѕ РїРѕС‚РѕРєР°
 	std::vector<std::string> GetStackTrace();
 	std::vector<std::string> GetStackTrace(CONTEXT* context, HANDLE hThread = GetCurrentThread());
 	std::vector<std::string> GetStackTrace(EXCEPTION_POINTERS* pExceptionInfo);
 
-	// Форматирование одного адреса в строку "адрес [модуль] символ + смещение (файл:строка)"
+	// Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РѕРґРЅРѕРіРѕ Р°РґСЂРµСЃР° РІ СЃС‚СЂРѕРєСѓ "Р°РґСЂРµСЃ [РјРѕРґСѓР»СЊ] СЃРёРјРІРѕР» + СЃРјРµС‰РµРЅРёРµ (С„Р°Р№Р»:СЃС‚СЂРѕРєР°)"
 	std::string FormatFrame(DWORD64 address);
 
   private:
@@ -32,10 +32,10 @@ class XRCORE_API DebugSupport
 
 	HANDLE m_hProcess = nullptr;
 	bool m_bInitialized = false;
-	CRITICAL_SECTION m_cs; // защита при многопоточном использовании
+	CRITICAL_SECTION m_cs; // Р·Р°С‰РёС‚Р° РїСЂРё РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕРј РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё
 };
 
-// Вспомогательная функция для перечисления модулей (аналог удалённой GetLoadedModules)
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµС‡РёСЃР»РµРЅРёСЏ РјРѕРґСѓР»РµР№ (Р°РЅР°Р»РѕРі СѓРґР°Р»С‘РЅРЅРѕР№ GetLoadedModules)
 XRCORE_API bool GetProcessModules(DWORD processId, std::vector<HMODULE>& outModules);
-// Устаревшая сигнатура для совместимости, если где-то ещё вызывается
+// РЈСЃС‚Р°СЂРµРІС€Р°СЏ СЃРёРіРЅР°С‚СѓСЂР° РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё, РµСЃР»Рё РіРґРµ-С‚Рѕ РµС‰С‘ РІС‹Р·С‹РІР°РµС‚СЃСЏ
 XRCORE_API BOOL GetLoadedModules(DWORD dwPID, UINT uiCount, HMODULE* paModArray, LPDWORD pdwRealCount);

@@ -13,9 +13,9 @@ class CBlender_skybox : public IBlender
 	{
 		C.begin_Pass("sky2", "sky2", "main", "main", FALSE, TRUE, FALSE);
 
-		// Устанавливаем сэмплеры для текстур скайбокса
-		// Эти сэмплеры привязаны к рендер-таргетам "$user$sky0" и "$user$sky1"
-		// которые заполняются в CEnvironment::OnFrame()
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃСЌРјРїР»РµСЂС‹ РґР»СЏ С‚РµРєСЃС‚СѓСЂ СЃРєР°Р№Р±РѕРєСЃР°
+		// Р­С‚Рё СЃСЌРјРїР»РµСЂС‹ РїСЂРёРІСЏР·Р°РЅС‹ Рє СЂРµРЅРґРµСЂ-С‚Р°СЂРіРµС‚Р°Рј "$user$sky0" Рё "$user$sky1"
+		// РєРѕС‚РѕСЂС‹Рµ Р·Р°РїРѕР»РЅСЏСЋС‚СЃСЏ РІ CEnvironment::OnFrame()
 		C.set_Sampler("s_sky0", "$user$sky0");
 		C.set_Sampler("s_sky1", "$user$sky1");
 

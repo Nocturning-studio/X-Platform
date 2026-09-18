@@ -108,7 +108,7 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 	if(object->berserk_always)
 		return false;
 
-	// ÿâëÿåòñÿ ëè âðàã àêòåðîì
+	// ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ð²Ñ€Ð°Ð³ Ð°ÐºÑ‚ÐµÑ€Ð¾Ð¼
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 	if(enemy->CLS_ID != CLSID_OBJECT_ACTOR)
 		return false;
@@ -131,15 +131,15 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerVampireAbstract::check_completion()
 {
-	// åñëè óáåæàë
+	// ÐµÑÐ»Ð¸ ÑƒÐ±ÐµÐ¶Ð°Ð»
 	if((current_substate == eStateVampire_Hide) && get_state_current()->check_completion())
 		return true;
 
-	// åñëè âðàã èçìåíèëñÿ
+	// ÐµÑÐ»Ð¸ Ð²Ñ€Ð°Ð³ Ð¸Ð·Ð¼ÐµÐ½Ð¸Ð»ÑÑ
 	if(enemy != object->EnemyMan.get_enemy())
 		return true;
 
-	// åñëè àêòåðà óæå êîíòðîëèò äðóãîé êðîâîñîñ
+	// ÐµÑÐ»Ð¸ Ð°ÐºÑ‚ÐµÑ€Ð° ÑƒÐ¶Ðµ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ð¸Ñ‚ Ð´Ñ€ÑƒÐ³Ð¾Ð¹ ÐºÑ€Ð¾Ð²Ð¾ÑÐ¾Ñ
 	if((current_substate != eStateVampire_Execute) && object->CControlledActor::is_controlling())
 		return true;
 

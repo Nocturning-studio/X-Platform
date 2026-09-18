@@ -31,7 +31,7 @@ class ENGINE_API CRT : public xr_resource_named
 		return !!pTexture;
 	}
 
-	// Получить описание (размеры) конкретного mip-уровня
+	// РџРѕР»СѓС‡РёС‚СЊ РѕРїРёСЃР°РЅРёРµ (СЂР°Р·РјРµСЂС‹) РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ mip-СѓСЂРѕРІРЅСЏ
 	void get_level_desc(u32 level, u32& width, u32& height)
 	{
 		width = 0;
@@ -53,7 +53,7 @@ class ENGINE_API CRT : public xr_resource_named
 		}
 	}
 
-	// Альтернативная версия, возвращающая структуру D3DSURFACE_DESC
+	// РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅР°СЏ РІРµСЂСЃРёСЏ, РІРѕР·РІСЂР°С‰Р°СЋС‰Р°СЏ СЃС‚СЂСѓРєС‚СѓСЂСѓ D3DSURFACE_DESC
 	bool get_level_desc(u32 level, D3DSURFACE_DESC& desc)
 	{
 		std::memset(&desc, 0, sizeof(desc));
@@ -68,7 +68,7 @@ class ENGINE_API CRT : public xr_resource_named
 		return SUCCEEDED(hr);
 	}
 
-	// Получить количество mip-уровней
+	// РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ mip-СѓСЂРѕРІРЅРµР№
 	u32 get_levels_count()
 	{
 		if(!pSurface)
@@ -76,7 +76,7 @@ class ENGINE_API CRT : public xr_resource_named
 		return pSurface->GetLevelCount();
 	}
 
-	// Получить поверхность конкретного mip-уровня
+	// РџРѕР»СѓС‡РёС‚СЊ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ mip-СѓСЂРѕРІРЅСЏ
 	IDirect3DSurface9* get_surface_level(u32 level)
 	{
 		if(!pSurface || level >= get_levels_count())
@@ -142,7 +142,7 @@ class ENGINE_API CRTC : public xr_resource_named
 
 		if(SUCCEEDED(hr))
 		{
-			size = desc.Width; // Для кубической текстуры Width == Height
+			size = desc.Width; // Р”Р»СЏ РєСѓР±РёС‡РµСЃРєРѕР№ С‚РµРєСЃС‚СѓСЂС‹ Width == Height
 		}
 	}
 

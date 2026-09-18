@@ -107,27 +107,27 @@ void CUICursor::SetUICursorPosition(fvec2 pos)
 
 	HWND hWnd = Engine.WindowManager.GetHandle();
 
-	// 1) Текущая клиентка
+	// 1) РўРµРєСѓС‰Р°СЏ РєР»РёРµРЅС‚РєР°
 	RECT rc{};
 	GetClientRect(hWnd, &rc);
 	const float cw = float(rc.right - rc.left);
 	const float ch = float(rc.bottom - rc.top);
 
-	// 2) UI -> клиентские пиксели
+	// 2) UI -> РєР»РёРµРЅС‚СЃРєРёРµ РїРёРєСЃРµР»Рё
 	POINT cpt;
 	cpt.x = LONG(floorf(pos.x * (cw / UI_BASE_WIDTH) + 0.5f));
 	cpt.y = LONG(floorf(pos.y * (ch / UI_BASE_HEIGHT) + 0.5f));
 
-	// 4) Клиент -> экран и SetCursorPos
+	// 4) РљР»РёРµРЅС‚ -> СЌРєСЂР°РЅ Рё SetCursorPos
 	ClientToScreen(hWnd, &cpt);
 	SetCursorPos(cpt.x, cpt.y);
 
-	// 5) Жёсткая синхронизация внутренних координат (не ждать физдвижения)
+	// 5) Р–С‘СЃС‚РєР°СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РІРЅСѓС‚СЂРµРЅРЅРёС… РєРѕРѕСЂРґРёРЅР°С‚ (РЅРµ Р¶РґР°С‚СЊ С„РёР·РґРІРёР¶РµРЅРёСЏ)
 	if(0) //(m_b_use_win_cursor)
 	{
 		POINT pt{};
-		GetCursorPos(&pt);		   // уже центр по экрану
-		ScreenToClient(hWnd, &pt); // обратно в клиент
+		GetCursorPos(&pt);		   // СѓР¶Рµ С†РµРЅС‚СЂ РїРѕ СЌРєСЂР°РЅСѓ
+		ScreenToClient(hWnd, &pt); // РѕР±СЂР°С‚РЅРѕ РІ РєР»РёРµРЅС‚
 		const float sx = UI_BASE_WIDTH / cw;
 		const float sy = UI_BASE_HEIGHT / ch;
 		vPrevPos.set(pos);

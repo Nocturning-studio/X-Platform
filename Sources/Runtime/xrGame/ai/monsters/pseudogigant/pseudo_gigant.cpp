@@ -225,7 +225,7 @@ void CPseudoGigant::on_activate_control(ControlCom::EControlType type)
 
 void CPseudoGigant::on_threaten_execute()
 {
-	// разбросить объекты
+	// СЂР°Р·Р±СЂРѕСЃРёС‚СЊ РѕР±СЉРµРєС‚С‹
 	m_nearest.clear_not_free();
 	Level().ObjectSpace.GetNearest(m_nearest, Position(), 15.f, NULL);
 	for(u32 i = 0; i < m_nearest.size(); i++)
@@ -243,13 +243,13 @@ void CPseudoGigant::on_threaten_execute()
 		obj->m_pPhysicsShell->applyImpulse(dir, 20 * obj->m_pPhysicsShell->getMass());
 	}
 
-	// играть звук
+	// РёРіСЂР°С‚СЊ Р·РІСѓРє
 	fvec3 pos;
 	pos.set(Position());
 	pos.y += 0.1f;
 	m_sound_threaten_hit.play_at_pos(this, pos);
 
-	// играть партиклы
+	// РёРіСЂР°С‚СЊ РїР°СЂС‚РёРєР»С‹
 	PlayParticles(m_kick_particles, pos, Direction());
 
 	CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(EnemyMan.get_enemy()));
@@ -263,7 +263,7 @@ void CPseudoGigant::on_threaten_execute()
 	hit_value = m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
 	clamp(hit_value, 0.f, 1.f);
 
-	// запустить эффектор
+	// Р·Р°РїСѓСЃС‚РёС‚СЊ СЌС„С„РµРєС‚РѕСЂ
 	Actor()->Cameras().AddCamEffector(
 		xr_new<CMonsterEffectorHit>(m_threaten_effector.ce_time, m_threaten_effector.ce_amplitude * hit_value,
 									m_threaten_effector.ce_period_number, m_threaten_effector.ce_power * hit_value));
@@ -271,7 +271,7 @@ void CPseudoGigant::on_threaten_execute()
 															  m_threaten_effector.time_attack,
 															  m_threaten_effector.time_release, hit_value));
 
-	// развернуть камеру
+	// СЂР°Р·РІРµСЂРЅСѓС‚СЊ РєР°РјРµСЂСѓ
 	if(pA->cam_Active())
 	{
 		pA->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, Random.randF(0.3f * hit_value));
@@ -280,7 +280,7 @@ void CPseudoGigant::on_threaten_execute()
 
 	Actor()->lock_accel_for(m_time_kick_actor_slow_down);
 
-	// Нанести хит
+	// РќР°РЅРµСЃС‚Рё С…РёС‚
 	NET_Packet l_P;
 	SHit HS;
 

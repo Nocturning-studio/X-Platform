@@ -152,7 +152,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 	rain_density = GetFloatIfExist("rain_density", 0.0f, config);
 	rain_color = GetRGBColorIfExist("rain_color", FULL_COLOR, config);
 
-	// Попытка найти ссылку на пресет ветра
+	// РџРѕРїС‹С‚РєР° РЅР°Р№С‚Рё СЃСЃС‹Р»РєСѓ РЅР° РїСЂРµСЃРµС‚ РІРµС‚СЂР°
 	bool bWindLoaded = false;
 	if(config.line_exist(m_identifier.c_str(), "wind_profile"))
 	{
@@ -176,7 +176,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 		}
 	}
 
-	// Fallback: Если профиль не задан или не найден, читаем по-старому из текущей секции
+	// Fallback: Р•СЃР»Рё РїСЂРѕС„РёР»СЊ РЅРµ Р·Р°РґР°РЅ РёР»Рё РЅРµ РЅР°Р№РґРµРЅ, С‡РёС‚Р°РµРј РїРѕ-СЃС‚Р°СЂРѕРјСѓ РёР· С‚РµРєСѓС‰РµР№ СЃРµРєС†РёРё
 	if(!bWindLoaded)
 	{
 		wind_strength = GetFloatIfExist("wind_strength", 0.35f, config);

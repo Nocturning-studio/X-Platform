@@ -73,7 +73,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fAccelK = pSettings->r_float(section, "accel_k");
 	m_fSprintK = pSettings->r_float(section, "sprint_k");
 
-	// порог силы и здоровья меньше которого актер начинает хромать
+	// РїРѕСЂРѕРі СЃРёР»С‹ Рё Р·РґРѕСЂРѕРІСЊСЏ РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ Р°РєС‚РµСЂ РЅР°С‡РёРЅР°РµС‚ С…СЂРѕРјР°С‚СЊ
 	m_fLimpingHealthBegin = pSettings->r_float(section, "limping_health_begin");
 	m_fLimpingHealthEnd = pSettings->r_float(section, "limping_health_end");
 	R_ASSERT(m_fLimpingHealthBegin <= m_fLimpingHealthEnd);
@@ -102,7 +102,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_MaxWalkWeight = pSettings->r_float(section, "max_walk_weight");
 }
 
-// вычисление параметров с ходом времени
+// РІС‹С‡РёСЃР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ СЃ С…РѕРґРѕРј РІСЂРµРјРµРЅРё
 #include "UI.h"
 #include "HUDManager.h"
 
@@ -215,13 +215,13 @@ void CActorCondition::UpdateSatiety()
 		clamp(m_fSatiety, 0.0f, 1.0f);
 	}
 
-	// сытость увеличивает здоровье только если нет открытых ран
+	// СЃС‹С‚РѕСЃС‚СЊ СѓРІРµР»РёС‡РёРІР°РµС‚ Р·РґРѕСЂРѕРІСЊРµ С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅРµС‚ РѕС‚РєСЂС‹С‚С‹С… СЂР°РЅ
 	if(!m_bIsBleeding)
 	{
 		m_fDeltaHealth += CanBeHarmed() ? (m_fV_SatietyHealth * (m_fSatiety > 0.0f ? 1.f : -1.f) * m_fDeltaTime) : 0;
 	}
 
-	// коэффициенты уменьшения восстановления силы от сытоти и радиации
+	// РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ СѓРјРµРЅСЊС€РµРЅРёСЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ СЃРёР»С‹ РѕС‚ СЃС‹С‚РѕС‚Рё Рё СЂР°РґРёР°С†РёРё
 	float radiation_power_k = 1.f;
 	float satiety_power_k = 1.f;
 
@@ -235,7 +235,7 @@ CWound* CActorCondition::ConditionHit(SHit* pHDS)
 	return inherited::ConditionHit(pHDS);
 }
 
-// weight - "удельный" вес от 0..1
+// weight - "СѓРґРµР»СЊРЅС‹Р№" РІРµСЃ РѕС‚ 0..1
 void CActorCondition::ConditionJump(float weight)
 {
 	float power = m_fJumpPower;

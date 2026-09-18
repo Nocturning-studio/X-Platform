@@ -14,28 +14,28 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 {
 	u32 global_time = Engine.TimeManager.GetGlobalTimeMs();
 
-	// 1. Быстрая проверка (Fast Path) - без локов
+	// 1. Р‘С‹СЃС‚СЂР°СЏ РїСЂРѕРІРµСЂРєР° (Fast Path) - Р±РµР· Р»РѕРєРѕРІ
 	if(global_time == UCalc_Time && !bForceExact)
 		return;
 
-	// 2. Захват блокировки
+	// 2. Р—Р°С…РІР°С‚ Р±Р»РѕРєРёСЂРѕРІРєРё
 	UCalc_Mutex.Enter();
 
-	// 3. Повторная проверка (Double Check) - под локом
+	// 3. РџРѕРІС‚РѕСЂРЅР°СЏ РїСЂРѕРІРµСЂРєР° (Double Check) - РїРѕРґ Р»РѕРєРѕРј
 	if(global_time == UCalc_Time && !bForceExact)
 	{
 		UCalc_Mutex.Leave();
 		return;
 	}
 
-	// 4. Логика интервала
+	// 4. Р›РѕРіРёРєР° РёРЅС‚РµСЂРІР°Р»Р°
 	if(!bForceExact && (global_time < (UCalc_Time + UCalc_Interval)))
 	{
 		UCalc_Mutex.Leave();
 		return;
 	}
 
-	// 5. Расчет (State Mutation)
+	// 5. Р Р°СЃС‡РµС‚ (State Mutation)
 	if(Update_Visibility)
 		Visibility_Update();
 
@@ -45,7 +45,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	Engine.Statistic->Animation.Begin();
 #endif
 
-	// Расчет иерархии костей (Тяжелая операция)
+	// Р Р°СЃС‡РµС‚ РёРµСЂР°СЂС…РёРё РєРѕСЃС‚РµР№ (РўСЏР¶РµР»Р°СЏ РѕРїРµСЂР°С†РёСЏ)
 	Bone_Calculate(bones->at(iRoot), &Fidentity);
 
 #ifdef DEBUG
@@ -53,7 +53,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	Engine.Statistic->Animation.End();
 #endif
 
-	// 6. Расчет Bounding Box (Visibox)
+	// 6. Р Р°СЃС‡РµС‚ Bounding Box (Visibox)
 	UCalc_Visibox++;
 	if(UCalc_Visibox >= psSkeletonUpdate)
 	{
@@ -113,12 +113,12 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	if(Update_Callback)
 		Update_Callback(this);
 
-	// Обновляем время только когда ВСЕ данные (кости и AABB) полностью готовы.
-	// Теперь другие потоки, проверяющие Fast Path, увидят новое время
-	// только когда данные действительно безопасны для чтения.
+	// РћР±РЅРѕРІР»СЏРµРј РІСЂРµРјСЏ С‚РѕР»СЊРєРѕ РєРѕРіРґР° Р’РЎР• РґР°РЅРЅС‹Рµ (РєРѕСЃС‚Рё Рё AABB) РїРѕР»РЅРѕСЃС‚СЊСЋ РіРѕС‚РѕРІС‹.
+	// РўРµРїРµСЂСЊ РґСЂСѓРіРёРµ РїРѕС‚РѕРєРё, РїСЂРѕРІРµСЂСЏСЋС‰РёРµ Fast Path, СѓРІРёРґСЏС‚ РЅРѕРІРѕРµ РІСЂРµРјСЏ
+	// С‚РѕР»СЊРєРѕ РєРѕРіРґР° РґР°РЅРЅС‹Рµ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ Р±РµР·РѕРїР°СЃРЅС‹ РґР»СЏ С‡С‚РµРЅРёСЏ.
 	UCalc_Time = global_time;
 
-	// 7. Освобождение блокировки
+	// 7. РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ Р±Р»РѕРєРёСЂРѕРІРєРё
 	UCalc_Mutex.Leave();
 }
 

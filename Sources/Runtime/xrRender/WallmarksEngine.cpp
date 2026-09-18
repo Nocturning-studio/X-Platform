@@ -356,7 +356,7 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 	   ::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)
 		return;
 
-	// Используем геттер get_HUD() вместо прямого доступа к m_is_hud_pass
+	// РСЃРїРѕР»СЊР·СѓРµРј РіРµС‚С‚РµСЂ get_HUD() РІРјРµСЃС‚Рѕ РїСЂСЏРјРѕРіРѕ РґРѕСЃС‚СѓРїР° Рє m_is_hud_pass
 	if(!::RenderImplementation.get_HUD())
 	{
 		lock.Enter();

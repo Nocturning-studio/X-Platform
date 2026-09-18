@@ -182,11 +182,11 @@ class ENGINE_API CResourceManager
 						  CShaderMacros& macros,
 						  T*& result);
 
-	// [ИЗМЕНЕНО] Добавлен аргумент const char* _entry = "main"
+	// [РР—РњР•РќР•РќРћ] Р”РѕР±Р°РІР»РµРЅ Р°СЂРіСѓРјРµРЅС‚ const char* _entry = "main"
 	template <typename T>
 	T* CreateShader(const char* _name, const char* _entry, CShaderMacros& macros);
 
-	// Для обратной совместимости можно добавить перегрузку (не обязательно, если везде обновили)
+	// Р”Р»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РїРµСЂРµРіСЂСѓР·РєСѓ (РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РµСЃР»Рё РІРµР·РґРµ РѕР±РЅРѕРІРёР»Рё)
 	template <typename T>
 	T* CreateShader(const char* _name, CShaderMacros& macros)
 	{

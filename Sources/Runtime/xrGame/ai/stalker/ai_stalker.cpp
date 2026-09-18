@@ -86,7 +86,7 @@ CAI_Stalker::CAI_Stalker()
 	m_power_fx_factor = flt_max;
 	m_wounded = false;
 
-	// [IMPROVEMENT] Инициализация переменных
+	// [IMPROVEMENT] РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
 	m_dwLastHitTime = 0;
 	m_rage_end_time = 0;
 	m_body_block_time = 0;
@@ -116,7 +116,7 @@ void CAI_Stalker::reinit()
 	animation().reinit();
 	movement().reinit();
 
-	// загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
+	// Р·Р°РіСЂСѓР·РєР° СЃРїРµС†РµРІРёС‡РµСЃРєРѕР№ Р·РІСѓРєРѕРІРѕР№ СЃС…РµРјС‹ РґР»СЏ СЃС‚Р°Р»РєРµСЂР° СЃРѕРіР»Р°СЃРЅРѕ m_SpecificCharacter
 	sound().sound_prefix(SpecificCharacter().sound_voice_prefix());
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -195,7 +195,7 @@ void CAI_Stalker::reinit()
 	m_sight_enabled_before_animation_controller = true;
 	m_update_rotation_on_frame = false;
 
-	// [IMPROVEMENT] Сброс переменных при реините
+	// [IMPROVEMENT] РЎР±СЂРѕСЃ РїРµСЂРµРјРµРЅРЅС‹С… РїСЂРё СЂРµРёРЅРёС‚Рµ
 	m_dwLastHitTime = 0;
 	m_rage_end_time = 0;
 	m_body_block_time = 0;
@@ -347,7 +347,7 @@ void CAI_Stalker::Die(CObject* who)
 
 	inherited::Die(who);
 
-	// запретить использование слотов в инвенторе
+	// Р·Р°РїСЂРµС‚РёС‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЃР»РѕС‚РѕРІ РІ РёРЅРІРµРЅС‚РѕСЂРµ
 	inventory().SetSlotsUseful(false);
 
 	if(inventory().GetActiveSlot() >= inventory().m_slots.size())
@@ -444,7 +444,7 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 	if(!g_Alive())
 		sound().set_sound_mask(u32(eStalkerSoundMaskDie));
 
-	// загрузить иммунитеты из модельки сталкера
+	// Р·Р°РіСЂСѓР·РёС‚СЊ РёРјРјСѓРЅРёС‚РµС‚С‹ РёР· РјРѕРґРµР»СЊРєРё СЃС‚Р°Р»РєРµСЂР°
 	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual());
 	VERIFY(pKinematics);
 	CInifile* ini = pKinematics->LL_UserData();
@@ -463,7 +463,7 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 		}
 	}
 
-	// вычислить иммунета в зависимости от ранга
+	// РІС‹С‡РёСЃР»РёС‚СЊ РёРјРјСѓРЅРµС‚Р° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂР°РЅРіР°
 	static float novice_rank_immunity = pSettings->r_float("ranks_properties", "immunities_novice_k");
 	static float expirienced_rank_immunity = pSettings->r_float("ranks_properties", "immunities_experienced_k");
 
@@ -518,15 +518,15 @@ void CAI_Stalker::net_Destroy()
 	CInventoryOwner::net_Destroy();
 	m_pPhysics_support->in_NetDestroy();
 
-	// 1. Создаем делегат
+	// 1. РЎРѕР·РґР°РµРј РґРµР»РµРіР°С‚
 	CThreadManager::ParallelTask taskDelegate = CThreadManager::ParallelTask(this, &CAI_Stalker::update_object_handler);
 
-	// 2. Удаляем через менеджер
+	// 2. РЈРґР°Р»СЏРµРј С‡РµСЂРµР· РјРµРЅРµРґР¶РµСЂ
 	Engine.ThreadManager.RemoveParallelTask(taskDelegate);
 
 #ifdef DEBUG
-	// 3. Проверяем через менеджер, что задачи больше нет
-	// Мы спрашиваем: "Есть ли задача?" и ожидаем FALSE.
+	// 3. РџСЂРѕРІРµСЂСЏРµРј С‡РµСЂРµР· РјРµРЅРµРґР¶РµСЂ, С‡С‚Рѕ Р·Р°РґР°С‡Рё Р±РѕР»СЊС€Рµ РЅРµС‚
+	// РњС‹ СЃРїСЂР°С€РёРІР°РµРј: "Р•СЃС‚СЊ Р»Рё Р·Р°РґР°С‡Р°?" Рё РѕР¶РёРґР°РµРј FALSE.
 	VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
 #endif // DEBUG
 
@@ -706,34 +706,34 @@ void CAI_Stalker::UpdateCL()
 	START_PROFILE("stalker/client_update")
 	VERIFY2(PPhysicsShell() || getEnabled(), *cName());
 
-	// [IMPROVEMENT] Turn Penalty: Обновляем значение предыдущего угла поворота
-	// Это используется в ai_stalker_fire.cpp для штрафа к точности при резком развороте
+	// [IMPROVEMENT] Turn Penalty: РћР±РЅРѕРІР»СЏРµРј Р·РЅР°С‡РµРЅРёРµ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р°
+	// Р­С‚Рѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ ai_stalker_fire.cpp РґР»СЏ С€С‚СЂР°С„Р° Рє С‚РѕС‡РЅРѕСЃС‚Рё РїСЂРё СЂРµР·РєРѕРј СЂР°Р·РІРѕСЂРѕС‚Рµ
 	m_previous_yaw = movement().m_body.current.yaw;
 
 	if(g_Alive())
 	{
-		// Проверяем глобальный конфиг многопоточности и готовность планировщика
+		// РџСЂРѕРІРµСЂСЏРµРј РіР»РѕР±Р°Р»СЊРЅС‹Р№ РєРѕРЅС„РёРі РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚Рё Рё РіРѕС‚РѕРІРЅРѕСЃС‚СЊ РїР»Р°РЅРёСЂРѕРІС‰РёРєР°
 		if(CObjectHandler::planner().initialized())
 		{
-			// Создаем делегат
+			// РЎРѕР·РґР°РµРј РґРµР»РµРіР°С‚
 			auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 
 #ifdef DEBUG
-			// Проверяем через менеджер, что задачи еще нет в очереди
+			// РџСЂРѕРІРµСЂСЏРµРј С‡РµСЂРµР· РјРµРЅРµРґР¶РµСЂ, С‡С‚Рѕ Р·Р°РґР°С‡Рё РµС‰Рµ РЅРµС‚ РІ РѕС‡РµСЂРµРґРё
 			VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
 #endif
-			// Добавляем задачу в пул потоков с ВЫСОКИМ приоритетом
+			// Р”РѕР±Р°РІР»СЏРµРј Р·Р°РґР°С‡Сѓ РІ РїСѓР» РїРѕС‚РѕРєРѕРІ СЃ Р’Р«РЎРћРљРРњ РїСЂРёРѕСЂРёС‚РµС‚РѕРј
 			Engine.ThreadManager.AddParallelTask(taskDelegate, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 		}
 		else
 		{
-			// Выполняем синхронно в главном потоке (если MT выключен или не готов)
+			// Р’С‹РїРѕР»РЅСЏРµРј СЃРёРЅС…СЂРѕРЅРЅРѕ РІ РіР»Р°РІРЅРѕРј РїРѕС‚РѕРєРµ (РµСЃР»Рё MT РІС‹РєР»СЋС‡РµРЅ РёР»Рё РЅРµ РіРѕС‚РѕРІ)
 			START_PROFILE("stalker/client_update/object_handler")
 			update_object_handler();
 			STOP_PROFILE
 		}
 
-		// Логика звуков (остается без изменений, выполняется в основном потоке)
+		// Р›РѕРіРёРєР° Р·РІСѓРєРѕРІ (РѕСЃС‚Р°РµС‚СЃСЏ Р±РµР· РёР·РјРµРЅРµРЅРёР№, РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РІ РѕСЃРЅРѕРІРЅРѕРј РїРѕС‚РѕРєРµ)
 		if((movement().speed(character_physics_support()->movement()) > EPS_L) &&
 		   (eMovementTypeStand != movement().movement_type()) && (eMentalStateDanger == movement().mental_state()))
 		{
@@ -806,22 +806,22 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	// --- [IMPROVEMENT START] ---
 	if(g_Alive())
 	{
-		// 1. Окончание контратаки
+		// 1. РћРєРѕРЅС‡Р°РЅРёРµ РєРѕРЅС‚СЂР°С‚Р°РєРё
 		if(m_is_counter_attacking && Engine.TimeManager.GetGlobalTimeMs() > m_counter_attack_end_time)
 		{
 			m_is_counter_attacking = false;
 		}
 
-		// 2. Выход из подавления (Ускоренный)
+		// 2. Р’С‹С…РѕРґ РёР· РїРѕРґР°РІР»РµРЅРёСЏ (РЈСЃРєРѕСЂРµРЅРЅС‹Р№)
 		if(!m_is_counter_attacking && m_suppression_end_time != 0 && Engine.TimeManager.GetGlobalTimeMs() > m_suppression_end_time)
 		{
-			// Ждем всего 0.3 - 0.8 сек после подавления (было 1 сек)
-			// Это делает их реактивнее
-			u32 reaction_delay = 300 + (1000 - Rank() * 10); // Мастера реагируют быстрее
+			// Р–РґРµРј РІСЃРµРіРѕ 0.3 - 0.8 СЃРµРє РїРѕСЃР»Рµ РїРѕРґР°РІР»РµРЅРёСЏ (Р±С‹Р»Рѕ 1 СЃРµРє)
+			// Р­С‚Рѕ РґРµР»Р°РµС‚ РёС… СЂРµР°РєС‚РёРІРЅРµРµ
+			u32 reaction_delay = 300 + (1000 - Rank() * 10); // РњР°СЃС‚РµСЂР° СЂРµР°РіРёСЂСѓСЋС‚ Р±С‹СЃС‚СЂРµРµ
 
 			if(Engine.TimeManager.GetGlobalTimeMs() > m_suppression_end_time + reaction_delay)
 			{
-				// Повышаем шанс контратаки до 80%
+				// РџРѕРІС‹С€Р°РµРј С€Р°РЅСЃ РєРѕРЅС‚СЂР°С‚Р°РєРё РґРѕ 80%
 				if(memory().enemy().selected() && ::Random.randF() < 0.8f)
 				{
 					sound().play(eStalkerSoundNeedBackup);
@@ -872,13 +872,13 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		memory().visual().check_visibles();
 #endif
 
-		// [IMPROVEMENT] Flashlight Reaction: Проверка на фонарик игрока
-		// Если игрок светит на сталкера - он становится видимым
+		// [IMPROVEMENT] Flashlight Reaction: РџСЂРѕРІРµСЂРєР° РЅР° С„РѕРЅР°СЂРёРє РёРіСЂРѕРєР°
+		// Р•СЃР»Рё РёРіСЂРѕРє СЃРІРµС‚РёС‚ РЅР° СЃС‚Р°Р»РєРµСЂР° - РѕРЅ СЃС‚Р°РЅРѕРІРёС‚СЃСЏ РІРёРґРёРјС‹Рј
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 		if(pActor)
 		{
-			// Проверяем включен ли фонарь (предполагаем наличие CTorch или аттача)
-			// В оригинале доступ может отличаться, используем общий подход
+			// РџСЂРѕРІРµСЂСЏРµРј РІРєР»СЋС‡РµРЅ Р»Рё С„РѕРЅР°СЂСЊ (РїСЂРµРґРїРѕР»Р°РіР°РµРј РЅР°Р»РёС‡РёРµ CTorch РёР»Рё Р°С‚С‚Р°С‡Р°)
+			// Р’ РѕСЂРёРіРёРЅР°Р»Рµ РґРѕСЃС‚СѓРї РјРѕР¶РµС‚ РѕС‚Р»РёС‡Р°С‚СЊСЃСЏ, РёСЃРїРѕР»СЊР·СѓРµРј РѕР±С‰РёР№ РїРѕРґС…РѕРґ
 			CTorch* torch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
 			if(torch && torch->IsSwitchedOn())
 			{
@@ -888,15 +888,15 @@ void CAI_Stalker::shedule_Update(u32 DT)
 				to_stalker.sub(actor_pos);
 				float dist = to_stalker.magnitude();
 
-				// Если дистанция < 60м
+				// Р•СЃР»Рё РґРёСЃС‚Р°РЅС†РёСЏ < 60Рј
 				if(dist < 60.0f)
 				{
 					to_stalker.normalize();
 					float angle = actor_dir.dotproduct(to_stalker);
-					// Угол примерно 30 градусов (cos > 0.86)
+					// РЈРіРѕР» РїСЂРёРјРµСЂРЅРѕ 30 РіСЂР°РґСѓСЃРѕРІ (cos > 0.86)
 					if(angle > 0.86f)
 					{
-						// Замечаем игрока принудительно
+						// Р—Р°РјРµС‡Р°РµРј РёРіСЂРѕРєР° РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ
 						memory().visual().add_visible_object(pActor, 1.0f, true);
 					}
 				}

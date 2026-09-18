@@ -91,7 +91,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	//	if(pWnd == GetParent())
 	//	{
-	// кто-то другой захватил клавиатуру
+	// РєС‚Рѕ-С‚Рѕ РґСЂСѓРіРѕР№ Р·Р°С…РІР°С‚РёР» РєР»Р°РІРёР°С‚СѓСЂСѓ
 	if(msg == WINDOW_KEYBOARD_CAPTURE_LOST)
 	{
 		m_bInputFocus = false;
@@ -234,7 +234,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 	default:
 		it = gs_DIK2CHR.find(dik);
 
-		// нажата клавиша с буквой
+		// РЅР°Р¶Р°С‚Р° РєР»Р°РІРёС€Р° СЃ Р±СѓРєРІРѕР№
 		if(gs_DIK2CHR.end() != it)
 		{
 			AddLetter((*it).second);
@@ -351,8 +351,8 @@ void CUICustomEdit::AddLetter(char c)
 	AddChar(c);
 }
 
-// время для обеспечивания печатания
-// символа при удерживаемой кнопке
+// РІСЂРµРјСЏ РґР»СЏ РѕР±РµСЃРїРµС‡РёРІР°РЅРёСЏ РїРµС‡Р°С‚Р°РЅРёСЏ
+// СЃРёРјРІРѕР»Р° РїСЂРё СѓРґРµСЂР¶РёРІР°РµРјРѕР№ РєРЅРѕРїРєРµ
 #define HOLD_WAIT_TIME 400
 #define HOLD_REPEAT_TIME 100
 

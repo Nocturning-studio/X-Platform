@@ -61,7 +61,7 @@ class ENGINE_API CEnvDescriptor
 	float m_fTreeRotation;
 	fvec3 m_fTreeWave;
 
-	// NSDeathman(Очередное ЧСВ в коде указало свой ник): Кинематографические инструменты
+	// NSDeathman(РћС‡РµСЂРµРґРЅРѕРµ Р§РЎР’ РІ РєРѕРґРµ СѓРєР°Р·Р°Р»Рѕ СЃРІРѕР№ РЅРёРє): РљРёРЅРµРјР°С‚РѕРіСЂР°С„РёС‡РµСЃРєРёРµ РёРЅСЃС‚СЂСѓРјРµРЅС‚С‹
 	fvec3 m_SepiaColor;
 	float m_SepiaPower;
 	float m_VignettePower;

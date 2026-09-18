@@ -73,7 +73,7 @@ class CUICustomEdit : public CUIWindow, public CUILinesOwner
 
 	u32 m_textColor[2];
 
-	// DIK клавиши, кот. нажата и удерживается, 0 если такой нет
+	// DIK РєР»Р°РІРёС€Рё, РєРѕС‚. РЅР°Р¶Р°С‚Р° Рё СѓРґРµСЂР¶РёРІР°РµС‚СЃСЏ, 0 РµСЃР»Рё С‚Р°РєРѕР№ РЅРµС‚
 	int m_iKeyPressAndHold;
 	bool m_bHoldWaitMode;
 

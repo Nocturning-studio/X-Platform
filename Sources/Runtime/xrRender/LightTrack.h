@@ -25,7 +25,7 @@ class CROS_impl : public IRender_ObjectSpecific
 	virtual float get_ao();
 	virtual const float* get_ao_cube();
 
-	// Интерфейс IRender_ObjectSpecific
+	// РРЅС‚РµСЂС„РµР№СЃ IRender_ObjectSpecific
 	virtual void force_mode(u32 mode) override
 	{
 		MODE = mode;
@@ -33,7 +33,7 @@ class CROS_impl : public IRender_ObjectSpecific
 	virtual float get_luminocity() override
 	{
 		return 0.5f;
-	} // Заглушка
+	} // Р—Р°РіР»СѓС€РєР°
 	virtual float get_luminocity_ao() override
 	{
 		return get_ao();
@@ -49,28 +49,28 @@ class CROS_impl : public IRender_ObjectSpecific
 	static inline void accum_ao(float* ao_cube, fvec3& dir, float scale);
 
   private:
-	// Состояние трассировки
+	// РЎРѕСЃС‚РѕСЏРЅРёРµ С‚СЂР°СЃСЃРёСЂРѕРІРєРё
 	bool result[lt_aosamples];
 	collide::ray_cache cache[lt_aosamples];
 
-	// Текущие значения AO
+	// РўРµРєСѓС‰РёРµ Р·РЅР°С‡РµРЅРёСЏ AO
 	float ao_value;
 	float ao_smooth;
 	float ao_cube[NUM_FACES];
 	float ao_cube_smooth[NUM_FACES];
 
-	// Управление обновлением
+	// РЈРїСЂР°РІР»РµРЅРёРµ РѕР±РЅРѕРІР»РµРЅРёРµРј
 	u32 dwFrame;
 	u32 dwFrameSmooth;
 	fvec3 last_position;
 	s32 ticks_to_update;
 	s32 sky_rays_uptodate;
 
-	// Счетчики сэмплов
+	// РЎС‡РµС‚С‡РёРєРё СЃСЌРјРїР»РѕРІ
 	s32 result_count;
 	u32 result_iterator;
 	u32 result_frame;
 
-	// Режим (для совместимости)
+	// Р РµР¶РёРј (РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё)
 	u32 MODE;
 };

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "r_sector.h"
 #include "r_portal.h"
-#include "render.h" // Для доступа к глобальному списку ресурсов при загрузке
+#include "render.h" // Р”Р»СЏ РґРѕСЃС‚СѓРїР° Рє РіР»РѕР±Р°Р»СЊРЅРѕРјСѓ СЃРїРёСЃРєСѓ СЂРµСЃСѓСЂСЃРѕРІ РїСЂРё Р·Р°РіСЂСѓР·РєРµ
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -13,9 +13,9 @@ CSector::CSector() : m_root_visual(nullptr)
 
 CSector::~CSector()
 {
-	// Очищаем контейнеры.
-	// Сами объекты (CPortal, IRender_Visual) удаляются в CRender::level_Unload,
-	// так что здесь мы просто забываем указатели.
+	// РћС‡РёС‰Р°РµРј РєРѕРЅС‚РµР№РЅРµСЂС‹.
+	// РЎР°РјРё РѕР±СЉРµРєС‚С‹ (CPortal, IRender_Visual) СѓРґР°Р»СЏСЋС‚СЃСЏ РІ CRender::level_Unload,
+	// С‚Р°Рє С‡С‚Рѕ Р·РґРµСЃСЊ РјС‹ РїСЂРѕСЃС‚Рѕ Р·Р°Р±С‹РІР°РµРј СѓРєР°Р·Р°С‚РµР»Рё.
 	m_portals.clear();
 	m_root_visual = nullptr;
 }
@@ -26,12 +26,12 @@ CSector::~CSector()
 
 void CSector::Load(IReader& fs)
 {
-	// 1. Загрузка Порталов
-	// В чанке fsP_Portals хранится список ID порталов (u16)
+	// 1. Р—Р°РіСЂСѓР·РєР° РџРѕСЂС‚Р°Р»РѕРІ
+	// Р’ С‡Р°РЅРєРµ fsP_Portals С…СЂР°РЅРёС‚СЃСЏ СЃРїРёСЃРѕРє ID РїРѕСЂС‚Р°Р»РѕРІ (u16)
 	if(fs.find_chunk(fsP_Portals))
 	{
 		u32 size = fs.find_chunk(fsP_Portals);
-		R_ASSERT(0 == (size & 1)); // Размер должен быть кратен 2 (sizeof(u16))
+		R_ASSERT(0 == (size & 1)); // Р Р°Р·РјРµСЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РєСЂР°С‚РµРЅ 2 (sizeof(u16))
 		u32 count = size / 2;
 
 		m_portals.reserve(count);
@@ -39,14 +39,14 @@ void CSector::Load(IReader& fs)
 		while(count)
 		{
 			u16 portal_id = fs.r_u16();
-			// Получаем указатель на портал из глобального пула рендера
+			// РџРѕР»СѓС‡Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕСЂС‚Р°Р» РёР· РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ РїСѓР»Р° СЂРµРЅРґРµСЂР°
 			CPortal* portal = (CPortal*)RenderImplementation.getPortal(portal_id);
 			m_portals.push_back(portal);
 			count--;
 		}
 	}
 
-	// 2. Загрузка Корневого Визуала (Геометрии)
+	// 2. Р—Р°РіСЂСѓР·РєР° РљРѕСЂРЅРµРІРѕРіРѕ Р’РёР·СѓР°Р»Р° (Р“РµРѕРјРµС‚СЂРёРё)
 	if(g_dedicated_server)
 	{
 		m_root_visual = nullptr;
@@ -56,7 +56,7 @@ void CSector::Load(IReader& fs)
 		if(fs.find_chunk(fsP_Root))
 		{
 			u32 size = fs.find_chunk(fsP_Root);
-			R_ASSERT(size == 4); // ID визуала - это u32
+			R_ASSERT(size == 4); // ID РІРёР·СѓР°Р»Р° - СЌС‚Рѕ u32
 
 			u32 visual_id = fs.r_u32();
 			m_root_visual = RenderImplementation.getVisual(visual_id);

@@ -23,7 +23,7 @@ class CUICheckButton : public CUI3tButton, public CUIOptionsItem
 	{ /*do nothing*/
 	}
 
-	// состояние кнопки
+	// СЃРѕСЃС‚РѕСЏРЅРёРµ РєРЅРѕРїРєРё
 	bool GetCheck()
 	{
 		return m_eButtonState == BUTTON_PUSHED;

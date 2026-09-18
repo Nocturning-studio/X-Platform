@@ -69,7 +69,7 @@ void SoftXOcclusionMapBuilder::Load(const CHOM& hom)
 	xr_vector<u16> indices;
 	ExtractGeometry(model, vertices, indices);
 
-	u32 vertexCount = (u32)vertices.size(); // ëîêàëüíûå ïåðåìåííûå
+	u32 vertexCount = (u32)vertices.size(); // Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ñ‹Ðµ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ
 	u32 indexCount = (u32)indices.size();
 
 	if(vertexCount == 0 || indexCount == 0)
@@ -110,7 +110,7 @@ void SoftXOcclusionMapBuilder::Build()
 		OPTICK_EVENT("Draw occluder");
 		SoftX::DeviceContext& ctx = core->GetImmediateContext();
 
-		// Ïîëíàÿ íàñòðîéêà ñîñòîÿíèé ïåðåä ðèñîâàíèåì îêêëþäåðîâ
+		// ÐŸÐ¾Ð»Ð½Ð°Ñ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ° ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¹ Ð¿ÐµÑ€ÐµÐ´ Ñ€Ð¸ÑÐ¾Ð²Ð°Ð½Ð¸ÐµÐ¼ Ð¾ÐºÐºÐ»ÑŽÐ´ÐµÑ€Ð¾Ð²
 		ctx.SetRenderTarget(nullptr, true);
 		ctx.SetDepthBuffer(core->GetWriteBuffer());
 		ctx.SetCullMode(SoftX::CullMode::None);

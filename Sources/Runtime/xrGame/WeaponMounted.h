@@ -41,7 +41,7 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 	virtual const fmat4x4& get_ParticlesTransform();
 
 	//////////////////////////////////////////////////
-	// непосредственно обработка стрельбы
+	// РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ РѕР±СЂР°Р±РѕС‚РєР° СЃС‚СЂРµР»СЊР±С‹
 	//////////////////////////////////////////////////
   protected:
 	virtual void FireStart();
@@ -55,10 +55,10 @@ class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public 
 	shared_str m_sAmmoType;
 	CCartridge m_CurrentAmmo;
 
-	// звук стрельбы
+	// Р·РІСѓРє СЃС‚СЂРµР»СЊР±С‹
 	HUD_SOUND sndShot;
 
-	// для отдачи
+	// РґР»СЏ РѕС‚РґР°С‡Рё
 	float camRelaxSpeed;
 	float camMaxAngle;
 

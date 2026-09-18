@@ -1,5 +1,5 @@
-// Level_Bullet_Manager.cpp:	для обеспечения полета пули по траектории
-//								все пули и осколки передаются сюда
+// Level_Bullet_Manager.cpp:	РґР»СЏ РѕР±РµСЃРїРµС‡РµРЅРёСЏ РїРѕР»РµС‚Р° РїСѓР»Рё РїРѕ С‚СЂР°РµРєС‚РѕСЂРёРё
+//								РІСЃРµ РїСѓР»Рё Рё РѕСЃРєРѕР»РєРё РїРµСЂРµРґР°СЋС‚СЃСЏ СЃСЋРґР°
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -185,11 +185,11 @@ void CBulletManager::UpdateWorkload()
 	for(int k = m_Bullets.size() - 1; k >= 0; k--)
 	{
 		SBullet& bullet = m_Bullets[k];
-		// для пули пущенной на этом же кадре считаем только 1 шаг
-		//(хотя по теории вообще ничего считать на надо)
-		// который пропустим на следующем кадре,
-		// это делается для того чтоб при скачках FPS не промазать
-		// с 2х метров
+		// РґР»СЏ РїСѓР»Рё РїСѓС‰РµРЅРЅРѕР№ РЅР° СЌС‚РѕРј Р¶Рµ РєР°РґСЂРµ СЃС‡РёС‚Р°РµРј С‚РѕР»СЊРєРѕ 1 С€Р°Рі
+		//(С…РѕС‚СЏ РїРѕ С‚РµРѕСЂРёРё РІРѕРѕР±С‰Рµ РЅРёС‡РµРіРѕ СЃС‡РёС‚Р°С‚СЊ РЅР° РЅР°РґРѕ)
+		// РєРѕС‚РѕСЂС‹Р№ РїСЂРѕРїСѓСЃС‚РёРј РЅР° СЃР»РµРґСѓСЋС‰РµРј РєР°РґСЂРµ,
+		// СЌС‚Рѕ РґРµР»Р°РµС‚СЃСЏ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР± РїСЂРё СЃРєР°С‡РєР°С… FPS РЅРµ РїСЂРѕРјР°Р·Р°С‚СЊ
+		// СЃ 2С… РјРµС‚СЂРѕРІ
 		u32 cur_step_num = step_num;
 
 		u32 frames_pass = Engine.TimeManager.GetFrameCount() - bullet.frame_num;
@@ -228,9 +228,9 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 	if(range > max_range)
 		range = max_range;
 
-	// запомнить текущую скорость пули, т.к. в
-	// RayQuery() она может поменяться из-за рикошетов
-	// и столкновений с объектами
+	// Р·Р°РїРѕРјРЅРёС‚СЊ С‚РµРєСѓС‰СѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ РїСѓР»Рё, С‚.Рє. РІ
+	// RayQuery() РѕРЅР° РјРѕР¶РµС‚ РїРѕРјРµРЅСЏС‚СЊСЃСЏ РёР·-Р·Р° СЂРёРєРѕС€РµС‚РѕРІ
+	// Рё СЃС‚РѕР»РєРЅРѕРІРµРЅРёР№ СЃ РѕР±СЉРµРєС‚Р°РјРё
 	fvec3 cur_dir = bullet->dir;
 	bullet_test_callback_data bullet_data;
 	bullet_data.pBullet = bullet;
@@ -253,7 +253,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 
 	if(!bullet->flags.ricochet_was)
 	{
-		// изменить положение пули
+		// РёР·РјРµРЅРёС‚СЊ РїРѕР»РѕР¶РµРЅРёРµ РїСѓР»Рё
 		bullet->pos.mad(bullet->pos, cur_dir, range);
 		bullet->fly_dist += range;
 
@@ -270,8 +270,8 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 			 (bullet->pos.z >= level_box.z1) && (bullet->pos.z <= level_box.z2)))
 			return false;
 
-		// изменить скорость и направление ее полета
-		// с учетом гравитации
+		// РёР·РјРµРЅРёС‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РµРµ РїРѕР»РµС‚Р°
+		// СЃ СѓС‡РµС‚РѕРј РіСЂР°РІРёС‚Р°С†РёРё
 		bullet->dir.mul(bullet->speed);
 
 		fvec3 air_resistance = bullet->dir;
@@ -288,7 +288,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 		bullet->speed = bullet->dir.magnitude();
 		VERIFY(_valid(bullet->speed));
 		VERIFY(!fis_zero(bullet->speed));
-		// вместо normalize(),	 чтоб не считать 2 раза magnitude()
+		// РІРјРµСЃС‚Рѕ normalize(),	 С‡С‚РѕР± РЅРµ СЃС‡РёС‚Р°С‚СЊ 2 СЂР°Р·Р° magnitude()
 
 		float BulletSpeedSafe = _max(bullet->speed, m_fMinBulletSpeed);
 		bullet->dir.x /= BulletSpeedSafe;
@@ -339,9 +339,9 @@ void CBulletManager::Render()
 	// OPTICK_EVENT("CBulletManager::Render");
 
 #ifdef DEBUG
-	// 0-рикошет
-	// 1-застрявание пули в материале
-	// 2-пробивание материала
+	// 0-СЂРёРєРѕС€РµС‚
+	// 1-Р·Р°СЃС‚СЂСЏРІР°РЅРёРµ РїСѓР»Рё РІ РјР°С‚РµСЂРёР°Р»Рµ
+	// 2-РїСЂРѕР±РёРІР°РЅРёРµ РјР°С‚РµСЂРёР°Р»Р°
 	if(g_bDrawBulletHit)
 	{
 		extern FvectorVec g_hit[];

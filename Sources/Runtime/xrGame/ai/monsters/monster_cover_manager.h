@@ -14,11 +14,11 @@ class CMonsterCoverManager
 	~CMonsterCoverManager();
 
 	void load();
-	// найти лучший ковер относительно "position"
+	// РЅР°Р№С‚Рё Р»СѓС‡С€РёР№ РєРѕРІРµСЂ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ "position"
 	const CCoverPoint* find_cover(const fvec3& position, float min_pos_distance, float max_pos_distance,
 								  float deviation = 0.f);
 
-	// найти лучший ковер относительно "src_pos" и "dest_pos"
+	// РЅР°Р№С‚Рё Р»СѓС‡С€РёР№ РєРѕРІРµСЂ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ "src_pos" Рё "dest_pos"
 	const CCoverPoint* find_cover(const fvec3& src_pos, const fvec3& dest_pos, float min_pos_distance,
 								  float max_pos_distance, float deviation = 0.f);
 

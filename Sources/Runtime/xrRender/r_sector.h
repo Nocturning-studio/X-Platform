@@ -1,19 +1,19 @@
 #pragma once
 
 #include "r_portal.h"
-#include "..\xrEngine\xrLevel.h" // Для fsP_Portals, fsP_Root
+#include "..\xrEngine\xrLevel.h" // Р”Р»СЏ fsP_Portals, fsP_Root
 
 class CSector : public IRender_Sector
 {
   private:
-	IRender_Visual* m_root_visual; // Корневая геометрия сектора (Static Geometry)
-	xr_vector<CPortal*> m_portals; // Список порталов, ведущих из этого сектора
+	IRender_Visual* m_root_visual; // РљРѕСЂРЅРµРІР°СЏ РіРµРѕРјРµС‚СЂРёСЏ СЃРµРєС‚РѕСЂР° (Static Geometry)
+	xr_vector<CPortal*> m_portals; // РЎРїРёСЃРѕРє РїРѕСЂС‚Р°Р»РѕРІ, РІРµРґСѓС‰РёС… РёР· СЌС‚РѕРіРѕ СЃРµРєС‚РѕСЂР°
 
   public:
 	CSector();
 	virtual ~CSector();
 
-	// Загрузка данных из .level файла
+	// Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РёР· .level С„Р°Р№Р»Р°
 	void Load(IReader& fs);
 
 	// === Accessors (Thread-Safe getters) ===

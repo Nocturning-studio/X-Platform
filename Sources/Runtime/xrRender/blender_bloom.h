@@ -35,7 +35,7 @@ class CBlender_bloom : public IBlender
 	{
 		IBlender::Compile(C);
 
-		// Единый файл шейдера
+		// Р•РґРёРЅС‹Р№ С„Р°Р№Р» С€РµР№РґРµСЂР°
 		LPCSTR sh_name = "postprocess_stage_bloom";
 
 		switch(C.iElement)
@@ -59,8 +59,8 @@ class CBlender_bloom : public IBlender
 			C.end_Pass();
 
 			// Vertical pass (Macros clear automatically in end_Pass or manually if reusing C object logic)
-			// Примечание: Макросы очищаются в end_Pass, так что для второго прохода USE_HORIZONTAL_FILTER не будет
-			// определен, что активирует ветку #else (Vertical) в шейдере.
+			// РџСЂРёРјРµС‡Р°РЅРёРµ: РњР°РєСЂРѕСЃС‹ РѕС‡РёС‰Р°СЋС‚СЃСЏ РІ end_Pass, С‚Р°Рє С‡С‚Рѕ РґР»СЏ РІС‚РѕСЂРѕРіРѕ РїСЂРѕС…РѕРґР° USE_HORIZONTAL_FILTER РЅРµ Р±СѓРґРµС‚
+			// РѕРїСЂРµРґРµР»РµРЅ, С‡С‚Рѕ Р°РєС‚РёРІРёСЂСѓРµС‚ РІРµС‚РєСѓ #else (Vertical) РІ С€РµР№РґРµСЂРµ.
 			C.begin_Pass("screen_quad", sh_name, "main", "FilterBloom");
 			C.set_Sampler_gaussian("s_bloom", r_RT_bloom2);
 			C.end_Pass();
@@ -82,7 +82,7 @@ class CBlender_bloom : public IBlender
 		case SE_PASS_APPLY_BLOOM:
 			// Pass 4: Apply
 
-			// Настраиваем аддитивный блендинг (Сложение цветов)
+			// РќР°СЃС‚СЂР°РёРІР°РµРј Р°РґРґРёС‚РёРІРЅС‹Р№ Р±Р»РµРЅРґРёРЅРі (РЎР»РѕР¶РµРЅРёРµ С†РІРµС‚РѕРІ)
 			CBlender_Compile::PassDesc PassDescription;
 			PassDescription.VertexShader = "screen_quad";
 			PassDescription.VertexShaderEntry = "main";
@@ -95,7 +95,7 @@ class CBlender_bloom : public IBlender
 
 			C.begin_Pass(PassDescription);
 
-			// Используем Linear семплеры, чтобы растянутый блум был мягким, а не пиксельным
+			// РСЃРїРѕР»СЊР·СѓРµРј Linear СЃРµРјРїР»РµСЂС‹, С‡С‚РѕР±С‹ СЂР°СЃС‚СЏРЅСѓС‚С‹Р№ Р±Р»СѓРј Р±С‹Р» РјСЏРіРєРёРј, Р° РЅРµ РїРёРєСЃРµР»СЊРЅС‹Рј
 			C.set_Sampler_linear("s_bloom", r_RT_bloom1);
 			C.set_Sampler_linear("s_bloom_blades", r_RT_bloom_blades1);
 

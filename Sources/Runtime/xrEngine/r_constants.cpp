@@ -21,7 +21,7 @@ bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination
 	{
 		LPCSTR name = LPCSTR(ptr + it->Name);
 
-		// Îïðåäåëÿåì áàçîâûé òèï
+		// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ Ð±Ð°Ð·Ð¾Ð²Ñ‹Ð¹ Ñ‚Ð¸Ð¿
 		u16 type = RC_float;
 		if(D3DXRS_BOOL == it->RegisterSet)
 			type = RC_bool;
@@ -76,7 +76,7 @@ bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination
 		case D3DXPC_OBJECT:
 			if(T->Type >= D3DXPT_SAMPLER && T->Type <= D3DXPT_SAMPLERCUBE)
 			{
-				// Ýòî ñýìïëåð – îáðàáàòûâàåì îòäåëüíî
+				// Ð­Ñ‚Ð¾ ÑÑÐ¼Ð¿Ð»ÐµÑ€ â€“ Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ð¾Ñ‚Ð´ÐµÐ»ÑŒÐ½Ð¾
 				ParamDesc sampParam;
 				sampParam.name = name;
 				sampParam.type = RC_sampler;
@@ -85,7 +85,7 @@ bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination
 				sampParam.samp.size_class = RC_sampler;
 				sampParam.handler = nullptr;
 
-				// Ïðîâåðÿåì, íåò ëè óæå òàêîãî
+				// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼, Ð½ÐµÑ‚ Ð»Ð¸ ÑƒÐ¶Ðµ Ñ‚Ð°ÐºÐ¾Ð³Ð¾
 				bool exists = false;
 				for(auto& p : m_params)
 				{
@@ -115,7 +115,7 @@ bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination
 		if(bSkip)
 			continue;
 
-		// Îáû÷íàÿ êîíñòàíòà
+		// ÐžÐ±Ñ‹Ñ‡Ð½Ð°Ñ ÐºÐ¾Ð½ÑÑ‚Ð°Ð½Ñ‚Ð°
 		ParamDesc param;
 		param.name = name;
 		param.type = type;
@@ -126,7 +126,7 @@ bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination
 		load.offset = r_index;
 		load.size_class = r_class;
 
-		// Èùåì, åñòü ëè óæå òàêàÿ (ìîãëà áûòü îáúÿâëåíà â äðóãîì øåéäåðå)
+		// Ð˜Ñ‰ÐµÐ¼, ÐµÑÑ‚ÑŒ Ð»Ð¸ ÑƒÐ¶Ðµ Ñ‚Ð°ÐºÐ°Ñ (Ð¼Ð¾Ð³Ð»Ð° Ð±Ñ‹Ñ‚ÑŒ Ð¾Ð±ÑŠÑÐ²Ð»ÐµÐ½Ð° Ð² Ð´Ñ€ÑƒÐ³Ð¾Ð¼ ÑˆÐµÐ¹Ð´ÐµÑ€Ðµ)
 		bool exists = false;
 		for(auto& p : m_params)
 		{
@@ -145,7 +145,7 @@ bool CShaderConstantLayout::LoadFromD3D9Bytecode(void* bytecode, u16 destination
 			m_params.push_back(param);
 	}
 
-	// Ñîðòèðóåì ïî èìåíè (äëÿ äåòåðìèíèðîâàííîñòè)
+	// Ð¡Ð¾Ñ€Ñ‚Ð¸Ñ€ÑƒÐµÐ¼ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸ (Ð´Ð»Ñ Ð´ÐµÑ‚ÐµÑ€Ð¼Ð¸Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾ÑÑ‚Ð¸)
 	std::sort(m_params.begin(), m_params.end(), [](const ParamDesc& a, const ParamDesc& b)
 			  { return xr_strcmp(a.name.c_str(), b.name.c_str()) < 0; });
 

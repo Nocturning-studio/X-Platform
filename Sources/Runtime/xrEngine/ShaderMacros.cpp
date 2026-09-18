@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ShaderMacros.h"
 
-// Добавили const
+// Р”РѕР±Р°РІРёР»Рё const
 void CShaderMacros::_clear_string_storage() const
 {
 	for(char* str : string_storage)
@@ -12,7 +12,7 @@ void CShaderMacros::_clear_string_storage() const
 	d3dx_macros_cache.clear();
 }
 
-// Вспомогательные методы форматирования (остаются без изменений)
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ (РѕСЃС‚Р°СЋС‚СЃСЏ Р±РµР· РёР·РјРµРЅРµРЅРёР№)
 void CShaderMacros::_safe_format_int(char* dest, size_t dest_size, int value)
 {
 	_snprintf(dest, dest_size, "%d", value);
@@ -24,7 +24,7 @@ void CShaderMacros::_safe_format_float(char* dest, size_t dest_size, float value
 	_snprintf(dest, dest_size, "%.8f", value);
 	dest[dest_size - 1] = '\0';
 
-	// Убираем trailing zeros
+	// РЈР±РёСЂР°РµРј trailing zeros
 	char* dot = strchr(dest, '.');
 	if(dot)
 	{
@@ -52,7 +52,7 @@ void CShaderMacros::_clean_string(char* str)
 
 	while(*src)
 	{
-		// Оставляем только ASCII печатные символы
+		// РћСЃС‚Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ ASCII РїРµС‡Р°С‚РЅС‹Рµ СЃРёРјРІРѕР»С‹
 		if(*src >= 32 && *src <= 126)
 		{
 			*dst++ = *src;
@@ -62,7 +62,7 @@ void CShaderMacros::_clean_string(char* str)
 	*dst = '\0';
 }
 
-// Добавили const
+// Р”РѕР±Р°РІРёР»Рё const
 bool CShaderMacros::_is_ascii_printable(const char* str) const
 {
 	if(!str)
@@ -176,7 +176,7 @@ void CShaderMacros::add(LPCSTR Name, bool value)
 	add(Name, value ? "1" : "0");
 }
 
-// Условные версии с Enabled
+// РЈСЃР»РѕРІРЅС‹Рµ РІРµСЂСЃРёРё СЃ Enabled
 void CShaderMacros::add(BOOL Enabled, LPCSTR Name, int value)
 {
 	string32 formatted;
@@ -262,7 +262,7 @@ std::string& CShaderMacros::get_name()
 
 	for(auto& it : macros_impl)
 	{
-		// Проверяем что Definition валиден и не пуст
+		// РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ Definition РІР°Р»РёРґРµРЅ Рё РЅРµ РїСѓСЃС‚
 		LPCSTR def_str = it.Definition.c_str();
 		if(def_str && def_str[0] != '\0')
 		{
@@ -272,7 +272,7 @@ std::string& CShaderMacros::get_name()
 			}
 			else
 			{
-				// Используем длину строки
+				// РСЃРїРѕР»СЊР·СѓРµРј РґР»РёРЅСѓ СЃС‚СЂРѕРєРё
 				size_t len = strlen(def_str);
 				for(size_t j = 0; j < len; ++j)
 					name += it.State;
@@ -285,7 +285,7 @@ std::string& CShaderMacros::get_name()
 
 xr_vector<D3DXMACRO> CShaderMacros::get_macros() const
 {
-	// Очищаем предыдущее хранилище
+	// РћС‡РёС‰Р°РµРј РїСЂРµРґС‹РґСѓС‰РµРµ С…СЂР°РЅРёР»РёС‰Рµ
 	_clear_string_storage();
 
 	d3dx_macros_cache.clear();
@@ -295,21 +295,21 @@ xr_vector<D3DXMACRO> CShaderMacros::get_macros() const
 		LPCSTR name_str = it.Name.c_str();
 		LPCSTR def_str = it.Definition.c_str();
 
-		// Проверяем через размер или указатель
+		// РџСЂРѕРІРµСЂСЏРµРј С‡РµСЂРµР· СЂР°Р·РјРµСЂ РёР»Рё СѓРєР°Р·Р°С‚РµР»СЊ
 		if(it.State == Enable && name_str && name_str[0] != '\0' && def_str && def_str[0] != '\0')
 		{
-			// Дополнительная проверка на валидность строк
+			// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РїСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ СЃС‚СЂРѕРє
 			if(!_is_ascii_printable(name_str) || !_is_ascii_printable(def_str))
 			{
 				Msg("! CShaderMacros: Skipping invalid macro: %s = %s", name_str, def_str);
 				continue;
 			}
 
-			// СОЗДАЕМ КОПИИ строк с выделением памяти
+			// РЎРћР—Р”РђР•Рњ РљРћРџРР СЃС‚СЂРѕРє СЃ РІС‹РґРµР»РµРЅРёРµРј РїР°РјСЏС‚Рё
 			char* name_copy = xr_strdup(name_str);
 			char* definition_copy = xr_strdup(def_str);
 
-			// Сохраняем указатели для последующего освобождения
+			// РЎРѕС…СЂР°РЅСЏРµРј СѓРєР°Р·Р°С‚РµР»Рё РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµРіРѕ РѕСЃРІРѕР±РѕР¶РґРµРЅРёСЏ
 			string_storage.push_back(name_copy);
 			string_storage.push_back(definition_copy);
 
@@ -321,7 +321,7 @@ xr_vector<D3DXMACRO> CShaderMacros::get_macros() const
 		}
 	}
 
-	// Добавляем терминальный NULL макрос
+	// Р”РѕР±Р°РІР»СЏРµРј С‚РµСЂРјРёРЅР°Р»СЊРЅС‹Р№ NULL РјР°РєСЂРѕСЃ
 	D3DXMACRO terminator = {NULL, NULL};
 	d3dx_macros_cache.push_back(terminator);
 

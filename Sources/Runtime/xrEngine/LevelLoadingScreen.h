@@ -6,26 +6,26 @@
 class ENGINE_API CLevelLoadingScreen
 {
   private:
-	// Ресурсы рендера
+	// Р РµСЃСѓСЂСЃС‹ СЂРµРЅРґРµСЂР°
 	ref_shader hLevelLogo;
 	ref_geom ll_hGeom;
 	ref_geom ll_hGeom2;
 	ref_shader sh_progress;
 
-	// Шрифты и текст
+	// РЁСЂРёС„С‚С‹ Рё С‚РµРєСЃС‚
 	CGameFont* pFontSystem;
 	string256 app_title;
 
-	// Состояние
+	// РЎРѕСЃС‚РѕСЏРЅРёРµ
 	bool bIsActive;
 	int load_stage;
 	int max_load_stage;
-	u32 ll_dwReference; // Счетчик ссылок (для вложенных вызовов)
+	u32 ll_dwReference; // РЎС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє (РґР»СЏ РІР»РѕР¶РµРЅРЅС‹С… РІС‹Р·РѕРІРѕРІ)
 
-	// Таймер фаз загрузки
+	// РўР°Р№РјРµСЂ С„Р°Р· Р·Р°РіСЂСѓР·РєРё
 	CTimer phase_timer;
 
-	// Вспомогательные методы
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹
 	void InitializeFont();
 	u32 CalcProgressColor(u32 idx, u32 total, int stage, int max_stage);
 	void DrawInternal();
@@ -36,14 +36,14 @@ class ENGINE_API CLevelLoadingScreen
 
 	void Destroy();
 
-	// Управление жизненным циклом экрана
+	// РЈРїСЂР°РІР»РµРЅРёРµ Р¶РёР·РЅРµРЅРЅС‹Рј С†РёРєР»РѕРј СЌРєСЂР°РЅР°
 	void Show();
 	void Hide();
-	void ForceRender(); // Принудительная отрисовка (LoadDraw)
+	void ForceRender(); // РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅР°СЏ РѕС‚СЂРёСЃРѕРІРєР° (LoadDraw)
 
-	// Обновление данных
+	// РћР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С…
 	void SetTitle(LPCSTR str);
-	void UpdateLevelLogo(); // Подтянет логотип текущего уровня из LevelManager
+	void UpdateLevelLogo(); // РџРѕРґС‚СЏРЅРµС‚ Р»РѕРіРѕС‚РёРї С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ РёР· LevelManager
 
 	bool IsActive() const
 	{

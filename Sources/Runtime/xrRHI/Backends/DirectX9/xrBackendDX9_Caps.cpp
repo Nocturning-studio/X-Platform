@@ -23,23 +23,23 @@ XRRHI_API std::string DecodeShaderVersion(u32 version)
 
 void CRenderBackendDX9::CacheDeviceCapsFromD3D()
 {
-	// 1. Получаем актуальные D3DCAPS9
+	// 1. РџРѕР»СѓС‡Р°РµРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ D3DCAPS9
 	D3DCAPS9 caps = {};
 	if(m_pDevice)
 		m_pDevice->GetDeviceCaps(&caps);
 
-	// 2. Идентификация
+	// 2. РРґРµРЅС‚РёС„РёРєР°С†РёСЏ
 	m_DeviceCaps.VendorId = m_AdapterID.VendorId;
 	m_DeviceCaps.DeviceId = m_AdapterID.DeviceId;
 	m_DeviceCaps.Description = m_AdapterID.Description;
 
-	// 3. Режим рабочего стола
+	// 3. Р РµР¶РёРј СЂР°Р±РѕС‡РµРіРѕ СЃС‚РѕР»Р°
 	m_DeviceCaps.DisplayWidth = m_DesktopMode.Width;
 	m_DeviceCaps.DisplayHeight = m_DesktopMode.Height;
 	m_DeviceCaps.DisplayRefreshRate = m_DesktopMode.RefreshRate;
 	m_DeviceCaps.DisplayFormat = D3DFormatToRHI(m_DesktopMode.Format);
 
-	// 4. Остальные параметры
+	// 4. РћСЃС‚Р°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
 	m_DeviceCaps.MaxTextureWidth = caps.MaxTextureWidth;
 	m_DeviceCaps.MaxTextureHeight = caps.MaxTextureHeight;
 	m_DeviceCaps.MaxVolumeExtent = caps.MaxVolumeExtent;
@@ -51,7 +51,7 @@ void CRenderBackendDX9::CacheDeviceCapsFromD3D()
 	m_DeviceCaps.PixelShaderMajor = (caps.PixelShaderVersion & 0xFF00) >> 8;
 	m_DeviceCaps.PixelShaderMinor = caps.PixelShaderVersion & 0xFF;
 	m_DeviceCaps.MaxVertexShaderConst = caps.MaxVertexShaderConst;
-	m_DeviceCaps.HasDepthStencil = true; // TODO: уточнить через CheckDeviceFormat
+	m_DeviceCaps.HasDepthStencil = true; // TODO: СѓС‚РѕС‡РЅРёС‚СЊ С‡РµСЂРµР· CheckDeviceFormat
 	m_DeviceCaps.MaxAnisotropy = caps.MaxAnisotropy;
 	m_DeviceCaps.MaxTextureBlendStages = caps.MaxTextureBlendStages;
 	m_DeviceCaps.MaxSimultaneousTextures = caps.MaxSimultaneousTextures;
@@ -81,7 +81,7 @@ void CRenderBackendDX9::CacheDeviceCapsFromD3D()
 	}
 }
 
-// Метод GetDeviceCaps
+// РњРµС‚РѕРґ GetDeviceCaps
 const RHIDeviceCaps& CRenderBackendDX9::GetDeviceCaps() const
 {
 	return m_DeviceCaps;

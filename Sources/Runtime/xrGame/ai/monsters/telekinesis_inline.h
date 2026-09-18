@@ -29,12 +29,12 @@ void CTelekinesis<_Object>::Activate()
 
 	active = true;
 
-	// получить список объектов
+	// РїРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ
 	m_nearest.clear_not_free();
 	Level().ObjectSpace.GetNearest(m_nearest, control_object->Position(), 10.f);
 	// xr_vector<CObject*> &m_nearest		= Level().ObjectSpace.q_nearest;
 
-	// все объекты внести в список
+	// РІСЃРµ РѕР±СЉРµРєС‚С‹ РІРЅРµСЃС‚Рё РІ СЃРїРёСЃРѕРє
 	for(u32 i = 0; i < m_nearest.size(); i++)
 	{
 
@@ -42,13 +42,13 @@ void CTelekinesis<_Object>::Activate()
 		if(!obj || !obj->m_pPhysicsShell)
 			continue;
 
-		// отключить гравитацию
+		// РѕС‚РєР»СЋС‡РёС‚СЊ РіСЂР°РІРёС‚Р°С†РёСЋ
 		obj->m_pPhysicsShell->set_ApplyByGravity(FALSE);
 
 		CTelekineticObject tele_object;
 
 		tele_object.init(obj, height);
-		// добавить объект
+		// РґРѕР±Р°РІРёС‚СЊ РѕР±СЉРµРєС‚
 		objects.push_back(tele_object);
 	}
 
@@ -91,7 +91,7 @@ void CTelekinesis<_Object>::UpdateSched()
 	if(!active)
 		return;
 
-	// обновить состояние объектов
+	// РѕР±РЅРѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СЉРµРєС‚РѕРІ
 	for(u32 i = 0; i < objects.size(); i++)
 	{
 		CTelekineticObject* cur_obj = &objects[i];
@@ -99,14 +99,14 @@ void CTelekinesis<_Object>::UpdateSched()
 		{
 		case TS_Raise:
 			if(cur_obj->check_height())
-				cur_obj->prepare_keep(); // начать удержание предмета
+				cur_obj->prepare_keep(); // РЅР°С‡Р°С‚СЊ СѓРґРµСЂР¶Р°РЅРёРµ РїСЂРµРґРјРµС‚Р°
 			break;
 		case TS_Keep:
 			if(cur_obj->time_keep_elapsed())
 			{
 				cur_obj->release();
 
-				// удалить объект из массива
+				// СѓРґР°Р»РёС‚СЊ РѕР±СЉРµРєС‚ РёР· РјР°СЃСЃРёРІР°
 				if(objects.size() > 1)
 				{
 					if(i != (objects.size() - 1))

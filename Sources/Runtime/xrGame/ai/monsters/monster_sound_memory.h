@@ -40,11 +40,11 @@ typedef struct tagSoundElement
 {
 	const CObject* who;
 	TSoundDangerValue type;
-	fvec3 position; // позиция звука, не объекта, издавшего звук
+	fvec3 position; // РїРѕР·РёС†РёСЏ Р·РІСѓРєР°, РЅРµ РѕР±СЉРµРєС‚Р°, РёР·РґР°РІС€РµРіРѕ Р·РІСѓРє
 	float power;
-	TTime time; // время обнаружения звука
+	TTime time; // РІСЂРµРјСЏ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ Р·РІСѓРєР°
 
-	int value; // оценочное значение данного звука
+	int value; // РѕС†РµРЅРѕС‡РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР°РЅРЅРѕРіРѕ Р·РІСѓРєР°
 
 	tagSoundElement()
 	{
@@ -80,7 +80,7 @@ typedef struct tagSoundElement
 
 class CMonsterSoundMemory
 {
-	TTime time_memory; // время хранения звуков
+	TTime time_memory; // РІСЂРµРјСЏ С…СЂР°РЅРµРЅРёСЏ Р·РІСѓРєРѕРІ
 	xr_vector<SoundElem> Sounds;
 
 	CBaseMonster* monster;
@@ -100,7 +100,7 @@ class CMonsterSoundMemory
 	{
 		return (!Sounds.empty());
 	}
-	void GetSound(SoundElem& s, bool& bDangerous); // возвращает самый опасный звук
+	void GetSound(SoundElem& s, bool& bDangerous); // РІРѕР·РІСЂР°С‰Р°РµС‚ СЃР°РјС‹Р№ РѕРїР°СЃРЅС‹Р№ Р·РІСѓРє
 	SoundElem& GetSound();
 	bool get_sound_from_object(const CObject* who, SoundElem& value);
 

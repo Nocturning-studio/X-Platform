@@ -61,7 +61,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 		strcpy_s(cTexture, sizeof(cTexture), cTextureName);
 
 	uFlags &= ~fsValid;
-	vTS.set(1.f, 1.f); // обязательно !!!
+	vTS.set(1.f, 1.f); // РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ !!!
 
 	eCurrentAlignment = alLeft;
 	vInterval.set(1.f, 1.f);
@@ -182,18 +182,18 @@ void CGameFont::OnRender()
 
 	if(!(uFlags & fsValid))
 	{
-		// БЫЛО: (Требует FFP)
+		// Р‘Р«Р›Рћ: (РўСЂРµР±СѓРµС‚ FFP)
 		// CTexture* T = RenderBackend.get_ActiveTexture(0);
 		// vTS.set((int)T->get_Width(), (int)T->get_Height());
 
-		// СТАЛО: (Используем наш сохраненный ресурс)
-		// m_FontTex работает как смарт-поинтер, разыменовываясь в CTexture*
-		// или имеет методы get_Width/get_Height напрямую (зависит от версии движка)
+		// РЎРўРђР›Рћ: (РСЃРїРѕР»СЊР·СѓРµРј РЅР°С€ СЃРѕС…СЂР°РЅРµРЅРЅС‹Р№ СЂРµСЃСѓСЂСЃ)
+		// m_FontTex СЂР°Р±РѕС‚Р°РµС‚ РєР°Рє СЃРјР°СЂС‚-РїРѕРёРЅС‚РµСЂ, СЂР°Р·С‹РјРµРЅРѕРІС‹РІР°СЏСЃСЊ РІ CTexture*
+		// РёР»Рё РёРјРµРµС‚ РјРµС‚РѕРґС‹ get_Width/get_Height РЅР°РїСЂСЏРјСѓСЋ (Р·Р°РІРёСЃРёС‚ РѕС‚ РІРµСЂСЃРёРё РґРІРёР¶РєР°)
 
 		if(m_FontTex)
 		{
 			vTS.set((int)m_FontTex->get_Width(), (int)m_FontTex->get_Height());
-			// На всякий случай проверка на ноль
+			// РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РїСЂРѕРІРµСЂРєР° РЅР° РЅРѕР»СЊ
 			if(vTS.y == 0)
 				vTS.y = 1;
 

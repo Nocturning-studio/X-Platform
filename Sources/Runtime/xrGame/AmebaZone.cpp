@@ -58,7 +58,7 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
 	float power = Power(distance_to_center(O->object));
 	float impulse = m_fHitImpulseScale * power * pGameObject->GetMass();
 
-	// ñòàòèñòèêà ïî îáúåêòó
+	// ÑÑ‚Ğ°Ñ‚Ğ¸ÑÑ‚Ğ¸ĞºĞ° Ğ¿Ğ¾ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ñƒ
 	O->total_damage += power;
 	O->hit_num++;
 

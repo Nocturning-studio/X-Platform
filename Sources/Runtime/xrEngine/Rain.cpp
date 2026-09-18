@@ -12,14 +12,14 @@
 #include "xr_object.h"
 #endif
 //////////////////////////////////////////////////////////////////////
-// Xorshift RNG с MurmurHash3 инициализацией
+// Xorshift RNG СЃ MurmurHash3 РёРЅРёС†РёР°Р»РёР·Р°С†РёРµР№
 //////////////////////////////////////////////////////////////////////
 struct FastRandom
 {
 	u32 state;
 
-	// Конструктор теперь делает "лавину" битов (Avalanche effect).
-	// Даже если seed отличается на 1 бит, state изменится до неузнаваемости.
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ С‚РµРїРµСЂСЊ РґРµР»Р°РµС‚ "Р»Р°РІРёРЅСѓ" Р±РёС‚РѕРІ (Avalanche effect).
+	// Р”Р°Р¶Рµ РµСЃР»Рё seed РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РЅР° 1 Р±РёС‚, state РёР·РјРµРЅРёС‚СЃСЏ РґРѕ РЅРµСѓР·РЅР°РІР°РµРјРѕСЃС‚Рё.
 	FastRandom(u32 seed)
 	{
 		state = seed;
@@ -27,7 +27,7 @@ struct FastRandom
 			state = 123456789;
 
 		// MurmurHash3 finalizer mix function
-		// Это разбивает линейную зависимость от времени и индекса
+		// Р­С‚Рѕ СЂР°Р·Р±РёРІР°РµС‚ Р»РёРЅРµР№РЅСѓСЋ Р·Р°РІРёСЃРёРјРѕСЃС‚СЊ РѕС‚ РІСЂРµРјРµРЅРё Рё РёРЅРґРµРєСЃР°
 		state ^= state >> 16;
 		state *= 0x85ebca6b;
 		state ^= state >> 13;
@@ -35,13 +35,13 @@ struct FastRandom
 		state ^= state >> 16;
 	}
 
-	// Возвращает float от min до max
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ float РѕС‚ min РґРѕ max
 	IC float randF(float min, float max)
 	{
 		return min + randF() * (max - min);
 	}
 
-	// Возвращает float [0..1]
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ float [0..1]
 	IC float randF()
 	{
 		// Xorshift32 algorithm
@@ -49,9 +49,9 @@ struct FastRandom
 		state ^= state >> 17;
 		state ^= state << 5;
 
-		// Оптимизированное преобразование в float [0..1)
-		// Используем маску мантиссы IEEE 754 (быстрее, чем деление/умножение)
-		// union позволяет делать это без нарушения strict aliasing в MSVC
+		// РћРїС‚РёРјРёР·РёСЂРѕРІР°РЅРЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ float [0..1)
+		// РСЃРїРѕР»СЊР·СѓРµРј РјР°СЃРєСѓ РјР°РЅС‚РёСЃСЃС‹ IEEE 754 (Р±С‹СЃС‚СЂРµРµ, С‡РµРј РґРµР»РµРЅРёРµ/СѓРјРЅРѕР¶РµРЅРёРµ)
+		// union РїРѕР·РІРѕР»СЏРµС‚ РґРµР»Р°С‚СЊ СЌС‚Рѕ Р±РµР· РЅР°СЂСѓС€РµРЅРёСЏ strict aliasing РІ MSVC
 		union
 		{
 			u32 i;
@@ -61,7 +61,7 @@ struct FastRandom
 		return u.f - 1.0f;
 	}
 
-	// Возвращает int [0..max-1]
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ int [0..max-1]
 	IC int randI(int max)
 	{
 		return iFloor(randF() * max);
@@ -94,10 +94,10 @@ CEffect_Rain::CEffect_Rain()
 	InitParticlePool();
 	FS.r_close(F);
 
-	// Инициализируем индекс
+	// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РёРЅРґРµРєСЃ
 	m_front_buffer_idx = 0;
 
-	// Резервируем память сразу, чтобы избежать аллокаций на старте
+	// Р РµР·РµСЂРІРёСЂСѓРµРј РїР°РјСЏС‚СЊ СЃСЂР°Р·Сѓ, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ Р°Р»Р»РѕРєР°С†РёР№ РЅР° СЃС‚Р°СЂС‚Рµ
 	m_render_buffers[0].reserve(MAX_DESIRED_DROPS);
 	m_render_buffers[1].reserve(MAX_DESIRED_DROPS);
 }
@@ -117,14 +117,14 @@ CEffect_Rain::~CEffect_Rain()
 void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 {
 	// -------------------------------------------------------------------------
-	// 1. Параметры окружения
+	// 1. РџР°СЂР°РјРµС‚СЂС‹ РѕРєСЂСѓР¶РµРЅРёСЏ
 	// -------------------------------------------------------------------------
 	CEnvDescriptorMixer* env = g_pGamePersistent->Environment().CurrentEnv;
 	float wind_strength = env->wind_strength;
 	float wind_direction = env->wind_direction;
 
 	// -------------------------------------------------------------------------
-	// 2. Расчет угла падения (Tilt)
+	// 2. Р Р°СЃС‡РµС‚ СѓРіР»Р° РїР°РґРµРЅРёСЏ (Tilt)
 	// -------------------------------------------------------------------------
 	float tilt_factor = 1.0f - (wind_strength * 0.6f);
 	float angle_deg = 90.0f * tilt_factor;
@@ -137,7 +137,7 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	dest.D.set(m_rotate.k);
 
 	// -------------------------------------------------------------------------
-	// 3. Расчет позиции спавна
+	// 3. Р Р°СЃС‡РµС‚ РїРѕР·РёС†РёРё СЃРїР°РІРЅР°
 	// -------------------------------------------------------------------------
 	float min_h = 5.0f;
 	float max_h = SOURCE_OFFSET;
@@ -158,12 +158,12 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	dest.P.set(cam_pos.x + offset.x + wind_shift_dir.x, cam_pos.y + spawn_h, cam_pos.z + offset.z + wind_shift_dir.z);
 
 	// -------------------------------------------------------------------------
-	// 4. Скорость
+	// 4. РЎРєРѕСЂРѕСЃС‚СЊ
 	// -------------------------------------------------------------------------
 	dest.fSpeed = R.randF(DROP_SPEED_MIN, DROP_SPEED_MAX) * (1.0f + wind_strength * 0.25f);
 
 	// -------------------------------------------------------------------------
-	// 5. Трассировка луча
+	// 5. РўСЂР°СЃСЃРёСЂРѕРІРєР° Р»СѓС‡Р°
 	// -------------------------------------------------------------------------
 	float check_dist = MAX_DROP_DISTANCE * 1.5f;
 	float hit_dist = check_dist;
@@ -171,34 +171,34 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	BOOL b_hit = RayTrace(dest.P, dest.D, hit_dist, collide::rqtStatic);
 
 	// -------------------------------------------------------------------------
-	// 6. Расчет времени жизни (ИСПРАВЛЕНО)
+	// 6. Р Р°СЃС‡РµС‚ РІСЂРµРјРµРЅРё Р¶РёР·РЅРё (РРЎРџР РђР’Р›Р•РќРћ)
 	// -------------------------------------------------------------------------
 	dest.uv_set = R.randI(2);
 
-	// Получаем время потокобезопасно
+	// РџРѕР»СѓС‡Р°РµРј РІСЂРµРјСЏ РїРѕС‚РѕРєРѕР±РµР·РѕРїР°СЃРЅРѕ
 	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 	u32 delta = Engine.TimeManager.GetDeltaTimeMs();
 
 	if(b_hit)
 	{
-		// Смещаем точку удара немного вверх от поверхности (5 см)
+		// РЎРјРµС‰Р°РµРј С‚РѕС‡РєСѓ СѓРґР°СЂР° РЅРµРјРЅРѕРіРѕ РІРІРµСЂС… РѕС‚ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё (5 СЃРј)
 		const float SURFACE_OFFSET = 0.05f;
 		hit_dist -= SURFACE_OFFSET;
 
 		dest.Phit.mad(dest.P, dest.D, hit_dist);
 
-		// Время полета до точки удара (в миллисекундах)
+		// Р’СЂРµРјСЏ РїРѕР»РµС‚Р° РґРѕ С‚РѕС‡РєРё СѓРґР°СЂР° (РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…)
 		float time_to_fly = 1000.0f * hit_dist / dest.fSpeed;
 		dest.dwTime_Life = cur_time + iFloor(time_to_fly) - delta;
 		dest.dwTime_Hit = dest.dwTime_Life;
 	}
 	else
 	{
-		// Капля не попала в геометрию
+		// РљР°РїР»СЏ РЅРµ РїРѕРїР°Р»Р° РІ РіРµРѕРјРµС‚СЂРёСЋ
 		float time_to_fly = 1000.0f * check_dist / dest.fSpeed;
 		dest.dwTime_Life = cur_time + iFloor(time_to_fly) - delta;
-		dest.dwTime_Hit = 0;   // 0 означает "нет удара"
-		dest.Phit.set(dest.P); // Значение не важно
+		dest.dwTime_Hit = 0;   // 0 РѕР·РЅР°С‡Р°РµС‚ "РЅРµС‚ СѓРґР°СЂР°"
+		dest.Phit.set(dest.P); // Р—РЅР°С‡РµРЅРёРµ РЅРµ РІР°Р¶РЅРѕ
 	}
 }
 
@@ -228,7 +228,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(MAX_DESIRED_DROPS));
 
-	// Инициализация при необходимости
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
 	{
 		FastRandom R(123);
 		while(m_drops.size() < desired_items)
@@ -249,48 +249,48 @@ void CEffect_Rain::SimulateDrops(float dt)
 	u32 current_frame = Engine.TimeManager.GetFrameCount();
 	float radius_wrap_sqr = _sqr((SOURCE_RADIUS + 2.0f));
 
-	// Локальные буферы
+	// Р›РѕРєР°Р»СЊРЅС‹Рµ Р±СѓС„РµСЂС‹
 	concurrency::combinable<xr_vector<RainDrawParam>> local_render_buffers;
 	concurrency::combinable<xr_vector<fvec3>> local_splash_queue;
 
-	// ПАРАЛЛЕЛЬНЫЙ ЦИКЛ
+	// РџРђР РђР›Р›Р•Р›Р¬РќР«Р™ Р¦РРљР›
 	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i)
 							  {
-		// Генерация уникального seed
+		// Р“РµРЅРµСЂР°С†РёСЏ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ seed
 		u32 seed = u32(i) ^ (current_frame * 719393u) ^ global_time;
 		FastRandom R(seed);
 
 		RainDrop& drop = m_drops[i];
 		bool respawn_needed = false;
-		bool just_hit = false; // Флаг, что капля только что ударилась
+		bool just_hit = false; // Р¤Р»Р°Рі, С‡С‚Рѕ РєР°РїР»СЏ С‚РѕР»СЊРєРѕ С‡С‚Рѕ СѓРґР°СЂРёР»Р°СЃСЊ
 
 		// ---------------------------------------------------------------------
-		// 1. ПРОВЕРКА СТОЛКНОВЕНИЯ НА ТЕКУЩЕМ ШАГЕ
+		// 1. РџР РћР’Р•Р РљРђ РЎРўРћР›РљРќРћР’Р•РќРРЇ РќРђ РўР•РљРЈР©Р•Рњ РЁРђР“Р•
 		// ---------------------------------------------------------------------
 		float move_dist = drop.fSpeed * dt;
-		float check_dist = move_dist * 1.1f; // Проверяем чуть дальше
+		float check_dist = move_dist * 1.1f; // РџСЂРѕРІРµСЂСЏРµРј С‡СѓС‚СЊ РґР°Р»СЊС€Рµ
 
-		// Рассчитываем новую позицию
+		// Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РЅРѕРІСѓСЋ РїРѕР·РёС†РёСЋ
 		fvec3 new_pos;
 		new_pos.mad(drop.P, drop.D, move_dist);
 
-		// Проверяем луч от текущей позиции к новой
+		// РџСЂРѕРІРµСЂСЏРµРј Р»СѓС‡ РѕС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё Рє РЅРѕРІРѕР№
 		float hit_dist = check_dist;
 
 		if (RayTrace(drop.P, drop.D, hit_dist, collide::rqtStatic))
 		{
-			// Капля ударилась на этом шаге!
-			// Устанавливаем позицию В ТОЧНОСТИ ДО ПОВЕРХНОСТИ
+			// РљР°РїР»СЏ СѓРґР°СЂРёР»Р°СЃСЊ РЅР° СЌС‚РѕРј С€Р°РіРµ!
+			// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР·РёС†РёСЋ Р’ РўРћР§РќРћРЎРўР Р”Рћ РџРћР’Р•Р РҐРќРћРЎРўР
 			const float MIN_HIT_OFFSET = 0.01f;
 			hit_dist -= MIN_HIT_OFFSET;
 
-			drop.P.mad(drop.P, drop.D, hit_dist); // Останавливаем в точке удара
-			drop.Phit = drop.P;					  // Точка удара совпадает с позицией
+			drop.P.mad(drop.P, drop.D, hit_dist); // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ С‚РѕС‡РєРµ СѓРґР°СЂР°
+			drop.Phit = drop.P;					  // РўРѕС‡РєР° СѓРґР°СЂР° СЃРѕРІРїР°РґР°РµС‚ СЃ РїРѕР·РёС†РёРµР№
 			drop.dwTime_Hit = global_time;
-			drop.dwTime_Life = global_time; // Умирает сразу
+			drop.dwTime_Life = global_time; // РЈРјРёСЂР°РµС‚ СЃСЂР°Р·Сѓ
 			just_hit = true;
 
-			// Спавним брызги
+			// РЎРїР°РІРЅРёРј Р±СЂС‹Р·РіРё
 			if (drop.Phit.distance_to_sqr(view_pos) < 400.0f)
 			{
 				local_splash_queue.local().push_back(drop.Phit);
@@ -298,20 +298,20 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 		else
 		{
-			// Без столкновения - обычное движение
+			// Р‘РµР· СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ - РѕР±С‹С‡РЅРѕРµ РґРІРёР¶РµРЅРёРµ
 			drop.P = new_pos;
 		}
 
 		// ---------------------------------------------------------------------
-		// 2. ПРОВЕРКА РЕСПАВНА
+		// 2. РџР РћР’Р•Р РљРђ Р Р•РЎРџРђР’РќРђ
 		// ---------------------------------------------------------------------
 		if (!just_hit)
 		{
-			// Проверка по времени жизни
+			// РџСЂРѕРІРµСЂРєР° РїРѕ РІСЂРµРјРµРЅРё Р¶РёР·РЅРё
 			if (drop.dwTime_Life < global_time)
 				respawn_needed = true;
 
-			// Проверка границ
+			// РџСЂРѕРІРµСЂРєР° РіСЂР°РЅРёС†
 			if (!respawn_needed)
 			{
 				if (drop.P.distance_to_sqr(view_pos) > radius_wrap_sqr)
@@ -322,7 +322,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 
 		// ---------------------------------------------------------------------
-		// 3. РЕСПАВН ПРИ НЕОБХОДИМОСТИ
+		// 3. Р Р•РЎРџРђР’Рќ РџР Р РќР•РћР‘РҐРћР”РРњРћРЎРўР
 		// ---------------------------------------------------------------------
 		if (respawn_needed || just_hit)
 		{
@@ -330,11 +330,11 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 
 		// ---------------------------------------------------------------------
-		// 4. ОБРАБОТКА БРЫЗГ (для капель, которые ударились по расписанию)
+		// 4. РћР‘Р РђР‘РћРўРљРђ Р‘Р Р«Р—Р“ (РґР»СЏ РєР°РїРµР»СЊ, РєРѕС‚РѕСЂС‹Рµ СѓРґР°СЂРёР»РёСЃСЊ РїРѕ СЂР°СЃРїРёСЃР°РЅРёСЋ)
 		// ---------------------------------------------------------------------
 		if (drop.dwTime_Hit != 0 && drop.dwTime_Hit <= global_time)
 		{
-			// Если капля ударилась по расписанию (не в этом кадре)
+			// Р•СЃР»Рё РєР°РїР»СЏ СѓРґР°СЂРёР»Р°СЃСЊ РїРѕ СЂР°СЃРїРёСЃР°РЅРёСЋ (РЅРµ РІ СЌС‚РѕРј РєР°РґСЂРµ)
 			if (!just_hit && drop.Phit.distance_to_sqr(view_pos) < 400.0f)
 			{
 				local_splash_queue.local().push_back(drop.Phit);
@@ -342,47 +342,47 @@ void CEffect_Rain::SimulateDrops(float dt)
 		}
 
 		// ---------------------------------------------------------------------
-		// 5. RENDER CULLING (ОСНОВНАЯ ИСПРАВЛЕНИЕ - КАПЛЯ ДОХОДИТ ДО ПОВЕРХНОСТИ)
+		// 5. RENDER CULLING (РћРЎРќРћР’РќРђРЇ РРЎРџР РђР’Р›Р•РќРР• - РљРђРџР›РЇ Р”РћРҐРћР”РРў Р”Рћ РџРћР’Р•Р РҐРќРћРЎРўР)
 		// ---------------------------------------------------------------------
 
-		// НЕ ОТРИСОВЫВАЕМ КАПЛИ, КОТОРЫЕ УЖЕ УДАРИЛИСЬ
+		// РќР• РћРўР РРЎРћР’Р«Р’РђР•Рњ РљРђРџР›Р, РљРћРўРћР Р«Р• РЈР–Р• РЈР”РђР РР›РРЎР¬
 		if (drop.dwTime_Hit != 0 && global_time >= drop.dwTime_Hit)
 		{
 			return;
 		}
 
-		// Рассчитываем визуальную длину капли
+		// Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РІРёР·СѓР°Р»СЊРЅСѓСЋ РґР»РёРЅСѓ РєР°РїР»Рё
 		float speed_factor = drop.fSpeed / DROP_SPEED_MIN;
 		float visual_len = 3.5f * speed_factor;
 
-		// Если у капли есть точка удара, ограничиваем длину расстоянием до нее
+		// Р•СЃР»Рё Сѓ РєР°РїР»Рё РµСЃС‚СЊ С‚РѕС‡РєР° СѓРґР°СЂР°, РѕРіСЂР°РЅРёС‡РёРІР°РµРј РґР»РёРЅСѓ СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РґРѕ РЅРµРµ
 		if (drop.dwTime_Hit != 0)
 		{
 			float distance_to_hit = drop.P.distance_to(drop.Phit);
 
-			// Если до удара осталось меньше визуальной длины - укорачиваем каплю
+			// Р•СЃР»Рё РґРѕ СѓРґР°СЂР° РѕСЃС‚Р°Р»РѕСЃСЊ РјРµРЅСЊС€Рµ РІРёР·СѓР°Р»СЊРЅРѕР№ РґР»РёРЅС‹ - СѓРєРѕСЂР°С‡РёРІР°РµРј РєР°РїР»СЋ
 			if (distance_to_hit < visual_len)
 			{
-				// Но не делаем каплю слишком короткой
+				// РќРѕ РЅРµ РґРµР»Р°РµРј РєР°РїР»СЋ СЃР»РёС€РєРѕРј РєРѕСЂРѕС‚РєРѕР№
 				if (distance_to_hit > 0.2f)
 				{
-					visual_len = distance_to_hit * 0.9f; // 90% оставшегося расстояния
+					visual_len = distance_to_hit * 0.9f; // 90% РѕСЃС‚Р°РІС€РµРіРѕСЃСЏ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ
 				}
 				else
 				{
-					// Очень близко к удару - не рисуем
+					// РћС‡РµРЅСЊ Р±Р»РёР·РєРѕ Рє СѓРґР°СЂСѓ - РЅРµ СЂРёСЃСѓРµРј
 					return;
 				}
 			}
 		}
 
-		// Рассчитываем позиции для рендеринга
+		// Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РїРѕР·РёС†РёРё РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР°
 		fvec3 pos_head = drop.P;
 		fvec3 pos_trail;
 		pos_trail.mad(pos_head, drop.D, -visual_len);
 
-		// Проверяем, не проходит ли капля сквозь геометрию
-		// Делаем быструю проверку луча от хвоста к голове
+		// РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РїСЂРѕС…РѕРґРёС‚ Р»Рё РєР°РїР»СЏ СЃРєРІРѕР·СЊ РіРµРѕРјРµС‚СЂРёСЋ
+		// Р”РµР»Р°РµРј Р±С‹СЃС‚СЂСѓСЋ РїСЂРѕРІРµСЂРєСѓ Р»СѓС‡Р° РѕС‚ С…РІРѕСЃС‚Р° Рє РіРѕР»РѕРІРµ
 		float ray_len = visual_len;
 		fvec3 ray_dir;
 		ray_dir.sub(pos_head, pos_trail);
@@ -390,20 +390,20 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 		if (RayTrace(pos_trail, ray_dir, ray_len, collide::rqtStatic))
 		{
-			// Капля пересекает геометрию - корректируем
+			// РљР°РїР»СЏ РїРµСЂРµСЃРµРєР°РµС‚ РіРµРѕРјРµС‚СЂРёСЋ - РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј
 			if (ray_len < visual_len * 0.1f)
 			{
-				// Капля почти внутри геометрии - не рисуем
+				// РљР°РїР»СЏ РїРѕС‡С‚Рё РІРЅСѓС‚СЂРё РіРµРѕРјРµС‚СЂРёРё - РЅРµ СЂРёСЃСѓРµРј
 				return;
 			}
 			else
 			{
-				// Укорачиваем каплю до точки пересечения
+				// РЈРєРѕСЂР°С‡РёРІР°РµРј РєР°РїР»СЋ РґРѕ С‚РѕС‡РєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 				pos_head.mad(pos_trail, ray_dir, ray_len * 0.95f);
 			}
 		}
 
-		// Проверка видимости
+		// РџСЂРѕРІРµСЂРєР° РІРёРґРёРјРѕСЃС‚Рё
 		fvec3 center;
 		center.sub(pos_head, pos_trail);
 		center.mul(0.5f);
@@ -428,7 +428,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 			item.UV[3] = s_drops_uv[s][3];
 		} });
 
-	// Merge результатов
+	// Merge СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
 	{
 		OPTICK_EVENT("Merge Queues");
 		local_render_buffers.combine_each([&](const xr_vector<RainDrawParam>& local_vec)
@@ -453,7 +453,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 void __stdcall CEffect_Rain::MT_CALC()
 {
-	// Вызываем нашу логику, используя сохраненный dt
+	// Р’С‹Р·С‹РІР°РµРј РЅР°С€Сѓ Р»РѕРіРёРєСѓ, РёСЃРїРѕР»СЊР·СѓСЏ СЃРѕС…СЂР°РЅРµРЅРЅС‹Р№ dt
 	SimulateDrops(m_worker_dt);
 }
 
@@ -512,21 +512,21 @@ void CEffect_Rain::OnFrame()
 	if(m_state == stWorking)
 	{
 		// 1. Swap Buffers
-		// Меняем буферы местами. Front идет на рендер (с данными прошлого кадра),
-		// Back освобождается для записи нового кадра в потоке.
+		// РњРµРЅСЏРµРј Р±СѓС„РµСЂС‹ РјРµСЃС‚Р°РјРё. Front РёРґРµС‚ РЅР° СЂРµРЅРґРµСЂ (СЃ РґР°РЅРЅС‹РјРё РїСЂРѕС€Р»РѕРіРѕ РєР°РґСЂР°),
+		// Back РѕСЃРІРѕР±РѕР¶РґР°РµС‚СЃСЏ РґР»СЏ Р·Р°РїРёСЃРё РЅРѕРІРѕРіРѕ РєР°РґСЂР° РІ РїРѕС‚РѕРєРµ.
 		SwapBuffers();
 
-		// 2. Сохраняем DT
-		// В поток нельзя передать аргументы напрямую через этот макрос,
-		// поэтому сохраняем dt в член класса.
+		// 2. РЎРѕС…СЂР°РЅСЏРµРј DT
+		// Р’ РїРѕС‚РѕРє РЅРµР»СЊР·СЏ РїРµСЂРµРґР°С‚СЊ Р°СЂРіСѓРјРµРЅС‚С‹ РЅР°РїСЂСЏРјСѓСЋ С‡РµСЂРµР· СЌС‚РѕС‚ РјР°РєСЂРѕСЃ,
+		// РїРѕСЌС‚РѕРјСѓ СЃРѕС…СЂР°РЅСЏРµРј dt РІ С‡Р»РµРЅ РєР»Р°СЃСЃР°.
 		m_worker_dt = Engine.TimeManager.GetDeltaTime();
 
-		// 3. Добавляем задачу в ThreadManager
+		// 3. Р”РѕР±Р°РІР»СЏРµРј Р·Р°РґР°С‡Сѓ РІ ThreadManager
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CEffect_Rain::MT_CALC));
 	}
 	else
 	{
-		// Очистка если дождь кончился
+		// РћС‡РёСЃС‚РєР° РµСЃР»Рё РґРѕР¶РґСЊ РєРѕРЅС‡РёР»СЃСЏ
 		if(!GetReadBuffer().empty())
 			GetReadBuffer().clear();
 		if(!GetWriteBuffer().empty())
@@ -565,7 +565,7 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 {
 	PROFILE_FUNCTION(); // "Draw Phase"
 
-	// Ссылка на буфер ЧТЕНИЯ (Front Buffer)
+	// РЎСЃС‹Р»РєР° РЅР° Р±СѓС„РµСЂ Р§РўР•РќРРЇ (Front Buffer)
 	const auto& read_queue = GetReadBuffer();
 
 	size_t count = read_queue.size();
@@ -576,16 +576,16 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 	u32 v_offset;
 	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock(count * 4, m_geom_rain->vb_stride, v_offset);
 
-	// Вспомогательные
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ
 	const fvec3& view_pos = Engine.RenderView.Position;
 	fvec3 cam_dir, line_dir, line_top, p, center;
 	float w = DROP_WIDTH;
 
-	// Просто молотим данные из буфера в видеокарту
+	// РџСЂРѕСЃС‚Рѕ РјРѕР»РѕС‚РёРј РґР°РЅРЅС‹Рµ РёР· Р±СѓС„РµСЂР° РІ РІРёРґРµРѕРєР°СЂС‚Сѓ
 	for(const auto& item : read_queue)
 	{
-		// Билбординг (поворот к камере)
-		// Считаем тут, так как позиция камеры могла измениться с момента симуляции (если многопоток)
+		// Р‘РёР»Р±РѕСЂРґРёРЅРі (РїРѕРІРѕСЂРѕС‚ Рє РєР°РјРµСЂРµ)
+		// РЎС‡РёС‚Р°РµРј С‚СѓС‚, С‚Р°Рє РєР°Рє РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РјРѕРіР»Р° РёР·РјРµРЅРёС‚СЊСЃСЏ СЃ РјРѕРјРµРЅС‚Р° СЃРёРјСѓР»СЏС†РёРё (РµСЃР»Рё РјРЅРѕРіРѕРїРѕС‚РѕРє)
 		center.add(item.PosHead, item.PosTrail);
 		center.mul(0.5f);
 
@@ -597,7 +597,7 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 
 		line_top.crossproduct(cam_dir, line_dir);
 
-		// Геометрия
+		// Р“РµРѕРјРµС‚СЂРёСЏ
 		p.mad(item.PosTrail, line_top, -w);
 		verts->set(p, rain_color, item.UV[0].x, item.UV[0].y);
 		verts++;

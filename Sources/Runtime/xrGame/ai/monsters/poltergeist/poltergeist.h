@@ -69,7 +69,7 @@ class CPoltergeist : public CBaseMonster, public CTelekinesis, public CEnergyHol
 	ref_sound m_strange_sound;
 
 	// Movement
-	fvec3 m_current_position; // Позиция на ноде
+	fvec3 m_current_position; // РџРѕР·РёС†РёСЏ РЅР° РЅРѕРґРµ
 
 	// Dynamic Height
 	u32 time_height_updated;

@@ -91,7 +91,7 @@ void CStats::Initialize()
 
 void CStats::Destroy()
 {
-	OnDeviceDestroy(); // На всякий случай
+	OnDeviceDestroy(); // РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 }
 
 void _draw_cam_pos(CGameFont* pFont)

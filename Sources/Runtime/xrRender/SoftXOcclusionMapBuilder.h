@@ -16,18 +16,18 @@ class SoftXOcclusionMapBuilder
 	SoftXOcclusionMapBuilder() = default;
 	~SoftXOcclusionMapBuilder() = default;
 
-	// Загрузить геометрию из CHOM (вершины + индексы)
+	// Р—Р°РіСЂСѓР·РёС‚СЊ РіРµРѕРјРµС‚СЂРёСЋ РёР· CHOM (РІРµСЂС€РёРЅС‹ + РёРЅРґРµРєСЃС‹)
 	void Load(const CHOM& hom);
 
-	// Освободить ресурсы
+	// РћСЃРІРѕР±РѕРґРёС‚СЊ СЂРµСЃСѓСЂСЃС‹
 	void Unload();
 
 	bool IsLoaded() const { return m_loaded; }
 
-	// Привязать ядро SoftX
+	// РџСЂРёРІСЏР·Р°С‚СЊ СЏРґСЂРѕ SoftX
 	void SetCore(SoftXOcclusionCore* core) { m_core = core; }
 
-	// Асинхронно заполнить depth-буфер (write-буфер ядра)
+	// РђСЃРёРЅС…СЂРѕРЅРЅРѕ Р·Р°РїРѕР»РЅРёС‚СЊ depth-Р±СѓС„РµСЂ (write-Р±СѓС„РµСЂ СЏРґСЂР°)
 	void Build();
 
 	u32 GetVertexCount() const { return m_vertexCount; }
@@ -36,7 +36,7 @@ class SoftXOcclusionMapBuilder
   private:
 	SoftXOcclusionCore* m_core = nullptr;
 
-	// Геометрия окклюдеров HOM
+	// Р“РµРѕРјРµС‚СЂРёСЏ РѕРєРєР»СЋРґРµСЂРѕРІ HOM
 	std::unique_ptr<SoftX::VertexBuffer> m_occluderVB;
 	std::unique_ptr<SoftX::IndexBuffer> m_occluderIB;
 
@@ -44,7 +44,7 @@ class SoftXOcclusionMapBuilder
 	u32 m_indexCount = 0;
 	bool m_loaded = false;
 
-	// Вспомогательные функции для извлечения геометрии из CDB
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РёР·РІР»РµС‡РµРЅРёСЏ РіРµРѕРјРµС‚СЂРёРё РёР· CDB
 	void ExtractGeometry(const CDB::MODEL* model,
 						 xr_vector<fvec3>& outVertices,
 						 xr_vector<u16>& outIndices) const;

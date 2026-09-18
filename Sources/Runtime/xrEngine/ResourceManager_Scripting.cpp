@@ -258,7 +258,7 @@ class adopt_compiler
 		return *this;
 	}
 
-	// Обертка для дефайна без значения (например, #define USE_WATER)
+	// РћР±РµСЂС‚РєР° РґР»СЏ РґРµС„Р°Р№РЅР° Р±РµР· Р·РЅР°С‡РµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ, #define USE_WATER)
 	adopt_compiler& _define(LPCSTR name)
 	{
 		if(C)
@@ -270,7 +270,7 @@ class adopt_compiler
 		return *this;
 	}
 
-	// Обертка для int
+	// РћР±РµСЂС‚РєР° РґР»СЏ int
 	adopt_compiler& _define_int(LPCSTR name, int v)
 	{
 		if(C)
@@ -282,7 +282,7 @@ class adopt_compiler
 		return *this;
 	}
 
-	// Обертка для float
+	// РћР±РµСЂС‚РєР° РґР»СЏ float
 	adopt_compiler& _define_float(LPCSTR name, float v)
 	{
 		if(C)
@@ -294,7 +294,7 @@ class adopt_compiler
 		return *this;
 	}
 
-	// Обертка для bool
+	// РћР±РµСЂС‚РєР° РґР»СЏ bool
 	adopt_compiler& _define_bool(LPCSTR name, bool v)
 	{
 		if(C)
@@ -306,7 +306,7 @@ class adopt_compiler
 		return *this;
 	}
 
-	// Обертка для строки (#define MACRO "VALUE")
+	// РћР±РµСЂС‚РєР° РґР»СЏ СЃС‚СЂРѕРєРё (#define MACRO "VALUE")
 	adopt_compiler& _define_string(LPCSTR name, LPCSTR v)
 	{
 		if(C)

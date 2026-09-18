@@ -129,10 +129,10 @@ IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const fvec3& poi
 								CObject* ignore_object)
 {
 	// =========================================================================
-	// Получаем r_spatial из потокобезопасного хранилища
+	// РџРѕР»СѓС‡Р°РµРј r_spatial РёР· РїРѕС‚РѕРєРѕР±РµР·РѕРїР°СЃРЅРѕРіРѕ С…СЂР°РЅРёР»РёС‰Р°
 	RayQueryThreadData& data = GetRayThreadData();
 	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
-	r_spatial.clear_not_free(); // Обязательно чистим перед использованием
+	r_spatial.clear_not_free(); // РћР±СЏР·Р°С‚РµР»СЊРЅРѕ С‡РёСЃС‚РёРј РїРµСЂРµРґ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј
 	// =========================================================================
 
 	// Query objects

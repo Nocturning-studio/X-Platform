@@ -22,44 +22,44 @@ void CEnvWind::load(CInifile& config, const shared_str& section)
 	m_wind_strength = config.r_float(m_load_section, "wind_strength");
 	m_wind_direction = deg2rad(config.r_float(m_load_section, "wind_direction"));
 	m_wind_gusting = config.r_float(m_load_section, "wind_gusting");
-	m_wind_tilt = config.r_float(m_load_section, "wind_tilt") * (PI / 180.0f); // Конвертируем в радианы
+	m_wind_tilt = config.r_float(m_load_section, "wind_tilt") * (PI / 180.0f); // РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ СЂР°РґРёР°РЅС‹
 	m_wind_velocity = config.r_float(m_load_section, "wind_velocity");
 }
 
 CEnvWind* CEnvironment::AppendEnvWind(const shared_str& sect)
 {
-	// 1. Ищем, загружен ли уже такой пресет
+	// 1. РС‰РµРј, Р·Р°РіСЂСѓР¶РµРЅ Р»Рё СѓР¶Рµ С‚Р°РєРѕР№ РїСЂРµСЃРµС‚
 	for(EnvWindVecIt it = Winds.begin(); it != Winds.end(); it++)
 		if((*it)->name().equal(sect))
 			return (*it);
 
-	// 2. Если нет, проверяем наличие секции в файле winds.ltx
+	// 2. Р•СЃР»Рё РЅРµС‚, РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРµРєС†РёРё РІ С„Р°Р№Р»Рµ winds.ltx
 	if(!m_winds_config->section_exist(sect))
 	{
 		Msg("! Error: Wind section '%s' not found in environment\\winds.ltx", sect.c_str());
 		return NULL;
 	}
 
-	// 3. Создаем, загружаем и добавляем в список
+	// 3. РЎРѕР·РґР°РµРј, Р·Р°РіСЂСѓР¶Р°РµРј Рё РґРѕР±Р°РІР»СЏРµРј РІ СЃРїРёСЃРѕРє
 	Winds.push_back(xr_new<CEnvWind>());
 	Winds.back()->load(*m_winds_config, sect);
 	return (Winds.back());
 }
 
-// Генерирует плавную волну порывов ветра (0.0 ... 1.0)
+// Р“РµРЅРµСЂРёСЂСѓРµС‚ РїР»Р°РІРЅСѓСЋ РІРѕР»РЅСѓ РїРѕСЂС‹РІРѕРІ РІРµС‚СЂР° (0.0 ... 1.0)
 float CalcGustWave(float Time)
 {
-	// Максимально простая и плавная волна.
-	// Используем всего две близкие частоты.
-	// Это создаст эффект "биения" (медленного нарастания и спада), без резких скачков.
+	// РњР°РєСЃРёРјР°Р»СЊРЅРѕ РїСЂРѕСЃС‚Р°СЏ Рё РїР»Р°РІРЅР°СЏ РІРѕР»РЅР°.
+	// РСЃРїРѕР»СЊР·СѓРµРј РІСЃРµРіРѕ РґРІРµ Р±Р»РёР·РєРёРµ С‡Р°СЃС‚РѕС‚С‹.
+	// Р­С‚Рѕ СЃРѕР·РґР°СЃС‚ СЌС„С„РµРєС‚ "Р±РёРµРЅРёСЏ" (РјРµРґР»РµРЅРЅРѕРіРѕ РЅР°СЂР°СЃС‚Р°РЅРёСЏ Рё СЃРїР°РґР°), Р±РµР· СЂРµР·РєРёС… СЃРєР°С‡РєРѕРІ.
 
-	float wave1 = sin(Time * 0.05f);		// Основной цикл (медленный)
-	float wave2 = sin(Time * 0.07f) * 0.5f; // Модуляция
+	float wave1 = sin(Time * 0.05f);		// РћСЃРЅРѕРІРЅРѕР№ С†РёРєР» (РјРµРґР»РµРЅРЅС‹Р№)
+	float wave2 = sin(Time * 0.07f) * 0.5f; // РњРѕРґСѓР»СЏС†РёСЏ
 
 	float result = wave1 + wave2;
 
-	// Мягкая нормализация в 0..1
-	// Используем (sin + 1) / 2, чтобы избежать острых углов
+	// РњСЏРіРєР°СЏ РЅРѕСЂРјР°Р»РёР·Р°С†РёСЏ РІ 0..1
+	// РСЃРїРѕР»СЊР·СѓРµРј (sin + 1) / 2, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РѕСЃС‚СЂС‹С… СѓРіР»РѕРІ
 	return (result / 3.0f) + 0.5f;
 }
 

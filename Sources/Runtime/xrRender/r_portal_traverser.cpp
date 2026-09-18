@@ -3,7 +3,7 @@
 #include "r_sector.h"
 #include "r_portal.h"
 
-// Глобальные настройки (SSA)
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё (SSA)
 extern float r_ssaDISCARD;
 extern float r_ssaLOD_A, r_ssaLOD_B;
 
@@ -34,7 +34,7 @@ void CPortalTraverser::Reset()
 
 CPortalTraverser::SectorVisibility& CPortalTraverser::GetOrAddSectorData(CSector* sector)
 {
-	// Линейный поиск (быстрее map на малых N)
+	// Р›РёРЅРµР№РЅС‹Р№ РїРѕРёСЃРє (Р±С‹СЃС‚СЂРµРµ map РЅР° РјР°Р»С‹С… N)
 	for(auto& vis : m_visible_sectors)
 	{
 		if(vis.sector == sector)
@@ -50,15 +50,15 @@ CPortalTraverser::SectorVisibility& CPortalTraverser::GetOrAddSectorData(CSector
 void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_pos, fmat4x4& xform, u32 options)
 {
 	VERIFY(start);
-	Reset(); // Очистка перед запуском
+	Reset(); // РћС‡РёСЃС‚РєР° РїРµСЂРµРґ Р·Р°РїСѓСЃРєРѕРј
 
-	// Настройка контекста
+	// РќР°СЃС‚СЂРѕР№РєР° РєРѕРЅС‚РµРєСЃС‚Р°
 	m_options = options;
 	m_view_pos = view_pos;
 	m_xform = xform;
 	m_start_sector = start;
 
-	// Матрица для Scissor теста (Projection -> Viewport 0..1)
+	// РњР°С‚СЂРёС†Р° РґР»СЏ Scissor С‚РµСЃС‚Р° (Projection -> Viewport 0..1)
 	fmat4x4 m_viewport_01 = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
 	m_xform_proj.mul(m_viewport_01, m_xform);
@@ -66,15 +66,15 @@ void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_p
 	if(m_options & VQ_FADE)
 		m_fade_portals.reserve(16);
 
-	// Начальный Scissor (весь экран)
+	// РќР°С‡Р°Р»СЊРЅС‹Р№ Scissor (РІРµСЃСЊ СЌРєСЂР°РЅ)
 	ScissorRect start_scissor;
 	start_scissor.set(0, 0, 1, 1);
 	start_scissor.depth = 0.f;
 
-	// Запуск рекурсии
+	// Р—Р°РїСѓСЃРє СЂРµРєСѓСЂСЃРёРё
 	RecursiveTraverse(start, frustum, start_scissor);
 
-	// Пост-обработка: Merge Scissors (если нужно для оптимизации)
+	// РџРѕСЃС‚-РѕР±СЂР°Р±РѕС‚РєР°: Merge Scissors (РµСЃР»Рё РЅСѓР¶РЅРѕ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё)
 	if(m_options & VQ_SCISSOR)
 	{
 		for(auto& sec_vis : m_visible_sectors)
@@ -94,20 +94,20 @@ void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_p
 void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum& cur_frustum,
 										 const ScissorRect& cur_scissor)
 {
-	// Регистрация видимости сектора
+	// Р РµРіРёСЃС‚СЂР°С†РёСЏ РІРёРґРёРјРѕСЃС‚Рё СЃРµРєС‚РѕСЂР°
 	SectorVisibility& sec_data = GetOrAddSectorData(current_sector);
 	sec_data.frustums.push_back(cur_frustum);
 	sec_data.scissors.push_back(cur_scissor);
 
-	// Обход порталов
+	// РћР±С…РѕРґ РїРѕСЂС‚Р°Р»РѕРІ
 	const auto& portals = current_sector->GetPortals();
 
-	// Используем sPoly на стеке, чтобы избежать аллокаций
+	// РСЃРїРѕР»СЊР·СѓРµРј sPoly РЅР° СЃС‚РµРєРµ, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ Р°Р»Р»РѕРєР°С†РёР№
 	sPoly poly_source, poly_clipped;
 
 	for(CPortal* portal : portals)
 	{
-		// A. Проверка посещения (чтобы не ходить назад или кругами)
+		// A. РџСЂРѕРІРµСЂРєР° РїРѕСЃРµС‰РµРЅРёСЏ (С‡С‚РѕР±С‹ РЅРµ С…РѕРґРёС‚СЊ РЅР°Р·Р°Рґ РёР»Рё РєСЂСѓРіР°РјРё)
 		bool already_visited = false;
 		for(CPortal* p : m_visited_portals)
 		{
@@ -120,20 +120,20 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 		if(already_visited)
 			continue;
 
-		// B. Определение целевого сектора
+		// B. РћРїСЂРµРґРµР»РµРЅРёРµ С†РµР»РµРІРѕРіРѕ СЃРµРєС‚РѕСЂР°
 		CSector* target_sector = portal->GetOppositeSector(current_sector);
 
-		// Anti-backtracking (не возвращаемся в тот, откуда начали, если это не dual render logic)
-		// Если нужна логика Precise Portals, она должна быть реализована здесь.
-		// Пока реализуем классическую логику: смотрим "сквозь" портал
+		// Anti-backtracking (РЅРµ РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РІ С‚РѕС‚, РѕС‚РєСѓРґР° РЅР°С‡Р°Р»Рё, РµСЃР»Рё СЌС‚Рѕ РЅРµ dual render logic)
+		// Р•СЃР»Рё РЅСѓР¶РЅР° Р»РѕРіРёРєР° Precise Portals, РѕРЅР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ СЂРµР°Р»РёР·РѕРІР°РЅР° Р·РґРµСЃСЊ.
+		// РџРѕРєР° СЂРµР°Р»РёР·СѓРµРј РєР»Р°СЃСЃРёС‡РµСЃРєСѓСЋ Р»РѕРіРёРєСѓ: СЃРјРѕС‚СЂРёРј "СЃРєРІРѕР·СЊ" РїРѕСЂС‚Р°Р»
 		CSector* facing_sector = portal->GetSectorBack(m_view_pos);
-		if(facing_sector == current_sector) // Мы смотрим в "спину" порталу?
-			continue;						// Пропускаем, если портал отвернут (Backface culling портала)
+		if(facing_sector == current_sector) // РњС‹ СЃРјРѕС‚СЂРёРј РІ "СЃРїРёРЅСѓ" РїРѕСЂС‚Р°Р»Сѓ?
+			continue;						// РџСЂРѕРїСѓСЃРєР°РµРј, РµСЃР»Рё РїРѕСЂС‚Р°Р» РѕС‚РІРµСЂРЅСѓС‚ (Backface culling РїРѕСЂС‚Р°Р»Р°)
 
-		if(target_sector == m_start_sector) // Не заходим обратно в стартовый
+		if(target_sector == m_start_sector) // РќРµ Р·Р°С…РѕРґРёРј РѕР±СЂР°С‚РЅРѕ РІ СЃС‚Р°СЂС‚РѕРІС‹Р№
 			continue;
 
-		// Создаем копию сферы на стеке.
+		// РЎРѕР·РґР°РµРј РєРѕРїРёСЋ СЃС„РµСЂС‹ РЅР° СЃС‚РµРєРµ.
 		fvec3 sphere_pos = portal->GetSphere().P;
 		float sphere_rad = portal->GetSphere().R;
 
@@ -148,7 +148,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 			float dist_sq = dir2portal.square_magnitude();
 			float ssa = portal->GetSphere().R * portal->GetSphere().R / dist_sq;
 
-			// Учитываем угол обзора
+			// РЈС‡РёС‚С‹РІР°РµРј СѓРіРѕР» РѕР±Р·РѕСЂР°
 			dir2portal.div(std::sqrt(dist_sq));
 			ssa *= _abs(portal->GetPlane().n.dotproduct(dir2portal));
 
@@ -160,7 +160,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 				if(ssa < r_ssaLOD_A)
 					m_fade_portals.push_back(std::make_pair(portal, ssa));
 				if(ssa < r_ssaLOD_B)
-					continue; // Слишком маленький, рисуем как Fade и не идем дальше
+					continue; // РЎР»РёС€РєРѕРј РјР°Р»РµРЅСЊРєРёР№, СЂРёСЃСѓРµРј РєР°Рє Fade Рё РЅРµ РёРґРµРј РґР°Р»СЊС€Рµ
 			}
 		}
 
@@ -169,7 +169,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 		poly_source.assign(verts.begin(), verts.size());
 		poly_clipped.clear();
 
-		// ClipPoly возвращает указатель на результат или null
+		// ClipPoly РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЂРµР·СѓР»СЊС‚Р°С‚ РёР»Рё null
 		sPoly* clipped_poly = cur_frustum.ClipPoly(poly_source, poly_clipped);
 
 		if(!clipped_poly || clipped_poly->empty())
@@ -187,7 +187,7 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 			for(const fvec3& v : *clipped_poly)
 			{
 				fvec4 t;
-				// Трансформация в Screen Space (0..1)
+				// РўСЂР°РЅСЃС„РѕСЂРјР°С†РёСЏ РІ Screen Space (0..1)
 				t.x = v.x * m_xform_proj._11 + v.y * m_xform_proj._21 + v.z * m_xform_proj._31 + m_xform_proj._41;
 				t.y = v.x * m_xform_proj._12 + v.y * m_xform_proj._22 + v.z * m_xform_proj._32 + m_xform_proj._42;
 				t.z = v.x * m_xform_proj._13 + v.y * m_xform_proj._23 + v.z * m_xform_proj._33 + m_xform_proj._43;
@@ -203,8 +203,8 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 				depth = _min(depth, t.z);
 			}
 
-			// Пересечение с предыдущим сциссором
-			if(depth > EPS) // Если не за спиной
+			// РџРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РїСЂРµРґС‹РґСѓС‰РёРј СЃС†РёСЃСЃРѕСЂРѕРј
+			if(depth > EPS) // Р•СЃР»Рё РЅРµ Р·Р° СЃРїРёРЅРѕР№
 			{
 				next_scissor.min.x = _max(cur_scissor.min.x, bb.min.x);
 				next_scissor.max.x = _min(cur_scissor.max.x, bb.max.x);
@@ -212,106 +212,106 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 				next_scissor.max.y = _min(cur_scissor.max.y, bb.max.y);
 				next_scissor.depth = depth;
 
-				// Если область пустая - отсекаем
+				// Р•СЃР»Рё РѕР±Р»Р°СЃС‚СЊ РїСѓСЃС‚Р°СЏ - РѕС‚СЃРµРєР°РµРј
 				if(next_scissor.min.x >= next_scissor.max.x || next_scissor.min.y >= next_scissor.max.y)
 					continue;
 
-				// HOM Culling (Быстрый тест по AABB сциссора)
+				// HOM Culling (Р‘С‹СЃС‚СЂС‹Р№ С‚РµСЃС‚ РїРѕ AABB СЃС†РёСЃСЃРѕСЂР°)
 				if((m_options & VQ_HOM) && RenderImplementation.HOM.invisible(next_scissor, depth))
 					continue;
 			}
 			else
 			{
-				// Если портал пересекает near plane, scissor не эффективен,
-				// проверяем полигон целиком через HOM (медленно)
+				// Р•СЃР»Рё РїРѕСЂС‚Р°Р» РїРµСЂРµСЃРµРєР°РµС‚ near plane, scissor РЅРµ СЌС„С„РµРєС‚РёРІРµРЅ,
+				// РїСЂРѕРІРµСЂСЏРµРј РїРѕР»РёРіРѕРЅ С†РµР»РёРєРѕРј С‡РµСЂРµР· HOM (РјРµРґР»РµРЅРЅРѕ)
 				if((m_options & VQ_HOM) && RenderImplementation.HOM.invisible(*clipped_poly))
 					continue;
 			}
 		}
 		else
 		{
-			// Если сциссора нет, проверяем просто полигон
+			// Р•СЃР»Рё СЃС†РёСЃСЃРѕСЂР° РЅРµС‚, РїСЂРѕРІРµСЂСЏРµРј РїСЂРѕСЃС‚Рѕ РїРѕР»РёРіРѕРЅ
 			if((m_options & VQ_HOM) && RenderImplementation.HOM.invisible(*clipped_poly))
 				continue;
 		}
 
-		// G. Рекурсия
+		// G. Р РµРєСѓСЂСЃРёСЏ
 		CFrustum next_frustum;
-		// Создаем новый фрустум, ограниченный порталом
+		// РЎРѕР·РґР°РµРј РЅРѕРІС‹Р№ С„СЂСѓСЃС‚СѓРј, РѕРіСЂР°РЅРёС‡РµРЅРЅС‹Р№ РїРѕСЂС‚Р°Р»РѕРј
 		fvec3 plane_n = portal->GetPlane().n;
 		next_frustum.CreateFromPortal(clipped_poly, plane_n, m_view_pos, m_xform);
 
-		m_visited_portals.push_back(portal); // Помечаем
+		m_visited_portals.push_back(portal); // РџРѕРјРµС‡Р°РµРј
 		RecursiveTraverse(target_sector, next_frustum, next_scissor);
 	}
 }
 
 void CPortalTraverser::RenderFade()
 {
-	// 1. Проверка наличия данных
+	// 1. РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ РґР°РЅРЅС‹С…
 	if(m_fade_portals.empty())
 		return;
 
-	// 2. Сортировка Back-to-Front (для корректного Alpha Blending)
-	// Используем лямбду с захватом позиции камеры (m_view_pos)
+	// 2. РЎРѕСЂС‚РёСЂРѕРІРєР° Back-to-Front (РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ Alpha Blending)
+	// РСЃРїРѕР»СЊР·СѓРµРј Р»СЏРјР±РґСѓ СЃ Р·Р°С…РІР°С‚РѕРј РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ (m_view_pos)
 	fvec3 camera_pos = m_view_pos;
 
 	std::sort(m_fade_portals.begin(), m_fade_portals.end(),
 			  [camera_pos](const std::pair<CPortal*, float>& a, const std::pair<CPortal*, float>& b)
 			  {
-				  // Сравниваем квадрат дистанции до центров порталов
+				  // РЎСЂР°РІРЅРёРІР°РµРј РєРІР°РґСЂР°С‚ РґРёСЃС‚Р°РЅС†РёРё РґРѕ С†РµРЅС‚СЂРѕРІ РїРѕСЂС‚Р°Р»РѕРІ
 				  float d1 = camera_pos.distance_to_sqr(a.first->GetSphere().P);
 				  float d2 = camera_pos.distance_to_sqr(b.first->GetSphere().P);
-				  return d2 > d1; // По убыванию (от дальнего к ближнему)
+				  return d2 > d1; // РџРѕ СѓР±С‹РІР°РЅРёСЋ (РѕС‚ РґР°Р»СЊРЅРµРіРѕ Рє Р±Р»РёР¶РЅРµРјСѓ)
 			  });
 
-	// 3. Расчет необходимого размера буфера
+	// 3. Р Р°СЃС‡РµС‚ РЅРµРѕР±С…РѕРґРёРјРѕРіРѕ СЂР°Р·РјРµСЂР° Р±СѓС„РµСЂР°
 	u32 poly_count = 0;
 	for(const auto& item : m_fade_portals)
 	{
-		// Портал — это выпуклый многоугольник. Триангуляция "веером" (Triangle Fan).
-		// Количество треугольников = кол-во вершин - 2.
+		// РџРѕСЂС‚Р°Р» вЂ” СЌС‚Рѕ РІС‹РїСѓРєР»С‹Р№ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРє. РўСЂРёР°РЅРіСѓР»СЏС†РёСЏ "РІРµРµСЂРѕРј" (Triangle Fan).
+		// РљРѕР»РёС‡РµСЃС‚РІРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ = РєРѕР»-РІРѕ РІРµСЂС€РёРЅ - 2.
 		poly_count += item.first->GetVertices().size() - 2;
 	}
 
 	if(poly_count == 0)
 		return;
 
-	// 4. Блокировка вершинного буфера
+	// 4. Р‘Р»РѕРєРёСЂРѕРІРєР° РІРµСЂС€РёРЅРЅРѕРіРѕ Р±СѓС„РµСЂР°
 	u32 v_offset = 0;
-	// Используем формат FVF::L (Point + Color)
+	// РСЃРїРѕР»СЊР·СѓРµРј С„РѕСЂРјР°С‚ FVF::L (Point + Color)
 	FVF::L* v_ptr = (FVF::L*)RenderBackend.Vertex.Lock(poly_count * 3, m_geom_fade.stride(), v_offset);
 
-	// 5. Подготовка констант цвета
+	// 5. РџРѕРґРіРѕС‚РѕРІРєР° РєРѕРЅСЃС‚Р°РЅС‚ С†РІРµС‚Р°
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
 	if(ssa_range < EPS)
 		ssa_range = EPS;
 
-	// Получаем текущий ambient цвет из окружения
+	// РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РёР№ ambient С†РІРµС‚ РёР· РѕРєСЂСѓР¶РµРЅРёСЏ
 	fvec3 ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
 	u32 ambient_clr = color_rgba_f(ambient_f.x, ambient_f.y, ambient_f.z, 0);
 
-	// 6. Заполнение геометрии
+	// 6. Р—Р°РїРѕР»РЅРµРЅРёРµ РіРµРѕРјРµС‚СЂРёРё
 	for(const auto& item : m_fade_portals)
 	{
 		CPortal* portal = item.first;
 		float ssa = item.second;
 
-		// Вычисление альфы на основе Screen Space Area
-		// Чем меньше SSA (дальше портал), тем плотнее "туман"
+		// Р’С‹С‡РёСЃР»РµРЅРёРµ Р°Р»СЊС„С‹ РЅР° РѕСЃРЅРѕРІРµ Screen Space Area
+		// Р§РµРј РјРµРЅСЊС€Рµ SSA (РґР°Р»СЊС€Рµ РїРѕСЂС‚Р°Р»), С‚РµРј РїР»РѕС‚РЅРµРµ "С‚СѓРјР°РЅ"
 		float ssa_diff = ssa - r_ssaLOD_B;
 		float ssa_scale = ssa_diff / ssa_range;
 		int alpha = iFloor((1.0f - ssa_scale) * 255.5f);
 		clamp(alpha, 0, 255);
 
-		// Подмешиваем альфу в цвет эмбиента
+		// РџРѕРґРјРµС€РёРІР°РµРј Р°Р»СЊС„Сѓ РІ С†РІРµС‚ СЌРјР±РёРµРЅС‚Р°
 		u32 final_clr = subst_alpha(ambient_clr, u32(alpha));
 
-		// Триангуляция многоугольника портала
+		// РўСЂРёР°РЅРіСѓР»СЏС†РёСЏ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєР° РїРѕСЂС‚Р°Р»Р°
 		const auto& verts = portal->GetVertices();
 		u32 tri_count = verts.size() - 2;
 
-		// Строим Triangle List из Triangle Fan (v[0], v[i+1], v[i+2])
+		// РЎС‚СЂРѕРёРј Triangle List РёР· Triangle Fan (v[0], v[i+1], v[i+2])
 		for(u32 k = 0; k < tri_count; ++k)
 		{
 			v_ptr->set(verts[0], final_clr);
@@ -325,19 +325,19 @@ void CPortalTraverser::RenderFade()
 
 	RenderBackend.Vertex.Unlock(poly_count * 3, m_geom_fade.stride());
 
-	// 7. Отрисовка
+	// 7. РћС‚СЂРёСЃРѕРІРєР°
 	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_Shader(m_shader_fade);
 	RenderBackend.set_Geometry(m_geom_fade);
 
-	// Отключаем отсечение задних граней, чтобы "туман" был виден с любой стороны портала
+	// РћС‚РєР»СЋС‡Р°РµРј РѕС‚СЃРµС‡РµРЅРёРµ Р·Р°РґРЅРёС… РіСЂР°РЅРµР№, С‡С‚РѕР±С‹ "С‚СѓРјР°РЅ" Р±С‹Р» РІРёРґРµРЅ СЃ Р»СЋР±РѕР№ СЃС‚РѕСЂРѕРЅС‹ РїРѕСЂС‚Р°Р»Р°
 	RenderBackend.set_CullMode(CULL_DISABLE);
 
 	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, poly_count);
 
-	// Восстанавливаем Cull Mode
+	// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј Cull Mode
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 
-	// 8. Очистка списка (данные устаревают каждый кадр)
+	// 8. РћС‡РёСЃС‚РєР° СЃРїРёСЃРєР° (РґР°РЅРЅС‹Рµ СѓСЃС‚Р°СЂРµРІР°СЋС‚ РєР°Р¶РґС‹Р№ РєР°РґСЂ)
 	m_fade_portals.clear();
 }

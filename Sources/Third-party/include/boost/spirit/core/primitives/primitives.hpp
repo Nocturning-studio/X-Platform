@@ -543,7 +543,7 @@ namespace boost { namespace spirit {
 
     ///////////////////////////////////////////////////////////////////////////
     //
-    //  end_parser class (suggested by Markus Schöpflin)
+    //  end_parser class (suggested by Markus SchÑ†pflin)
     //
     ///////////////////////////////////////////////////////////////////////////
     struct end_parser : public parser<end_parser>

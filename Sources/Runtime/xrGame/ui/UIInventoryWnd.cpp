@@ -115,7 +115,7 @@ void CUIInventoryWnd::Init()
 	UIOutfitInfo.InitFromXml(uiXml);
 	//.	xml_init.InitStatic					(uiXml, "outfit_info_window",0, &UIOutfitInfo);
 
-	// Элементы автоматического добавления
+	// Р­Р»РµРјРµРЅС‚С‹ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ
 	xml_init.InitAutoStatic(uiXml, "auto_static", this);
 
 	if(GameID() != GAME_SINGLE)
@@ -232,7 +232,7 @@ bool CUIInventoryWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 	if(m_b_need_reinit)
 		return true;
 
-	// вызов дополнительного меню по правой кнопке
+	// РІС‹Р·РѕРІ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРіРѕ РјРµРЅСЋ РїРѕ РїСЂР°РІРѕР№ РєРЅРѕРїРєРµ
 	if(mouse_action == WINDOW_RBUTTON_DOWN)
 	{
 		if(UIPropertiesBox.IsShown())
@@ -348,7 +348,7 @@ void CUIInventoryWnd::Hide()
 	SendInfoToActor("ui_inventory_hide");
 	ClearAllLists();
 
-	// достать вещь в активный слот
+	// РґРѕСЃС‚Р°С‚СЊ РІРµС‰СЊ РІ Р°РєС‚РёРІРЅС‹Р№ СЃР»РѕС‚
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
 	{
@@ -382,7 +382,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 
 	item_to_upgrade->Attach(CurrentIItem(), true);
 
-	// спрятать вещь из активного слота в инвентарь на время вызова менюшки
+	// СЃРїСЂСЏС‚Р°С‚СЊ РІРµС‰СЊ РёР· Р°РєС‚РёРІРЅРѕРіРѕ СЃР»РѕС‚Р° РІ РёРЅРІРµРЅС‚Р°СЂСЊ РЅР° РІСЂРµРјСЏ РІС‹Р·РѕРІР° РјРµРЅСЋС€РєРё
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor && item_to_upgrade == pActor->inventory().ActiveItem())
 	{
@@ -404,7 +404,7 @@ void CUIInventoryWnd::DetachAddon(const char* addon_name)
 	};
 	CurrentIItem()->Detach(addon_name, true);
 
-	// спрятать вещь из активного слота в инвентарь на время вызова менюшки
+	// СЃРїСЂСЏС‚Р°С‚СЊ РІРµС‰СЊ РёР· Р°РєС‚РёРІРЅРѕРіРѕ СЃР»РѕС‚Р° РІ РёРЅРІРµРЅС‚Р°СЂСЊ РЅР° РІСЂРµРјСЏ РІС‹Р·РѕРІР° РјРµРЅСЋС€РєРё
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor && CurrentIItem() == pActor->inventory().ActiveItem())
 	{

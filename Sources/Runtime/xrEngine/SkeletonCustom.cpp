@@ -423,7 +423,7 @@ void CKinematics::LL_Validate()
 		{
 			xr_vector<u16>& group = groups[g];
 			if(group.empty())
-				continue; // На всякий случай защита от пустых групп
+				continue; // РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ Р·Р°С‰РёС‚Р° РѕС‚ РїСѓСЃС‚С‹С… РіСЂСѓРїРї
 
 			u16 bp_id = b_parts[group[0]];
 			for(u32 b = 1; b < group.size(); b++)
@@ -774,7 +774,7 @@ struct zero_wm_pred
 
 void CKinematics::CalculateWallmarks()
 {
-	// Защита от одновременного доступа
+	// Р—Р°С‰РёС‚Р° РѕС‚ РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕРіРѕ РґРѕСЃС‚СѓРїР°
 	Wallmarks_Mutex.Enter();
 
 	if(!wallmarks.empty() && (wm_frame != Engine.TimeManager.GetFrameCount()))

@@ -426,10 +426,10 @@ void CActor::ActorUse()
 				{
 					TryToTalk();
 				}
-				// обыск трупа
+				// РѕР±С‹СЃРє С‚СЂСѓРїР°
 				else if(!Level().IR_GetKeyState(DIK_LSHIFT))
 				{
-					// только если находимся в режиме single
+					// С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 					if(pGameSP)
 						pGameSP->StartCarBody(this, m_pPersonWeLookingAt);

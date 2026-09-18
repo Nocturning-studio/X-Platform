@@ -1,6 +1,6 @@
 //=======================================================================
 // Copyright 2001 Universite Joseph Fourier, Grenoble.
-// Author: François Faure
+// Author: FranÐ·ois Faure
 //
 // This file is part of the Boost Graph Library
 //

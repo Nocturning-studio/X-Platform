@@ -9,7 +9,7 @@
 //  http://gcc.gnu.org/onlinedocs/porting/Thread-safety.html
 //
 //  Copyright (c) 2002 Peter Dimov and Multi Media Ltd.
-//  Copyright (c) 2002 Lars Gullik Bjønnes <larsbj@lyx.org>
+//  Copyright (c) 2002 Lars Gullik BjÑˆnnes <larsbj@lyx.org>
 //
 //  Permission to copy, use, modify, sell and distribute this software
 //  is granted provided this copyright notice appears in all copies.

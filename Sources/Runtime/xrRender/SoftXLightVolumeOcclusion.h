@@ -36,7 +36,7 @@ class SoftXLightVolumeOcclusion
   private:
 	SoftXOcclusionCore* m_core = nullptr;
 
-	// Геометрия объёмов источников
+	// Р“РµРѕРјРµС‚СЂРёСЏ РѕР±СЉС‘РјРѕРІ РёСЃС‚РѕС‡РЅРёРєРѕРІ
 	std::unique_ptr<SoftX::VertexBuffer> m_pointVB;
 	std::unique_ptr<SoftX::IndexBuffer> m_pointIB;
 	std::unique_ptr<SoftX::VertexBuffer> m_spotVB;
@@ -44,14 +44,14 @@ class SoftXLightVolumeOcclusion
 	std::unique_ptr<SoftX::VertexBuffer> m_omniVB;
 	std::unique_ptr<SoftX::IndexBuffer> m_omniIB;
 
-	// Пул запросов
+	// РџСѓР» Р·Р°РїСЂРѕСЃРѕРІ
 	static constexpr int QUERY_POOL_SIZE = 2;
 	std::vector<std::unique_ptr<SoftX::OcclusionQuery>> m_queryPool;
 	int m_currentQueryIndex = 0;
 	SoftX::OcclusionQuery* m_activeQuery = nullptr;
 	SoftX::OcclusionQuery* m_pendingQuery = nullptr;
 
-	// Текущие параметры камеры
+	// РўРµРєСѓС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ РєР°РјРµСЂС‹
 	fmat4x4 m_currentViewProj;
 	SoftX::Viewport m_currentViewport;
 

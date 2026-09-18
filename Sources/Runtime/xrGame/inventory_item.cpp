@@ -145,7 +145,7 @@ void CInventoryItem::Load(LPCSTR section)
 	m_flags.set(FCanTrade, READ_IF_EXISTS(pSettings, r_bool, section, "can_trade", TRUE));
 	m_flags.set(FIsQuestItem, READ_IF_EXISTS(pSettings, r_bool, section, "quest_item", FALSE));
 
-	// âðåìÿ óáèðàíèÿ îáúåêòà ñ óðîâíÿ
+	// Ð²Ñ€ÐµÐ¼Ñ ÑƒÐ±Ð¸Ñ€Ð°Ð½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ñ ÑƒÑ€Ð¾Ð²Ð½Ñ
 	m_dwItemRemoveTime = READ_IF_EXISTS(pSettings, r_u32, section, "item_remove_time", ITEM_REMOVE_TIME);
 
 	m_flags.set(FAllowSprint, READ_IF_EXISTS(pSettings, r_bool, section, "sprint_allowed", TRUE));
@@ -289,9 +289,9 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
-// ïðîöåññ îòñîåäèíåíèÿ âåùè çàêëþ÷àåòñÿ â ñïàóíå íîâîé âåùè
-// â èíâåíòàðå è óñòàíîâêå ñîîòâåòñòâóþùèõ ôëàãîâ â ðîäèòåëüñêîì
-// îáúåêòå, ïîýòîìó ôóíêöèÿ äîëæíà áûòü ïåðåîïðåäåëåíà
+// Ð¿Ñ€Ð¾Ñ†ÐµÑÑ Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ñ Ð²ÐµÑ‰Ð¸ Ð·Ð°ÐºÐ»ÑŽÑ‡Ð°ÐµÑ‚ÑÑ Ð² ÑÐ¿Ð°ÑƒÐ½Ðµ Ð½Ð¾Ð²Ð¾Ð¹ Ð²ÐµÑ‰Ð¸
+// Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ðµ Ð¸ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐµ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ñ… Ñ„Ð»Ð°Ð³Ð¾Ð² Ð² Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¾Ð¼
+// Ð¾Ð±ÑŠÐµÐºÑ‚Ðµ, Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ð¿ÐµÑ€ÐµÐ¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð°
 bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 {
 	if(OnClient())
@@ -368,7 +368,7 @@ BOOL CInventoryItem::net_Spawn(CSE_Abstract* DC)
 
 void CInventoryItem::net_Destroy()
 {
-	// èíâåíòàðü êîòîðîìó ìû ïðèíàäëåæàëè
+	// Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼Ñƒ Ð¼Ñ‹ Ð¿Ñ€Ð¸Ð½Ð°Ð´Ð»ÐµÐ¶Ð°Ð»Ð¸
 	//.	m_pCurrentInventory = NULL;
 }
 
@@ -717,7 +717,7 @@ void CInventoryItem::CalculateInterpolationParams()
 		{
 			P0[k] = c * (c * (c * p->SCoeff[k][0] + p->SCoeff[k][1]) + p->SCoeff[k][2]) + p->SCoeff[k][3];
 			P1[k] = (c * c * p->SCoeff[k][0] * 3 + c * p->SCoeff[k][1] * 2 + p->SCoeff[k][2]) /
-					3; // ñîêðîñòü èç ôîðìóëû â 3 ðàçà ïðåâûøàåò ñêîðîñòü ïðè ðàñ÷åòå êîýôôèöèåíòîâ !!!!
+					3; // ÑÐ¾ÐºÑ€Ð¾ÑÑ‚ÑŒ Ð¸Ð· Ñ„Ð¾Ñ€Ð¼ÑƒÐ»Ñ‹ Ð² 3 Ñ€Ð°Ð·Ð° Ð¿Ñ€ÐµÐ²Ñ‹ÑˆÐ°ÐµÑ‚ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ð¿Ñ€Ð¸ Ñ€Ð°ÑÑ‡ÐµÑ‚Ðµ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð² !!!!
 		};
 		P0.set(p->IStartPos);
 		P1.add(p->IStartPos);

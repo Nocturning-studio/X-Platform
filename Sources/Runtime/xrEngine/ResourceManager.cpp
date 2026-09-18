@@ -266,7 +266,7 @@ void CResourceManager::DeferredUpload()
 	if(!Device.b_is_Ready)
 		return;
 
-	// 1. Собираем список текстур для загрузки
+	// 1. РЎРѕР±РёСЂР°РµРј СЃРїРёСЃРѕРє С‚РµРєСЃС‚СѓСЂ РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 	xr_vector<CTexture*> textures_to_load;
 	textures_to_load.reserve(m_textures.size());
 
@@ -276,7 +276,7 @@ void CResourceManager::DeferredUpload()
 			textures_to_load.push_back(pair.second);
 	}
 
-	// 2. Грузим пачками по N штук
+	// 2. Р“СЂСѓР·РёРј РїР°С‡РєР°РјРё РїРѕ N С€С‚СѓРє
 	size_t total = textures_to_load.size();
 
 	for(size_t i = 0; i < total; i++)

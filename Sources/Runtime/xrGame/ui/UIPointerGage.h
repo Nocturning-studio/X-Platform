@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-// UIPointerGage.h:			цифровой прибор
+// UIPointerGage.h:			С†РёС„СЂРѕРІРѕР№ РїСЂРёР±РѕСЂ
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -23,14 +23,14 @@ class CUIPointerGage : public CUIStatic
 	virtual void Update();
 	virtual void Draw();
 
-	// value - от 0 до 1
+	// value - РѕС‚ 0 РґРѕ 1
 	virtual void SetValue(float value);
 
   protected:
 	float m_fAngleMin, m_fAngleMax;
 	float m_fAngle;
 
-	// текстура стрелки
+	// С‚РµРєСЃС‚СѓСЂР° СЃС‚СЂРµР»РєРё
 	CUIStaticItem m_ArrowPointer;
 	float m_iArrowOffsetX, m_iArrowOffsetY;
 };

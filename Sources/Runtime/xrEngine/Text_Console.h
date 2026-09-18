@@ -2,7 +2,7 @@
 #include "XR_IOConsole.h"
 #include "IGame_Level.h"
 #include <windows.h>
-#include <process.h> // для _beginthreadex
+#include <process.h> // РґР»СЏ _beginthreadex
 
 class ENGINE_API CTextConsole : public CConsole
 {
@@ -13,7 +13,7 @@ class ENGINE_API CTextConsole : public CConsole
 	HANDLE m_hConsoleThread;
 	CRITICAL_SECTION m_csCmdQueue;
 
-	// Очередь команд от потока к движку
+	// РћС‡РµСЂРµРґСЊ РєРѕРјР°РЅРґ РѕС‚ РїРѕС‚РѕРєР° Рє РґРІРёР¶РєСѓ
 	xr_vector<shared_str> m_cmd_queue;
 
 	HANDLE m_hStdOut;
@@ -24,7 +24,7 @@ class ENGINE_API CTextConsole : public CConsole
 	void ProcessOutput();
 	WORD GetColorByTag(char tag);
 
-	// Статическая функция для потока
+	// РЎС‚Р°С‚РёС‡РµСЃРєР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕС‚РѕРєР°
 	static unsigned __stdcall ConsoleThreadEntry(void* pArgs);
 	void ThreadLoop();
 

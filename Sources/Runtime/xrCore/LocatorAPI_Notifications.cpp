@@ -58,7 +58,7 @@ void CFS_PathNotificator::Execute()
 	OPTICK_THREAD("X-Ray File System notify thread");
 	OPTICK_FRAME("X-Ray File System notify thread");
 
-	// Инициализация обработчиков событий
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ СЃРѕР±С‹С‚РёР№
 	{
 		std::lock_guard<std::mutex> lock(CS);
 		for(auto& P : events)
@@ -73,7 +73,7 @@ void CFS_PathNotificator::Execute()
 		}
 	}
 
-	// Основной цикл обработки событий
+	// РћСЃРЅРѕРІРЅРѕР№ С†РёРєР» РѕР±СЂР°Р±РѕС‚РєРё СЃРѕР±С‹С‚РёР№
 	while(!Terminated)
 	{
 		std::vector<HANDLE> hHandles;
@@ -89,7 +89,7 @@ void CFS_PathNotificator::Execute()
 
 		if(result == WAIT_OBJECT_0)
 		{
-			// Мьютекс освобожден - выходим
+			// РњСЊСЋС‚РµРєСЃ РѕСЃРІРѕР±РѕР¶РґРµРЅ - РІС‹С…РѕРґРёРј
 			ReleaseMutex(FMutex);
 			break;
 		}
@@ -107,7 +107,7 @@ void CFS_PathNotificator::Execute()
 					}
 					catch(...)
 					{
-						// Игнорируем исключения в колбэках
+						// РРіРЅРѕСЂРёСЂСѓРµРј РёСЃРєР»СЋС‡РµРЅРёСЏ РІ РєРѕР»Р±СЌРєР°С…
 					}
 				}
 
@@ -117,12 +117,12 @@ void CFS_PathNotificator::Execute()
 		}
 		else
 		{
-			// Ошибка ожидания
+			// РћС€РёР±РєР° РѕР¶РёРґР°РЅРёСЏ
 			break;
 		}
 	}
 
-	// Очистка ресурсов
+	// РћС‡РёСЃС‚РєР° СЂРµСЃСѓСЂСЃРѕРІ
 	for(auto& P : events)
 	{
 		if(P.FWaitHandle != INVALID_HANDLE_VALUE)
@@ -155,11 +155,11 @@ void CLocatorAPI::ClearEventNotification()
 	{
 		FThread->Terminate();
 
-		// Разблокируем мьютекс, чтобы поток мог завершиться
+		// Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј РјСЊСЋС‚РµРєСЃ, С‡С‚РѕР±С‹ РїРѕС‚РѕРє РјРѕРі Р·Р°РІРµСЂС€РёС‚СЊСЃСЏ
 		if(FThread->FMutex)
 		{
 			ReleaseMutex(FThread->FMutex);
-			// Даем потоку время завершиться
+			// Р”Р°РµРј РїРѕС‚РѕРєСѓ РІСЂРµРјСЏ Р·Р°РІРµСЂС€РёС‚СЊСЃСЏ
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 

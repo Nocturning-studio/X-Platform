@@ -58,11 +58,11 @@ void CRender::Calculate()
 	Lights.Update();
 
 	// Check if we touch some light even trough portal
-	// Используем m_packet.m_spatial_query_results
+	// РСЃРїРѕР»СЊР·СѓРµРј m_packet.m_spatial_query_results
 	SceneGraph.m_packet.m_spatial_query_results.clear();
 	g_SpatialSpace->q_sphere(SceneGraph.m_packet.m_spatial_query_results, 0, STYPE_LIGHTSOURCE, Engine.RenderView.Position, EPS_L);
 
-	// Итерируемся по m_packet.m_spatial_query_results
+	// РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ m_packet.m_spatial_query_results
 	for(u32 _it = 0; _it < SceneGraph.m_packet.m_spatial_query_results.size(); _it++)
 	{
 		ISpatial* spatial = SceneGraph.m_packet.m_spatial_query_results[_it];

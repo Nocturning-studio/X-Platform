@@ -106,7 +106,7 @@ void CBlender_Compile::PassBegin()
 	strcpy_s(pass_vs_entry, "main");
 	dwStage = 0;
 
-	// Очищаем все списки
+	// РћС‡РёС‰Р°РµРј РІСЃРµ СЃРїРёСЃРєРё
 	macros_common.clear();
 	macros_vs.clear();
 	macros_ps.clear();
@@ -117,22 +117,22 @@ void CBlender_Compile::PassEnd()
 	// Create pass
 	ref_state state = Engine.ResourceManager->_CreateState(RS.GetContainer());
 
-	// [НОВАЯ ЛОГИКА] Объединяем макросы
-	// 1. Подготавливаем макросы для Pixel Shader (Common + PS)
+	// [РќРћР’РђРЇ Р›РћР“РРљРђ] РћР±СЉРµРґРёРЅСЏРµРј РјР°РєСЂРѕСЃС‹
+	// 1. РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµРј РјР°РєСЂРѕСЃС‹ РґР»СЏ Pixel Shader (Common + PS)
 	CShaderMacros final_macros_ps;
 	final_macros_ps.add(macros_common);
 	final_macros_ps.add(macros_ps);
 
-	// 2. Подготавливаем макросы для Vertex Shader (Common + VS)
+	// 2. РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµРј РјР°РєСЂРѕСЃС‹ РґР»СЏ Vertex Shader (Common + VS)
 	CShaderMacros final_macros_vs;
 	final_macros_vs.add(macros_common);
 	final_macros_vs.add(macros_vs);
 
-	// Компилируем шейдеры с соответствующими макросами
+	// РљРѕРјРїРёР»РёСЂСѓРµРј С€РµР№РґРµСЂС‹ СЃ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРјРё РјР°РєСЂРѕСЃР°РјРё
 	ref_ps ps = Engine.ResourceManager->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
 	ref_vs vs = Engine.ResourceManager->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
 
-	// Очищаем списки после создания прохода
+	// РћС‡РёС‰Р°РµРј СЃРїРёСЃРєРё РїРѕСЃР»Рµ СЃРѕР·РґР°РЅРёСЏ РїСЂРѕС…РѕРґР°
 	macros_common.clear();
 	macros_vs.clear();
 	macros_ps.clear();
@@ -152,7 +152,7 @@ void CBlender_Compile::PassSET_PS(LPCSTR name, LPCSTR entry)
 	strcpy_s(pass_ps, name);
 	xr_strlwr(pass_ps);
 
-	// Если entry задан, копируем, иначе main
+	// Р•СЃР»Рё entry Р·Р°РґР°РЅ, РєРѕРїРёСЂСѓРµРј, РёРЅР°С‡Рµ main
 	if(entry && entry[0])
 		strcpy_s(pass_ps_entry, entry);
 	else
@@ -164,7 +164,7 @@ void CBlender_Compile::PassSET_VS(LPCSTR name, LPCSTR entry)
 	strcpy_s(pass_vs, name);
 	xr_strlwr(pass_vs);
 
-	// Если entry задан, копируем, иначе main
+	// Р•СЃР»Рё entry Р·Р°РґР°РЅ, РєРѕРїРёСЂСѓРµРј, РёРЅР°С‡Рµ main
 	if(entry && entry[0])
 		strcpy_s(pass_vs_entry, entry);
 	else
@@ -196,19 +196,19 @@ void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST)
 void CBlender_Compile::begin_Pass(LPCSTR _vs, LPCSTR _ps, LPCSTR _vs_entry, LPCSTR _ps_entry, bool bFog, BOOL bZtest,
 								  BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST)
 {
-	// 1. Сначала копируем имена. Если пришли NULL - ставим "null".
+	// 1. РЎРЅР°С‡Р°Р»Р° РєРѕРїРёСЂСѓРµРј РёРјРµРЅР°. Р•СЃР»Рё РїСЂРёС€Р»Рё NULL - СЃС‚Р°РІРёРј "null".
 	strcpy_s(pass_vs, _vs ? _vs : "null");
 	strcpy_s(pass_ps, _ps ? _ps : "null");
 	strcpy_s(pass_vs_entry, _vs_entry ? _vs_entry : "main");
 	strcpy_s(pass_ps_entry, _ps_entry ? _ps_entry : "main");
 
-	// 2. ОБЯЗАТЕЛЬНО коммитим СРАЗУ.
-	// Это подготовит базовый проход и ctable для сэмплеров.
-	// При этом внутри вызовется RS.Invalidate(), что нормально, т.к. мы еще не настроили стейты.
+	// 2. РћР‘РЇР—РђРўР•Р›Р¬РќРћ РєРѕРјРјРёС‚РёРј РЎР РђР—РЈ.
+	// Р­С‚Рѕ РїРѕРґРіРѕС‚РѕРІРёС‚ Р±Р°Р·РѕРІС‹Р№ РїСЂРѕС…РѕРґ Рё ctable РґР»СЏ СЃСЌРјРїР»РµСЂРѕРІ.
+	// РџСЂРё СЌС‚РѕРј РІРЅСѓС‚СЂРё РІС‹Р·РѕРІРµС‚СЃСЏ RS.Invalidate(), С‡С‚Рѕ РЅРѕСЂРјР°Р»СЊРЅРѕ, С‚.Рє. РјС‹ РµС‰Рµ РЅРµ РЅР°СЃС‚СЂРѕРёР»Рё СЃС‚РµР№С‚С‹.
 	commit_Pass();
 
-	// 3. ПРИМЕНЯЕМ НАСТРОЙКИ СТЕЙТОВ ПОСЛЕ КОММИТА
-	// Теперь они лягут в чистый RS и не сотрутся.
+	// 3. РџР РРњР•РќРЇР•Рњ РќРђРЎРўР РћР™РљР РЎРўР•Р™РўРћР’ РџРћРЎР›Р• РљРћРњРњРРўРђ
+	// РўРµРїРµСЂСЊ РѕРЅРё Р»СЏРіСѓС‚ РІ С‡РёСЃС‚С‹Р№ RS Рё РЅРµ СЃРѕС‚СЂСѓС‚СЃСЏ.
 	PassSET_ZB(bZtest, bZwrite);
 	PassSET_Blend(bABlend, abSRC, abDST);
 }
@@ -217,7 +217,7 @@ void CBlender_Compile::commit_Pass()
 {
 	dwStage = 0;
 
-	// Макросы
+	// РњР°РєСЂРѕСЃС‹
 	CShaderMacros final_macros_ps;
 	final_macros_ps.add(macros_common);
 	final_macros_ps.add(macros_ps);
@@ -226,28 +226,28 @@ void CBlender_Compile::commit_Pass()
 	final_macros_vs.add(macros_common);
 	final_macros_vs.add(macros_vs);
 
-	// Создание шейдеров
+	// РЎРѕР·РґР°РЅРёРµ С€РµР№РґРµСЂРѕРІ
 	ref_ps ps = Engine.ResourceManager->CreateShader<SPS>(pass_ps, pass_ps_entry, final_macros_ps);
 	ref_vs vs = Engine.ResourceManager->CreateShader<SVS>(pass_vs, pass_vs_entry, final_macros_vs);
 
-	// Очистка
+	// РћС‡РёСЃС‚РєР°
 	macros_common.clear();
 	macros_vs.clear();
 	macros_ps.clear();
 
-	// Сохранение в дест
+	// РЎРѕС…СЂР°РЅРµРЅРёРµ РІ РґРµСЃС‚
 	dest.ps = ps;
 	dest.vs = vs;
 
-	// Проверяем, создались ли шейдеры, прежде чем лезть в их константы.
-	// Если шейдер "null", реф-каунтер (p_) будет равен nullptr.
+	// РџСЂРѕРІРµСЂСЏРµРј, СЃРѕР·РґР°Р»РёСЃСЊ Р»Рё С€РµР№РґРµСЂС‹, РїСЂРµР¶РґРµ С‡РµРј Р»РµР·С‚СЊ РІ РёС… РєРѕРЅСЃС‚Р°РЅС‚С‹.
+	// Р•СЃР»Рё С€РµР№РґРµСЂ "null", СЂРµС„-РєР°СѓРЅС‚РµСЂ (p_) Р±СѓРґРµС‚ СЂР°РІРµРЅ nullptr.
 	if(ps)
 		ctable.merge(&ps->constants);
 	if(vs)
 		ctable.merge(&vs->constants);
 
-	// SetMapping привязывает сэмплеры к симулятору.
-	// Важно: он использует dest.ps, который теперь безопасно обновлен (даже если он пуст).
+	// SetMapping РїСЂРёРІСЏР·С‹РІР°РµС‚ СЃСЌРјРїР»РµСЂС‹ Рє СЃРёРјСѓР»СЏС‚РѕСЂСѓ.
+	// Р’Р°Р¶РЅРѕ: РѕРЅ РёСЃРїРѕР»СЊР·СѓРµС‚ dest.ps, РєРѕС‚РѕСЂС‹Р№ С‚РµРїРµСЂСЊ Р±РµР·РѕРїР°СЃРЅРѕ РѕР±РЅРѕРІР»РµРЅ (РґР°Р¶Рµ РµСЃР»Рё РѕРЅ РїСѓСЃС‚).
 	SetMapping();
 }
 

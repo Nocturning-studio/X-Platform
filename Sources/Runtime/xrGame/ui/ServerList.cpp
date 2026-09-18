@@ -472,7 +472,7 @@ void CServerList::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 	UpdateVisibility();
 }
 
-#pragma todo(NSDeathman to NSDeathman : Починить проверку версий)
+#pragma todo(NSDeathman to NSDeathman : РџРѕС‡РёРЅРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ РІРµСЂСЃРёР№)
 void CServerList::ConnectToSelected()
 {
 	int sel = m_list[LST_SERVER].GetSelectedItem();

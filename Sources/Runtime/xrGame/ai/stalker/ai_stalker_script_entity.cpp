@@ -41,13 +41,13 @@ u32 CAI_Stalker::GetWeaponAmmo() const
 
 CInventoryItem* CAI_Stalker::GetMedikit() const
 {
-	// Ищем аптечку в инвентаре
+	// РС‰РµРј Р°РїС‚РµС‡РєСѓ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 	TIItemContainer::const_iterator I = inventory().m_all.begin();
 	TIItemContainer::const_iterator E = inventory().m_all.end();
 	for(; I != E; ++I)
 	{
-		// Пытаемся привести предмет к CMedkit
-		// Если это аптечка, smart_cast вернет не null
+		// РџС‹С‚Р°РµРјСЃСЏ РїСЂРёРІРµСЃС‚Рё РїСЂРµРґРјРµС‚ Рє CMedkit
+		// Р•СЃР»Рё СЌС‚Рѕ Р°РїС‚РµС‡РєР°, smart_cast РІРµСЂРЅРµС‚ РЅРµ null
 		if(smart_cast<CMedkit*>(*I))
 			return (*I);
 	}
@@ -56,12 +56,12 @@ CInventoryItem* CAI_Stalker::GetMedikit() const
 
 CInventoryItem* CAI_Stalker::GetFood() const
 {
-	// Ищем еду в инвентаре
+	// РС‰РµРј РµРґСѓ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 	TIItemContainer::const_iterator I = inventory().m_all.begin();
 	TIItemContainer::const_iterator E = inventory().m_all.end();
 	for(; I != E; ++I)
 	{
-		// Пытаемся привести предмет к CFoodItem
+		// РџС‹С‚Р°РµРјСЃСЏ РїСЂРёРІРµСЃС‚Рё РїСЂРµРґРјРµС‚ Рє CFoodItem
 		if(smart_cast<CFoodItem*>(*I))
 			return (*I);
 	}

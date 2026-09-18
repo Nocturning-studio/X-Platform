@@ -5,13 +5,13 @@
 #include "stdafx.h"
 #include "SunOccluder.h"
 ////////////////////////////////////////////////////////////////////////////////
-// Простая структура вершины. Для теней нам нужна только позиция.
+// РџСЂРѕСЃС‚Р°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° РІРµСЂС€РёРЅС‹. Р”Р»СЏ С‚РµРЅРµР№ РЅР°Рј РЅСѓР¶РЅР° С‚РѕР»СЊРєРѕ РїРѕР·РёС†РёСЏ.
 struct v_occluder
 {
 	fvec3 P;
 };
 
-// Формат вершин: только позиция
+// Р¤РѕСЂРјР°С‚ РІРµСЂС€РёРЅ: С‚РѕР»СЊРєРѕ РїРѕР·РёС†РёСЏ
 static const u32 v_occluder_fvf = D3DFVF_XYZ;
 
 CSunOccluder::CSunOccluder()
@@ -31,7 +31,7 @@ CSunOccluder::~CSunOccluder()
 
 void CSunOccluder::Load()
 {
-	// Путь к файлу: gamedata/levels/<current_level>/sun_occluder.obj
+	// РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ: gamedata/levels/<current_level>/sun_occluder.obj
 	string_path fn;
 	if(!FS.exist(fn, "$level$", "sun_occluder.obj"))
 	{
@@ -51,27 +51,27 @@ void CSunOccluder::Load()
 	{
 		F->r_string(line, sizeof(line));
 
-		// Пропускаем пустые строки
+		// РџСЂРѕРїСѓСЃРєР°РµРј РїСѓСЃС‚С‹Рµ СЃС‚СЂРѕРєРё
 		if(line[0] == 0)
 			continue;
 
 		if(line[0] == 'v' && line[1] == ' ')
 		{
-			// Вершина (v x y z)
+			// Р’РµСЂС€РёРЅР° (v x y z)
 			fvec3 v;
 			float x, y, z;
 			sscanf(line + 2, "%f %f %f", &x, &y, &z);
 
-			// !!! ИЗМЕНЕНИЕ 1: Инвертируем X для зеркального отражения
+			// !!! РР—РњР•РќР•РќРР• 1: РРЅРІРµСЂС‚РёСЂСѓРµРј X РґР»СЏ Р·РµСЂРєР°Р»СЊРЅРѕРіРѕ РѕС‚СЂР°Р¶РµРЅРёСЏ
 			v.set(-x, y, z);
 
 			temp_verts.push_back(v);
 		}
 		else if(line[0] == 'f' && line[1] == ' ')
 		{
-			// Грань (f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3)
+			// Р“СЂР°РЅСЊ (f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3)
 			int i1 = 0, i2 = 0, i3 = 0;
-			char* p = line + 2; // Пропускаем "f "
+			char* p = line + 2; // РџСЂРѕРїСѓСЃРєР°РµРј "f "
 
 			auto parse_index = [&](char*& ptr) -> int
 			{
@@ -89,19 +89,19 @@ void CSunOccluder::Load()
 			i2 = parse_index(p);
 			i3 = parse_index(p);
 
-			// Проверка на корректность индексов
+			// РџСЂРѕРІРµСЂРєР° РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ
 			if(i1 > 0 && i2 > 0 && i3 > 0)
 			{
 				if(i1 <= temp_verts.size() && i2 <= temp_verts.size() && i3 <= temp_verts.size())
 				{
-					// !!! ИЗМЕНЕНИЕ 2: Свапаем порядок индексов (i2 и i3 местами).
-					// Поскольку мы отзеркалили одну ось (X), порядок обхода вершин
-					// изменился на противоположный. Нужно вернуть его обратно,
-					// иначе Backface Culling скроет лицевые грани.
+					// !!! РР—РњР•РќР•РќРР• 2: РЎРІР°РїР°РµРј РїРѕСЂСЏРґРѕРє РёРЅРґРµРєСЃРѕРІ (i2 Рё i3 РјРµСЃС‚Р°РјРё).
+					// РџРѕСЃРєРѕР»СЊРєСѓ РјС‹ РѕС‚Р·РµСЂРєР°Р»РёР»Рё РѕРґРЅСѓ РѕСЃСЊ (X), РїРѕСЂСЏРґРѕРє РѕР±С…РѕРґР° РІРµСЂС€РёРЅ
+					// РёР·РјРµРЅРёР»СЃСЏ РЅР° РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹Р№. РќСѓР¶РЅРѕ РІРµСЂРЅСѓС‚СЊ РµРіРѕ РѕР±СЂР°С‚РЅРѕ,
+					// РёРЅР°С‡Рµ Backface Culling СЃРєСЂРѕРµС‚ Р»РёС†РµРІС‹Рµ РіСЂР°РЅРё.
 
 					temp_inds.push_back((u16)(i1 - 1));
-					temp_inds.push_back((u16)(i3 - 1)); // Было i2
-					temp_inds.push_back((u16)(i2 - 1)); // Было i3
+					temp_inds.push_back((u16)(i3 - 1)); // Р‘С‹Р»Рѕ i2
+					temp_inds.push_back((u16)(i2 - 1)); // Р‘С‹Р»Рѕ i3
 				}
 			}
 		}
@@ -119,7 +119,7 @@ void CSunOccluder::Load()
 
 	Msg("* [SunOccluder] Loaded: %d verts, %d indices", m_VertexCount, m_IndexCount);
 
-	// --- Создание буферов ---
+	// --- РЎРѕР·РґР°РЅРёРµ Р±СѓС„РµСЂРѕРІ ---
 
 	u32 vSize = sizeof(v_occluder);
 	R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(m_VertexCount * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, 0));
@@ -142,7 +142,7 @@ void CSunOccluder::Load()
 
 	R_CHK(m_IB->Unlock());
 
-	// Декларация
+	// Р”РµРєР»Р°СЂР°С†РёСЏ
 	static D3DVERTEXELEMENT9 dwDecl[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
 										 D3DDECL_END()};
 	m_Geom.create(dwDecl, m_VB, m_IB);

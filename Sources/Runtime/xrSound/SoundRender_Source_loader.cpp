@@ -162,7 +162,7 @@ void CSoundRender_Source::load(LPCSTR name)
 	if(!FS.exist("$level$", fn))
 		FS.update_path(fn, "$game_sounds$", fn);
 
-#pragma todo(NSDeathman to NSDeathman - кастыль)
+#pragma todo(NSDeathman to NSDeathman - РєР°СЃС‚С‹Р»СЊ)
 	if(!FS.exist(fn))
 	{
 		Msg("! Can't find sound '%s', try to find _l.ogg version", name);

@@ -3,7 +3,7 @@
 #include <cstddef> // size_t, ptrdiff_t
 #include <new>	   // placement new
 
-// Аллокатор xalloc, использующий xr_alloc/xr_free
+// РђР»Р»РѕРєР°С‚РѕСЂ xalloc, РёСЃРїРѕР»СЊР·СѓСЋС‰РёР№ xr_alloc/xr_free
 template <class T>
 class xalloc
 {
@@ -84,7 +84,7 @@ class xalloc
 	}
 };
 
-// Операторы сравнения (всегда true/false для любых экземпляров)
+// РћРїРµСЂР°С‚РѕСЂС‹ СЃСЂР°РІРЅРµРЅРёСЏ (РІСЃРµРіРґР° true/false РґР»СЏ Р»СЋР±С‹С… СЌРєР·РµРјРїР»СЏСЂРѕРІ)
 template <class T, class U>
 inline bool operator==(const xalloc<T>&, const xalloc<U>&) noexcept
 {
@@ -132,10 +132,10 @@ inline xalloc<Tp2> __stl_alloc_create(xalloc<Tp1>&, const Tp2*)
 }
 } // namespace std
 
-// Тип строки с нашим аллокатором
+// РўРёРї СЃС‚СЂРѕРєРё СЃ РЅР°С€РёРј Р°Р»Р»РѕРєР°С‚РѕСЂРѕРј
 typedef std::basic_string<char, std::char_traits<char>, xalloc<char>> xr_string;
 
-// Контейнеры, наследующие стандартные и расширяющие их функциональность
+// РљРѕРЅС‚РµР№РЅРµСЂС‹, РЅР°СЃР»РµРґСѓСЋС‰РёРµ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Рё СЂР°СЃС€РёСЂСЏСЋС‰РёРµ РёС… С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ
 
 // ---------- vector ----------
 template <typename T, typename Alloc = xalloc<T>>
@@ -216,7 +216,7 @@ class xr_vector : public std::vector<T, Alloc>
 	}
 };
 
-// Частичная специализация для bool
+// Р§Р°СЃС‚РёС‡РЅР°СЏ СЃРїРµС†РёР°Р»РёР·Р°С†РёСЏ РґР»СЏ bool
 template <>
 class xr_vector<bool, xalloc<bool>> : public std::vector<bool, xalloc<bool>>
 {
@@ -419,7 +419,7 @@ inline std::pair<Ty1, Ty2> mk_pair(Ty1 val1, Ty2 val2)
 	return std::pair<Ty1, Ty2>(val1, val2);
 }
 
-// Функторы сравнения строк
+// Р¤СѓРЅРєС‚РѕСЂС‹ СЃСЂР°РІРЅРµРЅРёСЏ СЃС‚СЂРѕРє
 struct pred_str
 {
 	IC bool operator()(const char* x, const char* y) const
@@ -436,7 +436,7 @@ struct pred_stri
 	}
 };
 
-// Макросы для удобного объявления типов контейнеров
+// РњР°РєСЂРѕСЃС‹ РґР»СЏ СѓРґРѕР±РЅРѕРіРѕ РѕР±СЉСЏРІР»РµРЅРёСЏ С‚РёРїРѕРІ РєРѕРЅС‚РµР№РЅРµСЂРѕРІ
 #define DEF_VECTOR(N, T)    \
 	typedef xr_vector<T> N; \
 	typedef N::iterator N##_it;
@@ -479,11 +479,11 @@ struct pred_stri
 	typedef N::iterator I;
 #define DEFINE_STACK(T, N) typedef xr_stack<T> N;
 
-// Подключение дополнительных контейнеров
+// РџРѕРґРєР»СЋС‡РµРЅРёРµ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… РєРѕРЅС‚РµР№РЅРµСЂРѕРІ
 #include "FixedVector.h"
 #include "buffer_vector.h"
 
-// Стандартные определения типов
+// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РѕРїСЂРµРґРµР»РµРЅРёСЏ С‚РёРїРѕРІ
 DEFINE_VECTOR(bool, boolVec, boolIt);
 DEFINE_VECTOR(BOOL, BOOLVec, BOOLIt);
 DEFINE_VECTOR(BOOL*, LPBOOLVec, LPBOOLIt);

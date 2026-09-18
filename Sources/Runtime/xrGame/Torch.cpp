@@ -19,7 +19,7 @@
 #include "CustomOutfit.h"
 #include "xrEngine/IGame_Persistent.h"
 
-#pragma todo("NSDeathman to NSDeathman: Îòðåôàêòîðèòü è ðàçäåëèòü îòâåòñòâåííîñòè")
+#pragma todo("NSDeathman to NSDeathman: ÐžÑ‚Ñ€ÐµÑ„Ð°ÐºÑ‚Ð¾Ñ€Ð¸Ñ‚ÑŒ Ð¸ Ñ€Ð°Ð·Ð´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÐµÐ½Ð½Ð¾ÑÑ‚Ð¸")
 
 static const float TIME_2_HIDE = 5.f;
 static const float TORCH_INERTION_CLAMP = PI_DIV_6;
@@ -268,7 +268,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	glow_render->set_color(clr);
 	glow_render->set_radius(pUserData->r_float("torch_definition", "glow_radius"));
 
-	// âêëþ÷èòü/âûêëþ÷èòü ôîíàðèê
+	// Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ/Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ñ„Ð¾Ð½Ð°Ñ€Ð¸Ðº
 	Switch(torch->m_active);
 	VERIFY(!torch->m_active || (torch->ID_Parent != 0xffff));
 
@@ -435,7 +435,7 @@ void CTorch::UpdateCL()
 		return;
 
 	int frame;
-	// âîçâðàùàåò â ôîðìàòå BGR
+	// Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð² Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ BGR
 	u32 clr = lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame);
 
 	Fcolor fclr;

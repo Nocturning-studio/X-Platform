@@ -1,4 +1,4 @@
-﻿// UpdateService.cpp
+// UpdateService.cpp
 // Компиляция: g++ UpdateService.cpp -o UpdateService.exe -static
 // Требования: curl.exe и 7za.exe должны лежать рядом с бинарником для работы обновления.
 

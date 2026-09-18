@@ -86,7 +86,7 @@ void ALDeviceList::Enumerate()
 		// Also we assume that if "Generic Hardware" exists, than "Generic Software" is also exists
 		// Maybe wrong
 
-#pragma todo("NSDeathman to All: Починить выбор аудиоустройства")
+#pragma todo("NSDeathman to All: РџРѕС‡РёРЅРёС‚СЊ РІС‹Р±РѕСЂ Р°СѓРґРёРѕСѓСЃС‚СЂРѕР№СЃС‚РІР°")
 		if(0 == xr_stricmp(m_defaultDeviceName.c_str(), AL_GENERIC_HARDWARE))
 		{
 			m_defaultDeviceName = AL_GENERIC_SOFTWARE;

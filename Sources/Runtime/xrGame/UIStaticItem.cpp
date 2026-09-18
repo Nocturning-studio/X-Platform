@@ -66,7 +66,7 @@ void CUIStaticItem::Render()
 	// OPTICK_EVENT("CUIStaticItem::Render");
 
 	VERIFY(g_bRendering);
-	// установить обязательно перед вызовом CustomItem::Render() !!!
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј CustomItem::Render() !!!
 	VERIFY(hShader);
 	RenderBackend.set_Shader(hShader);
 	if(alpha_ref != -1)
@@ -119,7 +119,7 @@ void CUIStaticItem::Render(float angle)
 	// OPTICK_EVENT("CUIStaticItem::Render");
 
 	VERIFY(g_bRendering);
-	// установить обязательно перед вызовом CustomItem::Render() !!!
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј CustomItem::Render() !!!
 	VERIFY(hShader);
 	RenderBackend.set_Shader(hShader);
 	if(alpha_ref != -1)

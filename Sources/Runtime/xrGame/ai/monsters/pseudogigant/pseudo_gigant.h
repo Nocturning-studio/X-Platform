@@ -21,8 +21,8 @@ class CPseudoGigant : public CBaseMonster, public CControlledEntity<CPseudoGigan
 	} step_effector;
 
 	SAttackEffector m_threaten_effector;
-	ref_sound m_sound_threaten_hit;	  // çâóê, êîòîðûé èãðàåòñÿ â ãîëîâå ó àêòåðà
-	ref_sound m_sound_start_threaten; // çâóê, êîòîðûé èãðàåòñÿ â ãîëîâå ó àêòåðà
+	ref_sound m_sound_threaten_hit;	  // Ð·Ð²ÑƒÐº, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð¸Ð³Ñ€Ð°ÐµÑ‚ÑÑ Ð² Ð³Ð¾Ð»Ð¾Ð²Ðµ Ñƒ Ð°ÐºÑ‚ÐµÑ€Ð°
+	ref_sound m_sound_start_threaten; // Ð·Ð²ÑƒÐº, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð¸Ð³Ñ€Ð°ÐµÑ‚ÑÑ Ð² Ð³Ð¾Ð»Ð¾Ð²Ðµ Ñƒ Ð°ÐºÑ‚ÐµÑ€Ð°
 
 	u32 m_time_next_threaten;
 

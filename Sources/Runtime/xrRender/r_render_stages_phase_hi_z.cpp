@@ -14,28 +14,28 @@ void CRender::create_hi_z_mip_chain()
 
 	ref_rt MipChain = RenderTarget->rt_Hi_z;
 
-	// Шаг 1: Копируем глубину сцены в Mip 0
-	// Используем индекс 0, который мы настроили в блендере
+	// РЁР°Рі 1: РљРѕРїРёСЂСѓРµРј РіР»СѓР±РёРЅСѓ СЃС†РµРЅС‹ РІ Mip 0
+	// РСЃРїРѕР»СЊР·СѓРµРј РёРЅРґРµРєСЃ 0, РєРѕС‚РѕСЂС‹Р№ РјС‹ РЅР°СЃС‚СЂРѕРёР»Рё РІ Р±Р»РµРЅРґРµСЂРµ
 	RenderBackend.set_Element(RenderTarget->s_hi_z->E[SE_HI_Z_GENERATE_MIP_CHAIN_PASS], 0);
 	RenderBackend.RenderViewportSurface(MipChain->get_surface_level(0));
 
-	// Шаг 2: Генерируем остальные мипы
+	// РЁР°Рі 2: Р“РµРЅРµСЂРёСЂСѓРµРј РѕСЃС‚Р°Р»СЊРЅС‹Рµ РјРёРїС‹
 	for(u32 i = 1; i < MipChain->get_levels_count(); i++)
 	{
-		// Используем индекс 1 для генерации (Downsample pass)
+		// РСЃРїРѕР»СЊР·СѓРµРј РёРЅРґРµРєСЃ 1 РґР»СЏ РіРµРЅРµСЂР°С†РёРё (Downsample pass)
 		RenderBackend.set_Element(RenderTarget->s_hi_z->E[SE_HI_Z_GENERATE_MIP_CHAIN_PASS], 1);
 
 		u32 prev_mip = i - 1;
 		u32 prev_mip_width, prev_mip_height;
 
-		// Получаем размеры ПРЕДЫДУЩЕГО уровня, из которого будем читать
+		// РџРѕР»СѓС‡Р°РµРј СЂР°Р·РјРµСЂС‹ РџР Р•Р”Р«Р”РЈР©Р•Р“Рћ СѓСЂРѕРІРЅСЏ, РёР· РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµРј С‡РёС‚Р°С‚СЊ
 		MipChain->get_level_desc(prev_mip, prev_mip_width, prev_mip_height);
 
-		// Передаем размеры текселя предыдущего мипа, чтобы точно попасть в центры пикселей
-		// x = 0, y = index mip-а для чтения, z/w = размер текселя
+		// РџРµСЂРµРґР°РµРј СЂР°Р·РјРµСЂС‹ С‚РµРєСЃРµР»СЏ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РјРёРїР°, С‡С‚РѕР±С‹ С‚РѕС‡РЅРѕ РїРѕРїР°СЃС‚СЊ РІ С†РµРЅС‚СЂС‹ РїРёРєСЃРµР»РµР№
+		// x = 0, y = index mip-Р° РґР»СЏ С‡С‚РµРЅРёСЏ, z/w = СЂР°Р·РјРµСЂ С‚РµРєСЃРµР»СЏ
 		RenderBackend.set_Constant("mip_data", 0.0f, (float)prev_mip, 1.0f / prev_mip_width, 1.0f / prev_mip_height);
 
-		// Рендерим в ТЕКУЩИЙ уровень
+		// Р РµРЅРґРµСЂРёРј РІ РўР•РљРЈР©РР™ СѓСЂРѕРІРµРЅСЊ
 		RenderBackend.RenderViewportSurface(MipChain->get_surface_level(i));
 	}
 }

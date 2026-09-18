@@ -22,8 +22,8 @@
 #include "xrEngine/xr_input.h" //remove me !!!
 
 const int SCROLLBARS_SHIFT = 5;
-const int VSCROLLBAR_STEP = 20; // В пикселях
-const int HSCROLLBAR_STEP = 20; // В пикселях
+const int VSCROLLBAR_STEP = 20; // Р’ РїРёРєСЃРµР»СЏС…
+const int HSCROLLBAR_STEP = 20; // Р’ РїРёРєСЃРµР»СЏС…
 
 static bool MAP_FLY_MODE = true;
 

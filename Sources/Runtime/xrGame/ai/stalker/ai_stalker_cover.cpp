@@ -69,20 +69,20 @@ const CCoverPoint* CAI_Stalker::find_best_cover(const fvec3& position_to_cover_f
 	float search_radius = 10.f;
 	float min_enemy_dist = MIN_SUITABLE_ENEMY_DISTANCE;
 
-	// Получаем ранг (0..100)
+	// РџРѕР»СѓС‡Р°РµРј СЂР°РЅРі (0..100)
 	int rank = Rank();
 
-	// 1. Агрессия с дробовиком
+	// 1. РђРіСЂРµСЃСЃРёСЏ СЃ РґСЂРѕР±РѕРІРёРєРѕРј
 	if(inventory().ActiveItem() && inventory().ActiveItem()->object().ef_weapon_type() >= 7)
 	{
 		if(conditions().health() > 0.7f)
 			search_radius = 40.f;
 	}
-	// 2. Ветераны и Мастера ищут укрытия в более широком радиусе (для флангования)
+	// 2. Р’РµС‚РµСЂР°РЅС‹ Рё РњР°СЃС‚РµСЂР° РёС‰СѓС‚ СѓРєСЂС‹С‚РёСЏ РІ Р±РѕР»РµРµ С€РёСЂРѕРєРѕРј СЂР°РґРёСѓСЃРµ (РґР»СЏ С„Р»Р°РЅРіРѕРІР°РЅРёСЏ)
 	else if(rank >= 50)
 	{
 		search_radius = 30.f;
-		// Если здоровье полное, поджимаем врага (разрешаем укрытия ближе к врагу)
+		// Р•СЃР»Рё Р·РґРѕСЂРѕРІСЊРµ РїРѕР»РЅРѕРµ, РїРѕРґР¶РёРјР°РµРј РІСЂР°РіР° (СЂР°Р·СЂРµС€Р°РµРј СѓРєСЂС‹С‚РёСЏ Р±Р»РёР¶Рµ Рє РІСЂР°РіСѓ)
 		if(conditions().health() > 0.9f)
 			min_enemy_dist = 5.0f;
 	}
@@ -120,10 +120,10 @@ void CAI_Stalker::update_best_cover_actuality(const fvec3& position_to_cover_fro
 	if(!m_best_cover)
 		return;
 
-	// [IMPROVEMENT] Anti-Bodyblock: Если мы долго блокируем линию огня союзникам
-	// Сбрасиваем актуальность укрытия, чтобы найти новое
+	// [IMPROVEMENT] Anti-Bodyblock: Р•СЃР»Рё РјС‹ РґРѕР»РіРѕ Р±Р»РѕРєРёСЂСѓРµРј Р»РёРЅРёСЋ РѕРіРЅСЏ СЃРѕСЋР·РЅРёРєР°Рј
+	// РЎР±СЂР°СЃРёРІР°РµРј Р°РєС‚СѓР°Р»СЊРЅРѕСЃС‚СЊ СѓРєСЂС‹С‚РёСЏ, С‡С‚РѕР±С‹ РЅР°Р№С‚Рё РЅРѕРІРѕРµ
 	if(m_body_block_time > 1000)
-	{ // Если блокируем > 1 сек
+	{ // Р•СЃР»Рё Р±Р»РѕРєРёСЂСѓРµРј > 1 СЃРµРє
 		m_best_cover_actual = false;
 		return;
 	}

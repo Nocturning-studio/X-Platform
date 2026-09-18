@@ -80,7 +80,7 @@ BOOL CPGDef::Load(IReader& F)
 		}
 	}
 	else
-	{ //.??? убрать через некоторое время
+	{ //.??? СѓР±СЂР°С‚СЊ С‡РµСЂРµР· РЅРµРєРѕС‚РѕСЂРѕРµ РІСЂРµРјСЏ
 		R_ASSERT(F.find_chunk(PGD_CHUNK_EFFECTS2));
 		m_Effects.resize(F.r_u32());
 		for(EffectIt it = m_Effects.begin(); it != m_Effects.end(); it++)
@@ -191,7 +191,7 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 	VERIFY(idx < _children_related.size());
 	IRender_Visual*& V = _children_related[idx];
 	((CParticleEffect*)V)->Stop(TRUE);
-	_children_free_pending.push_back(V); // вместо прямого push_back
+	_children_free_pending.push_back(V); // РІРјРµСЃС‚Рѕ РїСЂСЏРјРѕРіРѕ push_back
 	_children_related[idx] = _children_related.back();
 	_children_related.pop_back();
 }
@@ -365,7 +365,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 	}
 	if(!_children_free.empty())
 	{
-		// 1. Делаем копию и очищаем оригинал
+		// 1. Р”РµР»Р°РµРј РєРѕРїРёСЋ Рё РѕС‡РёС‰Р°РµРј РѕСЂРёРіРёРЅР°Р»
 		VisualVec local_free = std::move(_children_free);
 		_children_free.clear();
 
@@ -392,11 +392,11 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 			}
 		}
 
-		// Удаляем дубликаты (на случай, если один эффект был добавлен дважды)
+		// РЈРґР°Р»СЏРµРј РґСѓР±Р»РёРєР°С‚С‹ (РЅР° СЃР»СѓС‡Р°Р№, РµСЃР»Рё РѕРґРёРЅ СЌС„С„РµРєС‚ Р±С‹Р» РґРѕР±Р°РІР»РµРЅ РґРІР°Р¶РґС‹)
 		std::sort(to_delete.begin(), to_delete.end());
 		to_delete.erase(std::unique(to_delete.begin(), to_delete.end()), to_delete.end());
 
-		// Удаляем остановившиеся эффекты
+		// РЈРґР°Р»СЏРµРј РѕСЃС‚Р°РЅРѕРІРёРІС€РёРµСЃСЏ СЌС„С„РµРєС‚С‹
 		for(IRender_Visual* vis : to_delete)
 		{
 			if(vis)

@@ -32,8 +32,8 @@ struct MainSceneWorkItem
 {
 	SceneGraphPacket packet;
 
-	// Сохраняем матрицы, актуальные на момент сбора,
-	// чтобы Draw-поток мог их использовать, даже если Device уже ушел вперед
+	// РЎРѕС…СЂР°РЅСЏРµРј РјР°С‚СЂРёС†С‹, Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РЅР° РјРѕРјРµРЅС‚ СЃР±РѕСЂР°,
+	// С‡С‚РѕР±С‹ Draw-РїРѕС‚РѕРє РјРѕРі РёС… РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ, РґР°Р¶Рµ РµСЃР»Рё Device СѓР¶Рµ СѓС€РµР» РІРїРµСЂРµРґ
 	fmat4x4 view;
 	fmat4x4 projection;
 	fmat4x4 view_projection;
@@ -261,7 +261,7 @@ class CRender : public IRender_interface, public pureFrame
 	virtual IDirect3DBaseTexture9* TextureLoad(LPCSTR fname, u32& msize) override;
 
 /**/
-#pragma todo(Deathman to Deathman : Переписать передачу здоровья в рендер)
+#pragma todo(Deathman to Deathman : РџРµСЂРµРїРёСЃР°С‚СЊ РїРµСЂРµРґР°С‡Сѓ Р·РґРѕСЂРѕРІСЊСЏ РІ СЂРµРЅРґРµСЂ)
 	float m_actor_health;
 	virtual void set_actor_health(float health)
 	{

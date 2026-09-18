@@ -1,6 +1,6 @@
 // -- bind.hpp -- Boost Lambda Library --------------------------------------
 
-// Copyright (C) 1999-2001 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
+// Copyright (C) 1999-2001 Jaakko JÐ´rvi (jaakko.jarvi@cs.utu.fi)
 //                         Gary Powell (gwpowell@hotmail.com)
 //
 // Permission to copy, use, sell and distribute this software is granted

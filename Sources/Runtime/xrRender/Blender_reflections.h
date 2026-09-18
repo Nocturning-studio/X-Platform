@@ -28,7 +28,7 @@ class CBlender_reflections : public IBlender
 
 		CBlender_Compile::PassDesc PassDescription;
 
-		// Имя единого шейдерного файла (без расширения)
+		// РРјСЏ РµРґРёРЅРѕРіРѕ С€РµР№РґРµСЂРЅРѕРіРѕ С„Р°Р№Р»Р° (Р±РµР· СЂР°СЃС€РёСЂРµРЅРёСЏ)
 		LPCSTR sh_name = "postprocess_stage_reflections";
 
 		switch(C.iElement)
@@ -41,7 +41,7 @@ class CBlender_reflections : public IBlender
 			C.end_Pass();
 
 			// Pass 2: Generate Mip / Blur
-			// Используем наш единый файл и точку входа GenerateMipChainPass
+			// РСЃРїРѕР»СЊР·СѓРµРј РЅР°С€ РµРґРёРЅС‹Р№ С„Р°Р№Р» Рё С‚РѕС‡РєСѓ РІС…РѕРґР° GenerateMipChainPass
 			C.begin_Pass("screen_quad", sh_name, "main", "GenerateMipChainPass");
 			C.set_Sampler("s_mip_chain", r_RT_backbuffer_mip, false, D3DTADDRESS_CLAMP, D3DTEXF_GAUSSIANQUAD,
 						  D3DTEXF_GAUSSIANQUAD, D3DTEXF_GAUSSIANQUAD, false);
@@ -51,15 +51,15 @@ class CBlender_reflections : public IBlender
 
 		case SE_SSR_RENDER_PASS:
 			// Pass 3: Render SSR
-			// Используем наш единый файл и точку входа ReflectionsRenderPass
+			// РСЃРїРѕР»СЊР·СѓРµРј РЅР°С€ РµРґРёРЅС‹Р№ С„Р°Р№Р» Рё С‚РѕС‡РєСѓ РІС…РѕРґР° ReflectionsRenderPass
 			PassDescription.VertexShader = "screen_quad";
 			PassDescription.VertexShaderEntry = "main";
 			PassDescription.PixelShader = sh_name;
 			PassDescription.PixelShaderEntry = "ReflectionsRenderPass";
 
-			// В оригинале использовался begin_Pass("screen_quad", ...).
-			// Используем простой вариант, так как в оригинале не было сложного блендинга,
-			// но если нужно, можно развернуть PassDescription как в примере с автоэкспозицией.
+			// Р’ РѕСЂРёРіРёРЅР°Р»Рµ РёСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ begin_Pass("screen_quad", ...).
+			// РСЃРїРѕР»СЊР·СѓРµРј РїСЂРѕСЃС‚РѕР№ РІР°СЂРёР°РЅС‚, С‚Р°Рє РєР°Рє РІ РѕСЂРёРіРёРЅР°Р»Рµ РЅРµ Р±С‹Р»Рѕ СЃР»РѕР¶РЅРѕРіРѕ Р±Р»РµРЅРґРёРЅРіР°,
+			// РЅРѕ РµСЃР»Рё РЅСѓР¶РЅРѕ, РјРѕР¶РЅРѕ СЂР°Р·РІРµСЂРЅСѓС‚СЊ PassDescription РєР°Рє РІ РїСЂРёРјРµСЂРµ СЃ Р°РІС‚РѕСЌРєСЃРїРѕР·РёС†РёРµР№.
 			C.begin_Pass(PassDescription);
 
 			C.set_Sampler("s_hi_z_mip_chain", r_RT_Hi_z, false, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_POINT,

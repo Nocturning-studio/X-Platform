@@ -195,21 +195,21 @@ void CParticleManager::SetMaxParticles(int effect_id, u32 max_particles)
 {
 	ParticleEffect* pe = GetEffectPtr(effect_id);
 
-	// 1. Ïðîâåðêà íà âàëèäíîñòü óêàçàòåëÿ
+	// 1. ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð²Ð°Ð»Ð¸Ð´Ð½Ð¾ÑÑ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»Ñ
 	if(!pe)
 	{
 		Msg("! [ERROR] CParticleManager::SetMaxParticles: Effect is NULL! ID: %d", effect_id);
 		return;
 	}
 
-	// 2. Ïðîâåðêà íà àäåêâàòíîñòü êîëè÷åñòâà ÷àñòèö
-	// Îáû÷íî ïàðòèêëîâ íå äîëæíî áûòü ìèëëèîíû. Ïîñòàâèì ëèìèò, íàïðèìåð, 100 000.
+	// 2. ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð°Ð´ÐµÐºÐ²Ð°Ñ‚Ð½Ð¾ÑÑ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð° Ñ‡Ð°ÑÑ‚Ð¸Ñ†
+	// ÐžÐ±Ñ‹Ñ‡Ð½Ð¾ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð¾Ð² Ð½Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ Ð¼Ð¸Ð»Ð»Ð¸Ð¾Ð½Ñ‹. ÐŸÐ¾ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð»Ð¸Ð¼Ð¸Ñ‚, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, 100 000.
 	if(max_particles > 100000)
 	{
 		Msg("! [ERROR] CParticleManager::SetMaxParticles: Suspicious max_particles count: %u. ID: %d. Clamping to "
 			"1000.",
 			max_particles, effect_id);
-		max_particles = 1000; // Ñòàâèì áåçîïàñíîå çíà÷åíèå, ÷òîáû íå êðàøíóòü äâèæîê
+		max_particles = 1000; // Ð¡Ñ‚Ð°Ð²Ð¸Ð¼ Ð±ÐµÐ·Ð¾Ð¿Ð°ÑÐ½Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ ÐºÑ€Ð°ÑˆÐ½ÑƒÑ‚ÑŒ Ð´Ð²Ð¸Ð¶Ð¾Ðº
 	}
 
 	pe->Resize(max_particles);

@@ -133,7 +133,7 @@ void _cdecl dError(int num, const char* msg, ...)
         vsnprintf(s, sizeof(s), msg, ap);
         MessageBox(0, s, title, MB_OK | MB_ICONWARNING);
     }
-    va_end(ap);          // добавлен va_end
+    va_end(ap);          // РґРѕР±Р°РІР»РµРЅ va_end
     exit(1);
 }
 
@@ -149,7 +149,7 @@ void _cdecl dDebug(int num, const char* msg, ...)
         vsnprintf(s, sizeof(s), msg, ap);
         MessageBox(0, s, title, MB_OK | MB_ICONSTOP);
     }
-    va_end(ap);          // добавлен va_end
+    va_end(ap);          // РґРѕР±Р°РІР»РµРЅ va_end
     abort();
 }
 

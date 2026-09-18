@@ -46,7 +46,7 @@ class CBlender_motion_blur : public IBlender
 			break;
 
 		case SE_PASS_BLUR_DILATION_MAP:
-			// Фильтрация самой карты скоростей (можно оставить 2 прохода для дешевизны)
+			// Р¤РёР»СЊС‚СЂР°С†РёСЏ СЃР°РјРѕР№ РєР°СЂС‚С‹ СЃРєРѕСЂРѕСЃС‚РµР№ (РјРѕР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ 2 РїСЂРѕС…РѕРґР° РґР»СЏ РґРµС€РµРІРёР·РЅС‹)
 			C.set_Define("USE_VERTICAL_FILTER", "1");
 			C.begin_Pass("screen_quad", sh_name, "main", "BlurDilationMap");
 			C.set_Sampler_gaussian("s_dilation_map", r_RT_mblur_dilation_map_0);
@@ -59,12 +59,12 @@ class CBlender_motion_blur : public IBlender
 			break;
 
 		case SE_PASS_BLUR_FRAME:
-			// [ИЗМЕНЕНО] Финальное размытие теперь в ОДИН проход
-			// Мы не делим его на H/V, так как размытие диагональное (вдоль вектора)
+			// [РР—РњР•РќР•РќРћ] Р¤РёРЅР°Р»СЊРЅРѕРµ СЂР°Р·РјС‹С‚РёРµ С‚РµРїРµСЂСЊ РІ РћР”РРќ РїСЂРѕС…РѕРґ
+			// РњС‹ РЅРµ РґРµР»РёРј РµРіРѕ РЅР° H/V, С‚Р°Рє РєР°Рє СЂР°Р·РјС‹С‚РёРµ РґРёР°РіРѕРЅР°Р»СЊРЅРѕРµ (РІРґРѕР»СЊ РІРµРєС‚РѕСЂР°)
 			C.begin_Pass("screen_quad", sh_name, "main", "Blur");
 
-			C.set_Sampler_point("s_image", r_RT_generic0);						 // Исходная картинка
-			C.set_Sampler_gaussian("s_dilation_map", r_RT_mblur_dilation_map_0); // Векторы
+			C.set_Sampler_point("s_image", r_RT_generic0);						 // РСЃС…РѕРґРЅР°СЏ РєР°СЂС‚РёРЅРєР°
+			C.set_Sampler_gaussian("s_dilation_map", r_RT_mblur_dilation_map_0); // Р’РµРєС‚РѕСЂС‹
 			gbuffer(C);
 			C.end_Pass();
 			break;

@@ -48,7 +48,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 {
 	switch(fmt)
 	{
-	// Стандартные форматы бэкбуфера/текстур
+	// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С„РѕСЂРјР°С‚С‹ Р±СЌРєР±СѓС„РµСЂР°/С‚РµРєСЃС‚СѓСЂ
 	case D3DFMT_A8R8G8B8:
 		return RHI_Format::RGBA8_UNORM;
 	case D3DFMT_X8R8G8B8:
@@ -88,7 +88,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 	case D3DFMT_A32B32G32R32F:
 		return RHI_Format::Unknown;
 
-	// Luminance/Alpha (устаревшие)
+	// Luminance/Alpha (СѓСЃС‚Р°СЂРµРІС€РёРµ)
 	case D3DFMT_L8:
 		return RHI_Format::R8_UNORM;
 	case D3DFMT_A8L8:
@@ -114,7 +114,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 	case D3DFMT_D16_LOCKABLE:
 		return RHI_Format::Unknown;
 
-	// FourCC форматы (теневые карты)
+	// FourCC С„РѕСЂРјР°С‚С‹ (С‚РµРЅРµРІС‹Рµ РєР°СЂС‚С‹)
 	case MAKEFOURCC('I', 'N', 'T', 'Z'):
 		return RHI_Format::D24S8_Shadow;
 	case MAKEFOURCC('D', 'F', '1', '6'):
@@ -122,7 +122,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 	case MAKEFOURCC('D', 'F', '2', '4'):
 		return RHI_Format::Unknown;
 
-	// Сжатые форматы
+	// РЎР¶Р°С‚С‹Рµ С„РѕСЂРјР°С‚С‹
 	case D3DFMT_DXT1:
 		return RHI_Format::Unknown;
 	case D3DFMT_DXT2:
@@ -134,7 +134,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 	case D3DFMT_DXT5:
 		return RHI_Format::Unknown;
 
-	// Прочие
+	// РџСЂРѕС‡РёРµ
 	case D3DFMT_UYVY:
 		return RHI_Format::Unknown;
 	case D3DFMT_YUY2:
@@ -142,7 +142,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 	case D3DFMT_MULTI2_ARGB8:
 		return RHI_Format::Unknown;
 
-	// Неизвестный формат
+	// РќРµРёР·РІРµСЃС‚РЅС‹Р№ С„РѕСЂРјР°С‚
 	case D3DFMT_UNKNOWN:
 	default:
 		return RHI_Format::Unknown;

@@ -166,11 +166,11 @@ CEngine::~CEngine()
 
 bool CEngine::Initialize()
 {
-	// Предварительная настройка интерфейса (Splash Screen)
+	// РџСЂРµРґРІР°СЂРёС‚РµР»СЊРЅР°СЏ РЅР°СЃС‚СЂРѕР№РєР° РёРЅС‚РµСЂС„РµР№СЃР° (Splash Screen)
 	auto Logo = xr_make_unique<LogoWindow>();
 	Logo->Show();
 
-	// Настройка Debug систем
+	// РќР°СЃС‚СЂРѕР№РєР° Debug СЃРёСЃС‚РµРј
 #ifndef DEDICATED_SERVER
 	Debug.Initialize(false);
 #else  // DEDICATED_SERVER
@@ -178,20 +178,20 @@ bool CEngine::Initialize()
 	g_dedicated_server = true;
 #endif // DEDICATED_SERVER
 
-	// Декодер ресурсов
+	// Р”РµРєРѕРґРµСЂ СЂРµСЃСѓСЂСЃРѕРІ
 	Msg("[CEngine]: Initializing Universal Resource Auto-Decoder...");
 	g_temporary_stuff = &DecodeGameResources;
 
 	// Build Info
 	InitializeGlobalBuildID();
 
-	// Инициализация ядра (xrCore)
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЏРґСЂР° (xrCore)
 	Core.Initialize("X-Ray Engine", "xray_engine");
 
 	// Called after Core.Initialize() to ensure the SDL3 messages would end up in the .log files
 	InitSDL3();
 
-	// Инициализация настроек (Settings / INI)
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РЅР°СЃС‚СЂРѕРµРє (Settings / INI)
 	{
 		Msg("Initializing Settings...");
 		string_path fname;
@@ -387,7 +387,7 @@ void CEngine::UpdateGameLogic()
 {
 	PROFILE_FUNCTION();
 
-	// Профилирование логики процессора
+	// РџСЂРѕС„РёР»РёСЂРѕРІР°РЅРёРµ Р»РѕРіРёРєРё РїСЂРѕС†РµСЃСЃРѕСЂР°
 	Statistic->EngineTOTAL.Begin();
 
 	Events.Frame.Process(rp_Frame);
@@ -402,14 +402,14 @@ bool CEngine::CheckLoadingEvents()
 	if(m_loading_events.empty())
 		return false;
 
-	// Выполняем одно событие загрузки (например, загрузка текстуры)
+	// Р’С‹РїРѕР»РЅСЏРµРј РѕРґРЅРѕ СЃРѕР±С‹С‚РёРµ Р·Р°РіСЂСѓР·РєРё (РЅР°РїСЂРёРјРµСЂ, Р·Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂС‹)
 	if(m_loading_events.front()())
 		m_loading_events.pop_front();
 
-	// Рисуем экран загрузки
+	// Р РёСЃСѓРµРј СЌРєСЂР°РЅ Р·Р°РіСЂСѓР·РєРё
 	LoadingScreen->ForceRender();
 
-	return true; // Кадр обработан, дальше идти не надо
+	return true; // РљР°РґСЂ РѕР±СЂР°Р±РѕС‚Р°РЅ, РґР°Р»СЊС€Рµ РёРґС‚Рё РЅРµ РЅР°РґРѕ
 }
 
 void CEngine::ProcessFrame()
@@ -417,7 +417,7 @@ void CEngine::ProcessFrame()
 	OPTICK_FRAME("X-Ray Primary Thread");
 	PROFILE_FUNCTION();
 
-	// Проверка готовности устройства
+	// РџСЂРѕРІРµСЂРєР° РіРѕС‚РѕРІРЅРѕСЃС‚Рё СѓСЃС‚СЂРѕР№СЃС‚РІР°
 	if(!Device.b_is_Ready)
 	{
 		OPTICK_EVENT("Waiting for Device.b_is_Ready");
@@ -425,44 +425,44 @@ void CEngine::ProcessFrame()
 		return;
 	}
 
-	// Начало отсчета времени кадра
-	TimeManager.Update();		// Расчет DeltaTime
-	TimeManager.OnFrameStart(); // Засекаем время для лимитера
+	// РќР°С‡Р°Р»Рѕ РѕС‚СЃС‡РµС‚Р° РІСЂРµРјРµРЅРё РєР°РґСЂР°
+	TimeManager.Update();		// Р Р°СЃС‡РµС‚ DeltaTime
+	TimeManager.OnFrameStart(); // Р—Р°СЃРµРєР°РµРј РІСЂРµРјСЏ РґР»СЏ Р»РёРјРёС‚РµСЂР°
 
-	// Сбор статистики
+	// РЎР±РѕСЂ СЃС‚Р°С‚РёСЃС‚РёРєРё
 	if(psDeviceFlags.test(rsStatistic))
 		g_bEnableStatGather = TRUE;
 	else
 		g_bEnableStatGather = FALSE;
 
-	// Блокирующие события загрузки (прерывают кадр)
+	// Р‘Р»РѕРєРёСЂСѓСЋС‰РёРµ СЃРѕР±С‹С‚РёСЏ Р·Р°РіСЂСѓР·РєРё (РїСЂРµСЂС‹РІР°СЋС‚ РєР°РґСЂ)
 	if(CheckLoadingEvents())
 		return;
 
-	// Обновление игровой логики (Input, AI, Game)
+	// РћР±РЅРѕРІР»РµРЅРёРµ РёРіСЂРѕРІРѕР№ Р»РѕРіРёРєРё (Input, AI, Game)
 	UpdateGameLogic();
 
-	// Расчет камеры и матриц (View * Projection)
+	// Р Р°СЃС‡РµС‚ РєР°РјРµСЂС‹ Рё РјР°С‚СЂРёС† (View * Projection)
 	RenderView.UpdateViewProjection();
 
-	// Запуск тяжелых задач в потоках (Скелет, Физика, Распаковка)
+	// Р—Р°РїСѓСЃРє С‚СЏР¶РµР»С‹С… Р·Р°РґР°С‡ РІ РїРѕС‚РѕРєР°С… (РЎРєРµР»РµС‚, Р¤РёР·РёРєР°, Р Р°СЃРїР°РєРѕРІРєР°)
 	ThreadManager.SignalFrameStart();
 
-	// Рендер сцены
+	// Р РµРЅРґРµСЂ СЃС†РµРЅС‹
 #ifndef DEDICATED_SERVER
 	Device.RenderFrame();
 #endif
 
-	// Сохранение состояния камеры (для интерполяции в след. кадре)
+	// РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєР°РјРµСЂС‹ (РґР»СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё РІ СЃР»РµРґ. РєР°РґСЂРµ)
 	RenderView.SaveState();
 
-	// Синхронизация: ждем завершения всех потоков перед следующим кадром
+	// РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ: Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ РІСЃРµС… РїРѕС‚РѕРєРѕРІ РїРµСЂРµРґ СЃР»РµРґСѓСЋС‰РёРј РєР°РґСЂРѕРј
 	ThreadManager.WaitForFrameEnd();
 
-	// Лимитер FPS (усыпляем поток, если слишком быстро)
+	// Р›РёРјРёС‚РµСЂ FPS (СѓСЃС‹РїР»СЏРµРј РїРѕС‚РѕРє, РµСЃР»Рё СЃР»РёС€РєРѕРј Р±С‹СЃС‚СЂРѕ)
 	TimeManager.DoFrameLimit();
 
-	// Экономия энергии при свернутом окне
+	// Р­РєРѕРЅРѕРјРёСЏ СЌРЅРµСЂРіРёРё РїСЂРё СЃРІРµСЂРЅСѓС‚РѕРј РѕРєРЅРµ
 	if(!Device.b_is_Active)
 		Sleep(1);
 }

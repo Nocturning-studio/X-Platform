@@ -11,19 +11,19 @@ CPortal::~CPortal()
 
 void CPortal::Setup(fvec3* v_ptr, int v_count, CSector* face, CSector* back)
 {
-	// Расчет Bounding Sphere
+	// Р Р°СЃС‡РµС‚ Bounding Sphere
 	Fbox BB;
 	BB.invalidate();
 	for(int i = 0; i < v_count; i++)
 		BB.modify(v_ptr[i]);
 	BB.getsphere(m_sphere.P, m_sphere.R);
 
-	// Копируем вершины
+	// РљРѕРїРёСЂСѓРµРј РІРµСЂС€РёРЅС‹
 	m_vertices.assign(v_ptr, v_count);
 	m_front_sector = face;
 	m_back_sector = back;
 
-	// Расчет плоскости
+	// Р Р°СЃС‡РµС‚ РїР»РѕСЃРєРѕСЃС‚Рё
 	fvec3 N, T;
 	N.set(0, 0, 0);
 

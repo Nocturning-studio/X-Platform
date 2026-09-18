@@ -180,7 +180,7 @@ void CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
 		B.blend = CBlend::eFalloff;
 		B.blendFalloff = falloff;
 		if(B.stop_at_end)
-			B.playing = FALSE; // callback не должен приходить!
+			B.playing = FALSE; // callback РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёС…РѕРґРёС‚СЊ!
 	}
 }
 

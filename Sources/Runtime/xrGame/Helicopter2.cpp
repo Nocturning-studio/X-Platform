@@ -88,7 +88,7 @@ void CHelicopter::UpdateHeliParticles()
 		if(m_lanim)
 		{
 			int frame;
-			u32 clr = m_lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // тючтЁр•рхЄ т ЇюЁьрЄх BGR
+			u32 clr = m_lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // С‚СЋС‡С‚РЃСЂвЂўСЂС…Р„ С‚ Р‡СЋРЃСЊСЂР„С… BGR
 			Fcolor fclr;
 			fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
 			fclr.mul_rgb(m_light_brightness / 255.f);
@@ -158,8 +158,8 @@ float CHelicopter::GetMaxVelocity()
 //////////////////////Start By JoHnY///////////////////////
 void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
 {
-	m_movement.LinearAcc_fw = LAcc_fw; // ускорение разгона
-	m_movement.LinearAcc_bk = LAcc_bw; // ускорение торможения
+	m_movement.LinearAcc_fw = LAcc_fw; // СѓСЃРєРѕСЂРµРЅРёРµ СЂР°Р·РіРѕРЅР°
+	m_movement.LinearAcc_bk = LAcc_bw; // СѓСЃРєРѕСЂРµРЅРёРµ С‚РѕСЂРјРѕР¶РµРЅРёСЏ
 }
 //////////////////////End By JoHnY/////////////////////////
 void CHelicopter::SetSpeedInDestPoint(float sp)

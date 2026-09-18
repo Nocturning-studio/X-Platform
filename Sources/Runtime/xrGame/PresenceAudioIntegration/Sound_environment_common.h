@@ -1,4 +1,4 @@
-﻿/*
+/*
 ====================================================================================================
   Presence Audio SDK Integration for X-Ray Engine
   File: Sound_environment_common.h

@@ -262,7 +262,7 @@ void CInput::MouseUpdate()
 
 	VERIFY(pMouse);
 
-	// Ñíà÷àëà ïîëó÷àåì áóôåðèçèðîâàííûå äàííûå (âàæíî äëÿ êëèêîâ, ÷òîáû íå ïðîïóñòèòü íàæàòèÿ)
+	// Ð¡Ð½Ð°Ñ‡Ð°Ð»Ð° Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð±ÑƒÑ„ÐµÑ€Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ (Ð²Ð°Ð¶Ð½Ð¾ Ð´Ð»Ñ ÐºÐ»Ð¸ÐºÐ¾Ð², Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ Ð¿Ñ€Ð¾Ð¿ÑƒÑÑ‚Ð¸Ñ‚ÑŒ Ð½Ð°Ð¶Ð°Ñ‚Ð¸Ñ)
 	hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
 	if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 	{
@@ -277,7 +277,7 @@ void CInput::MouseUpdate()
 	DIMOUSESTATE2 immediateMouseState;
 	HRESULT hrState = pMouse->GetDeviceState(sizeof(DIMOUSESTATE2), &immediateMouseState);
 
-	// Åñëè óäàëîñü ïîëó÷èòü ìãíîâåííîå ñîñòîÿíèå - èñïîëüçóåì åãî äëÿ äâèæåíèÿ
+	// Ð•ÑÐ»Ð¸ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¼Ð³Ð½Ð¾Ð²ÐµÐ½Ð½Ð¾Ðµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ - Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼ ÐµÐ³Ð¾ Ð´Ð»Ñ Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ñ
 	if(SUCCEEDED(hrState))
 	{
 		offs[0] = immediateMouseState.lX;
@@ -286,7 +286,7 @@ void CInput::MouseUpdate()
 	}
 	else
 	{
-		// Fallback: åñëè GetDeviceState íå ñðàáîòàë, îáíóëÿåì ñìåùåíèÿ ïåðåä íàêîïëåíèåì
+		// Fallback: ÐµÑÐ»Ð¸ GetDeviceState Ð½Ðµ ÑÑ€Ð°Ð±Ð¾Ñ‚Ð°Ð», Ð¾Ð±Ð½ÑƒÐ»ÑÐµÐ¼ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ Ð¿ÐµÑ€ÐµÐ´ Ð½Ð°ÐºÐ¾Ð¿Ð»ÐµÐ½Ð¸ÐµÐ¼
 		offs[0] = offs[1] = offs[2] = 0;
 	}
 
@@ -299,7 +299,7 @@ void CInput::MouseUpdate()
 	{
 		switch(od[i].dwOfs)
 		{
-		// Îñè îáðàáàòûâàåì òîëüêî åñëè íå ñðàáîòàë GetDeviceState âûøå (fallback)
+		// ÐžÑÐ¸ Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ð½Ðµ ÑÑ€Ð°Ð±Ð¾Ñ‚Ð°Ð» GetDeviceState Ð²Ñ‹ÑˆÐµ (fallback)
 		case DIMOFS_X:
 			if(FAILED(hrState))
 				offs[0] += od[i].dwData;
@@ -316,7 +316,7 @@ void CInput::MouseUpdate()
 			timeStamp[2] = od[i].dwTimeStamp;
 			break;
 
-		// Êíîïêè îáðàáàòûâàåì âñåãäà ÷åðåç áóôåð, ÷òîáû íå òåðÿòü áûñòðûå íàæàòèÿ
+		// ÐšÐ½Ð¾Ð¿ÐºÐ¸ Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ð²ÑÐµÐ³Ð´Ð° Ñ‡ÐµÑ€ÐµÐ· Ð±ÑƒÑ„ÐµÑ€, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ Ñ‚ÐµÑ€ÑÑ‚ÑŒ Ð±Ñ‹ÑÑ‚Ñ€Ñ‹Ðµ Ð½Ð°Ð¶Ð°Ñ‚Ð¸Ñ
 		case DIMOFS_BUTTON0:
 			if(od[i].dwData & 0x80)
 			{
@@ -431,7 +431,7 @@ void CInput::MouseUpdate()
 		cbStack.back()->IR_OnMouseHold(2);
 	}
 
-	// Ïåðåäàåì äâèæåíèÿ
+	// ÐŸÐµÑ€ÐµÐ´Ð°ÐµÐ¼ Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ñ
 	if(offs[0] || offs[1])
 		cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
 	if(offs[2])

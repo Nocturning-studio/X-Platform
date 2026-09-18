@@ -13,7 +13,7 @@
 #include "xrGame/ai_monster_space.h"
 #include "../control_animation_base.h"
 
-// Установка анимации
+// РЈСЃС‚Р°РЅРѕРІРєР° Р°РЅРёРјР°С†РёРё
 void CBaseMonster::SelectAnimation(const fvec3& /**_view/**/, const fvec3& /**_move/**/, float /**speed/**/)
 {
 	control().animation().update_frame();

@@ -351,7 +351,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 		vmove.mul(m_vT.y);
 		m_Position.add(vmove);
 
-#pragma todo(NSDeathman to NSDeathman : Äîáàâèòü îãðàíè÷åíèå äàëüíîñòè ïîëåòà äëÿ èçáåãàíèÿ ÷èòèíãà)
+#pragma todo(NSDeathman to NSDeathman : Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð°Ð»ÑŒÐ½Ð¾ÑÑ‚Ð¸ Ð¿Ð¾Ð»ÐµÑ‚Ð° Ð´Ð»Ñ Ð¸Ð·Ð±ÐµÐ³Ð°Ð½Ð¸Ñ Ñ‡Ð¸Ñ‚Ð¸Ð½Ð³Ð°)
 		m_Camera.setHPB(m_HPB.x, m_HPB.y, m_HPB.z);
 		m_Camera.translate_over(m_Position);
 
@@ -385,8 +385,8 @@ void CPhotoMode::SwitchAutofocusState()
 	g_pGamePersistent->SetPickableEffectorDOF(m_bAutofocusEnabled);
 }
 
-// Ðåøåíèå äåéñòâîâàòü ÷åðåç êîíñîëü ÷óäîâèùíîå, â áóäóùåì íóæíî çàìåíèòü ñìåíó ôëàãà ÷åðåç êîíñîëü íà ñìåíó ÷åðåç ôëàã
-// îáùèõ êîìàíä äëÿ âñåõ ðåíäåðîâ
+// Ð ÐµÑˆÐµÐ½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¾Ð²Ð°Ñ‚ÑŒ Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð½ÑÐ¾Ð»ÑŒ Ñ‡ÑƒÐ´Ð¾Ð²Ð¸Ñ‰Ð½Ð¾Ðµ, Ð² Ð±ÑƒÐ´ÑƒÑ‰ÐµÐ¼ Ð½ÑƒÐ¶Ð½Ð¾ Ð·Ð°Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ ÑÐ¼ÐµÐ½Ñƒ Ñ„Ð»Ð°Ð³Ð° Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð½ÑÐ¾Ð»ÑŒ Ð½Ð° ÑÐ¼ÐµÐ½Ñƒ Ñ‡ÐµÑ€ÐµÐ· Ñ„Ð»Ð°Ð³
+// Ð¾Ð±Ñ‰Ð¸Ñ… ÐºÐ¾Ð¼Ð°Ð½Ð´ Ð´Ð»Ñ Ð²ÑÐµÑ… Ñ€ÐµÐ½Ð´ÐµÑ€Ð¾Ð²
 void CPhotoMode::SwitchGridState()
 {
 	if(m_bGridEnabled == false)
@@ -401,8 +401,8 @@ void CPhotoMode::SwitchGridState()
 	}
 }
 
-// Ðåøåíèå äåéñòâîâàòü ÷åðåç êîíñîëü ÷óäîâèùíîå, â áóäóùåì íóæíî çàìåíèòü ñìåíó ôëàãà ÷åðåç êîíñîëü íà ñìåíó ÷åðåç ôëàã
-// îáùèõ êîìàíä äëÿ âñåõ ðåíäåðîâ
+// Ð ÐµÑˆÐµÐ½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¾Ð²Ð°Ñ‚ÑŒ Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð½ÑÐ¾Ð»ÑŒ Ñ‡ÑƒÐ´Ð¾Ð²Ð¸Ñ‰Ð½Ð¾Ðµ, Ð² Ð±ÑƒÐ´ÑƒÑ‰ÐµÐ¼ Ð½ÑƒÐ¶Ð½Ð¾ Ð·Ð°Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ ÑÐ¼ÐµÐ½Ñƒ Ñ„Ð»Ð°Ð³Ð° Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð½ÑÐ¾Ð»ÑŒ Ð½Ð° ÑÐ¼ÐµÐ½Ñƒ Ñ‡ÐµÑ€ÐµÐ· Ñ„Ð»Ð°Ð³
+// Ð¾Ð±Ñ‰Ð¸Ñ… ÐºÐ¾Ð¼Ð°Ð½Ð´ Ð´Ð»Ñ Ð²ÑÐµÑ… Ñ€ÐµÐ½Ð´ÐµÑ€Ð¾Ð²
 void CPhotoMode::SwitchCinemaBordersState()
 {
 	if(m_bBordersEnabled == false)
@@ -596,7 +596,7 @@ void CPhotoMode::IR_OnKeyboardPress(int dik)
 	//	Device.Pause(!Device.Paused(), TRUE, TRUE, "photo_mode");
 
 #ifndef MASTER_GOLD
-#pragma todo("NSDeathman to all: Ïåðåäåëàòü áûñòðóþ îòëàäêó ðåíäåðà ïîä óäîáíûé âèä")
+#pragma todo("NSDeathman to all: ÐŸÐµÑ€ÐµÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð±Ñ‹ÑÑ‚Ñ€ÑƒÑŽ Ð¾Ñ‚Ð»Ð°Ð´ÐºÑƒ Ñ€ÐµÐ½Ð´ÐµÑ€Ð° Ð¿Ð¾Ð´ ÑƒÐ´Ð¾Ð±Ð½Ñ‹Ð¹ Ð²Ð¸Ð´")
 	if(dik == DIK_1)
 		Console->Execute("r_debug_render gbuffer_albedo");
 	if(dik == DIK_2)

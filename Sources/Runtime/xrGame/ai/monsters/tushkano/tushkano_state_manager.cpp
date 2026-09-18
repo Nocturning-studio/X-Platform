@@ -79,10 +79,10 @@ void CStateManagerTushkano::execute()
 	else
 		state_id = eStateControlled;
 
-	// óñòàíîâèòü òåêóùåå ñîñòîÿíèå
+	// ÑƒÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	select_state(state_id);
 
-	// âûïîëíèòü òåêóùåå ñîñòîÿíèå
+	// Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

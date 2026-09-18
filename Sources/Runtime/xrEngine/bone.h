@@ -135,8 +135,8 @@ struct SJointIKData
 		for(int k = 0; k < 3; k++)
 		{
 			// Kostya Slipchenko say:
-			// íàïðàâëåíèå âðàùåíèÿ â ÎÄÅ îòëè÷àåòñÿ îò íàïðàâëåíèÿ âðàùåíèå â X-Ray
-			// ïîýòîìó ìåíÿåì çíàê ó ëèìèòîâ
+			// Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð²Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ñ Ð² ÐžÐ”Ð• Ð¾Ñ‚Ð»Ð¸Ñ‡Ð°ÐµÑ‚ÑÑ Ð¾Ñ‚ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð²Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ðµ Ð² X-Ray
+			// Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ð¼ÐµÐ½ÑÐµÐ¼ Ð·Ð½Ð°Ðº Ñƒ Ð»Ð¸Ð¼Ð¸Ñ‚Ð¾Ð²
 			F.w_float(_min(-limits[k].limit.x, -limits[k].limit.y)); // min (swap special for ODE)
 			F.w_float(_max(-limits[k].limit.x, -limits[k].limit.y)); // max (swap special for ODE)
 			F.w_float(limits[k].spring_factor);

@@ -47,12 +47,12 @@ void CRenderTarget::create_textures()
 	// DOF Resources
 	// G16R16F: R = Real CoC, G = Dilated (Max) CoC
 	rt_dof_coc.create(r_RT_dof_coc, dwWidth, dwHeight, RHI_Format::RG16_FLOAT);
-	// R16F, разрешение / 8 (тайлы 8x8)
-	// Содержит Max Near CoC для тайла.
+	// R16F, СЂР°Р·СЂРµС€РµРЅРёРµ / 8 (С‚Р°Р№Р»С‹ 8x8)
+	// РЎРѕРґРµСЂР¶РёС‚ Max Near CoC РґР»СЏ С‚Р°Р№Р»Р°.
 	u32 tileW = dwWidth / 8;
 	u32 tileH = dwHeight / 8;
 	rt_dof_dilation.create(r_RT_dof_dilation, tileW, tileH, RHI_Format::R16_FLOAT);
-	// Буферы для слоев
+	// Р‘СѓС„РµСЂС‹ РґР»СЏ СЃР»РѕРµРІ
 	rt_dof_near.create(r_RT_dof_near, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 	rt_dof_far.create(r_RT_dof_far, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
 
@@ -163,7 +163,7 @@ void CRenderTarget::delete_textures()
 
 	Msg("Destroying render target textures");
 
-	// Освобождение обычных COM-поверхностей и текстур
+	// РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РѕР±С‹С‡РЅС‹С… COM-РїРѕРІРµСЂС…РЅРѕСЃС‚РµР№ Рё С‚РµРєСЃС‚СѓСЂ
 	_RELEASE(surf_screenshot_normal);
 	_RELEASE(surf_screenshot_gamesave);
 	_RELEASE(tex_screenshot_gamesave);

@@ -90,7 +90,7 @@ class CUIBuyWnd : public IBuyWnd
 	bool xr_stdcall OnItemSelected(CUICellItem* itm);
 	bool xr_stdcall OnItemRButtonClick(CUICellItem* itm);
 
-	// Получить данные о аддонах к оружию. Младшие 3 бита, если установлены в 1 означают:
+	// РџРѕР»СѓС‡РёС‚СЊ РґР°РЅРЅС‹Рµ Рѕ Р°РґРґРѕРЅР°С… Рє РѕСЂСѓР¶РёСЋ. РњР»Р°РґС€РёРµ 3 Р±РёС‚Р°, РµСЃР»Рё СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹ РІ 1 РѕР·РЅР°С‡Р°СЋС‚:
 	// 2 - Silencer, 1 - Grenade Launcher, 0 - Scope
 	const u8 GetWeaponAddonInfoByIndex(u8 idx);
 

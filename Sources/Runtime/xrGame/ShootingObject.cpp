@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// ShootingObject.cpp:  интерфейс для семейства стреляющих объектов
-//						(оружие и осколочные гранаты)
+// ShootingObject.cpp:  РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ СЃРµРјРµР№СЃС‚РІР° СЃС‚СЂРµР»СЏСЋС‰РёС… РѕР±СЉРµРєС‚РѕРІ
+//						(РѕСЂСѓР¶РёРµ Рё РѕСЃРєРѕР»РѕС‡РЅС‹Рµ РіСЂР°РЅР°С‚С‹)
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -68,7 +68,7 @@ void CShootingObject::Load(LPCSTR section)
 	else
 		m_bLightShotEnabled = true;
 
-	// время затрачиваемое на выстрел
+	// РІСЂРµРјСЏ Р·Р°С‚СЂР°С‡РёРІР°РµРјРѕРµ РЅР° РІС‹СЃС‚СЂРµР»
 	fTimeToFire = pSettings->r_float(section, "rpm");
 	VERIFY(fTimeToFire > 0.f);
 	fTimeToFire = 60.f / fTimeToFire;
@@ -97,12 +97,12 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	string32 buffer;
 	shared_str s_sHitPower;
 
-	// базовая дисперсия оружия
+	// Р±Р°Р·РѕРІР°СЏ РґРёСЃРїРµСЂСЃРёСЏ РѕСЂСѓР¶РёСЏ
 	fireDispersionBase = pSettings->r_float(section, "fire_dispersion_base");
 	fireDispersionBase = deg2rad(fireDispersionBase);
 
-	// Разброс в прицеле
-	if(pSettings->line_exist(section, "zoom_fire_dispersion_base")) // Если нашли секцию то читаем ее
+	// Р Р°Р·Р±СЂРѕСЃ РІ РїСЂРёС†РµР»Рµ
+	if(pSettings->line_exist(section, "zoom_fire_dispersion_base")) // Р•СЃР»Рё РЅР°С€Р»Рё СЃРµРєС†РёСЋ С‚Рѕ С‡РёС‚Р°РµРј РµРµ
 	{
 		zoom_fireDispersionBase = pSettings->r_float(section, "zoom_fire_dispersion_base");
 		zoom_fireDispersionBase = deg2rad(zoom_fireDispersionBase);
@@ -112,39 +112,39 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 		zoom_fireDispersionBase = fireDispersionBase * 0.5f;
 	}
 
-	// сила выстрела и его мощьность
+	// СЃРёР»Р° РІС‹СЃС‚СЂРµР»Р° Рё РµРіРѕ РјРѕС‰СЊРЅРѕСЃС‚СЊ
 	s_sHitPower = pSettings->r_string_wb(
-		section, strconcat(sizeof(full_name), full_name, prefix, "hit_power")); // читаем строку силы хита пули оружия
+		section, strconcat(sizeof(full_name), full_name, prefix, "hit_power")); // С‡РёС‚Р°РµРј СЃС‚СЂРѕРєСѓ СЃРёР»С‹ С…РёС‚Р° РїСѓР»Рё РѕСЂСѓР¶РёСЏ
 	fvHitPower[egdMaster] =
-		(float)atof(_GetItem(*s_sHitPower, 0, buffer)); // первый параметр - это хит для уровня игры мастер
+		(float)atof(_GetItem(*s_sHitPower, 0, buffer)); // РїРµСЂРІС‹Р№ РїР°СЂР°РјРµС‚СЂ - СЌС‚Рѕ С…РёС‚ РґР»СЏ СѓСЂРѕРІРЅСЏ РёРіСЂС‹ РјР°СЃС‚РµСЂ
 
-#pragma todo("NSDeathman to ALL: пофиксить то что первый параметр хита задается для мастера, не легенды")
+#pragma todo("NSDeathman to ALL: РїРѕС„РёРєСЃРёС‚СЊ С‚Рѕ С‡С‚Рѕ РїРµСЂРІС‹Р№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р° Р·Р°РґР°РµС‚СЃСЏ РґР»СЏ РјР°СЃС‚РµСЂР°, РЅРµ Р»РµРіРµРЅРґС‹")
 	fvHitPower[egdLegend] = fvHitPower[egdMaster] * 3;
-	fvHitPower[egdVeteran] = fvHitPower[egdMaster]; // изначально параметры для других уровней
-	fvHitPower[egdStalker] = fvHitPower[egdMaster]; // сложности
-	fvHitPower[egdNovice] = fvHitPower[egdMaster];	// такие же
+	fvHitPower[egdVeteran] = fvHitPower[egdMaster]; // РёР·РЅР°С‡Р°Р»СЊРЅРѕ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РґСЂСѓРіРёС… СѓСЂРѕРІРЅРµР№
+	fvHitPower[egdStalker] = fvHitPower[egdMaster]; // СЃР»РѕР¶РЅРѕСЃС‚Рё
+	fvHitPower[egdNovice] = fvHitPower[egdMaster];	// С‚Р°РєРёРµ Р¶Рµ
 
-	int num_game_diff_param = _GetItemCount(*s_sHitPower); // узнаём колличество параметров для хитов
-	if(num_game_diff_param > 1)							   // если задан второй параметр хита
+	int num_game_diff_param = _GetItemCount(*s_sHitPower); // СѓР·РЅР°С‘Рј РєРѕР»Р»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ С…РёС‚РѕРІ
+	if(num_game_diff_param > 1)							   // РµСЃР»Рё Р·Р°РґР°РЅ РІС‚РѕСЂРѕР№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р°
 	{
-		fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); // то вычитываем его для уровня
-																				 // ветерана
+		fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); // С‚Рѕ РІС‹С‡РёС‚С‹РІР°РµРј РµРіРѕ РґР»СЏ СѓСЂРѕРІРЅСЏ
+																				 // РІРµС‚РµСЂР°РЅР°
 	}
-	if(num_game_diff_param > 2) // если задан третий параметр хита
+	if(num_game_diff_param > 2) // РµСЃР»Рё Р·Р°РґР°РЅ С‚СЂРµС‚РёР№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р°
 	{
-		fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); // то вычитываем его для уровня
-																				 // сталкера
+		fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); // С‚Рѕ РІС‹С‡РёС‚С‹РІР°РµРј РµРіРѕ РґР»СЏ СѓСЂРѕРІРЅСЏ
+																				 // СЃС‚Р°Р»РєРµСЂР°
 	}
-	if(num_game_diff_param > 3) // если задан четвёртый параметр хита
+	if(num_game_diff_param > 3) // РµСЃР»Рё Р·Р°РґР°РЅ С‡РµС‚РІС‘СЂС‚С‹Р№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р°
 	{
-		fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); // то вычитываем его для уровня новичка
+		fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); // С‚Рѕ РІС‹С‡РёС‚С‹РІР°РµРј РµРіРѕ РґР»СЏ СѓСЂРѕРІРЅСЏ РЅРѕРІРёС‡РєР°
 	}
 
 	// fHitPower			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power"));
 	fHitImpulse = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "hit_impulse"));
-	// максимальное расстояние полета пули
+	// РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РїРѕР»РµС‚Р° РїСѓР»Рё
 	fireDistance = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "fire_distance"));
-	// начальная скорость пули
+	// РЅР°С‡Р°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїСѓР»Рё
 	m_fStartBulletSpeed = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "bullet_speed"));
 	m_bUseAimBullet = pSettings->r_bool(section, strconcat(sizeof(full_name), full_name, prefix, "use_aim_bullet"));
 	if(m_bUseAimBullet)
@@ -282,7 +282,7 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
 	if(pSettings->line_exist(section, full_name))
 		m_sShotParticles = pSettings->r_string(section, full_name);
 
-	// текущие партиклы
+	// С‚РµРєСѓС‰РёРµ РїР°СЂС‚РёРєР»С‹
 	m_sFlameParticlesCurrent = m_sFlameParticles;
 	m_sSmokeParticlesCurrent = m_sSmokeParticles;
 }
@@ -304,7 +304,7 @@ void CShootingObject::OnShellDrop(const fvec3& play_pos, const fvec3& parent_vel
 	pShellParticles->Play();
 }
 
-// партиклы дыма
+// РїР°СЂС‚РёРєР»С‹ РґС‹РјР°
 void CShootingObject::StartSmokeParticles(const fvec3& play_pos, const fvec3& parent_vel)
 {
 	CParticlesObject* pSmokeParticles = NULL;
@@ -316,7 +316,7 @@ void CShootingObject::StartFlameParticles()
 	if(0 == m_sFlameParticlesCurrent.size())
 		return;
 
-	// если партиклы циклические
+	// РµСЃР»Рё РїР°СЂС‚РёРєР»С‹ С†РёРєР»РёС‡РµСЃРєРёРµ
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped() && m_pFlameParticles->IsPlaying())
 	{
 		UpdateFlameParticles();
@@ -360,7 +360,7 @@ void CShootingObject::UpdateFlameParticles()
 	}
 }
 
-// подсветка от выстрела
+// РїРѕРґСЃРІРµС‚РєР° РѕС‚ РІС‹СЃС‚СЂРµР»Р°
 void CShootingObject::UpdateLight()
 {
 	if(light_render && light_time > 0)
@@ -461,7 +461,7 @@ void CShootingObject::FireBullet(const fvec3& pos, const fvec3& shot_dir, float 
 	m_fPredBulletTime = Engine.TimeManager.GetGlobalTime();
 
 	float l_fHitPower;
-	if(ParentIsActor()) // если из оружия стреляет актёр(игрок)
+	if(ParentIsActor()) // РµСЃР»Рё РёР· РѕСЂСѓР¶РёСЏ СЃС‚СЂРµР»СЏРµС‚ Р°РєС‚С‘СЂ(РёРіСЂРѕРє)
 	{
 		if(GameID() == GAME_SINGLE)
 		{

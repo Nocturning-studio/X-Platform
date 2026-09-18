@@ -36,9 +36,9 @@ extern bool show_restrictions(CRestrictedObject* object);
 const float BAD_PATH_ANGLE = PI_DIV_2 - PI_DIV_8;
 const float BAD_PATH_DISTANCE_CHECK = 2.f;
 
-// Функция расчета точки на сплайне Катмулла-Рома
-// p0, p1, p2, p3 - 4 последовательные точки пути
-// t - параметр от 0.0 до 1.0 (прогресс между p1 и p2)
+// Р¤СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° С‚РѕС‡РєРё РЅР° СЃРїР»Р°Р№РЅРµ РљР°С‚РјСѓР»Р»Р°-Р РѕРјР°
+// p0, p1, p2, p3 - 4 РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рµ С‚РѕС‡РєРё РїСѓС‚Рё
+// t - РїР°СЂР°РјРµС‚СЂ РѕС‚ 0.0 РґРѕ 1.0 (РїСЂРѕРіСЂРµСЃСЃ РјРµР¶РґСѓ p1 Рё p2)
 fvec3 SplineCatmullRom(const fvec3& p0, const fvec3& p1, const fvec3& p2, const fvec3& p3, float t)
 {
 	float t2 = t * t;
@@ -48,7 +48,7 @@ fvec3 SplineCatmullRom(const fvec3& p0, const fvec3& p1, const fvec3& p2, const 
 	res.x = 0.5f * ((2.0f * p1.x) + (-p0.x + p2.x) * t + (2.0f * p0.x - 5.0f * p1.x + 4.0f * p2.x - p3.x) * t2 +
 					(-p0.x + 3.0f * p1.x - 3.0f * p2.x + p3.x) * t3);
 
-	res.y = p1.y; // Y (высоту) лучше интерполировать линейно или оставить как есть, чтобы не проваливаться под террейн
+	res.y = p1.y; // Y (РІС‹СЃРѕС‚Сѓ) Р»СѓС‡С€Рµ РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°С‚СЊ Р»РёРЅРµР№РЅРѕ РёР»Рё РѕСЃС‚Р°РІРёС‚СЊ РєР°Рє РµСЃС‚СЊ, С‡С‚РѕР±С‹ РЅРµ РїСЂРѕРІР°Р»РёРІР°С‚СЊСЃСЏ РїРѕРґ С‚РµСЂСЂРµР№РЅ
 
 	res.z = 0.5f * ((2.0f * p1.z) + (-p0.z + p2.z) * t + (2.0f * p0.z - 5.0f * p1.z + 4.0f * p2.z - p3.z) * t2 +
 					(-p0.z + 3.0f * p1.z - 3.0f * p2.z + p3.z) * t3);
@@ -58,48 +58,48 @@ fvec3 SplineCatmullRom(const fvec3& p0, const fvec3& p1, const fvec3& p2, const 
 
 void CStalkerMovementManager::predict_smooth_direction()
 {
-	// [ИЗМЕНЕНИЕ] Разрешаем сглаживание для любого движения (кроме стояния)
+	// [РР—РњР•РќР•РќРР•] Р Р°Р·СЂРµС€Р°РµРј СЃРіР»Р°Р¶РёРІР°РЅРёРµ РґР»СЏ Р»СЋР±РѕРіРѕ РґРІРёР¶РµРЅРёСЏ (РєСЂРѕРјРµ СЃС‚РѕСЏРЅРёСЏ)
 	if(path().empty() || movement_type() == eMovementTypeStand)
 		return;
 
 	u32 idx = detail().curr_travel_point_index();
 	u32 count = path().size();
 
-	// Нам нужно минимум 4 точки для полноценного сплайна
+	// РќР°Рј РЅСѓР¶РЅРѕ РјРёРЅРёРјСѓРј 4 С‚РѕС‡РєРё РґР»СЏ РїРѕР»РЅРѕС†РµРЅРЅРѕРіРѕ СЃРїР»Р°Р№РЅР°
 	if(idx + 2 >= count)
 		return;
 
 	fvec3 p0, p1, p2, p3;
 
-	// P1 - текущая позиция
+	// P1 - С‚РµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ
 	p1 = object().Position();
 
-	// P2 - следующая точка
+	// P2 - СЃР»РµРґСѓСЋС‰Р°СЏ С‚РѕС‡РєР°
 	p2 = path()[idx + 1].position;
 
-	// P0 - предыдущая точка
+	// P0 - РїСЂРµРґС‹РґСѓС‰Р°СЏ С‚РѕС‡РєР°
 	if(idx > 0)
 		p0 = path()[idx - 1].position;
 	else
 		p0 = p1;
 
-	// P3 - точка после следующей
+	// P3 - С‚РѕС‡РєР° РїРѕСЃР»Рµ СЃР»РµРґСѓСЋС‰РµР№
 	if(idx + 2 < count)
 		p3 = path()[idx + 2].position;
 	else
 		p3 = p2;
 
-	// [ИЗМЕНЕНИЕ] Динамический коэффициент упреждения (t)
-	// Для бега смотрим дальше (0.4), для ходьбы чуть ближе (0.3), чтобы точнее входить в повороты
+	// [РР—РњР•РќР•РќРР•] Р”РёРЅР°РјРёС‡РµСЃРєРёР№ РєРѕСЌС„С„РёС†РёРµРЅС‚ СѓРїСЂРµР¶РґРµРЅРёСЏ (t)
+	// Р”Р»СЏ Р±РµРіР° СЃРјРѕС‚СЂРёРј РґР°Р»СЊС€Рµ (0.4), РґР»СЏ С…РѕРґСЊР±С‹ С‡СѓС‚СЊ Р±Р»РёР¶Рµ (0.3), С‡С‚РѕР±С‹ С‚РѕС‡РЅРµРµ РІС…РѕРґРёС‚СЊ РІ РїРѕРІРѕСЂРѕС‚С‹
 	float look_ahead_t = (movement_type() == eMovementTypeWalk) ? 0.3f : 0.45f;
 
 	fvec3 smooth_target = SplineCatmullRom(p0, p1, p2, p3, look_ahead_t);
 
-	// Вычисляем направление к этой "мягкой" точке
+	// Р’С‹С‡РёСЃР»СЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ Рє СЌС‚РѕР№ "РјСЏРіРєРѕР№" С‚РѕС‡РєРµ
 	fvec3 dir;
 	dir.sub(smooth_target, object().Position());
 
-	// Защита от нулевого вектора (если мы стоим точно в точке)
+	// Р—Р°С‰РёС‚Р° РѕС‚ РЅСѓР»РµРІРѕРіРѕ РІРµРєС‚РѕСЂР° (РµСЃР»Рё РјС‹ СЃС‚РѕРёРј С‚РѕС‡РЅРѕ РІ С‚РѕС‡РєРµ)
 	if(dir.square_magnitude() < EPS_L)
 		return;
 
@@ -110,7 +110,7 @@ void CStalkerMovementManager::predict_smooth_direction()
 
 	float target_yaw = -y;
 
-	// Применяем новый угол к корпусу и голове
+	// РџСЂРёРјРµРЅСЏРµРј РЅРѕРІС‹Р№ СѓРіРѕР» Рє РєРѕСЂРїСѓСЃСѓ Рё РіРѕР»РѕРІРµ
 	m_body.target.yaw = target_yaw;
 	m_head.target.yaw = target_yaw;
 }
@@ -259,13 +259,13 @@ void CStalkerMovementManager::init_velocity_masks()
 		eVelocityWalkDangerCrouchPositive,
 		m_velocities->velocity(eMentalStateDanger, eBodyStateCrouch, eMovementTypeWalk, eMovementDirectionForward),
 		100 * PI, cf * PI_DIV_2);
-	// Для бега в опасности (Danger Run) увеличиваем скорость поворота
+	// Р”Р»СЏ Р±РµРіР° РІ РѕРїР°СЃРЅРѕСЃС‚Рё (Danger Run) СѓРІРµР»РёС‡РёРІР°РµРј СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р°
 	add_velocity(
 		eVelocityRunDangerStandPositive,
 		m_velocities->velocity(eMentalStateDanger, eBodyStateStand, eMovementTypeRun, eMovementDirectionForward),
 		100 * PI,
-		cf * PI * combat_turn_mult); // Ускоряем поворот
-	// То же самое для Crouch Run (перебежки в присяде)
+		cf * PI * combat_turn_mult); // РЈСЃРєРѕСЂСЏРµРј РїРѕРІРѕСЂРѕС‚
+	// РўРѕ Р¶Рµ СЃР°РјРѕРµ РґР»СЏ Crouch Run (РїРµСЂРµР±РµР¶РєРё РІ РїСЂРёСЃСЏРґРµ)
 	add_velocity(
 		eVelocityRunDangerCrouchPositive,
 		m_velocities->velocity(eMentalStateDanger, eBodyStateCrouch, eMovementTypeRun, eMovementDirectionForward),
@@ -551,18 +551,18 @@ void CStalkerMovementManager::parse_velocity_mask()
 	}
 
 	// [IMPROVEMENT] Look Into Turn
-	// Если мы бежим и не целимся во врага (свободный бег или поиск укрытия)
+	// Р•СЃР»Рё РјС‹ Р±РµР¶РёРј Рё РЅРµ С†РµР»РёРјСЃСЏ РІРѕ РІСЂР°РіР° (СЃРІРѕР±РѕРґРЅС‹Р№ Р±РµРі РёР»Рё РїРѕРёСЃРє СѓРєСЂС‹С‚РёСЏ)
 	if(m_current.m_movement_type == eMovementTypeRun && !object().GetScriptControl())
 	{
-		// Проверяем, куда ведет путь через 1-2 метра
+		// РџСЂРѕРІРµСЂСЏРµРј, РєСѓРґР° РІРµРґРµС‚ РїСѓС‚СЊ С‡РµСЂРµР· 1-2 РјРµС‚СЂР°
 		float look_angle = path_direction_angle();
 
-		// Если угол значительный (поворот)
+		// Р•СЃР»Рё СѓРіРѕР» Р·РЅР°С‡РёС‚РµР»СЊРЅС‹Р№ (РїРѕРІРѕСЂРѕС‚)
 		if(_abs(look_angle) > PI_DIV_8)
 		{
-			// Принудительно вращаем голову в сторону пути быстрее, чем тело
-			// m_head.target.yaw берется из setup_body_orientation, но мы ускоряем поворот
-			m_head.speed = m_body.speed * 1.5f; // Голова поворачивается в 1.5 раза быстрее тела
+			// РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РІСЂР°С‰Р°РµРј РіРѕР»РѕРІСѓ РІ СЃС‚РѕСЂРѕРЅСѓ РїСѓС‚Рё Р±С‹СЃС‚СЂРµРµ, С‡РµРј С‚РµР»Рѕ
+			// m_head.target.yaw Р±РµСЂРµС‚СЃСЏ РёР· setup_body_orientation, РЅРѕ РјС‹ СѓСЃРєРѕСЂСЏРµРј РїРѕРІРѕСЂРѕС‚
+			m_head.speed = m_body.speed * 1.5f; // Р“РѕР»РѕРІР° РїРѕРІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ РІ 1.5 СЂР°Р·Р° Р±С‹СЃС‚СЂРµРµ С‚РµР»Р°
 		}
 	}
 
@@ -643,14 +643,14 @@ void CStalkerMovementManager::parse_velocity_mask()
 	// [IMPROVEMENT] Smooth Stop
 	if(!path().empty() && movement_type() != eMovementTypeStand)
 	{
-		// Дистанция до финиша
-		float dist_to_end = detail().distance_to_target(); // Метод есть в CDetailPathManager (или вычислить вручную)
+		// Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ С„РёРЅРёС€Р°
+		float dist_to_end = detail().distance_to_target(); // РњРµС‚РѕРґ РµСЃС‚СЊ РІ CDetailPathManager (РёР»Рё РІС‹С‡РёСЃР»РёС‚СЊ РІСЂСѓС‡РЅСѓСЋ)
 
-		// Если осталось меньше 1.5 метра
+		// Р•СЃР»Рё РѕСЃС‚Р°Р»РѕСЃСЊ РјРµРЅСЊС€Рµ 1.5 РјРµС‚СЂР°
 		if(dist_to_end < 1.5f)
 		{
-			// Линейная интерполяция скорости к нулю
-			// Минимальная скорость 0.5 м/с, чтобы он все-таки дошел
+			// Р›РёРЅРµР№РЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ СЃРєРѕСЂРѕСЃС‚Рё Рє РЅСѓР»СЋ
+			// РњРёРЅРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ 0.5 Рј/СЃ, С‡С‚РѕР±С‹ РѕРЅ РІСЃРµ-С‚Р°РєРё РґРѕС€РµР»
 			float slow_factor = dist_to_end / 1.5f;
 			clamp(slow_factor, 0.2f, 1.0f);
 
@@ -924,8 +924,8 @@ void CStalkerMovementManager::check_for_bad_path()
 
 void CStalkerMovementManager::process_smart_turns()
 {
-	// [ИЗМЕНЕНИЕ] Работаем для любого движения, кроме стояния
-	// Убрали проверку eMentalStateDanger, чтобы патрульные тоже ходили плавно
+	// [РР—РњР•РќР•РќРР•] Р Р°Р±РѕС‚Р°РµРј РґР»СЏ Р»СЋР±РѕРіРѕ РґРІРёР¶РµРЅРёСЏ, РєСЂРѕРјРµ СЃС‚РѕСЏРЅРёСЏ
+	// РЈР±СЂР°Р»Рё РїСЂРѕРІРµСЂРєСѓ eMentalStateDanger, С‡С‚РѕР±С‹ РїР°С‚СЂСѓР»СЊРЅС‹Рµ С‚РѕР¶Рµ С…РѕРґРёР»Рё РїР»Р°РІРЅРѕ
 	if(m_current.m_movement_type == eMovementTypeStand)
 		return;
 
@@ -952,17 +952,17 @@ void CStalkerMovementManager::process_smart_turns()
 	clamp(cos_angle, -1.f, 1.f);
 	float angle = acosf(cos_angle);
 
-	const float START_SLOW_ANGLE = PI_DIV_6; // 30 градусов
-	const float MAX_SLOW_ANGLE = PI_DIV_2;	 // 90 градусов
+	const float START_SLOW_ANGLE = PI_DIV_6; // 30 РіСЂР°РґСѓСЃРѕРІ
+	const float MAX_SLOW_ANGLE = PI_DIV_2;	 // 90 РіСЂР°РґСѓСЃРѕРІ
 
 	if(angle > START_SLOW_ANGLE)
 	{
 		float factor = (angle - START_SLOW_ANGLE) / (MAX_SLOW_ANGLE - START_SLOW_ANGLE);
 		clamp(factor, 0.f, 1.f);
 
-		// [ИЗМЕНЕНИЕ] Разная степень торможения для ходьбы и бега
-		// При ходьбе (Walk) тормозим меньше, так как скорость и так низкая (коэфф 0.7)
-		// При беге (Run) тормозим сильнее, чтобы не было заносов (коэфф 0.4)
+		// [РР—РњР•РќР•РќРР•] Р Р°Р·РЅР°СЏ СЃС‚РµРїРµРЅСЊ С‚РѕСЂРјРѕР¶РµРЅРёСЏ РґР»СЏ С…РѕРґСЊР±С‹ Рё Р±РµРіР°
+		// РџСЂРё С…РѕРґСЊР±Рµ (Walk) С‚РѕСЂРјРѕР·РёРј РјРµРЅСЊС€Рµ, С‚Р°Рє РєР°Рє СЃРєРѕСЂРѕСЃС‚СЊ Рё С‚Р°Рє РЅРёР·РєР°СЏ (РєРѕСЌС„С„ 0.7)
+		// РџСЂРё Р±РµРіРµ (Run) С‚РѕСЂРјРѕР·РёРј СЃРёР»СЊРЅРµРµ, С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ Р·Р°РЅРѕСЃРѕРІ (РєРѕСЌС„С„ 0.4)
 		float min_speed_limit = (m_current.m_movement_type == eMovementTypeWalk) ? 0.7f : 0.4f;
 
 		float final_factor = 1.0f - (factor * (1.0f - min_speed_limit));

@@ -141,9 +141,9 @@ void CWeaponKnife::KnifeStrike(const fvec3& pos, const fvec3& dir)
 	PlaySound(m_sndShot, pos);
 
 	// --- FIX START: FORCE DISTANCE ---
-	// Рассчитываем новую, гарантированную дистанцию удара.
-	// fireDistance берется из конфига. Мы добавляем компенсацию сдвига (0.2f)
-	// и ставим жесткий минимум в 2.0 метра (игровая условность, чтобы попадать наверняка).
+	// Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РЅРѕРІСѓСЋ, РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅСѓСЋ РґРёСЃС‚Р°РЅС†РёСЋ СѓРґР°СЂР°.
+	// fireDistance Р±РµСЂРµС‚СЃСЏ РёР· РєРѕРЅС„РёРіР°. РњС‹ РґРѕР±Р°РІР»СЏРµРј РєРѕРјРїРµРЅСЃР°С†РёСЋ СЃРґРІРёРіР° (0.2f)
+	// Рё СЃС‚Р°РІРёРј Р¶РµСЃС‚РєРёР№ РјРёРЅРёРјСѓРј РІ 2.0 РјРµС‚СЂР° (РёРіСЂРѕРІР°СЏ СѓСЃР»РѕРІРЅРѕСЃС‚СЊ, С‡С‚РѕР±С‹ РїРѕРїР°РґР°С‚СЊ РЅР°РІРµСЂРЅСЏРєР°).
 	float fEffectiveDist = fireDistance + 0.2f;
 	if(fEffectiveDist < 2.0f)
 		fEffectiveDist = 2.0f;
@@ -181,9 +181,9 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 				break;
 
 			// --- FIX START: ORIGIN SHIFT ---
-			// Сдвигаем точку начала удара НАЗАД относительно взгляда.
-			// Это решает проблему, когда игрок стоит вплотную к врагу и "промахивается",
-			// потому что луч начинался внутри модели врага.
+			// РЎРґРІРёРіР°РµРј С‚РѕС‡РєСѓ РЅР°С‡Р°Р»Р° СѓРґР°СЂР° РќРђР—РђР” РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РІР·РіР»СЏРґР°.
+			// Р­С‚Рѕ СЂРµС€Р°РµС‚ РїСЂРѕР±Р»РµРјСѓ, РєРѕРіРґР° РёРіСЂРѕРє СЃС‚РѕРёС‚ РІРїР»РѕС‚РЅСѓСЋ Рє РІСЂР°РіСѓ Рё "РїСЂРѕРјР°С…РёРІР°РµС‚СЃСЏ",
+			// РїРѕС‚РѕРјСѓ С‡С‚Рѕ Р»СѓС‡ РЅР°С‡РёРЅР°Р»СЃСЏ РІРЅСѓС‚СЂРё РјРѕРґРµР»Рё РІСЂР°РіР°.
 			p1.mad(d, -0.2f);
 			// --- FIX END ---
 
@@ -294,27 +294,27 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	// fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
 	s_sHitPower_2 = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power_2"));
 	fvHitPower_2[egdMaster] =
-		(float)atof(_GetItem(*s_sHitPower_2, 0, buffer)); // первый параметр - это хит для уровня игры мастер
+		(float)atof(_GetItem(*s_sHitPower_2, 0, buffer)); // РїРµСЂРІС‹Р№ РїР°СЂР°РјРµС‚СЂ - СЌС‚Рѕ С…РёС‚ РґР»СЏ СѓСЂРѕРІРЅСЏ РёРіСЂС‹ РјР°СЃС‚РµСЂ
 
-	fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster]; // изначально параметры для других уровней
-	fvHitPower_2[egdStalker] = fvHitPower_2[egdMaster]; // сложности
-	fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster];	// такие же
+	fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster]; // РёР·РЅР°С‡Р°Р»СЊРЅРѕ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РґСЂСѓРіРёС… СѓСЂРѕРІРЅРµР№
+	fvHitPower_2[egdStalker] = fvHitPower_2[egdMaster]; // СЃР»РѕР¶РЅРѕСЃС‚Рё
+	fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster];	// С‚Р°РєРёРµ Р¶Рµ
 
-	int num_game_diff_param = _GetItemCount(*s_sHitPower_2); // узнаём колличество параметров для хитов
-	if(num_game_diff_param > 1)								 // если задан второй параметр хита
+	int num_game_diff_param = _GetItemCount(*s_sHitPower_2); // СѓР·РЅР°С‘Рј РєРѕР»Р»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ С…РёС‚РѕРІ
+	if(num_game_diff_param > 1)								 // РµСЃР»Рё Р·Р°РґР°РЅ РІС‚РѕСЂРѕР№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р°
 	{
 		fvHitPower_2[egdVeteran] =
-			(float)atof(_GetItem(*s_sHitPower_2, 1, buffer)); // то вычитываем его для уровня ветерана
+			(float)atof(_GetItem(*s_sHitPower_2, 1, buffer)); // С‚Рѕ РІС‹С‡РёС‚С‹РІР°РµРј РµРіРѕ РґР»СЏ СѓСЂРѕРІРЅСЏ РІРµС‚РµСЂР°РЅР°
 	}
-	if(num_game_diff_param > 2) // если задан третий параметр хита
+	if(num_game_diff_param > 2) // РµСЃР»Рё Р·Р°РґР°РЅ С‚СЂРµС‚РёР№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р°
 	{
 		fvHitPower_2[egdStalker] =
-			(float)atof(_GetItem(*s_sHitPower_2, 2, buffer)); // то вычитываем его для уровня сталкера
+			(float)atof(_GetItem(*s_sHitPower_2, 2, buffer)); // С‚Рѕ РІС‹С‡РёС‚С‹РІР°РµРј РµРіРѕ РґР»СЏ СѓСЂРѕРІРЅСЏ СЃС‚Р°Р»РєРµСЂР°
 	}
-	if(num_game_diff_param > 3) // если задан четвёртый параметр хита
+	if(num_game_diff_param > 3) // РµСЃР»Рё Р·Р°РґР°РЅ С‡РµС‚РІС‘СЂС‚С‹Р№ РїР°СЂР°РјРµС‚СЂ С…РёС‚Р°
 	{
 		fvHitPower_2[egdNovice] =
-			(float)atof(_GetItem(*s_sHitPower_2, 3, buffer)); // то вычитываем его для уровня новичка
+			(float)atof(_GetItem(*s_sHitPower_2, 3, buffer)); // С‚Рѕ РІС‹С‡РёС‚С‹РІР°РµРј РµРіРѕ РґР»СЏ СѓСЂРѕРІРЅСЏ РЅРѕРІРёС‡РєР°
 	}
 
 	fHitImpulse_2 = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "hit_impulse_2"));

@@ -1,4 +1,4 @@
-// Actor_Movement.cpp:	 передвижения актера
+// Actor_Movement.cpp:	 РїРµСЂРµРґРІРёР¶РµРЅРёСЏ Р°РєС‚РµСЂР°
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -22,10 +22,10 @@
 #endif
 #include "CameraEffector.h"
 #include "ActorEffector.h"
-static const float s_fLandingTime1 = 0.1f; // через сколько снять флаг Landing1 (т.е. включить следующую анимацию)
-static const float s_fLandingTime2 = 0.3f; // через сколько снять флаг Landing2 (т.е. включить следующую анимацию)
+static const float s_fLandingTime1 = 0.1f; // С‡РµСЂРµР· СЃРєРѕР»СЊРєРѕ СЃРЅСЏС‚СЊ С„Р»Р°Рі Landing1 (С‚.Рµ. РІРєР»СЋС‡РёС‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ Р°РЅРёРјР°С†РёСЋ)
+static const float s_fLandingTime2 = 0.3f; // С‡РµСЂРµР· СЃРєРѕР»СЊРєРѕ СЃРЅСЏС‚СЊ С„Р»Р°Рі Landing2 (С‚.Рµ. РІРєР»СЋС‡РёС‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ Р°РЅРёРјР°С†РёСЋ)
 static const float s_fJumpTime = 0.3f;
-static const float s_fJumpGroundTime = 0.1f; // для снятия флажка Jump если на земле
+static const float s_fJumpGroundTime = 0.1f; // РґР»СЏ СЃРЅСЏС‚РёСЏ С„Р»Р°Р¶РєР° Jump РµСЃР»Рё РЅР° Р·РµРјР»Рµ
 const float s_fFallTime = 0.2f;
 
 IC static void generate_orthonormal_basis1(const fvec3& dir, fvec3& updir, fvec3& right)
@@ -47,7 +47,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	if(mstate_real & (mcJump | mcFall | mcLanding | mcLanding2))
 		mstate_real &= ~mcLookout;
 
-	// закончить приземление
+	// Р·Р°РєРѕРЅС‡РёС‚СЊ РїСЂРёР·РµРјР»РµРЅРёРµ
 	if(mstate_real & (mcLanding | mcLanding2))
 	{
 		m_fLandingTime -= dt;
@@ -57,7 +57,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 			mstate_real &= ~(mcFall | mcJump);
 		}
 	}
-	// закончить падение
+	// Р·Р°РєРѕРЅС‡РёС‚СЊ РїР°РґРµРЅРёРµ
 	if(character_physics_support()->movement()->gcontact_Was)
 	{
 		if(mstate_real & mcFall)
@@ -83,7 +83,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	if((mstate_wf & mcJump) == 0)
 		m_bJumpKeyPressed = FALSE;
 
-	// Зажало-ли меня/уперся - не двигаюсь
+	// Р—Р°Р¶Р°Р»Рѕ-Р»Рё РјРµРЅСЏ/СѓРїРµСЂСЃСЏ - РЅРµ РґРІРёРіР°СЋСЃСЊ
 	if(((character_physics_support()->movement()->GetVelocityActual() < 0.2f) &&
 		(!(mstate_real & (mcFall | mcJump)))) ||
 	   character_physics_support()->movement()->bSleep)
@@ -93,7 +93,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	if(character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
 	   character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
 	{
-		// если на земле гарантированно снимать флажок Jump
+		// РµСЃР»Рё РЅР° Р·РµРјР»Рµ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅРѕ СЃРЅРёРјР°С‚СЊ С„Р»Р°Р¶РѕРє Jump
 		if(((s_fJumpTime - m_fJumpTime) > s_fJumpGroundTime) && (mstate_real & mcJump))
 		{
 			mstate_real &= ~mcJump;
@@ -139,7 +139,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		bool bOnClimbNow = !!(mstate_real & mcClimb);
 		bool bOnClimbOld = !!(mstate_old & mcClimb);
 
-#pragma todo("NSDeathman to All: исправить лок только одного слота оружия из двух")
+#pragma todo("NSDeathman to All: РёСЃРїСЂР°РІРёС‚СЊ Р»РѕРє С‚РѕР»СЊРєРѕ РѕРґРЅРѕРіРѕ СЃР»РѕС‚Р° РѕСЂСѓР¶РёСЏ РёР· РґРІСѓС…")
 		if(bOnClimbNow != bOnClimbOld)
 		{
 			SetWeaponHideState(INV_STATE_LADDER, bOnClimbNow);
@@ -226,7 +226,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, fvec3& vControlAccel, float& Jump
 			Jump = m_fJumpSpeed;
 			m_fJumpTime = s_fJumpTime;
 
-			// уменьшить силу игрока из-за выполненого прыжка
+			// СѓРјРµРЅСЊС€РёС‚СЊ СЃРёР»Сѓ РёРіСЂРѕРєР° РёР·-Р·Р° РІС‹РїРѕР»РЅРµРЅРѕРіРѕ РїСЂС‹Р¶РєР°
 			if(!GodMode())
 				conditions().ConditionJump(inventory().TotalWeight() / MaxCarryWeight());
 		}
@@ -524,7 +524,7 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
 		r_torso.pitch = unaffected_r_torso.pitch + dangle.x;
 	}
 
-	// если есть движение - выровнять модель по камере
+	// РµСЃР»Рё РµСЃС‚СЊ РґРІРёР¶РµРЅРёРµ - РІС‹СЂРѕРІРЅСЏС‚СЊ РјРѕРґРµР»СЊ РїРѕ РєР°РјРµСЂРµ
 	if(mstate_rl & mcAnyMove)
 	{
 		r_model_yaw = angle_normalize(r_torso.yaw);

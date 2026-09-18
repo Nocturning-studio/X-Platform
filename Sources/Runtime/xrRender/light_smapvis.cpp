@@ -66,7 +66,7 @@ void smapvis::end()
 			RenderImplementation.occq_begin(testQ_id);
 			++RenderImplementation.SceneGraph.m_traversal_marker;
 
-			// Ïåðåäàåì òåêóùèé êîíòåêñò ðåíäåðà
+			// ÐŸÐµÑ€ÐµÐ´Ð°ÐµÐ¼ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÐºÐ¾Ð½Ñ‚ÐµÐºÑÑ‚ Ñ€ÐµÐ½Ð´ÐµÑ€Ð°
 			RenderImplementation.SceneGraph.EnqueueStatic(testQ_V, RenderImplementation.m_TraversalContext, RenderImplementation.SceneGraph.m_packet);
 
 			RenderImplementation.SceneGraph.Render(RenderImplementation.SceneGraph.m_packet, SceneGraphRenderType::Opaque);
@@ -88,10 +88,10 @@ void smapvis::flushoccq()
 	if(testQ_frame != Engine.TimeManager.GetFrameCount())
 		return;
 
-	if(testQ_id == 0) // íåò àêòèâíîãî çàïðîñà
+	if(testQ_id == 0) // Ð½ÐµÑ‚ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð³Ð¾ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
 		return;
 
-	// Ïðîâåðêà âàëèäíîñòè query
+	// ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð²Ð°Ð»Ð¸Ð´Ð½Ð¾ÑÑ‚Ð¸ query
 	if(testQ_id >= RenderImplementation.HWOCC.GetQuerySize() || testQ_id == 0xffffffff ||
 	   RenderImplementation.HWOCC.GetUsedQueryByID(testQ_id) == nullptr)
 	{

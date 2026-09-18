@@ -241,7 +241,7 @@ IC float _cos(float x)
 }
 IC BOOL _valid(const float x)
 {
-	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized,
+	// check for: Signaling NaN, Quiet NaN, Negative infinity ( â€“INF), Positive infinity (+INF), Negative denormalized,
 	// Positive denormalized
 	int cls = _fpclass(double(x));
 
@@ -270,7 +270,7 @@ IC double _cos(double x)
 }
 IC BOOL _valid(const double x)
 {
-	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized,
+	// check for: Signaling NaN, Quiet NaN, Negative infinity ( â€“INF), Positive infinity (+INF), Negative denormalized,
 	// Positive denormalized
 	int cls = _fpclass(x);
 

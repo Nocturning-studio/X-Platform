@@ -198,7 +198,7 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 
 		if(m_bAbleToConnectToMasterServer)
 		{
-			// Создаем данные для задачи
+			// РЎРѕР·РґР°РµРј РґР°РЅРЅС‹Рµ РґР»СЏ Р·Р°РґР°С‡Рё
 			RefreshData* pRData = xr_new<RefreshData>();
 			strcpy(pRData->FilterStr, FilterStr);
 			pRData->pGSBrowser = this;
@@ -207,17 +207,17 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 			if(MainMenu())
 				MainMenu()->Show_CTMS_Dialog();
 
-			// Запускаем асинхронную задачу с помощью PPL
+			// Р—Р°РїСѓСЃРєР°РµРј Р°СЃРёРЅС…СЂРѕРЅРЅСѓСЋ Р·Р°РґР°С‡Сѓ СЃ РїРѕРјРѕС‰СЊСЋ PPL
 			concurrency::create_task([pRData]()
 									 {
-				// Устанавливаем имя потока для профилировщика
+				// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРјСЏ РїРѕС‚РѕРєР° РґР»СЏ РїСЂРѕС„РёР»РёСЂРѕРІС‰РёРєР°
 				OPTICK_THREAD("GameSpy Internet Refresh thread");
 				OPTICK_FRAME("GameSpy Internet Refresh thread");
 
-				// Выполняем работу
+				// Р’С‹РїРѕР»РЅСЏРµРј СЂР°Р±РѕС‚Сѓ
 				pRData->pGSBrowser->RefreshListInternet(pRData->FilterStr);
 
-				// Освобождаем память
+				// РћСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ
 				xr_delete(pRData); });
 		}
 
@@ -366,12 +366,12 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo* pServerInfo, int idx)
 
 #define ADD_FLOAT_INFO_N(i, s, m, t1, t2, k)                                                                      \
 	{                                                                                                             \
-		/* Получаем значение один раз, чтобы не вызывать функцию дважды (оптимизация и читаемость) */             \
+		/* РџРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёРµ РѕРґРёРЅ СЂР°Р·, С‡С‚РѕР±С‹ РЅРµ РІС‹Р·С‹РІР°С‚СЊ С„СѓРЅРєС†РёСЋ РґРІР°Р¶РґС‹ (РѕРїС‚РёРјРёР·Р°С†РёСЏ Рё С‡РёС‚Р°РµРјРѕСЃС‚СЊ) */             \
 		float val = xrGS_SBServerGetFloatValue(s, m_pQR2->xrGS_RegisteredKey(k), 0);                              \
-		if(val != 0) /* Или другая проверка на валидность, если 0 - это валидное значение, то проверка неверна */ \
+		if(val != 0) /* РР»Рё РґСЂСѓРіР°СЏ РїСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ, РµСЃР»Рё 0 - СЌС‚Рѕ РІР°Р»РёРґРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ, С‚Рѕ РїСЂРѕРІРµСЂРєР° РЅРµРІРµСЂРЅР° */ \
 		{                                                                                                         \
 			string256 tmp;                                                                                        \
-			/* Убрали жесткий %f, теперь t2 полностью управляет форматом */                                       \
+			/* РЈР±СЂР°Р»Рё Р¶РµСЃС‚РєРёР№ %f, С‚РµРїРµСЂСЊ t2 РїРѕР»РЅРѕСЃС‚СЊСЋ СѓРїСЂР°РІР»СЏРµС‚ С„РѕСЂРјР°С‚РѕРј */                                       \
 			sprintf_s(tmp, t2, val * m);                                                                          \
 			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                             \
 		}                                                                                                         \

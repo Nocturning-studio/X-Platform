@@ -1,4 +1,4 @@
-// WeaponDispersion.cpp: разбос при стрельбе
+// WeaponDispersion.cpp: СЂР°Р·Р±РѕСЃ РїСЂРё СЃС‚СЂРµР»СЊР±Рµ
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -13,7 +13,7 @@
 #include "effectorshot.h"
 #include "EffectorShotX.h"
 
-// возвращает 1, если оружие в отличном состоянии и >1 если повреждено
+// РІРѕР·РІСЂР°С‰Р°РµС‚ 1, РµСЃР»Рё РѕСЂСѓР¶РёРµ РІ РѕС‚Р»РёС‡РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё Рё >1 РµСЃР»Рё РїРѕРІСЂРµР¶РґРµРЅРѕ
 float CWeapon::GetConditionDispersionFactor() const
 {
 	return (1.f + fireDispersionConditionFactor * (1.f - GetCondition()));
@@ -28,22 +28,22 @@ float CWeapon::GetFireDispersion(bool with_cartridge)
 	return GetFireDispersion(m_fCurrentCartirdgeDisp);
 }
 
-// текущая дисперсия (в радианах) оружия с учетом используемого патрона
+// С‚РµРєСѓС‰Р°СЏ РґРёСЃРїРµСЂСЃРёСЏ (РІ СЂР°РґРёР°РЅР°С…) РѕСЂСѓР¶РёСЏ СЃ СѓС‡РµС‚РѕРј РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ РїР°С‚СЂРѕРЅР°
 float CWeapon::GetFireDispersion(float cartridge_k)
 {
-	// учет базовой дисперсии, состояние оружия и влияение патрона
+	// СѓС‡РµС‚ Р±Р°Р·РѕРІРѕР№ РґРёСЃРїРµСЂСЃРёРё, СЃРѕСЃС‚РѕСЏРЅРёРµ РѕСЂСѓР¶РёСЏ Рё РІР»РёСЏРµРЅРёРµ РїР°С‚СЂРѕРЅР°
 	float fire_disp;
-	if(ParentIsActor() && Actor() && Actor()->IsZoomAimingMode())					   // Если оружие принадлежит гг, Actor() не вернул 0 и актор находится в режиме прицеливания (Спасибо Maks0 и Skyloader за помощь)
-		fire_disp = zoom_fireDispersionBase;										   // То используем параметр разброса в прицеливании
-	else																			   // Иначе
-		fire_disp = fireDispersionBase * cartridge_k * GetConditionDispersionFactor(); // Используем обычный разброс
+	if(ParentIsActor() && Actor() && Actor()->IsZoomAimingMode())					   // Р•СЃР»Рё РѕСЂСѓР¶РёРµ РїСЂРёРЅР°РґР»РµР¶РёС‚ РіРі, Actor() РЅРµ РІРµСЂРЅСѓР» 0 Рё Р°РєС‚РѕСЂ РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂРµР¶РёРјРµ РїСЂРёС†РµР»РёРІР°РЅРёСЏ (РЎРїР°СЃРёР±Рѕ Maks0 Рё Skyloader Р·Р° РїРѕРјРѕС‰СЊ)
+		fire_disp = zoom_fireDispersionBase;										   // РўРѕ РёСЃРїРѕР»СЊР·СѓРµРј РїР°СЂР°РјРµС‚СЂ СЂР°Р·Р±СЂРѕСЃР° РІ РїСЂРёС†РµР»РёРІР°РЅРёРё
+	else																			   // РРЅР°С‡Рµ
+		fire_disp = fireDispersionBase * cartridge_k * GetConditionDispersionFactor(); // РСЃРїРѕР»СЊР·СѓРµРј РѕР±С‹С‡РЅС‹Р№ СЂР°Р·Р±СЂРѕСЃ
 
 	if(ParentIsActor() &&
-	   g_SingleGameDifficulty == egdNovice) // Если орудие принадлежит гг и уровень сложности новичковый
-		fire_disp *= 0.25;					// То делим разброс на 1.5 чтобы облегчить игроку стрельбу
-	// Здесь был Джок... NSDeathman
+	   g_SingleGameDifficulty == egdNovice) // Р•СЃР»Рё РѕСЂСѓРґРёРµ РїСЂРёРЅР°РґР»РµР¶РёС‚ РіРі Рё СѓСЂРѕРІРµРЅСЊ СЃР»РѕР¶РЅРѕСЃС‚Рё РЅРѕРІРёС‡РєРѕРІС‹Р№
+		fire_disp *= 0.25;					// РўРѕ РґРµР»РёРј СЂР°Р·Р±СЂРѕСЃ РЅР° 1.5 С‡С‚РѕР±С‹ РѕР±Р»РµРіС‡РёС‚СЊ РёРіСЂРѕРєСѓ СЃС‚СЂРµР»СЊР±Сѓ
+	// Р—РґРµСЃСЊ Р±С‹Р» Р”Р¶РѕРє... NSDeathman
 
-	// вычислить дисперсию, вносимую самим стрелком
+	// РІС‹С‡РёСЃР»РёС‚СЊ РґРёСЃРїРµСЂСЃРёСЋ, РІРЅРѕСЃРёРјСѓСЋ СЃР°РјРёРј СЃС‚СЂРµР»РєРѕРј
 	const CInventoryOwner* pOwner = smart_cast<const CInventoryOwner*>(H_Parent());
 	VERIFY(pOwner);
 
@@ -54,7 +54,7 @@ float CWeapon::GetFireDispersion(float cartridge_k)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Для эффекта отдачи оружия
+// Р”Р»СЏ СЌС„С„РµРєС‚Р° РѕС‚РґР°С‡Рё РѕСЂСѓР¶РёСЏ
 void CWeapon::AddShotEffector()
 {
 	inventory_owner().on_weapon_shot_start(this);

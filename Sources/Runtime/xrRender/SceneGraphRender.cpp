@@ -5,7 +5,7 @@
 
 #include <ppl.h>
 
-// Глобальные переменные настроек (внешние)
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ РЅР°СЃС‚СЂРѕРµРє (РІРЅРµС€РЅРёРµ)
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
 extern float r_ssaHZBvsTEX;
 extern float r_ssaLOD_A;
@@ -21,7 +21,7 @@ namespace
 // --- LOD Factor Calculation ---
 ICF float CalculateLODFactor(float screen_space_area, float R)
 {
-	// Вычисляем коэффициент детализации на основе площади на экране
+	// Р’С‹С‡РёСЃР»СЏРµРј РєРѕСЌС„С„РёС†РёРµРЅС‚ РґРµС‚Р°Р»РёР·Р°С†РёРё РЅР° РѕСЃРЅРѕРІРµ РїР»РѕС‰Р°РґРё РЅР° СЌРєСЂР°РЅРµ
 	return std::sqrt(clampr((screen_space_area - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 }
 
@@ -36,7 +36,7 @@ static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 {
 	PROFILE_FUNCTION();
 
-	// Сортировка Front-to-Back по SSA для Early Z-Cull
+	// РЎРѕСЂС‚РёСЂРѕРІРєР° Front-to-Back РїРѕ SSA РґР»СЏ Early Z-Cull
 	// std::sort(batch.begin(), batch.end(),
 	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b)
 	//		  {
@@ -54,7 +54,7 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 {
 	PROFILE_FUNCTION();
 
-	// Сортировка Front-to-Back
+	// РЎРѕСЂС‚РёСЂРѕРІРєР° Front-to-Back
 	// std::sort(batch.begin(), batch.end(),
 	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b)
 	//		  {
@@ -150,7 +150,7 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 		}
 		else
 		{
-			// Разделяем на "близкие" (важные для HZB) и "дальние"
+			// Р Р°Р·РґРµР»СЏРµРј РЅР° "Р±Р»РёР·РєРёРµ" (РІР°Р¶РЅС‹Рµ РґР»СЏ HZB) Рё "РґР°Р»СЊРЅРёРµ"
 			for(auto it = textures_map.begin(); it != textures_map.end(); ++it)
 			{
 				if(it->val.screenSpaceArea > r_ssaHZBvsTEX)
@@ -159,10 +159,10 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 					temp_list.push_back(it);
 			}
 
-			// Близкие сортируем по SSA (для Z-Cull)
+			// Р‘Р»РёР·РєРёРµ СЃРѕСЂС‚РёСЂСѓРµРј РїРѕ SSA (РґР»СЏ Z-Cull)
 			std::sort(list.begin(), list.end(), CompareTexturesSSA<typename MapTextures::TNode>);
 
-			// Дальние сортируем по текстурам (для минимизации переключений)
+			// Р”Р°Р»СЊРЅРёРµ СЃРѕСЂС‚РёСЂСѓРµРј РїРѕ С‚РµРєСЃС‚СѓСЂР°Рј (РґР»СЏ РјРёРЅРёРјРёР·Р°С†РёРё РїРµСЂРµРєР»СЋС‡РµРЅРёР№)
 			if(2 == texture_count)
 				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLex2<typename MapTextures::TNode>);
 			else if(3 == texture_count)
@@ -473,11 +473,11 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 {
 	PROFILE_FUNCTION();
 
-	// Сбор LOD-ов в плоский список
+	// РЎР±РѕСЂ LOD-РѕРІ РІ РїР»РѕСЃРєРёР№ СЃРїРёСЃРѕРє
 	if(_setup_zb)
-		packet.mapLOD.getLR(packet.lstLODs); // front-to-back (для Z-buffer)
+		packet.mapLOD.getLR(packet.lstLODs); // front-to-back (РґР»СЏ Z-buffer)
 	else
-		packet.mapLOD.getRL(packet.lstLODs); // back-to-front (для цвета)
+		packet.mapLOD.getRL(packet.lstLODs); // back-to-front (РґР»СЏ С†РІРµС‚Р°)
 
 	if(packet.lstLODs.empty())
 		return;
@@ -495,25 +495,25 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	const float ssa_limit_b = r_ssaLOD_B;
 	const fvec3 camera_pos = Engine.RenderView.Position;
 
-	// *** Генерация геометрии ***
+	// *** Р“РµРЅРµСЂР°С†РёСЏ РіРµРѕРјРµС‚СЂРёРё ***
 	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i)
 							  {
 		FLOD::_hw* V = VertexBuffer + (i * 4);
 		SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
 		FLOD* lod_visual = (FLOD*)Node.pVisual;
 
-		// Вычисление Alpha
+		// Р’С‹С‡РёСЃР»РµРЅРёРµ Alpha
 		float ssa_diff = Node.screenSpaceArea - ssa_limit_b;
 		float scale = ssa_diff / ssa_range;
 		int alpha_int = iFloor((1.0f - scale) * 255.f);
 		u32 alpha_final = u32(clampr(alpha_int, 0, 255));
 
-		// Вычисление направления
+		// Р’С‹С‡РёСЃР»РµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 		fvec3 dir_to_camera, shift;
 		dir_to_camera.sub(lod_visual->vis.sphere.P, camera_pos).normalize();
 		shift.mul(dir_to_camera, -.5f * lod_visual->vis.sphere.R);
 
-		// Выбор лучших плоскостей
+		// Р’С‹Р±РѕСЂ Р»СѓС‡С€РёС… РїР»РѕСЃРєРѕСЃС‚РµР№
 		FLOD::_face* facets = lod_visual->facets;
 
 		svector<std::pair<float, u32>, 8> plane_selector;
@@ -529,13 +529,13 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		u32 id_best = plane_selector[plane_selector.size() - 1].second;
 		u32 id_next = plane_selector[plane_selector.size() - 2].second;
 
-		// Интерполяция
+		// РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ
 		float dot_a = dot_best, dot_b = dot_next, dot_c = dot_next_2;
 		float alpha_factor = 0.5f + 0.5f * (1 - (dot_b - dot_c) / (dot_a - dot_c));
 		int factor_int = iFloor(alpha_factor * 255.5f);
 		u32 factor_final = u32(clampr(factor_int, 0, 255));
 
-		// Заполнение буфера
+		// Р—Р°РїРѕР»РЅРµРЅРёРµ Р±СѓС„РµСЂР°
 		FLOD::_face& FaceA = facets[id_best];
 		FLOD::_face& FaceB = facets[id_next];
 
@@ -557,7 +557,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	RenderBackend.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
-	// *** Группировка по шейдерам ***
+	// *** Р“СЂСѓРїРїРёСЂРѕРІРєР° РїРѕ С€РµР№РґРµСЂР°Рј ***
 	if(!packet.lstLODs.empty())
 	{
 		ref_selement current_shader = packet.lstLODs[0].pVisual->shader->E[shader_id];
@@ -590,11 +590,11 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 		if(primitive_count > 0)
 		{
-			// Используем packet.lstLODs
+			// РСЃРїРѕР»СЊР·СѓРµРј packet.lstLODs
 			RenderBackend.set_Element(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
 			RenderBackend.set_Geometry(first_visual->geom);
 
-			// Отрисовка батча (2 треугольника на 1 LOD)
+			// РћС‚СЂРёСЃРѕРІРєР° Р±Р°С‚С‡Р° (2 С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РЅР° 1 LOD)
 			RenderBackend.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);
 
 			RenderBackend.stat.r.s_flora_lods.add(4 * primitive_count);

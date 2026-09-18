@@ -155,7 +155,7 @@ class CShaderDependencyManager
 			}
 		}
 
-		// Используем относительный путь для чтения
+		// РСЃРїРѕР»СЊР·СѓРµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ РїСѓС‚СЊ РґР»СЏ С‡С‚РµРЅРёСЏ
 		IReader* file = FS.r_open("$app_data_root$", iniPath);
 		if(!file)
 			return false;
@@ -167,7 +167,7 @@ class CShaderDependencyManager
 			return false;
 		}
 
-		// Читаем версию
+		// Р§РёС‚Р°РµРј РІРµСЂСЃРёСЋ
 		u32 version = file->r_u32();
 		if(version != DEPENDENCY_VERSION)
 		{
@@ -273,7 +273,7 @@ class CShaderDependencyManager
 
 	static bool ShouldCheckCRC(const std::string& filePath)
 	{
-		// Проверяем CRC только для .h и .xrh файлов (шейдерные заголовки)
+		// РџСЂРѕРІРµСЂСЏРµРј CRC С‚РѕР»СЊРєРѕ РґР»СЏ .h Рё .xrh С„Р°Р№Р»РѕРІ (С€РµР№РґРµСЂРЅС‹Рµ Р·Р°РіРѕР»РѕРІРєРё)
 		const char* ext = strrchr(filePath.c_str(), '.');
 		return ext && (strcmp(ext, ".h") == 0 ||
 					   strcmp(ext, ".hlsl") == 0 || strcmp(ext, ".xrh") == 0 ||
@@ -446,7 +446,7 @@ T* CResourceManager::CreateShader(const char* _name, const char* _entry, CShader
 	if(FAILED(_hr) && (0 == xr_strcmp(actual_entry, "main")))
 	{
 		string32 alt_entry;
-		// Определяем альтернативное имя на основе типа шейдера (первая буква типа 'p' -> ps -> MainPS)
+		// РћРїСЂРµРґРµР»СЏРµРј Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ РёРјСЏ РЅР° РѕСЃРЅРѕРІРµ С‚РёРїР° С€РµР№РґРµСЂР° (РїРµСЂРІР°СЏ Р±СѓРєРІР° С‚РёРїР° 'p' -> ps -> MainPS)
 		if(type[0] == 'p')
 			strcpy_s(alt_entry, "MainPS");
 		else
@@ -470,7 +470,7 @@ T* CResourceManager::CreateShader(const char* _name, const char* _entry, CShader
 template <typename T>
 HRESULT CResourceManager::ReadShaderCache(string_path name, T*& result, time_t sourceModTime)
 {
-	// Используем относительный путь для чтения
+	// РСЃРїРѕР»СЊР·СѓРµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ РїСѓС‚СЊ РґР»СЏ С‡С‚РµРЅРёСЏ
 	IReader* file = FS.r_open("$app_data_root$", name);
 	HRESULT cache_result = E_FAIL;
 
@@ -624,7 +624,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 	FS.update_path(source_file_path, "$engine_shaders$", source_file_path);
 	time_t sourceModTime = GetFileModTime(source_file_path);
 
-	// Try to find and read cache file - используем ОТНОСИТЕЛЬНЫЙ путь
+	// Try to find and read cache file - РёСЃРїРѕР»СЊР·СѓРµРј РћРўРќРћРЎРРўР•Р›Р¬РќР«Р™ РїСѓС‚СЊ
 	if(FS.exist("$app_data_root$", cache_dest) && bUseShaderCache)
 	{
 		_result = ReadShaderCache(cache_dest, result, sourceModTime);
@@ -744,8 +744,8 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 		{
 			ID3DXBuffer* pDisassembly = NULL;
 			HRESULT disasmResult = D3DXDisassembleShader((DWORD*)pShaderBuf->GetBufferPointer(),
-														 TRUE, // не показывать комментарии
-														 NULL, // не использовать дополнительные комментарии
+														 TRUE, // РЅРµ РїРѕРєР°Р·С‹РІР°С‚СЊ РєРѕРјРјРµРЅС‚Р°СЂРёРё
+														 NULL, // РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РєРѕРјРјРµРЅС‚Р°СЂРёРё
 														 &pDisassembly);
 
 			if(SUCCEEDED(disasmResult) && pDisassembly)
@@ -861,7 +861,7 @@ void CResourceManager::RecompileDependentShaders(const std::string& changedHeade
 
 	for(const auto& file : files)
 	{
-		// В XRay Engine FS_FileSet содержит только name, путь формируем относительно $app_data_root$
+		// Р’ XRay Engine FS_FileSet СЃРѕРґРµСЂР¶РёС‚ С‚РѕР»СЊРєРѕ name, РїСѓС‚СЊ С„РѕСЂРјРёСЂСѓРµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ $app_data_root$
 		string_path iniPath;
 		sprintf_s(iniPath, "shaders_cache\\%s", file.name.c_str());
 
@@ -872,12 +872,12 @@ void CResourceManager::RecompileDependentShaders(const std::string& changedHeade
 			{
 				if(dep.filePath.find(changedHeader) != std::string::npos)
 				{
-					// Нашли шейдер, зависящий от измененного header'а
+					// РќР°С€Р»Рё С€РµР№РґРµСЂ, Р·Р°РІРёСЃСЏС‰РёР№ РѕС‚ РёР·РјРµРЅРµРЅРЅРѕРіРѕ header'Р°
 					string_path cacheFile;
 					strcpy_s(cacheFile, iniPath);
 					char* ext = strstr(cacheFile, ".xrdep");
 					if(ext)
-						*ext = 0; // Убираем .xrdep
+						*ext = 0; // РЈР±РёСЂР°РµРј .xrdep
 
 					Msg("! Marking shader as outdated due to header change: %s", cacheFile);
 					FS.file_delete("$app_data_root$", cacheFile);

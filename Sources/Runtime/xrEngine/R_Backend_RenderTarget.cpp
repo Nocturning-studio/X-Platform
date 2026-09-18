@@ -7,7 +7,7 @@
 
 using namespace xrRHI;
 
-// Õåëïåð äëÿ îïðåäåëåíèÿ Usage
+// Ð¥ÐµÐ»Ð¿ÐµÑ€ Ð´Ð»Ñ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Usage
 static bool IsDepthStencilFormat(RHI_Format fmt)
 {
 	switch(fmt)
@@ -116,7 +116,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 		Msg("*!Can't get native texture for RT(%s)!", Name);
 		return;
 	}
-	pSurface->AddRef(); // ÷òîáû íå óíè÷òîæèëñÿ âìåñòå ñ õåíäëîì, åñëè õåíäë óäàëèòñÿ
+	pSurface->AddRef(); // Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ ÑƒÐ½Ð¸Ñ‡Ñ‚Ð¾Ð¶Ð¸Ð»ÑÑ Ð²Ð¼ÐµÑÑ‚Ðµ Ñ Ñ…ÐµÐ½Ð´Ð»Ð¾Ð¼, ÐµÑÐ»Ð¸ Ñ…ÐµÐ½Ð´Ð» ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑÑ
 
 	HRESULT hr = pSurface->GetSurfaceLevel(0, &pRT);
 	if(FAILED(hr))

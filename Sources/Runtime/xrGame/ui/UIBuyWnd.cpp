@@ -809,7 +809,7 @@ MP_BUY_SLOT CUIBuyWnd::GetLocalSlot(u32 slot)
 
 void CUIBuyWnd::ActivatePropertiesBox()
 {
-	// Ôëàã-ïðèçíàê äëÿ íåâëþ÷åíèÿ ïóíêòà êîíòåêñòíîãî ìåíþ: Dreess Outfit, åñëè êîñòþì óæå íàäåò
+	// Ð¤Ð»Ð°Ð³-Ð¿Ñ€Ð¸Ð·Ð½Ð°Ðº Ð´Ð»Ñ Ð½ÐµÐ²Ð»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ð¿ÑƒÐ½ÐºÑ‚Ð° ÐºÐ¾Ð½Ñ‚ÐµÐºÑÑ‚Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ: Dreess Outfit, ÐµÑÐ»Ð¸ ÐºÐ¾ÑÑ‚ÑŽÐ¼ ÑƒÐ¶Ðµ Ð½Ð°Ð´ÐµÑ‚
 	bool bAlreadyDressed = false;
 
 	m_propertiesBox.RemoveAll();
@@ -842,7 +842,7 @@ void CUIBuyWnd::ActivatePropertiesBox()
 		m_propertiesBox.AddItem("Dress in outfit", NULL, INVENTORY_TO_SLOT_ACTION);
 	}
 	//
-	// îòñîåäèíåíèå àääîíîâ îò âåùè
+	// Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð°Ð´Ð´Ð¾Ð½Ð¾Ð² Ð¾Ñ‚ Ð²ÐµÑ‰Ð¸
 	if(pWeapon)
 	{
 		if(pWeapon->GrenadeLauncherAttachable())
@@ -1457,7 +1457,7 @@ bool CUIBuyWnd::CheckBuyAvailabilityInSlots()
 
 	for(int j = 0; j < 3; ++j)
 	{
-		// Åñëè âåùü åñòü
+		// Ð•ÑÐ»Ð¸ Ð²ÐµÑ‰ÑŒ ÐµÑÑ‚ÑŒ
 		if(m_list[priorityArr[j]]->ItemsCount())
 		{
 			CUICellItem* itm = m_list[priorityArr[j]]->GetItemIdx(0);

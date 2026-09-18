@@ -50,7 +50,7 @@ class game_sv_TeamDeathmatch : public game_sv_Deathmatch
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P);
 	virtual void OnPlayerHitPlayer_Case(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);
 
-	virtual void OnRoundStart(); // старт раунда
+	virtual void OnRoundStart(); // СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
 	virtual void AutoBalanceTeams();
 	virtual void AutoSwapTeams();
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 // Forward declaration to avoid circular includes
 class CRenderBackend;

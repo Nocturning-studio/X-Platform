@@ -58,7 +58,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 	animation_movement_controller* m_anim_mov_ctrl;
 
   protected:
-	// время удаления объекта
+	// РІСЂРµРјСЏ СѓРґР°Р»РµРЅРёСЏ РѕР±СЉРµРєС‚Р°
 	bool m_bObjectRemoved;
 
   public:
@@ -206,7 +206,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 		return FALSE;
 	}
 
-	// игровое имя объекта
+	// РёРіСЂРѕРІРѕРµ РёРјСЏ РѕР±СЉРµРєС‚Р°
 	virtual LPCSTR Name() const;
 
 	// virtual void			OnH_A_Independent	();

@@ -30,7 +30,7 @@ struct CRegistryHelperLoad
 
 	IC static void process(T1* self, T2& p1)
 	{
-		do_load<object_type_traits::is_base_and_derived<IPureLîadableObject<T2>, Head>::value>(self, p1);
+		do_load<object_type_traits::is_base_and_derived<IPureLÐ¾adableObject<T2>, Head>::value>(self, p1);
 	}
 };
 

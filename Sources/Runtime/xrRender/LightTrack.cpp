@@ -4,17 +4,17 @@
 #include "..\xrEngine\igame_persistent.h"
 #include "..\xrEngine\environment.h"
 
-// Оптимизированные направления гемисферы из X-Ray 1.6
+// РћРїС‚РёРјРёР·РёСЂРѕРІР°РЅРЅС‹Рµ РЅР°РїСЂР°РІР»РµРЅРёСЏ РіРµРјРёСЃС„РµСЂС‹ РёР· X-Ray 1.6
 constexpr float hdir[lt_aosamples][3] = {
 	{-0.26287f, 0.52573f, 0.80902f}, {0.27639f, 0.44721f, 0.85065f}, {-0.95106f, 0.00000f, 0.30902f}, {-0.95106f, 0.00000f, -0.30902f}, {0.58779f, 0.00000f, -0.80902f}, {0.58779f, 0.00000f, 0.80902f}, {-0.00000f, 0.00000f, 1.00000f}, {0.52573f, 0.85065f, 0.00000f}, {-0.26287f, 0.52573f, -0.80902f}, {-0.42533f, 0.85065f, 0.30902f}, {0.95106f, 0.00000f, 0.30902f}, {0.95106f, 0.00000f, -0.30902f}, {0.00000f, 1.00000f, 0.00000f}, {-0.58779f, 0.00000f, 0.80902f}, {-0.72361f, 0.44721f, 0.52573f}, {-0.72361f, 0.44721f, -0.52573f}, {-0.58779f, 0.00000f, -0.80902f}, {0.16246f, 0.85065f, -0.50000f}, {0.89443f, 0.44721f, 0.00000f}, {-0.85065f, 0.52573f, -0.00000f}, {0.16246f, 0.85065f, 0.50000f}, {0.68819f, 0.52573f, -0.50000f}, {0.27639f, 0.44721f, -0.85065f}, {0.00000f, 0.00000f, -1.00000f}, {-0.42533f, 0.85065f, -0.30902f}, {0.68819f, 0.52573f, 0.50000f}};
 
 CROS_impl::CROS_impl()
 {
-	// Инициализация значений HEMI
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р·РЅР°С‡РµРЅРёР№ HEMI
 	ao_value = 0.5f;
 	ao_smooth = 0.5f;
 
-	// Инициализация массивов
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјР°СЃСЃРёРІРѕРІ
 	for(int i = 0; i < lt_aosamples; i++)
 	{
 		result[i] = false;
@@ -25,7 +25,7 @@ CROS_impl::CROS_impl()
 		ao_cube_smooth[i] = 0.0f;
 	}
 
-	// Инициализация управления обновлением
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СѓРїСЂР°РІР»РµРЅРёСЏ РѕР±РЅРѕРІР»РµРЅРёРµРј
 	dwFrame = u32(-1);
 	dwFrameSmooth = u32(-1);
 	result_count = 0;
@@ -67,7 +67,7 @@ void CROS_impl::smart_update(IRenderable* O)
 
 	--ticks_to_update;
 
-	// Получение текущей позиции
+	// РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё
 	fvec3 position;
 	O->renderable.transform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
 
@@ -125,7 +125,7 @@ void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 		result[sample] = !g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
 	}
 
-	// Расчет значения гемисферы
+	// Р Р°СЃС‡РµС‚ Р·РЅР°С‡РµРЅРёСЏ РіРµРјРёСЃС„РµСЂС‹
 	int _pass = 0;
 	for(int it = 0; it < result_count; it++)
 		if(result[it])
@@ -134,7 +134,7 @@ void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 	ao_value = float(_pass) / float(result_count ? result_count : 1);
 	ao_value *= ps_r_dhemi_sky_scale;
 
-	// Накопление в кубические грани для каждого успешного сэмпла
+	// РќР°РєРѕРїР»РµРЅРёРµ РІ РєСѓР±РёС‡РµСЃРєРёРµ РіСЂР°РЅРё РґР»СЏ РєР°Р¶РґРѕРіРѕ СѓСЃРїРµС€РЅРѕРіРѕ СЃСЌРјРїР»Р°
 	for(int it = 0; it < result_count; it++)
 	{
 		if(result[it])
@@ -165,7 +165,7 @@ void CROS_impl::update(IRenderable* O)
 	float radius = O->renderable.visual->vis.sphere.R;
 	position.y += .3f * radius;
 
-	// Инициализация кубических граней
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РєСѓР±РёС‡РµСЃРєРёС… РіСЂР°РЅРµР№
 	for(size_t i = 0; i < NUM_FACES; ++i)
 	{
 		ao_cube[i] = 0;
@@ -173,10 +173,10 @@ void CROS_impl::update(IRenderable* O)
 
 	bool bFirstTime = (0 == result_count);
 
-	// Основной расчет HEMI
+	// РћСЃРЅРѕРІРЅРѕР№ СЂР°СЃС‡РµС‚ HEMI
 	calc_sky_ao_value(position, _object);
 
-	// Сглаживание HEMI при первом обновлении
+	// РЎРіР»Р°Р¶РёРІР°РЅРёРµ HEMI РїСЂРё РїРµСЂРІРѕРј РѕР±РЅРѕРІР»РµРЅРёРё
 	if(bFirstTime)
 	{
 		ao_smooth = ao_value;
@@ -194,7 +194,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 		return;
 	dwFrameSmooth = Engine.TimeManager.GetFrameCount();
 
-	// Используем умное обновление для HEMI
+	// РСЃРїРѕР»СЊР·СѓРµРј СѓРјРЅРѕРµ РѕР±РЅРѕРІР»РµРЅРёРµ РґР»СЏ HEMI
 	smart_update(O);
 
 	float l_f = Engine.TimeManager.GetDeltaTime() * ps_r_lt_smooth;
@@ -202,7 +202,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 	float l_i = 1.f - l_f;
 	ao_smooth = ao_value * l_f + ao_smooth * l_i;
 
-	// Сглаживание кубических граней
+	// РЎРіР»Р°Р¶РёРІР°РЅРёРµ РєСѓР±РёС‡РµСЃРєРёС… РіСЂР°РЅРµР№
 	for(size_t i = 0; i < NUM_FACES; ++i)
 	{
 		ao_cube_smooth[i] = ao_cube[i] * l_f + ao_cube_smooth[i] * l_i;

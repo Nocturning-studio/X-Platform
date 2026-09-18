@@ -26,7 +26,7 @@ IBlender* CRender::blender_create(CLASS_ID cls)
 	case B_VERT_AREF:
 		return xr_new<CBlender_transluent>(false);
 	case B_SCREEN_SET:
-		return xr_new<CBlender_Screen_SET>(); // Фиксед пайплайн поебень для шрифтов блядь
+		return xr_new<CBlender_Screen_SET>(); // Р¤РёРєСЃРµРґ РїР°Р№РїР»Р°Р№РЅ РїРѕРµР±РµРЅСЊ РґР»СЏ С€СЂРёС„С‚РѕРІ Р±Р»СЏРґСЊ
 	case B_SCREEN_GRAY:
 		return 0;
 	case B_EDITOR_WIRE:

@@ -7,7 +7,7 @@
 
 extern char const* const ioc_prompt;
 
-// Цвета
+// Р¦РІРµС‚Р°
 #define C_DEFAULT (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED)
 #define C_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY)
 #define C_RED (FOREGROUND_RED | FOREGROUND_INTENSITY)
@@ -54,7 +54,7 @@ void CTextConsole::Initialize()
 		COORD bufferSize = {120, 3000};
 		SetConsoleScreenBufferSize(m_hStdOut, bufferSize);
 
-		// Цветной приветственный текст
+		// Р¦РІРµС‚РЅРѕР№ РїСЂРёРІРµС‚СЃС‚РІРµРЅРЅС‹Р№ С‚РµРєСЃС‚
 		SetConsoleTextAttribute(m_hStdOut, C_GREEN);
 
 		DWORD written;
@@ -69,7 +69,7 @@ void CTextConsole::Initialize()
 
 		SetConsoleTextAttribute(m_hStdOut, C_DEFAULT);
 
-		// Рисуем промпт
+		// Р РёСЃСѓРµРј РїСЂРѕРјРїС‚
 		WriteConsole(m_hStdOut, ioc_prompt, (DWORD)xr_strlen(ioc_prompt), &written, NULL);
 	}
 
@@ -85,7 +85,7 @@ void CTextConsole::Initialize()
 
 void CTextConsole::Destroy()
 {
-	// !!! УДАЛЯЕМ ИЗ ЦИКЛА !!!
+	// !!! РЈР”РђР›РЇР•Рњ РР— Р¦РРљР›Рђ !!!
 	Engine.Events.Frame.Remove(this);
 
 	inherited::Destroy();
@@ -96,7 +96,7 @@ void CTextConsole::Destroy()
 		TerminateThread(m_hConsoleThread, 0);
 		CloseHandle(m_hConsoleThread);
 	}
-	// FreeConsole(); // Можно оставить или убрать по вкусу
+	// FreeConsole(); // РњРѕР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ РёР»Рё СѓР±СЂР°С‚СЊ РїРѕ РІРєСѓСЃСѓ
 }
 
 void CTextConsole::OnRender()
@@ -129,7 +129,7 @@ WORD CTextConsole::GetColorByTag(char tag)
 }
 
 // -----------------------------------------------------------
-// ПОТОК ВВОДА
+// РџРћРўРћРљ Р’Р’РћР”Рђ
 // -----------------------------------------------------------
 unsigned __stdcall CTextConsole::ConsoleThreadEntry(void* pArgs)
 {
@@ -146,7 +146,7 @@ void CTextConsole::ThreadLoop()
 	{
 		if(fgets(buffer, 1024, stdin))
 		{
-			// Чистим любые спецсимволы в конце строки
+			// Р§РёСЃС‚РёРј Р»СЋР±С‹Рµ СЃРїРµС†СЃРёРјРІРѕР»С‹ РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 			size_t len = strlen(buffer);
 			while(len > 0 && (unsigned char)buffer[len - 1] <= 32)
 			{
@@ -166,7 +166,7 @@ void CTextConsole::ThreadLoop()
 }
 
 // -----------------------------------------------------------
-// ГЛАВНЫЙ ПОТОК (ENGINE LOOP)
+// Р“Р›РђР’РќР«Р™ РџРћРўРћРљ (ENGINE LOOP)
 // -----------------------------------------------------------
 void CTextConsole::ProcessOutput()
 {
@@ -178,16 +178,16 @@ void CTextConsole::ProcessOutput()
 
 	if(hasNewData)
 	{
-		// Если пришли новые логи - нужно "перебить" текущую строку ввода
-		// Стандартный способ в консолях:
-		// 1. \r (в начало)
-		// 2. Стереть пробелами
-		// 3. Вывести лог
-		// 4. Напечатать промпт заново
+		// Р•СЃР»Рё РїСЂРёС€Р»Рё РЅРѕРІС‹Рµ Р»РѕРіРё - РЅСѓР¶РЅРѕ "РїРµСЂРµР±РёС‚СЊ" С‚РµРєСѓС‰СѓСЋ СЃС‚СЂРѕРєСѓ РІРІРѕРґР°
+		// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ СЃРїРѕСЃРѕР± РІ РєРѕРЅСЃРѕР»СЏС…:
+		// 1. \r (РІ РЅР°С‡Р°Р»Рѕ)
+		// 2. РЎС‚РµСЂРµС‚СЊ РїСЂРѕР±РµР»Р°РјРё
+		// 3. Р’С‹РІРµСЃС‚Рё Р»РѕРі
+		// 4. РќР°РїРµС‡Р°С‚Р°С‚СЊ РїСЂРѕРјРїС‚ Р·Р°РЅРѕРІРѕ
 
 		DWORD written;
 		WriteConsole(m_hStdOut, "\r", 1, &written, NULL);
-		// Просто перезатираем текущую строку вывода логами
+		// РџСЂРѕСЃС‚Рѕ РїРµСЂРµР·Р°С‚РёСЂР°РµРј С‚РµРєСѓС‰СѓСЋ СЃС‚СЂРѕРєСѓ РІС‹РІРѕРґР° Р»РѕРіР°РјРё
 
 		for(u32 i = m_dwLastLogIndex; i < curSize; ++i)
 		{
@@ -201,7 +201,7 @@ void CTextConsole::ProcessOutput()
 				color = GetColorByTag(str[1]);
 
 			SetConsoleTextAttribute(m_hStdOut, color);
-			// Важно использовать printf/WriteConsole, синхронно с тем, что использует наш поток
+			// Р’Р°Р¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ printf/WriteConsole, СЃРёРЅС…СЂРѕРЅРЅРѕ СЃ С‚РµРј, С‡С‚Рѕ РёСЃРїРѕР»СЊР·СѓРµС‚ РЅР°С€ РїРѕС‚РѕРє
 			WriteConsole(m_hStdOut, str, (DWORD)xr_strlen(str), &written, NULL);
 			WriteConsole(m_hStdOut, "\n", 1, &written, NULL);
 		}
@@ -209,12 +209,12 @@ void CTextConsole::ProcessOutput()
 		SetConsoleTextAttribute(m_hStdOut, C_DEFAULT);
 		m_dwLastLogIndex = curSize;
 
-		// Восстанавливаем приглашение к вводу
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ
 		WriteConsole(m_hStdOut, ioc_prompt, (DWORD)xr_strlen(ioc_prompt), &written, NULL);
 
-		// Нюанс: мы не можем восстановить то, что пользователь уже успел напечатать наполовину (до Enter),
-		// так как буфер лежит внутри fgets. Это компромисс системной консоли.
-		// Зато ввод гарантированно работает.
+		// РќСЋР°РЅСЃ: РјС‹ РЅРµ РјРѕР¶РµРј РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ С‚Рѕ, С‡С‚Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓР¶Рµ СѓСЃРїРµР» РЅР°РїРµС‡Р°С‚Р°С‚СЊ РЅР°РїРѕР»РѕРІРёРЅСѓ (РґРѕ Enter),
+		// С‚Р°Рє РєР°Рє Р±СѓС„РµСЂ Р»РµР¶РёС‚ РІРЅСѓС‚СЂРё fgets. Р­С‚Рѕ РєРѕРјРїСЂРѕРјРёСЃСЃ СЃРёСЃС‚РµРјРЅРѕР№ РєРѕРЅСЃРѕР»Рё.
+		// Р—Р°С‚Рѕ РІРІРѕРґ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅРѕ СЂР°Р±РѕС‚Р°РµС‚.
 	}
 }
 
@@ -222,36 +222,36 @@ void CTextConsole::OnFrame()
 {
 	PROFILE_FUNCTION();
 
-	// inherited::OnFrame(); // НЕ вызываем родительский метод, там логика GUI нам не нужна
+	// inherited::OnFrame(); // РќР• РІС‹Р·С‹РІР°РµРј СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ РјРµС‚РѕРґ, С‚Р°Рј Р»РѕРіРёРєР° GUI РЅР°Рј РЅРµ РЅСѓР¶РЅР°
 
-	// 1. Выводим новые логи
+	// 1. Р’С‹РІРѕРґРёРј РЅРѕРІС‹Рµ Р»РѕРіРё
 	ProcessOutput();
 
-	// 2. Обрабатываем очередь команд
-	// Используем обычный EnterCriticalSection, так как он очень быстрый (мьютекс в user-space)
+	// 2. РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕС‡РµСЂРµРґСЊ РєРѕРјР°РЅРґ
+	// РСЃРїРѕР»СЊР·СѓРµРј РѕР±С‹С‡РЅС‹Р№ EnterCriticalSection, С‚Р°Рє РєР°Рє РѕРЅ РѕС‡РµРЅСЊ Р±С‹СЃС‚СЂС‹Р№ (РјСЊСЋС‚РµРєСЃ РІ user-space)
 	EnterCriticalSection(&m_csCmdQueue);
 
 	if(!m_cmd_queue.empty())
 	{
-		// Быстро копируем очередь себе
+		// Р‘С‹СЃС‚СЂРѕ РєРѕРїРёСЂСѓРµРј РѕС‡РµСЂРµРґСЊ СЃРµР±Рµ
 		xr_vector<shared_str> todo = m_cmd_queue;
 		m_cmd_queue.clear();
 		LeaveCriticalSection(&m_csCmdQueue);
 
-		// Выполняем команды
+		// Р’С‹РїРѕР»РЅСЏРµРј РєРѕРјР°РЅРґС‹
 		for(u32 i = 0; i < todo.size(); ++i)
 		{
 			LPCSTR cmd_str = todo[i].c_str();
 
-			// Логируем попытку выполнения, чтобы видеть, что движок принял команду
-			// Msg — это функция движка, она попадет в лог и на экран сама через ProcessOutput
+			// Р›РѕРіРёСЂСѓРµРј РїРѕРїС‹С‚РєСѓ РІС‹РїРѕР»РЅРµРЅРёСЏ, С‡С‚РѕР±С‹ РІРёРґРµС‚СЊ, С‡С‚Рѕ РґРІРёР¶РѕРє РїСЂРёРЅСЏР» РєРѕРјР°РЅРґСѓ
+			// Msg вЂ” СЌС‚Рѕ С„СѓРЅРєС†РёСЏ РґРІРёР¶РєР°, РѕРЅР° РїРѕРїР°РґРµС‚ РІ Р»РѕРі Рё РЅР° СЌРєСЂР°РЅ СЃР°РјР° С‡РµСЂРµР· ProcessOutput
 			Msg("sv_console_execute: %s", cmd_str);
 
-			// Выполняем команду
+			// Р’С‹РїРѕР»РЅСЏРµРј РєРѕРјР°РЅРґСѓ
 			this->Execute(cmd_str);
 		}
 
-		// Рисуем промпт после выполнения всех команд
+		// Р РёСЃСѓРµРј РїСЂРѕРјРїС‚ РїРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ РІСЃРµС… РєРѕРјР°РЅРґ
 		DWORD written;
 		WriteConsole(m_hStdOut, ioc_prompt, (DWORD)xr_strlen(ioc_prompt), &written, NULL);
 	}

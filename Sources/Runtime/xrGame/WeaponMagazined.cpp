@@ -119,7 +119,7 @@ void CWeaponMagazined::Load(LPCSTR section)
 	if(IsZoomEnabled())
 		animGet(mhud.mhud_idle_aim, pSettings->r_string(*hud_sect, "anim_idle_aim"));
 
-	// звуки и партиклы глушителя, еслит такой есть
+	// Р·РІСѓРєРё Рё РїР°СЂС‚РёРєР»С‹ РіР»СѓС€РёС‚РµР»СЏ, РµСЃР»РёС‚ С‚Р°РєРѕР№ РµСЃС‚СЊ
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
 	{
 		if(pSettings->line_exist(section, "silencer_flame_particles"))
@@ -253,7 +253,7 @@ bool CWeaponMagazined::IsAmmoAvailable()
 
 void CWeaponMagazined::OnMagazineEmpty()
 {
-	// попытка стрелять когда нет патронов
+	// РїРѕРїС‹С‚РєР° СЃС‚СЂРµР»СЏС‚СЊ РєРѕРіРґР° РЅРµС‚ РїР°С‚СЂРѕРЅРѕРІ
 	if(GetState() == eIdle)
 	{
 		OnEmptyClick();
@@ -318,12 +318,12 @@ void CWeaponMagazined::ReloadMagazine()
 
 	m_dwAmmoCurrentCalcFrame = 0;
 
-	// устранить осечку при перезарядке
+	// СѓСЃС‚СЂР°РЅРёС‚СЊ РѕСЃРµС‡РєСѓ РїСЂРё РїРµСЂРµР·Р°СЂСЏРґРєРµ
 	if(IsMisfire())
 		bMisfire = false;
 
-	// переменная блокирует использование
-	// только разных типов патронов
+	// РїРµСЂРµРјРµРЅРЅР°СЏ Р±Р»РѕРєРёСЂСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ
+	// С‚РѕР»СЊРєРѕ СЂР°Р·РЅС‹С… С‚РёРїРѕРІ РїР°С‚СЂРѕРЅРѕРІ
 	//	static bool l_lockType = false;
 	if(!m_bLockType)
 	{
@@ -342,14 +342,14 @@ void CWeaponMagazined::ReloadMagazine()
 
 	if(!unlimited_ammo())
 	{
-		// попытаться найти в инвентаре патроны текущего типа
+		// РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РЅР°Р№С‚Рё РІ РёРЅРІРµРЅС‚Р°СЂРµ РїР°С‚СЂРѕРЅС‹ С‚РµРєСѓС‰РµРіРѕ С‚РёРїР°
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
 
 		if(!m_pAmmo && !m_bLockType)
 		{
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i)
 			{
-				// проверить патроны всех подходящих типов
+				// РїСЂРѕРІРµСЂРёС‚СЊ РїР°С‚СЂРѕРЅС‹ РІСЃРµС… РїРѕРґС…РѕРґСЏС‰РёС… С‚РёРїРѕРІ
 				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[i]));
 				if(m_pAmmo)
 				{
@@ -362,11 +362,11 @@ void CWeaponMagazined::ReloadMagazine()
 	else
 		m_ammoType = m_ammoType;
 
-	// нет патронов для перезарядки
+	// РЅРµС‚ РїР°С‚СЂРѕРЅРѕРІ РґР»СЏ РїРµСЂРµР·Р°СЂСЏРґРєРё
 	if(!m_pAmmo && !unlimited_ammo())
 		return;
 
-	// разрядить магазин, если загружаем патронами другого типа
+	// СЂР°Р·СЂСЏРґРёС‚СЊ РјР°РіР°Р·РёРЅ, РµСЃР»Рё Р·Р°РіСЂСѓР¶Р°РµРј РїР°С‚СЂРѕРЅР°РјРё РґСЂСѓРіРѕРіРѕ С‚РёРїР°
 	if(!m_bLockType && !m_magazine.empty() &&
 	   (!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect)))
 		UnloadMagazine();
@@ -392,11 +392,11 @@ void CWeaponMagazined::ReloadMagazine()
 	}
 	m_ammoName = (m_pAmmo) ? m_pAmmo->m_nameShort : NULL;
 
-	// выкинуть коробку патронов, если она пустая
+	// РІС‹РєРёРЅСѓС‚СЊ РєРѕСЂРѕР±РєСѓ РїР°С‚СЂРѕРЅРѕРІ, РµСЃР»Рё РѕРЅР° РїСѓСЃС‚Р°СЏ
 	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer())
 		m_pAmmo->SetDropManual(TRUE);
 
-	// Дозарядка если одной пачки из инвентаря не хватило
+	// Р”РѕР·Р°СЂСЏРґРєР° РµСЃР»Рё РѕРґРЅРѕР№ РїР°С‡РєРё РёР· РёРЅРІРµРЅС‚Р°СЂСЏ РЅРµ С…РІР°С‚РёР»Рѕ
 	if(iMagazineSize > iAmmoElapsed)
 	{
 		m_bLockType = true;
@@ -448,8 +448,8 @@ void CWeaponMagazined::UpdateCL()
 	inherited::UpdateCL();
 	float dt = Engine.TimeManager.GetDeltaTime();
 
-	// когда происходит апдейт состояния оружия
-	// ничего другого не делать
+	// РєРѕРіРґР° РїСЂРѕРёСЃС…РѕРґРёС‚ Р°РїРґРµР№С‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ РѕСЂСѓР¶РёСЏ
+	// РЅРёС‡РµРіРѕ РґСЂСѓРіРѕРіРѕ РЅРµ РґРµР»Р°С‚СЊ
 	if(GetNextState() == GetState())
 	{
 		switch(GetState())
@@ -606,10 +606,10 @@ void CWeaponMagazined::OnShot()
 	PHGetLinearVell(vel);
 	OnShellDrop(get_LastSP(), vel);
 
-	// Огонь из ствола
+	// РћРіРѕРЅСЊ РёР· СЃС‚РІРѕР»Р°
 	StartFlameParticles();
 
-	// дым из ствола
+	// РґС‹Рј РёР· СЃС‚РІРѕР»Р°
 	ForceUpdateFireParticles();
 	StartSmokeParticles(get_LastFP(), vel);
 }
@@ -757,7 +757,7 @@ void CWeaponMagazined::switch2_Reload()
 	}
 	else if(IsMisfire())
 	{
-		// Msg("Weapon is misfire, we are need give ему пизды");
+		// Msg("Weapon is misfire, we are need give РµРјСѓ РїРёР·РґС‹");
 		PlayMisfireReloadSound();
 		PlayAnimMisfireReload();
 	}
@@ -804,7 +804,7 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	if(inherited::Action(cmd, flags))
 		return true;
 
-	// если оружие чем-то занято, то ничего не делать
+	// РµСЃР»Рё РѕСЂСѓР¶РёРµ С‡РµРј-С‚Рѕ Р·Р°РЅСЏС‚Рѕ, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ
 	if(IsPending())
 		return false;
 
@@ -912,7 +912,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 	{
 		if(b_send_event && OnServer())
 		{
-			// уничтожить подсоединенную вещь из инвентаря
+			// СѓРЅРёС‡С‚РѕР¶РёС‚СЊ РїРѕРґСЃРѕРµРґРёРЅРµРЅРЅСѓСЋ РІРµС‰СЊ РёР· РёРЅРІРµРЅС‚Р°СЂСЏ
 			//.			pIItem->Drop					();
 			pIItem->object().DestroyObject();
 		};
@@ -966,7 +966,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 void CWeaponMagazined::InitAddons()
 {
 	//////////////////////////////////////////////////////////////////////////
-	// Прицел
+	// РџСЂРёС†РµР»
 	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
 
 	if(IsScopeAttached())
@@ -1023,10 +1023,10 @@ void CWeaponMagazined::InitAddons()
 		m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
 		m_pSndShotCurrent = &sndSilencerShot;
 
-		// сила выстрела
+		// СЃРёР»Р° РІС‹СЃС‚СЂРµР»Р°
 		LoadFireParams(*cNameSect(), "");
 
-		// подсветка от выстрела
+		// РїРѕРґСЃРІРµС‚РєР° РѕС‚ РІС‹СЃС‚СЂРµР»Р°
 		LoadLights(*cNameSect(), "silencer_");
 		ApplySilencerKoeffs();
 	}
@@ -1036,9 +1036,9 @@ void CWeaponMagazined::InitAddons()
 		m_sSmokeParticlesCurrent = m_sSmokeParticles;
 		m_pSndShotCurrent = &sndShot;
 
-		// сила выстрела
+		// СЃРёР»Р° РІС‹СЃС‚СЂРµР»Р°
 		LoadFireParams(*cNameSect(), "");
-		// подсветка от выстрела
+		// РїРѕРґСЃРІРµС‚РєР° РѕС‚ РІС‹СЃС‚СЂРµР»Р°
 		LoadLights(*cNameSect(), "");
 	}
 
@@ -1081,7 +1081,7 @@ void CWeaponMagazined::ApplySilencerKoeffs()
 	camDispersionInc *= CD_k;
 }
 
-// виртуальные функции для проигрывания анимации HUD
+// РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё HUD
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState() == eShowing);
@@ -1201,7 +1201,7 @@ void CWeaponMagazined::OnZoomOut()
 	}
 }
 
-// переключение режимов стрельбы одиночными и очередями
+// РїРµСЂРµРєР»СЋС‡РµРЅРёРµ СЂРµР¶РёРјРѕРІ СЃС‚СЂРµР»СЊР±С‹ РѕРґРёРЅРѕС‡РЅС‹РјРё Рё РѕС‡РµСЂРµРґСЏРјРё
 bool CWeaponMagazined::SwitchMode()
 {
 	if(eIdle != GetState() || IsPending())

@@ -72,9 +72,9 @@ class ENGINE_API CBlender_Compile
 		D3DBLEND BlendDST = D3DBLEND_ZERO;
 	};
 
-	CShaderMacros macros_common; // Для обоих (по умолчанию)
-	CShaderMacros macros_vs;	 // Только для Vertex Shader
-	CShaderMacros macros_ps;	 // Только для Pixel Shader
+	CShaderMacros macros_common; // Р”Р»СЏ РѕР±РѕРёС… (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ)
+	CShaderMacros macros_vs;	 // РўРѕР»СЊРєРѕ РґР»СЏ Vertex Shader
+	CShaderMacros macros_ps;	 // РўРѕР»СЊРєРѕ РґР»СЏ Pixel Shader
 
 	CSimulator& R()
 	{
@@ -130,8 +130,8 @@ class ENGINE_API CBlender_Compile
 	void i_sRGB(u32 s, bool state = true);
 
   private:
-	// Вспомогательный макрос для распределения по scope
-	// __VA_ARGS__ позволяет передавать (Name, value) или (Name, "1")
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РјР°РєСЂРѕСЃ РґР»СЏ СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЏ РїРѕ scope
+	// __VA_ARGS__ РїРѕР·РІРѕР»СЏРµС‚ РїРµСЂРµРґР°РІР°С‚СЊ (Name, value) РёР»Рё (Name, "1")
 #define APPLY_SCOPE_MACRO(...)          \
 	switch(scope)                       \
 	{                                   \
@@ -168,10 +168,10 @@ class ENGINE_API CBlender_Compile
 		APPLY_SCOPE_MACRO(Name, value);
 	}
 
-	// ИСПРАВЛЕННЫЙ МЕТОД
+	// РРЎРџР РђР’Р›Р•РќРќР«Р™ РњР•РўРћР”
 	void set_Define(string32 Name, ShaderScope scope = ShaderScope::Both)
 	{
-		// Явно передаем "1", так как add(Name) не существует
+		// РЇРІРЅРѕ РїРµСЂРµРґР°РµРј "1", С‚Р°Рє РєР°Рє add(Name) РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 		APPLY_SCOPE_MACRO(Name, "1");
 	}
 
@@ -185,7 +185,7 @@ class ENGINE_API CBlender_Compile
 		APPLY_SCOPE_MACRO(Enabled, Name, Definition);
 	}
 
-	// Удаляем макрос, чтобы не засорять глобальное пространство имен
+	// РЈРґР°Р»СЏРµРј РјР°РєСЂРѕСЃ, С‡С‚РѕР±С‹ РЅРµ Р·Р°СЃРѕСЂСЏС‚СЊ РіР»РѕР±Р°Р»СЊРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ
 #undef APPLY_SCOPE_MACRO
 
 	void begin_Pass(LPCSTR vs = "null",

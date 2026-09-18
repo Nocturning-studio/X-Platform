@@ -111,12 +111,12 @@ void CDetailManager::Load()
 	m_slots->close();
 
 	// Initialize 'vis' and 'cache'
-	// === ИЗМЕНЕНИЕ: Инициализируем 2 буфера * 3 типа волн ===
+	// === РР—РњР•РќР•РќРР•: РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј 2 Р±СѓС„РµСЂР° * 3 С‚РёРїР° РІРѕР»РЅ ===
 	for(u32 buf_id = 0; buf_id < 2; ++buf_id)
 	{
 		for(u32 wave_id = 0; wave_id < 3; ++wave_id)
 		{
-			// Ресайзим под количество уникальных объектов (моделей травы)
+			// Р РµСЃР°Р№Р·РёРј РїРѕРґ РєРѕР»РёС‡РµСЃС‚РІРѕ СѓРЅРёРєР°Р»СЊРЅС‹С… РѕР±СЉРµРєС‚РѕРІ (РјРѕРґРµР»РµР№ С‚СЂР°РІС‹)
 			m_visibles[buf_id][wave_id].resize(objects.size());
 		}
 	}
@@ -141,7 +141,7 @@ void CDetailManager::Unload()
 	}
 	objects.clear();
 
-	// === ИЗМЕНЕНИЕ: Очистка двойного буфера ===
+	// === РР—РњР•РќР•РќРР•: РћС‡РёСЃС‚РєР° РґРІРѕР№РЅРѕРіРѕ Р±СѓС„РµСЂР° ===
 	for(u32 buf_id = 0; buf_id < 2; ++buf_id)
 	{
 		for(u32 wave_id = 0; wave_id < 3; ++wave_id)
@@ -152,7 +152,7 @@ void CDetailManager::Unload()
 	// ==========================================
 
 	FS.r_close(dtFS);
-	dtFS = NULL; // Хорошая практика обнулять указатель
+	dtFS = NULL; // РҐРѕСЂРѕС€Р°СЏ РїСЂР°РєС‚РёРєР° РѕР±РЅСѓР»СЏС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ
 }
 
 extern float r_ssaDISCARD;
@@ -227,7 +227,7 @@ void CDetailManager::UpdateVisibility()
 				if(dist_sq > fade_limit)
 					continue;
 
-				// === 1. ОБНОВЛЕНИЕ ПАРАМЕТРОВ (редко) ===
+				// === 1. РћР‘РќРћР’Р›Р•РќРР• РџРђР РђРњР•РўР РћР’ (СЂРµРґРєРѕ) ===
 				if(current_frame > S.frame)
 				{
 					float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
@@ -263,14 +263,14 @@ void CDetailManager::UpdateVisibility()
 					}
 				}
 
-				// === 2. ЗАПОЛНЕНИЕ ДАННЫХ ДЛЯ GPU (прямо в глобальные батчи) ===
+				// === 2. Р—РђРџРћР›РќР•РќРР• Р”РђРќРќР«РҐ Р”Р›РЇ GPU (РїСЂСЏРјРѕ РІ РіР»РѕР±Р°Р»СЊРЅС‹Рµ Р±Р°С‚С‡Рё) ===
 				for(int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 				{
 					SlotPart& sp = S.G[sp_id];
 					if(sp.id == DetailSlot::ID_Empty)
 						continue;
 
-					// Прямые ссылки на батчи в буфере видимости (calc_id)
+					// РџСЂСЏРјС‹Рµ СЃСЃС‹Р»РєРё РЅР° Р±Р°С‚С‡Рё РІ Р±СѓС„РµСЂРµ РІРёРґРёРјРѕСЃС‚Рё (calc_id)
 					DetailBatch& batch_static = m_visibles[m_vis_calc_id][DVL_Static][sp.id];
 					DetailBatch& batch_wave1 = m_visibles[m_vis_calc_id][DVL_Wave1][sp.id];
 					DetailBatch& batch_wave2 = m_visibles[m_vis_calc_id][DVL_Wave2][sp.id];
@@ -325,16 +325,16 @@ void CDetailManager::PrepareToCalc()
 
 	MT.Enter();
 
-	// 1. Своп индексов.
-	// То, что рисовали (render_id), теперь становится буфером для нового расчета.
+	// 1. РЎРІРѕРї РёРЅРґРµРєСЃРѕРІ.
+	// РўРѕ, С‡С‚Рѕ СЂРёСЃРѕРІР°Р»Рё (render_id), С‚РµРїРµСЂСЊ СЃС‚Р°РЅРѕРІРёС‚СЃСЏ Р±СѓС„РµСЂРѕРј РґР»СЏ РЅРѕРІРѕРіРѕ СЂР°СЃС‡РµС‚Р°.
 	std::swap(m_vis_render_id, m_vis_calc_id);
 
-	// 2. Очистка буфера, в который будем писать
+	// 2. РћС‡РёСЃС‚РєР° Р±СѓС„РµСЂР°, РІ РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµРј РїРёСЃР°С‚СЊ
 	for(int wave = 0; wave < 3; ++wave)
 		for(u32 obj = 0; obj < objects.size(); ++obj)
 			m_visibles[m_vis_calc_id][wave][obj].clear_not_free();
 
-	// 3. Захват состояния камеры для потока
+	// 3. Р—Р°С…РІР°С‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєР°РјРµСЂС‹ РґР»СЏ РїРѕС‚РѕРєР°
 	m_vCameraPos_calc = Engine.RenderView.Position;
 	m_mFullTransform_calc = Engine.RenderView.ViewProjection;
 
@@ -356,7 +356,7 @@ void __stdcall CDetailManager::MT_CALC()
 
 	MT.Enter();
 
-	// Используем ЗАХВАЧЕННУЮ позицию камеры
+	// РСЃРїРѕР»СЊР·СѓРµРј Р—РђРҐР’РђР§Р•РќРќРЈР® РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹
 	fvec3 EYE = m_vCameraPos_calc;
 
 	int s_x = iFloor(EYE.x / dm_slot_size + .5f);
@@ -466,7 +466,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 {
 	bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
 
-	// Сдвиг кеша (оставляем код сдвига)
+	// РЎРґРІРёРі РєРµС€Р° (РѕСЃС‚Р°РІР»СЏРµРј РєРѕРґ СЃРґРІРёРіР°)
 	while(cache_cx != v_x)
 	{
 		if(v_x > cache_cx)
@@ -524,7 +524,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 
 	bool bTasksProcessed = !cache_task.empty();
 
-	// PPL Распаковка
+	// PPL Р Р°СЃРїР°РєРѕРІРєР°
 	if(bTasksProcessed)
 	{
 		concurrency::parallel_for(size_t(0), cache_task.size(), [&](size_t i)
@@ -534,8 +534,8 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 		cache_task.clear();
 	}
 
-	// Обновление глобального AABB (MegaUpdate)
-	// ВАЖНО: обновляем если сдвинулись ИЛИ если распаковали новые слоты
+	// РћР±РЅРѕРІР»РµРЅРёРµ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ AABB (MegaUpdate)
+	// Р’РђР–РќРћ: РѕР±РЅРѕРІР»СЏРµРј РµСЃР»Рё СЃРґРІРёРЅСѓР»РёСЃСЊ РР›Р РµСЃР»Рё СЂР°СЃРїР°РєРѕРІР°Р»Рё РЅРѕРІС‹Рµ СЃР»РѕС‚С‹
 	if(bNeedMegaUpdate || bTasksProcessed)
 	{
 		for(int _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
@@ -588,7 +588,7 @@ void CDetailManager::InvalidateCache()
 
 	cache_task.clear();
 
-	// Очистка всех слотов и перезапуск их декомпрессии
+	// РћС‡РёСЃС‚РєР° РІСЃРµС… СЃР»РѕС‚РѕРІ Рё РїРµСЂРµР·Р°РїСѓСЃРє РёС… РґРµРєРѕРјРїСЂРµСЃСЃРёРё
 	for(int z = 0; z < dm_cache_line; z++)
 	{
 		for(int x = 0; x < dm_cache_line; x++)
@@ -599,7 +599,7 @@ void CDetailManager::InvalidateCache()
 				for(u32 i = 0; i < dm_obj_in_slot; i++)
 				{
 					S->G[i].items.clear();
-					// r_items удалены, больше ничего не чистим здесь
+					// r_items СѓРґР°Р»РµРЅС‹, Р±РѕР»СЊС€Рµ РЅРёС‡РµРіРѕ РЅРµ С‡РёСЃС‚РёРј Р·РґРµСЃСЊ
 				}
 				S->vis.clear();
 			}
@@ -613,7 +613,7 @@ void CDetailManager::InvalidateCache()
 		}
 	}
 
-	// Сброс видимости 1 уровня
+	// РЎР±СЂРѕСЃ РІРёРґРёРјРѕСЃС‚Рё 1 СѓСЂРѕРІРЅСЏ
 	for(int mz = 0; mz < dm_cache1_line; mz++)
 	{
 		for(int mx = 0; mx < dm_cache1_line; mx++)
@@ -623,7 +623,7 @@ void CDetailManager::InvalidateCache()
 		}
 	}
 
-	// Очистка централизованных буферов видимости (оба буфера, все волны)
+	// РћС‡РёСЃС‚РєР° С†РµРЅС‚СЂР°Р»РёР·РѕРІР°РЅРЅС‹С… Р±СѓС„РµСЂРѕРІ РІРёРґРёРјРѕСЃС‚Рё (РѕР±Р° Р±СѓС„РµСЂР°, РІСЃРµ РІРѕР»РЅС‹)
 	for(int buf = 0; buf < 2; ++buf)
 	{
 		for(int wave = 0; wave < 3; ++wave)
@@ -669,13 +669,13 @@ IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
 	return c > dither[col][row];
 }
 
-// Оптимизированная интерполяция без лишних делений
+// РћРїС‚РёРјРёР·РёСЂРѕРІР°РЅРЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ Р±РµР· Р»РёС€РЅРёС… РґРµР»РµРЅРёР№
 IC float InterpolateOptimized(float c0, float c1, float ratio)
 {
 	return c0 * (1.f - ratio) + c1 * ratio;
 }
 
-// Структура для кеширования треугольников
+// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РєРµС€РёСЂРѕРІР°РЅРёСЏ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 struct TriCache
 {
 	fvec3 v0, v1, v2;
@@ -720,7 +720,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 		alpha255[i][3] = k_alpha * float(DS.palette[i].a3);
 	}
 
-	// === ИСПОЛЬЗУЕМ НАСТРОЙКИ ===
+	// === РРЎРџРћР›Р¬Р—РЈР•Рњ РќРђРЎРўР РћР™РљР ===
 	float density = ps_r_Detail_density;
 	// ============================
 
@@ -738,7 +738,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	Fbox Bounds;
 	Bounds.invalidate();
 
-	// Кеш треугольников
+	// РљРµС€ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	const u32 MAX_TRIS_CACHE = 64;
 	TriCache t_cache[MAX_TRIS_CACHE];
 	u32 cached_tris_count = _min(triCount, MAX_TRIS_CACHE);
@@ -827,10 +827,10 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			if(y < D.vis.box.min.y)
 				continue;
 
-			Item_P.y = y - 0.17f; // Высота
+			Item_P.y = y - 0.17f; // Р’С‹СЃРѕС‚Р°
 
 			float base_scale = r_scale.randF(Dobj->m_fMinScale, Dobj->m_fMaxScale);
-			Item.scale = base_scale * ps_r_Detail_scale; // Масштаб
+			Item.scale = base_scale * ps_r_Detail_scale; // РњР°СЃС€С‚Р°Р±
 
 			fmat4x4 mScale, mTransform;
 			Fbox ItemBB;

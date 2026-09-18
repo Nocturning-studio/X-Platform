@@ -30,11 +30,11 @@ void CRender::LevelLoad(IReader* fs)
 	R_ASSERT(0 != g_pGameLevel);
 	R_ASSERT(!SceneGraph.b_loaded);
 
-	// Группа задач для Визуалов
+	// Р“СЂСѓРїРїР° Р·Р°РґР°С‡ РґР»СЏ Р’РёР·СѓР°Р»РѕРІ
 	concurrency::task_group tg_visuals;
 	std::atomic<int> active_tasks = 0;
 
-	// Хелпер
+	// РҐРµР»РїРµСЂ
 	auto run_task = [&](concurrency::task_group& tg, auto func)
 	{
 		active_tasks++;
@@ -56,7 +56,7 @@ void CRender::LevelLoad(IReader* fs)
 
 	g_pGamePersistent->LoadTitle("st_loading_components");
 
-	// --- ОПТИМИЗАЦИЯ СЕРВЕРА: Пропускаем создание визуальных эффектов ---
+	// --- РћРџРўРРњРР—РђР¦РРЇ РЎР•Р Р’Р•Р Рђ: РџСЂРѕРїСѓСЃРєР°РµРј СЃРѕР·РґР°РЅРёРµ РІРёР·СѓР°Р»СЊРЅС‹С… СЌС„С„РµРєС‚РѕРІ ---
 	if(!g_dedicated_server)
 	{
 		Wallmarks = xr_new<CWallmarksEngine>();
@@ -72,11 +72,11 @@ void CRender::LevelLoad(IReader* fs)
 	// ---------------------------------------------------------------------
 
 	// =================================================================================
-	// ШЕЙДЕРЫ (MAIN THREAD - СИНХРОННО)
+	// РЁР•Р™Р”Р•Р Р« (MAIN THREAD - РЎРРќРҐР РћРќРќРћ)
 	// =================================================================================
 	g_pGamePersistent->LoadTitle("st_loading_shaders");
 	{
-		// RT шейдеры нужны только для картинки
+		// RT С€РµР№РґРµСЂС‹ РЅСѓР¶РЅС‹ С‚РѕР»СЊРєРѕ РґР»СЏ РєР°СЂС‚РёРЅРєРё
 		if(!g_dedicated_server)
 		{
 			Msg("* Compiling RenderTarget shaders...");
@@ -110,7 +110,7 @@ void CRender::LevelLoad(IReader* fs)
 		}
 	}
 
-	// Геометрия
+	// Р“РµРѕРјРµС‚СЂРёСЏ
 	{
 		g_pGamePersistent->LoadTitle("st_loading_geometry");
 
@@ -133,26 +133,26 @@ void CRender::LevelLoad(IReader* fs)
 	g_pGamePersistent->LoadTitle("st_loading_spatial_db");
 
 	// =================================================================================
-	// ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ОБЪЕКТОВ
+	// РџРђР РђР›Р›Р•Р›Р¬РќРђРЇ Р—РђР“Р РЈР—РљРђ РћР‘РЄР•РљРўРћР’
 	// =================================================================================
 
-	// ЗАДАЧА A: Визуалы
-	// Загружаем даже на сервере, так как они нужны для RayPick'ов и определения хитбоксов
-	// в некоторых старых реализациях, а также для предотвращения пустых ссылок.
+	// Р—РђР”РђР§Рђ A: Р’РёР·СѓР°Р»С‹
+	// Р—Р°РіСЂСѓР¶Р°РµРј РґР°Р¶Рµ РЅР° СЃРµСЂРІРµСЂРµ, С‚Р°Рє РєР°Рє РѕРЅРё РЅСѓР¶РЅС‹ РґР»СЏ RayPick'РѕРІ Рё РѕРїСЂРµРґРµР»РµРЅРёСЏ С…РёС‚Р±РѕРєСЃРѕРІ
+	// РІ РЅРµРєРѕС‚РѕСЂС‹С… СЃС‚Р°СЂС‹С… СЂРµР°Р»РёР·Р°С†РёСЏС…, Р° С‚Р°РєР¶Рµ РґР»СЏ РїСЂРµРґРѕС‚РІСЂР°С‰РµРЅРёСЏ РїСѓСЃС‚С‹С… СЃСЃС‹Р»РѕРє.
 	IReader local_fs(level_data_ptr, level_size);
 	LoadVisuals(&local_fs);
 
 	if(!g_dedicated_server)
 	{
-		// ЗАДАЧА A: HOM (Hierarchical Occlusion Culling) - только для рендеринга
+		// Р—РђР”РђР§Рђ A: HOM (Hierarchical Occlusion Culling) - С‚РѕР»СЊРєРѕ РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР°
 		run_task(tg_visuals, [this]()
 				 { HOM.Load(); CPUOCC.Load(HOM); });
 
-		// ЗАДАЧА B: Детейлы (Трава)
+		// Р—РђР”РђР§Рђ B: Р”РµС‚РµР№Р»С‹ (РўСЂР°РІР°)
 		run_task(tg_visuals, [this]()
 				 { Details->Load(); });
 
-		// ЗАДАЧА C: Sun Occluder
+		// Р—РђР”РђР§Рђ C: Sun Occluder
 		run_task(tg_visuals, [this]()
 				 { m_SunOccluder->Load(); });
 	}
@@ -165,7 +165,7 @@ void CRender::LevelLoad(IReader* fs)
 	}
 	tg_visuals.wait();
 
-	// Финализация (Main Thread)
+	// Р¤РёРЅР°Р»РёР·Р°С†РёСЏ (Main Thread)
 	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
 	{
 		IReader local_fs_sectors(level_data_ptr, level_size);
@@ -186,7 +186,7 @@ void CRender::LevelLoad(IReader* fs)
 
 	xr_free(level_data_ptr);
 
-	// Очищаем списки через m_packet
+	// РћС‡РёС‰Р°РµРј СЃРїРёСЃРєРё С‡РµСЂРµР· m_packet
 	SceneGraph.m_packet.lstLODs.clear();
 	SceneGraph.m_packet.lstLODgroups.clear();
 	SceneGraph.m_packet.mapLOD.clear();
@@ -268,7 +268,7 @@ void CRender::LevelUnload()
 	//*** Components
 	g_pGamePersistent->LoadTitle("st_unloading_components");
 
-	// Details уже удален выше
+	// Details СѓР¶Рµ СѓРґР°Р»РµРЅ РІС‹С€Рµ
 	if(Wallmarks)
 	{
 		xr_delete(Wallmarks);
@@ -299,12 +299,12 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 		_DC.resize(count);
 		_VB.resize(count);
 
-		// Используем временный буфер для чтения
+		// РСЃРїРѕР»СЊР·СѓРµРј РІСЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ РґР»СЏ С‡С‚РµРЅРёСЏ
 		xr_vector<u8> temp_buffer;
 
 		for(u32 i = 0; i < count; i++)
 		{
-			// Читаем декларацию
+			// Р§РёС‚Р°РµРј РґРµРєР»Р°СЂР°С†РёСЋ
 			u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
 			D3DVERTEXELEMENT9* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
 			fs->r(dcl, buffer_size);
@@ -314,21 +314,21 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			_DC[i].resize(dcl_len);
 			fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
 
-			// Читаем данные вершин
+			// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ РІРµСЂС€РёРЅ
 			u32 vCount = fs->r_u32();
 			u32 vSize = D3DXGetDeclVertexSize(dcl, 0);
 			u32 byteSize = vCount * vSize;
 
 			Msg("* [Loading VB] %d verts, %d Kb", vCount, byteSize / 1024);
 
-			// Читаем в RAM
+			// Р§РёС‚Р°РµРј РІ RAM
 			temp_buffer.resize(byteSize);
 			fs->r(temp_buffer.data(), byteSize);
 
-			// Создаем буфер
+			// РЎРѕР·РґР°РµРј Р±СѓС„РµСЂ
 			R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(byteSize, dwUsage, 0, D3DPOOL_DEFAULT, &_VB[i], 0));
 
-			// Копируем из RAM в VRAM
+			// РљРѕРїРёСЂСѓРµРј РёР· RAM РІ VRAM
 			void* pData = 0;
 			R_CHK(_VB[i]->Lock(0, 0, (void**)&pData, 0));
 			CopyMemory(pData, temp_buffer.data(), byteSize);
@@ -351,11 +351,11 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			u32 byteSize = iCount * 2;
 			Msg("* [Loading IB] %d indices, %d Kb", iCount, byteSize / 1024);
 
-			// ОПТИМИЗАЦИЯ: Читаем в RAM
+			// РћРџРўРРњРР—РђР¦РРЇ: Р§РёС‚Р°РµРј РІ RAM
 			temp_buffer.resize(byteSize);
 			fs->r(temp_buffer.data(), byteSize);
 
-			// Создаем и копируем
+			// РЎРѕР·РґР°РµРј Рё РєРѕРїРёСЂСѓРµРј
 			void* pData = 0;
 			R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(byteSize, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &_IB[i], 0));
 			R_CHK(_IB[i]->Lock(0, 0, (void**)&pData, 0));

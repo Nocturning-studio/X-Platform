@@ -25,8 +25,8 @@ struct DynamicRenderNode
 	fmat4x4 transform;
 	CROS_impl::AOCube ao_cube;
 
-	// Дефолтный — чтобы ноды в контейнерах не содержали мусора
-	// до того, как их заполнят через Copy()/конструктор.
+	// Р”РµС„РѕР»С‚РЅС‹Р№ вЂ” С‡С‚РѕР±С‹ РЅРѕРґС‹ РІ РєРѕРЅС‚РµР№РЅРµСЂР°С… РЅРµ СЃРѕРґРµСЂР¶Р°Р»Рё РјСѓСЃРѕСЂР°
+	// РґРѕ С‚РѕРіРѕ, РєР°Рє РёС… Р·Р°РїРѕР»РЅСЏС‚ С‡РµСЂРµР· Copy()/РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ.
 	DynamicRenderNode()
 		: screenSpaceArea(0.f), pVisual(nullptr)
 	{
@@ -34,16 +34,16 @@ struct DynamicRenderNode
 		ZeroMemory(ao_cube.data(), sizeof(ao_cube));
 	}
 
-	// Конструктор "на месте" — то, что чаще всего нужно
-	// в EnqueueDynamic / EnqueueStatic.
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ "РЅР° РјРµСЃС‚Рµ" вЂ” С‚Рѕ, С‡С‚Рѕ С‡Р°С‰Рµ РІСЃРµРіРѕ РЅСѓР¶РЅРѕ
+	// РІ EnqueueDynamic / EnqueueStatic.
 	DynamicRenderNode(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
 		: screenSpaceArea(ssa), pVisual(pVis), transform(trans)
 	{
 		CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
 	}
 
-	// Универсальный заполнитель, если нода уже создана
-	// (например, в FixedMAP вернулась из insert()).
+	// РЈРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Р№ Р·Р°РїРѕР»РЅРёС‚РµР»СЊ, РµСЃР»Рё РЅРѕРґР° СѓР¶Рµ СЃРѕР·РґР°РЅР°
+	// (РЅР°РїСЂРёРјРµСЂ, РІ FixedMAP РІРµСЂРЅСѓР»Р°СЃСЊ РёР· insert()).
 	IC void Copy(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
 	{
 		screenSpaceArea = ssa;

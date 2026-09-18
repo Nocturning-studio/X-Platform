@@ -30,7 +30,7 @@ static void fill_vid_mode_list()
 
 	xr_vector<std::pair<u32, u32>> resolutions;
 
-	// Собираем все режимы со всех дисплеев
+	// РЎРѕР±РёСЂР°РµРј РІСЃРµ СЂРµР¶РёРјС‹ СЃРѕ РІСЃРµС… РґРёСЃРїР»РµРµРІ
 	int display_count = 0;
 	SDL_DisplayID* displays = SDL_GetDisplays(&display_count);
 	if(displays && display_count > 0)
@@ -55,7 +55,7 @@ static void fill_vid_mode_list()
 		SDL_free(displays);
 	}
 
-	// Fallback: текущий desktop-режим основного дисплея
+	// Fallback: С‚РµРєСѓС‰РёР№ desktop-СЂРµР¶РёРј РѕСЃРЅРѕРІРЅРѕРіРѕ РґРёСЃРїР»РµСЏ
 	if(resolutions.empty())
 	{
 		SDL_DisplayID primary = SDL_GetPrimaryDisplay();
@@ -64,17 +64,17 @@ static void fill_vid_mode_list()
 			resolutions.emplace_back((u32)dm->w, (u32)dm->h);
 	}
 
-	// Сортируем по возрастанию (ширина, затем высота)
+	// РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ (С€РёСЂРёРЅР°, Р·Р°С‚РµРј РІС‹СЃРѕС‚Р°)
 	std::sort(resolutions.begin(), resolutions.end(),
 			  [](const std::pair<u32, u32>& a, const std::pair<u32, u32>& b)
 			  {
 				  return a.first != b.first ? a.first < b.first : a.second < b.second;
 			  });
 
-	// Убираем дубликаты
+	// РЈР±РёСЂР°РµРј РґСѓР±Р»РёРєР°С‚С‹
 	resolutions.erase(std::unique(resolutions.begin(), resolutions.end()), resolutions.end());
 
-	// Формируем токены
+	// Р¤РѕСЂРјРёСЂСѓРµРј С‚РѕРєРµРЅС‹
 	xr_vector<LPCSTR> _tmp;
 	_tmp.reserve(resolutions.size());
 	for(const auto& res : resolutions)
@@ -757,13 +757,13 @@ void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 	u32 width, height;
 	target->get_level_desc(mip_level, width, height);
 
-	// Сохраняем состояние
+	// РЎРѕС…СЂР°РЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 	SaveRenderState();
 
-	// Рендерим
+	// Р РµРЅРґРµСЂРёРј
 	RenderViewportSurface(width, height, mip_surface);
 
-	// Восстанавливаем состояние
+	// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 	RestoreRenderState();
 
 	mip_surface->Release();
@@ -781,28 +781,28 @@ void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElemen
 	u32 width, height;
 	target->get_level_desc(mip_level, width, height);
 
-	// Сохраняем состояние
+	// РЎРѕС…СЂР°РЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 	SaveRenderState();
 
-	// Устанавливаем шейдер
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€РµР№РґРµСЂ
 	set_Element(shader, pass);
 
-	// Рендерим
+	// Р РµРЅРґРµСЂРёРј
 	RenderViewportSurface(width, height, mip_surface);
 
-	// Восстанавливаем состояние
+	// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 	RestoreRenderState();
 
 	mip_surface->Release();
 }
 
-// Генерация mip-цепочки
+// Р“РµРЅРµСЂР°С†РёСЏ mip-С†РµРїРѕС‡РєРё
 void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
 {
 	if(!source || !mip_chain || !source->valid() || !mip_chain->valid())
 		return;
 
-	// Копируем исходное изображение в уровень 0
+	// РљРѕРїРёСЂСѓРµРј РёСЃС…РѕРґРЅРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ РІ СѓСЂРѕРІРµРЅСЊ 0
 	IDirect3DSurface9* src_surface = source->pRT;
 	IDirect3DSurface9* dst_level0 = mip_chain->get_surface_level(0);
 
@@ -814,14 +814,14 @@ void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderEle
 		dst_level0->Release();
 	}
 
-	// Генерируем остальные mip-уровни
+	// Р“РµРЅРµСЂРёСЂСѓРµРј РѕСЃС‚Р°Р»СЊРЅС‹Рµ mip-СѓСЂРѕРІРЅРё
 	for(u32 i = 1; i < mip_chain->get_levels_count(); i++)
 	{
 		RenderToMipLevel(mip_chain, i, downsample_shader, pass);
 	}
 }
 
-// Копирование содержимого из одного ref_rt в другой
+// РљРѕРїРёСЂРѕРІР°РЅРёРµ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РёР· РѕРґРЅРѕРіРѕ ref_rt РІ РґСЂСѓРіРѕР№
 void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 {
 	if(!source || !destination || !source->valid() || !destination->valid())
@@ -830,7 +830,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 		return;
 	}
 
-	// Получаем поверхности
+	// РџРѕР»СѓС‡Р°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	IDirect3DSurface9* src_surface = source->pRT;
 	IDirect3DSurface9* dst_surface = destination->pRT;
 
@@ -840,11 +840,11 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 		return;
 	}
 
-	// Определяем области копирования
+	// РћРїСЂРµРґРµР»СЏРµРј РѕР±Р»Р°СЃС‚Рё РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
-	// Выполняем копирование
+	// Р’С‹РїРѕР»РЅСЏРµРј РєРѕРїРёСЂРѕРІР°РЅРёРµ
 	HRESULT hr = RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
 
 	if(FAILED(hr))
@@ -853,7 +853,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 	}
 }
 
-// Версия с указанием фильтра
+// Р’РµСЂСЃРёСЏ СЃ СѓРєР°Р·Р°РЅРёРµРј С„РёР»СЊС‚СЂР°
 void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination || !source->valid() || !destination->valid())
@@ -871,7 +871,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DT
 	RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
-// Версия с указанием конкретных областей
+// Р’РµСЂСЃРёСЏ СЃ СѓРєР°Р·Р°РЅРёРµРј РєРѕРЅРєСЂРµС‚РЅС‹С… РѕР±Р»Р°СЃС‚РµР№
 void CRenderBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination || !source->valid() || !destination->valid())
@@ -894,7 +894,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 		return;
 	}
 
-	// Получаем описания поверхностей для проверки
+	// РџРѕР»СѓС‡Р°РµРј РѕРїРёСЃР°РЅРёСЏ РїРѕРІРµСЂС…РЅРѕСЃС‚РµР№ РґР»СЏ РїСЂРѕРІРµСЂРєРё
 	D3DSURFACE_DESC src_desc, dst_desc;
 	HRESULT hr1 = source->GetDesc(&src_desc);
 	HRESULT hr2 = destination->GetDesc(&dst_desc);
@@ -905,11 +905,11 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 		return;
 	}
 
-	// Определяем области копирования
+	// РћРїСЂРµРґРµР»СЏРµРј РѕР±Р»Р°СЃС‚Рё РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	RECT src_rect = {0, 0, (LONG)src_desc.Width, (LONG)src_desc.Height};
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
-	// Выполняем копирование
+	// Р’С‹РїРѕР»РЅСЏРµРј РєРѕРїРёСЂРѕРІР°РЅРёРµ
 	HRESULT hr = RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
 
 	if(FAILED(hr))
@@ -918,7 +918,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 	}
 }
 
-// Версия с фильтром
+// Р’РµСЂСЃРёСЏ СЃ С„РёР»СЊС‚СЂРѕРј
 void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination)
@@ -934,7 +934,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 	RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
-// Версия с указанием областей
+// Р’РµСЂСЃРёСЏ СЃ СѓРєР°Р·Р°РЅРёРµРј РѕР±Р»Р°СЃС‚РµР№
 void CRenderBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination)

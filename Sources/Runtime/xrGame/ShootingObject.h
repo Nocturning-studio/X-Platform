@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
-// ShootingObject.h: интерфейс для семейства стреляющих объектов
-//					 (оружие и осколочные гранаты)
-//					 обеспечивает набор хитов, звуков рикошетп
+// ShootingObject.h: РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ СЃРµРјРµР№СЃС‚РІР° СЃС‚СЂРµР»СЏСЋС‰РёС… РѕР±СЉРµРєС‚РѕРІ
+//					 (РѕСЂСѓР¶РёРµ Рё РѕСЃРєРѕР»РѕС‡РЅС‹Рµ РіСЂР°РЅР°С‚С‹)
+//					 РѕР±РµСЃРїРµС‡РёРІР°РµС‚ РЅР°Р±РѕСЂ С…РёС‚РѕРІ, Р·РІСѓРєРѕРІ СЂРёРєРѕС€РµС‚Рї
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -30,7 +30,7 @@ class CShootingObject
 
 	fvec3 m_vCurrentShootDir;
 	fvec3 m_vCurrentShootPos;
-	// ID персонажа который иницировал действие
+	// ID РїРµСЂСЃРѕРЅР°Р¶Р° РєРѕС‚РѕСЂС‹Р№ РёРЅРёС†РёСЂРѕРІР°Р» РґРµР№СЃС‚РІРёРµ
 	u16 m_iCurrentParentID;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -68,21 +68,21 @@ class CShootingObject
 	// float					fHitPower;
 	float fHitImpulse;
 
-	// скорость вылета пули из ствола
+	// СЃРєРѕСЂРѕСЃС‚СЊ РІС‹Р»РµС‚Р° РїСѓР»Рё РёР· СЃС‚РІРѕР»Р°
 	float m_fStartBulletSpeed;
-	// максимальное расстояние стрельбы
+	// РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЃС‚СЂРµР»СЊР±С‹
 	float fireDistance;
 
-	// рассеивание во время стрельбы
+	// СЂР°СЃСЃРµРёРІР°РЅРёРµ РІРѕ РІСЂРµРјСЏ СЃС‚СЂРµР»СЊР±С‹
 	float fireDispersionBase;
 	float zoom_fireDispersionBase;
 
-	// счетчик времени, затрачиваемого на выстрел
+	// СЃС‡РµС‚С‡РёРє РІСЂРµРјРµРЅРё, Р·Р°С‚СЂР°С‡РёРІР°РµРјРѕРіРѕ РЅР° РІС‹СЃС‚СЂРµР»
 	float fTime;
 
   protected:
-	// для сталкеров, чтоб они знали эффективные границы использования
-	// оружия
+	// РґР»СЏ СЃС‚Р°Р»РєРµСЂРѕРІ, С‡С‚РѕР± РѕРЅРё Р·РЅР°Р»Рё СЌС„С„РµРєС‚РёРІРЅС‹Рµ РіСЂР°РЅРёС†С‹ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+	// РѕСЂСѓР¶РёСЏ
 	float m_fMinRadius;
 	float m_fMaxRadius;
 
@@ -100,7 +100,7 @@ class CShootingObject
 	float light_lifetime;
 	u32 light_frame;
 	float light_time;
-	// включение подсветки во время выстрела
+	// РІРєР»СЋС‡РµРЅРёРµ РїРѕРґСЃРІРµС‚РєРё РІРѕ РІСЂРµРјСЏ РІС‹СЃС‚СЂРµР»Р°
 	bool m_bLightShotEnabled;
 
   protected:
@@ -116,16 +116,16 @@ class CShootingObject
 	virtual void StopLight();
 
 	//////////////////////////////////////////////////////////////////////////
-	// партикловая система
+	// РїР°СЂС‚РёРєР»РѕРІР°СЏ СЃРёСЃС‚РµРјР°
 	//////////////////////////////////////////////////////////////////////////
   protected:
-	// функции родительского объекта
+	// С„СѓРЅРєС†РёРё СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 	virtual const fvec3& get_CurrentFirePoint() = 0;
 	virtual const fmat4x4& get_ParticlesTransform() = 0;
 	virtual void ForceUpdateFireParticles() {};
 
 	////////////////////////////////////////////////
-	// общие функции для работы с партиклами оружия
+	// РѕР±С‰РёРµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїР°СЂС‚РёРєР»Р°РјРё РѕСЂСѓР¶РёСЏ
 	virtual void StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const fvec3& pos,
 								const fvec3& vel = zero_vel, bool auto_remove_flag = false);
 	virtual void StopParticles(CParticlesObject*& pParticles);
@@ -135,23 +135,23 @@ class CShootingObject
 	virtual void LoadFlameParticles(LPCSTR section, LPCSTR prefix);
 
 	////////////////////////////////////////////////
-	// спецефические функции для партиклов
-	// партиклы огня
+	// СЃРїРµС†РµС„РёС‡РµСЃРєРёРµ С„СѓРЅРєС†РёРё РґР»СЏ РїР°СЂС‚РёРєР»РѕРІ
+	// РїР°СЂС‚РёРєР»С‹ РѕРіРЅСЏ
 	virtual void StartFlameParticles();
 	virtual void StopFlameParticles();
 	virtual void UpdateFlameParticles();
 
-	// партиклы дыма
+	// РїР°СЂС‚РёРєР»С‹ РґС‹РјР°
 	virtual void StartSmokeParticles(const fvec3& play_pos, const fvec3& parent_vel);
 
-	// партиклы полосы от пули
+	// РїР°СЂС‚РёРєР»С‹ РїРѕР»РѕСЃС‹ РѕС‚ РїСѓР»Рё
 	virtual void StartShotParticles();
 
-	// партиклы гильз
+	// РїР°СЂС‚РёРєР»С‹ РіРёР»СЊР·
 	virtual void OnShellDrop(const fvec3& play_pos, const fvec3& parent_vel);
 
   protected:
-	// имя пратиклов для гильз
+	// РёРјСЏ РїСЂР°С‚РёРєР»РѕРІ РґР»СЏ РіРёР»СЊР·
 	shared_str m_sShellParticles;
 
   public:
@@ -161,17 +161,17 @@ class CShootingObject
 	BOOL m_bUseAimBullet;
 
   protected:
-	// имя пратиклов для огня
+	// РёРјСЏ РїСЂР°С‚РёРєР»РѕРІ РґР»СЏ РѕРіРЅСЏ
 	shared_str m_sFlameParticlesCurrent;
-	// для выстрела 1м и 2м видом стрельбы
+	// РґР»СЏ РІС‹СЃС‚СЂРµР»Р° 1Рј Рё 2Рј РІРёРґРѕРј СЃС‚СЂРµР»СЊР±С‹
 	shared_str m_sFlameParticles;
-	// объект партиклов огня
+	// РѕР±СЉРµРєС‚ РїР°СЂС‚РёРєР»РѕРІ РѕРіРЅСЏ
 	CParticlesObject* m_pFlameParticles;
 
-	// имя пратиклов для дыма
+	// РёРјСЏ РїСЂР°С‚РёРєР»РѕРІ РґР»СЏ РґС‹РјР°
 	shared_str m_sSmokeParticlesCurrent;
 	shared_str m_sSmokeParticles;
 
-	// имя партиклов следа от пули
+	// РёРјСЏ РїР°СЂС‚РёРєР»РѕРІ СЃР»РµРґР° РѕС‚ РїСѓР»Рё
 	shared_str m_sShotParticles;
 };

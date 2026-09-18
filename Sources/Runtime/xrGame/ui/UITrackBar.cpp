@@ -39,7 +39,7 @@ bool CUITrackBar::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	if(m_bCursorOverWindow)
 	{
-		// Показываем текст при наведении
+		// РџРѕРєР°Р·С‹РІР°РµРј С‚РµРєСЃС‚ РїСЂРё РЅР°РІРµРґРµРЅРёРё
 		if(!m_pStaticValue->GetVisible())
 			m_pStaticValue->SetVisible(true);
 
@@ -48,7 +48,7 @@ bool CUITrackBar::OnMouse(float x, float y, EUIMessages mouse_action)
 	}
 	else
 	{
-		// Скрываем текст когда курсор ушел
+		// РЎРєСЂС‹РІР°РµРј С‚РµРєСЃС‚ РєРѕРіРґР° РєСѓСЂСЃРѕСЂ СѓС€РµР»
 		if(m_pStaticValue->GetVisible())
 			m_pStaticValue->SetVisible(false);
 	}
@@ -243,7 +243,7 @@ void CUITrackBar::UpdatePos()
 
 	m_pSlider->SetWndPos(pos);
 
-	// Обновляем текст значения
+	// РћР±РЅРѕРІР»СЏРµРј С‚РµРєСЃС‚ Р·РЅР°С‡РµРЅРёСЏ
 	UpdateStaticValue();
 	SaveValue();
 }

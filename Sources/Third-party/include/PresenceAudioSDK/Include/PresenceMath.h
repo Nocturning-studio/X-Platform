@@ -339,7 +339,7 @@ public:
     /**
      * @brief Unary minus (Vector inversion).
      * @return Vector (-x, -y).
-     * @note Implemented by simple negation – no SSE required.
+     * @note Implemented by simple negation â€“ no SSE required.
      */
     inline float2 operator-() const noexcept
     {
@@ -437,7 +437,7 @@ public:
     }
 
     /**
-     * @brief Cross Product (2D analog – returns a scalar).
+     * @brief Cross Product (2D analog â€“ returns a scalar).
      * @return The signed area of the parallelogram formed by the two vectors.
      * @note In 2D the cross product yields the z-component of the 3D cross product.
      *       Formula: x * v.y - y * v.x.

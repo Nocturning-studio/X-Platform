@@ -1,4 +1,4 @@
-﻿/*
+/*
 ====================================================================================================
   Presence Audio SDK - Main System Interface
   High-Performance Real-time Audio Path Tracing & EAX Simulation Library

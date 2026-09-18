@@ -100,8 +100,8 @@ class ENGINE_API CStats : public pureRender
 	CStats();
 	~CStats();
 
-	// Методы жизненного цикла (вызываются из Engine)
-	void Initialize(); // Сброс данных
+	// РњРµС‚РѕРґС‹ Р¶РёР·РЅРµРЅРЅРѕРіРѕ С†РёРєР»Р° (РІС‹Р·С‹РІР°СЋС‚СЃСЏ РёР· Engine)
+	void Initialize(); // РЎР±СЂРѕСЃ РґР°РЅРЅС‹С…
 	void Destroy();
 
 	IC CGameFont* Font()
@@ -109,13 +109,13 @@ class ENGINE_API CStats : public pureRender
 		return pFont;
 	}
 
-	// Методы графического цикла (вызываются из Device)
+	// РњРµС‚РѕРґС‹ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ С†РёРєР»Р° (РІС‹Р·С‹РІР°СЋС‚СЃСЏ РёР· Device)
 	void OnDeviceCreate();
 	void OnDeviceDestroy();
 
-	// Отрисовка на экран
+	// РћС‚СЂРёСЃРѕРІРєР° РЅР° СЌРєСЂР°РЅ
 	void Show();
-	virtual void OnRender(); // Если наследуемся от pureRender
+	virtual void OnRender(); // Р•СЃР»Рё РЅР°СЃР»РµРґСѓРµРјСЃСЏ РѕС‚ pureRender
 };
 
 enum

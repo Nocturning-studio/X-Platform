@@ -1,4 +1,4 @@
-﻿#include "pch_script.h"
+#include "pch_script.h"
 #include "UICarBodyWnd.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"

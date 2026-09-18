@@ -16,10 +16,10 @@ XRCORE_API xrDebug Debug;
 static bool error_after_dialog = false;
 
 // ---------------------------------------------------------------------------
-// Вспомогательные функции
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 // ---------------------------------------------------------------------------
 
-// Копирование текста в буфер обмена
+// РљРѕРїРёСЂРѕРІР°РЅРёРµ С‚РµРєСЃС‚Р° РІ Р±СѓС„РµСЂ РѕР±РјРµРЅР°
 static void CopyToClipboard(const char* text)
 {
 	if(OpenClipboard(nullptr))
@@ -37,7 +37,7 @@ static void CopyToClipboard(const char* text)
 	}
 }
 
-// Форматирование стека вызовов с помощью DebugSupport
+// Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ СЃС‚РµРєР° РІС‹Р·РѕРІРѕРІ СЃ РїРѕРјРѕС‰СЊСЋ DebugSupport
 static std::string GetStackTraceString(EXCEPTION_POINTERS* pExceptionInfo = nullptr)
 {
 	auto& dbg = DebugSupport::Instance();
@@ -51,7 +51,7 @@ static std::string GetStackTraceString(EXCEPTION_POINTERS* pExceptionInfo = null
 	return result;
 }
 
-// Запись стека в лог (без EXCEPTION_POINTERS, для текущего потока)
+// Р—Р°РїРёСЃСЊ СЃС‚РµРєР° РІ Р»РѕРі (Р±РµР· EXCEPTION_POINTERS, РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РїРѕС‚РѕРєР°)
 void LogStackTrace(LPCSTR header)
 {
 	if(!shared_str_initialized)
@@ -63,7 +63,7 @@ void LogStackTrace(LPCSTR header)
 		Msg("%s", f.c_str());
 }
 
-// Сбор строки с информацией об ошибке (включая стек, если нужно)
+// РЎР±РѕСЂ СЃС‚СЂРѕРєРё СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ РѕР± РѕС€РёР±РєРµ (РІРєР»СЋС‡Р°СЏ СЃС‚РµРє, РµСЃР»Рё РЅСѓР¶РЅРѕ)
 static void gather_info(const char* expression, const char* description,
 						const char* argument0, const char* argument1,
 						const char* file, int line, const char* function,
@@ -130,7 +130,7 @@ static void gather_info(const char* expression, const char* description,
 				Msg("%s", outBuffer);
 				FlushLog();
 			}
-			// переходим ко второму проходу для GUI (CR+LF, без префикса)
+			// РїРµСЂРµС…РѕРґРёРј РєРѕ РІС‚РѕСЂРѕРјСѓ РїСЂРѕС…РѕРґСѓ РґР»СЏ GUI (CR+LF, Р±РµР· РїСЂРµС„РёРєСЃР°)
 			buf = outBuffer;
 			remain = bufferSize;
 			endline = "\r\n";
@@ -150,7 +150,7 @@ static void gather_info(const char* expression, const char* description,
 			{
 				Msg("stack trace:\n");
 				auto lines = GetStackTraceString();
-				// разбить на строки и вывести через Msg
+				// СЂР°Р·Р±РёС‚СЊ РЅР° СЃС‚СЂРѕРєРё Рё РІС‹РІРµСЃС‚Рё С‡РµСЂРµР· Msg
 				size_t pos = 0;
 				while(pos < stack.size())
 				{
@@ -168,7 +168,7 @@ static void gather_info(const char* expression, const char* description,
 }
 
 // ---------------------------------------------------------------------------
-// Методы xrDebug
+// РњРµС‚РѕРґС‹ xrDebug
 // ---------------------------------------------------------------------------
 
 void xrDebug::backend(const char* expression, const char* description,
@@ -189,7 +189,7 @@ void xrDebug::backend(const char* expression, const char* description,
 				file, line, function, true,
 				assertion_info, sizeof(assertion_info));
 
-	// Дописываем кнопки
+	// Р”РѕРїРёСЃС‹РІР°РµРј РєРЅРѕРїРєРё
 	LPCSTR endline = "\r\n";
 	size_t len = strlen(assertion_info);
 	_snprintf(assertion_info + len, sizeof(assertion_info) - len,
@@ -290,7 +290,7 @@ void xrDebug::do_exit(const std::string& message)
 }
 
 // ---------------------------------------------------------------------------
-// Обработчики ошибок / исключений
+// РћР±СЂР°Р±РѕС‚С‡РёРєРё РѕС€РёР±РѕРє / РёСЃРєР»СЋС‡РµРЅРёР№
 // ---------------------------------------------------------------------------
 
 static void format_message(LPSTR buffer, size_t size)
@@ -379,7 +379,7 @@ int out_of_memory_handler(size_t size)
 }
 
 // ---------------------------------------------------------------------------
-// Необработанное исключение (использует DebugSupport)
+// РќРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅРѕРµ РёСЃРєР»СЋС‡РµРЅРёРµ (РёСЃРїРѕР»СЊР·СѓРµС‚ DebugSupport)
 // ---------------------------------------------------------------------------
 static LPTOP_LEVEL_EXCEPTION_FILTER previous_filter = nullptr;
 
@@ -435,7 +435,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
 }
 
 // ---------------------------------------------------------------------------
-// Инициализация / завершение
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ / Р·Р°РІРµСЂС€РµРЅРёРµ
 // ---------------------------------------------------------------------------
 void xrDebug::Initialize(const bool& dedicated)
 {

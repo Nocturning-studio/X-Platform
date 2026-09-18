@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "script_render_device.h"
-#include "xrEngine/Engine.h"	 // Обязательно: доступ к Engine
-#include "xrEngine/RenderView.h" // Обязательно: доступ к структуре RenderView
+#include "xrEngine/Engine.h"	 // РћР±СЏР·Р°С‚РµР»СЊРЅРѕ: РґРѕСЃС‚СѓРї Рє Engine
+#include "xrEngine/RenderView.h" // РћР±СЏР·Р°С‚РµР»СЊРЅРѕ: РґРѕСЃС‚СѓРї Рє СЃС‚СЂСѓРєС‚СѓСЂРµ RenderView
 
 using namespace luabind;
 
@@ -21,7 +21,7 @@ bool is_app_ready()
 	return !!g_appLoaded;
 }
 
-// --- Helper Functions для TimeManager ---
+// --- Helper Functions РґР»СЏ TimeManager ---
 u32 time_global(const CRenderDevice* self)
 {
 	return Engine.TimeManager.GetGlobalTimeMs();
@@ -42,9 +42,9 @@ u32 get_frame(const CRenderDevice* self)
 	return Engine.TimeManager.GetFrameCount();
 }
 
-// --- Helper Functions для RenderView (Камера) ---
-// Принимаем CRenderDevice*, чтобы Luabind понял контекст "self",
-// но данные берем из Engine.RenderView
+// --- Helper Functions РґР»СЏ RenderView (РљР°РјРµСЂР°) ---
+// РџСЂРёРЅРёРјР°РµРј CRenderDevice*, С‡С‚РѕР±С‹ Luabind РїРѕРЅСЏР» РєРѕРЅС‚РµРєСЃС‚ "self",
+// РЅРѕ РґР°РЅРЅС‹Рµ Р±РµСЂРµРј РёР· Engine.RenderView
 
 const fvec3& get_cam_pos(const CRenderDevice* self)
 {

@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "R_Backend_StateCache.h"
 #include "R_Backend.h" // for CRenderBackend & stat
 

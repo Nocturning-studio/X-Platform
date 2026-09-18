@@ -57,7 +57,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 		LPSTR op_server = LPSTR(P1);
 		LPSTR op_client = LPSTR(P2);
 
-		// ... (ëîãèêà main_menu) ...
+		// ... (Ð»Ð¾Ð³Ð¸ÐºÐ° main_menu) ...
 		{
 			Console->Execute("main_menu off");
 			Console->Hide();
@@ -65,7 +65,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGamePersistent->PreStart(op_server);
 			g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 
-			// --- ÄÅËÅÃÈÐÓÅÌ ÇÀÃÐÓÇÊÓ ---
+			// --- Ð”Ð•Ð›Ð•Ð“Ð˜Ð Ð£Ð•Ðœ Ð—ÐÐ“Ð Ð£Ð—ÐšÐ£ ---
 			Engine.LoadingScreen->Show();
 			// ----------------------------
 
@@ -73,7 +73,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGamePersistent->Start(op_server);
 			g_pGameLevel->net_Start(op_server, op_client);
 
-			// --- ÄÅËÅÃÈÐÓÅÌ ÇÀÂÅÐØÅÍÈÅ ---
+			// --- Ð”Ð•Ð›Ð•Ð“Ð˜Ð Ð£Ð•Ðœ Ð—ÐÐ’Ð•Ð Ð¨Ð•ÐÐ˜Ð• ---
 			Engine.LoadingScreen->Hide();
 			// -----------------------------
 		}
@@ -98,18 +98,18 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGameStateManager::OnFrame()
 {
-	// Îáðàáîòêà ñîáûòèé
+	// ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ð¹
 	Engine.Event.OnFrame();
 
-	// Îáíîâëåíèå ïðîñòðàíñòâåííûõ áàç
+	// ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿Ñ€Ð¾ÑÑ‚Ñ€Ð°Ð½ÑÑ‚Ð²ÐµÐ½Ð½Ñ‹Ñ… Ð±Ð°Ð·
 	g_SpatialSpace->update();
 	g_SpatialSpacePhysic->update();
 
-	// Çâóêîâûå ñîáûòèÿ óðîâíÿ
+	// Ð—Ð²ÑƒÐºÐ¾Ð²Ñ‹Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ ÑƒÑ€Ð¾Ð²Ð½Ñ
 	if(g_pGameLevel)
 		g_pGameLevel->SoundEvent_Dispatch();
 
-	// Äëÿ âûäåëåííîãî ñåðâåðà îáíîâëåíèå êîíñîëè çäåñü
+	// Ð”Ð»Ñ Ð²Ñ‹Ð´ÐµÐ»ÐµÐ½Ð½Ð¾Ð³Ð¾ ÑÐµÑ€Ð²ÐµÑ€Ð° Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð½ÑÐ¾Ð»Ð¸ Ð·Ð´ÐµÑÑŒ
 	if(g_dedicated_server)
 		Console->OnFrame();
 

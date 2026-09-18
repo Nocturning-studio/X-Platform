@@ -33,7 +33,7 @@ class CUIFrameWindow : public CUIWindow, public CUIMultiTextureOwner
 	virtual void Draw();
 	virtual void Update();
 
-	// текст заголовка
+	// С‚РµРєСЃС‚ Р·Р°РіРѕР»РѕРІРєР°
 	CUIStatic* UITitleText;
 	CUIStatic* GetTitleStatic()
 	{

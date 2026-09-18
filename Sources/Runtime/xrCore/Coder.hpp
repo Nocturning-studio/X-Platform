@@ -74,7 +74,7 @@ static DWORD low = 0, code = 0, range = 0;
 inline void rcEncNormalize(_PPMD_FILE* stream)
 {
 	while((low ^ (low + range)) < TOP ||
-		  range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Èñïðàâëåíî: ~low + 1 âìåñòî -low
+		  range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾: ~low + 1 Ð²Ð¼ÐµÑÑ‚Ð¾ -low
 	{
 		_PPMD_E_PUTC(low >> 24, stream);
 		range <<= 8;
@@ -85,7 +85,7 @@ inline void rcEncNormalize(_PPMD_FILE* stream)
 static inline void rcInitEncoder()
 {
 	low = 0;
-	range = ~0U; // Èñïðàâëåíî: ~0U âìåñòî DWORD(-1)
+	range = ~0U; // Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾: ~0U Ð²Ð¼ÐµÑÑ‚Ð¾ DWORD(-1)
 }
 /*
 #define RC_ENC_NORMALIZE(stream) {                                          \
@@ -114,7 +114,7 @@ static inline void rcFlushEncoder(_PPMD_FILE* stream)
 static inline void rcInitDecoder(_PPMD_FILE* stream)
 {
 	low = code = 0;
-	range = ~0U; // Èñïðàâëåíî: ~0U âìåñòî DWORD(-1)
+	range = ~0U; // Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾: ~0U Ð²Ð¼ÐµÑÑ‚Ð¾ DWORD(-1)
 	for(UINT i = 0; i < 4; i++)
 		code = (code << 8) | _PPMD_D_GETC(stream);
 }
@@ -122,7 +122,7 @@ static inline void rcInitDecoder(_PPMD_FILE* stream)
 inline void rcDecNormalize(_PPMD_FILE* stream)
 {
 	while((low ^ (low + range)) < TOP ||
-		  range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Èñïðàâëåíî: ~low + 1 âìåñòî -low
+		  range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾: ~low + 1 Ð²Ð¼ÐµÑÑ‚Ð¾ -low
 	{
 		code = (code << 8) | _PPMD_D_GETC(stream);
 		range <<= 8;

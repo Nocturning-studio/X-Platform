@@ -1,4 +1,4 @@
-﻿// Installer.cpp
+// Installer.cpp
 // Компилировать как Windows Application
 // Особенности: 7zr.exe ВШИТ ВНУТРЬ (нет лишних загрузок)
 

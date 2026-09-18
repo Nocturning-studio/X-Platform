@@ -22,7 +22,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	}
 
 	// -------------------------------------------------------------------------
-	// Настройка дефолтных пресетов
+	// РќР°СЃС‚СЂРѕР№РєР° РґРµС„РѕР»С‚РЅС‹С… РїСЂРµСЃРµС‚РѕРІ
 	// -------------------------------------------------------------------------
 	Presence::MaterialParams GetDefaultParams(Presence::MaterialType type)
 	{
@@ -47,24 +47,24 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	}
 
 	// -------------------------------------------------------------------------
-	// Построение кэша
+	// РџРѕСЃС‚СЂРѕРµРЅРёРµ РєСЌС€Р°
 	// -------------------------------------------------------------------------
 	void BuildMaterialCache(Presence::AudioSystem* pSystem)
 	{
 		if(!pSystem)
 			return;
-		// Если кэш перестраивается (hot reload), очищаем старый
+		// Р•СЃР»Рё РєСЌС€ РїРµСЂРµСЃС‚СЂР°РёРІР°РµС‚СЃСЏ (hot reload), РѕС‡РёС‰Р°РµРј СЃС‚Р°СЂС‹Р№
 		m_MaterialCache.clear();
 
 		Msg("[Presence Audio] Building material cache...");
 
-		// 1. Регистрируем базовые типы
+		// 1. Р РµРіРёСЃС‚СЂРёСЂСѓРµРј Р±Р°Р·РѕРІС‹Рµ С‚РёРїС‹
 		for(int i = 0; i < (int)Presence::MaterialType::Count; i++)
 		{
 			pSystem->SetMaterialProperties(i, GetDefaultParams((Presence::MaterialType)i));
 		}
 
-		// 2. Читаем конфиг LTX
+		// 2. Р§РёС‚Р°РµРј РєРѕРЅС„РёРі LTX
 		string_path configPath;
 		FS.update_path(configPath, "$game_config$", "presence_audio_materials.ltx");
 		CInifile* pConfig = FS.exist(configPath) ? new CInifile(configPath, TRUE, TRUE, FALSE) : nullptr;
@@ -74,7 +74,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		else
 			Msg("! [Presence Audio] Config not found, using heuristics.");
 
-		// 3. Маппинг материалов движка
+		// 3. РњР°РїРїРёРЅРі РјР°С‚РµСЂРёР°Р»РѕРІ РґРІРёР¶РєР°
 		u32 mtlCount = GMLib.CountMaterial();
 		m_MaterialCache.resize(mtlCount);
 
@@ -92,7 +92,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			LPCSTR name = mtl->m_Name.c_str();
 			int finalID = (int)Presence::MaterialType::Stone;
 
-			// A. Проверка конфига
+			// A. РџСЂРѕРІРµСЂРєР° РєРѕРЅС„РёРіР°
 			if(pConfig && pConfig->section_exist(name))
 			{
 				Presence::MaterialParams p;
@@ -105,10 +105,10 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 				finalID = pSystem->CreateCustomMaterial(p);
 				customCount++;
 			}
-			// B. Эвристика
+			// B. Р­РІСЂРёСЃС‚РёРєР°
 			else
 			{
-				// Специальная проверка для невидимых стен/сеток (важно для геймплея!)
+				// РЎРїРµС†РёР°Р»СЊРЅР°СЏ РїСЂРѕРІРµСЂРєР° РґР»СЏ РЅРµРІРёРґРёРјС‹С… СЃС‚РµРЅ/СЃРµС‚РѕРє (РІР°Р¶РЅРѕ РґР»СЏ РіРµР№РјРїР»РµСЏ!)
 				if(strstr(name, "fake") || strstr(name, "invisible") || strstr(name, "setka"))
 					finalID = (int)Presence::MaterialType::Air;
 				else if(strstr(name, "wood") || strstr(name, "plank"))
@@ -132,9 +132,9 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	}
 
 	// -------------------------------------------------------------------------
-	// Трассировка (Выполняется в рабочем потоке SDK!)
-	// Внимание: доступ к ObjectSpace.RayPick должен быть thread-safe.
-	// В X-Ray чтение статической геометрии обычно безопасно, если уровень загружен.
+	// РўСЂР°СЃСЃРёСЂРѕРІРєР° (Р’С‹РїРѕР»РЅСЏРµС‚СЃСЏ РІ СЂР°Р±РѕС‡РµРј РїРѕС‚РѕРєРµ SDK!)
+	// Р’РЅРёРјР°РЅРёРµ: РґРѕСЃС‚СѓРї Рє ObjectSpace.RayPick РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ thread-safe.
+	// Р’ X-Ray С‡С‚РµРЅРёРµ СЃС‚Р°С‚РёС‡РµСЃРєРѕР№ РіРµРѕРјРµС‚СЂРёРё РѕР±С‹С‡РЅРѕ Р±РµР·РѕРїР°СЃРЅРѕ, РµСЃР»Рё СѓСЂРѕРІРµРЅСЊ Р·Р°РіСЂСѓР¶РµРЅ.
 	// -------------------------------------------------------------------------
 	virtual Presence::RayHit CastRay(const Presence::float3& start, const Presence::float3& dir, float maxDist) override
 	{
@@ -143,22 +143,22 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		result.distance = maxDist;
 		result.materialID = 0;
 
-		// Критическая проверка: уровень мог выгрузиться
+		// РљСЂРёС‚РёС‡РµСЃРєР°СЏ РїСЂРѕРІРµСЂРєР°: СѓСЂРѕРІРµРЅСЊ РјРѕРі РІС‹РіСЂСѓР·РёС‚СЊСЃСЏ
 		if(!g_pGameLevel)
 			return result;
 
-		// Конвертация векторов
+		// РљРѕРЅРІРµСЂС‚Р°С†РёСЏ РІРµРєС‚РѕСЂРѕРІ
 		fvec3 xStart, xDir;
 		xStart.set(start.x, start.y, start.z);
 		xDir.set(dir.x, dir.y, dir.z);
 
-		// Валидация направления (предотвращение NaN)
+		// Р’Р°Р»РёРґР°С†РёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ (РїСЂРµРґРѕС‚РІСЂР°С‰РµРЅРёРµ NaN)
 		float mag = xDir.magnitude();
 		if(mag < EPS_S)
 			return result;
 		xDir.div(mag);
 
-		// Смещение луча для избежания самопересечения
+		// РЎРјРµС‰РµРЅРёРµ Р»СѓС‡Р° РґР»СЏ РёР·Р±РµР¶Р°РЅРёСЏ СЃР°РјРѕРїРµСЂРµСЃРµС‡РµРЅРёСЏ
 		const float K_BIAS = 0.05f;
 		xStart.mad(xDir, K_BIAS);
 		float traceDist = maxDist - K_BIAS;
@@ -167,8 +167,8 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 
 		collide::rq_result rq;
 
-		// Трассировка только по статике (rqtStatic) для скорости и стабильности
-		// Игнорируем динамические объекты (NPC, ящики) для расчета реверберации
+		// РўСЂР°СЃСЃРёСЂРѕРІРєР° С‚РѕР»СЊРєРѕ РїРѕ СЃС‚Р°С‚РёРєРµ (rqtStatic) РґР»СЏ СЃРєРѕСЂРѕСЃС‚Рё Рё СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚Рё
+		// РРіРЅРѕСЂРёСЂСѓРµРј РґРёРЅР°РјРёС‡РµСЃРєРёРµ РѕР±СЉРµРєС‚С‹ (NPC, СЏС‰РёРєРё) РґР»СЏ СЂР°СЃС‡РµС‚Р° СЂРµРІРµСЂР±РµСЂР°С†РёРё
 		BOOL hit = g_pGameLevel->ObjectSpace.RayPick(xStart, xDir, traceDist, collide::rqtStatic, rq, NULL);
 
 		if(hit)
@@ -176,7 +176,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			result.isHit = true;
 			result.distance = rq.range + K_BIAS;
 
-			// Получение треугольника для нормали и материала
+			// РџРѕР»СѓС‡РµРЅРёРµ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РґР»СЏ РЅРѕСЂРјР°Р»Рё Рё РјР°С‚РµСЂРёР°Р»Р°
 			CDB::TRI* tri = g_pGameLevel->ObjectSpace.GetStaticTris() + rq.element;
 			fvec3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 

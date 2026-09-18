@@ -6,12 +6,12 @@ class CSector;
 class CPortal : public IRender_Portal
 {
   public:
-	// Геометрические данные
+	// Р“РµРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ РґР°РЅРЅС‹Рµ
 	svector<fvec3, 8> m_vertices;
 	Fplane m_plane;
 	Fsphere m_sphere;
 
-	// Связи (Граф)
+	// РЎРІСЏР·Рё (Р“СЂР°С„)
 	CSector* m_front_sector;
 	CSector* m_back_sector;
 
@@ -19,10 +19,10 @@ class CPortal : public IRender_Portal
 	CPortal();
 	virtual ~CPortal();
 
-	// Инициализация (вызывается при загрузке)
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ (РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё Р·Р°РіСЂСѓР·РєРµ)
 	void Setup(fvec3* v_ptr, int v_count, CSector* face, CSector* back);
 
-	// Доступ к данным
+	// Р”РѕСЃС‚СѓРї Рє РґР°РЅРЅС‹Рј
 	IC const svector<fvec3, 8>& GetVertices() const
 	{
 		return m_vertices;
@@ -36,7 +36,7 @@ class CPortal : public IRender_Portal
 		return m_plane;
 	}
 
-	// Логика графа (Read-Only)
+	// Р›РѕРіРёРєР° РіСЂР°С„Р° (Read-Only)
 	IC CSector* GetFrontSector() const
 	{
 		return m_front_sector;
@@ -46,19 +46,19 @@ class CPortal : public IRender_Portal
 		return m_back_sector;
 	}
 
-	// Возвращает сектор, противоположный переданному
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРµРєС‚РѕСЂ, РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹Р№ РїРµСЂРµРґР°РЅРЅРѕРјСѓ
 	IC CSector* GetOppositeSector(CSector* current_sector) const
 	{
 		return (current_sector == m_front_sector) ? m_back_sector : m_front_sector;
 	}
 
-	// Определяет, в какой сектор смотрит точка
+	// РћРїСЂРµРґРµР»СЏРµС‚, РІ РєР°РєРѕР№ СЃРµРєС‚РѕСЂ СЃРјРѕС‚СЂРёС‚ С‚РѕС‡РєР°
 	CSector* GetSectorFacing(const fvec3& v) const
 	{
 		return (m_plane.classify(v) > 0) ? m_front_sector : m_back_sector;
 	}
 
-	// Определяет, какой сектор находится "сзади" точки (откуда смотрим)
+	// РћРїСЂРµРґРµР»СЏРµС‚, РєР°РєРѕР№ СЃРµРєС‚РѕСЂ РЅР°С…РѕРґРёС‚СЃСЏ "СЃР·Р°РґРё" С‚РѕС‡РєРё (РѕС‚РєСѓРґР° СЃРјРѕС‚СЂРёРј)
 	CSector* GetSectorBack(const fvec3& v) const
 	{
 		return (m_plane.classify(v) > 0) ? m_back_sector : m_front_sector;

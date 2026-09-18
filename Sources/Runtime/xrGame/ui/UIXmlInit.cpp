@@ -140,7 +140,7 @@ bool CUIXmlInit::InitFrameWindow(CUIXml& xml_doc, LPCSTR path, int index, CUIFra
 
 		if(*tex_name) pWnd->InitLeftBottom(*tex_name, x,y);
 	*/
-	// èíèöèàëèçèðîâàòü çàãîëîâîê îêíà
+	// Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº Ð¾ÐºÐ½Ð°
 	strconcat(sizeof(buf), buf, path, ":title");
 	if(xml_doc.NavigateToNode(buf, index))
 		InitStatic(xml_doc, buf, index, pWnd->UITitleText);
@@ -320,8 +320,8 @@ bool CUIXmlInit::InitCustomHint(CUIXml& xml_doc, const char* path, int index, CU
 	{
 		pWnd->m_hint = xr_new<CUIHint>();
 
-		// --- ÈÑÏÐÀÂËÅÍÈÅ ---
-		// Ñîîáùàåì õèíòó, êòî åãî âëàäåëåö, ÷òîáû OnRender ìîã ïðîâåðèòü èåðàðõèþ âèäèìîñòè
+		// --- Ð˜Ð¡ÐŸÐ ÐÐ’Ð›Ð•ÐÐ˜Ð• ---
+		// Ð¡Ð¾Ð¾Ð±Ñ‰Ð°ÐµÐ¼ Ñ…Ð¸Ð½Ñ‚Ñƒ, ÐºÑ‚Ð¾ ÐµÐ³Ð¾ Ð²Ð»Ð°Ð´ÐµÐ»ÐµÑ†, Ñ‡Ñ‚Ð¾Ð±Ñ‹ OnRender Ð¼Ð¾Ð³ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð¸ÐµÑ€Ð°Ñ€Ñ…Ð¸ÑŽ Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚Ð¸
 		pWnd->m_hint->SetOwner(pWnd);
 		// -------------------
 
@@ -336,7 +336,7 @@ bool CUIXmlInit::InitCustomHint(CUIXml& xml_doc, const char* path, int index, CU
 
 		hint_wnd->AttachChild(hint_obj);
 
-		// Âàøè èñïðàâëåííûå ìåòîäû ïîäñòðîéêè ðàçìåðà
+		// Ð’Ð°ÑˆÐ¸ Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð½Ñ‹Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ñ‹ Ð¿Ð¾Ð´ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ñ€Ð°Ð·Ð¼ÐµÑ€Ð°
 		hint_obj->AdjustWidthToText();
 		hint_obj->AdjustHeightToText();
 
@@ -347,7 +347,7 @@ bool CUIXmlInit::InitCustomHint(CUIXml& xml_doc, const char* path, int index, CU
 			hint_obj->SetVisible(false);
 		}
 
-		// Îáðàáîòêà òåêñòóðû ôîíà (hint_texture)
+		// ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ Ñ„Ð¾Ð½Ð° (hint_texture)
 		strconcat(sizeof(buff), buff, hint, ":hint_texture");
 		if(xml_doc.NavigateToNode(buff, index))
 		{
@@ -365,8 +365,8 @@ bool CUIXmlInit::InitCustomHint(CUIXml& xml_doc, const char* path, int index, CU
 			rect.x2 = hint_obj->GetWidth();
 			rect.y2 = hint_obj->GetHeight();
 
-			// Âíèìàíèå: Óáåäèòåñü, ÷òî SetOriginalRect ïðèíèìàåò ïèêñåëè, à íå UV-êîîðäèíàòû,
-			// ëèáî ÷òî òåêñòóðà ïîäãîòîâëåíà ñîîòâåòñòâóþùèì îáðàçîì.
+			// Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸Ðµ: Ð£Ð±ÐµÐ´Ð¸Ñ‚ÐµÑÑŒ, Ñ‡Ñ‚Ð¾ SetOriginalRect Ð¿Ñ€Ð¸Ð½Ð¸Ð¼Ð°ÐµÑ‚ Ð¿Ð¸ÐºÑÐµÐ»Ð¸, Ð° Ð½Ðµ UV-ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹,
+			// Ð»Ð¸Ð±Ð¾ Ñ‡Ñ‚Ð¾ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð¿Ð¾Ð´Ð³Ð¾Ñ‚Ð¾Ð²Ð»ÐµÐ½Ð° ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¼ Ð¾Ð±Ñ€Ð°Ð·Ð¾Ð¼.
 			if(rect.width() != 0 && rect.height() != 0)
 				m_border->SetOriginalRect(rect);
 
@@ -391,7 +391,7 @@ bool CUIXmlInit::InitCustomHint(CUIXml& xml_doc, const char* path, int index, CU
 			}
 		}
 
-		// Ïîäãîíÿåì ðàçìåð êîíòåéíåðà ïîä ðàçìåð òåêñòîâîãî áëîêà
+		// ÐŸÐ¾Ð´Ð³Ð¾Ð½ÑÐµÐ¼ Ñ€Ð°Ð·Ð¼ÐµÑ€ ÐºÐ¾Ð½Ñ‚ÐµÐ¹Ð½ÐµÑ€Ð° Ð¿Ð¾Ð´ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚Ð¾Ð²Ð¾Ð³Ð¾ Ð±Ð»Ð¾ÐºÐ°
 		hint_wnd->SetWidth(hint_obj->GetWidth());
 		hint_wnd->SetHeight(hint_obj->GetHeight());
 
@@ -478,8 +478,8 @@ bool CUIXmlInit::InitHint(CUIXml& xml_doc, const char* path, int index, CUIStati
 	{
 		pWnd->m_hint = xr_new<CUIHint>();
 
-		// --- ÂÀÆÍÎÅ ÄÎÁÀÂËÅÍÈÅ ---
-		// Ñâÿçûâàåì õèíò ñ âëàäåëüöåì äëÿ êîððåêòíîé ïðîâåðêè âèäèìîñòè â OnRender
+		// --- Ð’ÐÐ–ÐÐžÐ• Ð”ÐžÐ‘ÐÐ’Ð›Ð•ÐÐ˜Ð• ---
+		// Ð¡Ð²ÑÐ·Ñ‹Ð²Ð°ÐµÐ¼ Ñ…Ð¸Ð½Ñ‚ Ñ Ð²Ð»Ð°Ð´ÐµÐ»ÑŒÑ†ÐµÐ¼ Ð´Ð»Ñ ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾Ð¹ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¸ Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚Ð¸ Ð² OnRender
 		pWnd->m_hint->SetOwner(pWnd);
 		// -------------------------
 

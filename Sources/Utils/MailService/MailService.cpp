@@ -1,4 +1,4 @@
-﻿// MailService.cpp
+// MailService.cpp
 #define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS
 

@@ -23,7 +23,7 @@ class CBlender_autoexposure : public IBlender
 	{
 		IBlender::Compile(C);
 
-		// Имя единого шейдерного файла (без расширения)
+		// РРјСЏ РµРґРёРЅРѕРіРѕ С€РµР№РґРµСЂРЅРѕРіРѕ С„Р°Р№Р»Р° (Р±РµР· СЂР°СЃС€РёСЂРµРЅРёСЏ)
 		LPCSTR sh_name = "postprocess_stage_autoexposure";
 
 		switch(C.iElement)

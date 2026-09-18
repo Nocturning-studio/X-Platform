@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class CRenderBackend;
 class R_transforms;

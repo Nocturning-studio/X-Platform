@@ -10,12 +10,12 @@ class ENGINE_API CWindowManager
 
 	void Initialize();
 	void Destroy();
-	void Apply();			  // применить накопленные параметры
-	void Reset() { Apply(); } // совместимость
+	void Apply();			  // РїСЂРёРјРµРЅРёС‚СЊ РЅР°РєРѕРїР»РµРЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
+	void Reset() { Apply(); } // СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚СЊ
 
 	bool ProcessMessages();
 
-	// Геттеры
+	// Р“РµС‚С‚РµСЂС‹
 	HWND GetHandle() const { return m_hWnd; }
 	bool IsWindowed() const { return m_bWindowed; }
 	u32 GetRefreshRate() const { return m_RefreshRate; }
@@ -23,7 +23,7 @@ class ENGINE_API CWindowManager
 	u32 GetWidth() const { return m_width; }
 	u32 GetHeight() const { return m_height; }
 
-	// Сеттеры (накапливают состояние, Apply() применит)
+	// РЎРµС‚С‚РµСЂС‹ (РЅР°РєР°РїР»РёРІР°СЋС‚ СЃРѕСЃС‚РѕСЏРЅРёРµ, Apply() РїСЂРёРјРµРЅРёС‚)
 	void SetWindowed(bool bWindowed) { m_bWindowed = bWindowed; }
 	void SetRefreshRate(u32 rate) { m_RefreshRate = rate; }
 	void SetResolution(ivec2 res) { SetResolution((u32)res.x, (u32)res.y); }
@@ -32,7 +32,7 @@ class ENGINE_API CWindowManager
 		m_width = w;
 		m_height = h;
 	}
-	void UpdateSize(u32 w, u32 h) { SetResolution(w, h); } // для обратной совместимости
+	void UpdateSize(u32 w, u32 h) { SetResolution(w, h); } // РґР»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё
 
 	void CenterWindow();
 

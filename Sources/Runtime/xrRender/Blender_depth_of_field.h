@@ -39,7 +39,7 @@ class CBlender_depth_of_field : public IBlender
 			break;
 
 		// 2. Tile Dilation (Low Res)
-		// Важно: читаем CoC, пишем в rt_dof_dilation
+		// Р’Р°Р¶РЅРѕ: С‡РёС‚Р°РµРј CoC, РїРёС€РµРј РІ rt_dof_dilation
 		case SE_PASS_DOF_TILE_DILATION:
 			C.begin_Pass("screen_quad", sh_name, "main", "PassTileDilation");
 			C.set_Sampler_point("s_dof_coc", r_RT_dof_coc);

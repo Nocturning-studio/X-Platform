@@ -1,7 +1,7 @@
 
 // Copyright (C) 2000 John Maddock (john_maddock@compuserve.com)
 // Copyright (C) 2000 Jeremy Siek (jsiek@lsc.nd.edu)
-// Copyright (C) 1999, 2000 Jaakko J„rvi (jaakko.jarvi@cs.utu.fi)
+// Copyright (C) 1999, 2000 Jaakko Jâ€žrvi (jaakko.jarvi@cs.utu.fi)
 //
 // Permission to copy and use this software is granted, 
 // provided this copyright notice appears in all copies. 

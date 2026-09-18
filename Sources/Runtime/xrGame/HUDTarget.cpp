@@ -93,7 +93,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 	}
 	else
 	{
-		// получить треугольник и узнать его материал
+		// РїРѕР»СѓС‡РёС‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРє Рё СѓР·РЅР°С‚СЊ РµРіРѕ РјР°С‚РµСЂРёР°Р»
 		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
 		if(GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
 			return TRUE;
@@ -263,7 +263,7 @@ void CHUDTarget::Render()
 		clamp(fuzzyShowInfo, 0.f, 1.f);
 	}
 
-	// отрендерить кружочек или крестик
+	// РѕС‚СЂРµРЅРґРµСЂРёС‚СЊ РєСЂСѓР¶РѕС‡РµРє РёР»Рё РєСЂРµСЃС‚РёРє
 	if(!m_bShowCrosshair)
 	{
 		/*
@@ -300,7 +300,7 @@ void CHUDTarget::Render()
 	}
 	else
 	{
-		// отрендерить прицел
+		// РѕС‚СЂРµРЅРґРµСЂРёС‚СЊ РїСЂРёС†РµР»
 		HUDCrosshair.cross_color = C;
 		HUDCrosshair.OnRender();
 	}

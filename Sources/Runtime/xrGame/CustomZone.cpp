@@ -19,8 +19,8 @@
 #include "GamePersistent.h"
 
 //////////////////////////////////////////////////////////////////////////
-#define PREFETCHED_ARTEFACTS_NUM 1 // количество предварительно проспавненых артефактов
-#define WIND_RADIUS (4 * Radius()) // расстояние до актера, когда появляется ветер
+#define PREFETCHED_ARTEFACTS_NUM 1 // РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РїСЂРѕСЃРїР°РІРЅРµРЅС‹С… Р°СЂС‚РµС„Р°РєС‚РѕРІ
+#define WIND_RADIUS (4 * Radius()) // СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ Р°РєС‚РµСЂР°, РєРѕРіРґР° РїРѕСЏРІР»СЏРµС‚СЃСЏ РІРµС‚РµСЂ
 #define FASTMODE_DISTANCE (50.f)   // distance to camera from sphere, when zone switches to fast update sequence
 
 CCustomZone::CCustomZone(void)
@@ -86,7 +86,7 @@ void CCustomZone::Load(LPCSTR section)
 	m_zone_flags.set(eIgnoreArtefact, pSettings->r_bool(section, "ignore_artefacts"));
 	m_zone_flags.set(eVisibleByDetector, pSettings->r_bool(section, "visible_by_detector"));
 
-	// загрузить времена для зоны
+	// Р·Р°РіСЂСѓР·РёС‚СЊ РІСЂРµРјРµРЅР° РґР»СЏ Р·РѕРЅС‹
 	m_StateTime[eZoneStateIdle] = -1;
 	m_StateTime[eZoneStateAwaking] = pSettings->r_s32(section, "awaking_time");
 	m_StateTime[eZoneStateBlowout] = pSettings->r_s32(section, "blowout_time");
@@ -235,7 +235,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fBlowoutWindPowerMax = pSettings->r_float(section, "blowout_wind_power");
 	}
 
-	// загрузить параметры световой вспышки от взрыва
+	// Р·Р°РіСЂСѓР·РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ СЃРІРµС‚РѕРІРѕР№ РІСЃРїС‹С€РєРё РѕС‚ РІР·СЂС‹РІР°
 	m_zone_flags.set(eBlowoutLight, pSettings->r_bool(section, "blowout_light"));
 
 	if(m_zone_flags.test(eBlowoutLight))
@@ -249,7 +249,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fLightHeight = pSettings->r_float(section, "light_height");
 	}
 
-	// загрузить параметры idle подсветки
+	// Р·Р°РіСЂСѓР·РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ idle РїРѕРґСЃРІРµС‚РєРё
 	m_zone_flags.set(eIdleLight, pSettings->r_bool(section, "idle_light"));
 	if(m_zone_flags.test(eIdleLight))
 	{
@@ -260,7 +260,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fIdleLightHeight = pSettings->r_float(section, "idle_light_height");
 	}
 
-	// загрузить параметры для разбрасывания артефактов
+	// Р·Р°РіСЂСѓР·РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ СЂР°Р·Р±СЂР°СЃС‹РІР°РЅРёСЏ Р°СЂС‚РµС„Р°РєС‚РѕРІ
 	m_zone_flags.set(eSpawnBlowoutArtefacts, pSettings->r_bool(section, "spawn_blowout_artefacts"));
 	if(m_zone_flags.test(eSpawnBlowoutArtefacts))
 	{
@@ -300,7 +300,7 @@ void CCustomZone::Load(LPCSTR section)
 		}
 
 		R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!", *cName());
-		// нормализировать вероятности
+		// РЅРѕСЂРјР°Р»РёР·РёСЂРѕРІР°С‚СЊ РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё
 		for(i = 0; i < m_ArtefactSpawn.size(); ++i)
 		{
 			m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability / total_probability;
@@ -343,7 +343,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_StartTime = Engine.TimeManager.GetGlobalTimeMs();
 	m_zone_flags.set(eUseOnOffTime, (m_TimeToDisable != 0) && (m_TimeToEnable != 0));
 
-	// добавить источники света
+	// РґРѕР±Р°РІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРєРё СЃРІРµС‚Р°
 	if(m_zone_flags.test(eIdleLight))
 	{
 		m_pIdleLight = ::Render->light_create();
@@ -492,7 +492,7 @@ void CCustomZone::UpdateWorkload(u32 dt)
 		NODEFAULT;
 	}
 
-	// вычислить время срабатывания зоны
+	// РІС‹С‡РёСЃР»РёС‚СЊ РІСЂРµРјСЏ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ Р·РѕРЅС‹
 	if(m_bZoneActive)
 		m_dwDeltaTime += dt;
 	else
@@ -537,8 +537,8 @@ void CCustomZone::shedule_Update(u32 dt)
 		// update
 		feel_touch_update(P, s.R);
 
-		// пройтись по всем объектам в зоне
-		// и проверить их состояние
+		// РїСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј РѕР±СЉРµРєС‚Р°Рј РІ Р·РѕРЅРµ
+		// Рё РїСЂРѕРІРµСЂРёС‚СЊ РёС… СЃРѕСЃС‚РѕСЏРЅРёРµ
 		for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		{
 			CObject* pObject = (*it).object;
@@ -561,8 +561,8 @@ void CCustomZone::shedule_Update(u32 dt)
 					StopObjectIdleParticles(smart_cast<CPhysicsShellHolder*>(pObject));
 			}
 
-			// если есть хотя бы один не дисабленый объект, то
-			// зона считается активной
+			// РµСЃР»Рё РµСЃС‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РЅРµ РґРёСЃР°Р±Р»РµРЅС‹Р№ РѕР±СЉРµРєС‚, С‚Рѕ
+			// Р·РѕРЅР° СЃС‡РёС‚Р°РµС‚СЃСЏ Р°РєС‚РёРІРЅРѕР№
 			if(info.zone_ignore == false)
 				m_bZoneActive = true;
 		}
@@ -755,7 +755,7 @@ void CCustomZone::UpdateIdleLight()
 	VERIFY(m_pIdleLAnim);
 
 	int frame = 0;
-	u32 clr = m_pIdleLAnim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // возвращает в формате BGR
+	u32 clr = m_pIdleLAnim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // РІРѕР·РІСЂР°С‰Р°РµС‚ РІ С„РѕСЂРјР°С‚Рµ BGR
 	Fcolor fclr;
 	fclr.set((float)color_get_B(clr) / 255.f, (float)color_get_G(clr) / 255.f, (float)color_get_R(clr) / 255.f, 1.f);
 
@@ -839,7 +839,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	else
 		vel.set(0, 0, 0);
 
-	// выбрать случайную косточку на объекте
+	// РІС‹Р±СЂР°С‚СЊ СЃР»СѓС‡Р°Р№РЅСѓСЋ РєРѕСЃС‚РѕС‡РєСѓ РЅР° РѕР±СЉРµРєС‚Рµ
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 	if(PP)
 	{
@@ -895,7 +895,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 
 	shared_str particle_str = NULL;
 
-	// разные партиклы для объектов разного размера
+	// СЂР°Р·РЅС‹Рµ РїР°СЂС‚РёРєР»С‹ РґР»СЏ РѕР±СЉРµРєС‚РѕРІ СЂР°Р·РЅРѕРіРѕ СЂР°Р·РјРµСЂР°
 	if(pObject->Radius() < SMALL_OBJECT_RADIUS)
 	{
 		if(!m_sIdleObjectParticlesSmall)
@@ -909,7 +909,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 		particle_str = m_sIdleObjectParticlesBig;
 	}
 
-	// запустить партиклы на объекте
+	// Р·Р°РїСѓСЃС‚РёС‚СЊ РїР°СЂС‚РёРєР»С‹ РЅР° РѕР±СЉРµРєС‚Рµ
 	//. new
 	PP->StopParticles(particle_str, BI_NONE, true);
 
@@ -933,7 +933,7 @@ void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
 		return;
 
 	shared_str particle_str = NULL;
-	// разные партиклы для объектов разного размера
+	// СЂР°Р·РЅС‹Рµ РїР°СЂС‚РёРєР»С‹ РґР»СЏ РѕР±СЉРµРєС‚РѕРІ СЂР°Р·РЅРѕРіРѕ СЂР°Р·РјРµСЂР°
 	if(pObject->Radius() < SMALL_OBJECT_RADIUS)
 	{
 		if(!m_sIdleObjectParticlesSmall)
@@ -1209,8 +1209,8 @@ void CCustomZone::ZoneDisable()
 
 void CCustomZone::SpawnArtefact()
 {
-	// вычислить согласно распределению вероятностей
-	// какой артефакт из списка ставить
+	// РІС‹С‡РёСЃР»РёС‚СЊ СЃРѕРіР»Р°СЃРЅРѕ СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЋ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РµР№
+	// РєР°РєРѕР№ Р°СЂС‚РµС„Р°РєС‚ РёР· СЃРїРёСЃРєР° СЃС‚Р°РІРёС‚СЊ
 	float rnd = ::Random.randF(.0f, 1.f - EPS_L);
 	float prob_threshold = 0.f;
 

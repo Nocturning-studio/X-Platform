@@ -1,4 +1,4 @@
-﻿/*
+/*
  * AfterMath — high‑performance C++ math library (HLSL‑style, SSE‑accelerated)
  *
  * Project:   Presence AfterMath

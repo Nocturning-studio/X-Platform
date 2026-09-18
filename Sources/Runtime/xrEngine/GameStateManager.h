@@ -7,7 +7,7 @@
 class ENGINE_API CGameStateManager : public pureFrame, public IEventReceiver
 {
   private:
-	// События
+	// РЎРѕР±С‹С‚РёСЏ
 	EVENT eQuit;
 	EVENT eStart;
 	EVENT eStartLoad;

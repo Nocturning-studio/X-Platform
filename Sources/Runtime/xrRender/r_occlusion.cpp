@@ -99,13 +99,13 @@ u32 R_occlusion::occq_begin(u32& ID)
 	used[ID] = pool.back();
 	pool.pop_back();
 
-	used[ID].frame_issued = Engine.TimeManager.GetFrameCount(); // сохраняем кадр выдачи
+	used[ID].frame_issued = Engine.TimeManager.GetFrameCount(); // СЃРѕС…СЂР°РЅСЏРµРј РєР°РґСЂ РІС‹РґР°С‡Рё
 
 	HRESULT hr = used[ID].Q->Issue(D3DISSUE_BEGIN);
 	if(FAILED(hr))
 	{
 		Msg("! R_occlusion::occq_begin: Failed to issue query [HR:0x%08X]", hr);
-		// Возвращаем запрос обратно в пул при ошибке
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·Р°РїСЂРѕСЃ РѕР±СЂР°С‚РЅРѕ РІ РїСѓР» РїСЂРё РѕС€РёР±РєРµ
 		pool.push_back(used[ID]);
 		used[ID].Q = nullptr;
 		fids.push_back(ID);
@@ -148,7 +148,7 @@ u32 R_occlusion::occq_get(u32& ID, bool bWait)
 
 	if(bWait)
 	{
-		// Блокирующий режим (как раньше)
+		// Р‘Р»РѕРєРёСЂСѓСЋС‰РёР№ СЂРµР¶РёРј (РєР°Рє СЂР°РЅСЊС€Рµ)
 		CTimer T;
 		T.Start();
 		Engine.Statistic->RenderDUMP_Wait.Begin();
@@ -166,26 +166,26 @@ u32 R_occlusion::occq_get(u32& ID, bool bWait)
 	}
 	else
 	{
-		// Неблокирующая проверка
+		// РќРµР±Р»РѕРєРёСЂСѓСЋС‰Р°СЏ РїСЂРѕРІРµСЂРєР°
 		hr = used[ID].Q->GetData(&fragments, sizeof(fragments), 0);
 		if(hr == S_FALSE)
 		{
-			// Запрос ещё выполняется. Если висит слишком долго – принудительно сбрасываем.
-			if(frames_pending > 3) // более 3 кадров
+			// Р—Р°РїСЂРѕСЃ РµС‰С‘ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ. Р•СЃР»Рё РІРёСЃРёС‚ СЃР»РёС€РєРѕРј РґРѕР»РіРѕ вЂ“ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ СЃР±СЂР°СЃС‹РІР°РµРј.
+			if(frames_pending > 3) // Р±РѕР»РµРµ 3 РєР°РґСЂРѕРІ
 			{
 				Msg("! R_occlusion::occq_get: Query stuck for %d frames, forcing release", frames_pending);
-				hr = D3DERR_DEVICELOST; // имитируем потерю устройства, чтобы освободить
+				hr = D3DERR_DEVICELOST; // РёРјРёС‚РёСЂСѓРµРј РїРѕС‚РµСЂСЋ СѓСЃС‚СЂРѕР№СЃС‚РІР°, С‡С‚РѕР±С‹ РѕСЃРІРѕР±РѕРґРёС‚СЊ
 				fragments = 0xffffffff;
 			}
 			else
 			{
-				return 0xfffffffe; // данные не готовы, запрос остаётся в used
+				return 0xfffffffe; // РґР°РЅРЅС‹Рµ РЅРµ РіРѕС‚РѕРІС‹, Р·Р°РїСЂРѕСЃ РѕСЃС‚Р°С‘С‚СЃСЏ РІ used
 			}
 		}
 	}
 
-	// Если мы здесь, значит данные получены или произошла ошибка/таймаут.
-	// Возвращаем запрос в пул в любом случае.
+	// Р•СЃР»Рё РјС‹ Р·РґРµСЃСЊ, Р·РЅР°С‡РёС‚ РґР°РЅРЅС‹Рµ РїРѕР»СѓС‡РµРЅС‹ РёР»Рё РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°/С‚Р°Р№РјР°СѓС‚.
+	// Р’РѕР·РІСЂР°С‰Р°РµРј Р·Р°РїСЂРѕСЃ РІ РїСѓР» РІ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ.
 	if(hr == D3DERR_DEVICELOST)
 		fragments = 0xffffffff;
 

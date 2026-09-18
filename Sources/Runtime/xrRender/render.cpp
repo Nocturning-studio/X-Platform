@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////
 CRender RenderImplementation;
 //////////////////////////////////////////////////////////////////////////
-#pragma todo(NSDeathman to NSDeathman : Добавить поддержку Glow)
+#pragma todo(NSDeathman to NSDeathman : Р”РѕР±Р°РІРёС‚СЊ РїРѕРґРґРµСЂР¶РєСѓ Glow)
 class CGlow : public IRender_Glow
 {
   public:

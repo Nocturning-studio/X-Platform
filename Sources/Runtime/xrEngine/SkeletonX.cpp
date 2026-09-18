@@ -136,7 +136,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
 	s_bones_array_const = "sbones_array";
 	xr_vector<u16> bids;
 
-	// Çàãðóæàåì âåðøèíû
+	// Ð—Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ Ð²ÐµÑ€ÑˆÐ¸Ð½Ñ‹
 	R_ASSERT(data->find_chunk(OGF_VERTICES));
 
 	u32 dwVertType, size, it, crc;

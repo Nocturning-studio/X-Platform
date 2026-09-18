@@ -22,7 +22,7 @@ CEnvDescriptorMixer::CEnvDescriptorMixer(shared_str const& identifier) : CEnvDes
 
 void CEnvDescriptorMixer::destroy()
 {
-	// Очищаем текстуры
+	// РћС‡РёС‰Р°РµРј С‚РµРєСЃС‚СѓСЂС‹
 	sky_texture_0 = NULL;
 	sky_texture_1 = NULL;
 	sky_irradiance_0 = NULL;
@@ -32,7 +32,7 @@ void CEnvDescriptorMixer::destroy()
 	lut_texture_0 = NULL;
 	lut_texture_1 = NULL;
 
-	// Вызываем родительский destroy
+	// Р’С‹Р·С‹РІР°РµРј СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ destroy
 	CEnvDescriptor::on_device_destroy();
 }
 
@@ -49,19 +49,19 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env,
 							   CEnvModifier& Mdf,
 							   float modifier_power)
 {
-	// Макрос для интерполяции обычных чисел (float)
-	// Разворачивается в: variable = (1-f)*A.variable + f*B.variable
+	// РњР°РєСЂРѕСЃ РґР»СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё РѕР±С‹С‡РЅС‹С… С‡РёСЃРµР» (float)
+	// Р Р°Р·РІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ РІ: variable = (1-f)*A.variable + f*B.variable
 #define LERP(v) v = fi * A.v + f * B.v
 
-	// Макрос для интерполяции векторов (fvec3, fvec4, Fcolor)
-	// Разворачивается в: variable.lerp(A.variable, B.variable, f)
+	// РњР°РєСЂРѕСЃ РґР»СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё РІРµРєС‚РѕСЂРѕРІ (fvec3, fvec4, Fcolor)
+	// Р Р°Р·РІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ РІ: variable.lerp(A.variable, B.variable, f)
 #define LERP_VEC(v) v.lerp(A.v, B.v, f)
 
 	float modif_power = 1.f / (modifier_power + 1); // the environment itself
 	float fi = 1 - f;
 
 	// -------------------------------------------------------------------------
-	// Текстуры
+	// РўРµРєСЃС‚СѓСЂС‹
 	// -------------------------------------------------------------------------
 	sky_texture_0 = A.sky_texture;
 	sky_texture_1 = B.sky_texture;
@@ -73,7 +73,7 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env,
 	lut_texture_1 = B.lut_texture;
 
 	// -------------------------------------------------------------------------
-	// Интерполяция параметров
+	// РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ
 	// -------------------------------------------------------------------------
 	weight = f;
 
@@ -132,7 +132,7 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env,
 	LERP(m_VignettePower);
 
 	// -------------------------------------------------------------------------
-	// Цвета с учетом модификаторов
+	// Р¦РІРµС‚Р° СЃ СѓС‡РµС‚РѕРј РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРІ
 	// -------------------------------------------------------------------------
 
 	// Sky Color
@@ -162,7 +162,7 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env,
 	sun_dir.lerp(A.sun_dir, B.sun_dir, f).normalize();
 	VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while lerp");
 
-	// Удаляем макросы, чтобы не мусорить в глобальной области видимости
+	// РЈРґР°Р»СЏРµРј РјР°РєСЂРѕСЃС‹, С‡С‚РѕР±С‹ РЅРµ РјСѓСЃРѕСЂРёС‚СЊ РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ РѕР±Р»Р°СЃС‚Рё РІРёРґРёРјРѕСЃС‚Рё
 #undef LERP
 #undef LERP_VEC
 }

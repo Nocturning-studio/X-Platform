@@ -28,7 +28,7 @@ class game_sv_mp_script : public game_sv_mp
 	};
 
 	virtual void OnPlayerKillPlayer(ClientID id_killer, ClientID id_killed) {};
-	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P) {}; // игрок получил Hit
+	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P) {}; // РёРіСЂРѕРє РїРѕР»СѓС‡РёР» Hit
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE)
 	{
 		return true;

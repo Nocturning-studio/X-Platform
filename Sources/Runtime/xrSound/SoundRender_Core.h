@@ -75,7 +75,7 @@ class CSoundRender_Core : public CSound_manager_interface
 	typedef std::pair<ref_sound_data_ptr, float> event;
 	xr_vector<event> s_events;
 
-	// Указатель на интерфейс из SDK
+	// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РёРЅС‚РµСЂС„РµР№СЃ РёР· SDK
 	Presence::ISoundOcclusionCalculator* m_pOcclusion;
 
 	void SetOcclusion(Presence::ISoundOcclusionCalculator* pOcc)

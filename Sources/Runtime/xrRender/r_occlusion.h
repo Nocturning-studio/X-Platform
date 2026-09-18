@@ -19,7 +19,7 @@ class R_occlusion
 	{
 		IDirect3DQuery9* Q;
 		u32 order;
-		u32 frame_issued; // кадр, в котором был вызван Issue(BEGIN)
+		u32 frame_issued; // РєР°РґСЂ, РІ РєРѕС‚РѕСЂРѕРј Р±С‹Р» РІС‹Р·РІР°РЅ Issue(BEGIN)
 	};
 
 	BOOL enabled;		 //

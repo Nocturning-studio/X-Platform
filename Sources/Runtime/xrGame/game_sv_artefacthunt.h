@@ -79,7 +79,7 @@ class game_sv_ArtefactHunt : public game_sv_TeamDeathmatch
 	};
 	// Events
 	virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
-	virtual void OnRoundStart(); // старт раунда
+	virtual void OnRoundStart(); // СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
 	virtual KILL_RES GetKillResult(game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual bool OnKillResult(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual void OnGiveBonus(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim,

@@ -36,7 +36,7 @@ xrMemory::xrMemory()
 #ifdef DEBUG_MEMORY_MANAGER
 	debug_mode = FALSE;
 #endif
-	// Указатели на PSO больше не нужны
+	// РЈРєР°Р·Р°С‚РµР»Рё РЅР° PSO Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅС‹
 }
 
 #ifdef DEBUG_MEMORY_MANAGER

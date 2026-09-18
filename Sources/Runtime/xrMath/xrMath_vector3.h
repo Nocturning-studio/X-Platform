@@ -188,7 +188,7 @@ struct template_vector3
 	ICF SelfRef operator/=(const Self& v) { return div(v); }
 	ICF SelfRef operator/=(T s) { return div(s); }
 
-	// Унарный минус
+	// РЈРЅР°СЂРЅС‹Р№ РјРёРЅСѓСЃ
 	IC Self operator-() const
 	{
 		Self r;
@@ -719,7 +719,7 @@ IC template_vector3<T> operator-(T s, const template_vector3<T>& a)
 {
 	template_vector3<T> r;
 	r.sub(a, s);
-	return r; // эквивалентно: s - a = -(a - s)
+	return r; // СЌРєРІРёРІР°Р»РµРЅС‚РЅРѕ: s - a = -(a - s)
 }
 
 template <class T>

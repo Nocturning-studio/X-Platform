@@ -21,19 +21,19 @@ class CPortalTraverser
   public:
 	enum ETraverseOptions
 	{
-		VQ_HOM = (1 << 0),	   // Использовать HOM (Occlusion Culling)
-		VQ_SSA = (1 << 1),	   // Использовать Screen Space Area culling
-		VQ_SCISSOR = (1 << 2), // Использовать Scissor test
-		VQ_FADE = (1 << 3),	   // Рисовать затухание порталов
+		VQ_HOM = (1 << 0),	   // РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ HOM (Occlusion Culling)
+		VQ_SSA = (1 << 1),	   // РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Screen Space Area culling
+		VQ_SCISSOR = (1 << 2), // РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Scissor test
+		VQ_FADE = (1 << 3),	   // Р РёСЃРѕРІР°С‚СЊ Р·Р°С‚СѓС…Р°РЅРёРµ РїРѕСЂС‚Р°Р»РѕРІ
 	};
 
-	// Результат видимости для одного сектора
+	// Р РµР·СѓР»СЊС‚Р°С‚ РІРёРґРёРјРѕСЃС‚Рё РґР»СЏ РѕРґРЅРѕРіРѕ СЃРµРєС‚РѕСЂР°
 	struct SectorVisibility
 	{
 		CSector* sector;
 		xr_vector<CFrustum> frustums;
 		xr_vector<ScissorRect> scissors;
-		ScissorRect merged_scissor; // Объединенный сциссор для оптимизации
+		ScissorRect merged_scissor; // РћР±СЉРµРґРёРЅРµРЅРЅС‹Р№ СЃС†РёСЃСЃРѕСЂ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё
 
 		SectorVisibility() : sector(nullptr)
 		{
@@ -42,54 +42,54 @@ class CPortalTraverser
 	};
 
   private:
-	// === Контекст текущего обхода ===
+	// === РљРѕРЅС‚РµРєСЃС‚ С‚РµРєСѓС‰РµРіРѕ РѕР±С…РѕРґР° ===
 	u32 m_options;
 	fvec3 m_view_pos;
 	fmat4x4 m_xform;
 	fmat4x4 m_xform_proj; // View * Proj * ViewPort
 	CSector* m_start_sector;
 
-	// === Результаты и Кэш (State) ===
-	// Список видимых секторов с их фрустумами
+	// === Р РµР·СѓР»СЊС‚Р°С‚С‹ Рё РљСЌС€ (State) ===
+	// РЎРїРёСЃРѕРє РІРёРґРёРјС‹С… СЃРµРєС‚РѕСЂРѕРІ СЃ РёС… С„СЂСѓСЃС‚СѓРјР°РјРё
 	xr_vector<SectorVisibility> m_visible_sectors;
 
-	// Список посещенных порталов (чтобы не ходить кругами)
-	// Используем std::vector и linear search, т.к. N < 100 это быстрее hash_set
+	// РЎРїРёСЃРѕРє РїРѕСЃРµС‰РµРЅРЅС‹С… РїРѕСЂС‚Р°Р»РѕРІ (С‡С‚РѕР±С‹ РЅРµ С…РѕРґРёС‚СЊ РєСЂСѓРіР°РјРё)
+	// РСЃРїРѕР»СЊР·СѓРµРј std::vector Рё linear search, С‚.Рє. N < 100 СЌС‚Рѕ Р±С‹СЃС‚СЂРµРµ hash_set
 	xr_vector<CPortal*> m_visited_portals;
 
-	// Данные для отрисовки "тумана" в порталах (Fade)
+	// Р”Р°РЅРЅС‹Рµ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё "С‚СѓРјР°РЅР°" РІ РїРѕСЂС‚Р°Р»Р°С… (Fade)
 	xr_vector<std::pair<CPortal*, float>> m_fade_portals;
 
-	// Ресурсы рендера
+	// Р РµСЃСѓСЂСЃС‹ СЂРµРЅРґРµСЂР°
 	ref_shader m_shader_fade;
 	ref_geom m_geom_fade;
 
   public:
 	CPortalTraverser();
 
-	// Управление ресурсами
+	// РЈРїСЂР°РІР»РµРЅРёРµ СЂРµСЃСѓСЂСЃР°РјРё
 	void CreateResources();
 	void DestroyResources();
 
-	// Сброс состояния перед кадром
+	// РЎР±СЂРѕСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїРµСЂРµРґ РєР°РґСЂРѕРј
 	void Reset();
 
-	// Основной метод запуска обхода
+	// РћСЃРЅРѕРІРЅРѕР№ РјРµС‚РѕРґ Р·Р°РїСѓСЃРєР° РѕР±С…РѕРґР°
 	void Traverse(CSector* start, CFrustum& frustum, fvec3& view_pos, fmat4x4& xform, u32 options);
 
-	// Доступ к результатам
+	// Р”РѕСЃС‚СѓРї Рє СЂРµР·СѓР»СЊС‚Р°С‚Р°Рј
 	const xr_vector<SectorVisibility>& GetVisibleSectors() const
 	{
 		return m_visible_sectors;
 	}
 
-	// Рендер затухания (вызывается в конце кадра)
+	// Р РµРЅРґРµСЂ Р·Р°С‚СѓС…Р°РЅРёСЏ (РІС‹Р·С‹РІР°РµС‚СЃСЏ РІ РєРѕРЅС†Рµ РєР°РґСЂР°)
 	void RenderFade();
 
   private:
-	// Рекурсивное ядро обхода
+	// Р РµРєСѓСЂСЃРёРІРЅРѕРµ СЏРґСЂРѕ РѕР±С…РѕРґР°
 	void RecursiveTraverse(CSector* current_sector, const CFrustum& cur_frustum, const ScissorRect& cur_scissor);
 
-	// Хелпер добавления сектора в результаты
+	// РҐРµР»РїРµСЂ РґРѕР±Р°РІР»РµРЅРёСЏ СЃРµРєС‚РѕСЂР° РІ СЂРµР·СѓР»СЊС‚Р°С‚С‹
 	SectorVisibility& GetOrAddSectorData(CSector* sector);
 };

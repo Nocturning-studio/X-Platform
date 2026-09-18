@@ -1,5 +1,5 @@
 //=============================================================================
-//  Êðàñèâûé òåêñòîâûé áàííåð ñ ìíîæåñòâîì ñòèëåé
+//  ÐšÑ€Ð°ÑÐ¸Ð²Ñ‹Ð¹ Ñ‚ÐµÐºÑÑ‚Ð¾Ð²Ñ‹Ð¹ Ð±Ð°Ð½Ð½ÐµÑ€ Ñ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð¾Ð¼ ÑÑ‚Ð¸Ð»ÐµÐ¹
 //=============================================================================
 
 #include "stdafx.h"
@@ -36,7 +36,7 @@ void CUITextBanner::Update()
 {
 	StyleParams_it it = m_StyleParams.begin();
 
-	// Åñëè àíèìàöèÿ âêëþ÷åíà
+	// Ð•ÑÐ»Ð¸ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð°
 	if(m_bAnimate)
 	{
 		for(; it != m_StyleParams.end(); ++it)
@@ -54,7 +54,7 @@ void CUITextBanner::Out(float x, float y, const char* fmt, ...)
 
 	StyleParams_it it = m_StyleParams.begin();
 
-	// Ïðèìåíÿåì ýôôåêòû
+	// ÐŸÑ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ„Ñ„ÐµÐºÑ‚Ñ‹
 	for(; it != m_StyleParams.end(); ++it)
 	{
 		// Fade effect
@@ -95,11 +95,11 @@ void CUITextBanner::EffectFade()
 {
 	EffectParams& fade = m_StyleParams[tbsFade];
 
-	// Ïðîâåðÿì âêëþ÷åíà ëè àíèìàöèÿ
+	// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐ¼ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð° Ð»Ð¸ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ
 	if(!fade.bOn)
 		return;
 
-	// Åñëè ïðèøëî âðåìÿ ñìåíèòü íàïðàâëåíèå ôåéäà
+	// Ð•ÑÐ»Ð¸ Ð¿Ñ€Ð¸ÑˆÐ»Ð¾ Ð²Ñ€ÐµÐ¼Ñ ÑÐ¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ„ÐµÐ¹Ð´Ð°
 	if(fade.fTimePassed > fade.fPeriod)
 	{
 		if(!fade.bCyclic)
@@ -131,11 +131,11 @@ void CUITextBanner::EffectFlicker()
 {
 	EffectParams& flicker = m_StyleParams[tbsFlicker];
 
-	// Ïðîâåðÿì âêëþ÷åíà ëè àíèìàöèÿ
+	// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐ¼ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð° Ð»Ð¸ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ
 	if(!flicker.bOn)
 		return;
 
-	// Åñëè ïðèøëî âðåìÿ, ïîêàçàòü/ñïðÿòàòü íàäïèñü
+	// Ð•ÑÐ»Ð¸ Ð¿Ñ€Ð¸ÑˆÐ»Ð¾ Ð²Ñ€ÐµÐ¼Ñ, Ð¿Ð¾ÐºÐ°Ð·Ð°Ñ‚ÑŒ/ÑÐ¿Ñ€ÑÑ‚Ð°Ñ‚ÑŒ Ð½Ð°Ð´Ð¿Ð¸ÑÑŒ
 	if(flicker.fTimePassed > flicker.fPeriod)
 	{
 		if(!flicker.bCyclic)

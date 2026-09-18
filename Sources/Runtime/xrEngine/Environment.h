@@ -168,7 +168,7 @@ class ENGINE_API CEnvironment
 		return CurrentWeatherName;
 	}
 
-	// Kondr48: функция перемотки времени
+	// Kondr48: С„СѓРЅРєС†РёСЏ РїРµСЂРµРјРѕС‚РєРё РІСЂРµРјРµРЅРё
 	void ChangeGameTime(float game_time);
 
 	float GetGameTime();

@@ -11,7 +11,7 @@
 extern u32 ps_r_material_quality;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Безопасные функции для работы со строками
+// Р‘РµР·РѕРїР°СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂРѕРєР°РјРё
 namespace safe_string
 {
 inline void copy(char* dest, size_t dest_size, const char* src)
@@ -48,13 +48,13 @@ inline void concat3(char* dest, size_t dest_size, const char* src1, const char* 
 	if(dest_size == 0)
 		return;
 
-	// Первая часть
+	// РџРµСЂРІР°СЏ С‡Р°СЃС‚СЊ
 	size_t len1 = strnlen(src1, dest_size - 1);
 	size_t copy_len = std::min(len1, dest_size - 1);
 	memcpy(dest, src1, copy_len);
 	dest[copy_len] = '\0';
 
-	// Вторая часть
+	// Р’С‚РѕСЂР°СЏ С‡Р°СЃС‚СЊ
 	if(copy_len < dest_size - 1)
 	{
 		size_t remaining = dest_size - copy_len - 1;
@@ -64,7 +64,7 @@ inline void concat3(char* dest, size_t dest_size, const char* src1, const char* 
 		dest[copy_len] = '\0';
 	}
 
-	// Третья часть
+	// РўСЂРµС‚СЊСЏ С‡Р°СЃС‚СЊ
 	if(copy_len < dest_size - 1)
 	{
 		size_t remaining = dest_size - copy_len - 1;
@@ -172,32 +172,32 @@ bool StringsIsSimilar(LPCSTR x, LPCSTR y)
 bool CheckAndApplyManualTexturePath(LPCSTR section_name, LPCSTR line_name, string_path& ResultPath, CInifile* config,
 									string_path AlbedoBaseName)
 {
-	// Проверяем наличие строки в конфиге
+	// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃС‚СЂРѕРєРё РІ РєРѕРЅС„РёРіРµ
 	if(!LineIsExist(section_name, line_name, config))
 		return false;
 
-	// Получаем значение пути
+	// РџРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёРµ РїСѓС‚Рё
 	LPCSTR Path = GetStringValueIfExist(section_name, line_name, "path_is_empty", config);
 
 	const char* Token = "$albedo_path$";
 
-	// Проверяем, начинается ли путь с макроса
+	// РџСЂРѕРІРµСЂСЏРµРј, РЅР°С‡РёРЅР°РµС‚СЃСЏ Р»Рё РїСѓС‚СЊ СЃ РјР°РєСЂРѕСЃР°
 	if(strstr(Path, Token) == Path)
 	{
-		// Вычисляем суффикс (всё, что идет после токена)
+		// Р’С‹С‡РёСЃР»СЏРµРј СЃСѓС„С„РёРєСЃ (РІСЃС‘, С‡С‚Рѕ РёРґРµС‚ РїРѕСЃР»Рµ С‚РѕРєРµРЅР°)
 		LPCSTR Suffix = Path + strlen(Token);
 
-		// Используем базовое имя альбедо + суффикс
+		// РСЃРїРѕР»СЊР·СѓРµРј Р±Р°Р·РѕРІРѕРµ РёРјСЏ Р°Р»СЊР±РµРґРѕ + СЃСѓС„С„РёРєСЃ
 		return ConcatAndFindTexture(ResultPath, AlbedoBaseName, Suffix);
 	}
 	else
 	{
-		// Стандартное поведение (полный путь)
+		// РЎС‚Р°РЅРґР°СЂС‚РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ (РїРѕР»РЅС‹Р№ РїСѓС‚СЊ)
 		return FindTexture(ResultPath, Path);
 	}
 }
 
-// Вспомогательная функция для установки дефайнов каналов
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РґРµС„Р°Р№РЅРѕРІ РєР°РЅР°Р»РѕРІ
 void DefineCustomChannel(CBlender_Compile& C, LPCSTR component_name, LPCSTR channel_suffix)
 {
 	string_path define_name;
@@ -344,10 +344,10 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 	bool bNeedHashedAlphaTest = true;
 	bool bUseAlphaTest = bUseAlpha;
 
-	// [ИСПРАВЛЕНИЕ] Читаем настройки альфа-теста ДО установки define
+	// [РРЎРџР РђР’Р›Р•РќРР•] Р§РёС‚Р°РµРј РЅР°СЃС‚СЂРѕР№РєРё Р°Р»СЊС„Р°-С‚РµСЃС‚Р° Р”Рћ СѓСЃС‚Р°РЅРѕРІРєРё define
 	if(bUseConfigurator)
 	{
-		// Сначала читаем сам флаг использования
+		// РЎРЅР°С‡Р°Р»Р° С‡РёС‚Р°РµРј СЃР°Рј С„Р»Р°Рі РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
 		bUseAlphaTest =
 			GetBoolValueIfExist("material_configuration", "use_alpha_test", bUseAlpha, MaterialConfiguration);
 
@@ -642,32 +642,32 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 		// Create lightmapped shader if need
 		C.set_Define(bUseLightMap, "USE_LIGHTMAP", "1");
 
-		// Логика поиска ARMD и ARM
-		// 1. Проверяем наличие ARMD (AO, Roughness, Metallic, Displacement)
-		// Сначала ищем путь в конфигураторе (armd_path)
+		// Р›РѕРіРёРєР° РїРѕРёСЃРєР° ARMD Рё ARM
+		// 1. РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ ARMD (AO, Roughness, Metallic, Displacement)
+		// РЎРЅР°С‡Р°Р»Р° РёС‰РµРј РїСѓС‚СЊ РІ РєРѕРЅС„РёРіСѓСЂР°С‚РѕСЂРµ (armd_path)
 		if(bUseConfigurator)
 		{
 			bUseARMDMap = CheckAndApplyManualTexturePath("material_configuration", "armd_path", ARMDTexture,
 														 MaterialConfiguration, AlbedoTexture);
 		}
 
-		// Если в конфигураторе нет, ищем по стандартному суффиксу _armd
+		// Р•СЃР»Рё РІ РєРѕРЅС„РёРіСѓСЂР°С‚РѕСЂРµ РЅРµС‚, РёС‰РµРј РїРѕ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРјСѓ СЃСѓС„С„РёРєСЃСѓ _armd
 		if(!bUseARMDMap)
 		{
 			bUseARMDMap = ConcatAndFindTexture(ARMDTexture, AlbedoTexture, "_armd");
 		}
 
-		// 2. Если ARMD не найдена, ищем обычную ARM (AO, Roughness, Metallic)
+		// 2. Р•СЃР»Рё ARMD РЅРµ РЅР°Р№РґРµРЅР°, РёС‰РµРј РѕР±С‹С‡РЅСѓСЋ ARM (AO, Roughness, Metallic)
 		if(!bUseARMDMap)
 		{
-			// Сначала ищем путь в конфигураторе (arm_path)
+			// РЎРЅР°С‡Р°Р»Р° РёС‰РµРј РїСѓС‚СЊ РІ РєРѕРЅС„РёРіСѓСЂР°С‚РѕСЂРµ (arm_path)
 			if(bUseConfigurator)
 			{
 				bUseARMMap = CheckAndApplyManualTexturePath("material_configuration", "arm_path", ARMTexture,
 															MaterialConfiguration, AlbedoTexture);
 			}
 
-			// Если в конфигураторе нет, ищем по стандартному суффиксу _arm
+			// Р•СЃР»Рё РІ РєРѕРЅС„РёРіСѓСЂР°С‚РѕСЂРµ РЅРµС‚, РёС‰РµРј РїРѕ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРјСѓ СЃСѓС„С„РёРєСЃСѓ _arm
 			if(!bUseARMMap)
 			{
 				bUseARMMap = ConcatAndFindTexture(ARMTexture, AlbedoTexture, "_arm");
@@ -730,7 +730,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 			DefineCustomChannel(C, alpha_type, "A");
 		}
 
-		// Если используются ARMD или ARM, не ищем отдельные текстуры
+		// Р•СЃР»Рё РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ ARMD РёР»Рё ARM, РЅРµ РёС‰РµРј РѕС‚РґРµР»СЊРЅС‹Рµ С‚РµРєСЃС‚СѓСЂС‹
 		if(!bUseARMDMap && !bUseARMMap && !bUseERMMap)
 		{
 			if(bUseConfigurator)
@@ -790,7 +790,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 		if(!bUseCustomNormal)
 			bUseCustomNormal = ConcatAndFindTexture(CustomNormalTexture, AlbedoTexture, "_normal");
 
-		// Если обычной нормали нет, ищем упакованную
+		// Р•СЃР»Рё РѕР±С‹С‡РЅРѕР№ РЅРѕСЂРјР°Р»Рё РЅРµС‚, РёС‰РµРј СѓРїР°РєРѕРІР°РЅРЅСѓСЋ
 		if(!bUseCustomNormal)
 		{
 			if(bUseConfigurator)
@@ -948,7 +948,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 	if(bUseOpacity)
 		C.set_Sampler("s_custom_opacity", OpacityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
-	// Сэмплеры для ARMD и ARM
+	// РЎСЌРјРїР»РµСЂС‹ РґР»СЏ ARMD Рё ARM
 	if(bUseARMDMap)
 	{
 		C.set_Sampler("s_armd_map", ARMDTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);

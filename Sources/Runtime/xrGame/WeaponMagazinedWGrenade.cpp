@@ -178,15 +178,15 @@ void CWeaponMagazinedWGrenade::OnShot()
 
 		AddShotEffector();
 
-		// ïàðòèêëû îãíÿ âûëåòà ãðàíàòû èç ïîäñòâîëüíèêà
+		// Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ñ‹ Ð¾Ð³Ð½Ñ Ð²Ñ‹Ð»ÐµÑ‚Ð° Ð³Ñ€Ð°Ð½Ð°Ñ‚Ñ‹ Ð¸Ð· Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°
 		StartFlameParticles2();
 	}
 	else
 		inherited::OnShot();
 }
-// ïåðåõîä â ðåæèì ïîäñòâîëüíèêà èëè âûõîä èç íåãî
-// åñëè ìû â ðåæèìå ñòðåëüáû î÷åðåäÿìè, ïåðåêëþ÷èòüñÿ
-// íà îäèíî÷íûå, à óæå ïîòîì íà ïîäñòâîëüíèê
+// Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´ Ð² Ñ€ÐµÐ¶Ð¸Ð¼ Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ° Ð¸Ð»Ð¸ Ð²Ñ‹Ñ…Ð¾Ð´ Ð¸Ð· Ð½ÐµÐ³Ð¾
+// ÐµÑÐ»Ð¸ Ð¼Ñ‹ Ð² Ñ€ÐµÐ¶Ð¸Ð¼Ðµ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñ‹ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑÐ¼Ð¸, Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒÑÑ
+// Ð½Ð° Ð¾Ð´Ð¸Ð½Ð¾Ñ‡Ð½Ñ‹Ðµ, Ð° ÑƒÐ¶Ðµ Ð¿Ð¾Ñ‚Ð¾Ð¼ Ð½Ð° Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸Ðº
 bool CWeaponMagazinedWGrenade::SwitchMode()
 {
 	bool bUsefulStateToSwitch =
@@ -281,7 +281,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 {
 	VERIFY(fTimeToFire > 0.f);
 
-	// ðåæèì ñòðåëüáû ïîäñòâîëüíèêà
+	// Ñ€ÐµÐ¶Ð¸Ð¼ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñ‹ Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°
 	if(m_bGrenadeMode)
 	{
 		fTime -= dt;
@@ -329,7 +329,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		if(m_iShotNum == m_iQueueSize)
 			FireEnd();
 	}
-	// ðåæèì ñòðåëüáû î÷åðåäÿìè
+	// Ñ€ÐµÐ¶Ð¸Ð¼ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñ‹ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑÐ¼Ð¸
 	else
 		inherited::state_Fire(dt);
 }
@@ -338,7 +338,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 {
 	inherited::SwitchState(S);
 
-	// ñòðåëüíóòü èç ïîäñòâîëüíèêà
+	// ÑÑ‚Ñ€ÐµÐ»ÑŒÐ½ÑƒÑ‚ÑŒ Ð¸Ð· Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°
 	if(m_bGrenadeMode && GetState() == eIdle && S == eFire && getRocketCount())
 	{
 		fvec3 p1, d;
@@ -449,7 +449,7 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 {
 	inherited::ReloadMagazine();
 
-	// ïåðåçàðÿäêà ïîäñòâîëüíîãî ãðàíàòîìåòà
+	// Ð¿ÐµÑ€ÐµÐ·Ð°Ñ€ÑÐ´ÐºÐ° Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¾Ð³Ð¾ Ð³Ñ€Ð°Ð½Ð°Ñ‚Ð¾Ð¼ÐµÑ‚Ð°
 	if(iAmmoElapsed && !getRocketCount() && m_bGrenadeMode)
 	{
 		//.		shared_str fake_grenade_name = pSettings->r_string(*m_pAmmo->cNameSect(), "fake_grenade_name");
@@ -539,7 +539,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
 
-		// óíè÷òîæèòü ïîäñòâîëüíèê èç èíâåíòàðÿ
+		// ÑƒÐ½Ð¸Ñ‡Ñ‚Ð¾Ð¶Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð¸Ð· Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ñ
 		if(b_send_event)
 		{
 			//.			pIItem->Drop();
@@ -615,7 +615,7 @@ float CWeaponMagazinedWGrenade::CurrentZoomFactor()
 	return inherited::CurrentZoomFactor();
 }
 
-// âèðòóàëüíûå ôóíêöèè äëÿ ïðîèãðûâàíèÿ àíèìàöèè HUD
+// Ð²Ð¸Ñ€Ñ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ HUD
 void CWeaponMagazinedWGrenade::PlayAnimShow()
 {
 	VERIFY(GetState() == eShowing);
@@ -680,7 +680,7 @@ void CWeaponMagazinedWGrenade::PlayAnimShoot()
 	VERIFY(GetState() == eFire || GetState() == eFire2);
 	if(this->m_bGrenadeMode)
 	{
-		// àíèìàöèÿ ñòðåëüáû èç ïîäñòâîëüíèêà
+		// Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñ‹ Ð¸Ð· Ð¿Ð¾Ð´ÑÑ‚Ð²Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°
 		m_pHUD->animPlay(random_anim(mhud_shots_g), TRUE, this, GetState());
 	}
 	else

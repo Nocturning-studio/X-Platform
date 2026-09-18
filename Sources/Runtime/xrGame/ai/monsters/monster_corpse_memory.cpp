@@ -36,7 +36,7 @@ void CMonsterCorpseMemory::update()
 		}
 	}
 
-	// óäàëèòü óñòàðåâøèõ âðàãîâ
+	// ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ ÑƒÑÑ‚Ð°Ñ€ÐµÐ²ÑˆÐ¸Ñ… Ð²Ñ€Ð°Ð³Ð¾Ð²
 	remove_non_actual();
 }
 
@@ -50,12 +50,12 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive* corpse)
 	CORPSE_MAP_IT it = m_objects.find(corpse);
 	if(it != m_objects.end())
 	{
-		// îáíîâèòü äàííûå î âðàãå
+		// Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¾ Ð²Ñ€Ð°Ð³Ðµ
 		it->second = corpse_info;
 	}
 	else
 	{
-		// äîáàâèòü âðàãà â ñïèñîê îáúåêòîâ
+		// Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð²Ñ€Ð°Ð³Ð° Ð² ÑÐ¿Ð¸ÑÐ¾Ðº Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²
 		m_objects.insert(mk_pair(corpse, corpse_info));
 	}
 }
@@ -64,12 +64,12 @@ void CMonsterCorpseMemory::remove_non_actual()
 {
 	TTime cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
-	// óäàëèòü 'ñòàðûõ' âðàãîâ è òåõ, ðàññòîÿíèå äî êîòîðûõ > 30ì è äð.
+	// ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ 'ÑÑ‚Ð°Ñ€Ñ‹Ñ…' Ð²Ñ€Ð°Ð³Ð¾Ð² Ð¸ Ñ‚ÐµÑ…, Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð´Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… > 30Ð¼ Ð¸ Ð´Ñ€.
 	for(CORPSE_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
 	{
 		nit = it;
 		++nit;
-		// ïðîâåðèòü óñëîâèÿ óäàëåíèÿ
+		// Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ ÑƒÑÐ»Ð¾Ð²Ð¸Ñ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ñ
 		if(!it->first || it->first->g_Alive() || it->first->getDestroy() ||
 		   (it->second.time + time_memory < cur_time) || (it->first->m_fFood < 1))
 			m_objects.erase(it);

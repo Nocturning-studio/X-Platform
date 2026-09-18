@@ -221,7 +221,7 @@ BOOL CPoltergeist::net_Spawn(CSE_Abstract* DC)
 	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
-	// ñïàóíèòñÿ íèâèäèìûì
+	// ÑÐ¿Ð°ÑƒÐ½Ð¸Ñ‚ÑÑ Ð½Ð¸Ð²Ð¸Ð´Ð¸Ð¼Ñ‹Ð¼
 	setVisible(false);
 	ability()->on_hide();
 

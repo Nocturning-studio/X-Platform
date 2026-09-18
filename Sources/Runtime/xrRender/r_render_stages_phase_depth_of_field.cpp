@@ -5,14 +5,14 @@
 #include "stdafx.h"
 #include "Blender_depth_of_field.h"
 
-// Константы для расчета оптики (35mm Full Frame сенсор)
+// РљРѕРЅСЃС‚Р°РЅС‚С‹ РґР»СЏ СЂР°СЃС‡РµС‚Р° РѕРїС‚РёРєРё (35mm Full Frame СЃРµРЅСЃРѕСЂ)
 constexpr double SENSOR_DIAGONAL = 43.266615300557;
-constexpr float FOCAL_DEPTH_MUL = 1000.0f; // Перевод игровых единиц в метры/миллиметры
+constexpr float FOCAL_DEPTH_MUL = 1000.0f; // РџРµСЂРµРІРѕРґ РёРіСЂРѕРІС‹С… РµРґРёРЅРёС† РІ РјРµС‚СЂС‹/РјРёР»Р»РёРјРµС‚СЂС‹
 
-// Вспомогательная функция для расчета фокусного расстояния из FOV
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ СЂР°СЃС‡РµС‚Р° С„РѕРєСѓСЃРЅРѕРіРѕ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РёР· FOV
 double fov_to_length(double fov)
 {
-	// Защита от некорректных углов
+	// Р—Р°С‰РёС‚Р° РѕС‚ РЅРµРєРѕСЂСЂРµРєС‚РЅС‹С… СѓРіР»РѕРІ
 	if(fov < 1.0 || fov > 179.0)
 		return 35.0;
 
@@ -65,7 +65,7 @@ void CRender::render_depth_of_field()
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_far);
 
-	// PHASE 5: Blur Near (с Dilation map)
+	// PHASE 5: Blur Near (СЃ Dilation map)
 	RenderBackend.set_Element(RenderTarget->s_dof->E[SE_PASS_DOF_BLUR_NEAR]);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_dof_near);

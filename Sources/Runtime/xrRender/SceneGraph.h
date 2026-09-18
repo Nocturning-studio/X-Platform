@@ -14,16 +14,16 @@ class CRender;
 class IRender_Visual;
 class light;
 
-// Enum для типов рендеринга графа
+// Enum РґР»СЏ С‚РёРїРѕРІ СЂРµРЅРґРµСЂРёРЅРіР° РіСЂР°С„Р°
 enum class SceneGraphRenderType
 {
-	Opaque,		 // Обычная геометрия
+	Opaque,		 // РћР±С‹С‡РЅР°СЏ РіРµРѕРјРµС‚СЂРёСЏ
 	Transparent, // Alpha
-	HUD,		 // Оружие и руки
-	LOD,		 // LODы деревьев
-	Emissive,	 // Светящиеся объекты
-	Wallmarks,	 // Следы
-	Distortion	 // Искажения
+	HUD,		 // РћСЂСѓР¶РёРµ Рё СЂСѓРєРё
+	LOD,		 // LODС‹ РґРµСЂРµРІСЊРµРІ
+	Emissive,	 // РЎРІРµС‚СЏС‰РёРµСЃСЏ РѕР±СЉРµРєС‚С‹
+	Wallmarks,	 // РЎР»РµРґС‹
+	Distortion	 // РСЃРєР°Р¶РµРЅРёСЏ
 };
 
 struct SceneGraphFetchConfig
@@ -48,7 +48,7 @@ class R_feedback
 
 // =========================================================================
 //  Render Packet (Thread-Safe Data Buffer)
-//  Хранит только очереди отрисовки. Может быть локальным для потока.
+//  РҐСЂР°РЅРёС‚ С‚РѕР»СЊРєРѕ РѕС‡РµСЂРµРґРё РѕС‚СЂРёСЃРѕРІРєРё. РњРѕР¶РµС‚ Р±С‹С‚СЊ Р»РѕРєР°Р»СЊРЅС‹Рј РґР»СЏ РїРѕС‚РѕРєР°.
 // =========================================================================
 struct SceneGraphPacket
 {
@@ -62,10 +62,10 @@ struct SceneGraphPacket
 	SceneGraphTypes::mapSorted_T queue_wallmarks;
 	SceneGraphTypes::mapSorted_T mapEmissive;
 
-	// Добавляем персональный обходчик порталов для этого пакета
+	// Р”РѕР±Р°РІР»СЏРµРј РїРµСЂСЃРѕРЅР°Р»СЊРЅС‹Р№ РѕР±С…РѕРґС‡РёРє РїРѕСЂС‚Р°Р»РѕРІ РґР»СЏ СЌС‚РѕРіРѕ РїР°РєРµС‚Р°
 	CPortalTraverser portal_traverser;
 
-	// Списки для LOD (данные наполнения)
+	// РЎРїРёСЃРєРё РґР»СЏ LOD (РґР°РЅРЅС‹Рµ РЅР°РїРѕР»РЅРµРЅРёСЏ)
 	xr_vector<SceneGraphTypes::LodRenderNode, render_alloc<SceneGraphTypes::LodRenderNode>> lstLODs;
 	xr_vector<int, render_alloc<int>> lstLODgroups;
 
@@ -102,16 +102,16 @@ struct SceneGraphPacket
 		m_visual_refs.clear();
 	}
 
-	// Synchronization for parallel access (если используем один буфер на всех)
+	// Synchronization for parallel access (РµСЃР»Рё РёСЃРїРѕР»СЊР·СѓРµРј РѕРґРёРЅ Р±СѓС„РµСЂ РЅР° РІСЃРµС…)
 	xrCriticalSection cs;
 
 	SceneGraphPacket()
 	{
-		// Конструктор теперь просто зовет reset, ресурсы грузим явно
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ С‚РµРїРµСЂСЊ РїСЂРѕСЃС‚Рѕ Р·РѕРІРµС‚ reset, СЂРµСЃСѓСЂСЃС‹ РіСЂСѓР·РёРј СЏРІРЅРѕ
 		portal_traverser.Reset();
 	}
 
-	// Добавляем методы управления ресурсами
+	// Р”РѕР±Р°РІР»СЏРµРј РјРµС‚РѕРґС‹ СѓРїСЂР°РІР»РµРЅРёСЏ СЂРµСЃСѓСЂСЃР°РјРё
 	void InitResources()
 	{
 		portal_traverser.CreateResources();
@@ -165,8 +165,8 @@ struct SceneGraphPacket
 
 // =========================================================================
 //  Scratch Pad (Working Buffers)
-//  Используется только при рендеринге (сортировке/флаттенинге)
-//  Чтобы не переаллоцировать вектора каждый кадр.
+//  РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РїСЂРё СЂРµРЅРґРµСЂРёРЅРіРµ (СЃРѕСЂС‚РёСЂРѕРІРєРµ/С„Р»Р°С‚С‚РµРЅРёРЅРіРµ)
+//  Р§С‚РѕР±С‹ РЅРµ РїРµСЂРµР°Р»Р»РѕС†РёСЂРѕРІР°С‚СЊ РІРµРєС‚РѕСЂР° РєР°Р¶РґС‹Р№ РєР°РґСЂ.
 // =========================================================================
 struct SceneGraphScratchPad
 {
@@ -205,8 +205,8 @@ struct SceneGraphScratchPad
 
 // =========================================================================
 //  Traversal Context
-//  Состояние, которое меняется в процессе обхода.
-//  В будущем это должно передаваться аргументом, а не лежать в классе.
+//  РЎРѕСЃС‚РѕСЏРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РјРµРЅСЏРµС‚СЃСЏ РІ РїСЂРѕС†РµСЃСЃРµ РѕР±С…РѕРґР°.
+//  Р’ Р±СѓРґСѓС‰РµРј СЌС‚Рѕ РґРѕР»Р¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊСЃСЏ Р°СЂРіСѓРјРµРЅС‚РѕРј, Р° РЅРµ Р»РµР¶Р°С‚СЊ РІ РєР»Р°СЃСЃРµ.
 // =========================================================================
 struct SceneTraversalContext
 {
@@ -243,11 +243,11 @@ struct SceneTraversalContext
 class CurrentRenderContext
 {
   public:
-	// Эти переменные уникальны для каждого потока
+	// Р­С‚Рё РїРµСЂРµРјРµРЅРЅС‹Рµ СѓРЅРёРєР°Р»СЊРЅС‹ РґР»СЏ РєР°Р¶РґРѕРіРѕ РїРѕС‚РѕРєР°
 	static thread_local SceneGraphPacket* packet;
 	static thread_local SceneTraversalContext* context;
 
-	// Helper RAII для безопасной установки контекста в скоупе
+	// Helper RAII РґР»СЏ Р±РµР·РѕРїР°СЃРЅРѕР№ СѓСЃС‚Р°РЅРѕРІРєРё РєРѕРЅС‚РµРєСЃС‚Р° РІ СЃРєРѕСѓРїРµ
 	struct Scope
 	{
 		SceneGraphPacket* prev_packet;
@@ -275,7 +275,7 @@ class CurrentRenderContext
 // =========================================================================
 class CSceneGraph
 {
-  public: // Сделаем публичным для удобства доступа из CRender пока что
+  public: // РЎРґРµР»Р°РµРј РїСѓР±Р»РёС‡РЅС‹Рј РґР»СЏ СѓРґРѕР±СЃС‚РІР° РґРѕСЃС‚СѓРїР° РёР· CRender РїРѕРєР° С‡С‚Рѕ
 	// 1. Thread-Safe Data Container
 	SceneGraphPacket m_packet;
 
@@ -290,7 +290,7 @@ class CSceneGraph
 	std::atomic<u32> counter_D;
 	BOOL b_loaded;
 
-	friend class CRender; // CRender управляет контекстом и вызывает приватные методы
+	friend class CRender; // CRender СѓРїСЂР°РІР»СЏРµС‚ РєРѕРЅС‚РµРєСЃС‚РѕРј Рё РІС‹Р·С‹РІР°РµС‚ РїСЂРёРІР°С‚РЅС‹Рµ РјРµС‚РѕРґС‹
 
   public:
 	CSceneGraph();

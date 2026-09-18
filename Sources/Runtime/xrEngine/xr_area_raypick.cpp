@@ -17,7 +17,7 @@ BOOL CObjectSpace::RayTest(const fvec3& start, const fvec3& dir, float range, co
 {
 	BOOL _ret = _RayTest(start, dir, range, tgt, cache, ignore_object);
 
-	// Î÷èùàåì ëîêàëüíûé áóôåğ ïîòîêà
+	// ĞÑ‡Ğ¸Ñ‰Ğ°ĞµĞ¼ Ğ»Ğ¾ĞºĞ°Ğ»ÑŒĞ½Ñ‹Ğ¹ Ğ±ÑƒÑ„ĞµÑ€ Ğ¿Ğ¾Ñ‚Ğ¾ĞºĞ°
 	GetRayThreadData().r_spatial.clear_not_free();
 	return _ret;
 }
@@ -27,10 +27,10 @@ BOOL CObjectSpace::_RayTest(const fvec3& start, const fvec3& dir, float range, c
 {
 	VERIFY(_abs(dir.magnitude() - 1) < EPS);
 
-	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ ÒÅÊÓÙÅÃÎ ÏÎÒÎÊÀ
+	// ĞŸĞĞ›Ğ£Ğ§ĞĞ•Ğœ Ğ”ĞĞĞĞ«Ğ• Ğ¢Ğ•ĞšĞ£Ğ©Ğ•Ğ“Ğ ĞŸĞĞ¢ĞĞšĞ
 	RayQueryThreadData& data = GetRayThreadData();
 
-	// Ñîçäàåì ññûëêè äëÿ óäîáñòâà
+	// Ğ¡Ğ¾Ğ·Ğ´Ğ°ĞµĞ¼ ÑÑÑ‹Ğ»ĞºĞ¸ Ğ´Ğ»Ñ ÑƒĞ´Ğ¾Ğ±ÑÑ‚Ğ²Ğ°
 	xrXRC& xrc = data.xrc;
 	collide::rq_results& r_temp = data.r_temp;
 	xr_vector<ISpatial*>& r_spatial = data.r_spatial;
@@ -128,7 +128,7 @@ BOOL CObjectSpace::RayPick(const fvec3& start, const fvec3& dir, float range, rq
 BOOL CObjectSpace::_RayPick(const fvec3& start, const fvec3& dir, float range, rq_target tgt, rq_result& R,
 							CObject* ignore_object)
 {
-	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	// ĞŸĞĞ›Ğ£Ğ§ĞĞ•Ğœ Ğ”ĞĞĞĞ«Ğ•
 	RayQueryThreadData& data = GetRayThreadData();
 	xrXRC& xrc = data.xrc;
 	collide::rq_results& r_temp = data.r_temp;
@@ -203,7 +203,7 @@ BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB,
 							  LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
-	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	// ĞŸĞĞ›Ğ£Ğ§ĞĞ•Ğœ Ğ”ĞĞĞĞ«Ğ•
 	RayQueryThreadData& data = GetRayThreadData();
 	xrXRC& xrc = data.xrc;
 	collide::rq_results& r_temp = data.r_temp;
@@ -275,7 +275,7 @@ BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
 BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB,
 							  LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
-	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	// ĞŸĞĞ›Ğ£Ğ§ĞĞ•Ğœ Ğ”ĞĞĞĞ«Ğ•
 	RayQueryThreadData& data = GetRayThreadData();
 	xrXRC& xrc = data.xrc;
 	collide::rq_results& r_temp = data.r_temp;
@@ -384,7 +384,7 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 	if(R.range < EPS || !_valid(R.range))
 		Debug.fatal(DEBUG_INFO, "Invalid RayQuery range passed: %f.", R.range);
 #endif
-	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
+	// ĞŸĞĞ›Ğ£Ğ§ĞĞ•Ğœ Ğ”ĞĞĞĞ«Ğ•
 	RayQueryThreadData& data = GetRayThreadData();
 	xrXRC& xrc = data.xrc;
 	collide::rq_results& r_temp = data.r_temp;

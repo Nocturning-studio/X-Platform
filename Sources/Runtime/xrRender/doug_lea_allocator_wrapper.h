@@ -141,7 +141,7 @@ using render_allocator = doug_lea_allocator;
 
 #else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 
-// Fallback to standard xr_allocator (предполагаем, что он уже потокобезопасен)
+// Fallback to standard xr_allocator (РїСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ РѕРЅ СѓР¶Рµ РїРѕС‚РѕРєРѕР±РµР·РѕРїР°СЃРµРЅ)
 #define render_alloc xalloc
 using render_allocator = xr_allocator;
 

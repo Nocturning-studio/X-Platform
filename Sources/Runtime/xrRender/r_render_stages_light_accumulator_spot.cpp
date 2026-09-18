@@ -154,15 +154,15 @@ void CRender::accumulate_spot_lights(light* L)
 		float att_R = L->get_range() * .95f;
 		float att_factor = 1.f / (att_R * att_R);
 
-		// Получаем параметры spot света
-		float spot_cutoff = L->get_cone(); // внешний угол (в радианах)
+		// РџРѕР»СѓС‡Р°РµРј РїР°СЂР°РјРµС‚СЂС‹ spot СЃРІРµС‚Р°
+		float spot_cutoff = L->get_cone(); // РІРЅРµС€РЅРёР№ СѓРіРѕР» (РІ СЂР°РґРёР°РЅР°С…)
 
-		// Вычисляем внутренний и внешний углы
-		// Обычно внутренний угол составляет 80-90% от внешнего
-		float spot_inner_angle = spot_cutoff * 0.8f; // внутренний угол = 80% от внешнего
-		float spot_outer_angle = spot_cutoff;		 // внешний угол
+		// Р’С‹С‡РёСЃР»СЏРµРј РІРЅСѓС‚СЂРµРЅРЅРёР№ Рё РІРЅРµС€РЅРёР№ СѓРіР»С‹
+		// РћР±С‹С‡РЅРѕ РІРЅСѓС‚СЂРµРЅРЅРёР№ СѓРіРѕР» СЃРѕСЃС‚Р°РІР»СЏРµС‚ 80-90% РѕС‚ РІРЅРµС€РЅРµРіРѕ
+		float spot_inner_angle = spot_cutoff * 0.8f; // РІРЅСѓС‚СЂРµРЅРЅРёР№ СѓРіРѕР» = 80% РѕС‚ РІРЅРµС€РЅРµРіРѕ
+		float spot_outer_angle = spot_cutoff;		 // РІРЅРµС€РЅРёР№ СѓРіРѕР»
 
-		// Конвертируем углы в косинусы для шейдера
+		// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј СѓРіР»С‹ РІ РєРѕСЃРёРЅСѓСЃС‹ РґР»СЏ С€РµР№РґРµСЂР°
 		float cos_inner = cosf(spot_inner_angle);
 		float cos_outer = cosf(spot_outer_angle);
 

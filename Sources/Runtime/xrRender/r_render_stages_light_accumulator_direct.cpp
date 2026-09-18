@@ -219,7 +219,7 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 	if(bVolumetricSunTextureCleared)
 		bVolumetricSunTextureCleared = false;
 
-	// Убираем ВСЕ ограничения для объемного света
+	// РЈР±РёСЂР°РµРј Р’РЎР• РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РґР»СЏ РѕР±СЉРµРјРЅРѕРіРѕ СЃРІРµС‚Р°
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Depth_Buffer(NULL);

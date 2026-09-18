@@ -270,12 +270,12 @@ void CBurer::UpdateGraviObject()
 	// draw particle
 	CParticlesObject* ps = CParticlesObject::Create(particle_gravi_wave, TRUE);
 
-	// âû÷èñëèòü ïîçèöèþ è íàïðàâëåííîñòü ïàðòèêëà
+	// Ð²Ñ‹Ñ‡Ð¸ÑÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¸ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð½Ð¾ÑÑ‚ÑŒ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð°
 	fmat4x4 pos;
 	pos.identity();
 	pos.k.set(dir);
 	fvec3::generate_orthonormal_basis_normalized(pos.k, pos.j, pos.i);
-	// óñòàíîâèòü ïîçèöèþ
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ
 	pos.translate_over(m_gravi_object.cur_pos);
 
 	ps->UpdateParent(pos, zero_vel);
@@ -298,7 +298,7 @@ void CBurer::UpdateGraviObject()
 		obj->m_pPhysicsShell->applyImpulse(dir, m_gravi_impulse_to_objects * obj->m_pPhysicsShell->getMass());
 	}
 
-	// èãðàòü çâóê
+	// Ð¸Ð³Ñ€Ð°Ñ‚ÑŒ Ð·Ð²ÑƒÐº
 	fvec3 snd_pos = m_gravi_object.cur_pos;
 	snd_pos.y += 0.5f;
 	if(sound_gravi_wave._feedback())
@@ -365,12 +365,12 @@ void CBurer::Hit(SHit* pHDS)
 	if(m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != last_hit_frame))
 	{
 
-		// âû÷èñëèòü ïîçèöèþ è íàïðàâëåííîñòü ïàðòèêëà
+		// Ð²Ñ‹Ñ‡Ð¸ÑÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¸ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð½Ð¾ÑÑ‚ÑŒ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð°
 		fmat4x4 pos;
 		// CParticlesPlayer::MakeTransform(this,element,fvec3().set(0.f,0.f,1.f),p_in_object_space,pos);
 		CParticlesPlayer::MakeTransform(this, pHDS->bone(), pHDS->dir, pHDS->p_in_bone_space, pos);
 
-		// óñòàíîâèòü particles
+		// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ particles
 		CParticlesObject* ps = CParticlesObject::Create(particle_fire_shield, TRUE);
 
 		ps->UpdateParent(pos, fvec3().set(0.f, 0.f, 0.f));

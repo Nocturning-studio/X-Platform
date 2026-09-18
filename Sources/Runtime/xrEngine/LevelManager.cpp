@@ -29,7 +29,7 @@ void CLevelManager::Level_Append(LPCSTR folder)
 	{
 		sLevelInfo LI;
 		LI.folder = xr_strdup(folder);
-		LI.name = 0; // Тут можно добавить чтение имени из level.ltx если нужно
+		LI.name = 0; // РўСѓС‚ РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ С‡С‚РµРЅРёРµ РёРјРµРЅРё РёР· level.ltx РµСЃР»Рё РЅСѓР¶РЅРѕ
 		Levels.push_back(LI);
 	}
 }
@@ -38,7 +38,7 @@ void CLevelManager::Scan()
 {
 	Msg("Scanning levels...");
 
-	// Очищаем старое, если вызываем повторно
+	// РћС‡РёС‰Р°РµРј СЃС‚Р°СЂРѕРµ, РµСЃР»Рё РІС‹Р·С‹РІР°РµРј РїРѕРІС‚РѕСЂРЅРѕ
 	for(u32 i = 0; i < Levels.size(); i++)
 	{
 		xr_free(Levels[i].folder);
@@ -87,7 +87,7 @@ void CLevelManager::SetLevel(u32 ID)
 		return;
 
 	Level_Current = ID;
-	// Главная задача менеджера уровней — настроить файловую систему
+	// Р“Р»Р°РІРЅР°СЏ Р·Р°РґР°С‡Р° РјРµРЅРµРґР¶РµСЂР° СѓСЂРѕРІРЅРµР№ вЂ” РЅР°СЃС‚СЂРѕРёС‚СЊ С„Р°Р№Р»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ
 	FS.get_path("$level$")->_set(Levels[ID].folder);
 }
 

@@ -81,10 +81,10 @@ struct CWrapperBaseObjectsScript : public T, public luabind::wrap_base
 #pragma optimize("s", on)
 void CPureServerObject::script_register(lua_State* L)
 {
-	module(L)[class_<IPureLîadableObject<IReader>>("ipure_alife_load_object"),
+	module(L)[class_<IPureLÐ¾adableObject<IReader>>("ipure_alife_load_object"),
 			  class_<IPureSavableObject<IWriter>>("ipure_alife_save_object"),
 			  class_<IPureSerializeObject<IReader, IWriter>,
-					 bases<IPureLîadableObject<IReader>, IPureSavableObject<IWriter>>>("ipure_alife_load_save_object"),
+					 bases<IPureLÐ¾adableObject<IReader>, IPureSavableObject<IWriter>>>("ipure_alife_load_save_object"),
 			  class_<IPureServerObject, IPureSerializeObject<IReader, IWriter>>("ipure_server_object"),
 			  class_<CPureServerObject, IPureServerObject>("cpure_server_object")
 			  //			.def(		constructor<>())

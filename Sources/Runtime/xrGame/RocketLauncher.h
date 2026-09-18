@@ -25,7 +25,7 @@ class CRocketLauncher
 	CCustomRocket* getCurrentRocket();
 	void dropCurrentRocket();
 	u32 getRocketCount();
-	// начальная скорость, придаваемая ракете во время
-	// старта
+	// РЅР°С‡Р°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ, РїСЂРёРґР°РІР°РµРјР°СЏ СЂР°РєРµС‚Рµ РІРѕ РІСЂРµРјСЏ
+	// СЃС‚Р°СЂС‚Р°
 	float m_fLaunchSpeed;
 };

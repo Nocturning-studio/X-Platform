@@ -33,10 +33,10 @@ extern float ps_r_Detail_l_ambient;
 extern float ps_r_Detail_l_aniso;
 extern float ps_r_Detail_density;
 
-extern float ps_r_Detail_radius; // Радиус отрисовки
-extern float ps_r_Detail_scale;	 // Глобальный масштаб
-extern float ps_r_Detail_height; // Смещение по высоте
-extern u32 ps_r_Detail_quality;	 // Сам пресет (Low/Med/High)
+extern float ps_r_Detail_radius; // Р Р°РґРёСѓСЃ РѕС‚СЂРёСЃРѕРІРєРё
+extern float ps_r_Detail_scale;	 // Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РјР°СЃС€С‚Р°Р±
+extern float ps_r_Detail_height; // РЎРјРµС‰РµРЅРёРµ РїРѕ РІС‹СЃРѕС‚Рµ
+extern u32 ps_r_Detail_quality;	 // РЎР°Рј РїСЂРµСЃРµС‚ (Low/Med/High)
 
 extern float ps_r_Tree_w_rot;
 extern float ps_r_Tree_w_speed;

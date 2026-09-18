@@ -495,11 +495,11 @@ void game_sv_mp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	//-------------------------------------------
 	string256 SkinName;
 	std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
-	// загружены ли скины для этой комманды
+	// Р·Р°РіСЂСѓР¶РµРЅС‹ Р»Рё СЃРєРёРЅС‹ РґР»СЏ СЌС‚РѕР№ РєРѕРјРјР°РЅРґС‹
 
 	if(!TeamList.empty() && TeamList.size() > Team && !TeamList[Team].aSkins.empty())
 	{
-		// загружено ли достаточно скинов для этой комманды
+		// Р·Р°РіСЂСѓР¶РµРЅРѕ Р»Рё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ СЃРєРёРЅРѕРІ РґР»СЏ СЌС‚РѕР№ РєРѕРјРјР°РЅРґС‹
 		if(TeamList[Team].aSkins.size() > ID)
 		{
 			std::strcat(SkinName, TeamList[Team].aSkins[ID].c_str());
@@ -509,7 +509,7 @@ void game_sv_mp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	}
 	else
 	{
-		// скины для такой комманды не загружены
+		// СЃРєРёРЅС‹ РґР»СЏ С‚Р°РєРѕР№ РєРѕРјРјР°РЅРґС‹ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹
 		switch(Team)
 		{
 		case 0:
@@ -595,7 +595,7 @@ void game_sv_mp::SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons)
 
 	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL); // flags
 	/////////////////////////////////////////////////////////////////////////////////
-	// если это оружие - спавним его с полным магазином
+	// РµСЃР»Рё СЌС‚Рѕ РѕСЂСѓР¶РёРµ - СЃРїР°РІРЅРёРј РµРіРѕ СЃ РїРѕР»РЅС‹Рј РјР°РіР°Р·РёРЅРѕРј
 	CSE_ALifeItemWeapon* pWeapon = smart_cast<CSE_ALifeItemWeapon*>(E);
 	if(pWeapon)
 	{

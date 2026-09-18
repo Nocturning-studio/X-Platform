@@ -21,16 +21,16 @@ void CRender::motion_blur_pass_prepare_dilation_map()
 	float w = float(Device.dwWidth * 0.5f);
 	float h = float(Device.dwHeight * 0.5f);
 
-	// 1. Создаем карту векторов
+	// 1. РЎРѕР·РґР°РµРј РєР°СЂС‚Сѓ РІРµРєС‚РѕСЂРѕРІ
 	RenderBackend.set_Element(RenderTarget->s_motion_blur->E[SE_PASS_PREPARE_DILATION_MAP]);
-	// ВАЖНО: Уменьшил силу в коде, так как новая формула точнее. Подберите значение по вкусу (например 0.5 - 1.5)
+	// Р’РђР–РќРћ: РЈРјРµРЅСЊС€РёР» СЃРёР»Сѓ РІ РєРѕРґРµ, С‚Р°Рє РєР°Рє РЅРѕРІР°СЏ С„РѕСЂРјСѓР»Р° С‚РѕС‡РЅРµРµ. РџРѕРґР±РµСЂРёС‚Рµ Р·РЅР°С‡РµРЅРёРµ РїРѕ РІРєСѓСЃСѓ (РЅР°РїСЂРёРјРµСЂ 0.5 - 1.5)
 	RenderBackend.set_Constant("m_blur_power", ps_r_mblur);
 	RenderBackend.set_Constant("m_current", m_current);
 	RenderBackend.set_Constant("m_previous", m_previous);
 	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_0);
 
-	// 2. Сглаживаем карту векторов (убирает шум в векторах)
-	// Можно оставить 1 итерацию
+	// 2. РЎРіР»Р°Р¶РёРІР°РµРј РєР°СЂС‚Сѓ РІРµРєС‚РѕСЂРѕРІ (СѓР±РёСЂР°РµС‚ С€СѓРј РІ РІРµРєС‚РѕСЂР°С…)
+	// РњРѕР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ 1 РёС‚РµСЂР°С†РёСЋ
 	RenderBackend.set_Element(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_DILATION_MAP], 0);
 	RenderBackend.set_Constant("image_resolution", w, h, 1.0f / w, 1.0f / h);
 	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_1);
@@ -67,14 +67,14 @@ void CRender::render_motion_blur()
 {
 	////OPTICK_EVENT("CRenderTarget::render_motion_blur");
 
-	// Важно: Порядок вызовов.
-	// 1. Сначала считаем векторы (нужен текущий depth и предыдущий depth)
+	// Р’Р°Р¶РЅРѕ: РџРѕСЂСЏРґРѕРє РІС‹Р·РѕРІРѕРІ.
+	// 1. РЎРЅР°С‡Р°Р»Р° СЃС‡РёС‚Р°РµРј РІРµРєС‚РѕСЂС‹ (РЅСѓР¶РµРЅ С‚РµРєСѓС‰РёР№ depth Рё РїСЂРµРґС‹РґСѓС‰РёР№ depth)
 	motion_blur_pass_prepare_dilation_map();
 
-	// 2. Размываем картинку
+	// 2. Р Р°Р·РјС‹РІР°РµРј РєР°СЂС‚РёРЅРєСѓ
 	motion_blur_pass_blur();
 
-	// 3. Сохраняем текущий depth для следующего кадра
+	// 3. РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ depth РґР»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РєР°РґСЂР°
 	motion_blur_pass_save_depth();
 }
 ///////////////////////////////////////////////////////////////////////////////////

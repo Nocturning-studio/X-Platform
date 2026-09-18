@@ -3,7 +3,7 @@
 
 CEffectorsManager::CEffectorsManager()
 {
-	// Инициализация значений по умолчанию
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р·РЅР°С‡РµРЅРёР№ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	param_blur = 0.f;
 	param_gray = 0.f;
 	param_noise = 0.f;

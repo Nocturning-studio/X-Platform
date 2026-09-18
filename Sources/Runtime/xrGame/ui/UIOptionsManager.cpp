@@ -126,7 +126,7 @@ void CUIOptionsManager::UndoGroup(const char* group)
 	}
 }
 
-#pragma todo(NSDeathman to NSDeathman : Исправить snd_restart)
+#pragma todo(NSDeathman to NSDeathman : РСЃРїСЂР°РІРёС‚СЊ snd_restart)
 void CUIOptionsManager::OptionsPostAccept()
 {
 	if(m_b_vid_restart)

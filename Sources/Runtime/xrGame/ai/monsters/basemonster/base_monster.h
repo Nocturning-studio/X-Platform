@@ -261,7 +261,7 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 
 	virtual void SetTurnAnimation(bool turn_left);
 
-	// установка специфических анимаций
+	// СѓСЃС‚Р°РЅРѕРІРєР° СЃРїРµС†РёС„РёС‡РµСЃРєРёС… Р°РЅРёРјР°С†РёР№
 	virtual void CheckSpecParams(u32 /**spec_params/**/)
 	{
 	}
@@ -269,8 +269,8 @@ class CBaseMonster : public CCustomMonster, public CStepManager, public CInvento
 	{
 	}
 	virtual void LookPosition(fvec3 to_point,
-							  float angular_speed = PI_DIV_3); // каждый монстр может по-разному реализвать эту функ
-															   // (e.g. кровосос с поворотом головы и т.п.)
+							  float angular_speed = PI_DIV_3); // РєР°Р¶РґС‹Р№ РјРѕРЅСЃС‚СЂ РјРѕР¶РµС‚ РїРѕ-СЂР°Р·РЅРѕРјСѓ СЂРµР°Р»РёР·РІР°С‚СЊ СЌС‚Сѓ С„СѓРЅРє
+															   // (e.g. РєСЂРѕРІРѕСЃРѕСЃ СЃ РїРѕРІРѕСЂРѕС‚РѕРј РіРѕР»РѕРІС‹ Рё С‚.Рї.)
 
 	// Team
 	virtual void ChangeTeam(int team, int squad, int group);

@@ -546,7 +546,7 @@ void CLevel::OnFrame()
 	m_ph_commander->update();
 	m_ph_commander_scripts->update();
 
-	// просчитать полет пуль
+	// РїСЂРѕСЃС‡РёС‚Р°С‚СЊ РїРѕР»РµС‚ РїСѓР»СЊ
 	Engine.Statistic->TEST0.Begin();
 	BulletManager().CommitRenderSet();
 	Engine.Statistic->TEST0.End();
@@ -575,7 +575,7 @@ void CLevel::OnFrame()
 		pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
 	};
 
-#pragma todo(NSDeathman to NSDeathman : Переписать)
+#pragma todo(NSDeathman to NSDeathman : РџРµСЂРµРїРёСЃР°С‚СЊ)
 #ifdef BENCHMARK_BUILD
 	if(!DemoStarted)
 	{

@@ -180,7 +180,7 @@ CSE_Abstract* CLevel::spawn_item(LPCSTR section, const fvec3& position, u32 leve
 			dynamic_object->m_tGraphID = ai().cross_table().vertex(level_vertex_id).game_vertex_id();
 	}
 
-	// оружие спавним с полным магазинои
+	// РѕСЂСѓР¶РёРµ СЃРїР°РІРЅРёРј СЃ РїРѕР»РЅС‹Рј РјР°РіР°Р·РёРЅРѕРё
 	CSE_ALifeItemWeapon* weapon = smart_cast<CSE_ALifeItemWeapon*>(abstract);
 	if(weapon)
 		weapon->a_elapsed = weapon->get_ammo_magsize();

@@ -10,12 +10,12 @@
 class ENGINE_API CFontManager : public pureDeviceReset
 {
   public:
-	// Вектор указателей на указатели шрифтов (для массовой обработки)
+	// Р’РµРєС‚РѕСЂ СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° СѓРєР°Р·Р°С‚РµР»Рё С€СЂРёС„С‚РѕРІ (РґР»СЏ РјР°СЃСЃРѕРІРѕР№ РѕР±СЂР°Р±РѕС‚РєРё)
 	typedef xr_vector<CGameFont**> FONTS_VEC;
 	typedef FONTS_VEC::iterator FONTS_VEC_IT;
 	FONTS_VEC m_all_fonts;
 
-	// --- Игровые шрифты (Public для доступа из Game DLL) ---
+	// --- РРіСЂРѕРІС‹Рµ С€СЂРёС„С‚С‹ (Public РґР»СЏ РґРѕСЃС‚СѓРїР° РёР· Game DLL) ---
 	CGameFont* pFontMedium;
 	CGameFont* pFontDI;
 	CGameFont* pFontArial14;
@@ -28,12 +28,12 @@ class ENGINE_API CFontManager : public pureDeviceReset
 	CGameFont* pFontLetterica25;
 	CGameFont* pFontStat;
 
-	// --- Системный шрифт (Engine usage) ---
-	// Он отделен от общего списка, так как рендерится через seqRender
+	// --- РЎРёСЃС‚РµРјРЅС‹Р№ С€СЂРёС„С‚ (Engine usage) ---
+	// РћРЅ РѕС‚РґРµР»РµРЅ РѕС‚ РѕР±С‰РµРіРѕ СЃРїРёСЃРєР°, С‚Р°Рє РєР°Рє СЂРµРЅРґРµСЂРёС‚СЃСЏ С‡РµСЂРµР· seqRender
   private:
 	CGameFont* pSystemFont;
 
-	// Внутренние методы
+	// Р’РЅСѓС‚СЂРµРЅРЅРёРµ РјРµС‚РѕРґС‹
 	void InitializeFonts();
 	void InitializeFont(CGameFont*& F, LPCSTR section, u32 flags = 0);
 	LPCSTR GetFontTexName(LPCSTR section);
@@ -45,16 +45,16 @@ class ENGINE_API CFontManager : public pureDeviceReset
 	void Initialize();
 	void Destroy();
 
-	// Очистка буфера системного шрифта перед кадром
+	// РћС‡РёСЃС‚РєР° Р±СѓС„РµСЂР° СЃРёСЃС‚РµРјРЅРѕРіРѕ С€СЂРёС„С‚Р° РїРµСЂРµРґ РєР°РґСЂРѕРј
 	void OnFrame();
 
-	// Рендер игровых шрифтов (вызывается из UI/GamePersistent)
+	// Р РµРЅРґРµСЂ РёРіСЂРѕРІС‹С… С€СЂРёС„С‚РѕРІ (РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· UI/GamePersistent)
 	void Render();
 
-	// Обработка потери устройства (Alt+Tab, смена разрешения)
+	// РћР±СЂР°Р±РѕС‚РєР° РїРѕС‚РµСЂРё СѓСЃС‚СЂРѕР№СЃС‚РІР° (Alt+Tab, СЃРјРµРЅР° СЂР°Р·СЂРµС€РµРЅРёСЏ)
 	virtual void OnDeviceReset();
 
-	// Доступ к системному шрифту
+	// Р”РѕСЃС‚СѓРї Рє СЃРёСЃС‚РµРјРЅРѕРјСѓ С€СЂРёС„С‚Сѓ
 	CGameFont* GetSystemFont() const
 	{
 		return pSystemFont;

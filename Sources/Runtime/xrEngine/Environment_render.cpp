@@ -34,7 +34,7 @@ static	fvec3	hbox_verts[24]	=
 };
 */
 
-// SkyLoader: поднял скайбокс как в зп. Если не нужно, вернуть закомменченный код
+// SkyLoader: РїРѕРґРЅСЏР» СЃРєР°Р№Р±РѕРєСЃ РєР°Рє РІ Р·Рї. Р•СЃР»Рё РЅРµ РЅСѓР¶РЅРѕ, РІРµСЂРЅСѓС‚СЊ Р·Р°РєРѕРјРјРµРЅС‡РµРЅРЅС‹Р№ РєРѕРґ
 static fvec3 hbox_verts[24] = {
 	{-1.f, -1.f, -1.f}, {-1.f, -1.01f, -1.f}, // down
 	{1.f, -1.f, -1.f},
@@ -108,7 +108,7 @@ void CEnvironment::RenderSky()
 		return;
 #endif
 
-	// Инициализация геометрии при необходимости
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіРµРѕРјРµС‚СЂРёРё РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
 	if(bNeed_re_create_env)
 	{
 		sh_2sky.create(&m_b_skybox, "skybox_2t");
@@ -120,39 +120,39 @@ void CEnvironment::RenderSky()
 
 	::Render->set_render_mode(::Render->MODE_FAR);
 
-	// Матрица преобразования скайбокса
+	// РњР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ СЃРєР°Р№Р±РѕРєСЃР°
 	fmat4x4 mSky;
 	mSky.rotateY(CurrentEnv->sky_rotation);
 	mSky.translate_over(Engine.RenderView.Position);
 
-	// Вычисляем цвет скайбокса
+	// Р’С‹С‡РёСЃР»СЏРµРј С†РІРµС‚ СЃРєР°Р№Р±РѕРєСЃР°
 	u32 i_offset, v_offset;
 	u32 C = color_rgba(iFloor(CurrentEnv->sky_color.x * 255.f), iFloor(CurrentEnv->sky_color.y * 255.f),
 					   iFloor(CurrentEnv->sky_color.z * 255.f), iFloor(CurrentEnv->weight * 255.f));
 
-	// Заполняем индексный буфер
+	// Р—Р°РїРѕР»РЅСЏРµРј РёРЅРґРµРєСЃРЅС‹Р№ Р±СѓС„РµСЂ
 	u16* pib = RenderBackend.Index.Lock(20 * 3, i_offset);
 	CopyMemory(pib, hbox_faces, 20 * 3 * 2);
 	RenderBackend.Index.Unlock(20 * 3);
 
-	// Заполняем вершинный буфер
+	// Р—Р°РїРѕР»РЅСЏРµРј РІРµСЂС€РёРЅРЅС‹Р№ Р±СѓС„РµСЂ
 	v_skybox* pv = (v_skybox*)RenderBackend.Vertex.Lock(12, sh_2geom.stride(), v_offset);
 	for(u32 v = 0; v < 12; v++)
 		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
 	RenderBackend.Vertex.Unlock(12, sh_2geom.stride());
 
-	// Устанавливаем состояние рендера
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ СЂРµРЅРґРµСЂР°
 	RenderBackend.set_transform_world(mSky);
 	RenderBackend.set_Geometry(sh_2geom);
 	RenderBackend.set_Shader(sh_2sky);
 
-	// Рендерим скайбокс
+	// Р РµРЅРґРµСЂРёРј СЃРєР°Р№Р±РѕРєСЃ
 	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
 
-	// Сбрасываем режим рендера
+	// РЎР±СЂР°СЃС‹РІР°РµРј СЂРµР¶РёРј СЂРµРЅРґРµСЂР°
 	::Render->set_render_mode(::Render->MODE_NORMAL);
 
-	// Рендерим солнце (линз флеры)
+	// Р РµРЅРґРµСЂРёРј СЃРѕР»РЅС†Рµ (Р»РёРЅР· С„Р»РµСЂС‹)
 	eff_LensFlare->Render(TRUE, FALSE, FALSE);
 }
 
@@ -201,7 +201,7 @@ void CEnvironment::RenderRain()
 
 void CEnvironment::OnDeviceCreate()
 {
-	// Создаем шейдеры и геометрию
+	// РЎРѕР·РґР°РµРј С€РµР№РґРµСЂС‹ Рё РіРµРѕРјРµС‚СЂРёСЋ
 	sh_2sky.create(&m_b_skybox, "skybox_2t");
 	sh_2geom.create(v_skybox_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
 	clouds_sh.create("clouds", "null");
@@ -234,14 +234,14 @@ void CEnvironment::OnDeviceDestroy()
 {
 	// OPTICK_EVENT("CEnvironment::OnDeviceDestroy");
 
-	// Очищаем поверхности render targets
+	// РћС‡РёС‰Р°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚Рё render targets
 	tsky0->surface_set(NULL);
 	tsky1->surface_set(NULL);
 
 	tlut0->surface_set(NULL);
 	tlut1->surface_set(NULL);
 
-	// Уничтожаем шейдеры и геометрию
+	// РЈРЅРёС‡С‚РѕР¶Р°РµРј С€РµР№РґРµСЂС‹ Рё РіРµРѕРјРµС‚СЂРёСЋ
 	sh_2sky.destroy();
 	sh_2geom.destroy();
 	clouds_sh.destroy();
@@ -266,7 +266,7 @@ void CEnvironment::OnDeviceDestroy()
 				(*it)->on_device_destroy();
 	}
 
-	// Уничтожаем CurrentEnv
+	// РЈРЅРёС‡С‚РѕР¶Р°РµРј CurrentEnv
 	if(CurrentEnv)
 		CurrentEnv->destroy();
 }

@@ -15,7 +15,7 @@
 namespace boost {
 
   //======================================================================
-  // property iterator, generalized from ideas by François Faure
+  // property iterator, generalized from ideas by FranÐ·ois Faure
 
   namespace detail {
 

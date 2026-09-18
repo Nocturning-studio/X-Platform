@@ -1,4 +1,4 @@
-// ActorCondition.h: класс состояния игрока
+// ActorCondition.h: РєР»Р°СЃСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂРѕРєР°
 //
 
 #pragma once
@@ -47,7 +47,7 @@ class CActorCondition : public CEntityCondition
 	virtual void ChangeAlcohol(float value);
 	virtual void ChangeSatiety(float value);
 
-	// хромание при потере сил и здоровья
+	// С…СЂРѕРјР°РЅРёРµ РїСЂРё РїРѕС‚РµСЂРµ СЃРёР» Рё Р·РґРѕСЂРѕРІСЊСЏ
 	virtual bool IsLimping() const;
 	virtual bool IsCantWalk() const;
 	virtual bool IsCantWalkWeight();
@@ -106,7 +106,7 @@ class CActorCondition : public CEntityCondition
 	mutable bool m_bCantWalk;
 	mutable bool m_bCantSprint;
 
-	// порог силы и здоровья меньше которого актер начинает хромать
+	// РїРѕСЂРѕРі СЃРёР»С‹ Рё Р·РґРѕСЂРѕРІСЊСЏ РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ Р°РєС‚РµСЂ РЅР°С‡РёРЅР°РµС‚ С…СЂРѕРјР°С‚СЊ
 	float m_fLimpingPowerBegin;
 	float m_fLimpingPowerEnd;
 	float m_fCantWalkPowerBegin;

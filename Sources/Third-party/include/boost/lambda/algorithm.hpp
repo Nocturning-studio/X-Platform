@@ -1,5 +1,5 @@
 // -- algorithm.hpp -- Boost Lambda Library -----------------------------------
-// Copyright (C) 2002 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
+// Copyright (C) 2002 Jaakko JÐ´rvi (jaakko.jarvi@cs.utu.fi)
 // Copyright (C) 2002 Gary Powell (gwpowell@hotmail.com)
 //
 // Permission to copy, use, sell and distribute this software is granted

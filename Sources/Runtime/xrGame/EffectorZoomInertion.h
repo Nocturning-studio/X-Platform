@@ -1,5 +1,5 @@
-// EffectorZoomInertion.h: инерция(покачивания) оружия в режиме
-//						   приближения
+// EffectorZoomInertion.h: РёРЅРµСЂС†РёСЏ(РїРѕРєР°С‡РёРІР°РЅРёСЏ) РѕСЂСѓР¶РёСЏ РІ СЂРµР¶РёРјРµ
+//						   РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -10,7 +10,7 @@
 
 class CEffectorZoomInertion : public CEffectorCam
 {
-	// коэффициент скорости "покачивания" прицела
+	// РєРѕСЌС„С„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё "РїРѕРєР°С‡РёРІР°РЅРёСЏ" РїСЂРёС†РµР»Р°
 	float m_fFloatSpeed;
 	float m_fDispRadius;
 
@@ -24,13 +24,13 @@ class CEffectorZoomInertion : public CEffectorCam
 
 	u32 m_dwTimePassed;
 
-	// параметры настройки эффектора
+	// РїР°СЂР°РјРµС‚СЂС‹ РЅР°СЃС‚СЂРѕР№РєРё СЌС„С„РµРєС‚РѕСЂР°
 	float m_fCameraMoveEpsilon;
 	float m_fDispMin;
 	float m_fSpeedMin;
 	float m_fZoomAimingDispK;
 	float m_fZoomAimingSpeedK;
-	// время через которое эффектор меняет направление движения
+	// РІСЂРµРјСЏ С‡РµСЂРµР· РєРѕС‚РѕСЂРѕРµ СЌС„С„РµРєС‚РѕСЂ РјРµРЅСЏРµС‚ РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ
 	u32 m_dwDeltaTime;
 
 	CRandom m_Random;

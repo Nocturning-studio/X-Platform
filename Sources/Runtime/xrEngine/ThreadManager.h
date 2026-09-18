@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "pure.h"
 #include <mutex>

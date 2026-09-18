@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// CustomRocket.h:	ракета, которой стреляет RocketLauncher
-//					(умеет лететь, светиться и отыгрывать партиклы)
+// CustomRocket.h:	СЂР°РєРµС‚Р°, РєРѕС‚РѕСЂРѕР№ СЃС‚СЂРµР»СЏРµС‚ RocketLauncher
+//					(СѓРјРµРµС‚ Р»РµС‚РµС‚СЊ, СЃРІРµС‚РёС‚СЊСЃСЏ Рё РѕС‚С‹РіСЂС‹РІР°С‚СЊ РїР°СЂС‚РёРєР»С‹)
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -66,7 +66,7 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 		inherited::renderable_Render();
 	}
 
-	// создание физической оболочки
+	// СЃРѕР·РґР°РЅРёРµ С„РёР·РёС‡РµСЃРєРѕР№ РѕР±РѕР»РѕС‡РєРё
 	virtual void activate_physic_shell();
 	virtual void create_physic_shell();
 
@@ -97,37 +97,37 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 	bool m_bLaunched;
 
   protected:
-	// указатель на владельца RocketLauncher - который стреляет ракету
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РІР»Р°РґРµР»СЊС†Р° RocketLauncher - РєРѕС‚РѕСЂС‹Р№ СЃС‚СЂРµР»СЏРµС‚ СЂР°РєРµС‚Сѓ
 	CGameObject* m_pOwner;
 
 	SRoketContact m_contact;
-	// параметры которые задаются RocketLauncher-ом перед пуском
+	// РїР°СЂР°РјРµС‚СЂС‹ РєРѕС‚РѕСЂС‹Рµ Р·Р°РґР°СЋС‚СЃСЏ RocketLauncher-РѕРј РїРµСЂРµРґ РїСѓСЃРєРѕРј
 	fmat4x4 m_LaunchTransform;
 	fvec3 m_vLaunchVelocity;
 	fvec3 m_vLaunchAngularVelocity;
 
 	enum ERocketState
 	{
-		eInactive, // ракета неактивна и находиться в инвентаре
-		eEngine,   // включен двигатель
-		eFlying,   // просто летим
-		eCollide   // произошло столкновение с препятствием
+		eInactive, // СЂР°РєРµС‚Р° РЅРµР°РєС‚РёРІРЅР° Рё РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ РёРЅРІРµРЅС‚Р°СЂРµ
+		eEngine,   // РІРєР»СЋС‡РµРЅ РґРІРёРіР°С‚РµР»СЊ
+		eFlying,   // РїСЂРѕСЃС‚Рѕ Р»РµС‚РёРј
+		eCollide   // РїСЂРѕРёР·РѕС€Р»Рѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃ РїСЂРµРїСЏС‚СЃС‚РІРёРµРј
 	};
 
-	// текущее состояние ракеты
+	// С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ СЂР°РєРµС‚С‹
 	ERocketState m_eState;
 
-	// двигатель присутствует
+	// РґРІРёРіР°С‚РµР»СЊ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚
 	bool m_bEnginePresent;
-	// время работы двигателя с момента старта
+	// РІСЂРµРјСЏ СЂР°Р±РѕС‚С‹ РґРІРёРіР°С‚РµР»СЏ СЃ РјРѕРјРµРЅС‚Р° СЃС‚Р°СЂС‚Р°
 	int m_dwEngineWorkTime;
-	// сила работы двигателя (размер импульса в секунду)
+	// СЃРёР»Р° СЂР°Р±РѕС‚С‹ РґРІРёРіР°С‚РµР»СЏ (СЂР°Р·РјРµСЂ РёРјРїСѓР»СЊСЃР° РІ СЃРµРєСѓРЅРґСѓ)
 	float m_fEngineImpulse;
 	float m_fEngineImpulseUp;
-	// текущее время работы двигателя
+	// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ СЂР°Р±РѕС‚С‹ РґРІРёРіР°С‚РµР»СЏ
 	int m_dwEngineTime;
 
-	// обработка столкновения
+	// РѕР±СЂР°Р±РѕС‚РєР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ
 	virtual void Contact(const fvec3& pos, const fvec3& normal);
 	void PlayContact();
 	static void ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/,
@@ -137,12 +137,12 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 	//	Lights
 	//////////////////////////////////////////////////////////////////////////
   protected:
-	// флаг, что подсветка может быть включена
+	// С„Р»Р°Рі, С‡С‚Рѕ РїРѕРґСЃРІРµС‚РєР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РІРєР»СЋС‡РµРЅР°
 	bool m_bLightsEnabled;
-	// флаг, что подсветка будет остановлена
-	// вместе с двигателем
+	// С„Р»Р°Рі, С‡С‚Рѕ РїРѕРґСЃРІРµС‚РєР° Р±СѓРґРµС‚ РѕСЃС‚Р°РЅРѕРІР»РµРЅР°
+	// РІРјРµСЃС‚Рµ СЃ РґРІРёРіР°С‚РµР»РµРј
 	bool m_bStopLightsWithEngine;
-	// подсветка во время полета и работы двигателя
+	// РїРѕРґСЃРІРµС‚РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»РµС‚Р° Рё СЂР°Р±РѕС‚С‹ РґРІРёРіР°С‚РµР»СЏ
 	ref_light m_pTrailLight;
 	Fcolor m_TrailLightColor;
 	float m_fTrailLightRange;
@@ -157,10 +157,10 @@ class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 	//	Particles
 	//////////////////////////////////////////////////////////////////////////
   protected:
-	// имя партиклов двигателя
+	// РёРјСЏ РїР°СЂС‚РёРєР»РѕРІ РґРІРёРіР°С‚РµР»СЏ
 	shared_str m_sEngineParticles;
 	CParticlesObject* m_pEngineParticles;
-	// имя партиклов полета
+	// РёРјСЏ РїР°СЂС‚РёРєР»РѕРІ РїРѕР»РµС‚Р°
 	shared_str m_sFlyParticles;
 	CParticlesObject* m_pFlyParticles;
 

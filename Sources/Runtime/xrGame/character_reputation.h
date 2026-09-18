@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
-// character_reputation.h:		структура представления репутаций и
-//								отношений между ними
+// character_reputation.h:		СЃС‚СЂСѓРєС‚СѓСЂР° РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ СЂРµРїСѓС‚Р°С†РёР№ Рё
+//								РѕС‚РЅРѕС€РµРЅРёР№ РјРµР¶РґСѓ РЅРёРјРё
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -52,7 +52,7 @@ class CHARACTER_REPUTATION : public CIni_IdToIndex<1, REPUTATION_DATA, shared_st
 	static void InitIdToIndex();
 
   public:
-	// отношение между репутациями
+	// РѕС‚РЅРѕС€РµРЅРёРµ РјРµР¶РґСѓ СЂРµРїСѓС‚Р°С†РёСЏРјРё
 	static CHARACTER_GOODWILL relation(int from, int to);
 	CHARACTER_GOODWILL relation(int to);
 

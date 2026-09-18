@@ -119,7 +119,7 @@ class CEffectorsManager : public IEffectorsManager
 	}
 
   private:
-	// Параметры постобработки
+	// РџР°СЂР°РјРµС‚СЂС‹ РїРѕСЃС‚РѕР±СЂР°Р±РѕС‚РєРё
 	float param_blur;
 	float param_gray;
 	float param_duality_h;
@@ -132,7 +132,7 @@ class CEffectorsManager : public IEffectorsManager
 	u32 param_color_gray;
 	u32 param_color_add;
 
-	// Параметры шума
+	// РџР°СЂР°РјРµС‚СЂС‹ С€СѓРјР°
 	float im_noise_time;
 	u32 im_noise_shift_w;
 	u32 im_noise_shift_h;
